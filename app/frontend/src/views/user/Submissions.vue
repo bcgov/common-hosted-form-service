@@ -1,22 +1,20 @@
-<template>
-  <div>
-    <MySubmissionsTable :formId="f" />
-  </div>
-</template>
+<script setup>
+import { computed } from 'vue';
+import MySubmissionsTable from '~/components/forms/submission/MySubmissionsTable.vue';
+import { AppPermissions } from '~/utils/constants';
 
-<script>
-import MySubmissionsTable from '@/components/forms/submission/MySubmissionsTable.vue';
+defineProps({
+  f: {
+    type: String,
+    required: true,
+  },
+});
 
-export default {
-  name: 'Submissions',
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  components: {
-    MySubmissionsTable,
-  },
-};
+const APP_PERMS = computed(() => AppPermissions);
 </script>
+
+<template>
+  <BaseSecure :permission="APP_PERMS.VIEWS_USER_SUBMISSIONS">
+    <MySubmissionsTable :form-id="f" />
+  </BaseSecure>
+</template>

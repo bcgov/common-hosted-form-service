@@ -14,9 +14,9 @@ class UserFormAccess extends Model {
           query.where('userId', value);
         }
       },
-      filterKeycloakId(query, value) {
+      filterIdpUserId(query, value) {
         if (value) {
-          query.where('keycloakId', value);
+          query.where('idpUserId', value);
         }
       },
       filterUsername(query, value) {
@@ -103,7 +103,7 @@ class UserFormAccess extends Model {
       },
       orderDefault(builder) {
         builder.orderByRaw('lower("lastName"), lower("firstName"), lower("formName")');
-      }
+      },
     };
   }
 }

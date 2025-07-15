@@ -1,8 +1,30 @@
-import { formService } from '@/services';
-import store from '@/store';
-import { FormPermissions, IdentityProviders, IdentityMode } from '@/utils/constants';
-import * as permissionUtils from '@/utils/permissionUtils';
+import { setActivePinia, createPinia } from 'pinia';
+import { describe, expect, it, vi } from 'vitest';
 
+import { formService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
+import { useNotificationStore } from '~/store/notification';
+import { FormPermissions, IdentityMode } from '~/utils/constants';
+import * as permissionUtils from '~/utils/permissionUtils';
+vi.mock('nprogress', () => {
+  return {
+    default: {
+      start: vi.fn(),
+      set: vi.fn(),
+      inc: vi.fn(),
+      done: vi.fn(),
+      isRendered: vi.fn(() => false),
+      render: vi.fn(),
+    },
+  };
+});
+
+// Cleanup after each test
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.clearAllTimers(); // Still stops any stray timers
+});
 describe('checkFormSubmit', () => {
   it('should be false when userForm is undefined', () => {
     expect(permissionUtils.checkFormSubmit(undefined)).toBeFalsy();
@@ -16,66 +38,136 @@ describe('checkFormSubmit', () => {
     expect(permissionUtils.checkFormSubmit({ idps: [] })).toBeFalsy();
   });
 
-  it('should be true when idps is public', () => {
-    expect(permissionUtils.checkFormSubmit({ idps: [IdentityProviders.PUBLIC] })).toBeTruthy();
-  });
-
   it('should be true when permissions is submission creator', () => {
-    expect(permissionUtils.checkFormSubmit({ permissions: [FormPermissions.SUBMISSION_CREATE] })).toBeTruthy();
+    expect(
+      permissionUtils.checkFormSubmit({
+        permissions: [FormPermissions.SUBMISSION_CREATE],
+      })
+    ).toBeTruthy();
   });
 });
 
 describe('checkFormManage', () => {
-  it('should be false when userForm is undefined', () => {
+  it('should be false when permissions is undefined', () => {
     expect(permissionUtils.checkFormManage(undefined)).toBeFalsy();
   });
 
-  it('should be false when permissions is undefined', () => {
-    expect(permissionUtils.checkFormManage({})).toBeFalsy();
+  it('should be false when permissions is empty', () => {
+    expect(permissionUtils.checkFormManage([])).toBeFalsy();
+  });
+
+  it('should be false when no appropriate permission exists', () => {
+    let permissions = new Array(FormPermissions)
+      .filter((p) => p !== FormPermissions.FORM_UPDATE)
+      .filter((p) => p !== FormPermissions.FORM_DELETE)
+      .filter((p) => p !== FormPermissions.DESIGN_UPDATE)
+      .filter((p) => p !== FormPermissions.DESIGN_DELETE)
+      .filter((p) => p !== FormPermissions.TEAM_UPDATE);
+
+    expect(permissionUtils.checkFormManage(permissions)).not.toBeTruthy();
   });
 
   it('should be true when at least one appropriate permission exists', () => {
-    expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.FORM_UPDATE] })).toBeTruthy();
-    expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.FORM_DELETE] })).toBeTruthy();
-    expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.DESIGN_UPDATE] })).toBeTruthy();
-    expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.DESIGN_DELETE] })).toBeTruthy();
-    expect(permissionUtils.checkFormManage({ permissions: [FormPermissions.TEAM_UPDATE] })).toBeTruthy();
+    expect(
+      permissionUtils.checkFormManage([FormPermissions.FORM_UPDATE])
+    ).toBeTruthy();
+    expect(
+      permissionUtils.checkFormManage([FormPermissions.FORM_DELETE])
+    ).toBeTruthy();
+    expect(
+      permissionUtils.checkFormManage([FormPermissions.DESIGN_UPDATE])
+    ).toBeTruthy();
+    expect(
+      permissionUtils.checkFormManage([FormPermissions.DESIGN_DELETE])
+    ).toBeTruthy();
+    expect(
+      permissionUtils.checkFormManage([FormPermissions.TEAM_UPDATE])
+    ).toBeTruthy();
   });
 });
 
 describe('checkSubmissionView', () => {
-  it('should be false when userForm is undefined', () => {
+  it('should be false when permissions is undefined', () => {
     expect(permissionUtils.checkSubmissionView(undefined)).toBeFalsy();
   });
 
-  it('should be false when permissions is undefined', () => {
-    expect(permissionUtils.checkSubmissionView({})).toBeFalsy();
+  it('should be false when permissions is empty', () => {
+    expect(permissionUtils.checkSubmissionView([])).toBeFalsy();
+  });
+
+  it('should be false when no appropriate permission exists', () => {
+    let permissions = new Array(FormPermissions)
+      .filter((p) => p !== FormPermissions.SUBMISSION_READ)
+      .filter((p) => p !== FormPermissions.SUBMISSION_UPDATE);
+
+    expect(permissionUtils.checkSubmissionView(permissions)).not.toBeTruthy();
   });
 
   it('should be true when at least one appropriate permission exists', () => {
-    expect(permissionUtils.checkSubmissionView({ permissions: [FormPermissions.SUBMISSION_READ] })).toBeTruthy();
-    expect(permissionUtils.checkSubmissionView({ permissions: [FormPermissions.SUBMISSION_UPDATE] })).toBeTruthy();
+    expect(
+      permissionUtils.checkSubmissionView([FormPermissions.SUBMISSION_READ])
+    ).toBeTruthy();
+    expect(
+      permissionUtils.checkSubmissionView([FormPermissions.SUBMISSION_UPDATE])
+    ).toBeTruthy();
+  });
+});
+
+describe('checkSubmissionUpdate', () => {
+  it('should be false when permissions is undefined', () => {
+    expect(permissionUtils.checkSubmissionUpdate(undefined)).toBeFalsy();
+  });
+
+  it('should be false when permissions is empty', () => {
+    expect(permissionUtils.checkSubmissionUpdate([])).toBeFalsy();
+  });
+
+  it('should be false when no appropriate permission exists', () => {
+    let permissions = new Array(FormPermissions)
+      .filter((p) => p !== FormPermissions.SUBMISSION_READ)
+      .filter((p) => p !== FormPermissions.SUBMISSION_REVIEW);
+
+    expect(permissionUtils.checkSubmissionUpdate(permissions)).not.toBeTruthy();
+  });
+
+  it('should be true when at least one appropriate permission exists', () => {
+    expect(
+      permissionUtils.checkSubmissionUpdate([FormPermissions.SUBMISSION_UPDATE])
+    ).toBeTruthy();
   });
 });
 
 describe('preFlightAuth', () => {
-  const mockNext = jest.fn();
-  const dispatchSpy = jest.spyOn(store, 'dispatch');
-  const getSubmissionOptionsSpy = jest.spyOn(formService, 'getSubmissionOptions');
-  const readFormOptionsSpy = jest.spyOn(formService, 'readFormOptions');
+  setActivePinia(createPinia());
+  const authStore = useAuthStore();
+  const notificationStore = useNotificationStore();
+  const idpStore = useIdpStore();
+  const mockNext = vi.fn();
+  const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+  const alertNavigateSpy = vi.spyOn(notificationStore, 'alertNavigate');
+  const errorNavigateSpy = vi.spyOn(notificationStore, 'errorNavigate');
+  const getSubmissionOptionsSpy = vi.spyOn(formService, 'getSubmissionOptions');
+  const readFormOptionsSpy = vi.spyOn(formService, 'readFormOptions');
+
+  idpStore.providers = require('../fixtures/identityProviders.json');
+  const primaryIdp = idpStore.primaryIdp;
+  const secondaryIdp = idpStore.providers.find(
+    (x) => x.active && x.login && !x.primary
+  );
 
   beforeEach(() => {
-    if (store.hasModule('auth')) store.unregisterModule('auth');
+    authStore.$reset();
+    notificationStore.$reset();
     mockNext.mockReset();
-    dispatchSpy.mockReset();
+    addNotificationSpy.mockReset();
+    alertNavigateSpy.mockReset();
+    errorNavigateSpy.mockReset();
     getSubmissionOptionsSpy.mockReset();
     readFormOptionsSpy.mockReset();
   });
 
   afterAll(() => {
-    store.unregisterModule('auth');
     mockNext.mockRestore();
-    dispatchSpy.mockRestore();
     getSubmissionOptionsSpy.mockReset();
     readFormOptionsSpy.mockRestore();
   });
@@ -83,123 +175,220 @@ describe('preFlightAuth', () => {
   it('should create error notification if options are missing attributes', async () => {
     await permissionUtils.preFlightAuth({}, mockNext);
     expect(mockNext).toHaveBeenCalledTimes(0);
-    expect(dispatchSpy).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
-    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate');
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+    expect(errorNavigateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create custom error message if form is 404', async () => {
+    authStore.authenticated = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        identity_provider: 'public',
+      },
+    };
+
+    readFormOptionsSpy.mockImplementation(() => {
+      const error = new Error('Not Found');
+      error.response = {
+        status: 404,
+      };
+
+      throw error;
+    });
+    alertNavigateSpy.mockImplementation(() => {});
+
+    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+    expect(mockNext).toHaveBeenCalledTimes(0);
+    expect(alertNavigateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create custom error message if form is 422', async () => {
+    authStore.authenticated = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        identity_provider: 'public',
+      },
+    };
+    readFormOptionsSpy.mockImplementation(() => {
+      const error = new Error('Not Found');
+      error.response = {
+        status: 422,
+      };
+
+      throw error;
+    });
+    alertNavigateSpy.mockImplementation(() => {});
+
+    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+    expect(mockNext).toHaveBeenCalledTimes(0);
+    expect(alertNavigateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not create custom error message if form is 500', async () => {
+    authStore.authenticated = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        identity_provider: 'public',
+      },
+    };
+    const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+    const errorNavigateSpy = vi.spyOn(notificationStore, 'errorNavigate');
+    readFormOptionsSpy.mockImplementation(() => {
+      const error = new Error('Not Found');
+      error.response = {
+        status: 500,
+      };
+
+      throw error;
+    });
+
+    await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
+
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
+    expect(mockNext).toHaveBeenCalledTimes(0);
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+    expect(errorNavigateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not create custom error message if sub is missing', async () => {
+    authStore.authenticated = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        identity_provider: 'unknown',
+      },
+    };
+    const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+    const errorNavigateSpy = vi.spyOn(notificationStore, 'errorNavigate');
+    readFormOptionsSpy.mockImplementation(() => {
+      const error = new Error('Not Found');
+      error.response = {
+        status: 404,
+      };
+
+      throw error;
+    });
+    getSubmissionOptionsSpy.mockImplementation(() => {});
+
+    await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
+
+    expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
+    expect(mockNext).toHaveBeenCalledTimes(0);
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+    expect(errorNavigateSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should call readFormOptions and next callback if authenticated and public', async () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => true,
-        identityProvider: () => IdentityMode.PUBLIC
-      }
+    authStore.authenticated = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        identity_provider: 'unknown',
+      },
+    };
+    readFormOptionsSpy.mockResolvedValue({
+      data: { idpHints: [] },
     });
-    readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityMode.PUBLIC] } });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledTimes(0);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
     expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
   });
 
   it('should call readFormOptions and next callback if authenticated and idps match', async () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => true,
-        identityProvider: () => IdentityProviders.IDIR
-      }
+    authStore.authenticated = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        identity_provider: primaryIdp.code,
+      },
+    };
+    readFormOptionsSpy.mockResolvedValue({
+      data: { idpHints: [primaryIdp.code] },
     });
-    readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityProviders.IDIR] } });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledTimes(0);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
     expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
   });
 
   it('should call readFormOptions and create error notification with idp mismatch', async () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => true,
-        identityProvider: () => IdentityProviders.IDIR
-      }
+    authStore.authenticated = true;
+    authStore.keycloak = {
+      tokenParsed: {
+        identity_provider: primaryIdp.code,
+      },
+    };
+    const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+    const errorNavigateSpy = vi.spyOn(notificationStore, 'errorNavigate');
+    readFormOptionsSpy.mockResolvedValue({
+      data: { idpHints: [secondaryIdp.idp] },
     });
-    readFormOptionsSpy.mockResolvedValue({ data: { idpHints: [IdentityProviders.BCEIDBASIC] } });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(0);
-    expect(dispatchSpy).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object));
-    expect(dispatchSpy).toHaveBeenCalledWith('auth/errorNavigate', expect.any(String));
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+    expect(errorNavigateSpy).toHaveBeenCalledTimes(1);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(0);
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(1);
     expect(readFormOptionsSpy).toHaveBeenCalledWith('f');
   });
 
   it('should call getSubmissionOptions and next callback if not authenticated and public', async () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false
-      }
+    authStore.authenticated = false;
+    getSubmissionOptionsSpy.mockResolvedValue({
+      data: { form: { idpHints: [IdentityMode.PUBLIC] } },
     });
-    getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: [IdentityMode.PUBLIC] } } });
 
     await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledTimes(0);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
   });
 
   it('should call getSubmissionOptions and login flow with idpHint', async () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false
-      }
+    authStore.authenticated = false;
+    getSubmissionOptionsSpy.mockResolvedValue({
+      data: { form: { idpHints: ['idir'] } },
     });
-    getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: [IdentityProviders.IDIR] } } });
 
     await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(0);
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith('auth/login', IdentityProviders.IDIR);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
   });
 
   it('should call getSubmissionOptions and login flow without idpHint', async () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false
-      }
+    authStore.authenticated = false;
+    getSubmissionOptionsSpy.mockResolvedValue({
+      data: { form: { idpHints: ['idp'] } },
     });
-    getSubmissionOptionsSpy.mockResolvedValue({ data: { form: { idpHints: ['idp'] } } });
 
     await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(0);
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith('auth/login');
     expect(getSubmissionOptionsSpy).toHaveBeenCalledTimes(1);
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
@@ -216,14 +405,32 @@ describe('isFormPublic', () => {
   });
 
   it('should be true when idps is public', () => {
-    expect(permissionUtils.isFormPublic({ identityProviders: [{ code: IdentityMode.PUBLIC }] })).toBeTruthy();
+    expect(
+      permissionUtils.isFormPublic({
+        identityProviders: [{ code: IdentityMode.PUBLIC }],
+      })
+    ).toBeTruthy();
   });
 
   it('should be true when idps includes public', () => {
-    expect(permissionUtils.isFormPublic({ identityProviders: [{ code: IdentityMode.LOGIN }, { code: IdentityMode.PUBLIC }] })).toBeTruthy();
+    expect(
+      permissionUtils.isFormPublic({
+        identityProviders: [
+          { code: IdentityMode.LOGIN },
+          { code: IdentityMode.PUBLIC },
+        ],
+      })
+    ).toBeTruthy();
   });
 
   it('should be false when idps has something else', () => {
-    expect(permissionUtils.isFormPublic({ identityProviders: [{ code: IdentityMode.TEAM }, { code: IdentityMode.LOGIN }] })).toBeFalsy();
+    expect(
+      permissionUtils.isFormPublic({
+        identityProviders: [
+          { code: IdentityMode.TEAM },
+          { code: IdentityMode.LOGIN },
+        ],
+      })
+    ).toBeFalsy();
   });
 });

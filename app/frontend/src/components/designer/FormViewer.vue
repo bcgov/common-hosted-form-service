@@ -1,479 +1,1064 @@
+<script setup>
+import { Form } from '@formio/vue';
+import _ from 'lodash';
+import { storeToRefs } from 'pinia';
+import {
+  computed,
+  onBeforeUpdate,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import FormViewerActions from '~/components/designer/FormViewerActions.vue';
+import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
+import FormModuleLoader from '@/components/designer/FormModuleLoader.vue';
+import templateExtensions from '~/plugins/templateExtensions';
+import { fileService, formService, rbacService } from '~/services';
+import { useAppStore } from '~/store/app';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+
+import { isFormPublic } from '~/utils/permissionUtils';
+import {
+  attachAttributesToLinks,
+  getDisposition,
+} from '~/utils/transformUtils';
+import { FormPermissions, NotificationTypes } from '~/utils/constants';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const router = useRouter();
+
+const emit = defineEmits(['submission-updated']);
+
+const properties = defineProps({
+  displayTitle: {
+    type: Boolean,
+    default: false,
+  },
+  draftId: {
+    type: String,
+    default: null,
+  },
+  formId: {
+    type: String,
+    default: null,
+  },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
+  preview: Boolean,
+  staffEditMode: {
+    type: Boolean,
+    default: false,
+  },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
+  submissionId: {
+    type: String,
+    default: null,
+  },
+  versionId: {
+    type: String,
+    default: null,
+  },
+  isDuplicate: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const block = ref(false);
+const bulkFile = ref(false);
+const chefForm = ref(null);
+const confirmSubmit = ref(false);
+const currentForm = ref({});
+const downloadTimeout = ref(null);
+const doYouWantToSaveTheDraft = ref(false);
+const forceNewTabLinks = ref(true);
+const form = ref({});
+const formDataEntered = ref(false);
+const formElement = ref(undefined);
+const formSchema = ref({});
+const isFormScheduleExpired = ref(false);
+const isLateSubmissionAllowed = ref(false);
+const isLoading = ref(false);
+const json_csv = ref({
+  data: [],
+  file_name: String,
+});
+const loadingSubmission = ref(false);
+const permissions = ref([]);
+const reRenderFormIo = ref(0);
+const saveDraftDialog = ref(false);
+const saveDraftState = ref(0);
+const saving = ref(false);
+const showModal = ref(false);
+const showSubmitConfirmDialog = ref(false);
+const submission = ref({ data: { lateEntry: false } });
+const submissionRecord = ref({});
+const version = ref(0);
+const versionIdToSubmitTo = ref(properties.versionId);
+const isAuthorized = ref(true);
+const loadingFormModules = ref(true);
+
+const appStore = useAppStore();
+const authStore = useAuthStore();
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+
+const { config } = storeToRefs(appStore);
+const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
+const { downloadedFile, isRTL } = storeToRefs(formStore);
+
+const formScheduleExpireMessage = computed(() =>
+  form?.value?.schedule?.message
+    ? form.value.schedule.message
+    : t('trans.formViewer.formScheduleExpireMessage')
+);
+
+const formUnauthorizedMessage = computed(() =>
+  t('trans.formViewer.formUnauthorizedMessage')
+);
+
+const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
+
+const shouldDisableFileDownloads = computed(() => {
+  // To disable file downloads for Public forms
+  if (!form.value || !properties.readOnly) {
+    return false;
+  }
+
+  return (
+    properties.readOnly && isFormPublic(form.value) && !authenticated.value
+  );
+});
+
+const viewerOptions = computed(() => {
+  // Force recomputation of viewerOptions after rerendered formio to prevent duplicate submission update calls
+  reRenderFormIo.value;
+
+  return {
+    sanitizeConfig: {
+      addTags: ['iframe'],
+      ALLOWED_TAGS: ['iframe'],
+    },
+    templates: templateExtensions,
+    readOnly: properties.readOnly,
+    hooks: {
+      beforeSubmit: onBeforeSubmit,
+    },
+    // pass in options for custom components to use
+    componentOptions: {
+      simplefile: {
+        config: config.value,
+        chefsToken: getCurrentAuthHeader,
+        deleteFile: deleteFile,
+        getFile: getFile,
+        uploadFile: uploadFile,
+      },
+    },
+    evalContext: {
+      token: tokenParsed.value,
+      user: user.value,
+    },
+  };
+});
+
+const canSaveDraft = computed(
+  () =>
+    !properties.readOnly &&
+    permissions.value.includes(FormPermissions.SUBMISSION_UPDATE)
+);
+
+watch(locale, () => {
+  reRenderFormIo.value += 1;
+});
+
+watch(loadingFormModules, (value) => {
+  if (!value) {
+    this.reRenderFormIo += 1;
+  }
+});
+
+onMounted(async () => {
+  // load up headers for any External API calls
+  // from components.
+  await setProxyHeaders();
+  if (properties.submissionId && properties.isDuplicate) {
+    // Run when make new submission from existing one called. Get the
+    // published version of form, and then get the submission data.
+    await getFormSchema();
+    await getFormData();
+  } else if (properties.submissionId && !properties.isDuplicate) {
+    await getFormData();
+  } else {
+    showModal.value = true;
+    await getFormSchema();
+  }
+  window.addEventListener('beforeunload', beforeWindowUnload);
+
+  reRenderFormIo.value += 1;
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', beforeWindowUnload);
+  clearTimeout(downloadTimeout.value);
+});
+
+onBeforeUpdate(() => {
+  if (forceNewTabLinks.value) {
+    attachAttributesToLinks(formSchema.value.components);
+  }
+});
+
+function getCurrentAuthHeader() {
+  return `Bearer ${keycloak.value.token}`;
+}
+
+async function getFormData() {
+  function iterate(obj, stack, fields, propNeeded) {
+    //Get property path from nested object
+    for (let property in obj) {
+      const innerObject = obj[property];
+
+      if (propNeeded === property) {
+        fields = fields + stack + '.' + property;
+        return fields.replace(/^\./, '');
+      } else if (Array.isArray(innerObject)) {
+        // When the form contains a Data Grid there will be an array that
+        // needs to be checked, and an array of properties to be unset.
+        const fieldsArray = [];
+        for (let i = 0; i < innerObject.length; i++) {
+          const next = iterate(
+            innerObject[i],
+            stack + '.' + property + '[' + i + ']',
+            fields,
+            propNeeded
+          );
+
+          if (next) {
+            fieldsArray.push(next);
+          }
+        }
+
+        if (fieldsArray.length > 0) {
+          return fieldsArray;
+        }
+      } else if (typeof innerObject === 'object') {
+        return iterate(innerObject, stack + '.' + property, fields, propNeeded);
+      }
+    }
+  }
+
+  function deleteFieldData(fieldcomponent, submission) {
+    if (Object.prototype.hasOwnProperty.call(fieldcomponent, 'columns')) {
+      // It's a layout component that has columns.
+      fieldcomponent.columns.map((subComponent) => {
+        deleteFieldData(subComponent, submission);
+      });
+    } else if (
+      Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
+    ) {
+      // It's a layout component that has subcomponents, such as a panel.
+      fieldcomponent.components.map((subComponent) => {
+        deleteFieldData(subComponent, submission);
+      });
+    } else if (fieldcomponent?.validate?.isUseForCopy === false) {
+      const fieldPath = iterate(submission, '', '', fieldcomponent.key);
+      if (Array.isArray(fieldPath)) {
+        for (let path of fieldPath) {
+          _.unset(submission, path);
+        }
+      } else if (fieldPath) {
+        _.unset(submission, fieldPath);
+      }
+    }
+  }
+
+  try {
+    loadingSubmission.value = true;
+    const response = await formService.getSubmission(properties.submissionId);
+    submissionRecord.value = Object.assign({}, response.data.submission);
+    submission.value = submissionRecord.value.submission;
+    showModal.value =
+      submission.value.data.submit ||
+      submission.value.data.state == 'submitted' ||
+      !submissionRecord.value.draft ||
+      properties.readOnly
+        ? false
+        : true;
+    form.value = response.data.form;
+    versionIdToSubmitTo.value = versionIdToSubmitTo.value
+      ? versionIdToSubmitTo.value
+      : response.data?.version?.id;
+    if (!properties.isDuplicate) {
+      //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
+      formSchema.value = response.data.version.schema;
+      version.value = response.data.version.version;
+    } else {
+      if (
+        response.data?.version?.schema?.components &&
+        response.data?.version?.schema?.components.length
+      ) {
+        response.data.version.schema.components.map((component) => {
+          deleteFieldData(component, submission.value); //Delete all the fields data that are not enabled for duplication
+        });
+      }
+    }
+    // Get permissions
+    if (!properties.staffEditMode && !isFormPublic(form.value)) {
+      const permRes = await rbacService.getUserSubmissions({
+        formSubmissionId: properties.submissionId,
+      });
+      permissions.value = permRes.data[0] ? permRes.data[0].permissions : [];
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
+      consoleError: t('trans.formViewer.getUsersSubmissionsConsoleErrMsg', {
+        submissionId: properties.submissionId,
+        error: error,
+      }),
+    });
+  } finally {
+    loadingSubmission.value = false;
+  }
+}
+
+async function setProxyHeaders() {
+  try {
+    let response = await formService.getProxyHeaders({
+      formId: properties.formId,
+      versionId: properties.versionId,
+      submissionId: properties.submissionId,
+    });
+    // error checking for response
+    sessionStorage.setItem(
+      'X-CHEFS-PROXY-DATA',
+      response.data['X-CHEFS-PROXY-DATA']
+    );
+  } catch (error) {
+    // need error handling
+  }
+}
+
+// Get the form definition/schema
+async function getFormSchema() {
+  try {
+    let response = undefined;
+    if (properties.versionId) {
+      versionIdToSubmitTo.value = properties.versionId;
+      // If getting for a specific older version of the form
+      response = await formService.readVersion(
+        properties.formId,
+        properties.versionId
+      );
+      if (!response.data || !response.data.schema) {
+        throw new Error(
+          t('trans.formViewer.readVersionErrMsg', {
+            versionId: properties.versionId,
+          })
+        );
+      }
+      form.value = response.data;
+      version.value = response.data.version;
+      formSchema.value = response.data.schema;
+    } else if (properties.draftId) {
+      // If getting for a specific draft version of the form for preview
+      response = await formService.readDraft(
+        properties.formId,
+        properties.draftId
+      );
+      if (!response.data || !response.data.schema) {
+        throw new Error(
+          t('trans.formViewer.readDraftErrMsg', {
+            draftId: properties.draftId,
+          })
+        );
+      }
+      form.value = response.data;
+      formSchema.value = response.data.schema;
+    } else {
+      // If getting the HEAD form version (IE making a new submission)
+      response = await formService.readPublished(properties.formId);
+      if (
+        !response ||
+        !response.data ||
+        !response.data.versions ||
+        !response.data.versions[0]
+      ) {
+        router.push({
+          name: 'Alert',
+          query: {
+            text: t('trans.formViewer.alertRouteMsg'),
+            type: 'info',
+          },
+        });
+        return;
+      }
+      form.value = response.data;
+      version.value = response.data.versions[0].version;
+      versionIdToSubmitTo.value = response.data.versions[0].id;
+      formSchema.value = response.data.versions[0].schema;
+
+      if (response.data.schedule && response.data.schedule.expire) {
+        let formScheduleStatus = response.data.schedule;
+        isFormScheduleExpired.value = formScheduleStatus.expire;
+        isLateSubmissionAllowed.value = formScheduleStatus.allowLateSubmissions;
+      }
+    }
+  } catch (error) {
+    if (authenticated.value) {
+      // if 401 error, the user is not authorized to view the form
+      if (error.response && error.response.status === 401) {
+        isAuthorized.value = false;
+      } else {
+        // throw a generic error message
+        notificationStore.addNotification({
+          text: t('trans.formViewer.fecthingFormErrMsg'),
+          consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
+            versionId: properties.versionId,
+            error: error,
+          }),
+        });
+      }
+    }
+  }
+}
+
+function isProcessingMultiUpload(e) {
+  block.value = e;
+}
+
+function formChange(e) {
+  // if draft check validation on render
+  if (submissionRecord.value.draft) {
+    chefForm.value.formio.checkValidity(null, true, null, false);
+  }
+  if (e.changed != undefined && !e.changed.flags.fromSubmission) {
+    formDataEntered.value = true;
+  }
+
+  // Seems to be the only place the form changes on load
+  jsonManager();
+}
+
+function jsonManager() {
+  json_csv.value.file_name = 'template_' + form.value.name + '_' + Date.now();
+  if (chefForm.value?.formio) {
+    formElement.value = chefForm.value.formio;
+    json_csv.value.data = [
+      JSON.parse(JSON.stringify(formElement.value._data)),
+      JSON.parse(JSON.stringify(formElement.value._data)),
+    ];
+  }
+}
+
+async function saveDraft() {
+  try {
+    saving.value = true;
+
+    const response = await sendSubmission(true, submission.value);
+    if (properties.submissionId && properties.submissionId !== null) {
+      // Editing an existing draft
+      // Update this route with saved flag
+      if (!properties.saved) {
+        await router.replace({
+          name: 'UserFormDraftEdit',
+          query: { ...router.currentRoute.value.query, sv: true },
+        });
+      }
+      saving.value = false;
+    } else {
+      // Creating a new submission in draft state
+      // Go to the user form draft page
+      await router.push({
+        name: 'UserFormDraftEdit',
+        query: {
+          s: response.data.id,
+          sv: true,
+        },
+      });
+    }
+    showSubmitConfirmDialog.value = false;
+    saveDraftDialog.value = false;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formViewer.savingDraftErrMsg'),
+      consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
+        submissionId: properties.submissionId,
+        error: error,
+      }),
+    });
+  }
+}
+
+async function sendSubmission(isDraft, sub) {
+  submission.value.data.lateEntry =
+    form.value?.schedule?.expire !== undefined &&
+    form.value.schedule.expire === true
+      ? form.value.schedule.allowLateSubmissions
+      : false;
+  const body = {
+    draft: isDraft,
+    submission: sub,
+  };
+
+  let response;
+  //let's check if this is a submission from existing one, If isDuplicate then create new submission if now isDuplicate then update the submission
+  if (properties.submissionId && !properties.isDuplicate) {
+    // Updating an existing submission
+    response = await formService.updateSubmission(
+      properties.submissionId,
+      body
+    );
+  } else {
+    // Adding a new submission
+    response = await formService.createSubmission(
+      properties.formId,
+      versionIdToSubmitTo.value,
+      body
+    );
+  }
+
+  return response;
+}
+
+function onFormRender() {
+  if (isLoading.value) isLoading.value = false;
+}
+
+// -----------------------------------------------------------------------------------------
+// FormIO Events
+// -----------------------------------------------------------------------------------------
+// https://help.form.io/developers/form-renderer#form-events
+// event order is:
+// onSubmitButton
+// onBeforeSubmit
+// if no errors: onSubmit -> onSubmitDone
+// else onSubmitError
+function onSubmitButton(event) {
+  if (properties.preview) {
+    alert(t('trans.formViewer.submissionsPreviewAlert'));
+    return;
+  }
+  // this is our first event in the submission chain.
+  // most important thing here is ensuring that the formio form does not have an action, or else it POSTs to that action.
+  // console.info('onSubmitButton()') ; // eslint-disable-line no-console
+  currentForm.value = event.instance.parent.root;
+  currentForm.value.form.action = undefined;
+
+  // if form has drafts enabled in form settings, show 'confirm submit?' dialog
+  if (form.value.enableSubmitterDraft) {
+    showSubmitConfirmDialog.value = true;
+  }
+}
+
+// If the confirm modal pops up on drafts
+function continueSubmit() {
+  confirmSubmit.value = true;
+  showSubmitConfirmDialog.value = false;
+}
+
+// formIO hook, prior to a submission occurring
+// We can cancel a formIO submission event here, or go on
+async function onBeforeSubmit(submission, next) {
+  // dont do anything if previewing the form
+  if (properties.preview) {
+    // Force re-render form.io to reset submit button state
+    reRenderFormIo.value += 1;
+    return;
+  }
+
+  // if form has drafts enabled in form setttings,
+  if (form.value.enableSubmitterDraft) {
+    let timeout;
+    // while 'confirm submit?' dialog is open..
+    while (showSubmitConfirmDialog.value) {
+      // await a promise that never resolves to block this thread
+      await new Promise((resolve) => (timeout = setTimeout(resolve, 500)));
+    }
+    if (confirmSubmit.value) {
+      confirmSubmit.value = false; // clear for next attempt
+      clearTimeout(timeout);
+      next();
+    } else {
+      // Force re-render form.io to reset submit button state
+      reRenderFormIo.value += 1;
+    }
+  } else {
+    next();
+  }
+}
+
+// FormIO submit event
+// eslint-disable-next-line no-unused-vars
+async function onSubmit(sub) {
+  if (properties.preview) {
+    alert(t('trans.formViewer.submissionsPreviewAlert'));
+    confirmSubmit.value = false;
+    return;
+  }
+
+  const errors = await doSubmit(sub);
+
+  // if we are here, the submission has been saved to our db
+  // the passed in submission is the formio submission, not our db persisted submission record...
+  // fire off the submitDone event.
+  if (errors) {
+    notificationStore.addNotification({
+      text: errors,
+      consoleError: t('trans.formViewer.submissionsSubmitErrMsg', {
+        errors: errors,
+      }),
+    });
+  } else {
+    currentForm.value.events.emit('formio.submitDone');
+  }
+}
+
+// Not a formIO event, our saving routine to POST the submission to our API
+async function doSubmit(sub) {
+  // since we are not using formio api
+  // we should do the actual submit here, and return any error that occurrs to handle in the submit event
+  let errMsg = undefined;
+  try {
+    const response = await sendSubmission(false, sub);
+
+    if ([200, 201].includes(response.status)) {
+      // all is good, flag no errors and carry on...
+      // store our submission result...
+      submissionRecord.value = Object.assign(
+        {},
+        properties.submissionId && properties.isDuplicate //Check if this submission is creating with the existing one
+          ? response.data
+          : (() => {
+              let result;
+              if (properties.submissionId && properties.isDuplicate) {
+                result = response.data;
+              } else if (properties.submissionId && !properties.isDuplicate) {
+                result = response.data.submission;
+              } else {
+                result = response.data;
+              }
+              return result;
+            })()
+      );
+    } else {
+      throw new Error(
+        t('trans.formViewer.sendSubmissionErrMsg', {
+          status: response.status,
+        })
+      );
+    }
+  } catch (error) {
+    errMsg = t('trans.formViewer.errMsg');
+  } finally {
+    confirmSubmit.value = false;
+  }
+  return errMsg;
+}
+
+async function onSubmitDone() {
+  // huzzah!
+  // really nothing to do, the formio button has consumed the event and updated its display
+  // is there anything here for us to do?
+  // console.info('onSubmitDone()') ; // eslint-disable-line no-console
+  if (properties.staffEditMode) {
+    // updating an existing submission on the staff side
+    emit('submission-updated');
+  } else {
+    // User created new submission
+    router.push({
+      name: 'FormSuccess',
+      query: {
+        s: submissionRecord.value.id,
+      },
+    });
+  }
+}
+
+// Custom Event triggered from buttons with Action type "Event"
+function onCustomEvent(event) {
+  alert(t('trans.formViewer.customEventAlert', { event: event.type }));
+}
+
+function switchView() {
+  if (!bulkFile.value) {
+    showdoYouWantToSaveTheDraftModalForSwitch();
+    return;
+  }
+  bulkFile.value = !bulkFile.value;
+}
+
+function showdoYouWantToSaveTheDraftModalForSwitch() {
+  saveDraftState.value = 1;
+  if (formDataEntered.value && showModal.value) {
+    doYouWantToSaveTheDraft.value = true;
+  } else {
+    leaveThisPage();
+  }
+}
+
+function showdoYouWantToSaveTheDraftModal() {
+  if (!bulkFile.value) {
+    saveDraftState.value = 0;
+    if (
+      (properties.submissionId == undefined || formDataEntered.value) &&
+      showModal.value &&
+      form.value.enableSubmitterDraft
+    ) {
+      doYouWantToSaveTheDraft.value = true;
+    } else leaveThisPage();
+  } else {
+    leaveThisPage();
+  }
+}
+
+function leaveThisPage() {
+  if (saveDraftState.value == 0 || bulkFile.value) {
+    router.push({
+      name: 'UserSubmissions',
+      query: { f: form.value.id },
+    });
+  } else {
+    bulkFile.value = !bulkFile.value;
+  }
+}
+
+async function yes() {
+  await saveDraftFromModal(true);
+}
+
+async function no() {
+  await saveDraftFromModal(false);
+}
+
+async function saveDraftFromModal(event) {
+  doYouWantToSaveTheDraft.value = false;
+  if (event) {
+    await saveDraftFromModalNow();
+  } else {
+    leaveThisPage();
+  }
+}
+
+// Custom Event triggered from buttons with Action type "Event"
+async function saveDraftFromModalNow() {
+  try {
+    saving.value = true;
+    await sendSubmission(true, submission.value);
+    saving.value = false;
+    // Creating a new submission in draft state
+    // Go to the user form draft page
+    leaveThisPage();
+    showSubmitConfirmDialog.value = false;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formViewer.submittingDraftErrMsg'),
+      consoleError: t('trans.formViewer.submittingDraftConsErrMsg', {
+        submissionId: properties.submissionId,
+        error: error,
+      }),
+    });
+  }
+}
+
+function closeBulkYesOrNo() {
+  doYouWantToSaveTheDraft.value = false;
+}
+
+function beforeWindowUnload(e) {
+  if (!properties.preview && !properties.readOnly) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+}
+
+async function deleteFile(file) {
+  let fileId;
+  if (file?.data?.id) {
+    fileId = file.data.id;
+  } else if (file?.id) {
+    fileId = file.id;
+  } else {
+    fileId = undefined;
+  }
+  return fileService.deleteFile(fileId);
+}
+
+async function getFile(fileId, options = {}) {
+  await formStore.downloadFile(fileId, options);
+  if (downloadedFile.value && downloadedFile.value.headers) {
+    let data;
+
+    if (
+      downloadedFile.value.headers['content-type'].includes('application/json')
+    ) {
+      data = JSON.stringify(downloadedFile.value.data);
+    } else {
+      data = downloadedFile.value.data;
+    }
+
+    if (typeof data === 'string') {
+      data = new Blob([data], {
+        type: downloadedFile.value.headers['content-type'],
+      });
+    }
+
+    // don't need to blob because it's already a blob
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = getDisposition(
+      downloadedFile.value.headers['content-disposition']
+    );
+    a.style.display = 'none';
+    a.classList.add('hiddenDownloadTextElement');
+    document.body.appendChild(a);
+    a.click();
+    downloadTimeout.value = setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    });
+  }
+}
+
+async function uploadFile(file, config = {}) {
+  const uploadConfig = {
+    ...config,
+    formId: properties.formId,
+  };
+  return fileService.uploadFile(file, uploadConfig);
+}
+</script>
+
 <template>
   <FormModuleLoader
     v-if="loadingFormModules"
+    :form-id="formId"
+    :form-version-id="versionId"
+    :form-draft-id="draftId"
+    :submission-id="submissionId"
     @update:parent="loadingFormModules = $event"
-    :formId="formId"
-    :formVersionId="versionId"
-    :formDraftId="draftId"
-    :submissionId="submissionId"
   />
-  <v-skeleton-loader v-else :loading="loadingSubmission" type="article, actions">
-    <div v-if="displayTitle">
-      <div v-if="!isFormPublic(form)">
-        <FormViewerActions
-          :draftEnabled="form.enableSubmitterDraft"
-          :formId="form.id"
-          :isDraft="submissionRecord.draft"
-          :permissions="permissions"
-          :readOnly="readOnly"
-          :submissionId="submissionId"
-          @save-draft="saveDraft"
-        />
+  <v-skeleton-loader
+    v-else
+    :loading="loadingSubmission"
+    type="article, actions"
+  >
+    <v-container fluid>
+      <div v-if="!isAuthorized">
+        <v-alert
+          :text="formUnauthorizedMessage"
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="locale"
+        >
+        </v-alert>
       </div>
-      <h1 class="my-6 text-center">{{ form.name }}</h1>
-    </div>
-    <div class="form-wrapper">
-      <v-alert
-        :value="saved || saving"
-        :class="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.class
-            : NOTIFICATIONS_TYPES.SUCCESS.class
-        "
-        :color="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.color
-            : NOTIFICATIONS_TYPES.SUCCESS.color
-        "
-        :icon="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.icon
-            : NOTIFICATIONS_TYPES.SUCCESS.icon
-        "
-        transition="scale-transition"
-      >
-        <div v-if="saving">
-          <v-progress-linear indeterminate />
-          Saving
+
+      <div v-else-if="isFormScheduleExpired">
+        <v-alert
+          :text="
+            isLateSubmissionAllowed
+              ? $t('trans.formViewer.lateFormSubmissions')
+              : formScheduleExpireMessage
+          "
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="locale"
+        >
+        </v-alert>
+
+        <div v-if="isLateSubmissionAllowed">
+          <v-col cols="12" md="6">
+            <v-btn
+              color="primary"
+              :class="{ 'dir-rtl': isRTL }"
+              :title="$t('trans.formViewer.createLateSubmission')"
+              @click="isFormScheduleExpired = false"
+            >
+              <span :lang="locale">{{
+                $t('trans.formViewer.createLateSubmission')
+              }}</span>
+            </v-btn>
+          </v-col>
         </div>
-        <div v-else>Draft Saved</div>
-      </v-alert>
+      </div>
 
-      <slot name="alert" v-bind:form="form" />
+      <div v-else>
+        <div v-if="displayTitle">
+          <FormViewerActions
+            :allow-submitter-to-upload-file="form.allowSubmitterToUploadFile"
+            :block="block"
+            :bulk-file="bulkFile"
+            :copy-existing-submission="form.enableCopyExistingSubmission"
+            :draft-enabled="form.enableSubmitterDraft"
+            :form-id="form.id"
+            :is-draft="submissionRecord.draft"
+            :permissions="permissions"
+            :read-only="readOnly"
+            :submission="submission"
+            :submission-id="submissionId"
+            :wide-form-layout="form.wideFormLayout"
+            :public-form="isFormPublic(form)"
+            class="d-print-none"
+            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
+            @save-draft="saveDraft"
+            @switchView="switchView"
+          />
+          <h1 class="my-6 text-center">{{ form.name }}</h1>
+        </div>
+        <div
+          class="form-wrapper"
+          :class="{ 'disable-file-downloads': shouldDisableFileDownloads }"
+        >
+          <v-alert
+            v-if="saved || saving"
+            :class="
+              saving
+                ? NOTIFICATIONS_TYPES.INFO.class
+                : NOTIFICATIONS_TYPES.SUCCESS.class
+            "
+            :icon="
+              saving
+                ? NOTIFICATIONS_TYPES.INFO.icon
+                : NOTIFICATIONS_TYPES.SUCCESS.icon
+            "
+          >
+            <div v-if="saving" :class="{ 'mr-2': isRTL }">
+              <v-progress-linear indeterminate :lang="locale" />
+              {{ $t('trans.formViewer.saving') }}
+            </div>
+            <div v-else :class="{ 'mr-2': isRTL }" :lang="locale">
+              {{ $t('trans.formViewer.draftSaved') }}
+            </div>
+          </v-alert>
 
+          <slot name="alert" :form="form" :class="{ 'dir-rtl': isRTL }" />
+
+          <BaseDialog
+            v-model="showSubmitConfirmDialog"
+            type="CONTINUE"
+            :enable-custom-button="canSaveDraft"
+            @close-dialog="showSubmitConfirmDialog = false"
+            @continue-dialog="continueSubmit"
+          >
+            <template #title>
+              <span :lang="locale">{{
+                $t('trans.formViewer.pleaseConfirm')
+              }}</span></template
+            >
+            <template #text
+              ><span :lang="locale">{{
+                $t('trans.formViewer.submitFormWarningMsg')
+              }}</span></template
+            >
+            <template #button-text-continue>
+              <span :lang="locale">{{ $t('trans.formViewer.submit') }}</span>
+            </template>
+          </BaseDialog>
+
+          <v-alert
+            v-if="isLoading && !bulkFile && submissionId == undefined"
+            class="mt-2 mb-2"
+            :value="isLoading"
+            :class="NOTIFICATIONS_TYPES.INFO.class"
+            :color="NOTIFICATIONS_TYPES.INFO.color"
+            :icon="NOTIFICATIONS_TYPES.INFO.icon"
+          >
+            <div color="info" icon="$info">
+              <v-progress-linear
+                :indeterminate="true"
+                color="blue-grey-lighten-4"
+                height="5"
+              ></v-progress-linear>
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
+                {{ $t('trans.formViewer.formLoading') }}
+              </span>
+            </div>
+          </v-alert>
+          <FormViewerMultiUpload
+            v-if="!isLoading && form.allowSubmitterToUploadFile && bulkFile"
+            :form="form"
+            :form-element="formElement"
+            :form-schema="formSchema"
+            :json-csv="json_csv"
+            :submission-version="versionIdToSubmitTo"
+            @isProcessingMultiUpload="isProcessingMultiUpload"
+          />
+
+          <Form
+            v-if="!bulkFile"
+            :key="reRenderFormIo"
+            ref="chefForm"
+            :class="{ 'v-locale--is-ltr': isRTL }"
+            :form="formSchema"
+            :submission="submission"
+            :options="viewerOptions"
+            :language="locale"
+            @submit="onSubmit"
+            @submitDone="onSubmitDone"
+            @submitButton="onSubmitButton"
+            @customEvent="onCustomEvent"
+            @change="formChange"
+            @render="onFormRender"
+          />
+          <p
+            v-if="version"
+            :class="{ 'text-left': isRTL }"
+            class="mt-3"
+            :lang="locale"
+          >
+            {{ $t('trans.formViewer.version', { version: version }) }}
+          </p>
+        </div>
+      </div>
       <BaseDialog
-        v-model="showSubmitConfirmDialog"
-        type="CONTINUE"
-        @close-dialog="showSubmitConfirmDialog = false"
-        @continue-dialog="continueSubmit"
+        v-model="doYouWantToSaveTheDraft"
+        :class="{ 'dir-rtl': isRTL }"
+        type="SAVEDDELETE"
+        :enable-custom-button="false"
+        @close-dialog="closeBulkYesOrNo"
+        @delete-dialog="no"
+        @continue-dialog="yes"
       >
-        <template #title>Please Confirm</template>
-        <template #text>Are you sure you wish to submit your form?</template>
+        <template #title
+          ><span :lang="locale">
+            {{ $t('trans.formViewer.pleaseConfirm') }}</span
+          ></template
+        >
+        <template #text
+          ><span :lang="locale">
+            {{ $t('trans.formViewer.wantToSaveDraft') }}</span
+          ></template
+        >
         <template #button-text-continue>
-          <span>Submit</span>
+          <span :lang="locale"> {{ $t('trans.formViewer.yes') }}</span>
+        </template>
+        <template #button-text-delete>
+          <span :lang="locale"> {{ $t('trans.formViewer.no') }}</span>
         </template>
       </BaseDialog>
-
-      <Form
-        :form="formSchema"
-        :key="reRenderFormIo"
-        :submission="submission"
-        @submit="onSubmit"
-        @submitDone="onSubmitDone"
-        @submitButton="onSubmitButton"
-        @customEvent="onCustomEvent"
-        :options="viewerOptions"
-      />
-      <p v-if="version" class="text-right">Version: {{ version }}</p>
-    </div>
+    </v-container>
   </v-skeleton-loader>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapActions, mapGetters } from 'vuex';
-import { Form } from 'vue-formio';
-
-import templateExtensions from '@/plugins/templateExtensions';
-import { formService, rbacService } from '@/services';
-import FormViewerActions from '@/components/designer/FormViewerActions.vue';
-import FormModuleLoader from '@/components/designer/FormModuleLoader.vue';
-import { isFormPublic } from '@/utils/permissionUtils';
-import { attachAttributesToLinks } from '@/utils/transformUtils';
-import { NotificationTypes } from '@/utils/constants';
-
-export default {
-  name: 'FormViewer',
-  components: {
-    Form,
-    FormViewerActions,
-    FormModuleLoader
-  },
-  props: {
-    displayTitle: {
-      type: Boolean,
-      default: false,
-    },
-    draftId: String,
-    formId: String,
-    readOnly: {
-      type: Boolean,
-      default: false,
-    },
-    preview: Boolean,
-    staffEditMode: {
-      type: Boolean,
-      default: false,
-    },
-    saved: {
-      type: Boolean,
-      default: false,
-    },
-    submissionId: String,
-    versionId: String,
-  },
-  data() {
-    return {
-      confirmSubmit: false,
-      currentForm: {},
-      forceNewTabLinks: true,
-      form: {},
-      formSchema: {},
-      loadingFormModules: true,
-      loadingSubmission: false,
-      permissions: [],
-      reRenderFormIo: 0,
-      saving: false,
-      showSubmitConfirmDialog: false,
-      submission: {
-        data: {},
-      },
-      submissionRecord: {},
-      version: 0,
-      versionIdToSubmitTo: this.versionId,
-    };
-  },
-  computed: {
-    ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
-    viewerOptions() {
-      return {
-        sanitizeConfig: {
-          addTags: ['iframe'],
-          ALLOWED_TAGS: ['iframe'],
-        },
-        templates: templateExtensions,
-        readOnly: this.readOnly,
-        hooks: {
-          beforeSubmit: this.onBeforeSubmit,
-        },
-        // pass in options for custom components to use
-        componentOptions: {
-          simplefile: {
-            config: Vue.prototype.$config,
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
-          },
-        },
-        evalContext: {
-          token: this.tokenParsed,
-          user: this.user,
-        },
-      };
-    },
-  },
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    isFormPublic: isFormPublic,
-    // Get the data for a form submission
-    async getFormData() {
-      try {
-        this.loadingSubmission = true;
-        const response = await formService.getSubmission(this.submissionId);
-        this.submissionRecord = Object.assign({}, response.data.submission);
-        this.submission = this.submissionRecord.submission;
-        this.form = response.data.form;
-        this.formSchema = response.data.version.schema;
-        this.version = response.data.version.version;
-        // Get permissions
-        if (!this.staffEditMode && !isFormPublic(this.form)) {
-          const permRes = await rbacService.getUserSubmissions({
-            formSubmissionId: this.submissionId,
-          });
-          this.permissions = permRes.data[0] ? permRes.data[0].permissions : [];
-        }
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occurred fetching the submission for this form',
-          consoleError: `Error loading form submission data ${this.submissionId}: ${error}`,
-        });
-      } finally {
-        this.loadingSubmission = false;
-      }
-    },
-    // Get the form definition/schema
-    async getFormSchema() {
-      try {
-        let response = undefined;
-        if (this.versionId) {
-          this.versionIdToSubmitTo = this.versionId;
-          // If getting for a specific older version of the form
-          response = await formService.readVersion(this.formId, this.versionId);
-          if (!response.data || !response.data.schema) {
-            throw new Error(
-              `No schema in response. VersionId: ${this.versionId}`
-            );
-          }
-          this.form = response.data;
-          this.formSchema = response.data.schema;
-        } else if (this.draftId) {
-          // If getting for a specific draft version of the form for preview
-          response = await formService.readDraft(this.formId, this.draftId);
-          if (!response.data || !response.data.schema) {
-            throw new Error(`No schema in response. DraftId: ${this.draftId}`);
-          }
-          this.form = response.data;
-          this.formSchema = response.data.schema;
-        } else {
-          // If getting the HEAD form version (IE making a new submission)
-          response = await formService.readPublished(this.formId);
-          if (
-            !response.data ||
-            !response.data.versions ||
-            !response.data.versions[0]
-          ) {
-            throw new Error(
-              `No published version found in response. FormID: ${this.formId}`
-            );
-          }
-          this.form = response.data;
-          this.version = response.data.versions[0].version;
-          this.versionIdToSubmitTo = response.data.versions[0].id;
-          this.formSchema = response.data.versions[0].schema;
-        }
-      } catch (error) {
-        if (this.authenticated) {
-          this.addNotification({
-            message: 'An error occurred fetching this form',
-            consoleError: `Error loading form schema ${this.versionId}: ${error}`,
-          });
-        }
-      }
-    },
-    async saveDraft() {
-      try {
-        this.saving = true;
-        const response = await this.sendSubmission(true, this.submission);
-        if (this.submissionId) {
-          // Editing an existing draft
-          // Update this route with saved flag
-          if (!this.saved) {
-            this.$router.replace({
-              name: 'UserFormDraftEdit',
-              query: { ...this.$route.query, sv: true },
-            });
-          }
-          this.saving = false;
-        } else {
-          // Creating a new submission in draft state
-          // Go to the user form draft page
-          this.$router.push({
-            name: 'UserFormDraftEdit',
-            query: {
-              s: response.data.id,
-              sv: true,
-            },
-          });
-        }
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occurred while saving a draft',
-          consoleError: `Error saving draft. SubmissionId: ${this.submissionId}. Error: ${error}`,
-        });
-      }
-    },
-    async sendSubmission(isDraft, submission) {
-      const body = {
-        draft: isDraft,
-        submission: submission,
-      };
-
-      let response;
-      if (this.submissionId) {
-        // Updating an existing submission
-        response = await formService.updateSubmission(this.submissionId, body);
-      } else {
-        // Adding a new submission
-        response = await formService.createSubmission(
-          this.formId,
-          this.versionIdToSubmitTo,
-          body
-        );
-      }
-      return response;
-    },
-
-    // -----------------------------------------------------------------------------------------
-    // FormIO Events
-    // -----------------------------------------------------------------------------------------
-    // https://help.form.io/developers/form-renderer#form-events
-    // event order is:
-    // onSubmitButton
-    // onBeforeSubmit
-    // if no errors: onSubmit -> onSubmitDone
-    // else onSubmitError
-    onSubmitButton(event) {
-      if (this.preview) {
-        alert('Submission disabled during form preview');
-        return;
-      }
-      // this is our first event in the submission chain.
-      // most important thing here is ensuring that the formio form does not have an action, or else it POSTs to that action.
-      // console.info('onSubmitButton()') ; // eslint-disable-line no-console
-      this.currentForm = event.instance.parent.root;
-      this.currentForm.form.action = undefined;
-
-      // if form has drafts enabled in form settings, show 'confirm submit?' dialog
-      if (this.form.enableSubmitterDraft) {
-        this.showSubmitConfirmDialog = true;
-      }
-    },
-
-    // If the confirm modal pops up on drafts
-    continueSubmit() {
-      this.confirmSubmit = true;
-      this.showSubmitConfirmDialog = false;
-    },
-
-    // formIO hook, prior to a submission occurring
-    // We can cancel a formIO submission event here, or go on
-    async onBeforeSubmit(submission, next) {
-      // dont do anything if previewing the form
-      if (this.preview) {
-        // Force re-render form.io to reset submit button state
-        this.reRenderFormIo += 1;
-        return;
-      }
-
-      // if form has drafts enabled in form setttings,
-      if (this.form.enableSubmitterDraft) {
-        // while 'confirm submit?' dialog is open..
-        while (this.showSubmitConfirmDialog) {
-          // await a promise that never resolves to block this thread
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-        if (this.confirmSubmit) {
-          this.confirmSubmit = false; // clear for next attempt
-          next();
-        } else {
-          // Force re-render form.io to reset submit button state
-          this.reRenderFormIo += 1;
-        }
-      } else {
-        next();
-      }
-    },
-
-    // FormIO submit event
-    // eslint-disable-next-line no-unused-vars
-    async onSubmit(submission) {
-      if (this.preview) {
-        alert('Submission disabled during form preview');
-        return;
-      }
-
-      const errors = await this.doSubmit(submission);
-
-      // if we are here, the submission has been saved to our db
-      // the passed in submission is the formio submission, not our db persisted submission record...
-      // fire off the submitDone event.
-      // console.info(`onSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
-      if (errors) {
-        this.addNotification({
-          message: errors,
-          consoleError: `Error submiting the form: ${errors}`,
-        });
-      } else {
-        this.currentForm.events.emit('formio.submitDone');
-      }
-    },
-
-    // Not a formIO event, our saving routine to POST the submission to our API
-    async doSubmit(submission) {
-      // console.info(`doSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
-      // since we are not using formio api
-      // we should do the actual submit here, and return any error that occurrs to handle in the submit event
-      let errMsg = undefined;
-      try {
-        const response = await this.sendSubmission(false, submission);
-
-        if ([200, 201].includes(response.status)) {
-          // all is good, flag no errors and carry on...
-          // store our submission result...
-          this.submissionRecord = Object.assign(
-            {},
-            this.submissionId ? response.data.submission : response.data
-          );
-          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
-        } else {
-          // console.error(response); // eslint-disable-line no-console
-          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
-        }
-      } catch (error) {
-        console.error(error); // eslint-disable-line no-console
-        errMsg = 'An error occurred submitting this form';
-      }
-      return errMsg;
-    },
-
-    async onSubmitDone() {
-      // huzzah!
-      // really nothing to do, the formio button has consumed the event and updated its display
-      // is there anything here for us to do?
-      // console.info('onSubmitDone()') ; // eslint-disable-line no-console
-      if (this.staffEditMode) {
-        // updating an existing submission on the staff side
-        this.$emit('submission-updated');
-      } else {
-        // User created new submission
-        this.$router.push({
-          name: 'FormSuccess',
-          query: {
-            s: this.submissionRecord.id,
-          },
-        });
-      }
-    },
-    // Custom Event triggered from buttons with Action type "Event"
-    onCustomEvent(event) {
-      alert(
-        `Custom button events not supported yet. Event Type: ${event.type}`
-      );
-    },
-  },
-  created() {
-    if (this.submissionId) {
-      this.getFormData();
-    } else {
-      this.getFormSchema();
-    }
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-    if (!this.preview && !this.readOnly) {
-      window.onbeforeunload = () => true;
-    }
-  },
-  beforeUpdate() {
-    // This needs to be ran whenever we have a formSchema change
-    if (this.forceNewTabLinks) {
-      attachAttributesToLinks(this.formSchema.components);
-    }
-  },
-  watch: {
-    loadingFormModules(newValue) {
-      if (!newValue) this.reRenderFormIo += 1;
-    },
-  }
-};
-</script>
-
 <style lang="scss" scoped>
-@import '~font-awesome/css/font-awesome.min.css';
-@import '~formiojs/dist/formio.form.min.css';
-
-.form-wrapper ::v-deep .formio-form {
+.form-wrapper :deep(.formio-form) {
   &.formio-read-only {
     // in submission review mode, make readonly formio fields consistently greyed-out
     .form-control,

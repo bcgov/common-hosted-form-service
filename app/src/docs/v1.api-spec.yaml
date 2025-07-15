@@ -13,8 +13,8 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   contact:
-    name: NR Common Service Showcase
-    email: NR.CommonServiceShowcase@gov.bc.ca
+    name: Forminators
+    email: submit.digital@gov.bc.ca
 externalDocs:
   description: Project Readmes
   url: https://github.com/bcgov/common-hosted-form-service
@@ -45,6 +45,32 @@ tags:
       This section of the API includes endpoints used to perform various
       operations related to form drafts, for example create or publish a draft
       from a specific version of a form.
+  - name: Document Templates
+    description: >
+      Documents can be generated using the Common Document Generation Service
+      ([CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html)).
+      Form submission data is merged into a user-defined _document template_ to
+      create the document.
+
+      > This is an experimental API that is currently only MVP, and it will
+      change rapidly. It is best to avoid using these endpoints (outside of the
+      CHEFS app itself) until they stabilize.
+
+
+      Currently only a single document template per form is supported by the
+      CHEFS application:
+        1. The `POST /forms/{formId}/documentTemplates` route is used to create
+           a document template for a form.
+        2. Subsequent calls to the `POST` route should be paired with calls to
+           the `DELETE` route to delete the previously active template.
+        
+      Submission metadata is available for use in the document templates:
+        - `{d.chefs.submissionId}`: the unique identifier for the submission,
+          such as `3cb9acc7-cfd8-4491-b091-1277bc0ec303` 
+        - `{d.chefs.confirmationId}`: The uppercased first eight characters of
+          the `submissionId`, such as `3CB9ACC7`
+        - `{d.chefs.formVersion}`: The numeric version of the form that was used
+          to create the submission, such as `1`
   - name: Submission
     description: >-
       These API endpoints handle the input data provided by a user that
@@ -54,6 +80,10 @@ tags:
     description: >-
       These API endpoints handle operations to update and retrieve statuses and
       notes on a submission, and status code management for a Form.
+  - name: Email Recipients
+    description: >-
+      These API endpoints handle operations to update and retrieve email
+      recipients for a form when the status is set to REVISING or COMPLETED.
   - name: Files
     description: API endpoints to upload and retrieve files stored in CHEFS.
   - name: User
@@ -84,6 +114,9 @@ tags:
       All calls are secured by a role that operational team members will be
       granted and allow fetching some details about forms without needing a
       user->form permission.
+  - name: Health
+    description: >-
+      These API endpoints are used for for health checks of CHEFS and its required services.
 paths:
   /forms:
     get:
@@ -92,7 +125,8 @@ paths:
       tags:
         - Form
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: query
@@ -110,8 +144,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Form'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -138,8 +176,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormBasic'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -165,10 +207,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -199,10 +252,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -227,10 +291,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -253,8 +328,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -276,8 +357,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -294,9 +381,230 @@ paths:
         - $ref: '#/components/parameters/formIdParam'
       responses:
         '204':
-          description: OK
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/apiKey/filesApiAccess:
+    put:
+      summary: Set the API key access to submitted files
+      description: Enable/disable access to submitted files using the API key.
+      operationId: filesApiAccess
+      tags:
+        - Form API
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/documentTemplates:
+    get:
+      summary: Get all document templates for a form
+      description: >
+        Gets an array containing all the document template metadata for the
+        given form.
+
+        > Objects returned by this route do not include the `template` field. If
+        this document template file is needed, use the `id` field from the
+        returned metadata to make a call to
+        `/forms/{formId}/documentTemplates/{documentTemplateId}`.
+      operationId: readDocumentTemplates
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentTemplateResponseBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a document template
+      description: >
+        Creates a document template for a form. This makes it easier for users
+        to generate documents, as the template is associated with the form and
+        does not need to be distributed to every user.
+      operationId: updateDocumentTemplate
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentTemplateRequest'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTemplateResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/documentTemplates/{documentTemplateId}:
+    get:
+      summary: Get a document template
+      description: >
+        Gets a document template for the given form. The response will include
+        the `template` field, which is the actual document template file.
+      operationId: readDocumentTemplate
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/documentTemplateIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTemplateResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: (Soft) Delete a document template
+      description: >
+        Marks a document template as no longer being active. In this state the
+        document template is essentially treated as if it does not exist. It
+        will not be returned by the `GET` routes and cannot otherwise be used.
+      operationId: deleteDocumentTemplate
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/documentTemplateIdParam'
+      responses:
+        '204':
+          description: OK
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -330,17 +638,48 @@ paths:
           example: submissions
           required: true
         - in: query
-          name: minDate
+          name: version
           schema:
             type: string
-          example: '2020-12-17T08:00:00Z'
-          description: Start date of period included in the export
+          description: The form version number. If the export format is json and not csv, then setting this to 0 will export all versions.
+          example: 1
+          required: true
         - in: query
-          name: maxDate
+          name: preference
+          schema:
+            type: object
+          example: '{"minDate":"2020-12-17T08:00:00Z","maxDate":"2020-12-18T08:00:00Z","updatedMinDate":"2020-12-17T08:00:00Z","updatedMaxDate":"2020-12-18T08:00:00Z"}'
+          description: form submissions export preferences
+        - in: query
+          name: deleted
+          schema:
+            type: boolean
+          description: Set to true to return deleted submissions
+          example: false
+        - in: query
+          name: drafts
+          schema:
+            type: boolean
+          description: Set to true to return draft submissions
+          example: false
+        - in: query
+          name: columns
+          schema:
+            type: array
+            description: List of form level columns (Only Allowed `deleted`, `draft`, `updatedAt`) to be included, others will be ignored
+            example:
+              - deleted,
+              - draft,
+              - updatedAt
+            items:
+              type: string
+        - in: query
+          name: status
           schema:
             type: string
-          example: '2020-12-17T08:00:00Z'
-          description: End date of period included in the export
+          description: Submission status to be filtered based on
+          example: COMPLETED
+          required: false
       responses:
         '200':
           description: Export file created for download
@@ -350,6 +689,10 @@ paths:
               schema:
                 type: object
               example: text/json; charset=utf-8
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
           content:
             text/csv:
               schema:
@@ -359,10 +702,72 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmissionExport'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/export/fields:
+    post:
+      summary: Export submissions for a form with the ability to select fields to export if CSV is selected.
+      operationId: exportWithFields
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormSubmissionExportWithFields'
+      responses:
+        '200':
+          description: Export file created for download
+          headers:
+            content-type:
+              description: Response header
+              schema:
+                type: object
+              example: text/json; charset=utf-8
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+          content:
+            text/csv:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormSubmissionExport'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -384,37 +789,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormOptions'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /forms/{formId}/versions:
-    get:
-      summary: List all versions of a form
-      operationId: listVersions
-      security:
-        - BasicAuth: []
-        - BearerAuth: []
-          OpenID: []
-      tags:
-        - Version
-      parameters:
-        - $ref: '#/components/parameters/formIdParam'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FormVersion'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -441,10 +819,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersion'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -471,10 +862,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionFields'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -500,10 +904,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -537,10 +952,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -568,10 +996,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -610,10 +1049,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -640,10 +1090,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -678,10 +1141,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -703,10 +1179,23 @@ paths:
       responses:
         '204':
           description: OK
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -733,10 +1222,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -773,10 +1275,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmissionSummary'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -805,10 +1318,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmission'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -840,10 +1366,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormSubmission'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/versions/{formVersionId}/multiSubmission:
+    post:
+      summary: Upload multiple draft submissions
+      operationId: uploadMultipleDraft
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/formVersionIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormSubmissionMultiple'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormSubmissionResponseMultiple'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -885,10 +1473,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmissionDiscover'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -899,6 +1500,10 @@ paths:
     get:
       summary: Get a form submission
       operationId: readSubmission
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Submission
       parameters:
@@ -910,8 +1515,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionFormVersion'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -938,8 +1554,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormSubmission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -949,6 +1569,10 @@ paths:
     delete:
       summary: (Soft) delete a form submission
       operationId: deleteSubmission
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Submission
       parameters:
@@ -959,9 +1583,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormSubmission'
+                $ref: '#/components/schemas/SubmissionFormVersionDeleted'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -983,7 +1618,7 @@ paths:
             type: string
           required: true
           example: >-
-            https://survey.gov.bc.com/app/form/success?s=7d66664b-87c5-4df8-ba7c-a6fb7d62c379
+            https://submit.digital.gov.bc.ca/app/form/success?s=7d66664b-87c5-4df8-ba7c-a6fb7d62c379
       requestBody:
         required: true
         content:
@@ -1003,8 +1638,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/EmailMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1028,8 +1667,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubmissionEditMetadata'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1051,6 +1694,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionFormVersionOptions'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1074,8 +1721,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/StatusCodes'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1086,6 +1739,10 @@ paths:
     get:
       summary: Get the list of status history for a submission
       operationId: readSubmissionStatus
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Status
       parameters:
@@ -1099,8 +1756,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubmissionStatusHistory'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1130,35 +1798,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionStatusHistory'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /submissions/{formSubmissionId}/template/render:
-    post:
-      summary: Generate document from inline Template
+  /submissions/{formSubmissionId}/template/{documentTemplateId}/render:
+    get:
+      summary: Generate document from submission ID and template ID
       description: >-
-        This endpoint accepts a document template and a set (or multiple sets)
-        of substitution variables and merges them into the document.
-      operationId: uploadTemplateAndRenderReport
+        Uses form submission data (given the form submission ID) and a document
+        template (given the document template ID) and generates a document
+        containing the submission data.
+
+        #### Common Document Generation Service (CDOGS)
+
+        This endpoint is a passthrough to CDOGS. Instead of using *BasicAuth* to
+        call this endpoint, it is highly recommended that you [directly call
+        CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html).
+        Benefits of calling CDOGS directly from your application:
+          - avoid CHEFS API rate limiting restrictions
+          - avoid CHEFS API timeout restrictions (for large documents)
+          - better performance (direct call instead of passthrough)
+          - ability to use the CDOGS template cache
+          - direct support from the CDOGS team for your specific Client ID
+      operationId: templateIdSubmissionIdRender
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
-        - Template
+        - Document Templates
       parameters:
         - $ref: '#/components/parameters/formSubmissionIdParam'
-      requestBody:
-        description: Fields required to generate a document
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TemplateRenderObject'
+        - $ref: '#/components/parameters/documentTemplateIdParam'
+        - in: query
+          name: convertTo
+          schema:
+            type: string
+          description: file type to convert to
+          example: pdf
       responses:
         '200':
-          description: Returns the supplied document with variables merged in
+          description: Returns the document template with merged variables
           content:
             application/octet-stream:
               schema:
@@ -1178,10 +1867,97 @@ paths:
                 type: string
               description: The MIME-type of the binary file payload
               example: application/pdf
-        '400':
-          $ref: '#/components/responses/BadRequest'
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /submissions/{formSubmissionId}/template/render:
+    post:
+      summary: Generate document from submission ID and template object
+      description: >-
+        Merges data from a form submission into a document template.
+
+        #### Common Document Generation Service (CDOGS)
+
+        This endpoint is a passthrough to CDOGS. Instead of using *BasicAuth* to
+        call this endpoint, it is highly recommended that you [directly call
+        CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html).
+        Benefits of calling CDOGS directly from your application:
+          - avoid CHEFS API rate limiting restrictions
+          - avoid CHEFS API timeout restrictions (for large documents)
+          - better performance (direct call instead of passthrough)
+          - ability to use the CDOGS template cache
+          - direct support from the CDOGS team for your specific Client ID
+      operationId: templateObjectSubmissionIdRender
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      requestBody:
+        description: Fields required to generate a document
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRenderObject'
+      responses:
+        '200':
+          description: Returns the document template with merged variables
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary-encoded response
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: >-
+                Indicates if a browser should render this resource inline or
+                treat as an attachment for download
+              example: attachment; filename=file.pdf
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME-type of the binary file payload
+              example: application/pdf
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1207,8 +1983,12 @@ paths:
                   allOf:
                     - $ref: '#/components/schemas/Note'
                     - $ref: '#/components/schemas/TimeStampUserData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1235,8 +2015,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Note'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /submission/{formSubmissionId}/emailRecipients:
+    get:
+      summary: Get email recipients
+      operationId: getEmailRecipients
+      tags:
+        - Email Recipients
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailRecipients'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Add email recipients
+      operationId: addEmailRecipients
+      tags:
+        - Email Recipients
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRecipients'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailRecipients'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1273,8 +2116,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FileUpload'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1285,6 +2132,10 @@ paths:
     get:
       summary: Get a file
       operationId: fileGet
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Files
       parameters:
@@ -1297,8 +2148,14 @@ paths:
               schema:
                 type: string
                 format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1314,9 +2171,13 @@ paths:
         - $ref: '#/components/parameters/fileIdParam'
       responses:
         '202':
-          description: Accepted
+          $ref: '#/components/responses/Accepted'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1330,7 +2191,8 @@ paths:
       tags:
         - Permission
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       responses:
         '200':
@@ -1341,39 +2203,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Permission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      summary: Create a new permission
-      operationId: createPermission
-      tags:
-        - Permission
-      security:
-        - OpenID:
-            - admin
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Permission'
-      responses:
-        '201':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Permission'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1387,7 +2222,8 @@ paths:
       tags:
         - Permission
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: path
@@ -1404,45 +2240,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Permission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      summary: Update a permission
-      operationId: updatePermission
-      tags:
-        - Permission
-      security:
-        - OpenID:
-            - admin
-      parameters:
-        - in: path
-          name: code
-          schema:
-            type: string
-          required: true
-          example: submission_read
-          description: code of the permission to update
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Permission'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Permission'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1464,39 +2267,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Role'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      summary: Create a new role
-      operationId: createRole
-      tags:
-        - Role
-      security:
-        - OpenID:
-            - admin
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Role'
-      responses:
-        '201':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1523,44 +2299,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      summary: Update a role
-      operationId: updateRole
-      tags:
-        - Role
-      security:
-        - OpenID:
-            - admin
-      parameters:
-        - in: path
-          name: code
-          schema:
-            type: string
-          required: true
-          description: code of the role to update
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Role'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1569,8 +2313,34 @@ paths:
                 $ref: '#/components/schemas/Error'
   /rbac/current:
     get:
-      summary: Get forms/roles/permissions for current user
+      summary: Get current user details
       operationId: getCurrentUser
+      tags:
+        - RBAC
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CurrentUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rbac/current/forms:
+    get:
+      summary: Get forms/roles/permissions for current user
+      operationId: getCurrentUserForms
       tags:
         - RBAC
       parameters:
@@ -1579,7 +2349,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form ID
         - in: query
           name: active
@@ -1603,12 +2373,15 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/CurrentUser'
                   - type: array
                     items:
                       $ref: '#/components/schemas/UserForm'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1627,7 +2400,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form ID
         - in: query
           name: formSubmissionId
@@ -1658,8 +2431,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserSubmission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1688,6 +2465,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/IdentityProvider'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1706,7 +2485,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form ID
           required: true
         - in: query
@@ -1715,10 +2494,10 @@ paths:
             type: string
           description: user ID
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -1779,8 +2558,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserAccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1798,8 +2581,16 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form id
+          required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+            format: uuid
+            example: d7455376-382c-439d-a811-0381a012d696
+          description: user id
           required: true
       requestBody:
         required: true
@@ -1818,8 +2609,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserAccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1855,8 +2650,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserAccessSubmission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1864,7 +2663,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     put:
-      summary: Set premissions for a user on a submission
+      summary: Set permissions for a user on a submission
       operationId: setSubmissionUser
       tags:
         - RBAC
@@ -1904,8 +2703,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserAccessSubmission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1919,7 +2722,8 @@ paths:
       tags:
         - RBAC
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: query
@@ -1928,10 +2732,10 @@ paths:
             type: string
           description: user id
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -1967,7 +2771,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form id
           required: true
         - in: query
@@ -2005,8 +2809,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserAccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2030,7 +2838,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form id
           required: true
       requestBody:
@@ -2050,8 +2858,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserAccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2066,10 +2878,10 @@ paths:
         - User
       parameters:
         - in: query
-          name: keycloakId
+          name: idpUserId
           schema:
             type: string
-          description: user keycloakId
+          description: user identity provider id
         - in: query
           name: username
           schema:
@@ -2114,8 +2926,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2145,8 +2961,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2167,6 +2987,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPreferences'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -2194,8 +3016,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPreferences'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2210,9 +3036,13 @@ paths:
         - User
       responses:
         '204':
-          description: OK
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2237,8 +3067,12 @@ paths:
                 allOf:
                   - $ref: '#/components/schemas/UserFormPreferences'
                   - $ref: '#/components/schemas/TimeStampUserData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2268,8 +3102,12 @@ paths:
                 allOf:
                   - $ref: '#/components/schemas/UserFormPreferences'
                   - $ref: '#/components/schemas/TimeStampUserData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2286,9 +3124,69 @@ paths:
         - $ref: '#/components/parameters/formIdParam'
       responses:
         '204':
-          description: OK
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user/labels:
+    get:
+      summary: Get all the labels associated with the current user
+      description: Fetches the labels for the current user to this form
+      operationId: readUserLabels
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Label'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update user labels
+      operationId: updateUserLabels
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Label'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Label'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2302,7 +3200,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: query
@@ -2320,8 +3219,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Form'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2335,7 +3238,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
@@ -2346,8 +3250,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormBasic'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2361,6 +3269,10 @@ paths:
       operationId: adminReadApiDetails
       tags:
         - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
       responses:
@@ -2370,8 +3282,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormApiDetails'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2384,13 +3300,21 @@ paths:
       operationId: adminDeleteApiKey
       tags:
         - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
       responses:
         '204':
-          description: OK
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2404,7 +3328,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
@@ -2415,8 +3340,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserForm'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2430,7 +3359,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
@@ -2443,8 +3373,57 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormUserList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/forms/{formId}/addUser:
+    put:
+      summary: Add user permissions to a form
+      operationId: adminAddUser
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: The user to add permissions to
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormRoleUser'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2458,7 +3437,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       responses:
         '200':
@@ -2469,8 +3449,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2484,7 +3468,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: path
@@ -2501,8 +3486,586 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/encryptionKey/algorithms:
+    get:
+      summary: Get the list of encryption algorithms
+      operationId: listEncryptionAlgorithms
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for encryption Algorithm
+                    display:
+                      type: string
+                      description: display for encryption Algorithm
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/encryptionKey/{formEncryptionKeyId}:
+    get:
+      summary: Get the encryption key for a form
+      operationId: readEncryptionKey
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+        - in: path
+          name: formEncryptionKeyId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form encryption key ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/eventStreamConfig:
+    get:
+      summary: Get a form's event stream configuration
+      operationId: readEventStreamConfig
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventStreamConfig'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs/algorithms:
+    get:
+      summary: List available algorithms for External API encryption
+      operationId: listExternalAPIAlgorithms
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for encryption Algorithm
+                    display:
+                      type: string
+                      description: display for encryption Algorithm
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs/statusCodes:
+    get:
+      summary: List status codes for External APIs
+      operationId: listExternalAPIStatusCodes
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for Status
+                    display:
+                      type: string
+                      description: display for Status
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs:
+    get:
+      summary: List External API configurations for form
+      operationId: listExternalAPIs
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new External API configuration
+      operationId: createExternalAPI
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ExternalApi'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs/{externalAPIId}:
+    put:
+      summary: Update an External API configuration
+      operationId: updateExternalAPI
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - ExternalApi
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: path
+          name: externalAPIId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: external API ID
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalApi'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalApi'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete an External API configuration
+      operationId: deleteExternalAPI
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - ExternalApi
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: path
+          name: externalAPIId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: external API ID
+          required: true
+      responses:
+        '204':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /proxy/external:
+    get:
+      summary: Call a GET on an External API and return the results
+      operationId: callExternalApi
+      tags:
+        - ExternalApi
+      parameters:
+        - in: header
+          name: X-CHEFS-PROXY-DATA
+          schema:
+            type: string
+            format: hex
+          required: true
+        - in: header
+          name: X-CHEFS-EXTERNAL-API-NAME
+          schema:
+            type: string
+            example: BC Registries Number Lookup
+          required: true
+        - in: header
+          name: X-CHEFS-EXTERNAL-API-PATH
+          schema:
+            type: string
+            example: /path/to/api?qs=val
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '407':
+          $ref: '#/components/responses/ApiNotApproved'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /proxy/headers:
+    post:
+      summary: Generate encrypted headers for External API
+      operationId: generateProxyHeaders
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProxyInfo'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProxyData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/externalAPIs:
+    get:
+      summary: Get list of External APIs
+      operationId: adminGetExternalAPIs
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/externalAPIs/statusCodes:
+    get:
+      summary: Get list of Status Codes for External API
+      operationId: adminGetExternalAPIStatusCodes
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for Status
+                    display:
+                      type: string
+                      description: display for Status
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/externalAPIs/{externalAPIId}:
+    put:
+      summary: Update an External API
+      operationId: adminUpdateExternalAPI
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      parameters:
+        - in: path
+          name: externalAPIId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: external API ID
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminExternalApi'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      summary: Get the status of the CHEFS and its dependencies
+      description: >-
+        Returns the status of the CHEFS service and its dependencies, such as
+        database connectivity, external APIs, and other critical components.
+        Useful for monitoring and health checks.
+      operationId: getStatus
+      tags:
+        - Health
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceStatus'
         default:
           description: Unexpected error
           content:
@@ -2510,6 +4073,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 components:
+  headers:
+    RateLimit:
+      schema:
+        type: string
+      description: >-
+        Indicates the remaining number of allowed API calls within the
+        remaining window. In the example, 18 more requests are allowed
+        within the 45 seconds that remain in the window. When the window resets
+        after 45 seconds then the "remaining" will be reset to "limit".
+      example: limit=20, remaining=18, reset=45
+    RateLimit-Policy:
+      schema:
+        type: string
+      description: >-
+        Indicates how many API calls can be made within a "window" of time.
+        Additional API calls within the window will result in HTTP 429
+        responses. In the example, 20 requests are allowed within a 60
+        second window.
+      example: 20;w=60
+    retry-after:
+      schema:
+        type: integer
+      description: >-
+        Only returned when the rate limit is exceeded (HTTP 429). Indicates the
+        number of seconds before the window resets, after which API calls will
+        again be allowed. In the example, 13 seconds remain before the window is
+        reset.
+      example: 13
   securitySchemes:
     BasicAuth:
       type: http
@@ -2522,74 +4113,102 @@ components:
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
   parameters:
+    documentTemplateIdParam:
+      in: path
+      name: documentTemplateId
+      description: ID of the document template.
+      schema:
+        type: string
+        format: uuid
+      required: true
+      example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
     fileIdParam:
       in: path
       name: fileId
+      description: ID of the file.
       schema:
         type: string
         format: uuid
       example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
       required: true
-      description: ID of the File
     formIdParam:
       in: path
       name: formId
+      description: ID of the form.
       schema:
         type: string
         format: uuid
-      description: ID of the form
       required: true
-      example: c6455376-382c-439d-a811-0381a012d696
+      example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
     formVersionIdParam:
       in: path
       name: formVersionId
+      description: ID of the form version.
       schema:
         type: string
         format: uuid
       example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
       required: true
-      description: ID of the form version
     formVersionDraftIdParam:
       in: path
       name: formVersionDraftId
+      description: ID of the draft form version.
       schema:
         type: string
         format: uuid
         example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
       required: true
-      description: ID of the draft for form version
     formSubmissionIdParam:
       in: path
       name: formSubmissionId
+      description: ID of the submission.
       schema:
         type: string
         format: uuid
       example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
       required: true
-      description: ID of the Submission
   schemas:
-    BadRequest:
-      allOf:
-        - $ref: '#/components/schemas/Problem'
-        - type: object
-          properties:
-            status:
-              example: 400
-            title:
-              example: Bad Request
-            type:
-              example: https://httpstatuses.com/400
-    Conflict:
-      allOf:
-        - $ref: '#/components/schemas/Problem'
-        - type: object
-          properties:
-            status:
-              example: 409
-            title:
-              example: Conflict
-            type:
-              example: https://httpstatuses.com/409
+    AdminExternalApi:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of ExternalApi.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        formId:
+          type: string
+          format: uuid
+          description: Form ID this ExternalApi belongs to.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        name:
+          type: string
+          description: Name of the ExternalApi - unique per form.
+          example: BC Registries Number Lookup
+        ministry:
+          type: string
+          description: Ministry Name of Form
+          example: CITZ
+        formName:
+          type: string
+          description: Name of the Form using the External API
+          example: My Form
+        endpointUrl:
+          type: string
+          format: url
+          description: Endpoint URL of the External API - the api to call.
+          example: https://bcreg.com/v1/lookup
+        code:
+          type: string
+          description: Status code.
+          example: APPROVED
+        display:
+          type: string
+          description: Status code display value.
+          example: Approved
+        allowSendUserToken:
+          type: boolean
+          description: Set by CHEFS Admin, true allows the sendUserToken to be set to true
     CurrentUser:
       type: object
       properties:
@@ -2597,10 +4216,10 @@ components:
           type: string
           description: ID of the user
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-        keycloakId:
+        idpUserId:
           type: string
-          description: ID of the user
-          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+          description: ID of the user provided by the identity provider
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
         username:
           type: string
           description: Username of this user
@@ -2620,6 +4239,56 @@ components:
         public:
           type: boolean
           example: false
+    DocumentTemplateRequest:
+      type: object
+      properties:
+        filename:
+          type: string
+          description: >
+            The filename that the document template had when it was
+            originally uploaded.
+          example: my_document_template.txt
+        template:
+          type: string
+          description: >
+            The file that is the document template to be used in document
+            generation.
+          example: Hello {d.firstName}
+    DocumentTemplateResponse:
+      allOf:
+        - $ref: '#/components/schemas/DocumentTemplateResponseBasic'
+        - type: object
+          properties:
+            template:
+              type: string
+              description: >
+                The file that is the document template to be used in document
+                generation.
+              example: Hello {d.firstName}
+    DocumentTemplateResponseBasic:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the document template.
+              example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
+            formId:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the form that this document template
+                belongs to.
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            filename:
+              type: string
+              description: >
+                The filename that the document template had when it was
+                originally uploaded.
+              example: my_document_template.docx
+        - $ref: '#/components/schemas/TimeStampCreate'
     EmailMessage:
       allOf:
         - type: object
@@ -2640,6 +4309,34 @@ components:
               format: uuid
               description: Transaction ID returned by a messaging service
               example: 7d13b78b-21d2-4128-b4e8-02ad3da17d22
+    EncryptionKey:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of EncryptionKey.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            formId:
+              type: string
+              format: uuid
+              description: Form ID this EncryptionKey belongs to.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            name:
+              type: string
+              description: Name to identify this EncryptionKey to a user
+              example: 'private-event-stream'
+            algorithm:
+              type: string
+              description: Algorithm used for encryption
+              example: 'aes-256-gcm'
+            key:
+              type: string
+              format: sha256 hash
+              description: sha256 hash for encryption algorithm
+              example: ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985
+        - $ref: '#/components/schemas/TimeStampUserData'
     Error:
       allOf:
         - $ref: '#/components/schemas/Problem'
@@ -2651,6 +4348,85 @@ components:
               example: Internal Server Error
             type:
               example: https://httpstatuses.com/500
+    EventStreamConfig:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of EventStreamConfig.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            formId:
+              type: string
+              format: uuid
+              description: Form ID this EventStreamConfig belongs to.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            enablePublicStream:
+              type: boolean
+              description: When true, send messages on public stream
+            enablePrivateStream:
+              type: boolean
+              description: When true, send messages on private stream (requires EncryptionKey)
+            encryptionKeyId:
+              type: string
+              format: uuid
+              description: Id of EncryptionKey for private stream
+              example: 7d13b78b-21d2-4128-b4e8-02ad3da17d22
+            encryptionKey:
+              $ref: '#/components/schemas/EncryptionKey'
+        - $ref: '#/components/schemas/TimeStampUserData'
+    ExternalApi:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of ExternalApi.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        formId:
+          type: string
+          format: uuid
+          description: Form ID this ExternalApi belongs to.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        name:
+          type: string
+          description: Name of the ExternalApi - unique per form.
+          example: BC Registries Number Lookup
+        endpointUrl:
+          type: string
+          format: url
+          description: Endpoint URL of the External API - the api to call.
+          example: https://bcreg.com/v1/lookup
+        code:
+          type: string
+          description: Status code.
+          example: APPROVED
+        sendApiKey:
+          type: boolean
+          description: True, send an API Key to External API Endpoint
+        apiKeyHeader:
+          type: string
+          description: Name of API Key header
+          example: X-API-KEY
+        apiKey:
+          type: string
+          description: API Key Header value
+        allowSendUserToken:
+          type: boolean
+          description: Set by CHEFS Admin, true allows the sendUserToken to be set to true
+        sendUserToken:
+          type: boolean
+          description: True, send the user's token in headers to External API
+        userTokenHeader:
+          type: string
+          description: Name of header for sending the user token
+        userTokenBearer:
+          type: boolean
+          description: When true, send user token as a Bearer token
+        sendUserInfo:
+          type: boolean
+          description: Include user information via headers to External API
     FileUpload:
       type: object
       properties:
@@ -2674,41 +4450,13 @@ components:
     Form:
       allOf:
         - $ref: '#/components/schemas/FormBasic'
+        - $ref: '#/components/schemas/FormWithoutVersions'
         - type: object
           properties:
-            id:
-              type: string
-              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
-            active:
-              type: boolean
-              example: true
-            labels:
-              type: array
-              example:
-                - Survey
-              items:
-                type: string
             versions:
               type: array
               items:
                 $ref: '#/components/schemas/FormVersionBasic'
-            snake:
-              type: string
-              example: my-survey-form
-        - $ref: '#/components/schemas/TimeStampUserData'
-    FormApiKey:
-      allOf:
-        - type: object
-          properties:
-            id:
-              type: number
-              example: 4
-            formId:
-              type: string
-              example: c6455376-382c-439d-a811-0381a012d696
-            secret:
-              type: string
-              example: dd7d1699-61ec-4037-aa33-727f8aa79c0a
         - $ref: '#/components/schemas/TimeStampUserData'
     FormApiDetails:
       allOf:
@@ -2719,13 +4467,38 @@ components:
               example: 4
             formId:
               type: string
-              example: c6455376-382c-439d-a811-0381a012d696
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+        - $ref: '#/components/schemas/TimeStampUserData'
+    FormApiKey:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: number
+              example: 4
+            formId:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            secret:
+              type: string
+              example: dd7d1699-61ec-4237-aa33-727f8aa79c0a
+            filesApiAccess:
+              type: boolean
+              example: true
         - $ref: '#/components/schemas/TimeStampUserData'
     FormBasic:
       allOf:
         - $ref: '#/components/schemas/FormCore'
         - type: object
           properties:
+            formMetadata:
+              type: object
+              description: Contains Custom Form Metadata object
+              properties:
+                metadata:
+                  type: object
+                  description: JSON Object
+                  example: { externalId: 'AB-0123456789' }
             identityProviders:
               type: array
               items:
@@ -2733,6 +4506,10 @@ components:
             showSubmissionConfirmation:
               type: boolean
               example: true
+            sendSubmissionReceivedEmail:
+              type: boolean
+              example: true
+              description: Used to indicate if team should be notified upon submission
             submissionReceivedEmails:
               type: array
               items:
@@ -2740,18 +4517,124 @@ components:
               example:
                 - me@email.com
                 - manager@email.com
+            enableDocumentTemplates:
+              type: boolean
+              example: true
             enableStatusUpdates:
               type: boolean
               example: true
             enableSubmitterDraft:
               type: boolean
               example: true
+            reminder_enabled:
+              type: boolean
+              example: true
+              description: Allow form to send reminder email to all submitters
+            schedule:
+              type: object
+              description: Contains schedule related data
+              properties:
+                enabled:
+                  type: boolean
+                  description: Used to indicate if schedule feature enabled or not
+                  example: true
+                scheduleType:
+                  type: string
+                  description: Shows type of Schedule setting choose by form designed. Could be period,closingDate,manual
+                  example: period
+                closingMessage:
+                  type: string
+                  description: This string contain custom closing message message set by form designer that shows on frontend when a form is expired for a particular period.
+                  example: This Form is expired.
+                allowLateSubmissions:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Used to indicate if late submission allowed on a form or not, Will be true if enabled
+                      example: true
+                    forNext:
+                      type: object
+                      properties:
+                        term:
+                          type: string
+                          description: This contain a value that can be used with combination to another key i.e. intervalType to calculate a period. Thats tells a form to be allowed a late submission for particular period.  40 Days, 3 Weeks, 1 Years etc.
+                        intervalType:
+                          type: string
+                          description: This contain a value that can be used with combination to another key i.e. term to calculate a period. Thats tells a form to be allowed a late submission for particular period.  40 Days, 3 Weeks, 1 Years etc.
+                closingMessageEnabled:
+                  type: boolean
+                  description: Set to true when custom closing message is enabled
+                  example: true
+                openSubmissionDateTime:
+                  type: string
+                  description: Contains open date of form schedule system.
+                  example: '2022-12-22'
+                closeSubmissionDateTime:
+                  type: string
+                  description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
+                  example: '2022-12-22'
+                # The following fields are deprecated and only included for backward compatibility
+                keepOpenForTerm:
+                  type: string
+                  description: Deprecated. Previously used for PERIOD scheduling.
+                  deprecated: true
+                keepOpenForInterval:
+                  type: string
+                  description: Deprecated. Previously used for PERIOD scheduling.
+                  deprecated: true
+                repeatSubmission:
+                  type: object
+                  description: Deprecated. Previously used for PERIOD scheduling.
+                  deprecated: true
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Deprecated.
+                    everyTerm:
+                      type: string
+                      description: Deprecated.
+                    repeatUntil:
+                      type: string
+                      description: Deprecated.
+                    everyIntervalType:
+                      type: string
+                      description: Deprecated.
+            subscribe:
+              type: object
+              description: Contains subscription related data - future storage of subscribed events
+              properties:
+                enabled:
+                  type: boolean
+                  description: Used to indicate if subscribe feature enabled or not
+                  example: true
+            enableCopyExistingSubmission:
+              type: boolean
+              example: false
+            deploymentLevel:
+              type: string
+              description: Indicates whether the created form is for development, test, or production purposes
+              example: production
+            ministry:
+              type: string
+              description: Contains the ministry the form is associated to
+              example: CITZ
+            apiIntegration:
+              type: boolean
+              description: Set to true if the form user will utilize API integration
+              example: true
+            useCase:
+              type: string
+              description: This contains a value that makes apparent that use case of the created form
+              example: feedback
+            eventStreamConfig:
+              $ref: '#/components/schemas/EventStreamConfig'
     FormCore:
       type: object
       properties:
         name:
           type: string
-          example: My First Form
+          example: My Survey Form
         description:
           type: string
           example: I built this survey form. It is amazing.
@@ -2791,6 +4674,18 @@ components:
             snake:
               type: string
               example: my-survey-form
+    FormPreferences:
+      type: object
+      description: Form level user preferences
+      properties:
+        columnList:
+          type: array
+          description: A list of desired columns to show
+          example:
+            - foo
+            - bar
+          items:
+            type: string
     FormRoleUser:
       type: object
       properties:
@@ -2865,11 +4760,20 @@ components:
       properties:
         id:
           type: string
-          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+          example: c0822716-01f5-43e6-b4d4-ffcacd13aae3
         formVersionId:
           type: string
           description: ID of the FormVersion this submission is for.
-          example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
+          example: b6908dd4-2f01-4e08-831d-921edae99ca3
+    FormSubmissionDeleted:
+      allOf:
+        - $ref: '#/components/schemas/FormSubmission'
+        - type: object
+          properties:
+            deleted:
+              type: boolean
+              description: Used to indicate a soft delete.
+              example: true
     FormSubmissionDiscover:
       type: object
       properties:
@@ -2914,12 +4818,116 @@ components:
                 createdAt:
                   type: string
                   example: '2020-06-04T18:49:20.672Z'
+                submittedAt:
+                  type: string
+                  description: Represents the timestamp indicating when a submission was last moved to the SUBMITTED state. If a submission is revised and resubmitted multiple times, submittedAt will update each time the state changes back to SUBMITTED, reflecting the most recent submission time.
+                  example: '2020-06-04T18:49:20.672Z'
             formFieldA:
               type: string
               description: A field in the submission object
             formFieldB:
               type: string
               description: A field in the submission object
+    FormSubmissionExportWithFields:
+      allOf:
+        - type: object
+          properties:
+            format:
+              type: string
+              description: Chosen file type for the submission data exported
+              example: csv
+            template:
+              type: string
+              description: Chosen CSV format for the submission data exported
+              example: multiRowEmptySpacesCSVExport
+            version:
+              type: integer
+              description: The version number of the form for the submission data exported
+              example: 1
+            type:
+              type: string
+              description: default value is submissions and should be changed
+              example: submissions
+            preference:
+              type: object
+              description: form submissions export preferences
+              example: { minDate, maxDate }
+            fields:
+              type: array
+              description: List of form submission fields to be exported to CSV
+              example:
+                - form.confirmationId,
+                - form.formName,
+                - form.version,
+                - form.createdAt,
+                - form.fullName,
+                - form.username,
+                - form.email,
+                - form.status,
+                - form.assignee,
+                - form.assigneeEmail,
+                - fishermansName,
+                - email,
+                - forWhichBcLakeRegionAreYouCompletingTheseQuestions,
+                - didYouFishAnyBcLakesThisYear,
+                - oneRowPerLake,
+                - oneRowPerLake.lakeName,
+                - oneRowPerLake.closestTown,
+                - oneRowPerLake.numberOfDays,
+                - oneRowPerLake.dataGrid,
+                - oneRowPerLake.dataGrid.fishType,
+                - oneRowPerLake.dataGrid.numberCaught,
+                - oneRowPerLake.dataGrid.numberKept
+              items:
+                type: string
+            emailExport:
+              type: boolean
+              description: This parameter should be set to true if the form submissions are large (e.g. above 500) or the form is big
+              example: false
+    FormSubmissionMultiple:
+      allOf:
+        - type: object
+          properties:
+            draft:
+              type: boolean
+              description: >-
+                Used to indicate if submission came from a draft version of a
+                form.
+              example: false
+            submission:
+              type: object
+              description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
+                  description: this is an array of multiple objects, each object contain data of single the form submissions.
+    FormSubmissionObjectForMultipleUpload:
+      allOf:
+        - type: object
+          description: this is the json for the form submission.
+    FormSubmissionResponseMultiple:
+      allOf:
+        - type: array
+          items:
+            type: object
+            properties:
+              draft:
+                type: boolean
+                description: >-
+                  Used to indicate if submission came from a draft version of a
+                  form.
+                example: false
+              submission:
+                type: object
+                description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
+                    description: this is an array of multiple objects, each object contain data of single the form submissions.
     FormSubmissionSummary:
       allOf:
         - type: object
@@ -2973,7 +4981,7 @@ components:
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             name:
               type: string
-              example: My First Form.
+              example: My Survey Form.
             users:
               type: array
               items:
@@ -2999,7 +5007,7 @@ components:
       properties:
         id:
           type: string
-          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+          example: b6908dd4-2f01-4e08-831d-921edae99ca3
         formId:
           type: string
           format: uuid
@@ -3014,6 +5022,27 @@ components:
         - email1
       items:
         type: string
+    FormWithoutVersions:
+      allOf:
+        - $ref: '#/components/schemas/FormBasic'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            active:
+              type: boolean
+              example: true
+            labels:
+              type: array
+              example:
+                - Survey
+              items:
+                type: string
+            snake:
+              type: string
+              example: my-survey-form
+        - $ref: '#/components/schemas/TimeStampUserData'
     IdentityProvider:
       allOf:
         - type: object
@@ -3034,6 +5063,14 @@ components:
               type: boolean
               example: true
         - $ref: '#/components/schemas/TimeStampUserData'
+    Label:
+      type: array
+      example:
+        - Survey
+        - Questionnaire
+        - Feedback
+      items:
+        type: string
     Note:
       type: object
       properties:
@@ -3048,17 +5085,25 @@ components:
           example: >-
             'This is a note that can be up to 4000 characters I add to the
             submission and can link to an individual status id'
-    NotFound:
+    EmailRecipients:
+      type: object
+      properties:
+        emailRecipients:
+          type: array
+          items:
+            type: string
+          example:
+            - xyz@email.com
+            - abc@email.com
+    Permission:
       allOf:
-        - $ref: '#/components/schemas/Problem'
+        - $ref: '#/components/schemas/PermissionBasic'
         - type: object
           properties:
-            status:
-              example: 404
-            title:
-              example: Not Found
-            type:
-              example: https://httpstatuses.com/404
+            roles:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoleBasic'
     PermissionBasic:
       allOf:
         - type: object
@@ -3077,15 +5122,6 @@ components:
               type: boolean
               example: true
         - $ref: '#/components/schemas/TimeStampUserData'
-    Permission:
-      allOf:
-        - $ref: '#/components/schemas/PermissionBasic'
-        - type: object
-          properties:
-            roles:
-              type: array
-              items:
-                $ref: '#/components/schemas/RoleBasic'
     Problem:
       required:
         - type
@@ -3098,13 +5134,29 @@ components:
           description: What type of problem, link to explanation of problem
         title:
           type: string
-          description: Title of problem, generally the Http Status Code description
+          description: Title of problem, generally the HTTP status code description
         status:
           type: string
-          description: The Http Status code
+          description: The HTTP status code
         detail:
           type: string
-          description: short description of why this problem was raised.
+          description: Short description of why this problem was raised
+    ProxyData:
+      properties:
+        'X-CHEFS-PROXY-DATA':
+          type: string
+          description: Encrypted payload that includes user identification and form/submission identification. Can only be read by CHEFs server.
+    ProxyInfo:
+      properties:
+        formId:
+          type: string
+          description: Id of the form (required when no submissionId)
+        versionId:
+          type: string
+          description: Id of the form version (required when no submissionId)
+        submissionId:
+          type: string
+          description: Id of the submission (optional) if submissionId provided, then formId and versionId are ignored
     Role:
       allOf:
         - $ref: '#/components/schemas/RoleBasic'
@@ -3162,6 +5214,66 @@ components:
                   items:
                     type: string
         - $ref: '#/components/schemas/TimeStampUserData'
+    ServiceStatus:
+      type: object
+      properties:
+        ready:
+          type: boolean
+          description: If CHEFS is ready to accept requests
+          example: true
+        stopped:
+          type: boolean
+          description: If CHEFS is stopped or in the process of shutting down
+          example: false
+        connections:
+          type: object
+          description: Describe state of services CHEFS requires
+          properties:
+            clamAvScanner:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Virus Scanner
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
+            dataConnection:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Data Connection
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
+            eventStreamService:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Event Stream Service
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
     SubmissionEditMetadata:
       type: object
       properties:
@@ -3186,6 +5298,15 @@ components:
           $ref: '#/components/schemas/FormVersion'
         form:
           $ref: '#/components/schemas/Form'
+    SubmissionFormVersionDeleted:
+      type: object
+      properties:
+        submission:
+          $ref: '#/components/schemas/FormSubmissionDeleted'
+        version:
+          $ref: '#/components/schemas/FormVersion'
+        form:
+          $ref: '#/components/schemas/FormWithoutVersions'
     SubmissionFormVersionOptions:
       type: object
       properties:
@@ -3262,32 +5383,83 @@ components:
             convertTo:
               type: string
               description: >-
-                The desired file extension of the generated document, used for
-                converting to other types of document. If not supplied, will
-                just use the original contentFileType.
+                The desired file type of the generated document. If not
+                supplied, will use the original contentFileType.
               example: pdf
             reportName:
               type: string
               description: >-
-                The desired file name of the generated document, can accept
-                template substitution fields from the contexts. If not supplied,
-                will use a random UUID.  Extension will be from convertTo.
-              example: abc_123_{d.firstName}_{d.lastName}
+                The desired file name of the generated document. Can perform
+                template substitution using the form data. If not supplied, will
+                use a random UUID.
+              example: abc_123_{d.firstName}_{d.lastName}.pdf
+        template:
+          type: object
+          description: Object containing the document template
+          properties:
+            content:
+              type: string
+              description: >-
+                The document template encoded as a `base64` string. The example
+                is the encoded value of the text file
+                `Hello {d.firstName} {d.lastName}!`.
+              example: 'SGVsbG8ge2QuZmlyc3ROYW1lfSB7ZC5sYXN0TmFtZX0hCg=='
+            encodingType:
+              type: string
+              description: >-
+                The encoding of the `content` property: use `base64`.
+              example: base64
+            fileType:
+              type: string
+              description: >-
+                The original file type of the `content` document template.
+              example: txt
+    TimeStampCreate:
+      type: object
+      properties:
+        createdBy:
+          type: string
+          description: >
+            The username of the person who created the object.
+          example: bsmith@idir
+        createdAt:
+          type: string
+          description: >
+            The UTC date and time when the object was created.
+          example: '2020-06-04T18:49:20.672Z'
+        updatedBy:
+          type: string
+          description: >
+            The username of the person who last modified the object.
+          example:
+        updatedAt:
+          type: string
+          description: >
+            The UTC date and time when the object was last modified.
+          example: '2020-06-04T18:49:20.672Z'
     TimeStampUserData:
       type: object
       properties:
         createdBy:
           type: string
+          description: >
+            The username of the person who created the object.
           example: bsmith@idir
         createdAt:
           type: string
+          description: >
+            The UTC date and time when the object was created.
           example: '2020-06-04T18:49:20.672Z'
         updatedBy:
           type: string
+          description: >
+            The username of the person who last modified the object.
           example: jsmith@idir
         updatedAt:
           type: string
-          example: '2020-06-04T18:49:20.672Z'
+          description: >
+            The UTC date and time when the object was last modified.
+          example: '2020-06-05T11:27:15.853Z'
     User:
       allOf:
         - type: object
@@ -3296,10 +5468,10 @@ components:
               type: string
               description: ID of the user
               example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-            keycloakID:
+            idpUserId:
               type: string
-              description: ID of the user in the external Keycloak system
-              example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+              description: ID of the user in the external identity provider system
+              example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
             username:
               type: string
               description: Username of this user
@@ -3315,7 +5487,7 @@ components:
               example: Smith
             email:
               type: string
-              example: jsmith@gov.bc.
+              example: jsmith@gov.bc.ca
             idpCode:
               type: string
               example: idir
@@ -3327,10 +5499,10 @@ components:
           type: string
           description: ID of the user
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
-        keycloakId:
+        idpUserId:
           type: string
-          description: ID of the user
-          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+          description: ID of the user in the external identity provider system
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
         username:
           type: string
           description: Username of this user
@@ -3528,18 +5700,6 @@ components:
             - team_manager
           items:
             type: string
-    FormPreferences:
-      type: object
-      description: Form level user preferences
-      properties:
-        columnList:
-          type: array
-          description: A list of desired columns to show
-          example:
-            - foo
-            - bar
-          items:
-            type: string
     UserFormPreferences:
       type: object
       properties:
@@ -3615,6 +5775,7 @@ components:
             - submission_read
             - submission_delete
             - submission_update
+            - submission_review
           items:
             type: string
         submissionStatus:
@@ -3631,57 +5792,69 @@ components:
           type: integer
           description: The version number of the form for a submission
           example: 1
-    ValidationError:
-      allOf:
-        - $ref: '#/components/schemas/Problem'
-        - type: object
-          required:
-            - errors
-          properties:
-            errors:
-              type: array
-              items:
-                type: object
-                required:
-                  - message
-                properties:
-                  value:
-                    type: object
-                    description: Contents of the field that was in error.
-                    example: utf-8x
-                  message:
-                    type: string
-                    description: The error message for the field.
-                    example: Invalid value `encoding`.
-            status:
-              example: 422
-            title:
-              example: Unprocessable Entity
-            type:
-              example: https://httpstatuses.com/422
   responses:
     Accepted:
       description: Accepted
+    ApiNotApproved:
+      description: CHEFS Admins have not approved the External API
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 407
+                  title:
+                    example: Proxy Authentication Required
+                  type:
+                    example: https://httpstatuses.com/407
+    BadGateway:
+      description: Error attempting to call external system
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 502
+                  title:
+                    example: Bad Gateway
+                  type:
+                    example: https://httpstatuses.com/502
     BadRequest:
       description: Request is missing content or is malformed
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/BadRequest'
-    Conflict:
-      description: Request conflicts with server state
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Conflict'
-    Error:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 400
+                  title:
+                    example: Bad Request
+                  type:
+                    example: https://httpstatuses.com/400
     Forbidden:
       description: Lack required role to perform action
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 403
+                  title:
+                    example: Forbidden
+                  type:
+                    example: https://httpstatuses.com/403
     NoContent:
       description: Accepted and no content
     NotFound:
@@ -3689,9 +5862,59 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/NotFound'
-    UnauthorizedError:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 404
+                  title:
+                    example: Not Found
+                  type:
+                    example: https://httpstatuses.com/404
+    ServiceUnavailable:
+      description: External service is unavailable
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  detail:
+                    $ref: '#/components/schemas/ServiceStatus'
+              - type: object
+                properties:
+                  status:
+                    example: 503
+                  title:
+                    example: Service Unavailable
+                  type:
+                    example: https://httpstatuses.com/503
+    TooManyRequests:
+      description: BasicAuth request exceeds rate limiting
+      headers:
+        RateLimit:
+          $ref: '#/components/headers/RateLimit'
+        RateLimit-Policy:
+          $ref: '#/components/headers/RateLimit-Policy'
+        retry-after:
+          $ref: '#/components/headers/retry-after'
+    Unauthorized:
       description: Invalid authorization credentials
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 401
+                  title:
+                    example: Unauthorized
+                  type:
+                    example: https://httpstatuses.com/401
     UnprocessableEntity:
       description: >-
         The server was unable to process the contained instructions. Generally
@@ -3699,4 +5922,30 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ValidationError'
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - message
+                      properties:
+                        value:
+                          type: object
+                          description: Contents of the field that was in error.
+                          example: utf-8x
+                        message:
+                          type: string
+                          description: The error message for the field.
+                          example: Invalid value `encoding`.
+                  status:
+                    example: 422
+                  title:
+                    example: Unprocessable Entity
+                  type:
+                    example: https://httpstatuses.com/422

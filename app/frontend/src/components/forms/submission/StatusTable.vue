@@ -1,78 +1,91 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { formService } from '~/services';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  submissionId: {
+    required: true,
+    type: String,
+  },
+});
+
+const loading = ref(true);
+const statuses = ref([]);
+
+const notificationStore = useNotificationStore();
+
+const { isRTL } = storeToRefs(useFormStore());
+
+const headers = computed(() => {
+  return [
+    { title: t('trans.statusTable.status'), key: 'code' },
+    {
+      title: t('trans.statusTable.dateStatusChanged'),
+      align: 'start',
+      key: 'createdAt',
+    },
+    { title: t('trans.statusTable.assignee'), key: 'user' },
+    { title: t('trans.statusTable.updatedBy'), key: 'createdBy' },
+  ];
+});
+
+onMounted(async () => {
+  await getData();
+});
+
+async function getData() {
+  loading.value = true;
+  try {
+    const response = await formService.getSubmissionStatuses(
+      properties.submissionId
+    );
+    statuses.value = response.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.statusTable.getSubmissionStatusErr'),
+      consoleError:
+        t('trans.statusTable.getSubmissionStatusConsErr') + `${error}`,
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+</script>
+
 <template>
-  <v-container>
+  <v-container :class="{ 'dir-rtl': isRTL }">
     <v-data-table
       disable-pagination
+      hover
       :hide-default-footer="true"
       :headers="headers"
       :items="statuses"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.statusTable.loadingText')"
       item-key="statusId"
       class="status-table"
+      :lang="locale"
     >
-      <template #[`item.createdAt`]="{ item }">
-        <span>{{ item.createdAt | formatDate }}</span>
+      <template #item.createdAt="{ item }">
+        <span>{{ $filters.formatDate(item.createdAt) }}</span>
       </template>
 
-      <template #[`item.user`]="{ item }">{{
+      <template #item.user="{ item }">{{
         item.user ? item.user.fullName : ''
       }}</template>
     </v-data-table>
   </v-container>
 </template>
 
-<script>
-import { mapActions } from 'vuex';
-import { formService } from '@/services';
-
-export default {
-  name: 'StatusTable',
-  props: {
-    submissionId: {
-      required: true,
-      type: String,
-    },
-  },
-  data: () => ({
-    headers: [
-      { text: 'Status', value: 'code' },
-      { text: 'Date Status Changed', align: 'start', value: 'createdAt' },
-      { text: 'Assignee', value: 'user' },
-      { text: 'Updated By', value: 'createdBy' },
-    ],
-    statuses: [],
-    loading: true,
-  }),
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    async getData() {
-      this.loading = true;
-      try {
-        const response = await formService.getSubmissionStatuses(
-          this.submissionId
-        );
-        this.statuses = response.data;
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occured while trying to fetch statuses.',
-          consoleError: `Error adding note: ${error}`,
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-  mounted() {
-    this.getData();
-  },
-};
-</script>
-
 <style scoped>
-.status-table >>> tbody tr:nth-of-type(odd) {
-  background-color: #f5f5f5;
-}
-.status-table >>> thead tr th {
+.status-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

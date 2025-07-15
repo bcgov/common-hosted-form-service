@@ -1,22 +1,22 @@
 const service = require('../../../../src/forms/auth/service');
+const idpService = require('../../../../src/components/idpService');
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('parseToken', () => {
-
-  it('returns a default object when an exception happens', () => {
-    const result = service.parseToken(undefined);
+  it('returns a default object when an exception happens', async () => {
+    const result = await idpService.parseToken(undefined);
     expect(result).toEqual({
-      keycloakId: undefined,
+      idpUserId: undefined,
       username: 'public',
       firstName: undefined,
       lastName: undefined,
       fullName: 'public',
       email: undefined,
       idp: 'public',
-      public: true
+      public: true,
     });
   });
 });
@@ -35,7 +35,7 @@ describe('formAccessToForm', () => {
       published: 9,
       versionUpdatedAt: 10,
       roles: 11,
-      permissions: 12
+      permissions: 12,
     };
     const result = service.formAccessToForm(form);
     expect(result).toEqual(form);
@@ -45,23 +45,19 @@ describe('formAccessToForm', () => {
 describe('login', () => {
   const resultSample = {
     user: 'me',
-    forms: [{ formID: 1 }, { formId: 2 }],
-    deletedForms: [{ formID: 1 }, { formId: 2 }]
+    idpHint: 'fake',
   };
 
   it('returns a currentUser object', async () => {
-    service.parseToken = jest.fn().mockReturnValue('userInf');
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'fake' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'fake', code: 'fake' });
     service.getUserId = jest.fn().mockReturnValue({ user: 'me' });
-    service.getUserForms = jest.fn().mockReturnValue([{ formID: 1 }, { formId: 2 }]);
-    const params = { p: 1 };
     const token = 'token';
-    const result = await service.login(token, params);
-    expect(service.parseToken).toHaveBeenCalledTimes(1);
-    expect(service.parseToken).toHaveBeenCalledWith(token);
-    expect(service.getUserId).toHaveBeenCalledTimes(1);
-    expect(service.getUserId).toHaveBeenCalledWith('userInf');
-    expect(service.getUserForms).toHaveBeenCalledTimes(2);
-    expect(service.getUserForms).toHaveBeenCalledWith({ user: 'me' }, { p: 1, active: false });
+    const result = await service.login(token);
+    expect(idpService.parseToken).toBeCalledTimes(1);
+    expect(idpService.parseToken).toBeCalledWith(token);
+    expect(service.getUserId).toBeCalledTimes(1);
+    expect(service.getUserId).toBeCalledWith({ idp: 'fake' });
     expect(result).toBeTruthy();
     expect(result).toEqual(resultSample);
   });

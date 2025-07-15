@@ -1,43 +1,32 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { useAdminStore } from '~/store/admin';
+
+const { locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  userId: {
+    type: String,
+    required: true,
+  },
+});
+
+const adminStore = useAdminStore();
+
+const { user } = storeToRefs(adminStore);
+
+onMounted(async () => {
+  await adminStore.readUser(properties.userId);
+});
+</script>
+
 <template>
   <div>
     <h3>{{ user.fullName }}</h3>
-    <h4>User Details</h4>
+    <h4 :lang="locale">{{ $t('trans.administerUser.userDetails') }}</h4>
     <pre>{{ user }}</pre>
-
-    <v-btn
-      color="primary"
-      text
-      small
-      :href="userUrl"
-      target="_blank"
-    >
-      <span>Open SSO console</span>
-    </v-btn>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  name: 'AdministerUser',
-  props: {
-    userId: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    ...mapGetters('admin', ['user']),
-    userUrl() {
-      return `${this.$config.keycloak.serverUrl}/admin/${this.$config.keycloak.realm}/console/#/realms/${this.$config.keycloak.realm}/users/${this.user.keycloakId}`;
-    },
-  },
-  methods: {
-    ...mapActions('admin', ['readUser']),
-  },
-  async mounted() {
-    await this.readUser(this.userId);
-  },
-};
-</script>

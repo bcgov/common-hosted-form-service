@@ -1,0 +1,497 @@
+{{- if and (.Values.linter.serviceAccount.enabled) (eq .Release.Namespace .Values.provisioner.namespace) }}
+
+apiVersion: authorization.openshift.io/v1
+kind: Role
+metadata:
+  labels: {{ include "crunchy-postgres-tools.labels" . | nindent 4}}
+  annotations:
+    openshift.io/description: A user who can view but not edit any resources within
+      the project. They can not view secrets or membership.
+    openshift.io/reconcile-protect: "false"
+  name: {{ .Release.Name }}-linter
+rules:
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - configmaps
+  - endpoints
+  - persistentvolumeclaims
+  - projects
+  - pods
+  - replicationcontrollers
+  - replicationcontrollers/scale
+  - serviceaccounts
+  - services
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - bindings
+  - events
+  - limitranges
+  - namespaces/status
+  - pods/log
+  - pods/status
+  - replicationcontrollers/status
+  - resourcequotas
+  - resourcequotas/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - daemonsets
+  - deployments
+  - deployments/scale
+  - replicasets
+  - replicasets/scale
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoscaling
+  attributeRestrictions: null
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  attributeRestrictions: null
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  attributeRestrictions: null
+  resources:
+  - daemonsets
+  - deployments
+  - deployments/scale
+  - ingresses
+  - replicasets
+  - replicasets/scale
+  - replicationcontrollers/scale
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - policy
+  attributeRestrictions: null
+  resources:
+  - poddisruptionbudgets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - statefulsets/scale
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - statefulsets/scale
+  verbs:
+  - list
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - statefulsets/scale
+  verbs:
+  - watch
+- apiGroups:
+  - extensions
+  attributeRestrictions: null
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+- apiGroups:
+  - extensions
+  attributeRestrictions: null
+  resources:
+  - networkpolicies
+  verbs:
+  - list
+- apiGroups:
+  - extensions
+  attributeRestrictions: null
+  resources:
+  - networkpolicies
+  verbs:
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  attributeRestrictions: null
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+- apiGroups:
+  - networking.k8s.io
+  attributeRestrictions: null
+  resources:
+  - networkpolicies
+  verbs:
+  - list
+- apiGroups:
+  - networking.k8s.io
+  attributeRestrictions: null
+  resources:
+  - networkpolicies
+  verbs:
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - configmaps
+  - endpoints
+  - persistentvolumeclaims
+  - pods
+  - replicationcontrollers
+  - serviceaccounts
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - bindings
+  - events
+  - limitranges
+  - namespaces
+  - namespaces/status
+  - pods/log
+  - pods/status
+  - replicationcontrollers/status
+  - resourcequotas
+  - resourcequotas/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  attributeRestrictions: null
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  attributeRestrictions: null
+  resources:
+  - deployments
+  - deployments/scale
+  - replicasets
+  - replicasets/scale
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  attributeRestrictions: null
+  resources:
+  - daemonsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - deployments
+  - deployments/scale
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - build.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - buildconfigs
+  - buildconfigs/webhooks
+  - builds
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - build.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - builds/log
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - build.openshift.io
+  attributeRestrictions: null
+  resources:
+  - jenkins
+  verbs:
+  - view
+- apiGroups:
+  - apps.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - deploymentconfigs
+  - deploymentconfigs/scale
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - deploymentconfigs/log
+  - deploymentconfigs/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - image.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - imagestreamimages
+  - imagestreammappings
+  - imagestreams
+  - imagestreamtags
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - image.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - imagestreams/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - project.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - projects
+  verbs:
+  - get
+- apiGroups:
+  - quota.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - appliedclusterresourcequotas
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - route.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - routes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - route.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - routes/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - template.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - processedtemplates
+  - templateconfigs
+  - templateinstances
+  - templates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - build.openshift.io
+  - ""
+  attributeRestrictions: null
+  resources:
+  - buildlogs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - resourcequotausages
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - projects
+  verbs:
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - projects
+  verbs:
+  - list
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - replicasets
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - replicasets
+  verbs:
+  - list
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - replicasets
+  verbs:
+  - watch
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - replicasets/scale
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - replicasets/scale
+  verbs:
+  - list
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - replicasets/scale
+  verbs:
+  - watch
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - daemonsets
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - daemonsets
+  verbs:
+  - list
+- apiGroups:
+  - apps
+  attributeRestrictions: null
+  resources:
+  - daemonsets
+  verbs:
+  - watch
+- apiGroups:
+  - authorization.openshift.io
+  - rbac.authorization.k8s.io
+  attributeRestrictions: null
+  resources:
+  - rolebindings
+  - roles
+  verbs:
+  - get
+  - patch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+- apiGroups:
+  - postgres-operator.crunchydata.com
+  resources:
+  - postgresclusters
+  verbs:
+  - get
+  - list
+    
+{{ end }}

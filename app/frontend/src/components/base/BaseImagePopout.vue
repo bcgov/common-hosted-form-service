@@ -1,12 +1,35 @@
+<script setup>
+import { ref } from 'vue';
+
+defineProps({
+  alt: {
+    type: String,
+    default: '',
+  },
+  src: {
+    type: String,
+    required: true,
+  },
+  width: {
+    type: String,
+    default: '600px',
+  },
+});
+
+const dialog = ref(false);
+</script>
+
 <template>
   <div>
     <v-hover>
-      <template v-slot:default="{ hover }">
+      <template #default="{ isHovering, props }">
         <v-img
-          :class="`elevation-${hover ? 24 : 6}`"
+          data-test="v-hover-img"
+          v-bind="props"
+          :class="`elevation-${isHovering ? 24 : 6}`"
           class="thumbnail"
           :alt="alt"
-          contain
+          cover
           :src="src"
           :width="width"
           @click="dialog = true"
@@ -14,34 +37,11 @@
       </template>
     </v-hover>
 
-    <v-dialog v-model="dialog" width="unset">
-      <v-card><v-img :alt="alt" :src="src" /></v-card>
+    <v-dialog v-model="dialog" data-test="v-dialog" width="150vh">
+      <v-card><v-img data-test="v-dialog-img" :alt="alt" :src="src" /></v-card>
     </v-dialog>
   </div>
 </template>
-
-<script>
-export default {
-  props: {
-    alt: {
-      type: String,
-      default: '',
-    },
-    src: {
-      type: String,
-      required: true,
-    },
-    width: {
-      type: String,
-    },
-  },
-  data() {
-    return {
-      dialog: false,
-    };
-  },
-};
-</script>
 
 <style lang="scss" scoped>
 .thumbnail:hover {

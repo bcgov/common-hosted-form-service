@@ -17,7 +17,7 @@
       "path": "FILES_UPLOADS_PATH"
     },
     "permanent": "FILES_PERMANENT",
-    "localStorage" : {
+    "localStorage": {
       "path": "FILES_LOCALSTORAGE_PATH"
     },
     "objectStorage": {
@@ -26,43 +26,72 @@
       "endpoint": "FILES_OBJECTSTORAGE_ENDPOINT",
       "key": "FILES_OBJECTSTORAGE_KEY",
       "secretAccessKey": "FILES_OBJECTSTORAGE_SECRETACCESSKEY"
+    },
+    "clamav": {
+      "host": "FILES_CLAMAV_HOST",
+      "port": "FILES_CLAMAV_PORT"
     }
   },
   "frontend": {
+    "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
-    "basePath": "FRONTEND_BASEPATH",
-    "keycloak": {
-      "clientId": "FRONTEND_KC_CLIENTID",
-      "realm": "FRONTEND_KC_REALM",
-      "serverUrl": "FRONTEND_KC_SERVERURL"
+    "basePath": "VITE_FRONTEND_BASEPATH",
+    "oidc": {
+      "clientId": "OIDC_CLIENTID",
+      "realm": "OIDC_REALM",
+      "serverUrl": "OIDC_SERVERURL",
+      "logoutUrl": "OIDC_LOGOUTURL"
     }
   },
   "server": {
     "apiPath": "SERVER_APIPATH",
-    "basePath" : "SERVER_BASEPATH",
+    "basePath": "SERVER_BASEPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
-    "keycloak": {
-      "clientId": "SERVER_KC_CLIENTID",
-      "clientSecret": "SERVER_KC_CLIENTSECRET",
-      "publicKey": "SERVER_KC_PUBLICKEY",
-      "realm": "SERVER_KC_REALM",
-      "serverUrl": "SERVER_KC_SERVERURL"
+    "oidc": {
+      "realm": "OIDC_REALM",
+      "serverUrl": "OIDC_SERVERURL",
+      "jwksUri": "OIDC_JWKSURI",
+      "issuer": "OIDC_ISSUER",
+      "audience": "OIDC_CLIENTID",
+      "maxTokenAge": "OIDC_MAXTOKENAGE"
     },
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",
-    "port": "SERVER_PORT"
+    "port": "SERVER_PORT",
+    "encryption": {
+      "proxy": "SERVER_ENCRYPTION_PROXY"
+    }
+  },
+  "eventStreamService": {
+    "servers": "EVENTSTREAMSERVICE_SERVERS",
+    "websockets": "EVENTSTREAMSERVICE_WEBSOCKETS",
+    "consumerservers": "EVENTSTREAMSERVICE_CONSUMERSERVERS",
+    "streamName": "EVENTSTREAMSERVICE_STREAMNAME",
+    "source": "EVENTSTREAMSERVICE_SOURCE",
+    "domain": "EVENTSTREAMSERVICE_DOMAIN",
+    "username": "EVENTSTREAMSERVICE_USERNAME",
+    "password": "EVENTSTREAMSERVICE_PASSWORD",
+    "maxAge": "EVENTSTREAMSERVICE_MAXAGE",
+    "maxBytes": "EVENTSTREAMSERVICE_MAXBYTES",
+    "maxMsgs": "EVENTSTREAMSERVICE_MAXMSGS",
+    "maxMsgSize": "EVENTSTREAMSERVICE_MAXMSGSIZE",
+    "duplicateWindow": "EVENTSTREAMSERVICE_DUPLICATEWINDOW",
+    "numReplicas": "EVENTSTREAMSERVICE_NUMREPLICAS"
   },
   "serviceClient": {
     "commonServices": {
       "ches": {
-        "endpoint": "SC_CS_CHES_ENDPOINT"
+        "endpoint": "SC_CS_CHES_ENDPOINT",
+        "tokenEndpoint": "SC_CS_CHES_TOKEN_ENDPOINT",
+        "clientId": "SC_CS_CHES_CLIENT_ID",
+        "clientSecret": "SC_CS_CHES_CLIENT_SECRET"
       },
       "cdogs": {
-        "endpoint": "SC_CS_CDOGS_ENDPOINT"
-      },
-      "tokenEndpoint": "SC_CS_TOKEN_ENDPOINT",
-      "username": "SC_CS_USERNAME",
-      "password": "SC_CS_PASSWORD"
+        "endpoint": "SC_CS_CDOGS_ENDPOINT",
+        "tokenEndpoint": "SC_CS_CDOGS_TOKEN_ENDPOINT",
+        "clientId": "SC_CS_CDOGS_CLIENT_ID",
+        "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
+      }
     }
   }
 }

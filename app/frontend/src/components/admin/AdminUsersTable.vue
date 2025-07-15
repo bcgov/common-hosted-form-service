@@ -1,84 +1,159 @@
+<script setup>
+import _ from 'lodash';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { useAdminStore } from '~/store/admin';
+import { useFormStore } from '~/store/form';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const loading = ref(true);
+const search = ref('');
+const firstDataLoad = ref(true);
+const forceTableRefresh = ref(0);
+const debounceInput = ref(null);
+const debounceTime = ref(300);
+const currentPage = ref(1);
+const itemsPP = ref(10);
+
+const adminStore = useAdminStore();
+const formStore = useFormStore();
+
+const { userList, userTotal } = storeToRefs(adminStore);
+const { isRTL } = storeToRefs(formStore);
+
+const headers = computed(() => [
+  {
+    title: t('trans.adminUsersTable.fullName'),
+    align: 'start',
+    key: 'fullName',
+  },
+  {
+    title: t('trans.adminUsersTable.userID'),
+    align: 'start',
+    key: 'username',
+  },
+  {
+    title: t('trans.adminUsersTable.created'),
+    align: 'start',
+    key: 'created',
+  },
+  {
+    title: t('trans.adminUsersTable.actions'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
+  },
+]);
+
+async function refreshUsers() {
+  loading.value = true;
+  await adminStore.getUsers({
+    paginationEnabled: true,
+    page: currentPage.value - 1,
+    itemsPerPage: itemsPP.value,
+    search: search.value,
+    searchEnabled: search.value.length > 0,
+  });
+  loading.value = false;
+}
+
+async function updateOptions(options) {
+  const { page, itemsPerPage } = options;
+  if (page) {
+    currentPage.value = page;
+  }
+  if (itemsPerPage) {
+    itemsPP.value = itemsPerPage;
+  }
+  if (!firstDataLoad.value) {
+    await refreshUsers();
+  }
+  firstDataLoad.value = false;
+}
+
+async function handleSearch(value) {
+  search.value = value;
+  if (value === '') {
+    await refreshUsers();
+  } else {
+    debounceInput.value();
+  }
+}
+
+onMounted(async () => {
+  debounceInput.value = _.debounce(async () => {
+    forceTableRefresh.value += 1;
+  }, debounceTime.value);
+  refreshUsers();
+});
+</script>
+
 <template>
   <div>
     <v-row no-gutters>
       <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
+            density="compact"
+            variant="underlined"
+            :label="$t('trans.adminUsersTable.search')"
+            append-inner-icon="mdi-magnify"
             single-line
             hide-details
             class="pb-5"
+            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            :lang="locale"
+            @update:modelValue="handleSearch"
           />
         </div>
       </v-col>
     </v-row>
 
     <!-- table header -->
-    <v-data-table
+    <v-data-table-server
       class="submissions-table"
+      hover
       :headers="headers"
       item-key="title"
       :items="userList"
+      :items-per-page="itemsPP"
+      :items-length="userTotal === undefined ? 0 : userTotal"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.adminUsersTable.loadingText')"
+      :lang="locale"
+      @update:options="updateOptions"
     >
-      <template #[`item.created`]="{ item }">
-        {{ item.createdAt | formatDate }}
+      <template #item.created="{ item }">
+        {{ $filters.formatDate(item.createdAt) }}
       </template>
-      <template #[`item.actions`]="{ item }">
-        <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex">Admin</span>
-          </v-btn>
-        </router-link>
+      <template #item.actions="{ item }">
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
+          :to="{ name: 'AdministerUser', query: { u: item.id } }"
+          :title="$t('trans.adminUsersTable.admin')"
+        >
+          <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
+          <span class="d-none d-sm-flex" :lang="locale">{{
+            $t('trans.adminUsersTable.admin')
+          }}</span>
+        </v-btn>
       </template>
-    </v-data-table>
+    </v-data-table-server>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  name: 'FormsTable',
-  data() {
-    return {
-      activeOnly: false,
-      headers: [
-        { text: 'Full Name', align: 'start', value: 'fullName' },
-        { text: 'User ID', align: 'start', value: 'username' },
-        { text: 'Created', align: 'start', value: 'created' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ],
-      loading: true,
-      search: '',
-    };
-  },
-  computed: {
-    ...mapGetters('admin', ['userList']),
-  },
-  methods: {
-    ...mapActions('admin', ['getUsers']),
-  },
-  async mounted() {
-    await this.getUsers();
-    this.loading = false;
-  },
-};
-</script>
-
 <style scoped>
 /* TODO: Global Style! */
 .submissions-search {
@@ -101,15 +176,11 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
-/* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
-  background-color: #f5f5f5;
-}
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

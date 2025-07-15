@@ -1,111 +1,128 @@
-<template>
-  <BaseSecure :idp="IDP.IDIR">
-    <h1 class="my-6 text-center">Create New Form</h1>
-    <v-stepper v-model="creatorStep" class="elevation-0">
-      <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
-          Set up Form
-        </v-stepper-step>
-        <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
-          Design Form
-        </v-stepper-step>
-      </v-stepper-header>
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onBeforeRouteLeave } from 'vue-router';
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-      <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1">
+import FormDesigner from '~/components/designer/FormDesigner.vue';
+import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
+import FormSettings from '~/components/designer/FormSettings.vue';
+import FormProfile from '~/components/designer/FormProfile.vue';
+import { useFormStore } from '~/store/form';
+import { AppPermissions, IdentityMode } from '~/utils/constants';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const formDesigner = ref(null);
+const settingsForm = ref(null);
+const settingsFormValid = ref(false);
+const step = ref(0);
+const stepper = ref(null);
+const disclaimerCheckbox = ref(false);
+const disclaimerRules = [(v) => !!v || t('trans.create.agreementErrMsg')];
+
+const formStore = useFormStore();
+
+const { form, isRTL } = storeToRefs(formStore);
+const APP_PERMS = computed(() => AppPermissions);
+
+watch(form, () => {
+  if (form.userType === IdentityMode.LOGIN && settingsForm.value)
+    settingsForm.value.validate();
+});
+
+onBeforeRouteLeave((_to, _from, next) => {
+  form.value.isDirty
+    ? next(window.confirm(t('trans.create.confirmPageNav')))
+    : next();
+});
+
+formStore.resetForm();
+</script>
+
+<template>
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_STEPPER">
+    <v-stepper
+      ref="stepper"
+      :model-value="step"
+      hide-actions
+      alt-labels
+      flat
+      tile
+      :border="false"
+    >
+      <v-stepper-header>
+        <v-stepper-item
+          :title="$t('trans.baseStepper.setUpForm')"
+          value="1"
+          :complete="step == 0"
+        />
+        <v-divider />
+        <v-stepper-item
+          :title="$t('trans.baseStepper.designForm')"
+          value="2"
+          :complete="step > 0"
+        />
+        <v-divider />
+        <v-stepper-item
+          :title="$t('trans.baseStepper.manageForm')"
+          value="3"
+          :complete="step > 1"
+        />
+      </v-stepper-header>
+      <v-stepper-window>
+        <v-stepper-window-item value="1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1>Form Settings</h1>
+            <h1 :lang="locale">
+              {{ $t('trans.create.formSettings') }}
+            </h1>
             <FormSettings />
 
+            <FormProfile />
+
             <BasePanel class="my-6">
-              <template #title>Disclaimer</template>
+              <template #title
+                ><span :lang="locale">{{
+                  $t('trans.create.disclaimer')
+                }}</span></template
+              >
               <FormDisclaimer />
 
               <v-checkbox
+                v-model="disclaimerCheckbox"
                 :rules="disclaimerRules"
-                required
-                label="I agree to the disclaimer and statement of responsibility for Form Designers"
-              />
+                required="true"
+              >
+                <template #label>
+                  <span :class="{ 'mr-2': isRTL }" :lang="locale">{{
+                    $t('trans.create.disclaimerStmt')
+                  }}</span>
+                </template>
+              </v-checkbox>
             </BasePanel>
           </v-form>
           <v-btn
-            class="py-4"
-            color="primary"
             :disabled="!settingsFormValid"
-            @click="creatorStep = 2"
+            color="primary"
+            data-test="continue-btn"
+            :title="$t('trans.create.continue')"
+            @click="stepper.next()"
           >
-            <span>Continue</span>
+            {{ $t('trans.create.continue') }}
           </v-btn>
-        </v-stepper-content>
-
-        <v-stepper-content step="2" class="pa-1">
-          <FormDesigner />
-          <v-btn class="my-4" outlined @click="creatorStep = 1">
-            <span>Back</span>
+        </v-stepper-window-item>
+        <v-stepper-window-item value="2">
+          <v-btn
+            variant="outlined"
+            data-test="back-btn"
+            :title="$t('trans.create.back')"
+            @click="stepper.prev()"
+          >
+            <span :lang="locale">{{ $t('trans.create.back') }}</span>
           </v-btn>
-        </v-stepper-content>
-      </v-stepper-items>
+          <FormDesigner ref="formDesigner" />
+        </v-stepper-window-item>
+      </v-stepper-window>
     </v-stepper>
   </BaseSecure>
 </template>
-
-<script>
-import { mapActions } from 'vuex';
-import { mapFields } from 'vuex-map-fields';
-
-import FormDesigner from '@/components/designer/FormDesigner.vue';
-import FormSettings from '@/components/designer/FormSettings.vue';
-import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
-import { IdentityMode, IdentityProviders } from '@/utils/constants';
-
-export default {
-  name: 'FormCreate',
-  components: {
-    FormDesigner,
-    FormSettings,
-    FormDisclaimer,
-  },
-  computed: {
-    ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
-    IDP: () => IdentityProviders,
-  },
-  data() {
-    return {
-      creatorStep: 1,
-      settingsFormValid: false,
-      disclaimerRules: [
-        (v) => !!v || 'You must agree to the privacy disclaimer shown above.',
-      ],
-    };
-  },
-  methods: mapActions('form', ['resetForm']),
-  created() {
-    this.resetForm();
-  },
-  watch: {
-    idps() {
-      if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
-        this.$refs.settingsForm.validate();
-    },
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.isDirty
-      ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
-        )
-      )
-      : next();
-  },
-};
-</script>
-
-<style lang="scss" scoped>
-/* unset 'overflow: hidden' from all parents of FormDesigner, so FormDesigner's 'sticky' components menu sticks. */
-.v-stepper,
-.v-stepper__items,
-.v-stepper ::v-deep .v-stepper__wrapper {
-  overflow: initial !important;
-}
-</style>

@@ -1,26 +1,20 @@
+<script setup>
+import { computed } from 'vue';
+import SubmissionsTable from '~/components/forms/SubmissionsTable.vue';
+import { AppPermissions } from '~/utils/constants';
+
+defineProps({
+  f: {
+    type: String,
+    required: true,
+  },
+});
+
+const APP_PERMS = computed(() => AppPermissions);
+</script>
+
 <template>
-  <BaseSecure :idp="IDP.IDIR">
-    <SubmissionsTable :formId="f" />
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_SUBMISSIONS">
+    <SubmissionsTable :form-id="f" />
   </BaseSecure>
 </template>
-
-<script>
-import SubmissionsTable from '@/components/forms/SubmissionsTable.vue';
-import { IdentityProviders } from '@/utils/constants';
-
-export default {
-  name: 'Submissions',
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  components: {
-    SubmissionsTable,
-  },
-  computed: {
-    IDP: () => IdentityProviders,
-  }
-};
-</script>

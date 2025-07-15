@@ -1,26 +1,20 @@
+<script setup>
+import { computed } from 'vue';
+import TeamManagement from '~/components/forms/manage/TeamManagement.vue';
+import { AppPermissions } from '~/utils/constants';
+
+defineProps({
+  f: {
+    type: String,
+    required: true,
+  },
+});
+
+const APP_PERMS = computed(() => AppPermissions);
+</script>
+
 <template>
-  <BaseSecure :idp="IDP.IDIR">
-    <TeamManagement :formId="f" />
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_TEAMS">
+    <TeamManagement :form-id="f" />
   </BaseSecure>
 </template>
-
-<script>
-import TeamManagement from '@/components/forms/manage/TeamManagement.vue';
-import { IdentityProviders } from '@/utils/constants';
-
-export default {
-  name: 'FormTeams',
-  components: {
-    TeamManagement,
-  },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    IDP: () => IdentityProviders,
-  }
-};
-</script>

@@ -1,22 +1,38 @@
-import { appAxios } from '@/services/interceptors';
-import { ApiRoutes } from '@/utils/constants';
+import { appAxios } from '~/services/interceptors';
+import { ApiRoutes } from '~/utils/constants';
 
 export default {
+  /**
+   * @function getIdentityProviders
+   * Get the Identity Provider details from the rbac endpoint
+   * @returns {Promise} An axios response
+   */
+  getIdentityProviders(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/idps`, { params });
+  },
   /**
    * @function getCurrentUser
    * Get the current user details from the rbac endpoint
    * @returns {Promise} An axios response
    */
-  getCurrentUser(params = {}) {
-    return appAxios().get(`${ApiRoutes.RBAC}/current`, { params });
+  getCurrentUser() {
+    return appAxios().get(`${ApiRoutes.RBAC}/current`, {});
+  },
+  /**
+   * @function getCurrentUserForms
+   * Get the current user's forms from the rbac endpoint
+   * @returns {Promise} An axios response
+   */
+  getCurrentUserForms(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/current/forms`, { params });
   },
 
   /**
-  * @function getUserSubmissions
-  * Get the submissions for a form that the current user has permissions on
-  * @param {Object} [params={}] The query parameters
-  * @returns {Promise} An axios response
-  */
+   * @function getUserSubmissions
+   * Get the submissions for a form that the current user has permissions on
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
   getUserSubmissions(params = {}) {
     return appAxios().get(`${ApiRoutes.RBAC}/current/submissions`, { params });
   },
@@ -33,6 +49,16 @@ export default {
    */
   getFormUsers(params = {}) {
     return appAxios().get(`${ApiRoutes.RBAC}/forms`, { params });
+  },
+
+  /**
+   * @function isUserAssignedToFormTeams
+   * Determine if user is in form team
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  isUserAssignedToFormTeams(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/form/user`, { params });
   },
 
   /**
@@ -71,6 +97,20 @@ export default {
     return appAxios().put(`${ApiRoutes.RBAC}/users`, requestBody, { params });
   },
 
+  /**
+   * @function removeMultiUsers
+   * removes selected users from the from
+   * @param {Object} requestBody The request body for the relationships
+   * @returns {Promise} An axios response
+   */
+  removeMultiUsers(requestBody, params = {}) {
+    return appAxios().delete(
+      `${ApiRoutes.RBAC}/users?formId=${params.formId}`,
+      { data: requestBody },
+      { params }
+    );
+  },
+
   //
   // Submission Management calls
   //
@@ -93,6 +133,8 @@ export default {
    * @returns {Promise} An axios response
    */
   setSubmissionUserPermissions(requestBody, params = {}) {
-    return appAxios().put(`${ApiRoutes.RBAC}/submissions`, requestBody, { params });
+    return appAxios().put(`${ApiRoutes.RBAC}/submissions`, requestBody, {
+      params,
+    });
   },
 };

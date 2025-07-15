@@ -1,142 +1,130 @@
-import { cloneDeep } from 'lodash';
-import Vue from 'vue';
+// @vitest-environment happy-dom
+// happy-dom is required to access window.location
+import { setActivePinia, createPinia } from 'pinia';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import getRouter from '~/router';
 
-import store from '@/store/modules/auth';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
+import { useAppStore } from '~/store/app';
 
 describe('auth actions', () => {
-  const { location } = window;
-  const mockReplace = jest.fn(cb => {
-    cb();
-  });
-  const mockStore = {
-    commit: jest.fn(),
-    getters: {
-      createLoginUrl: jest.fn(),
-      createLogoutUrl: jest.fn()
-    },
-    rootGetters: {},
-    state: cloneDeep(store.state)
-  };
+  let router = getRouter();
+  const replaceSpy = vi.spyOn(router, 'replace');
+  const windowReplaceSpy = vi.spyOn(window.location, 'replace');
+  const windowAssignSpy = vi.spyOn(window.location, 'assign');
+  setActivePinia(createPinia());
+  const mockStore = useAuthStore();
+  const formStore = useFormStore();
+  const idpStore = useIdpStore();
+  const appStore = useAppStore();
 
-  beforeAll(() => {
-    delete window.location;
-    window.location = {
-      replace: mockReplace
-    };
-    Vue.prototype.$config = { basePath: 'test' };
-  });
-
-  beforeEach(() => {
-    Object.keys(mockStore).forEach((f) => {
-      if (jest.isMockFunction(f)) f.mockReset();
-    });
-    mockStore.state = cloneDeep(store.state);
-  });
-
-  afterAll(() => {
-    window.location = location;
-    Vue.prototype.$config = undefined;
-  });
+  idpStore.providers = require('../../fixtures/identityProviders.json');
 
   describe('login', () => {
     beforeEach(() => {
-      mockStore.commit.mockReset();
-      mockStore.getters.createLoginUrl.mockReset();
-      delete mockStore.getters.keycloakReady;
-      delete mockStore.getters.redirectUri;
-      delete mockStore.rootGetters['form/form'];
-      mockReplace.mockReset();
+      mockStore.$reset();
+      formStore.$reset();
+      appStore.$reset();
+      mockStore.keycloak = {
+        createLoginUrl: vi.fn().mockResolvedValue('about:blank'),
+        createLogoutUrl: vi.fn(() => 'about:blank'),
+      };
+      replaceSpy.mockReset();
+      windowReplaceSpy.mockReset();
+      router.replace.mockReset();
+      appStore.config = { basePath: '/app' };
     });
 
-    it('should do nothing if keycloak is not ready', () => {
-      mockStore.getters.keycloakReady = false;
-      store.actions.login(mockStore);
+    it('should do nothing if keycloak is not ready', async () => {
+      mockStore.ready = false;
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(0);
-      expect(window.location.replace).toHaveBeenCalledTimes(0);
-      expect(mockStore.getters.createLoginUrl).toHaveBeenCalledTimes(0);
+      await mockStore.login();
+
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(0);
     });
 
-    it('should update redirectUri if not defined', () => {
-      mockStore.getters.keycloakReady = true;
-      mockStore.getters.redirectUri = undefined;
+    it('should update redirectUri if not defined', async () => {
+      mockStore.ready = true;
+      mockStore.redirectUri = undefined;
 
-      store.actions.login(mockStore, 'test');
+      await mockStore.login('test');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(window.location.replace).toHaveBeenCalledTimes(1);
-      expect(mockStore.getters.createLoginUrl).toHaveBeenCalledTimes(1);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
+      // Expecting location.toString() instead of 'about:blank'
+      expect(mockStore.redirectUri).toBeTruthy();
     });
 
-    it('should not update redirectUri if already defined', () => {
-      mockStore.getters.keycloakReady = true;
-      mockStore.getters.redirectUri = 'value';
+    it('should not update redirectUri if already defined', async () => {
+      mockStore.ready = true;
+      mockStore.redirectUri = 'value';
 
-      store.actions.login(mockStore, 'test');
+      await mockStore.login('test');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(0);
-      expect(window.location.replace).toHaveBeenCalledTimes(1);
-      expect(mockStore.getters.createLoginUrl).toHaveBeenCalledTimes(1);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
+      expect(mockStore.redirectUri).toEqual('value');
     });
 
-    it('should navigate with provided idpHint', () => {
-      mockStore.getters.keycloakReady = true;
-      mockStore.getters.redirectUri = 'value';
+    it('should navigate with provided idpHint', async () => {
+      mockStore.ready = true;
+      mockStore.redirectUri = 'value';
 
-      store.actions.login(mockStore, 'test');
+      await mockStore.login('test');
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(0);
-      expect(window.location.replace).toHaveBeenCalledTimes(1);
-      expect(mockStore.getters.createLoginUrl).toHaveBeenCalledTimes(1);
+      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should navigate with vuex store idpHint', () => {
-      mockStore.getters.keycloakReady = true;
-      mockStore.getters.redirectUri = undefined;
-      mockStore.rootGetters['form/form'] = { idps: ['test'] };
+    it('should navigate with pinia store idpHint', async () => {
+      mockStore.ready = true;
+      mockStore.redirectUri = undefined;
+      formStore.form = { idps: ['test'] };
 
-      store.actions.login(mockStore);
+      await mockStore.login();
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(1);
-      expect(window.location.replace).toHaveBeenCalledTimes(1);
-      expect(mockStore.getters.createLoginUrl).toHaveBeenCalledTimes(1);
+      expect(replaceSpy).toHaveBeenCalledTimes(1);
+      expect(replaceSpy).toHaveBeenCalledWith({
+        name: 'Login',
+        query: { idpHint: idpStore.loginIdpHints },
+      });
     });
 
     // TODO: Figure out how to mock and intercept vue-router instantiation
     // it('should router navigate to login page without idpHint', () => {
-    //   mockStore.getters.keycloakReady = true;
-    //   mockStore.getters.redirectUri = undefined;
+    //   mockStore.ready = true;
+    //   mockStore.redirectUri = undefined;
     //   mockStore.rootGetters['form/form'] = { idps: [] };
 
-    //   store.actions.login(mockStore);
+    //   mockStore.login(mockStore);
 
     //   expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    //   expect(window.location.replace).toHaveBeenCalledTimes(0);
+    //   expect(replaceSpy).toHaveBeenCalledTimes(0);
     //   expect(mockStore.getters.createLoginUrl).toHaveBeenCalledTimes(0);
     // });
   });
 
   describe('logout', () => {
     beforeEach(() => {
-      mockStore.getters.createLogoutUrl.mockReset();
-      delete mockStore.getters.keycloakReady;
-      mockReplace.mockReset();
+      mockStore.$reset();
+      mockStore.keycloak = {
+        createLoginUrl: vi.fn(() => 'about:blank'),
+      };
+      mockStore.logoutUrl = location.origin;
+      windowAssignSpy.mockReset();
     });
 
     it('should do nothing if keycloak is not ready', () => {
-      mockStore.getters.keycloakReady = false;
-      store.actions.logout(mockStore);
+      mockStore.ready = false;
+      mockStore.logout();
 
-      expect(window.location.replace).toHaveBeenCalledTimes(0);
-      expect(mockStore.getters.createLogoutUrl).toHaveBeenCalledTimes(0);
+      expect(windowAssignSpy).toHaveBeenCalledTimes(0);
     });
 
     it('should trigger navigation action if keycloak is ready', () => {
-      mockStore.getters.keycloakReady = true;
-      store.actions.logout(mockStore);
+      mockStore.ready = true;
+      mockStore.logout();
 
-      expect(window.location.replace).toHaveBeenCalledTimes(1);
-      expect(mockStore.getters.createLogoutUrl).toHaveBeenCalledTimes(1);
+      expect(windowAssignSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,0 +1,537 @@
+[
+  {
+    "confirmationId": "93E2EFFB",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-04-02T18:06:30.840Z",
+    "fullName": "Ayobamii Idowu",
+    "username": "AIDOWU",
+    "email": "ayobamii.idowu@gov.bc.ca",
+    "submission": {
+      "email": "Aurth@gmail.com",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "E6DCBB3A",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-04-02T18:06:30.619Z",
+    "fullName": "Ayobamii Idowu",
+    "username": "AIDOWU",
+    "email": "ayobamii.idowu@gov.bc.ca",
+    "submission": {
+      "email": "Aurth@gmail.com",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "E4D9700A",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-04-02T18:06:30.097Z",
+    "fullName": "Ayobamii Idowu",
+    "username": "AIDOWU",
+    "email": "ayobamii.idowu@gov.bc.ca",
+    "submission": {
+      "email": "Aurth@gmail.com",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "5C9455DF",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-04-02T18:06:28.382Z",
+    "fullName": "Ayobamii Idowu",
+    "username": "AIDOWU",
+    "email": "ayobamii.idowu@gov.bc.ca",
+    "submission": {
+      "email": "Aurth@gmail.com",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "C51594C1",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-04-02T18:06:26.559Z",
+    "fullName": "Ayobamii Idowu",
+    "username": "AIDOWU",
+    "email": "ayobamii.idowu@gov.bc.ca",
+    "submission": {
+      "email": "Aurth@gmail.com",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "40EDE76F",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-06-02T18:09:26.559Z",
+    "updatedAt": "2023-06-02T18:10:26.559Z",
+    "draft": true,
+    "deleted": false,
+    "fullName": "Prabhjot Tugger",
+    "username": "ptugger",
+    "email": "prabhjot.tugger@gov.bc.ca",
+    "submission": {
+      "email": "prabhjot.tugger@gov.bc.ca",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "3E105CA1",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-06-02T18:06:26.559Z",
+    "updatedAt": "2023-06-02T18:06:26.559Z",
+    "draft": false,
+    "deleted": false,
+    "fullName": "Prabhjot Tugger",
+    "username": "AIDOWU",
+    "email": "prabhjot.tugger@gov.bc.ca",
+    "submission": {
+      "email": "prabhjot.tugger@gov.bc.ca",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "CD097322",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-06-03T18:06:26.559Z",
+    "updatedAt": "2023-06-04T18:06:26.559Z",
+    "draft": true,
+    "deleted": true,
+    "fullName": "Prabhjot Tugger",
+    "username": "AIDOWU",
+    "email": "prabhjot.tugger@gov.bc.ca",
+    "submission": {
+      "email": "prabhjot.tugger@gov.bc.ca",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "CD935788",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-06-02T18:06:26.559Z",
+    "updatedAt": "2023-06-02T18:06:26.559Z",
+    "draft": false,
+    "deleted": true,
+    "fullName": "Prabhjot Tugger",
+    "username": "AIDOWU",
+    "email": "prabhjot.tugger@gov.bc.ca",
+    "submission": {
+      "email": "prabhjot.tugger@gov.bc.ca",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  },
+  {
+    "confirmationId": "CD085969",
+    "formName": "Fisheries",
+    "version": 1,
+    "createdAt": "2023-06-02T18:06:26.559Z",
+    "updatedAt": "2023-06-02T18:06:26.559Z",
+    "draft": false,
+    "deleted": false,
+    "fullName": "Prabhjot Tugger",
+    "username": "AIDOWU",
+    "email": "prabhjot.tugger@gov.bc.ca",
+    "submission": {
+      "email": "prabhjot.tugger@gov.bc.ca",
+      "submit": true,
+      "oneRowPerLake": [
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "cutthroat",
+              "numberKept": 2,
+              "numberCaught": 2
+            }
+          ],
+          "lakeName": "Ran",
+          "closestTown": "Ranian",
+          "numberOfDays": 1
+        },
+        {
+          "dataGrid": [
+            {
+              "fishType": "rainbow",
+              "numberKept": 1,
+              "numberCaught": 1
+            },
+            {
+              "fishType": "smallmouthBass",
+              "numberKept": 1,
+              "numberCaught": 1
+            }
+          ],
+          "lakeName": "Cat",
+          "closestTown": "Catian",
+          "numberOfDays": 1
+        }
+      ],
+      "fishermansName": "Geroge Aurth",
+      "didYouFishAnyBcLakesThisYear": "yes",
+      "forWhichBcLakeRegionAreYouCompletingTheseQuestions": 1
+    }
+  }
+]

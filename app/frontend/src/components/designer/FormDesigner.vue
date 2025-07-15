@@ -1,631 +1,657 @@
+<script setup>
+import { FormBuilder } from '@formio/vue';
+import { compare, applyPatch, deepClone } from 'fast-json-patch';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+
+import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
+import FloatButton from '~/components/designer/FloatButton.vue';
+import FormModuleLoader from '~/components/designer/FormModuleLoader.vue';
+import { exportFormSchema, importFormSchemaFromFile } from '~/composables/form';
+import formioIl8next from '~/internationalization/trans/formio/formio.json';
+import templateExtensions from '~/plugins/templateExtensions';
+import { formService, userService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+import { FormDesignerBuilderOptions } from '~/utils/constants';
+import { generateIdps } from '~/utils/transformUtils';
+
+const { locale, t } = useI18n({ useScope: 'global' });
+const router = useRouter();
+
+const properties = defineProps({
+  draftId: {
+    type: String,
+    default: null,
+  },
+  formId: {
+    type: String,
+    default: null,
+  },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
+  newVersion: {
+    type: Boolean,
+    default: false,
+  },
+  isSavedStatus: {
+    type: String,
+    default: 'Save',
+  },
+  versionId: {
+    type: String,
+    default: null,
+  },
+});
+
+const canSave = ref(false);
+const formSchema = ref({
+  display: 'form',
+  type: 'form',
+  components: [],
+});
+const isFormSaved = ref(!properties.newVersion);
+const patch = ref({
+  componentAddedStart: false,
+  componentRemovedStart: false,
+  componentMovedStart: false,
+  history: [],
+  index: -1,
+  MAX_PATCHES: 30,
+  originalSchema: null,
+  redoClicked: false,
+  undoClicked: false,
+});
+const reRenderFormIo = ref(0);
+const savedStatus = ref(properties.isSavedStatus);
+const saving = ref(false);
+const loadingFormModules = ref(true);
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+
+const { tokenParsed, user } = storeToRefs(authStore);
+const { form, isRTL, userLabels } = storeToRefs(formStore);
+
+watch(form, (newFormValue, oldFormValue) => {
+  if (newFormValue.userType != oldFormValue.userType) {
+    reRenderFormIo.value += 1;
+  }
+});
+
+watch(locale, (value) => {
+  if (value) {
+    reRenderFormIo.value += 1;
+  }
+});
+
+watch(loadingFormModules, (value) => {
+  if (!value) {
+    this.reRenderFormIo += 1;
+  }
+});
+
+onMounted(async () => {
+  if (properties.formId) {
+    await formStore.fetchForm(properties.formId);
+    await getFormSchema();
+  }
+
+  // load up headers for any External API calls
+  // from components (component makes calls during design phase).
+  await setProxyHeaders();
+  if (!properties.formId) {
+    // We are creating a new form, so we obtain the original schema here.
+    patch.value.originalSchema = deepClone(formSchema.value);
+  }
+});
+
+const designerOptions = computed(() => {
+  return {
+    sanitizeConfig: {
+      addTags: ['iframe'],
+      ALLOWED_TAGS: ['iframe'],
+    },
+    noDefaultSubmitButton: false,
+    builder: {
+      ...FormDesignerBuilderOptions,
+      customControls: {
+        ...FormDesignerBuilderOptions.customControls,
+        components: {
+          ...FormDesignerBuilderOptions.customControls.components,
+          simplefile: true,
+        },
+      },
+    },
+    language: locale.value ? locale.value : 'en',
+    i18n: formioIl8next,
+    templates: templateExtensions,
+    evalContext: {
+      token: tokenParsed.value,
+      user: user.value,
+    },
+  };
+});
+
+const DISPLAY_VERSION = computed(() =>
+  form.value?.versions?.length ? form.value.versions.length + 1 : 1
+);
+
+// ---------------------------------------------------------------------------------------------------
+// FormIO event handlers
+// ---------------------------------------------------------------------------------------------------
+function init() {
+  formStore.setDirtyFlag(false);
+}
+
+function onChangeMethod(changed, flags, modified) {
+  // Don't call an unnecessary action if already dirty
+  if (!form.value.isDirty) formStore.setDirtyFlag(true);
+
+  onSchemaChange(changed, flags, modified);
+}
+
+function onRenderMethod() {
+  const el = document.querySelector('input.builder-sidebar_search:focus');
+  if (el === '') reRenderFormIo.value += 1;
+  formStore.setDirtyFlag(false);
+}
+
+function onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
+  if (isNew) {
+    // Component Add Start, the user can still cancel/remove the add
+    patch.value.componentAddedStart = true;
+  } else {
+    // The user has initiated a move
+    patch.value.componentMovedStart = true;
+  }
+}
+
+function onRemoveSchemaComponent() {
+  // Component remove start
+  patch.value.componentRemovedStart = true;
+}
+// ----------------------------------------------------------------------------------/ FormIO Handlers
+
+// ---------------------------------------------------------------------------------------------------
+// Patch History
+// ---------------------------------------------------------------------------------------------------
+function onSchemaChange(_changed, flags, modified) {
+  // If the form changed but was not done so through the undo
+  // or redo button
+  if (!patch.value.undoClicked && !patch.value.redoClicked) {
+    // flags and modified are defined when a component is added
+    if (flags !== undefined && modified !== undefined) {
+      // Component was added into the form and save was clicked
+      if (patch.value.componentAddedStart) {
+        addPatchToHistory();
+      } else {
+        // Tab changed, Edit saved, paste occurred
+        if (typeof modified == 'boolean') {
+          // Tab changed
+          resetHistoryFlags();
+        } else {
+          // Edit saved or paste occurred
+          addPatchToHistory();
+        }
+      }
+      canSave.value = true;
+      modified?.components?.map((comp) => {
+        if (comp.key === 'form') {
+          const notificationStore = useNotificationStore();
+          const msg = t('trans.formDesigner.fieldnameError', {
+            label: comp.label,
+          });
+          notificationStore.addNotification({
+            text: msg,
+            consoleError: msg,
+          });
+          canSave.value = false;
+        }
+      });
+    } else {
+      // If we removed a component but not during an add action
+      if (
+        (!patch.value.componentAddedStart &&
+          patch.value.componentRemovedStart) ||
+        patch.value.componentMovedStart
+      ) {
+        // Component was removed or moved
+        addPatchToHistory();
+      }
+    }
+  } else {
+    // We pressed undo or redo, so we just ignore
+    // adding the action to the history
+    patch.value.undoClicked = false;
+    patch.value.redoClicked = false;
+    resetHistoryFlags();
+  }
+}
+
+function addPatchToHistory() {
+  // Determine if there is even a difference with the action
+  const frm = getPatch(patch.value.index + 1);
+  const ptch = compare(frm, formSchema.value);
+
+  if (ptch.length > 0) {
+    canSave.value = true;
+    savedStatus.value = 'Save';
+    isFormSaved.value = false;
+    // Remove any actions past the action we were on
+    patch.value.index += 1;
+    if (patch.value.history.length > 0) {
+      patch.value.history.length = patch.value.index;
+    }
+    // Add the patch to the history
+    patch.value.history.push(ptch);
+
+    // If we've exceeded the limit on actions
+    if (patch.value.history.length > patch.value.MAX_PATCHES) {
+      // We need to set the original schema to the first patch
+      const newHead = getPatch(0);
+      patch.value.originalSchema = newHead;
+      patch.value.history.shift();
+      --patch.value.index;
+    }
+  }
+  resetHistoryFlags();
+}
+
+function getPatch(idx) {
+  // Generate the form from the original schema
+  let frm = deepClone(patch.value.originalSchema);
+  if (patch.value.index > -1 && patch.value.history.length > 0) {
+    // Apply all patches until we reach the requested patch
+    for (let i = -1; i < idx; i++) {
+      let ptch = patch.value.history[i + 1];
+      if (ptch !== undefined) {
+        // remove reactivity from the form so we don't affect the original schema
+        frm = deepClone(applyPatch(frm, ptch).newDocument);
+      }
+    }
+  }
+  return frm;
+}
+
+async function undoPatchFromHistory() {
+  // Only allow undo if there was an action made
+  if (canUndoPatch()) {
+    savedStatus.value = 'Save';
+    isFormSaved.value = false;
+    canSave.value = true;
+    // Flag for formio to know we are setting the form
+    patch.value.undoClicked = true;
+    formSchema.value = getPatch(--patch.value.index);
+    reRenderFormIo.value += 1;
+  }
+}
+
+async function redoPatchFromHistory() {
+  // Only allow redo if there was an action made
+  if (canRedoPatch()) {
+    savedStatus.value = 'Save';
+    isFormSaved.value = false;
+    canSave.value = true;
+    // Flag for formio to know we are setting the form
+    patch.value.redoClicked = true;
+    formSchema.value = getPatch(++patch.value.index);
+    reRenderFormIo.value += 1;
+  }
+}
+
+function resetHistoryFlags(flag = false) {
+  patch.value.componentAddedStart = flag;
+  patch.value.componentMovedStart = flag;
+  patch.value.componentRemovedStart = flag;
+}
+
+function canUndoPatch() {
+  return (
+    patch.value.history.length &&
+    patch.value.index >= 0 &&
+    patch.value.index < patch.value.history.length
+  );
+}
+
+function canRedoPatch() {
+  return (
+    patch.value.history.length &&
+    patch.value.index < patch.value.history.length - 1
+  );
+}
+
+function undoEnabled() {
+  return canUndoPatch();
+}
+
+function redoEnabled() {
+  return canRedoPatch();
+}
+// ----------------------------------------------------------------------------------/ Patch History
+
+// ---------------------------------------------------------------------------------------------------
+// Saving the Schema
+// ---------------------------------------------------------------------------------------------------
+async function submitFormSchema() {
+  try {
+    saving.value = true;
+    savedStatus.value = 'Saving';
+
+    // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
+    await formStore.setDirtyFlag(false);
+
+    if (properties.formId) {
+      if (properties.versionId) {
+        // If creating a new draft from an existing version
+        await schemaCreateDraftFromVersion();
+      } else if (properties.draftId) {
+        // If updating an existing draft
+        await schemaUpdateExistingDraft();
+      }
+    } else {
+      // If creating a new form, add the form and a draft
+      await schemaCreateNew();
+    }
+
+    savedStatus.value = 'Saved';
+    isFormSaved.value = true;
+    canSave.value = false;
+  } catch (error) {
+    await formStore.setDirtyFlag(true);
+    savedStatus.value = 'Not Saved';
+    isFormSaved.value = false;
+    notificationStore.addNotification({
+      text: t('trans.formDesigner.formDesignSaveErrMsg'),
+      consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
+        formId: properties.formId,
+        versionId: properties.versionId,
+        draftId: properties.draftId,
+        error: error,
+      }),
+    });
+  } finally {
+    saving.value = false;
+  }
+}
+
+async function onUndoClick() {
+  undoPatchFromHistory();
+}
+
+async function onRedoClick() {
+  redoPatchFromHistory();
+}
+
+async function schemaCreateNew() {
+  const response = await formService.createForm({
+    name: form.value.name,
+    description: form.value.description,
+    schema: formSchema.value,
+    identityProviders: generateIdps({
+      idps: form.value.idps,
+      userType: form.value.userType,
+    }),
+    sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
+    enableSubmitterDraft: form.value.enableSubmitterDraft,
+    allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
+    enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
+    wideFormLayout: form.value.wideFormLayout,
+    enableStatusUpdates: form.value.enableStatusUpdates,
+    showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
+    showSubmissionConfirmation: form.value.showSubmissionConfirmation,
+    submissionReceivedEmails: form.value.submissionReceivedEmails,
+    reminder_enabled: false,
+    deploymentLevel: form.value.deploymentLevel,
+    ministry: form.value.ministry,
+    apiIntegration: form.value.apiIntegration,
+    useCase: form.value.useCase,
+    labels: form.value.labels,
+    formMetadata: form.value.formMetadata,
+    eventStreamConfig: form.value.eventStreamConfig,
+  });
+  // update user labels with any new added labels
+  if (
+    form.value.labels.some((label) => userLabels.value.indexOf(label) === -1)
+  ) {
+    const userLabelResponse = await userService.updateUserLabels(
+      form.value.labels
+    );
+    userLabels.value = userLabelResponse.data;
+  }
+
+  // Navigate back to this page with ID updated
+  router.push({
+    name: 'FormDesigner',
+    query: {
+      f: response.data.id,
+      d: response.data.draft.id,
+      sv: true,
+      svs: 'Saved',
+    },
+  });
+}
+
+async function schemaCreateDraftFromVersion() {
+  const { data } = await formService.createDraft(properties.formId, {
+    schema: formSchema.value,
+    formVersionId: properties.versionId,
+  });
+
+  // Navigate back to this page with ID updated
+  router.push({
+    name: 'FormDesigner',
+    query: {
+      f: properties.formId,
+      d: data.id,
+      sv: true,
+      svs: 'Saved',
+    },
+  });
+}
+
+async function schemaUpdateExistingDraft() {
+  await formService.updateDraft(properties.formId, properties.draftId, {
+    schema: formSchema.value,
+  });
+
+  // Update this route with saved flag
+  router.replace({
+    name: 'FormDesigner',
+    query: { ...router.currentRoute.value.query, sv: true, svs: 'Saved' },
+  });
+}
+// ----------------------------------------------------------------------------------/ Saving the Schema
+async function setProxyHeaders() {
+  try {
+    let response = await formService.getProxyHeaders({
+      formId: properties.formId,
+      versionId: properties.versionId,
+    });
+    // error checking for response
+    sessionStorage.setItem(
+      'X-CHEFS-PROXY-DATA',
+      response.data['X-CHEFS-PROXY-DATA']
+    );
+  } catch (error) {
+    notificationStore.addNotification({
+      text: 'Failed to set proxy headers',
+      consoleError: error,
+    });
+  }
+}
+
+async function getFormSchema() {
+  try {
+    let res;
+    if (properties.versionId) {
+      // Making a new draft from a previous version
+      res = await formService.readVersion(
+        properties.formId,
+        properties.versionId
+      );
+    } else if (properties.draftId) {
+      // Editing an existing draft
+      res = await formService.readDraft(properties.formId, properties.draftId);
+    }
+    formSchema.value = {
+      ...formSchema.value,
+      ...res.data.schema,
+    };
+    if (patch.value.history.length === 0) {
+      // We are fetching an existing form, so we get the original schema here because
+      // using the original schema in the mount will give you the default schema
+      patch.value.originalSchema = deepClone(formSchema.value);
+    }
+    reRenderFormIo.value += 1;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formDesigner.formLoadErrMsg'),
+      consoleError: t('trans.formDesigner.formLoadConsoleErrMsg', {
+        formId: properties.formId,
+        versionId: properties.versionId,
+        draftId: properties.draftId,
+        error: error,
+      }),
+    });
+  }
+}
+
+async function loadFile(event) {
+  try {
+    const result = await importFormSchemaFromFile(event.target.files[0]);
+
+    formSchema.value = JSON.parse(result);
+    addPatchToHistory();
+    patch.value.undoClicked = false;
+    patch.value.redoClicked = false;
+    resetHistoryFlags();
+    // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+    reRenderFormIo.value += 1;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formDesigner.formSchemaImportErrMsg'),
+      consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
+        error: error,
+      }),
+    });
+  }
+}
+
+defineExpose({ designerOptions, reRenderFormIo });
+</script>
 <template>
   <FormModuleLoader
     v-if="loadingFormModules"
+    :form-id="formId"
+    :form-version-id="versionId"
+    :form-draft-id="draftId"
     @update:parent="loadingFormModules = $event"
-    :formId="formId"
-    :formVersionId="versionId"
-    :formDraftId="draftId"
   />
-  <div v-else>
-    <v-row class="mt-6" no-gutters>
+  <div v-else :class="{ 'dir-rtl': isRTL }">
+    <div class="d-flex flex-wrap">
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Form Design</h1>
-      </v-col>
+      <div :lang="locale" class="flex-1-0">
+        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
+        <h3 v-if="form.name">{{ form.name }}</h3>
+      </div>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-md-1 mx-0"
-              @click="submitFormSchema"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>save</v-icon>
-            </v-btn>
-          </template>
-          <span>Save Design</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!undoEnabled"
-              class="mx-1"
-              @click="onUndoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>undo</v-icon>
-              {{ undoCount }}
-            </v-btn>
-          </template>
-          <span>Undo</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              :disabled="!redoEnabled"
-              class="mx-1"
-              @click="onRedoClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ redoCount }}
-              <v-icon>redo</v-icon>
-            </v-btn>
-          </template>
-          <span>Redo</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-1"
-              @click="onExportClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>get_app</v-icon>
-            </v-btn>
-          </template>
-          <span>Export Design</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-1"
-              @click="$refs.uploader.click()"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>publish</v-icon>
-              <input
-                class="d-none"
-                @change="loadFile"
-                ref="uploader"
-                type="file"
-                accept=".json"
-              />
-            </v-btn>
-          </template>
-          <span>Import Design</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <router-link
-              :to="{ name: 'FormManage', query: { f: formId } }"
-              :class="{ 'disabled-router': !formId }"
-            >
-              <v-btn
-                class="mx-1"
-                color="primary"
-                :disabled="!formId"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>settings</v-icon>
-              </v-btn>
-            </router-link>
-          </template>
-          <span>Manage Form</span>
-        </v-tooltip>
-      </v-col>
-      <!-- form name -->
-      <v-col cols="12" order="3">
-        <h3 v-if="name">{{ name }}</h3>
-      </v-col>
-      <!-- version number-->
-      <v-col class="mb-3" cols="12" order="4">
-        <em>Version: {{ this.displayVersion }}</em>
-      </v-col>
-    </v-row>
-    <v-alert
-      :value="saved || saving"
-      :class="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.class
-          : NOTIFICATIONS_TYPES.SUCCESS.class
-      "
-      :color="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.color
-          : NOTIFICATIONS_TYPES.SUCCESS.color
-      "
-      :icon="
-        saving
-          ? NOTIFICATIONS_TYPES.INFO.icon
-          : NOTIFICATIONS_TYPES.SUCCESS.icon
-      "
-      transition="scale-transition"
-    >
-      <div v-if="saving">
-        <v-progress-linear indeterminate />
-        Saving
+      <div class="d-flex flex-row">
+        <div class="d-flex flex-column ma-2" style="align-items: center">
+          <v-btn
+            class="mx-1"
+            color="primary"
+            :title="$t('trans.formDesigner.downloadJson')"
+            :lang="locale"
+            prepend-icon="mdi:mdi-download"
+            @click="exportFormSchema(form.name, formSchema, form.snake)"
+          >
+            {{ $t('trans.formDesigner.downloadJson') }}
+          </v-btn>
+        </div>
+        <div class="d-flex flex-column ma-2" style="align-items: center">
+          <v-btn
+            class="mx-1"
+            color="primary"
+            :lang="locale"
+            prepend-icon="mdi:mdi-publish"
+            :title="$t('trans.formDesigner.uploadJson')"
+            @click="$refs.uploader.click()"
+          >
+            {{ $t('trans.formDesigner.uploadJson') }}
+            <input
+              ref="uploader"
+              class="d-none"
+              type="file"
+              accept=".json"
+              @change="loadFile"
+            />
+          </v-btn>
+        </div>
       </div>
-      <div v-else>
-        Your form has been successfully saved
-        <router-link
-          :to="{ name: 'FormPreview', query: { f: formId, d: draftId } }"
-          target="_blank"
-          class="mx-5"
+    </div>
+    <div>
+      <!-- page version -->
+      <div :lang="locale">
+        <em :lang="locale"
+          >{{ $t('trans.formDesigner.version') }} : {{ DISPLAY_VERSION }}</em
         >
-          Preview
-        </router-link>
-        <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-          Go to Manage Form to Publish
-        </router-link>
       </div>
-    </v-alert>
-
-    <BaseInfoCard class="my-6">
-      <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+    </div>
+    <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
+      <h4 class="text-primary" :lang="locale">
+        <v-icon
+          :class="isRTL ? 'ml-1' : 'mr-1'"
+          color="primary"
+          icon="mdi:mdi-information"
+        ></v-icon
+        >{{ $t('trans.formDesigner.important') }}!
       </h4>
-      <p class="my-0">
-        Use the <strong>SAVE DESIGN</strong> button when you are done building
-        this form.
-      </p>
-      <p class="my-0">
-        The <strong>SUBMIT</strong> button is provided for your user to submit
-        this form and will be activated after it is saved.
-      </p>
+      <p
+        class="my-0"
+        :lang="locale"
+        v-html="$t('trans.formDesigner.formDesignInfoA')"
+      ></p>
+      <p
+        class="my-0"
+        :lang="locale"
+        v-html="$t('trans.formDesigner.formDesignInfoB')"
+      ></p>
     </BaseInfoCard>
     <FormBuilder
-      :form="formSchema"
       :key="reRenderFormIo"
+      :form="formSchema"
       :options="designerOptions"
-      ref="formioForm"
+      class="form-designer"
+      :class="{ 'v-locale--is-ltr': isRTL }"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
-      class="form-designer"
+    />
+    <FloatButton
+      class="position-fixed bottom-0"
+      style="right: 0"
+      :saved-status="savedStatus"
+      :is-form-saved="isFormSaved"
+      :new-version="newVersion"
+      :is-saving="saving"
+      :saved="saved"
+      :can-save="canSave"
+      :form-id="formId"
+      :draft-id="draftId"
+      :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"
+      :redo-enabled="redoEnabled() === 0 ? false : redoEnabled()"
+      @undo="onUndoClick"
+      @redo="onRedoClick"
+      @save="submitFormSchema"
     />
   </div>
 </template>
-
-<script>
-import { compare, applyPatch, deepClone } from 'fast-json-patch';
-import { mapActions, mapGetters } from 'vuex';
-import { FormBuilder } from 'vue-formio';
-import { mapFields } from 'vuex-map-fields';
-
-import FormModuleLoader from '@/components/designer/FormModuleLoader.vue';
-import templateExtensions from '@/plugins/templateExtensions';
-import { formService } from '@/services';
-import { IdentityMode, NotificationTypes } from '@/utils/constants';
-import { generateIdps } from '@/utils/transformUtils';
-
-export default {
-  name: 'FormDesigner',
-  components: {
-    FormBuilder,
-    FormModuleLoader,
-  },
-  props: {
-    draftId: String,
-    formId: String,
-    saved: {
-      type: Boolean,
-      default: false,
-    },
-    versionId: String,
-  },
-  data() {
-    return {
-      advancedItems: [
-        { text: 'Simple Mode', value: false },
-        { text: 'Advanced Mode', value: true },
-      ],
-      designerStep: 1,
-      displayVersion: 1,
-      formSchema: {
-        display: 'form',
-        type: 'form',
-        components: [],
-      },
-      loadingFormModules: true,
-      patch: {
-        componentAddedStart: false,
-        componentRemovedStart: false,
-        componentMovedStart: false,
-        history: [],
-        index: -1,
-        redoClicked: false,
-        undoClicked: false,
-        originalSchema: null,
-      },
-      reRenderFormIo: 0,
-      saving: false,
-      settingsOverlay: {
-        selectedComponent: null,
-        selectedSettings: null,
-      }
-    };
-  },
-  computed: {
-    ...mapGetters('auth', ['tokenParsed', 'user']),
-    ...mapGetters('formModule', ['builder']),
-    ...mapFields('form', [
-      'form.description',
-      'form.enableSubmitterDraft',
-      'form.enableStatusUpdates',
-      'form.idps',
-      'form.isDirty',
-      'form.name',
-      'form.sendSubRecieviedEmail',
-      'form.showSubmissionConfirmation',
-      'form.snake',
-      'form.submissionReceivedEmails',
-      'form.userType',
-      'form.versions',
-    ]),
-    ID_MODE() {
-      return IdentityMode;
-    },
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
-    designerOptions() {
-      return {
-        sanitizeConfig: {
-          addTags: ['iframe'],
-          ALLOWED_TAGS: ['iframe'],
-        },
-        noDefaultSubmitButton: false,
-        builder: this.builder,
-        templates: templateExtensions,
-      };
-    },
-    undoCount() {
-      return this.patch.history.length > 0 ? this.patch.index + 1 : 0;
-    },
-    redoCount() {
-      return this.patch.history.length > 0 ? this.patch.history.length - this.patch.index - 1 : 0;
-    },
-    undoEnabled() {
-      return this.canUndoPatch();
-    },
-    redoEnabled() {
-      return this.canRedoPatch();
-    },
-    objectsToLoad() {
-      return Object.values(this.loading.objects).flat().length;
-    },
-  },
-  methods: {
-    ...mapActions('form', ['fetchForm', 'setDirtyFlag']),
-    ...mapActions('notifications', ['addNotification']),
-    // ----------------------------------------------------------------------------------/ FormIO Modules
-
-    // TODO: Put this into vuex form module
-    async getFormSchema() {
-      try {
-        let res;
-        if (this.versionId) {
-          // Making a new draft from a previous version
-          res = await formService.readVersion(this.formId, this.versionId);
-        } else if (this.draftId) {
-          // Editing an existing draft
-          res = await formService.readDraft(this.formId, this.draftId);
-        }
-        this.formSchema = { ...this.formSchema, ...res.data.schema };
-        if (this.patch.history.length === 0) {
-          // We are fetching an existing form, so we get the original schema here because
-          // using the original schema in the mount will give you the default schema
-          this.patch.originalSchema = deepClone(this.formSchema);
-        }
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occurred while loading the form design.',
-          consoleError: `Error loading form ${this.formId} schema (version: ${this.versionId} draft: ${this.draftId}): ${error}`,
-        });
-      }
-      // get a version number to show in header
-      this.displayVersion = this.versions.length + 1;
-    },
-    async loadFile(event) {
-      try {
-        const file = event.target.files[0];
-        const fileReader = new FileReader();
-        fileReader.addEventListener('load', () => {
-          this.formSchema = JSON.parse(fileReader.result);
-          this.addPatchToHistory();
-          this.patch.undoClicked = false;
-          this.patch.redoClicked = false;
-          this.resetHistoryFlags();
-          // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
-          this.reRenderFormIo += 1;
-        });
-        fileReader.readAsText(file);
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occurred while importing the form schema.',
-          consoleError: `Error importing form schema : ${error}`,
-        });
-      }
-    },
-    onExportClick() {
-      let snek = this.snake;
-      if (!this.snake) {
-        snek = this.name
-          .replace(/\s+/g, '_')
-          .replace(/[^-_0-9a-z]/gi, '')
-          .toLowerCase();
-      }
-
-      const a = document.createElement('a');
-      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(this.formSchema)
-      )}`;
-      a.download = `${snek}_schema.json`;
-      a.style.display = 'none';
-      a.classList.add('hiddenDownloadTextElement');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    },
-
-    // ---------------------------------------------------------------------------------------------------
-    // FormIO event handlers
-    // ---------------------------------------------------------------------------------------------------
-    init() {
-      // Since change is triggered during loading
-    },
-    onChangeMethod(changed, flags, modified) {
-      // Don't call an unnecessary action if already dirty
-      if (!this.isDirty) this.setDirtyFlag(true);
-
-      this.onSchemaChange(changed, flags, modified);
-    },
-    onRenderMethod() {
-      const el = document.querySelector('input.builder-sidebar_search:focus');
-      if (el && el.value === '') this.reRenderFormIo += 1;
-      this.setDirtyFlag(false);
-    },
-    onAddSchemaComponent(_info, _parent, _path, _index, isNew) {
-      if (isNew) {
-        // Component Add Start, the user can still cancel/remove the add
-        this.patch.componentAddedStart = true;
-      } else {
-        // The user has initiated a move
-        this.patch.componentMovedStart = true;
-      }
-    },
-    onRemoveSchemaComponent() {
-      // Component remove start
-      this.patch.componentRemovedStart = true;
-    },
-    // ----------------------------------------------------------------------------------/ FormIO Handlers
-
-    // ---------------------------------------------------------------------------------------------------
-    // Patch History
-    // ---------------------------------------------------------------------------------------------------
-    onSchemaChange(_changed, flags, modified) {
-      // If the form changed but was not done so through the undo
-      // or redo button
-      if (!this.patch.undoClicked && !this.patch.redoClicked) {
-        // flags and modified are defined when a component is added
-        if (flags !== undefined && modified !== undefined) {
-          if (this.patch.componentAddedStart !== null) {
-            this.addPatchToHistory();
-          } else {
-            this.resetHistoryFlags();
-          }
-        } else {
-          // If we removed a component but not during an add action
-          if ((!this.patch.componentAddedStart && this.patch.componentRemovedStart) || this.patch.componentMovedStart) {
-            // Component was removed or moved
-            this.addPatchToHistory();
-          }
-        }
-      } else {
-        // We pressed undo or redo, so we just ignore
-        // adding the action to the history
-        this.patch.undoClicked = false;
-        this.patch.redoClicked = false;
-        this.resetHistoryFlags();
-      }
-    },
-    addPatchToHistory() {
-      // Remove any actions past the action we were on
-      if (this.patch.history.length > 0) {
-        this.patch.history.length = this.patch.index + 1;
-      }
-
-      // Get the differences between the last patch 
-      // and the current form
-      const form = this.getPatch(++this.patch.index);
-      const patch = compare(form, this.formSchema);
-      // Add the patch to the history
-      this.patch.history.push(patch);
-
-      this.resetHistoryFlags();
-    },
-    getPatch(idx) {
-      // Generate the form from the original schema
-      let form = deepClone(this.patch.originalSchema);
-      if (this.patch.index > -1 && this.patch.history.length > 0) {
-        // Apply all patches until we reach the requested patch
-        for (let i = -1; i < idx; i++) {
-          let patch = this.patch.history[i + 1];
-          if (patch !== undefined) {
-            // remove reactivity from the form so we don't affect the original schema
-            form = deepClone(applyPatch(form, patch).newDocument);
-          }
-        }
-      }
-      return form;
-    },
-    undoPatchFromHistory() {
-      // Only allow undo if there was an action made
-      if (this.canUndoPatch()) {
-        // Flag for formio to know we are setting the form
-        this.patch.undoClicked = true;
-        this.patch.index--;
-        this.formSchema = this.getPatch(this.patch.index);
-      }
-    },
-    redoPatchFromHistory() {
-      // Only allow redo if there was an action made
-      if (this.canRedoPatch()) {
-        // Flag for formio to know we are setting the form
-        this.patch.redoClicked = true;
-        this.patch.index++;
-        this.formSchema = this.getPatch(this.patch.index);
-      }
-    },
-    resetHistoryFlags(flag = false) {
-      this.patch.componentAddedStart = flag;
-      this.patch.componentMovedStart = flag;
-      this.patch.componentRemovedStart = flag;
-    },
-    canUndoPatch() {
-      return this.patch.history.length && this.patch.index >= 0 && this.patch.index < this.patch.history.length;
-    },
-    canRedoPatch() {
-      return this.patch.history.length && this.patch.index < (this.patch.history.length - 1);
-    },
-    // ----------------------------------------------------------------------------------/ FormIO Handlers
-
-    // ---------------------------------------------------------------------------------------------------
-    // Saving the Schema
-    // ---------------------------------------------------------------------------------------------------
-    async submitFormSchema() {
-      try {
-        this.saving = true;
-        // Once the form is done disable the "leave site/page" messages so they can quit without getting whined at
-        await this.setDirtyFlag(false);
-
-        if (this.formId) {
-          if (this.versionId) {
-            // If creating a new draft from an existing version
-            await this.schemaCreateDraftFromVersion();
-          } else if (this.draftId) {
-            // If updating an existing draft
-            await this.schemaUpdateExistingDraft();
-          }
-        } else {
-          // If creating a new form, add the form and a draft
-          await this.schemaCreateNew();
-        }
-      } catch (error) {
-        await this.setDirtyFlag(true);
-        this.addNotification({
-          message:
-            'An error occurred while attempting to save this form design. If you need to refresh or leave to try again later, you can Export the existing design on the page to save for later.',
-          consoleError: `Error updating or creating form (FormID: ${this.formId}, versionId: ${this.versionId}, draftId: ${this.draftId}) Error: ${error}`,
-        });
-      } finally {
-        this.saving = false;
-      }
-    },
-    onUndoClick() {
-      this.undoPatchFromHistory();
-    },
-    onRedoClick() {
-      this.redoPatchFromHistory();
-    },
-    async schemaCreateNew() {
-      const emailList =
-        this.sendSubRecieviedEmail &&
-        this.submissionReceivedEmails &&
-        Array.isArray(this.submissionReceivedEmails)
-          ? this.submissionReceivedEmails
-          : [];
-      const response = await formService.createForm({
-        name: this.name,
-        description: this.description,
-        schema: this.formSchema,
-        identityProviders: generateIdps({
-          idps: this.idps,
-          userType: this.userType,
-        }),
-        enableSubmitterDraft: this.enableSubmitterDraft,
-        enableStatusUpdates: this.enableStatusUpdates,
-        showSubmissionConfirmation: this.showSubmissionConfirmation,
-        submissionReceivedEmails: emailList,
-      });
-
-      // Navigate back to this page with ID updated
-      this.$router.push({
-        name: 'FormDesigner',
-        query: {
-          f: response.data.id,
-          d: response.data.draft.id,
-          sv: true,
-        },
-      });
-    },
-    async schemaCreateDraftFromVersion() {
-      const { data } = await formService.createDraft(this.formId, {
-        schema: this.formSchema,
-        formVersionId: this.versionId,
-      });
-      // Navigate back to this page with ID updated
-      this.$router.push({
-        name: 'FormDesigner',
-        query: {
-          f: this.formId,
-          d: data.id,
-          sv: true,
-        },
-      });
-    },
-    async schemaUpdateExistingDraft() {
-      await formService.updateDraft(this.formId, this.draftId, {
-        schema: this.formSchema,
-      });
-      // Update this route with saved flag
-      this.$router.replace({
-        name: 'FormDesigner',
-        query: { ...this.$route.query, sv: true },
-      });
-    },
-    // ----------------------------------------------------------------------------------/ Saving Schema
-  },
-  created() {
-    if (this.formId) {
-      this.getFormSchema();
-      this.fetchForm(this.formId);
-    }
-  },
-  mounted() {
-    if (!this.formId) {
-      // We are creating a new form, so we obtain the original schema here.
-      this.patch.originalSchema = deepClone(this.formSchema);
-    }
-  },
-  watch: {
-    // if form userType (public, idir, team, etc) changes, re-render the form builder
-    userType() {
-      this.reRenderFormIo += 1;
-    },
-    loadingFormModules(newValue) {
-      if (!newValue) this.reRenderFormIo += 1;
-    },
-  },
-};
-</script>
-
-<style lang="scss" scoped>
-@import '~font-awesome/css/font-awesome.min.css';
-@import '~formiojs/dist/formio.builder.min.css';
-
-/* disable router-link */
-.disabled-router {
-  pointer-events: none;
-}
-</style>

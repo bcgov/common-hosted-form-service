@@ -15,7 +15,7 @@ module.exports = {
 
   read: async (req, res, next) => {
     try {
-      const response = await service.read(req.params.userId);
+      const response = await service.readSafe(req.params.userId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -31,13 +31,33 @@ module.exports = {
     }
   },
 
+  readUserLabels: async (req, res, next) => {
+    try {
+      const response = await service.readUserLabels(req.currentUser);
+      const labelText = response.map((label) => label.labelText);
+      res.status(200).json(labelText);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateUserLabels: async (req, res, next) => {
+    try {
+      const response = await service.updateUserLabels(req.currentUser, req.body);
+      const labelText = response.map((label) => label.labelText);
+      res.status(200).json(labelText);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   //
   // User Preferences
   //
   deleteUserPreferences: async (req, res, next) => {
     try {
       await service.deleteUserPreferences(req.currentUser);
-      res.status(204).send();
+      res.sendStatus(204);
     } catch (error) {
       next(error);
     }
@@ -48,7 +68,7 @@ module.exports = {
       const response = await service.readUserPreferences(req.currentUser);
       res.status(200).json({
         forms: response,
-        preferences: {}
+        preferences: {},
       });
     } catch (error) {
       next(error);
@@ -60,7 +80,7 @@ module.exports = {
       const response = await service.updateUserPreferences(req.currentUser, req.body);
       res.status(200).json({
         forms: response,
-        preferences: {}
+        preferences: {},
       });
     } catch (error) {
       next(error);
@@ -73,7 +93,7 @@ module.exports = {
   deleteUserFormPreferences: async (req, res, next) => {
     try {
       await service.deleteUserFormPreferences(req.currentUser, req.params.formId);
-      res.status(204).send();
+      res.sendStatus(204);
     } catch (error) {
       next(error);
     }

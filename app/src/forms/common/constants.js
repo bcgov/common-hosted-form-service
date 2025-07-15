@@ -1,6 +1,9 @@
 module.exports = Object.freeze({
+  Development: {
+    LOCALHOST_ORIGIN: 'http://localhost:5173',
+  },
   EmailProperties: {
-    FROM_EMAIL: 'donotreplyCHEFS@gov.bc.ca'
+    FROM_EMAIL: 'donotreplyCHEFS@gov.bc.ca',
   },
   EmailTypes: {
     SUBMISSION_ASSIGNED: 'submissionAssigned',
@@ -8,51 +11,105 @@ module.exports = Object.freeze({
     STATUS_ASSIGNED: 'statusAssigned',
     STATUS_REVISING: 'statusRevising',
     SUBMISSION_RECEIVED: 'submissionReceived',
-    SUBMISSION_CONFIRMATION: 'submissionConfirmation'
+    SUBMISSION_CONFIRMATION: 'submissionConfirmation',
+    REMINDER_FORM_OPEN: 'formOpen',
+    REMINDER_FORM_WILL_CLOSE: 'formWillClose',
+    REMINDER_FORM_NOT_FILL: 'formNotFill',
   },
   Permissions: {
-    FORM_API_CREATE: 'form_api_create',
-    FORM_API_READ: 'form_api_read',
-    FORM_API_UPDATE: 'form_api_update',
-    FORM_API_DELETE: 'form_api_delete',
-    FORM_READ: 'form_read',
-    FORM_UPDATE: 'form_update',
-    FORM_DELETE: 'form_delete',
-    SUBMISSION_CREATE: 'submission_create',
-    SUBMISSION_READ: 'submission_read',
-    SUBMISSION_UPDATE: 'submission_update',
-    SUBMISSION_DELETE: 'submission_delete',
     DESIGN_CREATE: 'design_create',
+    DESIGN_DELETE: 'design_delete',
     DESIGN_READ: 'design_read',
     DESIGN_UPDATE: 'design_update',
-    DESIGN_DELETE: 'design_delete',
+    DOCUMENT_TEMPLATE_CREATE: 'document_template_create',
+    DOCUMENT_TEMPLATE_DELETE: 'document_template_delete',
+    DOCUMENT_TEMPLATE_READ: 'document_template_read',
+    EMAIL_TEMPLATE_READ: 'email_template_read',
+    EMAIL_TEMPLATE_UPDATE: 'email_template_update',
+    FORM_API_CREATE: 'form_api_create',
+    FORM_API_DELETE: 'form_api_delete',
+    FORM_API_READ: 'form_api_read',
+    FORM_API_UPDATE: 'form_api_update',
+    FORM_DELETE: 'form_delete',
+    FORM_READ: 'form_read',
+    FORM_SUBMITTER: ['form_read', 'submission_create', 'document_template_read'],
+    FORM_UPDATE: 'form_update',
+    SUBMISSION_CREATE: 'submission_create',
+    SUBMISSION_DELETE: 'submission_delete',
+    SUBMISSION_READ: 'submission_read',
+    SUBMISSION_REVIEW: 'submission_review',
+    SUBMISSION_UPDATE: 'submission_update',
     TEAM_READ: 'team_read',
     TEAM_UPDATE: 'team_update',
-    FORM_SUBMITTER: ['form_read', 'submission_create']
   },
   Roles: {
-    OWNER: 'owner',
-    TEAM_MANAGER: 'team_manager',
     FORM_DESIGNER: 'form_designer',
+    FORM_SUBMITTER: 'form_submitter',
+    OWNER: 'owner',
+    SUBMISSION_APPROVER: 'submission_approver',
     SUBMISSION_REVIEWER: 'submission_reviewer',
-    FORM_SUBMITTER: 'form_submitter'
+    TEAM_MANAGER: 'team_manager',
   },
   Regex: {
     CONFIRMATION_ID: '^[0-9A-Fa-f]{8}$',
     UUID: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$',
     // From ajv-formats
-    EMAIL: '^[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$'
+    EMAIL: "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$",
   },
   Statuses: {
     SUBMITTED: 'SUBMITTED',
     ASSIGNED: 'ASSIGNED',
     COMPLETED: 'COMPLETED',
-    REVISING: 'REVISING'
+    REVISING: 'REVISING',
+  },
+  SubscriptionEvent: {
+    FORM_SUBMITTED: 'eventSubmission',
+    FORM_STATUS_CHANGE: 'eventStatusChange',
+    FORM_ASSIGNMENT: 'eventAssignment',
+    FORM_PUBLISHED: 'eventFormPublished',
+    FORM_DRAFT_PUBLISHED: 'eventFormDraftPublished',
+    FORM_UNPUBLISHED: 'eventFormUnPublished',
   },
   StorageTypes: {
     UPLOADS: 'uploads',
     LOCAL_STORAGE: 'localStorage',
     OBJECT_STORAGE: 'objectStorage',
-    LOCAL_STORES: ['uploads', 'localStorage']
+    LOCAL_STORES: ['uploads', 'localStorage', 'exports'],
+  },
+  ScheduleType: {
+    MANUAL: 'manual',
+    CLOSINGDATE: 'closingDate',
+  },
+  EXPORT_TYPES: {
+    submissions: 'submissions',
+    default: 'submissions',
+  },
+  EXPORT_FORMATS: {
+    csv: 'csv',
+    json: 'json',
+    default: 'csv',
+  },
+  // app permissions are not assigned on the form
+  // they are for flow within the UX, what views one can navigate
+  // what buttons one can have.
+  // these will be assigned via the user's IDP.
+  APP_PERMISSIONS: {
+    VIEWS_FORM_STEPPER: 'views_form_stepper',
+    VIEWS_ADMIN: 'views_admin',
+    VIEWS_FILE_DOWNLOAD: 'views_file_download',
+    VIEWS_FORM_EMAILS: 'views_form_emails',
+    VIEWS_FORM_EXPORT: 'views_form_export',
+    VIEWS_FORM_MANAGE: 'views_form_manage',
+    VIEWS_FORM_PREVIEW: 'views_form_preview',
+    VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
+    VIEWS_FORM_TEAMS: 'views_form_teams',
+    VIEWS_FORM_VIEW: 'views_form_view',
+    VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
+  },
+  ExternalAPIStatuses: {
+    SUBMITTED: 'SUBMITTED',
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    DENIED: 'DENIED',
   },
 });

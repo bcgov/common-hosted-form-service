@@ -1,17 +1,21 @@
+<script setup>
+import { useI18n } from 'vue-i18n';
+
+const { locale } = useI18n({ useScope: 'global' });
+</script>
+
 <template>
   <v-container class="text-center">
-    <h1 class="my-6">404: Page not found. :(</h1>
-    <router-link :to="{ name: 'About' }">
-      <v-btn color="primary" large>
-        <v-icon left>home</v-icon>
-        <span>About</span>
-      </v-btn>
-    </router-link>
+    <h1 class="my-6" :lang="locale">{{ $t('trans.notFound.pageNotFound') }}</h1>
+
+    <v-btn
+      color="primary"
+      size="large"
+      :to="{ name: 'About' }"
+      :title="$t('trans.notFound.about')"
+    >
+      <v-icon start icon="mdi-home"></v-icon>
+      <span :lang="locale">{{ $t('trans.notFound.about') }}</span>
+    </v-btn>
   </v-container>
 </template>
-
-<script>
-export default {
-  name: 'NotFound',
-};
-</script>

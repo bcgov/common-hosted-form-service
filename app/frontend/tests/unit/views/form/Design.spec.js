@@ -1,73 +1,55 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
+// @vitest-environment happy-dom
+// happy-dom is required to access window.confirm
 
-import Design from '@/views/form/Design.vue';
+import { createTestingPinia } from '@pinia/testing';
+import { mount } from '@vue/test-utils';
+import { setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+import { useFormStore } from '~/store/form';
+import Design from '~/views/form/Design.vue';
+import { useAppStore } from '~/store/app';
+
+vi.mock('vue-router', () => ({
+  ...vi.importActual('vue-router'),
+  onBeforeRouteLeave: vi.fn(),
+}));
 
 describe('Design.vue', () => {
-  const mockWindowConfirm = jest.spyOn(window, 'confirm');
-  const mockFormGetter = jest.fn();
-  let store;
+  const mockWindowConfirm = vi.spyOn(window, 'confirm');
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
+
+  const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        form: {
-          namespaced: true,
-          getters: {
-            form: mockFormGetter
-          }
-        }
-      }
-    });
-  });
-
-  afterEach(() => {
+    formStore.$reset();
+    appStore.$reset();
     mockWindowConfirm.mockReset();
-    mockFormGetter.mockReset();
   });
 
   afterAll(() => {
     mockWindowConfirm.mockRestore();
   });
 
-  it('renders', () => {
-    const wrapper = shallowMount(Design, {
-      localVue,
-      store,
-      stubs: ['BaseSecure', 'FormDesigner']
+  it('renders', async () => {
+    const wrapper = mount(Design, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
+          FormDesigner: {
+            name: 'FormDesigner',
+            template: '<div class="form-designer-stub"><slot /></div>',
+          },
+        },
+      },
     });
 
-    expect(wrapper.html()).toMatch('basesecure');
-  });
-
-  it('beforeRouteLeave guard works when not dirty', () => {
-    mockFormGetter.mockReturnValue({ isDirty: false });
-    const next = jest.fn();
-    const wrapper = shallowMount(Design, {
-      localVue,
-      store,
-      stubs: ['BaseSecure', 'FormDesigner']
-    });
-    Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
-
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(mockWindowConfirm).toHaveBeenCalledTimes(0);
-  });
-
-  it('beforeRouteLeave guard works when not dirty', () => {
-    mockFormGetter.mockReturnValue({ isDirty: true });
-    const next = jest.fn();
-    const wrapper = shallowMount(Design, {
-      localVue,
-      store,
-      stubs: ['BaseSecure', 'FormDesigner']
-    });
-    Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
-
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(mockWindowConfirm).toHaveBeenCalledTimes(1);
+    expect(wrapper.html()).toMatch('v-stepper');
   });
 });

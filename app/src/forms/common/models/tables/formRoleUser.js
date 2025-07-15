@@ -19,36 +19,51 @@ class FormRoleUser extends Timestamps(Model) {
         modelClass: Form,
         join: {
           from: 'form_role_user.formId',
-          to: 'form.id'
-        }
+          to: 'form.id',
+        },
       },
       userRole: {
         relation: Model.HasOneRelation,
         modelClass: Role,
         join: {
           from: 'form_role_user.role',
-          to: 'role.code'
-        }
+          to: 'role.code',
+        },
       },
       user: {
         relation: Model.HasOneRelation,
         modelClass: User,
         join: {
           from: 'form_role_user.userId',
-          to: 'user.id'
-        }
+          to: 'user.id',
+        },
       },
     };
   }
 
   static get modifiers() {
     return {
+      filterUserId(query, value) {
+        if (value) {
+          query.where('userId', value);
+        }
+      },
+      filterFormId(query, value) {
+        if (value) {
+          query.where('formId', value);
+        }
+      },
+      filterRole(query, value) {
+        if (value) {
+          query.where('role', value);
+        }
+      },
       orderCreatedAtDescending(builder) {
         builder.orderBy('createdAt', 'desc');
       },
       orderUpdatedAtDescending(builder) {
         builder.orderBy('updatedAt', 'desc');
-      }
+      },
     };
   }
 
@@ -61,9 +76,9 @@ class FormRoleUser extends Timestamps(Model) {
         formId: { type: 'string', pattern: Regex.UUID },
         userId: { type: 'string', pattern: Regex.UUID },
         role: { type: 'string', minLength: 1, maxLength: 255 },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

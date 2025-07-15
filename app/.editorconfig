@@ -17,7 +17,3 @@ indent_size = 2
 [.{babelrc,eslintrc}]
 indent_style = space
 indent_size = 2
-
-[Jenkinsfile*]
-indent_style = space
-indent_size = 2

@@ -1,4 +1,5 @@
 const config = require('config');
+const uuid = require('uuid');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const _isLocal = (x) => StorageTypes.LOCAL_STORES.includes(x.storage);
@@ -8,7 +9,6 @@ const localStorageService = require('./localStorageService');
 const objectStorageService = require('./objectStorageService');
 
 const service = {
-
   _deleteFile: async (fileStorage) => {
     if (_isLocal(fileStorage)) {
       return localStorageService.delete(fileStorage);
@@ -25,7 +25,7 @@ const service = {
     }
   },
 
-  _moveFile: async(fileStorage, ...subdirs) => {
+  _moveFile: async (fileStorage, ...subdirs) => {
     // move file only works on the same storage system
     if (_isLocal(fileStorage)) {
       return localStorageService.move(fileStorage, ...subdirs);
@@ -34,11 +34,20 @@ const service = {
     }
   },
 
-  _uploadFile: async(fileStorage) => {
+  _uploadFile: async (fileStorage) => {
     if (PERMANENT_STORAGE === StorageTypes.LOCAL_STORAGE) {
       return localStorageService.uploadFile(fileStorage);
     } else if (PERMANENT_STORAGE === StorageTypes.OBJECT_STORAGE) {
       return objectStorageService.uploadFile(fileStorage);
+    }
+  },
+
+  _cloneFile: async (fileStorage) => {
+    const id = uuid.v4();
+    if (PERMANENT_STORAGE === StorageTypes.LOCAL_STORAGE) {
+      return localStorageService.cloneFile(fileStorage, id);
+    } else if (PERMANENT_STORAGE === StorageTypes.OBJECT_STORAGE) {
+      return objectStorageService.cloneFile(fileStorage, id);
     }
   },
 
@@ -56,7 +65,11 @@ const service = {
 
   upload: async (fileStorage) => {
     return service._uploadFile(fileStorage);
-  }
+  },
+
+  clone: async (fileStorage) => {
+    return service._cloneFile(fileStorage);
+  },
 };
 
 module.exports = service;

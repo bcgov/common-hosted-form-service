@@ -1,118 +1,204 @@
+<script setup>
+import _ from 'lodash';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { useAdminStore } from '~/store/admin';
+import { useFormStore } from '~/store/form';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const showDeleted = ref(false);
+const loading = ref(false);
+const search = ref('');
+const firstDataLoad = ref(true);
+const forceTableRefresh = ref(0);
+const debounceInput = ref(null);
+const debounceTime = ref(300);
+const currentPage = ref(1);
+const itemsPP = ref(10);
+
+const adminStore = useAdminStore();
+const formStore = useFormStore();
+
+const { formList, formTotal } = storeToRefs(adminStore);
+const { isRTL } = storeToRefs(formStore);
+
+const calcHeaders = computed(() =>
+  headers.value.filter((x) => x.key !== 'updatedAt' || showDeleted.value)
+);
+
+const headers = computed(() => [
+  {
+    title: t('trans.adminFormsTable.formTitle'),
+    align: 'start',
+    key: 'name',
+  },
+  {
+    title: t('trans.adminFormsTable.created'),
+    align: 'start',
+    key: 'createdAt',
+  },
+  {
+    title: t('trans.adminFormsTable.deleted'),
+    align: 'start',
+    key: 'updatedAt',
+  },
+  {
+    title: t('trans.adminFormsTable.actions'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
+  },
+]);
+
+watch(showDeleted, async () => {
+  await refreshForms();
+});
+
+onMounted(async () => {
+  debounceInput.value = _.debounce(async () => {
+    forceTableRefresh.value += 1;
+  }, debounceTime.value);
+  refreshForms();
+});
+
+async function refreshForms() {
+  loading.value = true;
+  await adminStore.getForms({
+    activeOnly: !showDeleted.value,
+    paginationEnabled: true,
+    page: currentPage.value - 1,
+    itemsPerPage: itemsPP.value,
+    search: search.value,
+    searchEnabled: search.value.length > 0,
+  });
+  loading.value = false;
+}
+async function updateOptions(options) {
+  const { page, itemsPerPage } = options;
+  if (page) {
+    currentPage.value = page;
+  }
+  if (itemsPerPage) {
+    itemsPP.value = itemsPerPage;
+  }
+  if (!firstDataLoad.value) {
+    await refreshForms();
+  }
+  firstDataLoad.value = false;
+}
+async function handleSearch(value) {
+  search.value = value;
+  if (value === '') {
+    await refreshForms();
+  } else {
+    debounceInput.value();
+  }
+}
+</script>
+
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-row no-gutters>
       <v-col cols="12" sm="8">
         <v-checkbox
+          v-model="showDeleted"
           class="pl-3"
-          v-model="activeOnly"
-          label="Show deleted forms"
-          @click="refeshForms"
-        />
+          data-test="checkbox-show-deleted"
+          :class="isRTL ? 'float-right' : 'float-left'"
+          :label="t('trans.adminFormsTable.showDeletedForms')"
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="locale">
+              {{ t('trans.adminFormsTable.showDeletedForms') }}
+            </span>
+          </template>
+        </v-checkbox>
       </v-col>
+
       <v-col cols="12" sm="4">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
+            density="compact"
+            variant="underlined"
+            :lang="locale"
+            :label="t('trans.adminFormsTable.search')"
+            append-inner-icon="mdi-magnify"
             single-line
             hide-details
             class="pb-5"
+            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            @update:modelValue="handleSearch"
           />
         </div>
       </v-col>
     </v-row>
 
     <!-- table header -->
-    <v-data-table
+    <v-data-table-server
       class="submissions-table"
+      hover
       :headers="calcHeaders"
       item-key="title"
       :items="formList"
+      :items-per-page="itemsPP"
+      :items-length="formTotal"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
-      no-data-text="There are no forms in your system"
+      :lang="locale"
+      :loading-text="t('trans.adminFormsTable.loadingText')"
+      :no-data-text="t('trans.adminFormsTable.noDataText')"
+      @update:options="updateOptions"
     >
-      <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }} - {{ item.createdBy }}
+      <template #item.createdAt="{ item }">
+        {{ $filters.formatDateLong(item.createdAt) }} -
+        {{ item.createdBy }}
       </template>
-      <template #[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }} - {{ item.updatedBy }}
+      <template #item.updatedAt="{ item }">
+        {{ $filters.formatDateLong(item.updatedAt) }} -
+        {{ item.updatedBy }}
       </template>
-      <template #[`item.actions`]="{ item }">
-        <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex">Admin</span>
-          </v-btn>
-        </router-link>
-
-        <router-link
+      <template #item.actions="{ item }">
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
+          :to="{ name: 'AdministerForm', query: { f: item.id } }"
+          :title="$t('trans.adminFormsTable.admin')"
+        >
+          <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
+          <span class="d-none d-sm-flex" :lang="locale">{{
+            t('trans.adminFormsTable.admin')
+          }}</span>
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
           :to="{
             name: 'FormSubmit',
             query: { f: item.id },
           }"
           target="_blank"
+          :title="$t('trans.adminFormsTable.launch')"
         >
-          <v-btn color="primary" text small>
-            <v-icon class="mr-1">note_add</v-icon>
-            <span class="d-none d-sm-flex">Launch</span>
-          </v-btn>
-        </router-link>
+          <v-icon class="mr-1" icon="mdi:mdi-note-plus"></v-icon>
+          <span class="d-none d-sm-flex" :lang="locale">{{
+            t('trans.adminFormsTable.launch')
+          }}</span>
+        </v-btn>
       </template>
-    </v-data-table>
+    </v-data-table-server>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  name: 'FormsTable',
-  data() {
-    return {
-      activeOnly: false,
-      headers: [
-        { text: 'Form Title', align: 'start', value: 'name' },
-        { text: 'Created', align: 'start', value: 'createdAt' },
-        { text: 'Deleted', align: 'start', value: 'updatedAt' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ],
-      loading: true,
-      search: '',
-    };
-  },
-  computed: {
-    ...mapGetters('admin', ['formList']),
-    calcHeaders() {
-      return this.headers.filter(
-        (x) => x.value !== 'updatedAt' || this.activeOnly
-      );
-    },
-  },
-  methods: {
-    ...mapActions('admin', ['getForms']),
-    async refeshForms() {
-      this.loading = true;
-      await this.getForms(!this.activeOnly);
-      this.loading = false;
-    },
-  },
-  async mounted() {
-    await this.getForms();
-    this.loading = false;
-  },
-};
-</script>
-
 <style scoped>
 /* TODO: Global Style! */
 .submissions-search {
@@ -135,15 +221,11 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
-/* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
-  background-color: #f5f5f5;
-}
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

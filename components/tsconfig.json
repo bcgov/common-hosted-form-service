@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "esnext",
     "preserveConstEnums": true,
     "outDir": "lib",
     "noImplicitAny": false,
     "sourceMap": false,
     "declaration": true,
     "rootDir": "src",
-    "module": "es6",
+    "module": "esnext",
     "moduleResolution": "node",
     "lib": [
-      "es2015",
+      "esnext",
       "dom"
-    ]
+    ],
+    "types": ["vite/client"]
   },
   "include": [
     "src/*.ts",

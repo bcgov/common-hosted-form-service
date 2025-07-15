@@ -1,105 +1,160 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+import { onMounted, ref } from 'vue';
+
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import { formService, rbacService } from '~/services';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  email: {
+    type: String,
+    required: true,
+  },
+  submissionId: {
+    type: String,
+    required: true,
+  },
+  formId: {
+    type: String,
+    required: true,
+  },
+});
+
+const emailRules = ref([(v) => !!v || 'E-mail is required']);
+const forms = ref(null);
+const priority = ref('normal');
+const showDialog = ref(false);
+const to = ref('');
+const formStore = useFormStore();
+
+const { isRTL, form } = storeToRefs(useFormStore());
+
+onMounted(() => {
+  resetDialog();
+  formStore.fetchSubmission({ submissionId: properties.submissionId });
+});
+
+function displayDialog() {
+  showDialog.value = true;
+}
+
+async function requestReceipt() {
+  const { valid } = await forms.value.validate();
+  if (valid) {
+    const notificationStore = useNotificationStore();
+    try {
+      if (form.value.enableTeamMemberDraftShare) {
+        const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
+          formId: properties.formId,
+          email: to.value,
+          roles: '*',
+        });
+
+        if (formUsersResponse && !formUsersResponse.data) {
+          notificationStore.addNotification({
+            ...NotificationTypes.ERROR,
+            text: t('trans.canShareDraft.canShareMessage'),
+          });
+          return;
+        }
+      }
+      await formService.requestReceiptEmail(properties.submissionId, {
+        priority: priority.value,
+        to: to.value,
+      });
+      notificationStore.addNotification({
+        text: t('trans.requestReceipt.emailSent', { to: to.value }),
+        ...NotificationTypes.SUCCESS,
+      });
+    } catch (error) {
+      notificationStore.addNotification({
+        text: t('trans.requestReceipt.sendingEmailErrMsg'),
+        consoleError: t('trans.requestReceipt.sendingEmailConsErrMsg', {
+          to: to.value,
+          error: error,
+        }),
+      });
+    } finally {
+      showDialog.value = false;
+    }
+  }
+}
+
+function resetDialog() {
+  to.value = properties.email;
+}
+
+defineExpose({ displayDialog, forms, showDialog });
+</script>
+
 <template>
-  <div>
-    <v-btn color="primary" text small @click="displayDialog">
-      <v-icon class="mr-1">email</v-icon>
-      <span>Email a receipt of this submission</span>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-btn
+      color="primary"
+      variant="text"
+      size="small"
+      :class="{ 'dir-rtl': isRTL }"
+      :title="$t('trans.requestReceipt.emailReceipt')"
+      @click="displayDialog"
+    >
+      <v-icon icon="mdi:mdi-email"></v-icon>
+      <span :lang="locale">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
 
     <BaseDialog
       v-model="showDialog"
       type="CONTINUE"
+      :class="{ 'dir-rtl': isRTL }"
       @close-dialog="showDialog = false"
       @continue-dialog="requestReceipt()"
     >
-      <template #icon>
-        <v-icon large color="primary" class="d-none d-sm-flex"> email </v-icon>
-      </template>
       <template #text>
-        <v-form
-          ref="form"
-          v-model="valid"
-          @submit="requestReceipt()"
-          @submit.prevent
-        >
+        <v-form ref="forms" @submit="requestReceipt()" @submit.prevent>
           <v-text-field
-            dense
-            flat
-            solid
-            outlined
-            label="Send to E-mail Address"
-            :rules="emailRules"
             v-model="to"
+            density="compact"
+            solid
+            variant="outlined"
+            :label="$t('trans.requestReceipt.sendToEmailAddress')"
+            :rules="emailRules"
             data-test="text-form-to"
-          />
+            :lang="locale"
+          >
+            <template #prepend>
+              <v-icon
+                color="primary"
+                class="d-none d-sm-flex"
+                icon="mdi:mdi-email"
+              ></v-icon>
+            </template>
+          </v-text-field>
+          <v-select
+            v-model="priority"
+            density="compact"
+            variant="outlined"
+            :items="[
+              { title: $t('trans.requestReceipt.low'), value: 'low' },
+              { title: $t('trans.requestReceipt.normal'), value: 'normal' },
+              { title: $t('trans.requestReceipt.high'), value: 'high' },
+            ]"
+            :label="$t('trans.requestReceipt.emailPriority')"
+            :lang="locale"
+          >
+            <template #prepend>
+              <v-icon />
+            </template>
+          </v-select>
         </v-form>
       </template>
-      <template v-slot:button-text-continue>
-        <span>SEND</span>
+      <template #button-text-continue>
+        <span :lang="locale">{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>
 </template>
-
-<script>
-import { mapActions } from 'vuex';
-
-import { NotificationTypes } from '@/utils/constants';
-import { formService } from '@/services';
-
-export default {
-  name: 'RequestReceipt',
-  data: () => ({
-    emailRules: [(v) => !!v || 'E-mail is required'],
-    showDialog: false,
-    to: '',
-    valid: false,
-  }),
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    displayDialog() {
-      this.showDialog = true;
-    },
-    async requestReceipt() {
-      if (this.valid) {
-        try {
-          await formService.requestReceiptEmail(this.submissionId, {
-            to: this.to,
-          });
-          this.addNotification({
-            message: `An email has been sent to ${this.to}.`,
-            ...NotificationTypes.SUCCESS,
-          });
-        } catch (error) {
-          this.addNotification({
-            message: 'An error occured while attempting to send your email.',
-            consoleError: `Email confirmation to ${this.to} failed: ${error}`,
-          });
-        } finally {
-          this.showDialog = false;
-        }
-      }
-    },
-    resetDialog() {
-      this.to = this.email;
-      this.valid = false;
-    },
-  },
-  mounted() {
-    this.resetDialog();
-  },
-  props: {
-    email: {
-      type: String,
-      required: true,
-    },
-    formName: {
-      type: String,
-      required: true,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-};
-</script>

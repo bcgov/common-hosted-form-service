@@ -1,261 +1,236 @@
-import { cloneDeep } from 'lodash';
-import { createLocalVue } from '@vue/test-utils';
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { setActivePinia, createPinia } from 'pinia';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { createApp } from 'vue';
 
-import authStore from '@/store/modules/auth';
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
+import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
 
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
+const zeroGuid = '00000000000000000000000000000000';
 
-const keycloakHelper = (mockKcObject) => {
-  // TODO: Find better way to set up keycloak object mock without deleting first
-  if (Vue.prototype.$keycloak) {
-    delete Vue.prototype.$keycloak;
-  }
-  Object.defineProperty(Vue.prototype, '$keycloak', {
-    configurable: true, // Needed to allow deletions later
-    get() {
-      return mockKcObject;
-    }
-  });
+const defaultUser = {
+  idpUserId: '',
+  username: '',
+  firstName: '',
+  lastName: '',
+  fullName: '',
+  email: '',
+  idp: {
+    code: 'public',
+    display: 'Public',
+    hint: 'public',
+  },
+  public: true,
 };
 
 describe('auth getters', () => {
-  let authenticated;
   let roles;
-  let store;
+  const app = createApp({});
+  const pinia = createPinia();
+  app.use(pinia);
+  setActivePinia(pinia);
+  const store = useAuthStore();
+  const idpStore = useIdpStore();
 
+  idpStore.providers = require('../../fixtures/identityProviders.json');
   beforeEach(() => {
-    authenticated = true;
-    roles = [];
-    store = new Vuex.Store(cloneDeep(authStore));
-
-    Object.defineProperty(Vue.prototype, '$keycloak', {
-      configurable: true, // Needed to allow deletions later
-      get() {
-        return {
-          authenticated: authenticated,
-          createLoginUrl: () => 'loginUrl',
-          createLogoutUrl: () => 'logoutUrl',
-          fullName: 'fName',
-          ready: true,
-          subject: zeroUuid,
-          token: 'token',
-          tokenParsed: {
-            given_name: 'John',
-            family_name: 'Doe',
-            name: 'John Doe',
-            email: 'e@mail.com',
-            identity_provider: 'idir',
-            preferred_username: 'johndoe',
-            realm_access: {},
-            resource_access: {
-              chefs: {
-                roles: roles
-              }
-            }
-          },
-          userName: 'uName'
-        };
-      }
-    });
-  });
-
-  afterEach(() => {
-    if (Vue.prototype.$keycloak) {
-      delete Vue.prototype.$keycloak;
-    }
-  });
-
-  it('authenticated should return a boolean', () => {
-    expect(store.getters.authenticated).toBeTruthy();
-  });
-
-  it('createLoginUrl should return a string', () => {
-    expect(store.getters.createLoginUrl).toBeTruthy();
-    expect(typeof store.getters.createLoginUrl).toBe('function');
-    expect(store.getters.createLoginUrl()).toMatch('loginUrl');
-  });
-
-  it('createLogoutUrl should return a string', () => {
-    expect(store.getters.createLogoutUrl).toBeTruthy();
-    expect(typeof store.getters.createLogoutUrl).toBe('function');
-    expect(store.getters.createLogoutUrl()).toMatch('logoutUrl');
-  });
-
-  it('email should return a string', () => {
-    expect(store.getters.email).toBeTruthy();
-    expect(store.getters.email).toMatch('e@mail.com');
-  });
-
-  it('email should return an empty string', () => {
-    keycloakHelper({
-      tokenParsed: undefined
-    });
-
-    expect(store.getters.email).toBeFalsy();
-    expect(store.getters.email).toEqual('');
-  });
-
-  it('fullName should return a string', () => {
-    expect(store.getters.fullName).toBeTruthy();
-    expect(store.getters.fullName).toMatch('fName');
-  });
-
-  it('hasResourceRoles should return false if unauthenticated', () => {
-    authenticated = false;
-
-    expect(store.getters.authenticated).toBeFalsy();
-    expect(store.getters.hasResourceRoles('app', roles)).toBeFalsy();
-  });
-
-  it('hasResourceRoles should return true when checking no roles', () => {
-    authenticated = true;
-    roles = [];
-
-    expect(store.getters.authenticated).toBeTruthy();
-    expect(store.getters.hasResourceRoles('app', roles)).toBeTruthy();
-  });
-
-  it('hasResourceRoles should return true when role exists', () => {
-    authenticated = true;
-    roles = [];
-
-    expect(store.getters.authenticated).toBeTruthy();
-    expect(store.getters.hasResourceRoles('app', roles)).toBeTruthy();
-  });
-
-  it('hasResourceRoles should return false when resource does not exist', () => {
-    authenticated = true;
-    roles = ['non-existent-role'];
-
-    keycloakHelper({
-      authenticated: authenticated,
+    store.$reset();
+    store.authenticated = true;
+    store.ready = true;
+    store.keycloak = {
+      createLoginUrl: () => 'loginUrl',
+      fullName: 'fName',
+      subject: zeroUuid,
+      token: 'token',
       tokenParsed: {
+        given_name: 'John',
+        family_name: 'Doe',
+        name: 'John Doe',
+        email: 'e@mail.com',
+        identity_provider: 'idir',
+        idir_user_guid: zeroGuid,
+        idir_username: 'JDOE',
+        preferred_username: 'johndoe',
         realm_access: {},
-        resource_access: {}
-      }
-    });
-
-    expect(store.getters.authenticated).toBeTruthy();
-    expect(store.getters.hasResourceRoles('app', roles)).toBeFalsy();
-  });
-
-  it('identityProvider should return a string', () => {
-    expect(store.getters.identityProvider).toBeTruthy();
-    expect(typeof store.getters.identityProvider).toBe('string');
-  });
-
-  it('isAdmin should return false if no admin role', () => {
-    authenticated = true;
-    roles = [];
-
-    expect(store.getters.authenticated).toBeTruthy();
-    expect(store.getters.isAdmin).toBeFalsy();
-  });
-
-  it('isAdmin should return true if admin role', () => {
-    authenticated = true;
-    roles = ['admin'];
-
-    expect(store.getters.authenticated).toBeTruthy();
-    expect(store.getters.isAdmin).toBeTruthy();
-  });
-
-  it('isUser should return false if no user role', () => {
-    authenticated = true;
-    roles = [];
-
-    expect(store.getters.authenticated).toBeTruthy();
-    expect(store.getters.isUser).toBeFalsy();
-  });
-
-  it('isUser should return true if user role', () => {
-    authenticated = true;
-    roles = ['user'];
-
-    expect(store.getters.authenticated).toBeTruthy();
-    expect(store.getters.isUser).toBeTruthy();
-  });
-
-  it('keycloakReady should return a boolean', () => {
-    expect(store.getters.keycloakReady).toBeTruthy();
-  });
-
-  it('keycloakSubject should return a string', () => {
-    expect(store.getters.keycloakSubject).toBeTruthy();
-    expect(store.getters.keycloakSubject).toMatch(zeroUuid);
-  });
-
-  it('moduleLoaded should return a boolean', () => {
-    expect(store.getters.moduleLoaded).toBeTruthy();
-  });
-
-  it('realmAccess should return an object', () => {
-    expect(store.getters.realmAccess).toBeTruthy();
-    expect(typeof store.getters.realmAccess).toBe('object');
-  });
-
-  it('realmAccess should return a string', () => {
-    const uri = 'http://foo.bar';
-    store.replaceState({ redirectUri: uri });
-
-    expect(store.getters.redirectUri).toBeTruthy();
-    expect(typeof store.getters.redirectUri).toBe('string');
-    expect(store.getters.redirectUri).toEqual(uri);
-  });
-
-  it('resourceAccess should return an object', () => {
-    expect(store.getters.resourceAccess).toBeTruthy();
-    expect(typeof store.getters.resourceAccess).toBe('object');
-  });
-
-  it('token should return a string', () => {
-    expect(store.getters.token).toBeTruthy();
-    expect(store.getters.token).toMatch('token');
-  });
-
-  it('tokenParsed should return an object', () => {
-    expect(store.getters.tokenParsed).toBeTruthy();
-    expect(typeof store.getters.tokenParsed).toBe('object');
-  });
-
-  it('userName should return a string', () => {
-    expect(store.getters.userName).toBeTruthy();
-    expect(store.getters.userName).toMatch('uName');
-  });
-
-  it('creates an auth user when authenticated', () => {
-    expect(store.getters.user).toBeTruthy();
-    expect(store.getters.user).toEqual({
-      username: 'johndoe',
+        client_roles: roles,
+      },
+      userName: 'uName',
+    };
+    store.currentUser = {
+      idpUserId: zeroGuid,
+      username: 'JDOE',
       firstName: 'John',
       lastName: 'Doe',
       fullName: 'John Doe',
       email: 'e@mail.com',
-      idp: 'idir',
-      public: false
-    });
+      idp: {
+        code: 'idir',
+        display: 'IDIR',
+        hint: 'idir',
+      },
+      public: false,
+    };
+  });
+
+  it('authenticated should return a boolean', () => {
+    expect(store.authenticated).toBeTruthy();
+  });
+
+  it('email should return a string', () => {
+    expect(store.email).toBeTruthy();
+    expect(store.email).toMatch('e@mail.com');
+  });
+
+  it('email should return an empty string', () => {
+    store.keycloak.tokenParsed = undefined;
+    store.currentUser = defaultUser;
+
+    expect(store.email).toBeFalsy();
+    expect(store.email).toEqual('');
+  });
+
+  it('fullName should return a string', () => {
+    expect(store.fullName).toBeTruthy();
+    expect(store.fullName).toMatch('John Doe');
+  });
+
+  it('hasResourceRoles should return false if unauthenticated', () => {
+    store.authenticated = false;
+    store.currentUser = defaultUser;
+
+    expect(store.authenticated).toBeFalsy();
+    expect(store.hasResourceRoles(roles)).toBeFalsy();
+  });
+
+  it('hasResourceRoles should return true when checking no roles', () => {
+    store.authenticated = true;
+    roles = [];
+
+    expect(store.authenticated).toBeTruthy();
+    expect(store.hasResourceRoles(roles)).toBeTruthy();
+  });
+
+  it('hasResourceRoles should return true when role exists', () => {
+    store.authenticated = true;
+    roles = [];
+
+    expect(store.authenticated).toBeTruthy();
+    expect(store.hasResourceRoles(roles)).toBeTruthy();
+  });
+
+  it('hasResourceRoles should return false when resource does not exist', () => {
+    store.authenticated = true;
+    store.keycloak.tokenParsed = {
+      realm_access: {},
+      client_roles: [],
+    };
+    roles = ['non-existent-role'];
+
+    expect(store.authenticated).toBeTruthy();
+    expect(store.hasResourceRoles(roles)).toBeFalsy();
+  });
+
+  it('identityProvider should return a string', () => {
+    expect(store.identityProvider).toBeTruthy();
+    expect(typeof store.identityProvider).toBe('object');
+  });
+
+  it('isAdmin should return false if no admin role', () => {
+    store.authenticated = true;
+    roles = [];
+    store.keycloak.tokenParsed = {
+      client_roles: roles,
+    };
+
+    expect(store.authenticated).toBeTruthy();
+    expect(store.isAdmin).toBeFalsy();
+  });
+
+  it('isAdmin should return true if admin role', () => {
+    store.authenticated = true;
+    roles = ['admin'];
+    store.keycloak.tokenParsed = {
+      client_roles: roles,
+    };
+
+    expect(store.authenticated).toBeTruthy();
+    expect(store.isAdmin).toBeTruthy();
+  });
+
+  it('ready should return a boolean', () => {
+    expect(store.ready).toBeTruthy();
+  });
+
+  it('identityProviderIdentity should return a string', () => {
+    expect(store.identityProviderIdentity).toBeTruthy();
+    expect(store.identityProviderIdentity).toMatch(zeroGuid);
+  });
+
+  it('keycloakSubject should return a string', () => {
+    expect(store.keycloakSubject).toBeTruthy();
+    expect(store.keycloakSubject).toMatch(zeroUuid);
+  });
+
+  it('moduleLoaded should return a boolean', () => {
+    expect(store.moduleLoaded).toBeTruthy();
+  });
+
+  it('realmAccess should return an object', () => {
+    expect(store.realmAccess).toBeTruthy();
+    expect(typeof store.realmAccess).toBe('object');
+  });
+
+  it('realmAccess should return a string', () => {
+    const uri = 'http://foo.bar';
+    store.redirectUri = uri;
+
+    expect(store.redirectUri).toBeTruthy();
+    expect(typeof store.redirectUri).toBe('string');
+    expect(store.redirectUri).toEqual(uri);
+  });
+
+  it('resourceAccess should return an object', () => {
+    expect(store.resourceAccess).toBeTruthy();
+    expect(typeof store.resourceAccess).toBe('object');
+  });
+
+  it('token should return a string', () => {
+    expect(store.token).toBeTruthy();
+    expect(store.token).toMatch('token');
+  });
+
+  it('tokenParsed should return an object', () => {
+    expect(store.tokenParsed).toBeTruthy();
+    expect(typeof store.tokenParsed).toBe('object');
+  });
+
+  it('userName should return a string', () => {
+    expect(store.userName).toBeTruthy();
+    expect(store.userName).toMatch('johndoe');
+  });
+
+  it('creates an auth user when authenticated', () => {
+    expect(store.user).toBeTruthy();
+    expect(store.user.username).toEqual('JDOE');
+    expect(store.user.idp.code).toEqual('idir');
   });
 
   it('creates a public user when not authenticated', () => {
-    keycloakHelper({
-      authenticated: false,
-      tokenParsed: undefined
-    });
+    store.authenticated = false;
+    store.keycloak.tokenParsed = undefined;
+    // default unauthenticated user...
+    store.currentUser = defaultUser;
 
-    expect(store.getters.user).toBeTruthy();
-    expect(store.getters.user).toEqual({
+    expect(store.user).toBeTruthy();
+    expect(store.user).toEqual({
+      idpUserId: '',
       username: '',
       firstName: '',
       lastName: '',
       fullName: '',
       email: '',
-      idp: 'public',
-      public: true
+      idp: { code: 'public', display: 'Public', hint: 'public' },
+      public: true,
     });
   });
 });

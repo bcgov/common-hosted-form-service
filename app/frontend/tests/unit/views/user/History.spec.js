@@ -1,15 +1,27 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import History from '@/views/user/History.vue';
+import { createTestingPinia } from '@pinia/testing';
+import { mount } from '@vue/test-utils';
+import { setActivePinia } from 'pinia';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
+import History from '~/views/user/History.vue';
 
 describe('History.vue', () => {
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
+
   it('renders', () => {
-    const wrapper = shallowMount(History, {
-      localVue,
-      stubs: ['BaseSecure']
+    const wrapper = mount(History, {
+      global: {
+        stubs: {
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
+        },
+        plugins: [pinia],
+      },
     });
 
-    expect(wrapper.text()).toMatch('Your Submission History');
+    expect(wrapper.text()).toMatch('trans.history.submissnHistory');
   });
 });

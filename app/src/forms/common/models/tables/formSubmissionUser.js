@@ -19,24 +19,24 @@ class FormSubmissionUser extends Timestamps(Model) {
         modelClass: FormSubmission,
         join: {
           from: 'form_submission_user.submissionId',
-          to: 'form_submission.id'
-        }
+          to: 'form_submission.id',
+        },
       },
       userPermission: {
         relation: Model.HasOneRelation,
         modelClass: Permission,
         join: {
           from: 'form_submission_user.permission',
-          to: 'permission.code'
-        }
+          to: 'permission.code',
+        },
       },
       user: {
         relation: Model.HasOneRelation,
         modelClass: User,
         join: {
           from: 'form_submission_user.userId',
-          to: 'user.id'
-        }
+          to: 'user.id',
+        },
       },
     };
   }
@@ -48,7 +48,7 @@ class FormSubmissionUser extends Timestamps(Model) {
       },
       orderUpdatedAtDescending(builder) {
         builder.orderBy('updatedAt', 'desc');
-      }
+      },
     };
   }
 
@@ -61,9 +61,9 @@ class FormSubmissionUser extends Timestamps(Model) {
         formSubmissionId: { type: 'string', pattern: Regex.UUID },
         userId: { type: 'string', pattern: Regex.UUID },
         permission: { type: 'string', minLength: 1, maxLength: 255 },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

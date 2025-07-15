@@ -23,7 +23,7 @@ class SubmissionAudit extends Model {
       },
       orderDefault(builder) {
         builder.orderBy('actionTimestamp', 'DESC');
-      }
+      },
     };
   }
 
@@ -38,9 +38,9 @@ class SubmissionAudit extends Model {
         updatedByUsername: { type: ['string', 'null'], maxLength: 255 },
         actionTimestamp: { type: ['string', 'null'] },
         action: { type: 'string', maxLength: 255 },
-        originalData: { type: 'object' }
+        originalData: { type: 'object' },
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

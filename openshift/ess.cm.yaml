@@ -1,0 +1,90 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "chefs-app-event-stream-service-template"
+metadata:
+  name: "chefs-app-event-stream-service"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
+    data:
+      EVENTSTREAMSERVICE_SERVERS: ${SERVERS}
+      EVENTSTREAMSERVICE_WEBSOCKETS: ${WEBSOCKETS}
+      EVENTSTREAMSERVICE_CONSUMERSERVERS: ${CONSUMERSERVERS}
+      EVENTSTREAMSERVICE_STREAMNAME: ${STREAMNAME}
+      EVENTSTREAMSERVICE_SOURCE: ${SOURCE}
+      EVENTSTREAMSERVICE_DOMAIN: ${DOMAIN}
+      EVENTSTREAMSERVICE_MAXAGE: ${MAXAGE}
+      EVENTSTREAMSERVICE_MAXBYTES: ${MAXBYTES}
+      EVENTSTREAMSERVICE_MAXMSGS: ${MAXMSGS}
+      EVENTSTREAMSERVICE_MAXMSGSIZE: ${MAXMSGSIZE}
+      EVENTSTREAMSERVICE_DUPLICATEWINDOW: ${DUPLICATEWINDOW}
+      EVENTSTREAMSERVICE_NUMREPLICAS: ${NUMREPLICAS}
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: SERVERS
+    description: Comma separated list of NATS servers for Event Stream Service
+    displayName: Event Stream NATS servers
+    required: true
+  - name: WEBSOCKETS
+    description: Connect to ESS via websockets or NATS protocol
+    displayName: Connect with websockets
+    required: true
+  - name: CONSUMERSERVERS
+    description: ESS Servers for consumer configuration
+    displayName: ESS Servers (consumers)
+    required: true
+  - name: STREAMNAME
+    description: Name of the CHEFS Event Stream
+    displayName: CHEFS Event Stream name
+    required: true
+    value: CHEFS
+  - name: DOMAIN
+    description: Domain of the CHEFS Event Stream
+    displayName: CHEFS Event Stream domain
+    required: true
+    value: forms
+  - name: SOURCE
+    description: Source of CHEFS Event Stream
+    displayName: CHEFS Event Stream source
+    required: true
+  - name: MAXAGE
+    description: Maximum age of any message in the Stream (milliseconds)
+    displayName: Age of msgs (ms)
+    required: true
+  - name: MAXBYTES
+    description: Maximum number of bytes stored in the stream.
+    displayName: Size of stream (bytes)
+    required: true
+  - name: MAXMSGS
+    description: Maximum number of messages stored in the stream.
+    displayName: Number of msgs in stream
+    required: true
+  - name: MAXMSGSIZE
+    description: The largest message that will be accepted by the Stream (bytes)
+    displayName: Max Msg Size (bytes)
+    required: true
+  - name: DUPLICATEWINDOW
+    description: Duplicate messages window (milliseconds)
+    displayName: Duplicate window (ms)
+    required: true
+  - name: NUMREPLICAS
+    description: Number of stream replicas
+    display: Number of stream replicas
+    required: true

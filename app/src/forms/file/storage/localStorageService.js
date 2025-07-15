@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
 
-const _remLastSep = (x) => x && x.endsWith(path.sep) ? x.slice(0, -1) : x;
+const _remLastSep = (x) => (x && x.endsWith(path.sep) ? x.slice(0, -1) : x);
 
 const _path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
 const BASE_PATH = _remLastSep(_path);
@@ -14,9 +14,7 @@ try {
   throw new Error(`Could not access local storage directory '${BASE_PATH}'.`);
 }
 
-
 const service = {
-
   delete: async (fileStorage) => {
     if (fs.existsSync(fileStorage.path)) {
       fs.unlinkSync(fileStorage.path);
@@ -57,14 +55,37 @@ const service = {
     }
   },
 
-  uploadFile: async(fileStorage) => {
+  uploadFile: async (fileStorage) => {
     // we do not upload, so return current state.
     return {
       path: fileStorage.path,
-      storage: fileStorage.storage
+      storage: fileStorage.storage,
     };
-  }
+  },
 
+  cloneFile: async (fileStorage, newId) => {
+    if (!fs.existsSync(fileStorage.path)) {
+      throw new Error(`File not found: ${fileStorage.path}`);
+    }
+
+    // Define the new file path
+    const newPath = `${BASE_PATH}${path.sep}${newId}`;
+
+    try {
+      // Copy the file to the new location
+      fs.copyFileSync(fileStorage.path, newPath);
+
+      // Return a new file object with updated details
+      return {
+        ...fileStorage,
+        id: newId,
+        path: newPath,
+        storage: fileStorage.storage,
+      };
+    } catch (error) {
+      throw new Error(`Error cloning file: ${error.message}`);
+    }
+  },
 };
 
 module.exports = service;

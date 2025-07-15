@@ -1,16 +1,30 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import { setActivePinia, createPinia } from 'pinia';
+import { describe, expect, it } from 'vitest';
+import { nextTick } from 'vue';
 
-import Success from '@/views/form/Success.vue';
-
-const localVue = createLocalVue();
+import Success from '~/views/form/Success.vue';
 
 describe('Success.vue', () => {
-  it('renders', () => {
-    const wrapper = shallowMount(Success, {
-      localVue,
-      stubs: ['FormViewer']
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  it('renders', async () => {
+    const wrapper = mount(Success, {
+      props: {
+        s: 's',
+        f: 'f',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          FormViewer: true,
+          RequestReceipt: true,
+        },
+      },
     });
 
-    expect(wrapper.html()).toMatch('formviewer');
+    await nextTick();
+
+    expect(wrapper.html()).toMatch('form-viewer');
   });
 });

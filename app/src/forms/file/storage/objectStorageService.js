@@ -1,20 +1,24 @@
+const { CopyObjectCommand, DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } = require('@aws-sdk/client-s3');
 const config = require('config');
 const fs = require('fs-extra');
 const mime = require('mime-types');
 const path = require('path');
-const Problem = require('api-problem');
-const S3 = require('aws-sdk/clients/s3');
+const { Readable } = require('stream');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const errorToProblem = require('../../../components/errorToProblem');
 const log = require('../../../components/log')(module.filename);
 
+const fileUpload = require('../middleware/upload').fileUpload;
+
+// The AWS SDK requires a region, even though it isn't used.
+const DUMMY_REGION = 'ca-west-1';
 const SERVICE = 'ObjectStorage';
 const TEMP_DIR = 'uploads';
 const Delimiter = '/';
 
 class ObjectStorageService {
-  constructor({endpoint, bucket, key, accessKeyId, secretAccessKey}) {
+  constructor({ endpoint, bucket, key, accessKeyId, secretAccessKey }) {
     log.debug(`Constructed with ${endpoint}, ${bucket}, ${key}, ${accessKeyId}, secretAccessKey`, { function: 'constructor' });
     if (!endpoint || !bucket || !key || !accessKeyId || !secretAccessKey) {
       log.error('Invalid configuration.', { function: 'constructor' });
@@ -25,23 +29,26 @@ class ObjectStorageService {
     this._key = this._delimit(key);
     this._accessKeyId = accessKeyId;
     this._secretAccessKey = secretAccessKey;
-    this._s3 = new S3({
+    this._s3 = new S3Client({
+      credentials: {
+        accessKeyId: this._accessKeyId,
+        secretAccessKey: this._secretAccessKey,
+      },
       endpoint: this._endpoint,
-      accessKeyId: this._accessKeyId,
-      secretAccessKey: this._secretAccessKey,
-      s3ForcePathStyle: true,
+      forcePathStyle: true,
       params: {
-        Bucket: this._bucket
-      }
+        Bucket: this._bucket,
+      },
+      region: DUMMY_REGION,
     });
   }
 
   _join(...items) {
     if (items && items.length) {
       const parts = [];
-      items.map(p => {
+      items.map((p) => {
         if (p) {
-          p.split('/').map(x => {
+          p.split('/').map((x) => {
             if (x && x.trim().length) parts.push(x);
           });
         }
@@ -58,10 +65,31 @@ class ObjectStorageService {
     return '';
   }
 
+  /**
+   * Gets the contents of a file from the local filesystem. Will error if the
+   * requested file is not in the allowed file uploads directory.
+   *
+   * @param {string} filename the filename of the file to be read.
+   * @returns a Buffer containing the file contents.
+   * @throws an Error if the filename is not within the allowed directory.
+   */
+  _readLocalFile(filename) {
+    let fileUploadsDir = fileUpload.getFileUploadsDir();
+    if (!fileUploadsDir.endsWith('/')) {
+      fileUploadsDir += '/';
+    }
+
+    const resolvedFilename = fs.realpathSync(path.resolve(fileUploadsDir, filename));
+    if (!resolvedFilename.startsWith(fileUploadsDir)) {
+      throw new Error(`Invalid path '${filename}'`);
+    }
+
+    return fs.readFileSync(resolvedFilename);
+  }
+
   async uploadFile(fileStorage) {
     try {
-
-      const fileContent = fs.readFileSync(fileStorage.path);
+      const fileContent = this._readLocalFile(fileStorage.path);
 
       // uploads can go to a 'holding' area, we can shuffle it later if we want to.
       const key = this._join(this._key, TEMP_DIR, fileStorage.id);
@@ -71,28 +99,22 @@ class ObjectStorageService {
         Key: key,
         Body: fileContent,
         Metadata: {
-          'name': fileStorage.originalName,
-          'id': fileStorage.id
-        }
+          // FIX: Encode Unicode filename for S3 HTTP headers
+          name: encodeURIComponent(fileStorage.originalName),
+          id: fileStorage.id,
+        },
       };
 
       if (mime.contentType(path.extname(fileStorage.originalName))) {
         params.ContentType = mime.contentType(path.extname(fileStorage.originalName));
       }
 
-      return new Promise((resolve, reject) => {
-        // eslint-disable-next-line no-unused-vars
-        this._s3.upload(params, (err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({
-              path: data.Key,
-              storage: StorageTypes.OBJECT_STORAGE
-            });
-          }
-        });
-      });
+      await this._s3.send(new PutObjectCommand(params));
+
+      return {
+        path: params.Key,
+        storage: StorageTypes.OBJECT_STORAGE,
+      };
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
@@ -102,18 +124,10 @@ class ObjectStorageService {
     try {
       const params = {
         Bucket: this._bucket,
-        Key: fileStorage.path
+        Key: fileStorage.path,
       };
-      return new Promise((resolve, reject) => {
-        this._s3.deleteObject(params, (err, data) => {
-          if (err) {
-            // doesn't throw a 404 when given a bad key
-            reject(err);
-          } else {
-            resolve(data);
-          }
-        });
-      });
+
+      return await this._s3.send(new DeleteObjectCommand(params));
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
@@ -123,24 +137,12 @@ class ObjectStorageService {
     try {
       const params = {
         Bucket: this._bucket,
-        Key: fileStorage.path
+        Key: fileStorage.path,
       };
-      return new Promise((resolve, reject) => {
-        const _local_s3 = this._s3;
-        // eslint-disable-next-line
-        _local_s3.headObject(params, function (err, data) {
-          if (err) {
-            if (404 === err.statusCode) {
-              reject(new Problem(404, 'File not found'));
-            } else {
-              reject(err);
-            }
-          } else {
-            // want to return the stream...
-            resolve(_local_s3.getObject(params).createReadStream());
-          }
-        });
-      });
+
+      const response = await this._s3.send(new GetObjectCommand(params));
+
+      return Readable.from(response.Body);
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
@@ -156,50 +158,54 @@ class ObjectStorageService {
         // now delete original...
         const params = {
           Bucket: this._bucket,
-          Key: sourcePath
+          Key: sourcePath,
         };
 
-        return new Promise((resolve, reject) => {
-          // eslint-disable-next-line no-unused-vars
-          this._s3.deleteObject(params, (err, data) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(newPath);
-            }
-          });
-        });
+        await this._s3.send(new DeleteObjectCommand(params));
+
+        return newPath;
       }
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
   }
 
+  // Copies the file to a new location, not the same directory, keeps the same id.
   async copyFile(fileStorage, ...subdirs) {
     try {
-      const destPath = this._join(...subdirs);
+      const key = this._join(this._key, ...subdirs, fileStorage.id);
 
       const params = {
-        Bucket: `${this._bucket}/${this._key}${destPath}`,
+        Bucket: this._bucket,
         CopySource: `${this._bucket}/${fileStorage.path}`,
-        Key: fileStorage.id
+        Key: key,
       };
 
-      return new Promise((resolve, reject) => {
-        // eslint-disable-next-line no-unused-vars
-        this._s3.copyObject(params, (err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(data);
-          }
-        });
-      });
+      return await this._s3.send(new CopyObjectCommand(params));
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
   }
 
+  async cloneFile(fileStorage, newId) {
+    try {
+      // Construct the new key using the new ID
+      const newKey = this._join(this._key, newId);
+
+      // Perform the copy operation
+      await this.copyFile({ ...fileStorage, id: newId }, newKey);
+
+      // Return the newly cloned file details
+      return {
+        ...fileStorage,
+        id: newId,
+        path: newKey,
+        storage: StorageTypes.OBJECT_STORAGE,
+      };
+    } catch (error) {
+      errorToProblem(SERVICE, error);
+    }
+  }
 }
 
 const endpoint = config.get('files.objectStorage.endpoint');
@@ -208,5 +214,11 @@ const key = config.get('files.objectStorage.key');
 const accessKeyId = config.get('files.objectStorage.accessKeyId');
 const secretAccessKey = config.get('files.objectStorage.secretAccessKey');
 
-let objectStorageService = new ObjectStorageService({accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, endpoint: endpoint, bucket: bucket, key: key});
+let objectStorageService = new ObjectStorageService({
+  accessKeyId: accessKeyId,
+  secretAccessKey: secretAccessKey,
+  endpoint: endpoint,
+  bucket: bucket,
+  key: key,
+});
 module.exports = objectStorageService;

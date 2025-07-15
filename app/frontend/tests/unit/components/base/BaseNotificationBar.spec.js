@@ -1,80 +1,135 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
+import { createTestingPinia } from '@pinia/testing';
+import { flushPromises, mount } from '@vue/test-utils';
+import { describe, expect, it, vi } from 'vitest';
 
-import BaseNotificationBar from '@/components/base/BaseNotificationBar.vue';
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
+import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
 
 describe('BaseNotificationBar.vue', () => {
-  let mockDeleteNotification = jest.fn();
-  let store;
   const notificationProperties = {
-    type: 'error',
-    class: 'alert-error',
-    color: '#f2dede',
-    icon: 'error',
-    message: 'test',
+    text: 'Test Notification',
+    ...NotificationTypes.ERROR,
   };
 
-  beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        notifications: {
-          namespaced: true,
-          actions: {
-            deleteNotification: mockDeleteNotification
-          }
-        }
-      }
-    });
-  });
-
-  afterEach(() => {
-    mockDeleteNotification.mockClear();
-  });
-
-  it('renders', () => {
-    const wrapper = shallowMount(BaseNotificationBar, {
-      localVue,
-      propsData: {
+  it('notification is just a string', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mount(BaseNotificationBar, {
+      props: {
         notification: {
-          ...notificationProperties,
-        }
+          id: 1,
+          consoleError: 'Hello',
+        },
       },
-      store
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    await flushPromises();
+
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith('Hello');
+  });
+
+  it('notification is an object', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mount(BaseNotificationBar, {
+      props: {
+        notification: {
+          id: 1,
+          consoleError: {
+            text: 'Just an object',
+          },
+        },
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    await flushPromises();
+
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith('Just an object');
+  });
+
+  it('notification is an object with options', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mount(BaseNotificationBar, {
+      props: {
+        notification: {
+          id: 1,
+          consoleError: {
+            text: 'Object with options',
+            options: {
+              to: 'nowhere',
+            },
+          },
+        },
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    await flushPromises();
+
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith('Object with options');
+  });
+
+  it('renders', async () => {
+    const wrapper = mount(BaseNotificationBar, {
+      props: {
+        notification: {
+          id: 1,
+          ...notificationProperties,
+        },
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
     });
 
     expect(wrapper.html()).toMatch('v-alert');
-    expect(wrapper.text()).toMatch(notificationProperties.message);
+    expect(wrapper.text()).toMatch(notificationProperties.text);
   });
 
-  it('alertClosed behaves correctly', () => {
-    const wrapper = shallowMount(BaseNotificationBar, {
-      localVue,
-      propsData: {
+  it('alertClosed behaves correctly', async () => {
+    const wrapper = mount(BaseNotificationBar, {
+      props: {
         notification: {
+          id: 1,
           ...notificationProperties,
-        }
+        },
       },
-      store
+      global: {
+        plugins: [createTestingPinia()],
+      },
     });
+    const store = useNotificationStore();
+    const deleteNotificationSpy = vi.spyOn(store, 'deleteNotification');
+
     wrapper.vm.alertClosed();
-
-    expect(mockDeleteNotification).toHaveBeenCalledTimes(1);
+    expect(deleteNotificationSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('clears timeout before destroy', () => {
-    const wrapper = shallowMount(BaseNotificationBar, {
-      localVue,
-      propsData: {
+  it('clears timeout before destroy', async () => {
+    const wrapper = mount(BaseNotificationBar, {
+      props: {
         notification: {
+          id: 1,
+          timeout: 1,
           ...notificationProperties,
-        }
+        },
       },
-      store
+      global: {
+        plugins: [createTestingPinia()],
+      },
     });
-    wrapper.destroy();
+
+    wrapper.unmount();
 
     expect(wrapper.vm.timeout).not.toBeNull();
   });

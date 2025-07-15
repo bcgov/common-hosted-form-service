@@ -1,18 +1,19 @@
 version: "2"
 exclude_patterns:
+  - components/
   - config/
-  - "**/db/"
   - dist/
   - features/
-  - "**/node_modules/"
   - script/
+  - Tests/
+  - "**/*.d.ts"
+  - "**/*_test.go"
+  - "**/db/"
+  - "**/node_modules/"
   - "**/spec/"
   - "**/test/"
   - "**/tests/"
-  - Tests/
   - "**/vendor/"
-  - "**/*_test.go"
-  - "**/*.d.ts"
 plugins:
   csslint:
     enabled: true
@@ -29,7 +30,7 @@ plugins:
         enabled: false
   eslint:
     enabled: true
-    channel: "eslint-7"
+    channel: "eslint-8"
     config:
       config: app/.eslintrc.js
   fixme:

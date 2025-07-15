@@ -1,15 +1,25 @@
-import { formService } from '@/services';
-import store from '@/store';
+import { formService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useNotificationStore } from '~/store/notification';
+import { useIdpStore } from '~/store/identityProviders';
 import {
   FormPermissions,
   FormManagePermissions,
   IdentityMode,
-  IdentityProviders
-} from '@/utils/constants';
+  NotificationTypes,
+} from '~/utils/constants';
+
+import { i18n } from '~/internationalization';
+const t = (key) => {
+  return i18n.t(key);
+};
 
 //
 // Utility Functions for determining permissions
 //
+export function isIdpEnabled(idps, type) {
+  return idps ? idps.includes(type) : false;
+}
 
 /**
  * @function checkFormSubmit
@@ -18,33 +28,70 @@ import {
  * @returns {boolean} TRUE if they can
  */
 export function checkFormSubmit(userForm) {
-  return userForm &&
-    (userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC) ||
-      userForm.permissions && userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE));
+  return (
+    userForm &&
+    userForm.permissions &&
+    userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)
+  );
 }
 
 /**
  * @function checkFormManage
- * Returns true or false if the user can manage the form
- * @param {Object} userForm The form object for the rbac user
+ * Returns true if the user can manage a form, false otherwise
+ * @param {Array} userForm A form's permissions array for the rbac user
  * @returns {boolean} TRUE if they can
  */
-export function checkFormManage(userForm) {
-  return userForm && userForm.permissions && userForm.permissions.some(p => FormManagePermissions.includes(p));
+export function checkFormManage(permissions) {
+  return (
+    permissions && permissions.some((p) => FormManagePermissions.includes(p))
+  );
 }
 
 /**
  * @function checkSubmissionView
- * Returns true or false if the user view submissions of this form
- * @param {Object} userForm The form object for the rbac user
+ * Returns true if the user can view submissions of a form, false otherwise
+ * @param {Array} permissions A form's permissions array for the rbac user
  * @returns {boolean} TRUE if they can
  */
-export function checkSubmissionView(userForm) {
+export function checkSubmissionView(permissions) {
   const perms = [
     FormPermissions.SUBMISSION_READ,
-    FormPermissions.SUBMISSION_UPDATE
+    FormPermissions.SUBMISSION_UPDATE,
   ];
-  return userForm && userForm.permissions && userForm.permissions.some(p => perms.includes(p));
+
+  return permissions && permissions.some((p) => perms.includes(p));
+}
+
+/**
+ * @function checkSubmissionUpdate
+ * Returns true if the user can update submissions of a form, false otherwise
+ * @param {Array} permissions A form's permissions array for the rbac user
+ * @returns {boolean} TRUE if they can
+ */
+export function checkSubmissionUpdate(permissions) {
+  const perms = [FormPermissions.SUBMISSION_UPDATE];
+
+  return permissions && permissions.some((p) => perms.includes(p));
+}
+
+/**
+ * @function getErrorMessage
+ * Gets the message to display for preflight errors. Expand this to add
+ * friendlier messages for other errors.
+ * @param {Object} options - The Object containing preflight request details.
+ * @param {Error} error - The error that was produced.
+ * @returns {string|undefined} - The error message to display, or undefined to
+ *    use the default message.
+ */
+function getErrorMessage(options, error) {
+  let errorMessage;
+  if (options.formId) {
+    const status = error?.response?.status;
+    if (status === 404 || status === 422) {
+      errorMessage = t('trans.permissionUtils.formNotAvailable');
+    }
+  }
+  return errorMessage;
 }
 
 /**
@@ -53,57 +100,96 @@ export function checkSubmissionView(userForm) {
  * @param {Object} options Object containing either a formId or submissionId attribute
  * @param {Object} next The callback function
  */
-export async function preFlightAuth(options = {}, next) {
-  // Support lambda functions (Consider making them util functions?)
-  const getIdpHint = (values) => {
-    return (Array.isArray(values) && values.length) ? values[0] : undefined;
-  };
-  const isValidIdp = (value) => Object.values(IdentityProviders).includes(value);
+export async function preFlightAuth(options, next) {
+  if (!options) options = {};
+  const notificationStore = useNotificationStore();
+  const idpStore = useIdpStore();
+  const authStore = useAuthStore();
 
-  // Determine current form or submission idpHint if available
-  let idpHint = undefined;
-  try {
-    if (options.formId) {
-      const { data } = await formService.readFormOptions(options.formId);
-      idpHint = getIdpHint(data.idpHints);
-    } else if (options.submissionId) {
-      const { data } = await formService.getSubmissionOptions(options.submissionId);
-      idpHint = getIdpHint(data.form.idpHints);
-    } else {
-      throw new Error('Options missing both formId and submissionId');
-    }
-  } catch (error) {
-    store.dispatch('notifications/addNotification', {
-      message: 'An error occurred while loading this form.',
-      consoleError: `Error while loading ${JSON.stringify(options)}: ${error}`,
-    });
-    store.dispatch('auth/errorNavigate'); // Halt user with error page
-    return; // Short circuit this function - no point executing further logic
+  function getValidIdpHints(values) {
+    return Array.isArray(values)
+      ? values.filter((v) => idpStore.isValidIdpHint(v))
+      : [];
   }
 
-  if (store.getters['auth/authenticated']) {
-    const userIdp = store.getters['auth/identityProvider'];
+  async function fetchIdpHints() {
+    if (options.formId) {
+      const { data } = await formService.readFormOptions(options.formId);
+      return getValidIdpHints(data.idpHints);
+    }
+    if (options.submissionId) {
+      const { data } = await formService.getSubmissionOptions(
+        options.submissionId
+      );
+      return getValidIdpHints(data.form.idpHints);
+    }
+    throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));
+  }
 
-    if (idpHint === IdentityMode.PUBLIC || !idpHint) {
-      next(); // Permit navigation if public or team form
-    } else if (isValidIdp(idpHint) && userIdp === idpHint) {
-      next(); // Permit navigation if idps match
+  function handleError(error) {
+    const message = getErrorMessage(options, error);
+    if (message) {
+      notificationStore.alertNavigate(
+        NotificationTypes.ERROR.type,
+        t('trans.permissionUtils.formNotAvailable')
+      );
     } else {
-      const msg = `This form requires ${idpHint.toUpperCase()} authentication. Please re-login and try again.`;
-      store.dispatch('notifications/addNotification', {
-        message: msg,
-        consoleError: `Form IDP mismatch. Form requires ${idpHint} but user has ${userIdp}.`,
+      notificationStore.addNotification({
+        text: t('trans.permissionUtils.loadingFormErrMsg'),
+        consoleError: {
+          text: 'trans.permissionUtils.loadingForm',
+          options: { options, error },
+        },
       });
-      store.dispatch('auth/errorNavigate', msg); // Halt user with idp mismatch error page
+      notificationStore.errorNavigate();
     }
-  } else {
-    if (idpHint === IdentityMode.PUBLIC) {
-      next(); // Permit navigation if public form
-    } else if (isValidIdp(idpHint)) {
-      store.dispatch('auth/login', idpHint); // Force login flow with specified idpHint
+  }
+
+  function handleAuthenticated(idpHints, userIdp) {
+    if (idpHints.length === 0 || idpHints[0] === IdentityMode.PUBLIC) {
+      next();
+      return;
+    }
+    if (userIdp?.hint && idpHints.includes(userIdp.hint)) {
+      next();
+      return;
+    }
+    const msg = {
+      text: 'trans.permissionUtils.idpHintMsg',
+      options: { idpHint: idpHints.map((x) => x.toUpperCase()) },
+    };
+    notificationStore.addNotification({
+      text: t('trans.permissionUtils.idpHintMsg'),
+      options: { idpHint: idpHints.map((x) => x.toUpperCase()) },
+      consoleError: msg,
+    });
+    notificationStore.errorNavigate(msg);
+  }
+
+  function handleUnauthenticated(idpHints) {
+    if (idpHints.length && idpHints[0] === IdentityMode.PUBLIC) {
+      next();
+    } else if (idpHints.length === 1) {
+      authStore.login(idpHints[0]);
+    } else if (idpHints.length > 1) {
+      authStore.login(idpHints);
     } else {
-      store.dispatch('auth/login'); // Force login flow with user choice
+      authStore.login();
     }
+  }
+
+  let idpHints = [];
+  try {
+    idpHints = await fetchIdpHints();
+  } catch (error) {
+    handleError(error);
+    return;
+  }
+
+  if (authStore.authenticated) {
+    handleAuthenticated(idpHints, authStore.identityProvider);
+  } else {
+    handleUnauthenticated(idpHints);
   }
 }
 
@@ -114,6 +200,9 @@ export async function preFlightAuth(options = {}, next) {
  * @returns {boolean} TRUE if public
  */
 export function isFormPublic(form) {
-  return form &&
-    (form.identityProviders && form.identityProviders.some(i => i.code === IdentityMode.PUBLIC));
+  return (
+    form &&
+    form.identityProviders &&
+    form.identityProviders.some((i) => i.code === IdentityMode.PUBLIC)
+  );
 }

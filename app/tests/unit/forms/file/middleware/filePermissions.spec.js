@@ -1,15 +1,19 @@
-const Problem = require('api-problem');
+const { getMockReq, getMockRes } = require('@jest-mock/express');
+const uuid = require('uuid');
 
-const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('../../../../../src/forms/file/middleware/filePermissions');
+const { currentFileRecord, hasFileCreate, hasFileDelete, hasFilePermissions } = require('../../../../../src/forms/file/middleware/filePermissions');
 const service = require('../../../../../src/forms/file/service');
 const userAccess = require('../../../../../src/forms/auth/middleware/userAccess');
 
-const testRes = {
-  writeHead: jest.fn(),
-  end: jest.fn()
+const fileId = uuid.v4();
+const formSubmissionId = uuid.v4();
+const idpUserId = uuid.v4();
+
+const bearerToken = Math.random().toString(36).substring(2);
+const formService = require('../../../../../src/forms/form/service');
+const currentUserIdp = {
+  idpUserId: idpUserId,
 };
-const zeroUuid = '00000000-0000-0000-0000-000000000000';
-const oneUuid = '11111111-1111-1111-1111-111111111111';
 
 describe('currentFileRecord', () => {
   const readFileSpy = jest.spyOn(service, 'read');
@@ -18,249 +22,636 @@ describe('currentFileRecord', () => {
     readFileSpy.mockReset();
   });
 
-  it('403s if there is no current user on the request scope', async () => {
-    const testReq = {
-      params: {
-        id: zeroUuid
-      }
-    };
+  describe('403 response when', () => {
+    const expectedStatus = { status: 403 };
 
-    const nxt = jest.fn();
+    test('there is no current user on the request', async () => {
+      const req = getMockReq({
+        params: {
+          fileId: fileId,
+        },
+      });
+      const { res, next } = getMockRes();
 
-    await currentFileRecord(testReq, testRes, nxt);
-    expect(testReq.currentFileRecord).toEqual(undefined);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
-    expect(readFileSpy).toHaveBeenCalledTimes(0);
+      await currentFileRecord(req, res, next);
 
-
-  });
-
-  it('403s if there is no file ID on the request scope', async () => {
-    const testReq = {
-      params: {},
-      currentUser: {
-        keycloakId: zeroUuid,
-        username: 'jsmith@idir',
-      }
-    };
-
-    const nxt = jest.fn();
-
-    await currentFileRecord(testReq, testRes, nxt);
-    expect(testReq.currentFileRecord).toEqual(undefined);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
-    expect(readFileSpy).toHaveBeenCalledTimes(0);
-  });
-
-
-  it('403s if there is no file record to be found', async () => {
-    const testReq = {
-      params: { id: zeroUuid },
-      currentUser: {
-        keycloakId: oneUuid,
-        username: 'jsmith@idir',
-      }
-    };
-
-    const nxt = jest.fn();
-    readFileSpy.mockImplementation(() => {
-      return undefined;
+      expect(readFileSpy).toBeCalledTimes(0);
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'File access to this ID is unauthorized.',
+        })
+      );
     });
 
-    await currentFileRecord(testReq, testRes, nxt);
-    expect(testReq.currentFileRecord).toEqual(undefined);
-    expect(readFileSpy).toHaveBeenCalledTimes(1);
-    expect(readFileSpy).toHaveBeenCalledWith(zeroUuid);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
-  });
+    test('there is no file id on the request', async () => {
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        params: {},
+      });
+      const { res, next } = getMockRes();
 
-  it('403s if an exception occurs from the file lookup', async () => {
-    const testReq = {
-      params: { id: zeroUuid },
-      currentUser: {
-        keycloakId: oneUuid,
-        username: 'jsmith@idir',
-      }
-    };
+      await currentFileRecord(req, res, next);
 
-    const nxt = jest.fn();
-    readFileSpy.mockImplementation(() => {
-      throw new Error();
+      expect(readFileSpy).toBeCalledTimes(0);
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'File access to this ID is unauthorized.',
+        })
+      );
     });
 
-    await currentFileRecord(testReq, testRes, nxt);
-    expect(testReq.currentFileRecord).toEqual(undefined);
-    expect(readFileSpy).toHaveBeenCalledTimes(1);
-    expect(readFileSpy).toHaveBeenCalledWith(zeroUuid);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
+    test('there is no file record to be found', async () => {
+      readFileSpy.mockImplementation(() => {
+        return undefined;
+      });
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        params: {
+          fileId: fileId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await currentFileRecord(req, res, next);
+
+      expect(readFileSpy).toBeCalledTimes(1);
+      expect(readFileSpy).toBeCalledWith(fileId);
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'File access to this ID is unauthorized.',
+        })
+      );
+    });
+
+    test('service.read throws an error', async () => {
+      readFileSpy.mockImplementation(() => {
+        throw new Error();
+      });
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        params: {
+          fileId: fileId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await currentFileRecord(req, res, next);
+
+      expect(readFileSpy).toBeCalledTimes(1);
+      expect(readFileSpy).toBeCalledWith(fileId);
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'File access to this ID is unauthorized.',
+        })
+      );
+    });
   });
 
-  it('403s if an exception occurs from the file lookup', async () => {
-    const testReq = {
-      params: { id: zeroUuid },
-      currentUser: {
-        keycloakId: oneUuid,
-        username: 'jsmith@idir',
-      }
-    };
+  describe('success when', () => {
     const testRecord = {
-      name: 'test'
+      name: 'test',
     };
 
-    const nxt = jest.fn();
-    readFileSpy.mockImplementation(() => {
-      return testRecord;
+    test('an idp user on the request', async () => {
+      readFileSpy.mockImplementation(() => {
+        return testRecord;
+      });
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        params: { fileId: fileId },
+      });
+      const { res, next } = getMockRes();
+
+      await currentFileRecord(req, res, next);
+
+      expect(readFileSpy).toBeCalledTimes(1);
+      expect(readFileSpy).toBeCalledWith(fileId);
+      expect(req.currentFileRecord).toEqual(testRecord);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
-    await currentFileRecord(testReq, testRes, nxt);
-    expect(readFileSpy).toHaveBeenCalledTimes(1);
-    expect(readFileSpy).toHaveBeenCalledWith(zeroUuid);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
-    expect(testReq.currentFileRecord).toEqual(testRecord);
-  });
+    test('an api key user on the request', async () => {
+      readFileSpy.mockImplementation(() => {
+        return testRecord;
+      });
+      const req = getMockReq({
+        apiUser: true,
+        params: { fileId: fileId },
+      });
+      const { res, next } = getMockRes();
 
+      await currentFileRecord(req, res, next);
+
+      expect(readFileSpy).toBeCalledWith(fileId);
+      expect(req.currentFileRecord).toEqual(testRecord);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+  });
 });
 
 describe('hasFileCreate', () => {
+  const formId = uuid.v4();
 
-  it('403s if there is no current user on the request scope', async () => {
-    const testReq = {
-      headers: {
-        authorization: 'Bearer hjvds0uds'
-      }
-    };
+  // Mock the form service
+  const readFormSpy = jest.spyOn(formService, 'readForm');
 
-    const nxt = jest.fn();
-
-    await hasFileCreate(testReq, testRes, nxt);
-    expect(testReq.currentFileRecord).toEqual(undefined);
-    expect(testReq.currentUser).toEqual(undefined);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Invalid authorization credentials.' }));
-
+  beforeEach(() => {
+    readFormSpy.mockReset();
   });
 
-  it('403s if the current user is not an actual user (IE, public)', async () => {
-    const testReq = {
-      currentUser: {
-        keycloakId: undefined,
-        username: 'public',
-      }
-    };
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
 
-    const nxt = jest.fn();
+    test('there is no formId in the request', async () => {
+      const req = getMockReq({
+        query: {}, // No formId
+      });
+      const { res, next } = getMockRes();
 
-    await hasFileCreate(testReq, testRes, nxt);
-    expect(testReq.currentFileRecord).toEqual(undefined);
-    expect(testReq.currentUser).toEqual(testReq.currentUser);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Invalid authorization credentials.' }));
+      await hasFileCreate(req, res, next);
 
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'formId is required as query parameter for file uploads',
+        })
+      );
+    });
   });
 
-  it('passes if a authed user is on the request', async () => {
-    const testReq = {
-      currentUser: {
-        keycloakId: zeroUuid,
-        username: 'jsmith@idir',
-      }
-    };
+  describe('404 response when', () => {
+    const expectedStatus = { status: 404 };
 
-    const nxt = jest.fn();
+    test('form does not exist', async () => {
+      readFormSpy.mockResolvedValue(null);
 
-    await hasFileCreate(testReq, testRes, nxt);
-    expect(testReq.currentFileRecord).toEqual(undefined);
-    expect(testReq.currentUser).toEqual(testReq.currentUser);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
+      const req = getMockReq({
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
 
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Form not found',
+        })
+      );
+    });
+  });
+
+  describe('403 response when', () => {
+    const expectedStatus = { status: 403 };
+
+    test('form is not active', async () => {
+      const mockForm = {
+        id: formId,
+        active: false,
+        identityProviders: [{ code: 'public' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Form is not active',
+        })
+      );
+    });
+
+    test('public user but form does not allow public access', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'idir' }], // No public provider
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        currentUser: { username: 'public' }, // Public user, no idpUserId
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Authentication required for file uploads on this form',
+        })
+      );
+    });
+  });
+
+  describe('allows upload when', () => {
+    test('authenticated user with idpUserId (skips form validation)', async () => {
+      const req = getMockReq({
+        currentUser: { idpUserId: 'some-id' }, // Has idpUserId
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      // Should skip form validation entirely
+      expect(readFormSpy).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - no error
+    });
+
+    test('public user on public form', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'public' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        currentUser: { username: 'public' }, // Public user, no idpUserId
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - no error
+    });
+
+    test('no currentUser (public access) on public form', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'public' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        // No currentUser at all
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - no error
+    });
+
+    test('form with multiple identity providers including public', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'idir' }, { code: 'public' }, { code: 'bceid' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        currentUser: { username: 'public' },
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - found public in the list
+    });
+  });
+
+  describe('handles errors', () => {
+    test('form service throws error', async () => {
+      const error = new Error('Database connection failed');
+      readFormSpy.mockRejectedValue(error);
+
+      const req = getMockReq({
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 500 }));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Unable to upload file at this time. Please try again later.',
+        })
+      );
+    });
   });
 });
 
+describe('hasFileDelete', () => {
+  const readFileSpy = jest.spyOn(service, 'read');
+  const submissionPermissionsSpy = jest.spyOn(userAccess, 'hasSubmissionPermissions');
+
+  beforeEach(() => {
+    readFileSpy.mockReset();
+    submissionPermissionsSpy.mockReset();
+  });
+
+  describe('403 response when', () => {
+    const expectedStatus = { status: 403 };
+
+    test('there is no current user on the request scope', () => {
+      const req = getMockReq({
+        headers: {
+          authorization: 'Bearer ' + bearerToken,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next);
+
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(req.currentUser).toEqual(undefined);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Invalid authorization credentials.',
+        })
+      );
+    });
+
+    test('the current user is a public user', () => {
+      const req = getMockReq({
+        currentUser: {
+          username: 'public',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next);
+
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(req.currentUser).toEqual(req.currentUser);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Invalid authorization credentials.',
+        })
+      );
+    });
+
+    test('the fileIds are not an array', () => {
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: 'string',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next);
+
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(req.currentUser).toEqual(currentUserIdp);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'File IDs must be an array of file UUIDs.',
+        })
+      );
+    });
+
+    test('the file is not found', () => {
+      readFileSpy.mockImplementation(() => {
+        return Promise.resolve(undefined);
+      });
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: [fileId],
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next).then(() => {
+        expect(req.currentFileRecord).toEqual(undefined);
+        expect(req.currentUser).toEqual(currentUserIdp);
+        expect(next).toBeCalledTimes(1); // for some reason this is called 0 times?
+        expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+        expect(next).toBeCalledWith(
+          expect.objectContaining({
+            detail: 'File access to this ID is unauthorized.',
+          })
+        );
+      });
+    });
+
+    test('hasSubmissionPermissions returns an error', (done) => {
+      const error = new Error('Permission error');
+      readFileSpy.mockResolvedValue({
+        id: fileId,
+        formSubmissionId: '123',
+      });
+      const mockSubPermCheck = async (_req, _res, next) => {
+        next(error);
+      };
+      submissionPermissionsSpy.mockImplementation(() => mockSubPermCheck);
+
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: [fileId],
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next)
+        .then(() => {
+          expect(req.currentFileRecord).toEqual({
+            id: fileId,
+            formSubmissionId: '123',
+          });
+          expect(req.currentUser).toEqual(currentUserIdp);
+          expect(next).toBeCalledTimes(1);
+          expect(next).toBeCalledWith(error);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('allows', () => {
+    test('an idp user on the request', (done) => {
+      readFileSpy.mockResolvedValue({
+        id: fileId,
+        formSubmissionId: '123',
+      });
+      const mockSubPermCheck = async (_req, _res, next) => {
+        next();
+      };
+      submissionPermissionsSpy.mockImplementation(() => mockSubPermCheck);
+
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: [fileId],
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next)
+        .then(() => {
+          expect(req.currentFileRecord).toEqual({
+            id: fileId,
+            formSubmissionId: '123',
+          });
+          expect(req.currentUser).toEqual(currentUserIdp);
+          expect(next).toBeCalledTimes(1);
+          done();
+        })
+        .catch(done);
+    });
+  });
+});
 
 describe('hasFilePermissions', () => {
-  const perm = 'submission_read';
+  const permissions = ['submission_read'];
 
-  const subPermSpy = jest.spyOn(userAccess, 'hasSubmissionPermissions');
+  const submissionPermissionsSpy = jest.spyOn(userAccess, 'hasSubmissionPermissions');
   beforeEach(() => {
-    subPermSpy.mockReset();
+    submissionPermissionsSpy.mockReset();
   });
 
   it('returns a middleware function', async () => {
-    const mw = hasFilePermissions(perm);
-    expect(mw).toBeInstanceOf(Function);
+    const middleware = hasFilePermissions(permissions);
+
+    expect(middleware).toBeInstanceOf(Function);
   });
 
-  it('403s if the request has no current user', async () => {
-    const mw = hasFilePermissions(perm);
-    const nxt = jest.fn();
-    const req = { a: '1' };
+  describe('403 response when', () => {
+    const expectedStatus = { status: 403 };
 
-    mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Unauthorized to read file' }));
+    test('the request has no current user', async () => {
+      const req = getMockReq();
+      const { res, next } = getMockRes();
+
+      hasFilePermissions(permissions)(req, res, next);
+
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Unauthorized to read file.',
+        })
+      );
+    });
+
+    test('the current user is a public user', async () => {
+      const req = getMockReq({
+        currentUser: {
+          username: 'public',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFilePermissions(permissions)(req, res, next);
+
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Unauthorized to read file.',
+        })
+      );
+    });
   });
 
-  it('403s if the request is a unauthed user', async () => {
-    const mw = hasFilePermissions(perm);
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {
-        keycloakId: undefined,
-        username: 'public',
-      }
-    };
+  describe('allows', () => {
+    test('an api key user on the request', async () => {
+      const req = getMockReq({
+        apiUser: true,
+        currentFileRecord: {
+          formSubmissionId: formSubmissionId,
+        },
+      });
+      const { res, next } = getMockRes();
 
-    mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Unauthorized to read file' }));
-  });
+      hasFilePermissions(permissions)(req, res, next);
 
-  it('passes through if the user is authed and the file record has no submission', async () => {
-    const mw = hasFilePermissions(perm);
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {
-        keycloakId: zeroUuid,
-        username: 'jsmith@idir',
-      },
-      currentFileRecord: {
-        name: 'unsubmitted file',
-      }
-    };
+      expect(submissionPermissionsSpy).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
 
-    mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
-  });
+    test('authed user when file record has submission', async () => {
+      submissionPermissionsSpy.mockReturnValue(jest.fn());
+      const req = getMockReq({
+        query: {},
+        currentFileRecord: {
+          formSubmissionId: formSubmissionId,
+          name: 'unsubmitted file',
+        },
+        currentUser: currentUserIdp,
+      });
+      const { res, next } = getMockRes();
 
-  it('returns the result of the submission checking middleware', async () => {
-    // Submission checking middleware is fully tested out in useraccess.spec.js
-    // treat as black box for this testing
-    subPermSpy.mockReturnValue(jest.fn());
+      hasFilePermissions(permissions)(req, res, next);
 
-    const mw = hasFilePermissions(perm);
-    const nxt = jest.fn();
-    const req = {
-      query: {},
-      currentUser: {
-        keycloakId: zeroUuid,
-        username: 'jsmith@idir',
-      },
-      currentFileRecord: {
-        formSubmissionId: oneUuid,
-        name: 'unsubmitted file',
-      }
-    };
+      expect(submissionPermissionsSpy).toBeCalledTimes(1);
+      expect(submissionPermissionsSpy).toBeCalledWith(permissions);
+      expect(next).toBeCalledTimes(0);
+    });
 
-    mw(req, testRes, nxt);
-    expect(subPermSpy).toHaveBeenCalledTimes(1);
-    expect(subPermSpy).toHaveBeenCalledWith(perm);
-    expect(nxt).toHaveBeenCalledTimes(0);
+    test('authed user when file record has no submission', async () => {
+      const req = getMockReq({
+        currentFileRecord: {
+          name: 'unsubmitted file',
+        },
+        currentUser: currentUserIdp,
+      });
+      const { res, next } = getMockRes();
+
+      hasFilePermissions(permissions)(req, res, next);
+
+      expect(submissionPermissionsSpy).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
   });
 });

@@ -1,0 +1,52 @@
+name: PR Undeploy
+run-name: Undeploy PR
+description: |
+  This workflow is triggered manually via the workflow_dispatch event.
+  It removes the deployment and associated resources for the specified pull request in the development namespace.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: Pull request number
+        required: true
+        type: string
+
+jobs:
+  remove-pr-dev:
+    name: Remove PR build from dev namespace
+    environment:
+      name: pr
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ACRONYM: chefs
+      PR_NUMBER: ${{ github.event.inputs.pr-number || github.event.pull_request.number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+      - name: Login to OpenShift Cluster
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ vars.NAMESPACE_PREFIX }}-dev
+      - name: Remove PR Deployment
+        shell: bash
+        run: |
+          oc delete deploymentconfig ${{ env.ACRONYM }}-app-pr-${{ env.PR_NUMBER }} -n ${{ vars.NAMESPACE_PREFIX }}-dev --ignore-not-found=true
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev job pre-${{ env.ACRONYM }}-app-pr-${{ env.PR_NUMBER }} --ignore-not-found=true
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,secret,networkpolicy,rolebinding --selector app=${{ env.ACRONYM }}-pr-${{ env.PR_NUMBER }}
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ env.PR_NUMBER }}
+      - name: Remove Release Comment on PR
+        if: github.event_name == 'workflow_dispatch'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: release
+          delete: true
+          number: ${{ env.PR_NUMBER }}

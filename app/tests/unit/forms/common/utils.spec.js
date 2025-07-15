@@ -1,53 +1,105 @@
-const { queryUtils, typeUtils } = require('../../../../src/forms/common/utils');
+const config = require('config');
+const { getBaseUrl, queryUtils, typeUtils } = require('../../../../src/forms/common/utils');
+
+jest.mock('config');
+
+describe('getBaseUrl', () => {
+  const basePath = '/app';
+  const basePathPr = '/pr-1234';
+  const localhostPort = '5173';
+  const serverDev = 'chefs-dev.apps.silver.devops.gov.bc.ca';
+  const serverProd = 'submit.digital.gov.bc.ca';
+
+  it('should return a default for local development', () => {
+    config.get.mockReturnValue(basePath);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`http://localhost${basePath}`);
+  });
+
+  it('should return a default with port for local development', () => {
+    config.get = jest.fn((k) => (k === 'frontend.basePath' ? basePath : localhostPort));
+    config.has.mockReturnValue(true);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`http://localhost:${localhostPort}${basePath}`);
+  });
+
+  it('should handle non-prod SERVER_URL variable', () => {
+    process.env.SERVER_HOST = serverDev;
+    config.get.mockReturnValue(basePath);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`https://${serverDev}${basePath}`);
+  });
+
+  it('should handle non-prod SERVER_URL variable for PRs', () => {
+    process.env.SERVER_HOST = serverDev;
+    config.get.mockReturnValue(basePathPr);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`https://${serverDev}${basePathPr}`);
+  });
+
+  it('should handle prod SERVER_URL variable', () => {
+    process.env.SERVER_HOST = serverProd;
+    config.get.mockReturnValue(basePath);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`https://${serverProd}${basePath}`);
+  });
+});
 
 describe('Test Query Utils functions', () => {
-
   it('defaultActiveOnly should return params object', () => {
     const params = queryUtils.defaultActiveOnly(null);
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true});
+    expect(params).toEqual({ active: true });
   });
 
   it('defaultActiveOnly should return active = true', () => {
     let params = queryUtils.defaultActiveOnly(null);
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true});
+    expect(params).toEqual({ active: true });
 
     params = queryUtils.defaultActiveOnly({});
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true});
+    expect(params).toEqual({ active: true });
 
-    params = queryUtils.defaultActiveOnly({other: 'value'});
+    params = queryUtils.defaultActiveOnly({ other: 'value' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true, other: 'value'});
+    expect(params).toEqual({ active: true, other: 'value' });
 
-    params = queryUtils.defaultActiveOnly({active: 'not a false value', other: 'value'});
+    params = queryUtils.defaultActiveOnly({ active: 'not a false value', other: 'value' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true, other: 'value'});
+    expect(params).toEqual({ active: true, other: 'value' });
 
-    params = queryUtils.defaultActiveOnly({active: true, other: 'value'});
+    params = queryUtils.defaultActiveOnly({ active: true, other: 'value' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true, other: 'value'});
+    expect(params).toEqual({ active: true, other: 'value' });
   });
 
   it('defaultActiveOnly should return active = false', () => {
-    let params = queryUtils.defaultActiveOnly({active: false});
+    let params = queryUtils.defaultActiveOnly({ active: false });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: false});
+    expect(params).toEqual({ active: false });
 
-    params = queryUtils.defaultActiveOnly({active: 'false'});
+    params = queryUtils.defaultActiveOnly({ active: 'false' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: false});
+    expect(params).toEqual({ active: false });
 
-    params = queryUtils.defaultActiveOnly({active: 0});
+    params = queryUtils.defaultActiveOnly({ active: 0 });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: false});
+    expect(params).toEqual({ active: false });
   });
-
 });
 
 describe('Test Type Utils functions', () => {
-
   it('isInt should return true for int and int like strings', () => {
     let result = typeUtils.isInt(1);
     expect(result).toBeDefined();
@@ -67,7 +119,7 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isInt({key: 1});
+    result = typeUtils.isInt({ key: 1 });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
@@ -75,7 +127,9 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isInt(() =>{ return 1; });
+    result = typeUtils.isInt(() => {
+      return 1;
+    });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
   });
@@ -107,11 +161,13 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isString({key: 'string'});
+    result = typeUtils.isString({ key: 'string' });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isString(() =>{ return 'string'; });
+    result = typeUtils.isString(() => {
+      return 'string';
+    });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
@@ -143,11 +199,13 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isBoolean({key: 'string'});
+    result = typeUtils.isBoolean({ key: 'string' });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isBoolean(() =>{ return 'string'; });
+    result = typeUtils.isBoolean(() => {
+      return 'string';
+    });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 

@@ -1,13 +1,16 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import User from '@/views/User.vue';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
+import User from '~/views/User.vue';
 
 describe('User.vue', () => {
   it('renders', () => {
-    const wrapper = shallowMount(User, {
-      localVue,
-      stubs: ['router-view']
+    const wrapper = mount(User, {
+      global: {
+        stubs: {
+          RouterView: true,
+        },
+      },
     });
 
     expect(wrapper.html()).toMatch('router-view');

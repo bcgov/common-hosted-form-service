@@ -1,0 +1,31 @@
+#
+# Reusable workflow to run the OWASP ZAP (Open Worldwide Application Security
+# Project - Zed Attack Proxy) Scan against a deployed application.
+#
+name: OWASP ZAP Scan
+on:
+  workflow_call:
+    inputs:
+      url:
+        required: true
+        type: string
+
+jobs:
+  owasp-zap:
+    name: OWASP ZAP Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Scan
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          # Do not create GitHub Issues
+          allow_issue_writing: false
+
+          artifact_name: OWASP ZAP Scan
+
+          # -a: include the alpha passive scan rules as well
+          # -d: show debug messages
+          cmd_options: "-a -d"
+
+          target: ${{ inputs.url }}

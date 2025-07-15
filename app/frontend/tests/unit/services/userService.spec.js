@@ -1,24 +1,24 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import userService from '@/services/userService';
-import { ApiRoutes } from '@/utils/constants';
+import userService from '~/services/userService';
+import { ApiRoutes } from '~/utils/constants';
 
 const mockInstance = axios.create();
 const mockAxios = new MockAdapter(mockInstance);
 
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
-jest.mock('@/services/interceptors', () => {
+vi.mock('~/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
 
 beforeEach(() => {
   mockAxios.reset();
 });
-
 
 describe('users', () => {
   const endpoint = `${ApiRoutes.USERS}/`;
@@ -51,5 +51,3 @@ describe('user preferences', () => {
     expect(mockAxios.history.put).toHaveLength(1);
   });
 });
-
-

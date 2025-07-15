@@ -1,0 +1,16 @@
+{{- if and .Values.networking.podNetworkPolicy.enabled (ne .Release.Namespace .Values.provisioner.namespace) }}
+
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ or .Values.deploymentName .Release.Name }}-allow-same-namespace
+  labels:
+{{ include "crunchy-postgres-tools.labels" . | indent 4}}
+spec:
+  # This policy allows pods to accept traffic from other pods in this namespace
+  ingress:
+    - from:
+        - podSelector: {}
+  podSelector: {}
+
+{{ end }}

@@ -1,0 +1,24 @@
+instances:
+  limits:
+    cpu:
+    memory:
+  replicaCertCopy:
+    limits:
+      cpu:
+      memory:
+
+pgBackRest:
+  repoHost:
+    limits:
+      cpu:
+      memory:
+  sidecars:
+    limits:
+      cpu:
+      memory:
+
+proxy:
+  pgBouncer:
+    limits:
+      cpu:
+      memory:

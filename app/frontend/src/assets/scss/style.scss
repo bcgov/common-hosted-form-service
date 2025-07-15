@@ -1,13 +1,13 @@
-/*
- * BCGov Style
- * This globally extends the base Vuetify style
- */
-@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900");
-@import url("https://fonts.googleapis.com/css?family=Material+Icons");
-@import "~material-design-icons-iconfont/dist/material-design-icons.css";
-@import "~bootstrap-scss/bootstrap.scss"; // TODO: import this only for form designer/renderer formio components
-@import "~vuetify/src/styles/styles.sass";
-@import "~vue-json-pretty/lib/styles.css";
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Material+Icons');
+@import '@mdi/font/css/materialdesignicons.css';
+@import '~font-awesome/css/font-awesome.min.css';
+@import '~formiojs/dist/formio.builder.min.css';
+@import 'vue-json-pretty/lib/styles.css';
+
+// Override bootstrap default value
+$enable-smooth-scroll: false;
+@import 'bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
 
 // Variables
 $bcgov-blue: #003366;
@@ -26,6 +26,10 @@ $bcgov-alert-error: #f2dede;
 $bcgov-alert-warning: #f9f1c6;
 $bcgov-alert-info: #d9eaf7;
 $bcgov-alert-success: #dff0d8;
+//FORMS-1640 Update contrast for accessibility
+$danger-bg-accessible: #e35f6c;
+$secondary-bg-accessible: #848d94;
+$success-bg-accessible: #1d9f63;
 
 // Sticky Footer
 body {
@@ -38,7 +42,8 @@ body {
 
 // Typography
 .v-application {
-  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial, sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
+    sans-serif !important;
   line-height: 1.4;
   font-size: 0.875rem;
 }
@@ -81,7 +86,6 @@ a {
 
 // Horizontal Rule
 hr {
-  border-top: 1px solid lightgrey;
   margin-bottom: 1em;
   .orange {
     border-top: 2px solid $bcgov-orange;
@@ -106,13 +110,11 @@ a,
     text-decoration: underline;
     button,
     .v-icon {
-      display: inline-block;
       text-decoration: none;
     }
   }
 }
 
-// General Button Style Extensions
 .v-btn {
   span > span {
     font-weight: bold;
@@ -124,73 +126,36 @@ a,
       text-decoration: underline;
     }
   }
-
   &.v-btn--disabled {
     color: #777;
   }
 
   &.v-btn--outlined {
-    &.theme--light {
-      border: 2px solid #003366;
-    }
-
-    &.theme--dark {
-      border: 2px solid #fff;
-    }
+    border: 2px solid #fff;
     &.v-btn--disabled {
       border-color: rgba(0, 0, 0, 0.26);
     }
   }
-  // align links with icons (shown in My Forms in table)
-  // causes underline issues in firefox
-  // a > i ~ span {
-  //   vertical-align: middle;
-  // }
 }
 
-// buttons in v-card
-.v-card__actions > .v-btn {
-  padding: 0 16px !important;
-}
-
-// vuetify radio button and checkbox labels need alignment help
-.v-input--selection-controls__input {
-  ~ .v-label {
-    margin-bottom: 0 !important;
-  }
-}
-
-// Stepper
-.nrmc-stepper {
-  .header-row {
-    background-color: $bcgov-grey !important;
-  }
-  &.v-stepper--alt-labels {
-    .v-stepper__step {
-      padding-left: 0;
-      padding-right: 0;
-      .v-stepper__label {
-        color: $bcgov-font;
-        font-size: 0.75em;
-      }
-      &.v-stepper__step--active {
-        .v-stepper__label {
-          color: $bcgov-font;
-          font-weight: bold;
-        }
-      }
-    }
-  }
+.v-tooltip > .v-overlay__content {
+  background: rgba(97, 97, 97, 0.9) !important;
 }
 
 // Customized expand/collapse section
 .nrmc-expand-collapse {
+  width: 100%;
   min-height: 50px;
-  .v-expansion-panel--active > .v-expansion-panel-header {
+
+  .v-expansion-panel--active {
+    margin-bottom: 20px;
+  }
+
+  .v-expansion-panel--active > .v-expansion-panel-title {
     min-height: 50px;
   }
 
-  .v-expansion-panel-header {
+  .v-expansion-panel-title {
     padding: 10px;
     background-color: $bcgov-grey;
     .icon {
@@ -202,73 +167,13 @@ a,
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-  }
-
-  .v-expansion-panel-content__wrap {
-    padding-top: 8px;
-  }
-}
-
-/////////////////////////////////////////
-// Override Vuetify v-alert Components
-/////////////////////////////////////////
-
-// BCGov Styled Error Notification Override
-.v-alert.v-sheet.theme--light.v-alert.alert-error {
-  background-color: $bcgov-alert-error;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font-error;
+      flex: 1 auto;
     }
   }
 }
 
-// BCGov Styled Warning Alerts Override
-.v-alert.v-sheet.theme--light.v-alert.alert-warning {
-  background-color: $bcgov-alert-warning;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font-warning;
-    }
-  }
-}
-
-// BCGov Styled Info Notification Override
-.v-alert.v-sheet.theme--light.v-alert.alert-info {
-  background-color: $bcgov-alert-info;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font;
-    }
-  }
-}
-
-// BCGov Styled Success Notification Override
-.v-alert.v-sheet.theme--light.v-alert.alert-success {
-  background-color: $bcgov-alert-success;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font-success;
-    }
-  }
-}
-
-// BCGov Alert Style Override
-.v-alert {
-  font-family: "BC Sans", "Noto Sans", Arial, "sans serif";
-  line-height: 1.5em;
-  border-radius: 4px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  padding: 15px;
-  div {
-    font-size: 18px;
-  }
+.v-stepper-header {
+  box-shadow: none !important;
 }
 
 /////////////////////////////////
@@ -282,7 +187,7 @@ a,
 // override preview panel in form builder component editor modal
 .component-preview {
   // layout
-  div[class^="col-"]:nth-child(n + 1) {
+  div[class^='col-']:nth-child(n + 1) {
     padding-top: 0; // make nested columns line up vertically alongside components in non-nested adjacent columns
   }
 
@@ -297,11 +202,39 @@ a,
       color: black;
     }
     .fa-minus-square-o::before {
-      content: "\f106";
+      content: '\f106';
     }
     .fa-plus-square-o::before {
-      content: "\f107";
+      content: '\f107';
     }
+  }
+
+  // Undo "break-all". Breaking in the middle of all words affects readability.
+  .formio-component .table {
+    word-break: break-word;
+  }
+
+  //FORMS-1640 Update contrast for accessibility
+  .btn.btn-danger {
+    background-color: $danger-bg-accessible;
+    border-color: $danger-bg-accessible;
+  }
+  .btn.btn-secondary {
+    background-color: $secondary-bg-accessible;
+    border-color: $secondary-bg-accessible;
+  }
+  .btn.btn-success {
+    background-color: $success-bg-accessible;
+    border-color: $success-bg-accessible;
+  }
+  /**FORMS-1640 - Remove the pink background entirely or change its colour to transparent across the entire CHEFS product 
+  or specifically within the "form submitter" forms to Improve error message contrast for accessibility. **/
+  .formio-error-wrapper {
+    background-color: transparent;
+  }
+  .formio-error-wrapper,
+  .formio-warning-wrapper {
+    padding: 0;
   }
 
   // tabs component
@@ -382,6 +315,7 @@ a,
   }
 
   // buttons
+
   .btn {
     @extend .v-btn;
   }
@@ -397,8 +331,8 @@ a,
     }
 
     &:disabled,
-    &[disabled="disabled"],
-    &[disabled="disabled"] &:hover {
+    &[disabled='disabled'],
+    &[disabled='disabled'] &:hover {
       @extend .v-btn--disabled;
       cursor: default;
       text-decoration: none;
@@ -416,6 +350,11 @@ a,
     font-weight: 700;
     letter-spacing: 0.0892857143em;
     font-size: 0.875rem;
+  }
+
+  // add margin to create space between the button and form.io inputs
+  .formio-component-button {
+    margin-top: 1rem;
   }
 
   // tooltips
@@ -441,7 +380,7 @@ a,
   // hide asterisks after input in Data Grid when labels appear as table headers
   .formio-component-datagrid {
     label.field-required.control-label--hidden::after {
-      content: "";
+      content: '';
     }
   }
 
@@ -523,6 +462,16 @@ a,
   }
 }
 
+.formcomponents {
+  .builder-sidebar {
+    .form-builder-panel {
+      .formcomponent.btn-block {
+        width: 100%;
+      }
+    }
+  }
+}
+
 .form-wrapper {
   // the drag/drop area needs to line up with vuetify v-application ul styles...
   .formio-component-file {
@@ -566,3 +515,102 @@ a,
   color: white;
   background: $bcgov-blue;
 }
+
+.info-helper {
+  color: #00000061;
+  margin-top: 2px;
+}
+
+.info-helper:hover {
+  color: #01254a;
+}
+
+.v-tooltip > .v-overlay__content {
+  pointer-events: auto !important; //Have to replace Tooltips default behaviour pointer-events: none as we have some tooltips with External Links.
+}
+
+.preview_info_link_field_white {
+  color: white !important;
+  text-decoration: underline;
+}
+.center_vertical_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.label .v-label {
+  right: 0 !important;
+  left: auto !important;
+}
+
+.label span {
+  margin-right: 30px;
+}
+
+.flex-xs-column-reverse {
+  flex-direction: column-reverse;
+}
+
+.flex-xs-column {
+  flex-direction: column;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
+
+.dir-ltl {
+  direction: ltr !important;
+  text-align: left;
+}
+
+.v-skeleton-loader {
+  background: none !important;
+  display: block !important;
+}
+
+.submissions-table tbody tr:nth-child(odd) td {
+  background-color: #f5f5f5 !important;
+}
+
+.v-table.v-table--hover > .v-table__wrapper > table > tbody > tr:hover td {
+  background-color: #eee !important;
+}
+
+.v-data-table,
+.v-data-table-server,
+.v-table {
+  font-size: 16px !important;
+}
+
+.v-select .v-field__input {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.v-select .v-list-item--density-default {
+  min-height: 38px !important;
+}
+
+.vselect .v-label {
+  opacity: 1 !important;
+}
+
+// Disable file downloads for public forms in readonly mode
+.form-wrapper.disable-file-downloads .formio-form {
+  .formio-component-simplefile a[href],
+  .formio-component-file a[href] {
+    pointer-events: none !important;
+    color: #6c757d !important;
+    text-decoration: none !important;
+    cursor: not-allowed !important;
+  }
+}
+
+@import 'global-status-overlay.scss';

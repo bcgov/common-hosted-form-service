@@ -1,51 +1,126 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import VueJsonPretty from 'vue-json-pretty';
+import { useI18n } from 'vue-i18n';
+
+import AddOwner from '~/components/admin/AddOwner.vue';
+import AdminVersions from '~/components/admin/AdminVersions.vue';
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import { useAdminStore } from '~/store/admin';
+import { onMounted, ref } from 'vue';
+
+const { locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
+  },
+});
+
+const formDetails = ref({});
+const loading = ref(true);
+const restoreInProgress = ref(false);
+const showDeleteDialog = ref(false);
+const showRestoreDialog = ref(false);
+
+const adminStore = useAdminStore();
+
+const { form, roles, apiKey } = storeToRefs(adminStore);
+
+onMounted(async () => {
+  await Promise.all([
+    adminStore.readForm(properties.formId),
+    adminStore.readApiDetails(properties.formId),
+    adminStore.readRoles(properties.formId),
+  ]);
+
+  formDetails.value = { ...form.value };
+  delete formDetails.value.versions;
+
+  loading.value = false;
+});
+
+async function deleteKey() {
+  await adminStore.deleteApiKey(form.value.id);
+  showDeleteDialog.value = false;
+}
+
+async function restore() {
+  restoreInProgress.value = true;
+  await adminStore.restoreForm(form.value.id);
+  restoreInProgress.value = false;
+  showRestoreDialog.value = false;
+}
+</script>
+
 <template>
-  <v-skeleton-loader :loading="loading" type="article">
+  <v-skeleton-loader :loading="loading" type="article" class="bgtrans">
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
-    <div v-if="form.active === false" class="red--text mb-6">
-      (DELETED)
+    <div v-if="form.active === false" class="text-red mb-6" :lang="locale">
+      ({{ $t('trans.administerForm.deleted') }})
       <v-btn
         color="primary"
         class="mt-0"
+        variant="text"
+        size="small"
+        :title="$t('trans.administerForm.restoreForm')"
         @click="showRestoreDialog = true"
-        text
-        small
       >
-        <v-icon class="mr-1">build_circle</v-icon>
-        <span class="d-none d-sm-flex">Restore this form</span>
+        <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
+        <span class="d-none d-sm-flex" :lang="locale">{{
+          $t('trans.administerForm.restoreForm')
+        }}</span>
       </v-btn>
     </div>
 
     <v-container>
       <v-row no-gutters>
         <v-col md="6">
-          <h4>Form Details</h4>
+          <h4 :lang="locale">
+            {{ $t('trans.administerForm.formDetails') }}
+          </h4>
           <vue-json-pretty :data="formDetails" />
 
           <div v-if="apiKey" class="mt-6">
-            <h4>API Key Details</h4>
+            <h4 :lang="locale">
+              {{ $t('trans.administerForm.apiKeyDetails') }}
+            </h4>
             <vue-json-pretty :data="apiKey" />
             <v-btn
               class="mt-6 mb-6"
               color="primary"
               :disabled="!apiKey"
+              :title="$t('trans.administerForm.deleteApiKey')"
               @click="showDeleteDialog = true"
             >
-              <span>Delete API Key</span>
+              <span :lang="locale">{{
+                $t('trans.administerForm.deleteApiKey')
+              }}</span>
             </v-btn>
           </div>
         </v-col>
         <v-col md="6">
-          <h4>Form Users</h4>
+          <h4 :lang="locale">
+            {{ $t('trans.administerForm.formUsers') }}
+          </h4>
           <vue-json-pretty :data="roles" />
         </v-col>
       </v-row>
     </v-container>
 
     <div v-if="form.active" class="mt-12">
-      <h4>Form Versions</h4>
+      <h4 :lang="locale">
+        {{ $t('trans.administerForm.formVersions') }}
+      </h4>
       <AdminVersions />
+    </div>
+
+    <div v-if="form.active" class="mt-12">
+      <h4 :lang="locale">{{ $t('trans.administerForm.assignANewOwner') }}</h4>
+      <AddOwner :form-id="form.id" />
     </div>
 
     <BaseDialog
@@ -54,20 +129,30 @@
       @close-dialog="showRestoreDialog = false"
       @continue-dialog="restore"
     >
-      <template #title>Confirm Restore</template>
+      <template #title
+        ><span :lang="locale">{{
+          $t('trans.administerForm.confirmRestore')
+        }}</span></template
+      >
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
-          <v-progress-circular indeterminate color="primary" :size="100">
-            Restoring
+          <v-progress-circular
+            indeterminate
+            color="primary"
+            :size="100"
+            :lang="locale"
+          >
+            {{ $t('trans.administerForm.restoring') }}
           </v-progress-circular>
         </div>
-        <div v-else>
-          Restore
-          <strong>{{ form.name }}</strong> to active state?
+        <div v-else :lang="locale">
+          {{ $t('trans.administerForm.restore') }}
+          <strong>{{ form.name }}</strong>
+          {{ $t('trans.administerForm.toActiveState') }}?
         </div>
       </template>
       <template #button-text-continue>
-        <span>Restore</span>
+        <span :lang="locale">{{ $t('trans.administerForm.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -78,76 +163,19 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="deleteKey"
     >
-      <template #title>Confirm Deletion</template>
-      <template #text>Are you sure you want to delete this API Key?</template>
-      <template #button-text-continue>
-        <span>Delete</span>
+      <template #title
+        ><span :lang="locale">{{
+          $t('trans.administerForm.confirmDeletion')
+        }}</span></template
+      >
+      <template #text
+        ><span :lang="locale">{{
+          $t('trans.administerForm.confirmDeletionMsg')
+        }}</span>
+      </template>
+      <template #button-text-continue
+        ><span :lang="locale">{{ $t('trans.administerForm.delete') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import AdminVersions from './AdminVersions.vue';
-
-import VueJsonPretty from 'vue-json-pretty';
-
-export default {
-  name: 'AdministerForm',
-  components: {
-    AdminVersions,
-    VueJsonPretty,
-  },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      formDetails: {},
-      loading: true,
-      restoreInProgress: false,
-      roleDetails: {},
-      showDeleteDialog: false,
-      showRestoreDialog: false,
-    };
-  },
-  computed: {
-    ...mapGetters('admin', ['form', 'roles', 'apiKey']),
-  },
-  methods: {
-    ...mapActions('admin', [
-      'deleteApiKey',
-      'readApiDetails',
-      'readForm',
-      'readRoles',
-      'restoreForm',
-    ]),
-    async deleteKey() {
-      await this.deleteApiKey(this.form.id);
-      this.showDeleteDialog = false;
-    },
-    async restore() {
-      this.restoreInProgress = true;
-      await this.restoreForm(this.form.id);
-      this.restoreInProgress = false;
-      this.showRestoreDialog = false;
-    },
-  },
-  async mounted() {
-    await Promise.all([
-      this.readForm(this.formId),
-      this.readApiDetails(this.formId),
-      this.readRoles(this.formId),
-    ]);
-
-    this.formDetails = { ...this.form };
-    delete this.formDetails.versions;
-
-    this.loading = false;
-  },
-};
-</script>

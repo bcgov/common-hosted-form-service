@@ -1,17 +1,19 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import rbacService from '@/services/rbacService';
-import { ApiRoutes } from '@/utils/constants';
+import rbacService from '~/services/rbacService';
+import { ApiRoutes } from '~/utils/constants';
 
 const mockInstance = axios.create();
 const mockAxios = new MockAdapter(mockInstance);
 
-jest.mock('@/services/interceptors', () => {
+vi.mock('~/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
+
 
 describe('RBAC Service', () => {
   beforeEach(() => {
@@ -24,7 +26,19 @@ describe('RBAC Service', () => {
     it('calls rbac/current endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
 
-      const result = await rbacService.getCurrentUser({ idp: 'idir' });
+      const result = await rbacService.getCurrentUser();
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('rbac/current/forms', () => {
+    const endpoint = `${ApiRoutes.RBAC}/current/forms`;
+
+    it('calls rbac/current endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await rbacService.getCurrentUserForms({ idp: 'idir' });
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
       expect(Object.keys(mockAxios.history.get[0].params)).toEqual(['idp']);
@@ -89,6 +103,27 @@ describe('RBAC Service', () => {
       expect(result.data).toEqual(data);
       expect(mockAxios.history.put).toHaveLength(1);
       expect(Object.keys(mockAxios.history.put[0].params)).toEqual(['idp']);
+    });
+  });
+  describe('rbac/form/user', () => {
+    //end
+    const endpoint = `${ApiRoutes.RBAC}/form/user`;
+
+    it('calls rbac/form/user endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await rbacService.isUserAssignedToFormTeams({
+        formId: '3d338420-b272-4b4b-8b08-756ed5b1576c',
+        email: 'test@gg.com',
+        roles: '*',
+      });
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+      expect(Object.keys(mockAxios.history.get[0].params)).toEqual([
+        'formId',
+        'email',
+        'roles',
+      ]);
     });
   });
 });

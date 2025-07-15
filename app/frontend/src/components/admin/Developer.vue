@@ -1,3 +1,42 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import VueJsonPretty from 'vue-json-pretty';
+import { useI18n } from 'vue-i18n';
+import { onBeforeMount, ref } from 'vue';
+
+import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
+import { rbacService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useNotificationStore } from '~/store/notification';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const apiRes = ref('');
+
+const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
+
+const { fullName, token, tokenParsed, userName } = storeToRefs(authStore);
+
+onBeforeMount(async () => {
+  await getUser();
+});
+
+async function getUser() {
+  try {
+    const user = await rbacService.getCurrentUser();
+    const forms = await rbacService.getCurrentUserForms();
+    apiRes.value = { ...user.data, forms: forms.data };
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.developer.notificationMsg'),
+      consoleError:
+        t('trans.developer.notificationConsErr') + `: ${error.message}`,
+    });
+  }
+}
+</script>
+
 <template>
   <div>
     <h2 class="mt-4">Developer Resources</h2>
@@ -5,83 +44,47 @@
       <v-col cols="6">
         <h3>Keycloak</h3>
         <br />
-        <h4>User</h4>
-        <strong>Name:</strong>
+        <h4 :lang="locale">{{ $t('trans.developer.user') }}</h4>
+        <strong :lang="locale">{{ $t('trans.developer.name') }}:</strong>
         {{ fullName }}
         <br />
-        <strong>UserName:</strong>
+        <strong :lang="locale">{{ $t('trans.developer.userName') }}:</strong>
         {{ userName }}
         <br />
         <br />
-        <h4>JWT Contents
+        <h4 :lang="locale">
+          {{ $t('trans.developer.JWTContents') }}
           <BaseCopyToClipboard
-            :copyText="JSON.stringify(tokenParsed)"
-            snackBarText="JWT Contents copied to clipboard"
-            tooltipText="Copy JWT Contents to clipboard"
+            :text-to-copy="JSON.stringify(tokenParsed)"
+            :snack-bar-text="$t('trans.developer.JWTContentsSBTxt')"
+            :tooltip-text="$t('trans.developer.JWTContentsTTTxt')"
           />
         </h4>
         <vue-json-pretty :data="tokenParsed" />
-        <h4>JWT Token
+        <h4 :lang="locale">
+          {{ $t('trans.developer.JWTToken') }}
           <BaseCopyToClipboard
-            :copyText="token"
-            snackBarText="JWT Token copied to clipboard"
-            tooltipText="Copy JWT Token to clipboard"
+            :text-to-copy="token"
+            :snack-bar-text="$t('trans.developer.JWTTokenSBTxt')"
+            :tooltip-text="$t('trans.developer.JWTTokenTTTxt')"
+            :lang="locale"
           />
         </h4>
         <div style="word-break: break-all">{{ token }}</div>
       </v-col>
       <v-col cols="5" offset="1">
-        <h3>CHEFS API</h3>
+        <h3 :lang="locale">{{ $t('trans.developer.chefsAPI') }}</h3>
         <br />
-        <h4>/rbac/current
+        <h4>
           <BaseCopyToClipboard
-            :copyText="JSON.stringify(apiRes)"
-            snackBarText="RBAC Response copied to clipboard"
-            tooltipText="Copy RBAC Response to clipboard"
+            :text-to-copy="JSON.stringify(apiRes)"
+            :snack-bar-text="$t('trans.developer.RBACSBTxt')"
+            :tooltip-text="$t('trans.developer.RBACTTTxt')"
+            :lang="locale"
           />
         </h4>
         <vue-json-pretty :data="apiRes" />
-
       </v-col>
     </v-row>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import { rbacService } from '@/services';
-
-import VueJsonPretty from 'vue-json-pretty';
-
-export default {
-  name: 'Developer',
-  components: {
-    VueJsonPretty
-  },
-  data() {
-    return {
-      apiRes: '',
-    };
-  },
-  computed: {
-    ...mapGetters('auth', ['fullName', 'token', 'tokenParsed', 'userName']),
-  },
-  created() {
-    this.getUser();
-  },
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    async getUser() {
-      try {
-        const user = await rbacService.getCurrentUser();
-        this.apiRes = user.data;
-      } catch (error) {
-        this.addNotification({
-          message: 'Failed to get user from RBAC, see console',
-          consoleError: `Error getting User from RBAC: ${error.message}`,
-        });
-      }
-    },
-  },
-};
-</script>

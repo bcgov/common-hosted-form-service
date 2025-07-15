@@ -11,14 +11,6 @@ const { logger } = require('express-winston');
  */
 class NullTransport extends Transport {
   /**
-   * Constructor
-   * @param {object} opts Winston Transport options
-   */
-  constructor(opts) {
-    super(opts);
-  }
-
-  /**
    * The transport logger
    * @param {object} _info Object to log
    * @param {function} callback Callback function
@@ -37,9 +29,9 @@ const log = createLogger({
   format: format.combine(
     format.errors({ stack: true }), // Force errors to show stacktrace
     format.timestamp(), // Add ISO timestamp to each entry
-    format.json(), // Force output to be in JSON format
+    format.json() // Force output to be in JSON format
   ),
-  level: config.get('server.logLevel')
+  level: config.get('server.logLevel'),
 });
 
 if (process.env.NODE_ENV !== 'test') {
@@ -49,10 +41,12 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 if (config.has('server.logFile')) {
-  log.add(new transports.File({
-    filename: config.get('server.logFile'),
-    handleExceptions: true
-  }));
+  log.add(
+    new transports.File({
+      filename: config.get('server.logFile'),
+      handleExceptions: true,
+    })
+  );
 }
 
 /**
@@ -74,8 +68,9 @@ const httpLogger = logger({
   dynamicMeta: (req, res) => {
     const token = jwt.decode((req.get('authorization') || '').slice(7));
     return {
-      azp: token && token.azp || undefined,
+      azp: (token && token.azp) || undefined,
       contentLength: res.get('content-length'),
+      formId: (req.auth && req.auth.user) || undefined,
       httpVersion: req.httpVersion,
       ip: req.ip,
       method: req.method,
@@ -83,7 +78,8 @@ const httpLogger = logger({
       query: Object.keys(req.query).length ? req.query : undefined,
       responseTime: res.responseTime,
       statusCode: res.statusCode,
-      userAgent: req.get('user-agent')
+      userAgent: req.get('user-agent'),
+      username: (token && token.idir_username) || (token && token.bceid_username) || (token && token.email) || undefined,
     };
   },
   expressFormat: true, // Use express style message strings

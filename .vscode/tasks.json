@@ -1,0 +1,80 @@
+{
+  "tasks": [
+    {
+      "dependsOn": ["Unit Tests - API", "Unit Tests - Frontend"],
+      "group": {
+        "isDefault": true,
+        "kind": "test"
+      },
+      "label": "All Tests",
+      "type": "shell"
+    },
+    {
+      "args": ["run", "all:reinstall"],
+      "command": "npm",
+      "label": "All - Reinstall",
+      "options": {
+        "cwd": "${workspaceFolder}/app"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": ["run", "test"],
+      "command": "npm",
+      "group": "test",
+      "label": "Unit Tests - API",
+      "options": {
+        "cwd": "${workspaceFolder}/app"
+      },
+      "type": "shell"
+    },
+    {
+      "args": ["run", "test"],
+      "command": "npm",
+      "group": "test",
+      "label": "Unit Tests - Frontend",
+      "options": {
+        "cwd": "${workspaceFolder}/app/frontend"
+      },
+      "type": "shell"
+    },
+    {
+      "args": ["run", "build:formio"],
+      "command": "npm",
+      "group": "test",
+      "label": "Components build",
+      "options": {
+        "cwd": "${workspaceFolder}/app/frontend"
+      },
+      "type": "shell"
+    },
+    {
+      "args": ["run", "deploy:formio"],
+      "command": "npm",
+      "group": "test",
+      "label": "Components deploy",
+      "options": {
+        "cwd": "${workspaceFolder}/app/frontend"
+      },
+      "type": "shell"
+    },
+    {
+      "label": "chefs_local up",
+      "type": "shell",
+      "command": "docker-compose",
+      "args": ["-f", "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml", "up", "-d"],
+      "isBackground": true,
+      "problemMatcher": [],
+    },
+    {
+      "label": "chefs_local down",
+      "type": "shell",
+      "command": "docker-compose",
+      "args": ["-f", "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml", "down"],
+      "isBackground": true,
+      "problemMatcher": [],
+    },
+  ],
+  "version": "2.0.0"
+}

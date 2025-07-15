@@ -1,7 +1,11 @@
-const dataErrors = require('../common/middleware').dataErrors;
 const routes = require('./routes');
 const setupMount = require('../common/utils').setupMount;
 
+const encryptionKeyRoutes = require('./encryptionKey/routes');
+const eventStreamConfigRoutes = require('./eventStreamConfig/routes');
+const externalApiRoutes = require('./externalApi/routes');
+
 module.exports.mount = (app) => {
-  return setupMount('forms', app, routes, dataErrors);
+  const p = setupMount('forms', app, [routes, encryptionKeyRoutes, eventStreamConfigRoutes, externalApiRoutes]);
+  return p;
 };

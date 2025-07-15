@@ -1,7 +1,7 @@
 const config = require('config');
 
 const docs = {
-  getDocHTML: version => `<!DOCTYPE html>
+  getDocHTML: (version) => `<!DOCTYPE html>
   <html>
     <head>
       <title>Common Hosted Form Service - Documentation ${version}</title>
@@ -19,7 +19,7 @@ const docs = {
       <redoc spec-url='${config.get('server.basePath')}/api/${version}/api-spec.yaml' />
       <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
     </body>
-  </html>`
+  </html>`,
 };
 
 module.exports = docs;

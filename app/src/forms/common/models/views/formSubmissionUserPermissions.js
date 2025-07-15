@@ -21,7 +21,6 @@ class FormSubmissionUserPermissions extends Model {
       },
       filterByPermissions(query, permissions) {
         if (permissions) {
-
           const _permissions = utils.toArray(permissions);
           let clauses = [];
 
@@ -33,7 +32,7 @@ class FormSubmissionUserPermissions extends Model {
             query.whereRaw(`(${clauses.join(' or ')})`);
           }
         }
-      }
+      },
     };
   }
 }

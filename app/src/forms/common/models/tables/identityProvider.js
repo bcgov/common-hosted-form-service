@@ -18,9 +18,14 @@ class IdentityProvider extends Timestamps(Model) {
           query.where('active', value);
         }
       },
+      filterIdp(query, value) {
+        if (value !== undefined) {
+          query.where('idp', value);
+        }
+      },
       orderDefault(builder) {
-        builder.orderByRaw('lower("identity_provider"."code")');
-      }
+        builder.orderByRaw('"identity_provider"."primary" DESC NULLS LAST, lower("identity_provider"."code")');
+      },
     };
   }
 
@@ -33,12 +38,17 @@ class IdentityProvider extends Timestamps(Model) {
         display: { type: 'string', minLength: 1, maxLength: 255 },
         idp: { type: 'string', minLength: 1, maxLength: 255 },
         active: { type: 'boolean' },
-        ...stamps
+        primary: { type: 'boolean' },
+        login: { type: 'boolean' },
+        permissions: { type: ['array', 'null'], items: { type: 'string' } },
+        roles: { type: ['array', 'null'], items: { type: 'string' } },
+        tokenmap: { type: 'object' },
+        extra: { type: 'object' },
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = IdentityProvider;

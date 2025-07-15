@@ -9,7 +9,7 @@ fs.readFile(file, 'utf8', (err, data) => {
   }
   const result = data.replace(/src/g, `${process.cwd()}/src`);
 
-  fs.writeFile(file, result, 'utf8', err => {
+  fs.writeFile(file, result, 'utf8', (err) => {
     if (err) return console.error(err); // eslint-disable-line no-console
   });
 });

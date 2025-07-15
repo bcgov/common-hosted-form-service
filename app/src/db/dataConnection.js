@@ -79,8 +79,7 @@ class DataConnection {
       const result = data && data.rows && data.rows[0].transaction_read_only === 'off';
       if (result) {
         log.debug('Database connection ok', { function: 'checkConnection' });
-      }
-      else {
+      } else {
         log.warn('Database connection is read-only', { function: 'checkConnection' });
       }
       return result;
@@ -98,10 +97,9 @@ class DataConnection {
   checkSchema() {
     const tables = tableNames(models);
     try {
-      return Promise
-        .all(tables.map(table => this._knex.schema.hasTable(table)))
-        .then(exists => exists.every(x => x))
-        .then(result => {
+      return Promise.all(tables.map((table) => this._knex.schema.hasTable(table)))
+        .then((exists) => exists.every((x) => x))
+        .then((result) => {
           if (result) log.debug('Database schema ok', { function: 'checkSchema' });
           return result;
         });
@@ -128,7 +126,6 @@ class DataConnection {
       return false;
     }
   }
-
 
   /**
    * @function close

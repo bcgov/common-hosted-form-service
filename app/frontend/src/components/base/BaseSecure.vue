@@ -1,74 +1,74 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
+import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
+
+const { locale } = useI18n({ useScope: 'global' });
+
+defineProps({
+  admin: {
+    type: Boolean,
+    default: false,
+  },
+  permission: {
+    type: String,
+    default: undefined,
+  },
+});
+
+const authStore = useAuthStore();
+const idpStore = useIdpStore();
+
+const { authenticated, identityProvider, isAdmin, ready } =
+  storeToRefs(authStore);
+</script>
+
 <template>
   <div v-if="authenticated">
-    <div v-if="isUser">
-      <div v-if="admin && !isAdmin" class="text-center">
-        <h1 class="my-8">401: Unauthorized. :(</h1>
-        <p>You do not have permission to access this page.</p>
-      </div>
-      <div v-else-if="idp && identityProvider !== idp" class="text-center">
-        <h1 class="my-8">403: Forbidden. :(</h1>
-        <p>This page requires {{ idp.toUpperCase() }} authentication.</p>
-      </div>
-      <slot v-else />
-    </div>
-    <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
-    <div v-else class="text-center">
-      <h1 class="my-8">401: Unauthorized. :(</h1>
-      <p>
-        Your account is not set up correctly.<br />Please contact
-        <a :href="mailToLink">NR.CommonServiceShowcase@gov.bc.ca</a>
+    <div v-if="admin && !isAdmin" class="text-center">
+      <h1 class="my-8" :lang="locale">
+        {{ $t('trans.baseSecure.401UnAuthorized') }}
+      </h1>
+      <p :lang="locale">
+        {{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}
       </p>
-      <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" class="about-btn" large>
-          <v-icon left>home</v-icon>
-          <span>About</span>
-        </v-btn>
-      </router-link>
     </div>
+    <div
+      v-else-if="
+        permission &&
+        !idpStore.hasPermission(identityProvider?.code, permission)
+      "
+      class="text-center"
+    >
+      <h1 class="my-8" :lang="locale">
+        {{ $t('trans.baseSecure.403Forbidden') }}
+      </h1>
+      <p :lang="locale">
+        {{
+          $t('trans.baseSecure.403ErrorMsg', {
+            idp: permission,
+          })
+        }}
+      </p>
+    </div>
+    <slot v-else />
   </div>
   <div v-else class="text-center">
-    <h1 class="my-8">You must be logged in to use this feature.</h1>
+    <h1 class="my-8" :lang="locale">
+      {{ $t('trans.baseSecure.loginInfo') }}
+    </h1>
     <v-btn
-      v-if="keycloakReady"
+      v-if="ready"
+      data-test="login-btn"
       color="primary"
       class="login-btn"
-      @click="login"
-      large
+      size="large"
+      :title="$t('trans.baseSecure.login')"
+      @click="authStore.login"
     >
-      <span>Login</span>
+      <span :lang="locale">{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  name: 'BaseSecure',
-  props: {
-    admin: {
-      type: Boolean,
-      default: false,
-    },
-    idp: {
-      type: String,
-      default: undefined
-    }
-  },
-  computed: {
-    ...mapGetters('auth', [
-      'authenticated',
-      'identityProvider',
-      'isAdmin',
-      'isUser',
-      'keycloakReady',
-    ]),
-    mailToLink() {
-      return `mailto:NR.CommonServiceShowcase@gov.bc.ca?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
-        location
-      )}.`;
-    },
-  },
-  methods: mapActions('auth', ['login']),
-};
-</script>

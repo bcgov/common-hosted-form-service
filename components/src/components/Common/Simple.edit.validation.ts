@@ -1,5 +1,7 @@
+import UseForCopy from './UseForCopy';
 /* eslint-disable quotes, max-len */
 export default [
+    UseForCopy,
     {
         weight: 10,
         type: 'checkbox',
