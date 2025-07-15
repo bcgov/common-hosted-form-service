@@ -1,6 +1,107 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { ref, watch } from 'vue';
+import { onBeforeRouteLeave, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+import FormModuleSettings from '~/components/formModule/FormModuleSettings.vue';
+import FormModuleVersionSettings from '~/components/formModuleVersion/FormModuleVersionSettings.vue';
+import { formModuleService } from '~/services';
+import { useFormModuleStore } from '~/store/formModule';
+import { useNotificationsStore } from '~/store/notifications';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+const router = useRouter();
+
+const formModuleStore = useFormModuleStore();
+const notificationStore = useNotificationsStore();
+
+const { formModule, formModuleVersion } = storeToRefs(formModuleStore);
+
+const settingsFormModule = ref(null);
+const settingsFormModuleValid = ref(false);
+const saving = ref(false);
+
+watch(
+  () => formModule.value.identityProviders,
+  () => {
+    if (formModule.value.idpTypes.length < 1 && settingsFormModuleValid.value) {
+      settingsFormModule.value.validate();
+    }
+  }
+);
+
+async function submitFormModule() {
+  try {
+    saving.value = true;
+    await formModuleStore.setDirtyFlag(false);
+
+    let idps = [];
+
+    let formModuleData = {
+      pluginName: formModule.value.pluginName,
+      identityProviders: idps.concat(
+        formModule.value.idpTypes.map((i) => ({ code: i }))
+      ),
+    };
+
+    const formModuleResponse = await formModuleService.createFormModule(
+      formModuleData
+    );
+
+    let euris = [];
+
+    if (!formModuleVersion.value.importData)
+      formModuleVersion.value.importData = '';
+
+    let formModuleVersionData = {
+      importData: formModuleVersion.value.importData,
+      externalUris: euris.concat(
+        formModuleVersion.value.externalUris.map((i) => i.uri)
+      ),
+    };
+
+    await formModuleService.createFormModuleVersion(
+      formModuleResponse.data.id,
+      formModuleVersionData
+    );
+
+    router.push({
+      name: 'FormModuleManage',
+      query: {
+        fm: formModuleResponse.data.id,
+      },
+    });
+  } catch (error) {
+    await formModuleStore.setDirtyFlag(true);
+    notificationStore.addNotification({
+      text: t('trans.formModuleImport.createFormModuleVersionErr'),
+      consoleError: t('trans.formModuleImport.createFormModuleVersionConsErr', {
+        error: error,
+      }),
+    });
+  } finally {
+    saving.value = false;
+  }
+}
+
+Promise.all([
+  formModuleStore.resetFormModule(),
+  formModuleStore.resetFormModuleVersion(),
+]);
+
+onBeforeRouteLeave((_to, _from, next) => {
+  formModuleStore.isDirty
+    ? next(window.confirm(t('trans.formModuleAddVersion.confirmLeave')))
+    : next();
+});
+</script>
+
 <template>
   <v-container>
-    <h1 class="mt-6">Import Form Module</h1>
+    <h1 class="mt-6" :lang="locale">
+      {{ $t('trans.formModuleImport.importFormModule') }}
+    </h1>
     <v-form ref="settingsFormModule" v-model="settingsFormModuleValid">
       <FormModuleSettings />
       <FormModuleVersionSettings />
@@ -11,105 +112,9 @@
       :disabled="!settingsFormModuleValid"
       @click="submitFormModule"
     >
-      Submit
+      {{ $t('trans.formModuleImport.submit') }}
     </v-btn>
   </v-container>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import { mapFields } from 'vuex-map-fields';
-
-import FormModuleSettings from '@/components/formModule/FormModuleSettings.vue';
-import FormModuleVersionSettings from '@/components/formModuleVersion/FormModuleVersionSettings.vue';
-import { formModuleService } from '@/services';
-import { IdentityProviders } from '@/utils/constants';
-
-export default {
-  name: 'ImportFormModuleView',
-  components: {
-    FormModuleSettings,
-    FormModuleVersionSettings,
-  },
-  computed: {
-    ...mapFields('formModule', ['formModule.isDirty']),
-    ...mapGetters('formModule', [ 'formModule', 'formModuleVersion' ]),
-    IDP: () => IdentityProviders,
-  },
-  data() {
-    return {
-      settingsFormModuleValid: false,
-      saving: false,
-    };
-  },
-  methods: {
-    ...mapActions('formModule', ['resetFormModule', 'resetFormModuleVersion', 'setDirtyFlag']),
-    ...mapActions('notifications', ['addNotification']),
-    async submitFormModule() {
-      try {
-        this.saving = true;
-        await this.setDirtyFlag(false);
-
-        let idps = [];
-
-        let formModuleData = {
-          pluginName: this.formModule.pluginName,
-          identityProviders: idps.concat(this.formModule.idpTypes.map((i) => ({ code: i }))),
-        };
-
-        const formModuleResponse = await formModuleService.createFormModule(formModuleData);
-
-        let euris = [];
-
-        if (!this.formModuleVersion.importData) this.formModuleVersion.importData = '';
-
-        let formModuleVersionData = {
-          importData: this.formModuleVersion.importData,
-          externalUris: euris.concat(this.formModuleVersion.externalUris.map((i) => (i.uri))),
-        };
-
-        await formModuleService.createFormModuleVersion(formModuleResponse.data.id, formModuleVersionData);
-
-        this.$router.push({
-          name: 'FormModuleManage',
-          query: {
-            fm: formModuleResponse.data.id,
-          }
-        });
-      } catch (error) {
-        await this.setDirtyFlag(true);
-        this.addNotification({
-          message:
-            'An error occurred while attempting to save this form module.',
-          consoleError: `Error creating form module (Error: ${error}`,
-        });
-      } finally {
-        this.saving = false;
-      }
-    },
-  },
-  created() {
-    this.resetFormModule();
-    this.resetFormModuleVersion();
-  },
-  watch: {
-    idps() {
-      if (this.idpTypes.length < 1 && this.$refs.settingsFormModule)
-        this.$refs.settingsFormModule.validate();
-    },
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.isDirty
-      ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
-        )
-      )
-      : next();
-  },
-};
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

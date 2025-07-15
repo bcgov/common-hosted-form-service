@@ -1,6 +1,92 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { ref, watch } from 'vue';
+import { onBeforeRouteLeave, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+import FormModuleVersionSettings from '~/components/formModuleVersion/FormModuleVersionSettings.vue';
+import { formModuleService } from '~/services';
+import { useFormModuleStore } from '~/store/formModule';
+import { useNotificationsStore } from '~/store/notifications';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+const router = useRouter();
+
+const formModuleStore = useFormModuleStore();
+const notificationStore = useNotificationsStore();
+
+const { formModule, formModuleVersion } = storeToRefs(formModuleStore);
+
+const settingsFormModule = ref(null);
+const settingsFormModuleValid = ref(false);
+const saving = ref(false);
+
+watch(
+  () => formModule.value.identityProviders,
+  () => {
+    if (formModule.value.idpTypes.length < 1 && settingsFormModuleValid.value) {
+      settingsFormModuleValid.value = false;
+    }
+  }
+);
+
+onBeforeRouteLeave((_to, _from, next) => {
+  formModule.isDirty
+    ? next(window.confirm(t('trans.formModuleAddVersion.confirmLeave')))
+    : next();
+});
+
+async function submitFormModule() {
+  try {
+    saving.value = true;
+    await formModule.setDirtyFlag(false);
+
+    let euris = [];
+
+    if (!formModuleVersion.value.importData) formModuleVersion.value.importData = '';
+
+    let formModuleVersionData = {
+      importData: formModuleVersion.value.importData,
+      externalUris: euris.concat(
+        formModuleVersion.value.externalUris.map((i) => i.uri)
+      ),
+    };
+
+    await formModuleService.createFormModuleVersion(
+      formModule.value.id,
+      formModuleVersionData
+    );
+
+    router.push({
+      name: 'FormModuleManage',
+      query: {
+        fm: formModule.value.id,
+      },
+    });
+  } catch (error) {
+    await formModule.setDirtyFlag(true);
+    notificationStore.addNotification({
+      text: t('trans.formModuleAddVersion.createForModuleVersionErr'),
+      consoleError: t(
+        'trans.formModuleAddVersion.createFormModuleVersionConsErr',
+        {
+          error: error,
+        }
+      ),
+    });
+  } finally {
+    saving.value = false;
+  }
+}
+
+formModuleStore.resetFormModuleVersion();
+</script>
+
 <template>
   <v-container>
-    <h1 class="mt-6">Add Form Module Version</h1>
+    <h1 class="mt-6" :lang="locale">
+      {{ $t('trans.formModuleAddVersion.addFormModuleVersion') }}
+    </h1>
     <v-form ref="settingsFormModule" v-model="settingsFormModuleValid">
       <FormModuleVersionSettings />
     </v-form>
@@ -8,95 +94,12 @@
       class="py-4"
       color="primary"
       :disabled="!settingsFormModuleValid"
+      :lang="locale"
       @click="submitFormModule"
     >
-      Submit
+      {{ $t('trans.formModuleAddVersion.submit') }}
     </v-btn>
   </v-container>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import { mapFields } from 'vuex-map-fields';
-
-import FormModuleVersionSettings from '@/components/formModuleVersion/FormModuleVersionSettings.vue';
-import { formModuleService } from '@/services';
-import { IdentityProviders } from '@/utils/constants';
-
-export default {
-  name: 'FormModuleAddVersion',
-  components: {
-    FormModuleVersionSettings,
-  },
-  computed: {
-    ...mapFields('formModule', ['formModule.isDirty']),
-    ...mapGetters('formModule', [ 'formModule', 'formModuleVersion' ]),
-    IDP: () => IdentityProviders,
-  },
-  data() {
-    return {
-      settingsFormModuleValid: false,
-      saving: false,
-    };
-  },
-  methods: {
-    ...mapActions('formModule', ['resetFormModuleVersion', 'setDirtyFlag']),
-    ...mapActions('notifications', ['addNotification']),
-    async submitFormModule() {
-      try {
-        this.saving = true;
-        await this.setDirtyFlag(false);
-
-        let euris = [];
-        
-        if (!this.formModuleVersion.importData) this.formModuleVersion.importData = '';
-
-        let formModuleVersionData = {
-          importData: this.formModuleVersion.importData,
-          externalUris: euris.concat(this.formModuleVersion.externalUris.map((i) => (i.uri))),
-        };
-
-        await formModuleService.createFormModuleVersion(this.formModule.id, formModuleVersionData);
-
-        this.$router.push({
-          name: 'FormModuleManage',
-          query: {
-            fm: this.formModule.id,
-          },
-        });
-      } catch (error) {
-        await this.setDirtyFlag(true);
-        this.addNotification({
-          message:
-            'An error occurred while attempting to save this form module.',
-          consoleError: `Error creating form module (Error: ${error}`,
-        });
-      } finally {
-        this.saving = false;
-      }
-    },
-  },
-  created() {
-    this.resetFormModuleVersion();
-  },
-  watch: {
-    idps() {
-      if (this.idpTypes.length < 1 && this.$refs.settingsFormModule)
-        this.$refs.settingsFormModule.validate();
-    },
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.isDirty
-      ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
-        )
-      )
-      : next();
-  },
-};
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

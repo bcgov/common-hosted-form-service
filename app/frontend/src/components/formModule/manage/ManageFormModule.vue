@@ -1,23 +1,75 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import FormModuleSettings from '~/components/formModule/FormModuleSettings.vue';
+import ManageFormModuleVersions from '~/components/formModule/manage/ManageFormModuleVersions.vue';
+import { useFormModuleStore } from '~/store/formModule';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
+
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const settingsFormModule = ref(null);
+const settingsFormModuleValid = ref(false);
+const settingsPanel = ref(0);
+const versionsPanel = ref(0);
+
+const formModuleStore = useFormModuleStore();
+const notificationStore = useNotificationStore();
+
+const { formModule } = storeToRefs(formModuleStore);
+
+const versionCount = computed(() =>
+  formModule.value && formModule.value.formModuleVersions
+    ? formModule.value.formModuleVersions.length
+    : 0
+);
+
+async function updateSettings() {
+  try {
+    if (settingsFormModule.value.validate()) {
+      await formModuleStore.updateFormModule();
+      notificationStore.addNotification({
+        text: t('trans.manageFormModule.updateFormModuleSuccess'),
+        ...NotificationTypes.SUCCESS,
+      });
+      formModuleStore.fetchFormModule(this.formModule.id);
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.manageFormModule.updateFormModuleErr'),
+      consoleError: t('trans.manageFormModule.updateFormModuleErr', {
+        formModuleId: formModule.value.id,
+        error: error.message,
+      }),
+    });
+  }
+}
+</script>
+
 <template>
   <div>
-    <v-expansion-panels
-      v-model="settingsPanel"
-      flat
-      class="nrmc-expand-collapse"
-    >
+    <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <!-- Form Settings -->
         <v-expansion-panel-header>
-          <template v-slot:actions>
+          <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>Form Module Settings</strong>
+            <strong :lang="locale">{{
+              $t('trans.manageFormModule.formModuleSettings')
+            }}</strong>
             <span>
-              <small>
-                Created: {{ formModule.createdAt | formatDate }} ({{
-                  formModule.createdBy
-                }})
+              <small :lang="locale">
+                {{
+                  $t('trans.manageFormModule.formModuleCreated', {
+                    createdAt: formModule.createdAt,
+                    createdBy: formModule.createdBy,
+                  })
+                }}
               </small>
             </span>
           </div>
@@ -33,7 +85,9 @@
 
           <div class="mb-5">
             <v-btn class="mr-5" color="primary" @click="updateSettings">
-              <span>Update</span>
+              <span :lang="locale">{{
+                $t('trans.manageFormModule.update')
+              }}</span>
             </v-btn>
           </div>
         </v-expansion-panel-content>
@@ -41,22 +95,23 @@
     </v-expansion-panels>
 
     <!-- Form Module Versioning -->
-    <v-expansion-panels
-      v-model="versionsPanel"
-      flat
-      class="nrmc-expand-collapse"
-    >
+    <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <v-expansion-panel-header>
-          <template v-slot:actions>
+          <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
           <div class="header">
-            <strong>Form Module Versions</strong>
+            <strong :lang="locale">{{
+              $t('trans.manageFormModule.formModuleVersions')
+            }}</strong>
             <div>
               <span>
-                <strong>Total Versions:</strong>
-                {{ versionCount }}
+                <strong :lang="locale">{{
+                  $t('trans.manageFormModule.totalVersions', {
+                    versionCount: versionCount,
+                  })
+                }}</strong>
               </span>
             </div>
           </div>
@@ -68,64 +123,6 @@
     </v-expansion-panels>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-import FormModuleSettings from '@/components/formModule/FormModuleSettings.vue';
-import ManageFormModuleVersions from '@/components/formModule/manage/ManageFormModuleVersions.vue';
-import { NotificationTypes } from '@/utils/constants';
-import { mapFields } from 'vuex-map-fields';
-
-export default {
-  name: 'ManageFormModule',
-  components: { FormModuleSettings, ManageFormModuleVersions },
-  data() {
-    return {
-      formModuleSettingsDisabled: true,
-      settingsFormModuleValid: false,
-      settingsPanel: 0,
-      versionsPanel: 0,
-    };
-  },
-  computed: {
-    ...mapFields('formModule', [
-      'formModule.pluginName',
-      'formModule.identityProviders',
-      'formModule.idpTypes',
-    ]),
-    ...mapGetters('formModule', ['formModule']),
-    versionCount() {
-      return (this.formModule && this.formModule.formModuleVersions) ? this.formModule.formModuleVersions.length : 0;
-    },
-    currentVersion() {
-      let cv = 'N/A';
-      return cv;
-    },
-  },
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    ...mapActions('formModule', ['updateFormModule', 'fetchFormModule']),
-    async updateSettings() {
-      try {
-        if (this.$refs.settingsFormModule.validate()) {
-          await this.updateFormModule();
-          this.addNotification({
-            message: 'Your form module settings have been updated successfully.',
-            ...NotificationTypes.SUCCESS,
-          });
-          this.fetchFormModule(this.formModule.id);
-        }
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occurred while attempting to update the settings for this form module.',
-          consoleError: `Error updating settings for ${this.formModule.id}: ${error}`,
-        });
-      }
-    },
-  },
-};
-</script>
 
 <style>
 .v-expansion-panel:not(.v-expansion-panel--active) {

@@ -1,5 +1,5 @@
-import { appAxios } from '@/services/interceptors';
-import { ApiRoutes } from '@/utils/constants';
+import { appAxios } from '~/services/interceptors';
+import { ApiRoutes } from '~/utils/constants';
 
 export default {
   //
@@ -42,22 +42,29 @@ export default {
    * @returns {Promise} An axios response
    */
   updateFormModule(formModuleId, formModuleData) {
-    return appAxios().put(`${ApiRoutes.FORMMODULES}/${formModuleId}`, formModuleData);
+    return appAxios().put(
+      `${ApiRoutes.FORMMODULES}/${formModuleId}`,
+      formModuleData
+    );
   },
 
   /**
    * @function toggleFormModule
    * Toggle a Form module to active or inactive
    * @param {string} formModuleId The form module uuid
-   * @param {Object} active True to enable, false to disable
+   * @param {Object} active True to enable, false to deactivate
    * @returns {Promise} An axios response
    */
   toggleFormModule(formModuleId, active) {
-    return appAxios().post(`${ApiRoutes.FORMMODULES}/${formModuleId}/toggle`, null, {
-      params: {
-        active: active,
+    return appAxios().post(
+      `${ApiRoutes.FORMMODULES}/${formModuleId}/toggle`,
+      null,
+      {
+        params: {
+          active: active,
+        },
       }
-    });
+    );
   },
 
   /**
@@ -66,7 +73,10 @@ export default {
    * @returns {Promise} An axios response
    */
   listFormModuleVersions(formModuleId, params = {}) {
-    return appAxios().get(`${ApiRoutes.FORMMODULES}/${formModuleId}/version`, params);
+    return appAxios().get(
+      `${ApiRoutes.FORMMODULES}/${formModuleId}/version`,
+      params
+    );
   },
 
   /**
@@ -77,7 +87,9 @@ export default {
    * @returns {Promise} An axios response
    */
   readFormModuleVersion(formModuleId, formModuleVersionId) {
-    return appAxios().get(`${ApiRoutes.FORMMODULES}/${formModuleId}/version/${formModuleVersionId}`);
+    return appAxios().get(
+      `${ApiRoutes.FORMMODULES}/${formModuleId}/version/${formModuleVersionId}`
+    );
   },
 
   /**
@@ -88,7 +100,10 @@ export default {
    * @returns {Promise} An axios response
    */
   createFormModuleVersion(formModuleId, formModuleVersionData) {
-    return appAxios().post(`${ApiRoutes.FORMMODULES}/${formModuleId}/version`, formModuleVersionData);
+    return appAxios().post(
+      `${ApiRoutes.FORMMODULES}/${formModuleId}/version`,
+      formModuleVersionData
+    );
   },
 
   /**
@@ -99,8 +114,15 @@ export default {
    * @param {Object} formModuleVersionData An object containing the form module version details
    * @returns {Promise} An axios response
    */
-  updateFormModuleVersion(formModuleId, formModuleVersionId, formModuleVersionData) {
-    return appAxios().put(`${ApiRoutes.FORMMODULES}/${formModuleId}/version/${formModuleVersionId}`, formModuleVersionData);
+  updateFormModuleVersion(
+    formModuleId,
+    formModuleVersionId,
+    formModuleVersionData
+  ) {
+    return appAxios().put(
+      `${ApiRoutes.FORMMODULES}/${formModuleId}/version/${formModuleVersionId}`,
+      formModuleVersionData
+    );
   },
 
   /**
@@ -109,6 +131,8 @@ export default {
    * @returns {Promise} An axios response
    */
   listFormModuleIdentityProviders(formModuleId, params = {}) {
-    return appAxios().get(`${ApiRoutes.FORMMODULES}/${formModuleId}/idp`, { params: params });
+    return appAxios().get(`${ApiRoutes.FORMMODULES}/${formModuleId}/idp`, {
+      params: params,
+    });
   },
 };

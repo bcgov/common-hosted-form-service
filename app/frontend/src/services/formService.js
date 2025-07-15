@@ -756,6 +756,8 @@ export default {
    * @returns {Promise} An axios response
    */
   listFormVersionFormModuleVersions(formId, formVersionId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/formModuleVersions`);
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/formModuleVersions`
+    );
   },
 };

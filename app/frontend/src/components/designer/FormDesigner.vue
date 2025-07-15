@@ -15,8 +15,8 @@ import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useFormModuleStore } from '~/store/formModule';
 import { useNotificationStore } from '~/store/notification';
-import { FormDesignerBuilderOptions } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
 
 const { locale, t } = useI18n({ useScope: 'global' });
@@ -74,10 +74,12 @@ const loadingFormModules = ref(true);
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const formModuleStore = useFormModuleStore();
 const notificationStore = useNotificationStore();
 
 const { tokenParsed, user } = storeToRefs(authStore);
 const { form, isRTL, userLabels } = storeToRefs(formStore);
+const { builder } = storeToRefs(formModuleStore);
 
 watch(form, (newFormValue, oldFormValue) => {
   if (newFormValue.userType != oldFormValue.userType) {
@@ -119,16 +121,7 @@ const designerOptions = computed(() => {
       ALLOWED_TAGS: ['iframe'],
     },
     noDefaultSubmitButton: false,
-    builder: {
-      ...FormDesignerBuilderOptions,
-      customControls: {
-        ...FormDesignerBuilderOptions.customControls,
-        components: {
-          ...FormDesignerBuilderOptions.customControls.components,
-          simplefile: true,
-        },
-      },
-    },
+    builder: builder,
     language: locale.value ? locale.value : 'en',
     i18n: formioIl8next,
     templates: templateExtensions,

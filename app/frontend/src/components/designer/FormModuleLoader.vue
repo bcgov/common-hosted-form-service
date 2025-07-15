@@ -1,218 +1,270 @@
-<template>
-  <div>
-    <h1 class="text-center">Loading FormIO modules</h1>
-    <h5 class="text-center">Remaining objects: {{remainingObjects}} / {{totalObjects}}</h5>
-    <v-list flat dark>
-      <template
-        v-for="(log, index) in log"
-      >
-        <v-list-item
-          :key="index"
-        >
-          {{ log }}
-        </v-list-item>
-      </template>
-    </v-list>
-  </div>
-</template>
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-<script>
-import { mapActions, mapGetters } from 'vuex';
+import { formService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { useFormModuleStore } from '~/store/formModule';
+import { useNotificationStore } from '~/store/notification';
+import { importExternalFile } from '~/utils/formModuleUtils';
 
-import { formService } from '@/services';
-import { importExternalFile } from '@/utils/formModuleUtils';
-import { mapFields } from 'vuex-map-fields';
+const { locale, t } = useI18n({ useScope: 'global' });
 
-export default {
-  name: 'FormModuleLoader',
-  props: {
-    formId: String,
-    formVersionId: String,
-    formDraftId: String,
-    submissionId: String,
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      formModuleUris: [],
-      log: [],
-      objectsLoaded: 0,
-    };
+  formVersionId: {
+    type: String,
+    required: true,
   },
-  computed: {
-    ...mapGetters('auth', ['user']),
-    ...mapGetters('formModule', [
-      'builder',
-      'formModuleList',
-      'formModuleVersion',
-      'formModuleVersionList'
-    ]),
-    ...mapFields('form', [
-      'form.userType',
-    ]),
-    totalObjects() {
-      return this.formModuleUris.length;
-    },
-    remainingObjects() {
-      return this.totalObjects - this.objectsLoaded;
-    },
+  formDraftId: {
+    type: String,
+    required: true,
   },
-  methods: {
-    ...mapActions('formModule', ['registerComponent', 'setBuilderCategory', 'setBuilder', 'resetBuilder']),
-    ...mapActions('formModule', ['getFormModuleList', 'getFormModuleVersionList', 'fetchFormModuleVersion', 'getFormVersionFormModuleVersions']),
-    ...mapActions('notifications', ['addNotification']),
-    async loadDefaultModules() {
-      await this.getFormModuleList({ active: true });
-      for (const module of this.formModuleList) {
-        for (const moduleVersion of module.formModuleVersions) {
-          for (const uri of moduleVersion.externalUris) {
-            this.formModuleUris.push(uri);
-          }
-        }
+  submissionId: {
+    type: String,
+    required: true,
+  },
+});
+
+const emit = defineEmits(['update:parent']);
+
+const formModuleUris = ref([]);
+const log = ref([]);
+const objectsLoaded = ref(0);
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+const formModuleStore = useFormModuleStore();
+const notificationStore = useNotificationStore();
+
+const { user } = storeToRefs(authStore);
+const { form } = storeToRefs(formStore);
+const { builder, formModuleList, formModuleVersion, formModuleVersionList } =
+  storeToRefs(formModuleStore);
+
+const totalObjects = computed(() => formModuleUris.value.length);
+const remainingObjects = computed(
+  () => totalObjects.value - objectsLoaded.value
+);
+
+watch(remainingObjects, (value) => {
+  if (value === 0) {
+    emit('update:parent', false);
+  }
+});
+
+async function loadDefaultModules() {
+  await formModuleStore.getFormModuleList({ active: true });
+  for (const module of formModuleList.value) {
+    for (const moduleVersion of module.formModuleVersions) {
+      for (const uri of moduleVersion.externalUris) {
+        formModuleUris.value.push(uri);
       }
-    },
-    async loadModulesWithFormVersion(formId, formVersionId) {
-      await this.getFormVersionFormModuleVersions({ formId: formId, formVersionId: formVersionId });
-      if (this.formModuleVersionList && Array.isArray(this.formModuleVersionList) && this.formModuleVersionList.length > 0) {
-        for (const fmv of this.formModuleVersionList) {
-          await this.fetchFormModuleVersion({ formModuleId: fmv.formModuleVersion.formModuleId, formModuleVersionId: fmv.formModuleVersionId });
-          for (const uri of this.formModuleVersion.externalUris) {
-            if (typeof uri !== 'string')
-              this.formModuleUris.push(uri.uri);
-            else
-              this.formModuleUris.push(uri);
-          }
-        }
+    }
+  }
+}
+
+async function loadModulesWithFormVersion(formId, formVersionId) {
+  await formModuleStore.getFormVersionFormModuleVersions({
+    formId: formId,
+    formVersionId: formVersionId,
+  });
+  if (
+    formModuleVersionList.value &&
+    Array.isArray(formModuleVersionList.value) &&
+    formModuleVersionList.value.length > 0
+  ) {
+    for (const fmv of formModuleVersionList.value) {
+      await formModuleStore.fetchFormModuleVersion({
+        formModuleId: fmv.formModuleVersion.formModuleId,
+        formModuleVersionId: fmv.formModuleVersionId,
+      });
+      for (const uri of formModuleVersion.value.externalUris) {
+        if (typeof uri !== 'string') formModuleUris.value.push(uri.uri);
+        else formModuleUris.value.push(uri);
+      }
+    }
+  } else {
+    await loadDefaultModules();
+  }
+}
+
+async function loadModules() {
+  await formModuleStore.resetBuilder();
+
+  try {
+    if (properties.formId) {
+      let versionId = '';
+      if (properties.formVersionId) {
+        versionId = properties.formVersionId;
+        await loadModulesWithFormVersion(properties.formId, versionId);
+      } else if (properties.formDraftId) {
+        await loadDefaultModules();
       } else {
-        await this.loadDefaultModules();
+        // If getting the HEAD form version (IE making a new submission)
+        let response = await formService.readPublished(properties.formId);
+        if (
+          !response.data ||
+          !response.data.versions ||
+          !response.data.versions[0]
+        ) {
+          throw new Error(
+            t('trans.formModuleLoader.noPublishedVersion', {
+              formId: properties.formId,
+            })
+          );
+        }
+        versionId = response.data.versions[0].id;
+        await loadModulesWithFormVersion(properties.formId, versionId);
       }
-    },
-    async loadModules() {
-      await this.resetBuilder();
+    } else if (properties.submissionId) {
+      const response = await formService.getSubmission(properties.submissionId);
+      if (!response.data && !response.data.version) {
+        throw new Error(
+          t('trans.formModuleLoader.noPublishedVersion', {
+            formId: properties.formId,
+          })
+        );
+      }
+      await loadModulesWithFormVersion(
+        response.data.form.id,
+        response.data.version.id
+      );
+    } else {
+      await loadDefaultModules();
+    }
 
-      try {
-        if (this.formId) {
-          let versionId = '';
-          if (this.formVersionId) {
-            versionId = this.formVersionId;
-            await this.loadModulesWithFormVersion(this.formId, versionId);
-          } else if (this.formDraftId) {
-            await this.loadDefaultModules();
-          } else {
-            // If getting the HEAD form version (IE making a new submission)
-            let response = await formService.readPublished(this.formId);
+    var uris = JSON.parse(JSON.stringify(formModuleUris.value));
+    for (const uri of uris) {
+      log.value.push(t('trans.formModuleLoader.logImport', { uri: uri }));
+      importExternalFile(document, uri, () => {
+        log.value.push(t('trans.formModuleLoader.logImported', { uri: uri }));
+        if (uri.split('.').pop().toLowerCase() === 'js') {
+          updateBuilder();
+        }
+        objectsLoaded.value++;
+      });
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formModuleLoader.loadingFormModulesErr'),
+      consoleError: t('trans.formModuleLoader.loadingFormModulesConsErr', {
+        error: error,
+      }),
+    });
+  }
+}
+
+function updateBuilder() {
+  formModuleStore.resetBuilder();
+  if (formModuleList.value.length > 0) {
+    formModuleList.value.forEach((formModule) => {
+      if (
+        properties.formDraftId ||
+        (!properties.formId &&
+          !properties.formDraftId &&
+          !properties.formVersionId)
+      ) {
+        let idps = formModule.identityProviders.map((fm) => fm.idp);
+        if (!idps.includes(user.value.idp)) return;
+      }
+      formModule.formModuleVersions.forEach((formModuleVersion) => {
+        parseFormModuleVersion(formModuleVersion);
+      });
+    });
+  } else if (formModuleVersion.valueList.length > 0) {
+    formModuleVersionList.value.forEach((formModuleVersion) => {
+      parseFormModuleVersion(formModuleVersion.formModuleVersion);
+    });
+  }
+  formModuleStore.setBuilder(builder.value);
+}
+
+function parseFormModuleVersion(fmv) {
+  let importData = JSON.parse(JSON.stringify(fmv.importData));
+  if ('components' in importData) {
+    if ('builderCategories' in importData.components) {
+      // Prep any builder categories, if the module creates a category, give it a components object
+      for (let [key, value] of Object.entries(
+        importData.components['builderCategories']
+      )) {
+        // If the builder category exists and hasn't been initialized yet
+        if (key in builder.value && typeof builder.value[key] === 'object') {
+          // Map the modules builder category to update it
+          Object.keys(value).map((entryKey) => {
+            builder.value[key][entryKey] = value[entryKey];
+          });
+        } else {
+          // This is a new builder category
+          builder.value[key] = value;
+        }
+        if (
+          typeof builder.value[key] === 'object' &&
+          !('components' in builder.value[key])
+        ) {
+          builder.value[key]['components'] = {};
+        }
+      }
+    }
+
+    for (const [categoryKey, categoryValue] of Object.entries(
+      importData.components.builder
+    )) {
+      for (const [componentKey, componentValue] of Object.entries(
+        categoryValue
+      )) {
+        if (typeof componentValue === 'boolean') {
+          formModuleStore.registerComponent(
+            categoryKey.toString(),
+            componentKey.toString(),
+            componentValue
+          );
+        } else {
+          if (
+            'userType' in
+            importData.components.builder[categoryKey][componentKey]
+          ) {
             if (
-              !response.data ||
-              !response.data.versions ||
-              !response.data.versions[0]
+              'denylist' in
+              importData.components.builder[categoryKey][componentKey][
+                'userType'
+              ]
             ) {
-              throw new Error(
-                `No published version found in response. FormID: ${this.formId}`
+              formModuleStore.registerComponent(
+                categoryKey.toString(),
+                componentKey.toString(),
+                !importData.components.builder[categoryKey][componentKey][
+                  'userType'
+                ]['denylist'].includes(form.userType)
               );
             }
-            versionId = response.data.versions[0].id;
-            await this.loadModulesWithFormVersion(this.formId, versionId);
-          }
-        } else if (this.submissionId) {
-          const response = await formService.getSubmission(this.submissionId);
-          if (
-            !response.data && !response.data.version
-          ) {
-            throw new Error(
-              `No published version found in response. FormID: ${this.formId}`
-            );
-          }
-          await this.loadModulesWithFormVersion(response.data.form.id, response.data.version.id);
-        } else {
-          await this.loadDefaultModules();
-        }
-        
-        var uris = JSON.parse(JSON.stringify(this.formModuleUris));
-        for (const uri of uris) {
-          this.log.push(`Importing ${uri}`);
-          importExternalFile(document, uri, () => {
-            this.log.push(`Imported ${uri}`);
-            if (uri.split('.').pop().toLowerCase() === 'js') {
-              this.updateBuilder();
-            }
-            this.objectsLoaded++;
-          });
-        }
-      } catch (error) {
-        this.addNotification({
-          message: 'An error occurred while loading formio modules.',
-          consoleError: `Error loading form modules: ${error}`,
-        });
-      }
-    },
-    updateBuilder() {
-      this.resetBuilder();
-      if (this.formModuleList.length > 0) {
-        this.formModuleList.forEach((formModule) => {
-          if (this.formDraftId || (!this.formId && !this.formDraftId && !this.formVersionId)) {
-            let idps = formModule.identityProviders.map((fm) => fm.idp);
-            if (!idps.includes(this.user.idp)) return;
-          }
-          formModule.formModuleVersions.forEach((formModuleVersion) => {
-            this.parseFormModuleVersion(formModuleVersion);
-          });
-        });
-      } else if (this.formModuleVersionList.length > 0) {
-        this.formModuleVersionList.forEach((formModuleVersion) => {
-          this.parseFormModuleVersion(formModuleVersion.formModuleVersion);
-        });
-      }
-      this.setBuilder(this.builder);
-    },
-    parseFormModuleVersion(fmv) {
-      let importData = JSON.parse(JSON.stringify(fmv.importData));
-      if ('components' in importData) {
-        if ('builderCategories' in importData.components) {
-          // Prep any builder categories, if the module creates a category, give it a components object
-          for (let [key, value] of Object.entries(importData.components['builderCategories'])) {
-            // If the builder category exists and hasn't been initialized yet
-            if (key in this.builder && typeof this.builder[key] === 'object') {
-              // Map the modules builder category to update it
-              Object.keys(value).map((entryKey) => {
-                this.builder[key][entryKey] = value[entryKey];
-              });
-            } else {
-              // This is a new builder category
-              this.builder[key] = value;
-            }
-            if (typeof this.builder[key] === 'object' && !('components' in this.builder[key])) {
-              this.builder[key]['components'] = {};
-            }
-          }
-        }
-        
-        for (const [categoryKey, categoryValue] of Object.entries(importData.components.builder)) {
-          for (const [componentKey, componentValue] of Object.entries(categoryValue)) {
-            if (typeof componentValue === 'boolean') {
-              this.registerComponent(categoryKey.toString(), componentKey.toString(), componentValue);
-            } else {
-              if ('userType' in importData.components.builder[categoryKey][componentKey]) {
-                if ('blacklist' in importData.components.builder[categoryKey][componentKey]['userType']) {
-                  this.registerComponent(categoryKey.toString(), componentKey.toString(), !importData.components.builder[categoryKey][componentKey]['userType']['blacklist'].includes(this.userType)); 
-                }
-              }
-            }
           }
         }
       }
-    },
-    registerComponent(category, component, value) {
-      return this.builder[category]['components'][component] = value;
-    },
-  },
-  created() {
-    this.loadModules();
-  },
-  watch: {
-    remainingObjects(newValue) {
-      if (newValue === 0) {
-        this.$emit('update:parent', false);
-      }
-    },
+    }
   }
-};
+}
+
+loadModules();
 </script>
+<template>
+  <div>
+    <h1 class="text-center" :lang="locale">
+      {{ $t('trans.formModuleLoader.loadingFormModules') }}
+    </h1>
+    <h5 class="text-center" :lang="locale">
+      {{
+        $t('trans.formModuleLoader.remainingObjects', {
+          remainingObjects: remainingObjects,
+          totalObjects: totalObjects,
+        })
+      }}
+    </h5>
+    <v-list :items="log"></v-list>
+  </div>
+</template>

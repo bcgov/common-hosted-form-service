@@ -434,6 +434,41 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
+        path: '/form_module',
+        component: () => import('~/views/Admin.vue'),
+        children: [
+          {
+            path: 'import',
+            name: 'ImportFormModuleView',
+            component: () => import('~/views/formModule/Import.vue'),
+            props: createProps,
+          },
+          {
+            path: 'manage',
+            name: 'FormModuleManage',
+            component: () => import('~/views/formModule/Manage.vue'),
+            props: createProps,
+          },
+          {
+            path: 'version',
+            name: 'FormModuleVersionManage',
+            component: () => import('~/views/formModuleVersion/Manage.vue'),
+            props: createProps,
+          },
+          {
+            path: 'add_version',
+            name: 'FormModuleAddVersion',
+            component: () => import('~/views/formModule/AddVersion.vue'),
+            props: createProps,
+          },
+        ],
+        meta: {
+          breadcrumbTitle: 'Import Form Module',
+          requiresAuth: 'primary',
+          hasLogin: true,
+        },
+      },
+      {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
         component: () => import('~/views/NotFound.vue'),

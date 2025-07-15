@@ -1,92 +1,101 @@
+<script setup>
+const { storeToRefs } = require('pinia');
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { useFormModuleStore } from '~/store/formModule';
+
+const { locale } = useI18n({ useScope: 'global' });
+
+const showActiveDialog = ref(false);
+
+const formModuleStore = useFormModuleStore();
+
+const { formModule } = storeToRefs(formModuleStore);
+
+function toggleActive() {
+  if (formModule.value.active) {
+    showActiveDialog.value = true;
+  } else {
+    updateActive();
+  }
+}
+
+function cancelDeactivate() {
+  showActiveDialog.value = false;
+  formModuleStore.fetchFormModule(formModule.value.id);
+}
+
+async function updateActive() {
+  showActiveDialog.value = false;
+  await formModuleStore.toggleFormModule({
+    formModuleId: formModule.value.id,
+    active: !formModule.value.active,
+  });
+  formModuleStore.fetchFormModule(formModule.value.id);
+}
+</script>
+
 <template>
   <div>
     <span>
-      <template>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <router-link :to="{ name: 'FormModuleAddVersion', query: { fm: formModule.id } }">
-              <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
-                <v-icon>add_circle</v-icon>
-              </v-btn>
-            </router-link>
-          </template>
-          <span>Import Form Module</span>
-        </v-tooltip>
-      </template>
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <router-link
+            :to="{
+              name: 'FormModuleAddVersion',
+              query: { fm: formModule.id },
+            }"
+          >
+            <v-btn
+              v-bind="props"
+              class="mx-1"
+              color="primary"
+              icon="mdi-plus"
+              size="x-small"
+              :title="$t('trans.manageFormModuleActions.importFormModule')"
+            >
+            </v-btn>
+          </router-link>
+        </template>
+        <span :lang="locale">{{
+          $t('trans.manageFormModuleActions.importFormModule')
+        }}</span>
+      </v-tooltip>
     </span>
     <span>
-      <template>
-        <v-switch
-          color="success"
-          class="float-right m-1"
-          :input-value="this.formModule.active"
-          :label="this.formModule.active ? 'Active' : 'Disabled'"
-          @change="toggleDisable"
-        />
-      </template>
+      <v-switch
+        color="success"
+        class="float-right m-1"
+        :model-value="formModule.active"
+        :label="
+          formModule.active
+            ? $t('trans.manageFormModuleActions.active')
+            : $t('trans.manageFormModuleActions.inactive')
+        "
+        @update:model-value="toggleActive"
+      />
 
       <BaseDialog
-        v-model="showDisableDialog"
+        v-model="showActiveDialog"
         type="CONTINUE"
-        @close-dialog="cancelDisable"
-        @continue-dialog="updateDisable"
+        @close-dialog="cancelDeactivate"
+        @continue-dialog="updateActive"
       >
-        <template #title>Confirm Disable</template>
-        <template #text>
-          Are you sure you wish to disable
-          <strong>{{ pluginName }}</strong
-          >? This form module will be disabled for all form designers.
-          It will still be available for reviewers and submitters.
+        <template #title>{{
+          $t('trans.manageFormModuleActions.confirmDeactivationTitle')
+        }}</template>
+        <template #text
+          >{{
+            $t('trans.manageFormModuleActions.confirmDeactivationText', {
+              pluginName: formModule.pluginName,
+            })
+          }}
         </template>
         <template #button-text-continue>
-          <span>Disable</span>
+          <span>{{ $t('trans.manageFormModuleActions.deactivate') }}</span>
         </template>
       </BaseDialog>
     </span>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import { mapFields } from 'vuex-map-fields';
-
-export default {
-  name: 'ManageFormModuleActions',
-  data() {
-    return {
-      showDisableDialog: false,
-    };
-  },
-  computed: {
-    ...mapGetters('formModule', ['formModule']),
-    ...mapFields('formModule', [
-      'formModule.pluginName',
-    ]),
-  },
-  methods: {
-    ...mapActions('formModule', ['fetchFormModule', 'toggleFormModule']),
-    disableFormModule(value) {
-      this.showDisableDialog = value;
-    },
-    toggleDisable() {
-      if (this.formModule.active) {
-        this.showDisableDialog = true;
-      } else {
-        this.updateDisable();
-      }
-    },
-    cancelDisable() {
-      this.showDisableDialog = false;
-      this.fetchFormModule(this.formModule.id);
-    },
-    async updateDisable() {
-      this.showDisableDialog = false;
-      await this.toggleFormModule({
-        formModuleId: this.formModule.id,
-        active: !this.formModule.active
-      });
-      this.fetchFormModule(this.formModule.id);
-    },
-  }
-};
-</script>

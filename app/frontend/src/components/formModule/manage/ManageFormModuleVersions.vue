@@ -1,16 +1,67 @@
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { useFormModuleStore } from '~/store/formModule';
+
+const { locale, t } = useI18n({ useScope: 'global' });
+
+const formModuleStore = useFormModuleStore();
+const { formModuleVersionList } = storeToRefs(formModuleStore);
+
+const rerenderTable = ref(0);
+
+const headers = computed(() => [
+  {
+    title: t('trans.manageFormModuleVersions.version'),
+    align: 'start',
+    key: 'version',
+  },
+  {
+    title: t('trans.manageFormModuleVersions.createdAt'),
+    align: 'start',
+    key: 'createdAt',
+  },
+  {
+    title: t('trans.manageFormModuleVersions.createdBy'),
+    align: 'start',
+    key: 'createdBy',
+  },
+  {
+    title: t('trans.manageFormModuleVersions.actions'),
+    align: 'end',
+    key: 'action',
+    filterable: false,
+    sortable: false,
+    width: 200,
+  },
+]);
+
+const versionList = computed(() => {
+  if (!formModuleVersionList.value) return [];
+  return formModuleVersionList.value.map((fmv, index) => {
+    fmv.version = formModuleVersionList.value.length - index;
+    return fmv;
+  });
+});
+</script>
+
 <template>
   <div>
     <BaseInfoCard class="my-4">
-      <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon>IMPORTANT!
+      <h4 class="text-primary">
+        <v-icon class="mr-1" color="primary">info</v-icon
+        >{{ $t('trans.manageFormModuleVersions.important') }}
       </h4>
       <p>
-        Form Module Versions can't be deleted, but they can be updated and overwritten. To prevent breaking older forms, you should only replace a url if it is not working.
+        {{ $t('trans.manageFormModuleVersions.importantDescription') }}
       </p>
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon>The latest version will be used in all form designers.
+      <v-icon class="mr-1" color="primary">info</v-icon
+      >{{ $t('trans.manageFormModuleVersions.info') }}
     </div>
 
     <v-data-table
@@ -21,14 +72,16 @@
     >
       <!-- Version -->
       <template #[`item.version`]="{ item }">
-        <span>
-          Version {{ item.version }}
-        </span>
+        <span :lang="locale">{{
+          $t('trans.manageFormModuleVersions.tableTemplateVersion', {
+            version: item.version,
+          })
+        }}</span>
       </template>
 
       <!-- Created date  -->
       <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
+        {{ item.createdAt }}
       </template>
 
       <!-- Created by  -->
@@ -39,8 +92,8 @@
       <!-- Actions -->
       <template #[`item.action`]="{ item }">
         <span>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
               <router-link
                 :to="{
                   name: 'FormModuleVersionManage',
@@ -50,60 +103,18 @@
                 <v-btn
                   color="primary"
                   class="mx-1"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
+                  icon="mdi:mdi-cog"
+                  v-bind="props"
                 >
-                  <v-icon>edit</v-icon>
                 </v-btn>
               </router-link>
             </template>
-            <span>Manage Form Module Version</span>
+            <span :lang="locale">{{
+              $t('trans.manageFormModuleVersions.tableTemplateVersion')
+            }}</span>
           </v-tooltip>
         </span>
       </template>
     </v-data-table>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  name: 'ManageFormModuleVersions',
-  data() {
-    return {
-      headers: [
-        { text: 'Version', align: 'start', value: 'version' },
-        { text: 'Date Created', align: 'start', value: 'createdAt' },
-        { text: 'Created By', align: 'start', value: 'createdBy' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'action',
-          filterable: false,
-          sortable: false,
-          width: 200,
-        },
-      ],
-      rerenderTable: 0,
-    };
-  },
-  computed: {
-    ...mapGetters('formModule', ['formModule', 'formModuleVersionList']),
-    versionList() {
-      if (!this.formModuleVersionList) return [];
-      this.formModuleVersionList.map((fmv, index) => {
-        fmv.version = this.formModuleVersionList.length - index; 
-        return fmv;
-      });
-      return this.formModuleVersionList;
-    }
-  },
-  methods: {
-    ...mapActions('formModule', [
-      'getFormModuleVersionList',
-    ]),
-  },
-};
-</script>

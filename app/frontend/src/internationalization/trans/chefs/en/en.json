@@ -425,6 +425,18 @@
     "actions": "Actions",
     "delete": "Delete"
   },
+  "adminFormModulesTable": {
+    "search": "Search",
+    "loadingText": "Loading... Please wait",
+    "noDataText": "There are no form modules in your system",
+    "showInactive": "Show inactive form modules",
+    "formModuleName": "Form Module Name",
+    "createdAt": "Created",
+    "isInactive": "Is inactive",
+    "actions": "Actions",
+    "importFormModule": "Import Form Module",
+    "manage": "Manage"
+  },
   "administerForm": {
     "deleted": "DELETED",
     "restoreForm": "Restore this form",
@@ -1180,6 +1192,24 @@
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
       "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "An error occurred while trying to fetch the form modules.",
+      "getFormModuleListConsErrMsg": "Error getting form modules: {error}",
+      "getFormModuleVersionListErrMsg": "An error occurred while trying to fetch the form module versions.",
+      "getFormModuleVersionListConsErrMsg": "Error getting form module versions for {error}",
+      "fetchFormModuleErrMsg": "An error occurred while trying to fetch the form module.",
+      "fetchFormModuleConsErrMsg": "Error getting form module {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "An error occurred while trying to fetch the form module version.",
+      "fetchFormModuleVersionConsErrMsg": "Error getting form module version {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "An error occurred while trying to fetch the form module versions for this form version.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Error getting form module versions: ${error}",
+      "toggleFormModuleErrMsg": "An error occurred while {state} the form module.",
+      "toggleFormModuleConsErrMsg": "Error {state} form module {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "An error occurred while updating the form module.",
+      "updateFormModuleConsErrMsg": "Error updating form module {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "An error occurred while updating the form module version.",
+      "updateFormModuleVersionConsErrMsg": "Error updating form module version {formModuleVersionId}: {error}"
     }
   },
   "permissionUtils": {
@@ -1246,5 +1276,83 @@
     "shuttingDown": "CHEFS is shutting down.",
     "notReady": "CHEFS cannot connect to all required services.",
     "unableToReachBackend": "Unable to reach backend service."
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "No published version found for form {formId}",
+    "loadingFormModules": "Loading form modules",
+    "loadingFormModulesErr": "An error occurred while loading the form modules.",
+    "loadingFormModulesConsErr": "Error loading form modules: {error}",
+    "remainingObjects": "Remaining objects: {remaining} / {total}",
+    "logImport": "Importing {uri}",
+    "logImported": "Imported {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Import Form Module",
+    "submit": "Submit",
+    "createFormModuleVersionErr": "An error occurred while attempting to save the form module.",
+    "createFormModuleVersionConsErr": "Error creating form module version: {error}",
+    "confirmLeave": "Do you really want to leave this page? Changes you made will not be saved.",
+    "addFormModuleVersion": "Add Form Module Version"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Plugin name is required",
+    "pluginNameMaxLength": "Form module name must be 255 characters or less",
+    "formModulePluginName": "Form Module Plugin Name",
+    "pluginName": "Plugin Name",
+    "formDesignerIDPAccess": "Form Designer IDP Access"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "Your form module settings have been updated successfully.",
+    "updateFormModuleErr": "An error occurred while attempting to update the settings for this form module.",
+    "updateFormModuleConsErr": "Error updating form module {formModuleId}: {error}",
+    "formModuleSettings": "Form Module Settings",
+    "formModuleCreated": "Created: {createdAt} ({createdBy})",
+    "update": "Update",
+    "formModuleVersions": "Form Module Versions",
+    "totalVersions": "Total Versions: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Import Form Module",
+    "active": "Active",
+    "inactive": "Inactive",
+    "confirmDeactivationTitle": "Confirm Deactivation",
+    "confirmDeactivationText": "Are you sure you wish to deactivate <strong>(pluginName)</strong>? This form module will be deactivated for all form designers. It will still be available for reviewers and submitters.",
+    "deactivate": "Deactivate"
+  },
+  "manageFormModuleVersions": {
+    "version": "Version",
+    "createdAt": "Created At",
+    "createdBy": "Created By",
+    "actions": "Actions",
+    "important": "IMPORTANT!",
+    "importantDescription": "Form Module Versions can't be deleted, but they can be updated and overwritten. To prevent breaking older forms, you should only replace a url if it is not working.",
+    "info": "The latest version will be used in all form designers.",
+    "tableTemplateVersion": "Version: {version}",
+    "manageFormModuleVersion": "Manage Form Module Version"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Manage Form Module",
+    "externalUriRequired": "External URI is required",
+    "externalUriMaxLength": "External URI must be 255 characters or less",
+    "externalUriMinOne": "You need at least one URI",
+    "importData": "Import Data (JSON)",
+    "externalUris": "External URIs"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "Your form module version settings have been updated successfully.",
+    "updateFormModuleVersionErr": "An error occurred while attempting to update the settings for this form module version.",
+    "updateFormModuleVersionConsErr": "Error updating form module version {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "Form Module Version Settings",
+    "formModuleVersionCreated": "Created: {createdAt} ({createdBy})",
+    "update": "Update"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Manage Form Module Version"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr":"An error occurred while attempting to save the form module.",
+    "createFormModuleVersionConsErr":"Error creating form module version: {error}",
+    "importFormModule": "Import Form Module",
+    "submit": "Submit"
   }
 }

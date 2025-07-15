@@ -1,24 +1,20 @@
+<script setup>
+import { computed } from 'vue';
+import FormModuleManageLayout from '~/components/formModule/manage/ManageLayout.vue';
+import { AppPermissions } from '~/utils/constants';
+
+defineProps({
+  fm: {
+    type: String,
+    required: true,
+  },
+});
+
+const APP_PERMS = computed(() => AppPermissions);
+</script>
+
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :admin="isAdmin" :permission="APP_PERMS.VIEWS_ADMIN">
     <FormModuleManageLayout :fm="fm" />
   </BaseSecure>
 </template>
-
-<script>
-import FormModuleManageLayout from '@/components/formModule/manage/ManageLayout.vue';
-import { IdentityProviders } from '@/utils/constants';
-
-export default {
-  name: 'FormModuleManage',
-  components: { FormModuleManageLayout },
-  props: {
-    fm: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    IDP: () => IdentityProviders,
-  },
-};
-</script>

@@ -73,7 +73,7 @@
           "orgbook": true,
           "simplefile": {
             "userType": {
-              "blacklist": ["public"]
+              "denylist": ["public"]
             }
           }
         }
