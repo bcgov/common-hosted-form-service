@@ -567,11 +567,16 @@ describe('hasFilePermissions', () => {
   describe('403 response when', () => {
     const expectedStatus = { status: 403 };
 
-    test('the request has no current user', async () => {
-      const req = getMockReq();
+    // Only block when file has submission AND no user
+    test('the request has no current user for a submitted file', async () => {
+      const req = getMockReq({
+        currentFileRecord: {
+          formSubmissionId: formSubmissionId, // Has submission
+        },
+      });
       const { res, next } = getMockRes();
 
-      hasFilePermissions(permissions)(req, res, next);
+      await hasFilePermissions(permissions)(req, res, next);
 
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
@@ -582,15 +587,19 @@ describe('hasFilePermissions', () => {
       );
     });
 
-    test('the current user is a public user', async () => {
+    // Only block when file has submission AND public user
+    test('the current user is a public user for a submitted file', async () => {
       const req = getMockReq({
         currentUser: {
           username: 'public',
         },
+        currentFileRecord: {
+          formSubmissionId: formSubmissionId, // Has submission
+        },
       });
       const { res, next } = getMockRes();
 
-      hasFilePermissions(permissions)(req, res, next);
+      await hasFilePermissions(permissions)(req, res, next);
 
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
