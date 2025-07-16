@@ -139,29 +139,27 @@ const hasFileDelete = async (req, res, next) => {
  * @returns {Function} a middleware function
  */
 const hasFilePermissions = (permissions) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     // skip for API users
     if (req.apiUser) {
       return next();
     }
-    // Guard against unauthed (or public) users
+
+    // If file has no submission ID yet, it's a draft - allow deletion
+    if (!req.currentFileRecord.formSubmissionId) {
+      // File not yet submitted - allow the uploader to delete
+      return next();
+    }
+
+    // Guard against unauthed (or public) users for submitted files
     if (!req.currentUser || !req.currentUser.idpUserId) {
       return next(new Problem(403, { detail: 'Unauthorized to read file.' }));
     }
 
-    // Check to see if this has been associated with a submission...
-    // like prior implementations, if a submission has not been posted, there's not
-    // anything we can check permissions on so can only check authed
-    if (req.currentFileRecord.formSubmissionId) {
-      // For the existing middleware to interface as designed, add the sub ID to the req
-      req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
-
-      // Trigger submission permission checker
-      const subPermCheck = userAccess.hasSubmissionPermissions(permissions);
-      return subPermCheck(req, res, next);
-    }
-
-    next();
+    // For submitted files, check permissions normally
+    req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
+    const subPermCheck = userAccess.hasSubmissionPermissions(permissions);
+    return subPermCheck(req, res, next);
   };
 };
 
