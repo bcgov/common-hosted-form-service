@@ -376,12 +376,13 @@ defineExpose({
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div
-      class="flex-container"
-      data-test="showStatusPanel"
-      @click="showStatusContent = !showStatusContent"
-    >
-      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="locale">
+    <div class="flex-container" data-test="showStatusPanel">
+      <button
+        class="status-heading"
+        :class="{ 'dir-rtl': isRTL }"
+        :lang="locale"
+        @click="showStatusContent = !showStatusContent"
+      >
         {{ $t('trans.formSubmission.status') }}
         <v-icon>{{
           showStatusContent
@@ -390,7 +391,7 @@ defineExpose({
             ? 'mdi:mdi-chevron-left'
             : 'mdi:mdi-chevron-right'
         }}</v-icon>
-      </h2>
+      </button>
       <!-- Show <p> here for screens greater than 959px  -->
       <p class="hide-on-narrow" :lang="locale">
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
@@ -665,6 +666,8 @@ defineExpose({
 .status-heading {
   color: #003366;
   margin-bottom: 0;
+  font-size: 27px;
+  font-weight: 700;
   .v-icon {
     transition: transform 0.3s ease;
   }
