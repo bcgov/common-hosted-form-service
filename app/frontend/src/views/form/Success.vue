@@ -14,10 +14,6 @@ defineProps({
     type: String,
     required: true,
   },
-  f: {
-    type: String,
-    required: true,
-  },
 });
 
 const { email } = storeToRefs(useAuthStore());
@@ -50,7 +46,6 @@ const { form, isRTL } = storeToRefs(useFormStore());
             <RequestReceipt
               class="d-print-none"
               :email="email"
-              :form-name="form.name"
               :submission-id="s"
             />
           </div>
