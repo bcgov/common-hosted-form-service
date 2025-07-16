@@ -87,7 +87,6 @@ describe('Form Designer', () => {
             const rem=$el[0];//save and edit drafts
             const rem1=$el[1];//Reviewers can update the status
             const rem2=$el[2];//display assignee column
-            //const rem3=$el[3];//multiple draft upload
             const rem4=$el[4];//form submission schedule settings
             const rem5=$el[5];//copy existing submission
             const rem6=$el[6];//Event Subscription
@@ -96,7 +95,6 @@ describe('Form Designer', () => {
             cy.get(rem).should("not.be.enabled");
             cy.get(rem1).should("be.enabled");
             cy.get(rem2).should("be.enabled");
-            //cy.get(rem3).should("be.enabled");
             cy.get(rem4).should("be.enabled");
             cy.get(rem5).should("not.be.enabled");
             cy.get(rem6).should("be.enabled"); 
