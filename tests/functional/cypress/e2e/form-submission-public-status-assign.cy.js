@@ -91,25 +91,29 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
-    ///*
-    cy.get('input[value="public"]').click();
+    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('Public (anonymous)').click();
     cy.waitForLoad();
     cy.get('input[type="checkbox"]').then($el => {
             const rem=$el[0];//save and edit drafts
-            const rem2=$el[2];//multiple draft upload
-            const rem3=$el[3];//form submission schedule settings
-            const rem4=$el[4];//copy submission
-            const rem5=$el[5];//event subscription
-            const rem6=$el[6];//wide form layout
+            const rem1=$el[1];//Reviewers can update the status
+            const rem2=$el[2];//display assignee column
+            //const rem3=$el[3];//multiple draft upload
+            const rem4=$el[4];//form submission schedule settings
+            const rem5=$el[5];//copy existing submission
+            const rem6=$el[6];//Event Subscription
+            const rem7=$el[7];//Wide form layout
+            const rem8=$el[8];//Share draft with team members
             cy.get(rem).should("not.be.enabled");
+            cy.get(rem1).should("be.enabled");
             cy.get(rem2).should("be.enabled");
-            cy.get(rem3).should("be.enabled");
+            //cy.get(rem3).should("be.enabled");
             cy.get(rem4).should("be.enabled");
-            cy.get(rem5).should("not.be.enabled");  
-            cy.get(rem6).should("be.enabled");    
+            cy.get(rem5).should("not.be.enabled");
+            cy.get(rem6).should("be.enabled"); 
+            cy.get(rem7).should("be.enabled");
+            cy.get(rem8).should("not.be.enabled");      
     });
-    cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').should('exist');
-    //*/
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
     
@@ -145,10 +149,8 @@ describe('Form Designer', () => {
     cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
     cy.get('div.col-md-2').contains('61.48 kB');
     cy.wait(1000);
-    /*
     //Remove uploaded file
     cy.get('i[class="fa fa-remove"]').click();
-    
     //Add invalid type files
     cy.get('.browse').click();
     let fileUploadInputFields = cy.get('input[type=file]');
@@ -164,7 +166,6 @@ describe('Form Designer', () => {
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputFields1.attachFile('add1.png');
     cy.wait(1000);
-    */
     //form submission
     cy.get('button').contains('Submit').click();
     //cy.get('[data-test="continue-btn-continue"]').click({force: true});
