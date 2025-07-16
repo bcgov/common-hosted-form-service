@@ -56,7 +56,7 @@ module.exports = {
   },
   pool: {
     min: 2,
-    max: 10,
+    max: 20,
     // This shouldn't be here: https://github.com/knex/knex/issues/3455#issuecomment-535554401
     // propagateCreateError: false
   },
