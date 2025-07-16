@@ -52,10 +52,8 @@ describe("Form Designer", () => {
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     });
-
     //Go to Team Management
-
-    cy.get(".mdi-account-multiple").click();
+    cy.get('[data-test="canManageTeammembers"]').click();
     cy.get(".mdi-account-plus").click();
     //Search for a member to add
     cy.get(
