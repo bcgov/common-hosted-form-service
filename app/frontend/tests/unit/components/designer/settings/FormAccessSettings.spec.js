@@ -8,6 +8,7 @@ import { useFormStore } from '~/store/form';
 import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
 import { IdentityMode } from '~/utils/constants';
 import { useAppStore } from '~/store/app';
+import { useIdpStore } from '~/store/identityProviders';
 
 describe('FormAccessSettings.vue', () => {
   const pinia = createTestingPinia();
@@ -15,13 +16,15 @@ describe('FormAccessSettings.vue', () => {
 
   const formStore = useFormStore(pinia);
   const appStore = useAppStore(pinia);
+  const idpStore = useIdpStore(pinia);
+  idpStore.providers = require('../../../fixtures/identityProviders.json');
 
   beforeEach(() => {
     formStore.$reset();
     appStore.$reset();
   });
 
-  it('renders and displays 3 radio buttons', () => {
+  it('renders and displays 3 login types', () => {
     const wrapper = mount(FormAccessSettings, {
       global: {
         plugins: [pinia],
@@ -38,9 +41,16 @@ describe('FormAccessSettings.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toMatch('trans.formSettings.public');
-    expect(wrapper.text()).toMatch('trans.formSettings.loginRequired');
-    expect(wrapper.text()).toMatch('trans.formSettings.specificTeamMembers');
+    // Find the v-autocomplete by data-test attribute
+    const components = wrapper.findAllComponents({ name: 'VAutocomplete' });
+    const autocomplete = components.find(
+      (c) => c.attributes('data-test') === 'userType'
+    );
+    expect(autocomplete.exists()).toBe(true);
+
+    const items = autocomplete.props('items');
+    expect(items).toEqual(wrapper.vm.IdpTypeList);
+    expect(items).toHaveLength(3);
   });
 
   it('if this is a form with a specified identity provider, it should select it', async () => {
@@ -65,7 +75,7 @@ describe('FormAccessSettings.vue', () => {
 
     await flushPromises();
 
-    expect(wrapper.vm.idpType).toEqual('idir');
+    expect(wrapper.vm.idpType).toEqual(['idir']);
   });
 
   it('if the form is changed to public, disable submitter drafts and submission copying', async () => {
@@ -135,7 +145,7 @@ describe('FormAccessSettings.vue', () => {
     expect(formStore.form.reminder_enabled).toBeFalsy();
   });
 
-  it('updateLoginType should set the idp and set the userType to login', async () => {
+  it('userTypeChanged should set the idp and set the userType to login', async () => {
     formStore.form = ref({
       userType: 'login',
       idps: ['idir'],
@@ -159,13 +169,42 @@ describe('FormAccessSettings.vue', () => {
     expect(formStore.form.idps).toEqual(['idir']);
     expect(formStore.form.userType).toEqual('login');
 
-    wrapper.vm.idpType = 'bceid-basic';
+    wrapper.vm.idpType = ['bceid-basic'];
 
-    wrapper.vm.updateLoginType();
+    wrapper.vm.userTypeChanged();
 
     await nextTick();
 
     expect(formStore.form.idps).toEqual(['bceid-basic']);
     expect(formStore.form.userType).toEqual('login');
+  });
+
+  it('multiple idps can be set', async () => {
+    formStore.form = ref({
+      userType: 'login',
+      idps: [],
+    });
+    const wrapper = mount(FormAccessSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(formStore.form.idps).toEqual([]);
+    expect(formStore.form.userType).toEqual('login');
+
+    wrapper.vm.idpType = ['idir', 'bceid-basic'];
+    await nextTick();
+    expect(formStore.form.idps).toContain('bceid-basic');
+    expect(formStore.form.idps.length).toBe(2);
   });
 });
