@@ -2581,3 +2581,66 @@ describe('listFormComponentsProactiveHelp', () => {
     expect(result).toEqual({});
   });
 });
+
+describe('_setAllowSubmitterToUploadFile', () => {
+  it('returns true if identityProviders does not include public', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
+  });
+
+  it('returns false if identityProviders includes public and allowSubmitterToUploadFile is truthy', () => {
+    const formData = {
+      identityProviders: [{ code: 'public' }],
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns false if allowSubmitterToUploadFile is false', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      allowSubmitterToUploadFile: false,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns true if identityProviders is missing (team protected) and allow is true', () => {
+    const formData = {
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
+  });
+
+  it('returns false if identityProviders is missing (team protected) and allow is false', () => {
+    const formData = {
+      allowSubmitterToUploadFile: false,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns true if identityProviders is empty and allow is true', () => {
+    const formData = {
+      identityProviders: [],
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
+  });
+
+  it('returns false if identityProviders is empty and allow is false', () => {
+    const formData = {
+      identityProviders: [],
+      allowSubmitterToUploadFile: false,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns false if allowSubmitterToUploadFile is missing', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+});
