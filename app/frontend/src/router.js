@@ -205,10 +205,7 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
-              preFlightAuth(
-                { submissionId: to.query.s, formId: to.query.f },
-                next
-              );
+              preFlightAuth({ submissionId: to.query.s }, next);
             },
           },
           {
