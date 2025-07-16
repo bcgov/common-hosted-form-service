@@ -20,10 +20,6 @@ const properties = defineProps({
     type: String,
     required: true,
   },
-  formId: {
-    type: String,
-    required: true,
-  },
 });
 
 const emailRules = ref([(v) => !!v || 'E-mail is required']);
@@ -51,7 +47,7 @@ async function requestReceipt() {
     try {
       if (form.value.enableTeamMemberDraftShare) {
         const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
-          formId: properties.formId,
+          formId: form.value.id,
           email: to.value,
           roles: '*',
         });
