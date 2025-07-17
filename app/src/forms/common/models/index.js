@@ -30,6 +30,9 @@ module.exports = {
   FormMetadata: require('./tables/formMetadata'),
   FormEncryptionKey: require('./tables/formEncryptionKey'),
   FormEventStreamConfig: require('./tables/formEventStreamConfig'),
+  FormEmbedDomain: require('./tables/formEmbedDomain'),
+  FormEmbedDomainHistory: require('./tables/formEmbedDomainHistory'),
+  FormEmbedDomainStatusCode: require('./tables/formEmbedDomainStatusCode'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
@@ -39,4 +42,6 @@ module.exports = {
   UserFormAccess: require('./views/userFormAccess'),
   UserSubmissions: require('./views/userSubmissions'),
   AdminExternalAPI: require('./views/adminExternalAPI'),
+  FormEmbedDomainVw: require('./views/formEmbedDomainVw'),
+  FormEmbedDomainHistoryVw: require('./views/formEmbedDomainHistoryVw'),
 };

@@ -1,5 +1,20 @@
+const Problem = require('api-problem');
 const { ExternalAPIStatuses } = require('../common/constants');
-const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
+const {
+  Form,
+  FormVersion,
+  User,
+  UserFormAccess,
+  FormComponentsProactiveHelp,
+  AdminExternalAPI,
+  ExternalAPI,
+  ExternalAPIStatusCode,
+  FormEmbedDomain,
+  FormEmbedDomainHistory,
+  FormEmbedDomainStatusCode,
+  FormEmbedDomainVw,
+  FormEmbedDomainHistoryVw,
+} = require('../common/models');
 const { queryUtils, typeUtils } = require('../common/utils');
 const moment = require('moment');
 const uuid = require('uuid');
@@ -420,6 +435,120 @@ const service = {
       }, Object.create(null));
     }
     return {};
+  },
+
+  //
+  // Form Embedding
+  //
+  /**
+   * @function getFormEmbedDomainStatusCodes
+   * Gets all form embed domain status codes
+   * @returns {Promise} An array of requested domains
+   */
+  getFormEmbedDomainStatusCodes: async () => {
+    return FormEmbedDomainStatusCode.query();
+  },
+
+  /**
+   * @function getFormEmbedDomains
+   * Gets all requested domains with pagination and filtering
+   * @param {Object} params Query parameters
+   * @returns {Promise<Object>} Object with results and total count
+   */
+  getFormEmbedDomains: async (params) => {
+    const query = FormEmbedDomainVw.query()
+      .modify('filterMinistry', params.ministry)
+      .modify('filterFormName', params.formName)
+      .modify('filterDomain', params.domain)
+      .modify('orderByRequestedAt');
+
+    if (params.paginationEnabled) {
+      return await service._processPagination(query, {
+        page: parseInt(params.page),
+        itemsPerPage: parseInt(params.itemsPerPage),
+        totalItems: params.totalItems,
+        search: params.search,
+        searchEnabled: params.searchEnabled,
+      });
+    }
+    return query;
+  },
+
+  /**
+   * @function getFormEmbedDomainHistory
+   * Gets history for a specific domain
+   * @param {string} formEmbedDomainId The domain uuid
+   * @returns {Promise<Array>} Domain history records
+   */
+  getFormEmbedDomainHistory: async (formEmbedDomainId) => {
+    return FormEmbedDomainHistoryVw.query().where('formEmbedDomainId', formEmbedDomainId).orderBy('statusChangedAt', 'desc');
+  },
+
+  /**
+   * @function updateFormEmbedDomainRequest
+   * Reviews a domain request (approve/deny)
+   * @param {string} formEmbedDomainId The domain uuid
+   * @param {Object} data The review data
+   * @param {Object} currentUser The current user
+   * @returns {Promise<Object>} The updated domain
+   */
+  updateFormEmbedDomainRequest: async (formEmbedDomainId, data, currentUser) => {
+    const domain = await FormEmbedDomain.query().findById(formEmbedDomainId);
+    if (!domain) {
+      throw new Problem(404, 'Domain request not found');
+    }
+
+    let trx;
+    try {
+      trx = await FormEmbedDomain.startTransaction();
+
+      // Add history record
+      await FormEmbedDomainHistory.query(trx).insert({
+        id: uuid.v4(),
+        formEmbedDomainId: formEmbedDomainId,
+        previousStatus: domain.status,
+        newStatus: data.status,
+        reason: data.reason || null,
+        createdBy: currentUser.usernameIdp,
+        updatedBy: currentUser.usernameIdp,
+      });
+
+      // Update domain status
+      const updated = await FormEmbedDomain.query(trx).patchAndFetchById(formEmbedDomainId, {
+        status: data.status,
+      });
+
+      await trx.commit();
+      return updated;
+    } catch (error) {
+      if (trx) await trx.rollback();
+      throw error;
+    }
+  },
+
+  /**
+   * @function removeFormEmbedDomain
+   * Permanently removes a domain
+   * @param {string} formEmbedDomainId The domain uuid
+   * @returns {Promise<number>} Number of deleted records
+   */
+  removeFormEmbedDomain: async (formEmbedDomainId) => {
+    let trx;
+    try {
+      trx = await FormEmbedDomain.startTransaction();
+
+      // Delete history first
+      await FormEmbedDomainHistory.query(trx).where('formEmbedDomainId', formEmbedDomainId).delete();
+
+      // Then delete the domain
+      const deleted = await FormEmbedDomain.query(trx).deleteById(formEmbedDomainId);
+
+      await trx.commit();
+      return deleted;
+    } catch (error) {
+      if (trx) await trx.rollback();
+      throw error;
+    }
   },
 };
 
