@@ -282,7 +282,6 @@ describe('TeamManagement.vue', () => {
   const idpStore = useIdpStore(pinia);
   const notificationStore = useNotificationStore(pinia);
   const appStore = useAppStore(pinia);
-  const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
   const listRolesSpy = vi.spyOn(roleService, 'list');
 
   beforeEach(() => {
@@ -291,7 +290,6 @@ describe('TeamManagement.vue', () => {
     idpStore.$reset();
     appStore.$reset();
     notificationStore.$reset();
-    fetchFormSpy.mockReset();
     listRolesSpy.mockReset();
 
     listRolesSpy.mockImplementation(async () => {
@@ -309,12 +307,7 @@ describe('TeamManagement.vue', () => {
     const getFormUsersSpy = vi.spyOn(rbacService, 'getFormUsers');
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
     const removeMultiUsersSpy = vi.spyOn(rbacService, 'removeMultiUsers');
-    fetchFormSpy.mockImplementationOnce(async () => {
-      return {
-        name: 'This is a form name',
-        userType: 'team',
-      };
-    });
+
     getFormPermissionsForUserSpy.mockImplementationOnce(async () => {
       return [FormPermissions.TEAM_UPDATE];
     });
@@ -341,6 +334,7 @@ describe('TeamManagement.vue', () => {
 
     expect(wrapper.text()).toContain('trans.teamManagement.teamManagement');
     expect(wrapper.text()).toContain(formStore.form.name);
+    expect(wrapper.text()).toContain('This is a form title');
   });
 
   it('DeleteMessage returns delSelectedMembersWarning if there is at least 2 items to delete otherwise it returns delSelectedMemberWarning', async () => {
@@ -1012,6 +1006,7 @@ describe('TeamManagement.vue', () => {
     });
 
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
+    formStore.form = { userType: 'team' };
     const wrapper = shallowMount(TeamManagement, {
       props: {
         formId: formId,

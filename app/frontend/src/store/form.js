@@ -84,7 +84,7 @@ const genInitialForm = () => ({
   reminder_enabled: false,
   schedule: genInitialSchedule(),
   subscribe: genInitialSubscribe(),
-  userType: IdentityMode.TEAM,
+  userType: IdentityMode.LOGIN,
   versions: [],
   enableCopyExistingSubmission: false,
   enableTeamMemberDraftShare: false,
