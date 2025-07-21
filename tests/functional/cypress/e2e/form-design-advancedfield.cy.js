@@ -285,12 +285,8 @@ describe('Form Designer', () => {
         //verify file uploads to object storage
         cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
         cy.get('div.col-md-2').contains('61.48 kB');
-        //Verify save as draft button
-        //cy.get(':nth-child(4) > .v-btn > .v-btn__content > span').click();
         cy.waitForLoad();
         cy.wait(2000);
-        //Close the upload warning message
-        //cy.get('.v-alert__close > .v-btn').click();
         cy.wait(2000);
         //form submission
         cy.get('button').contains('Submit').click();
@@ -302,7 +298,6 @@ describe('Form Designer', () => {
         cy.get('.choices__inner > .choices__list > .choices__item').contains('hello');
         cy.get('.col-md-9 > a').contains('add1.png');
         cy.get('.ui > .choices__list > .choices__item').contains('THRIFTY FOODS');
-
         //Delete form after test run
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.waitForLoad();
