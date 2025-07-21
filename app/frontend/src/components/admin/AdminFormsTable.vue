@@ -11,11 +11,12 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 const showDeleted = ref(false);
 const loading = ref(false);
+const inputValue = ref('');
 const search = ref('');
 const firstDataLoad = ref(true);
 const forceTableRefresh = ref(0);
 const debounceInput = ref(null);
-const debounceTime = ref(300);
+const debounceTime = ref(500);
 const currentPage = ref(1);
 const itemsPP = ref(10);
 
@@ -90,12 +91,18 @@ async function updateOptions(options) {
   }
   firstDataLoad.value = false;
 }
-async function handleSearch(value) {
+
+const debouncedSearch = _.debounce(async (value) => {
   search.value = value;
+  await refreshForms();
+}, debounceTime.value);
+
+async function handleSearch(value) {
   if (value === '') {
+    search.value = value;
     await refreshForms();
   } else {
-    debounceInput.value();
+    debouncedSearch(value);
   }
 }
 </script>
@@ -126,7 +133,7 @@ async function handleSearch(value) {
           :class="isRTL ? 'float-left' : 'float-right'"
         >
           <v-text-field
-            v-model="search"
+            v-model="inputValue"
             density="compact"
             variant="underlined"
             :lang="locale"

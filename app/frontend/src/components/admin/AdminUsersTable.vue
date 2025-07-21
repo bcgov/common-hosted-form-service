@@ -75,12 +75,17 @@ async function updateOptions(options) {
   firstDataLoad.value = false;
 }
 
-async function handleSearch(value) {
+const debouncedSearch = _.debounce(async (value) => {
   search.value = value;
+  await refreshUsers();
+}, debounceTime.value);
+
+async function handleSearch(value) {
   if (value === '') {
+    search.value = value;
     await refreshUsers();
   } else {
-    debounceInput.value();
+    debouncedSearch(value);
   }
 }
 
