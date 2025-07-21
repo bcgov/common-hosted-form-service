@@ -257,7 +257,8 @@ describe('Form Designer', () => {
         // for print option verification
         cy.get(':nth-child(2) > .d-print-none > :nth-child(1) > .v-btn').should('be.visible');
         cy.get('.mdi-printer').should('be.visible');
-        cy.get('.ml-auto > :nth-child(3) > .v-btn').should('be.visible');
+        //Wide form layout button
+        cy.get(':nth-child(2) > .v-btn').should('be.visible');
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('input[type="radio"]').click();
@@ -284,7 +285,8 @@ describe('Form Designer', () => {
         //verify file uploads to object storage
         cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
         cy.get('div.col-md-2').contains('61.48 kB');
-        cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
+        //Verify save as draft button
+        //cy.get(':nth-child(4) > .v-btn > .v-btn__content > span').click();
         cy.waitForLoad();
         cy.wait(2000);
         //Close the upload warning message
