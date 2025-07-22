@@ -31,7 +31,7 @@ const editDialog = ref({
 const firstDataLoad = ref(true);
 const forceTableRefresh = ref(0);
 const debounceInput = ref(null);
-const debounceTime = ref(300);
+const debounceTime = ref(500);
 const currentPage = ref(1);
 const itemsPP = ref(10);
 
