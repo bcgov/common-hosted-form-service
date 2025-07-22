@@ -563,9 +563,8 @@ const service = {
 
   _validateSortBy: (params, selection, fields) => {
     if (params.sortBy?.column && !selection.includes(params.sortBy.column) && !fields.includes(params.sortBy.column)) {
-      throw new Problem(400, {
-        details: `orderBy column '${params.sortBy.column}' not in selected columns`,
-      });
+      // don't throw an error, just remove the sortBy column, user can choose a different column
+      delete params.sortBy;
     }
   },
 
@@ -575,9 +574,9 @@ const service = {
 
     // Determine if assignee data should be included in response
     const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
-    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
     const { selection, fields } = service._buildSelectionAndFields(params, shouldIncludeAssignee);
     service._validateSortBy(params, selection, fields);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
 
     query.select(
       selection,
