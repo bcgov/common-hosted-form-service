@@ -1,14 +1,12 @@
 const uuid = require('uuid');
-const log = require('../../components/log')(module.filename);
 
 const { Statuses } = require('../common/constants');
-const { FileStorage, Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
-const emailService = require('../email/emailService');
-const eventService = require('../event/eventService');
-const fileService = require('../file/service');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+
+const updateService = require('./updateService');
 
 const service = {
   // -------------------------------------------------------------------------------------------------------
@@ -102,65 +100,7 @@ const service = {
   readSubmissionData: (formSubmissionIds) => service._fetchSpecificSubmissionData(formSubmissionIds),
 
   update: async (formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
-    let trx;
-    let result;
-    try {
-      trx = etrx ? etrx : await FormSubmission.startTransaction();
-      const restoring = data['deleted'] !== undefined && typeof data.deleted == 'boolean';
-
-      // If we're restoring a submission
-      if (restoring) {
-        await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: data.deleted, updatedBy: currentUser.usernameIdp });
-      } else {
-        const statuses = await FormSubmissionStatus.query().modify('filterSubmissionId', formSubmissionId).modify('orderDescending');
-        if (!data.draft) {
-          // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
-          if (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING) {
-            await service.changeStatusState(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser, trx);
-            // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
-            const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
-            emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => {});
-            eventService.formSubmissionEventReceived(submissionMetaData.formId, submissionMetaData.formVersionId, formSubmissionId, data);
-          }
-        } else {
-          if (statuses && statuses.length > 0 && (statuses[0].code === Statuses.SUBMITTED || statuses[0].code === Statuses.COMPLETED)) {
-            return false;
-          }
-        }
-
-        // Patch the submission record with the updated changes
-        await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
-          draft: data.draft,
-          submission: data.submission,
-          updatedBy: currentUser.usernameIdp,
-        });
-
-        // Update new file uploads with the submission ID.
-        const fileIds = service._findFileIds(data);
-        for (const fileId of fileIds) {
-          const fileStorage = await fileService.read(fileId);
-          if (!fileStorage.formSubmissionId) {
-            await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: formSubmissionId, updatedBy: currentUser.usernameIdp });
-            fileService.moveSubmissionFile(formSubmissionId, fileStorage, currentUser.usernameIdp).catch((error) => {
-              // Log it, but since storage can't be part of the transaction then
-              // deal with the state it's in when the error is investigated.
-              log.error('Error moving file', error);
-            });
-          }
-        }
-      }
-
-      if (!etrx) await trx.commit();
-
-      result = await service.read(formSubmissionId);
-    } catch (err) {
-      if (!etrx && trx) await trx.rollback();
-      throw err;
-    }
-    if (result) {
-      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.UPDATED, result.submission, data.draft);
-      return result;
-    }
+    return updateService.update(service, formSubmissionId, data, currentUser, referrer, etrx);
   },
 
   /**
@@ -176,7 +116,7 @@ const service = {
   setDraftState: async (submissionId, draft, currentUser, etrx = undefined) => {
     let trx;
     try {
-      trx = etrx ? etrx : await FormSubmission.startTransaction();
+      trx = etrx || (await FormSubmissionStatus.startTransaction());
 
       const result = await FormSubmission.query(trx).patchAndFetchById(submissionId, {
         draft: draft,
@@ -353,7 +293,7 @@ const service = {
   changeStatusState: async (submissionId, data, currentUser, etrx = undefined) => {
     let trx;
     try {
-      trx = etrx ? etrx : await FormSubmissionStatus.startTransaction();
+      trx = etrx || (await FormSubmissionStatus.startTransaction());
 
       // Create a new status entry
       await service.createStatus(submissionId, data, currentUser, trx);
@@ -396,7 +336,7 @@ const service = {
   createStatus: async (submissionId, data, currentUser, etrx = undefined) => {
     let trx;
     try {
-      trx = etrx ? etrx : await FormSubmissionStatus.startTransaction();
+      trx = etrx || (await FormSubmissionStatus.startTransaction());
 
       await FormSubmissionStatus.query(trx).insert({
         id: uuid.v4(),
@@ -434,7 +374,9 @@ const service = {
    */
   addEmailRecipients: async (submissionId, emailRecipients) => {
     // Convert the JavaScript array to a PostgreSQL array literal
-    const pgArray = `{${emailRecipients.map((email) => `"${email}"`).join(',')}}`;
+    // Convert the JavaScript array to a PostgreSQL array literal without nested template literals
+    const quotedEmails = emailRecipients.map((email) => '"' + email + '"');
+    const pgArray = '{' + quotedEmails.join(',') + '}';
 
     await FormSubmissionStatus.query()
       .modify('filterSubmissionId', submissionId)
