@@ -16,7 +16,7 @@ beforeEach(() => {
 });
 
 describe('list', () => {
-  it ('should query form_module table for list', async () => {
+  it('should query form_module table for list', async () => {
     const params = {
       pluginName: 'pluginName',
       active: true,
@@ -37,7 +37,7 @@ describe('list', () => {
   });
 });
 describe('list', () => {
-  it ('should query form_module table for list with no params', async () => {
+  it('should query form_module table for list with no params', async () => {
     await service.listFormModules({});
 
     expect(MockModel.query).toHaveBeenCalledTimes(1);
@@ -52,7 +52,7 @@ describe('list', () => {
 });
 
 describe('read', () => {
-  it ('should query form_module table by id', async () => {
+  it('should query form_module table by id', async () => {
     await service.readFormModule(formModuleId);
 
     expect(MockModel.query).toHaveBeenCalledTimes(1);
@@ -79,17 +79,19 @@ describe('form module CRUD', () => {
   const formModuleUpd = {
     pluginName: 'pluginName2',
     active: false,
-    identityProviders: [{
-      code: 'idir',
-      display: 'IDIR',
-    }],
+    identityProviders: [
+      {
+        code: 'idir',
+        display: 'IDIR',
+      },
+    ],
   };
   const formModuleToggle = {
     active: false,
   };
 
   const readFormModuleSpy = jest.spyOn(service, 'readFormModule');
-  
+
   beforeEach(() => {
     readFormModuleSpy.mockReset();
   });
@@ -118,9 +120,9 @@ describe('form module CRUD', () => {
   it('should update form module', async () => {
     MockModel.mockResolvedValue({});
     readFormModuleSpy.mockResolvedValue({});
-  
+
     await service.updateFormModule(formModuleId, formModuleUpd, currentUser);
-  
+
     expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
     expect(MockModel.query).toHaveBeenCalledTimes(3);
     expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
@@ -128,7 +130,7 @@ describe('form module CRUD', () => {
     expect(MockModel.patchAndFetchById).toHaveBeenCalledWith(formModuleId, {
       pluginName: 'pluginName2',
       active: false,
-      updatedBy: currentUser.usernameIdp
+      updatedBy: currentUser.usernameIdp,
     });
     expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
   });
@@ -136,31 +138,31 @@ describe('form module CRUD', () => {
   it('should update toggle form module', async () => {
     MockModel.mockResolvedValue({});
     readFormModuleSpy.mockResolvedValue({});
-  
+
     await service.toggleFormModule(formModuleId, formModuleToggle, currentUser);
-  
+
     expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
     expect(MockModel.query).toHaveBeenCalledTimes(1);
     expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
     expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
     expect(MockModel.patchAndFetchById).toHaveBeenCalledWith(formModuleId, {
       active: false,
-      updatedBy: currentUser.usernameIdp
+      updatedBy: currentUser.usernameIdp,
     });
     expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
   });
 
   describe('form module version CRUD', () => {
     const formModuleVersionBody = {
-      externalUris: [ 'MOCK_URI' ],
-      config: {}
+      externalUris: ['MOCK_URI'],
+      config: {},
     };
 
     const formModuleVersionUpd = {
-      externalUris: [ 'MOCK_URI2' ],
+      externalUris: ['MOCK_URI2'],
       config: {
         matrix: true,
-      }
+      },
     };
 
     const readFormModuleVersionSpy = jest.spyOn(service, 'readFormModuleVersion');
@@ -185,7 +187,7 @@ describe('form module CRUD', () => {
 
       await service.createFormModule(formModuleBody, currentUser);
       await service.createFormModuleVersion(formModuleId, formModuleVersionBody, currentUser);
-  
+
       expect(MockModel.startTransaction).toHaveBeenCalledTimes(2);
       expect(MockModel.query).toHaveBeenCalledTimes(2);
       expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
@@ -195,26 +197,26 @@ describe('form module CRUD', () => {
     it('should update form module version', async () => {
       MockModel.mockResolvedValue({});
       readFormModuleVersionSpy.mockResolvedValue({});
-    
+
       await service.updateFormModuleVersion(formModuleVersionId, formModuleVersionUpd, currentUser);
-    
+
       expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
       expect(MockModel.query).toHaveBeenCalledTimes(1);
       expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
       expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
       expect(MockModel.patchAndFetchById).toHaveBeenCalledWith(formModuleVersionId, {
-        externalUris: [ 'MOCK_URI2' ],
+        externalUris: ['MOCK_URI2'],
         config: {
           matrix: true,
         },
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
       });
       expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('form module identity provider CRUD', () => {
-    it('should list the form module identity providers', async () => {     
+    it('should list the form module identity providers', async () => {
       MockModel.mockResolvedValue(undefined);
 
       await service.createFormModule(formModuleBody, currentUser);

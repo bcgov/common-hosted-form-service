@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 describe('list', () => {
-  it ('should query form_module table for list', async () => {
+  it('should query form_module table for list', async () => {
     const req = {
       query: {
         pluginName: 'pluginName',
@@ -19,31 +19,31 @@ describe('list', () => {
       currentUser: {
         id: userId,
         usernameIdp: 'me',
-      }
+      },
     };
-    
+
     jest.spyOn(controller, 'listFormModules');
-    service.listFormModules = jest.fn().mockReturnValue([{pluginName: 'pluginName', active: true}]);
+    service.listFormModules = jest.fn().mockReturnValue([{ pluginName: 'pluginName', active: true }]);
 
     let next = jest.fn();
 
     await controller.listFormModules(req, {}, next);
 
     expect(service.listFormModules).toHaveBeenCalledTimes(1);
-    expect(service.listFormModules).toHaveBeenCalledWith({pluginName: 'pluginName', active: true});
+    expect(service.listFormModules).toHaveBeenCalledWith({ pluginName: 'pluginName', active: true });
     expect(controller.listFormModules).toHaveBeenCalledTimes(1);
   });
 
-  it ('should query form_module table for list with no query parameters', async () => {
+  it('should query form_module table for list with no query parameters', async () => {
     const req = {
       currentUser: {
         id: userId,
         usernameIdp: 'me',
-      }
+      },
     };
-    
+
     jest.spyOn(controller, 'listFormModules');
-    service.listFormModules = jest.fn().mockReturnValue([{pluginName: 'pluginName', active: true}]);
+    service.listFormModules = jest.fn().mockReturnValue([{ pluginName: 'pluginName', active: true }]);
 
     let next = jest.fn();
 
@@ -67,10 +67,12 @@ describe('form module CRUD', () => {
   const formModuleUpd = {
     pluginName: 'pluginName2',
     active: false,
-    identityProviders: [{
-      code: 'idir',
-      display: 'IDIR',
-    }],
+    identityProviders: [
+      {
+        code: 'idir',
+        display: 'IDIR',
+      },
+    ],
   };
   const formModuleToggle = {
     active: true,
@@ -80,7 +82,7 @@ describe('form module CRUD', () => {
     const req = {
       currentUser: currentUser,
     };
-    
+
     jest.spyOn(controller, 'readFormModule');
 
     let next = jest.fn();
@@ -92,19 +94,19 @@ describe('form module CRUD', () => {
     await expect(controller.readFormModule).rejects.toThrow();
   });
 
-  it ('should read form_module by id', async () => {
+  it('should read form_module by id', async () => {
     const req = {
       params: {
-        formModuleId: formModuleId, 
+        formModuleId: formModuleId,
       },
       currentUser: {
         id: userId,
         usernameIdp: 'me',
       },
     };
-    
+
     jest.spyOn(controller, 'readFormModule');
-    service.readFormModule = jest.fn().mockReturnValue({ id: formModuleId, pluginName: 'pluginName', active: true});
+    service.readFormModule = jest.fn().mockReturnValue({ id: formModuleId, pluginName: 'pluginName', active: true });
 
     let next = jest.fn();
 
@@ -117,9 +119,9 @@ describe('form module CRUD', () => {
       body: formModuleBody,
       currentUser: currentUser,
     };
-    
+
     jest.spyOn(controller, 'createFormModule');
-    service.createFormModule = jest.fn().mockReturnValue({ id: formModuleId, pluginName: 'pluginName', active: true});
+    service.createFormModule = jest.fn().mockReturnValue({ id: formModuleId, pluginName: 'pluginName', active: true });
 
     let next = jest.fn();
 
@@ -130,14 +132,14 @@ describe('form module CRUD', () => {
   it('should update form module', async () => {
     const req = {
       params: {
-        formModuleId: formModuleId
+        formModuleId: formModuleId,
       },
       body: formModuleUpd,
       currentUser: currentUser,
     };
-    
+
     jest.spyOn(controller, 'updateFormModule');
-    service.updateFormModule = jest.fn().mockReturnValue({ id: formModuleId, pluginName: 'pluginName2', active: false, identityProviders: [{code: 'idir',display: 'IDIR'}]});
+    service.updateFormModule = jest.fn().mockReturnValue({ id: formModuleId, pluginName: 'pluginName2', active: false, identityProviders: [{ code: 'idir', display: 'IDIR' }] });
 
     let next = jest.fn();
 
@@ -149,12 +151,12 @@ describe('form module CRUD', () => {
   it('should toggle form module', async () => {
     const req = {
       params: {
-        formModuleId: formModuleId
+        formModuleId: formModuleId,
       },
       body: formModuleToggle,
       currentUser: currentUser,
     };
-    
+
     jest.spyOn(controller, 'toggleFormModule');
     service.toggleFormModule = jest.fn().mockReturnValue({ id: formModuleId, active: false });
 
@@ -167,29 +169,29 @@ describe('form module CRUD', () => {
 
   describe('form module version CRUD', () => {
     const formModuleVersionBody = {
-      externalUris: [ 'MOCK_URI' ],
-      config: {}
+      externalUris: ['MOCK_URI'],
+      config: {},
     };
 
     const formModuleVersionUpd = {
-      externalUris: [ 'MOCK_URI2' ],
+      externalUris: ['MOCK_URI2'],
       config: {
         matrix: true,
-      }
+      },
     };
 
     it('should throw when invalid options are provided', async () => {
       const req = {
         currentUser: currentUser,
       };
-      
+
       jest.spyOn(controller, 'createFormModuleVersion');
-  
+
       let next = jest.fn();
-  
+
       await controller.createFormModuleVersion(req, {}, next);
       await expect(controller.createFormModuleVersion).rejects.toThrow();
-  
+
       await controller.createFormModuleVersion(undefined, {}, next);
       await expect(controller.createFormModuleVersion).rejects.toThrow();
     });
@@ -197,38 +199,38 @@ describe('form module CRUD', () => {
     it('should insert form module version', async () => {
       const req = {
         params: {
-          formModuleId: formModuleId
+          formModuleId: formModuleId,
         },
         body: formModuleVersionBody,
         currentUser: currentUser,
       };
-      
+
       jest.spyOn(controller, 'createFormModuleVersion');
-      service.createFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: [ 'MOCK_URI' ], config: {}});
-  
+      service.createFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: ['MOCK_URI'], config: {} });
+
       let next = jest.fn();
-  
+
       await controller.createFormModuleVersion(req, {}, next);
-  
+
       expect(controller.createFormModuleVersion).toHaveBeenCalledTimes(1);
     });
 
     it('should update form module version', async () => {
       const req = {
         params: {
-          formModuleVersionId: formModuleVersionId
+          formModuleVersionId: formModuleVersionId,
         },
         body: formModuleVersionUpd,
         currentUser: currentUser,
       };
-      
+
       jest.spyOn(controller, 'updateFormModuleVersion');
-      service.updateFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: [ 'MOCK_URI2' ], config: { matrix: true }});
-  
+      service.updateFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: ['MOCK_URI2'], config: { matrix: true } });
+
       let next = jest.fn();
-  
+
       await controller.updateFormModuleVersion(req, {}, next);
-  
+
       expect(controller.updateFormModuleVersion).toHaveBeenCalledTimes(1);
     });
   });
@@ -242,20 +244,19 @@ describe('form module CRUD', () => {
         currentUser: {
           id: userId,
           usernameIdp: 'me',
-        }
+        },
       };
-      
+
       jest.spyOn(controller, 'listFormModuleIdentityProviders');
       service.listFormModuleIdentityProviders = jest.fn().mockReturnValue([{ formModuleId: formModuleId, code: 'idir' }]);
-  
+
       let next = jest.fn();
-  
+
       await controller.listFormModuleIdentityProviders(req, {}, next);
-  
+
       expect(service.listFormModuleIdentityProviders).toHaveBeenCalledTimes(1);
       expect(service.listFormModuleIdentityProviders).toHaveBeenCalledWith(req.params.formModuleId);
       expect(controller.listFormModuleIdentityProviders).toHaveBeenCalledTimes(1);
     });
   });
 });
-

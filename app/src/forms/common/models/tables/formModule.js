@@ -25,7 +25,7 @@ class FormModule extends Timestamps(Model) {
       idpHints: {
         relation: Model.HasManyRelation,
         modelClass: FormModuleIdentityProvider,
-        filter: query => query.select('code'),
+        filter: (query) => query.select('code'),
         join: {
           from: 'form_module.id',
           to: 'form_module_identity_provider.formModuleId',
@@ -85,7 +85,6 @@ class FormModule extends Timestamps(Model) {
       additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormModule;

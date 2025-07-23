@@ -1,8 +1,9 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { formModuleService } from '@/services';
-import { ApiRoutes } from '@/utils/constants';
+import { formModuleService } from '~/services';
+import { ApiRoutes } from '~/utils/constants';
 
 const mockInstance = axios.create();
 const mockAxios = new MockAdapter(mockInstance);
@@ -10,9 +11,9 @@ const mockAxios = new MockAdapter(mockInstance);
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 const oneUuid = '11111111-1111-1111-1111-111111111111';
 
-jest.mock('@/services/interceptors', () => {
+vi.mock('~/services/interceptors', () => {
   return {
-    appAxios: () => mockInstance
+    appAxios: () => mockInstance,
   };
 });
 
@@ -32,7 +33,7 @@ describe('Form Module Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
-  
+
   describe('form_modules', () => {
     const endpoint = `${ApiRoutes.FORMMODULES}`;
 
@@ -68,7 +69,7 @@ describe('Form Module Service', () => {
       expect(mockAxios.history.put).toHaveLength(1);
     });
   });
-  
+
   describe('form_modules/{formModuleId}/version', () => {
     const endpoint = `${ApiRoutes.FORMMODULES}/${zeroUuid}/version`;
 
@@ -76,7 +77,10 @@ describe('Form Module Service', () => {
       const data = { test: 'testdata' };
       mockAxios.onPost(endpoint).reply(200, data);
 
-      const result = await formModuleService.createFormModuleVersion(zeroUuid, data);
+      const result = await formModuleService.createFormModuleVersion(
+        zeroUuid,
+        data
+      );
       expect(result).toBeTruthy();
       expect(result.data).toEqual(data);
       expect(mockAxios.history.post).toHaveLength(1);
@@ -89,7 +93,10 @@ describe('Form Module Service', () => {
     it('calls read on endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
 
-      const result = await formModuleService.readFormModuleVersion(zeroUuid, oneUuid);
+      const result = await formModuleService.readFormModuleVersion(
+        zeroUuid,
+        oneUuid
+      );
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });
@@ -98,7 +105,11 @@ describe('Form Module Service', () => {
       const data = { test: 'testdata' };
       mockAxios.onPut(endpoint).reply(200, data);
 
-      const result = await formModuleService.updateFormModuleVersion(zeroUuid, oneUuid, data);
+      const result = await formModuleService.updateFormModuleVersion(
+        zeroUuid,
+        oneUuid,
+        data
+      );
       expect(result).toBeTruthy();
       expect(result.data).toEqual(data);
       expect(mockAxios.history.put).toHaveLength(1);
@@ -111,7 +122,9 @@ describe('Form Module Service', () => {
     it('calls get endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
 
-      const result = await formModuleService.listFormModuleIdentityProviders(zeroUuid);
+      const result = await formModuleService.listFormModuleIdentityProviders(
+        zeroUuid
+      );
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });
