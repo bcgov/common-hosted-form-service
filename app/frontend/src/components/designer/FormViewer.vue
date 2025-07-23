@@ -16,7 +16,7 @@ import { useRouter } from 'vue-router';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
-import FormModuleLoader from '@/components/designer/FormModuleLoader.vue';
+import FormModuleLoader from '~/components/designer/FormModuleLoader.vue';
 import templateExtensions from '~/plugins/templateExtensions';
 import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';

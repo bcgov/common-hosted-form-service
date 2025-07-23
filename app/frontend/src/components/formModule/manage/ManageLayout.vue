@@ -38,7 +38,7 @@ onMounted(async () => {
       <!-- page title -->
       <v-col cols="12" sm="6" order="2" order-sm="1">
         <h1 :lang="locale">
-          {{ $t('trans.manageFormModuleLayout.manageFormModule') }}
+          {{ $t('trans.formModuleManageLayout.manageFormModule') }}
         </h1>
       </v-col>
       <!-- buttons -->

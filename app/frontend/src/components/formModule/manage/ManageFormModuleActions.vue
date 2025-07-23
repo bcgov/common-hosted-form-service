@@ -1,5 +1,5 @@
 <script setup>
-const { storeToRefs } = require('pinia');
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -85,12 +85,14 @@ async function updateActive() {
         <template #title>{{
           $t('trans.manageFormModuleActions.confirmDeactivationTitle')
         }}</template>
-        <template #text
-          >{{
-            $t('trans.manageFormModuleActions.confirmDeactivationText', {
-              pluginName: formModule.pluginName,
-            })
-          }}
+        <template #text>
+          <p
+            v-html="
+              $t('trans.manageFormModuleActions.confirmDeactivationText', {
+                pluginName: formModule.pluginName,
+              })
+            "
+          ></p>
         </template>
         <template #button-text-continue>
           <span>{{ $t('trans.manageFormModuleActions.deactivate') }}</span>

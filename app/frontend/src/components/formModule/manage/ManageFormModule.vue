@@ -54,7 +54,7 @@ async function updateSettings() {
     <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <!-- Form Settings -->
-        <v-expansion-panel-header>
+        <v-expansion-panel-title>
           <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
@@ -73,8 +73,8 @@ async function updateSettings() {
               </small>
             </span>
           </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
           <v-form
             ref="settingsFormModule"
             v-model="settingsFormModuleValid"
@@ -90,14 +90,14 @@ async function updateSettings() {
               }}</span>
             </v-btn>
           </div>
-        </v-expansion-panel-content>
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
 
     <!-- Form Module Versioning -->
     <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
-        <v-expansion-panel-header>
+        <v-expansion-panel-title>
           <template #actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
@@ -115,10 +115,10 @@ async function updateSettings() {
               </span>
             </div>
           </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
           <ManageFormModuleVersions />
-        </v-expansion-panel-content>
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>

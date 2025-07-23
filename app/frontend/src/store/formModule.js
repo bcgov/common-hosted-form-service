@@ -36,13 +36,6 @@ export const useFormModuleStore = defineStore('formModule', {
     formModuleVersionList: [],
     builder: genInitialBuilder(),
   }),
-  getters: {
-    formModule: (state) => state.formModule,
-    formModuleList: (state) => state.formModuleList,
-    formModuleVersion: (state) => state.formModuleVersion,
-    formModuleVersionList: (state) => state.formModuleVersionList,
-    builder: (state) => state.builder,
-  },
   actions: {
     async getFormModuleList(activeOnly) {
       try {

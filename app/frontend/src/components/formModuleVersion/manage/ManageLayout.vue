@@ -28,7 +28,10 @@ onMounted(async () => {
   loading.value = true;
   await Promise.all([
     formModuleStore.fetchFormModule(properties.fm),
-    formModuleStore.fetchFormModuleVersion(properties.fmv),
+    formModuleStore.fetchFormModuleVersion({
+      formModuleId: properties.fm,
+      formModuleVersionId: properties.fmv,
+    }),
   ]);
   loading.value = false;
 });
@@ -55,4 +58,3 @@ onMounted(async () => {
     </v-skeleton-loader>
   </div>
 </template>
-

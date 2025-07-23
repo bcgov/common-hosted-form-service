@@ -110,7 +110,9 @@ const versionList = computed(() => {
               </router-link>
             </template>
             <span :lang="locale">{{
-              $t('trans.manageFormModuleVersions.tableTemplateVersion')
+              $t('trans.manageFormModuleVersions.tableTemplateVersion', {
+                version: item.version,
+              })
             }}</span>
           </v-tooltip>
         </span>

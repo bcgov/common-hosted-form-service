@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import FormModuleManageLayout from '~/components/formModule/manage/ManageLayout.vue';
+
+import FormModuleVersionManageLayout from '~/components/formModuleVersion/manage/ManageLayout.vue';
 import { AppPermissions } from '~/utils/constants';
 
 defineProps({
@@ -18,7 +19,7 @@ const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure :admin="isAdmin" :permission="APP_PERMS.VIEWS_ADMIN">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_MANAGE">
     <FormModuleVersionManageLayout :fm="fm" :fmv="fmv" />
   </BaseSecure>
 </template>

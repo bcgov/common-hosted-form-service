@@ -7,12 +7,12 @@ import { onBeforeRouteLeave } from 'vue-router';
 import FormModuleVersionSettings from '~/components/formModuleVersion/FormModuleVersionSettings.vue';
 import { formModuleService } from '~/services';
 import { useFormModuleStore } from '/store/formModule';
-import { useNotificationsStore } from '~/store/notifications';
+import { useNotificationStore } from '~/store/notification';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
 const formModuleStore = useFormModuleStore();
-const notificationStore = useNotificationsStore();
+const notificationStore = useNotificationStore();
 
 const { formModule, formModuleVersion } = storeToRefs(formModuleStore);
 
@@ -31,7 +31,7 @@ watch(
 async function submitFormModule() {
   try {
     saving.value = true;
-    await formModule.setDirtyFlag(false);
+    await formModuleStore.setDirtyFlag(false);
 
     let euris = [];
 
@@ -50,7 +50,7 @@ async function submitFormModule() {
       formModuleVersionData
     );
   } catch (error) {
-    await formModule.setDirtyFlag(true);
+    await formModuleStore.setDirtyFlag(true);
     notificationStore.addNotification({
       text: t('trans.formModuleAddVersion.createFormModuleVersionErr'),
       consoleError: t(
@@ -82,7 +82,6 @@ onBeforeRouteLeave((_to, _from, next) => {
       <FormModuleVersionSettings />
     </v-form>
     <v-btn
-      class="py-4"
       color="primary"
       :disabled="!settingsFormModuleValid"
       @click="submitFormModule"

@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { useFormStore } from '~/store/form';
 import { useFormModuleStore } from '~/store/formModule';
 
 const { locale, t } = useI18n({ useScope: 'global' });
@@ -11,8 +12,10 @@ const activeOnly = ref(false);
 const loading = ref(true);
 const search = ref('');
 
+const formStore = useFormStore();
 const formModuleStore = useFormModuleStore();
 
+const { isRTL } = storeToRefs(formStore);
 const { formModuleList } = storeToRefs(formModuleStore);
 
 const calcHeaders = computed(() =>
@@ -44,15 +47,14 @@ const headers = computed(() => [
   },
 ]);
 
-async function refeshFormModules() {
+async function refreshFormModules() {
   loading.value = true;
   await formModuleStore.getFormModuleList(!activeOnly.value);
   loading.value = false;
 }
 
 onMounted(async () => {
-  await formModuleStore.getFormModuleList(!activeOnly.value);
-  loading.value = false;
+  await refreshFormModules();
 });
 </script>
 <template>
@@ -92,7 +94,7 @@ onMounted(async () => {
           v-model="activeOnly"
           class="pl-3"
           :label="$t('trans.adminFormModulesTable.showInactive')"
-          @click="refeshFormModules"
+          @click="refreshFormModules"
         />
       </v-col>
       <v-col cols="12" sm="4">
@@ -107,7 +109,7 @@ onMounted(async () => {
             :label="$t('trans.adminFormModulesTable.search')"
             class="pb-5"
             :class="{ label: isRTL }"
-            :loading="locale"
+            :loading="loading"
           />
         </div>
       </v-col>
@@ -121,7 +123,7 @@ onMounted(async () => {
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminFormModulesTable.loadingText')"
-      no-data-text="$t('trans.adminFormModulesTable.noDataText')"
+      :no-data-text="$t('trans.adminFormModulesTable.noDataText')"
     >
       <template #[`item.actions`]="{ item }">
         <router-link :to="{ name: 'FormModuleManage', query: { fm: item.id } }">

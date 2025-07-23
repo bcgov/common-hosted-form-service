@@ -15,19 +15,19 @@ const { locale, t } = useI18n({ useScope: 'global' });
 const properties = defineProps({
   formId: {
     type: String,
-    required: true,
+    default: null,
   },
   formVersionId: {
     type: String,
-    required: true,
+    default: null,
   },
   formDraftId: {
     type: String,
-    required: true,
+    default: null,
   },
   submissionId: {
     type: String,
-    required: true,
+    default: null,
   },
 });
 
@@ -59,6 +59,7 @@ watch(remainingObjects, (value) => {
 });
 
 async function loadDefaultModules() {
+  console.log('loading default modules');
   await formModuleStore.getFormModuleList({ active: true });
   for (const module of formModuleList.value) {
     for (const moduleVersion of module.formModuleVersions) {
@@ -187,6 +188,7 @@ function updateBuilder() {
 
 function parseFormModuleVersion(fmv) {
   let importData = JSON.parse(JSON.stringify(fmv.importData));
+  console.log(importData);
   if ('components' in importData) {
     if ('builderCategories' in importData.components) {
       // Prep any builder categories, if the module creates a category, give it a components object
@@ -257,6 +259,7 @@ loadModules();
     <h1 class="text-center" :lang="locale">
       {{ $t('trans.formModuleLoader.loadingFormModules') }}
     </h1>
+    {{ builder }}
     <h5 class="text-center" :lang="locale">
       {{
         $t('trans.formModuleLoader.remainingObjects', {

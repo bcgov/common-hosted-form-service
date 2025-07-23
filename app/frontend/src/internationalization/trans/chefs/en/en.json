@@ -464,7 +464,8 @@
     "apis": "APIs",
     "developer": "Developer",
     "infoLinks": "Info Links",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "adminFormModulesTable": "Form Modules"
   },
   "adminAPIsTable": {
     "search": "Search",
@@ -1316,7 +1317,7 @@
     "active": "Active",
     "inactive": "Inactive",
     "confirmDeactivationTitle": "Confirm Deactivation",
-    "confirmDeactivationText": "Are you sure you wish to deactivate <strong>(pluginName)</strong>? This form module will be deactivated for all form designers. It will still be available for reviewers and submitters.",
+    "confirmDeactivationText": "Are you sure you wish to deactivate <strong>%{pluginName}</strong>? This form module will be deactivated for all form designers. It will still be available for reviewers and submitters.",
     "deactivate": "Deactivate"
   },
   "manageFormModuleVersions": {
@@ -1354,5 +1355,8 @@
     "createFormModuleVersionConsErr":"Error creating form module version: {error}",
     "importFormModule": "Import Form Module",
     "submit": "Submit"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Manage Form Module"
   }
 }

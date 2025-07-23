@@ -8,13 +8,13 @@ import FormModuleSettings from '~/components/formModule/FormModuleSettings.vue';
 import FormModuleVersionSettings from '~/components/formModuleVersion/FormModuleVersionSettings.vue';
 import { formModuleService } from '~/services';
 import { useFormModuleStore } from '~/store/formModule';
-import { useNotificationsStore } from '~/store/notifications';
+import { useNotificationStore } from '~/store/notification';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
 
 const formModuleStore = useFormModuleStore();
-const notificationStore = useNotificationsStore();
+const notificationStore = useNotificationStore();
 
 const { formModule, formModuleVersion } = storeToRefs(formModuleStore);
 
@@ -107,7 +107,7 @@ onBeforeRouteLeave((_to, _from, next) => {
       <FormModuleVersionSettings />
     </v-form>
     <v-btn
-      class="py-4"
+      size="large"
       color="primary"
       :disabled="!settingsFormModuleValid"
       @click="submitFormModule"

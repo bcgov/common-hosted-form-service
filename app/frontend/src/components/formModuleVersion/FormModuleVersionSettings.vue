@@ -4,44 +4,48 @@ import { ref, onMounted, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormModuleStore } from '~/store/formModule';
-import { useNotificationsStore } from '~/store/notifications';
+import { useNotificationStore } from '~/store/notification';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
 const formModuleStore = useFormModuleStore();
-const notificationStore = useNotificationsStore();
+const notificationStore = useNotificationStore();
 const { formModuleVersion } = storeToRefs(formModuleStore);
 
 const externalUriRules = [
   (v) => !!v || t('trans.formModuleVersionSettings.externalUriRequired'),
   (v) =>
-    (v && v.length <= 255) || t('trans.formModuleVersionSettings.externalUriMaxLength', { length: 255 }),
+    (v && v.length <= 255) ||
+    t('trans.formModuleVersionSettings.externalUriMaxLength', { length: 255 }),
 ];
 const externalUriId = ref(1);
 const isLoading = ref(true);
 
 function addUri() {
   externalUriId.value++;
-  formModuleVersion.externalUris.push({ id: externalUriId.value, uri: '' });
+  formModuleVersion.value.externalUris.push({
+    id: externalUriId.value,
+    uri: '',
+  });
 }
 
 function removeUri(item) {
-  if (formModuleVersion.externalUris.length == 1) {
+  if (formModuleVersion.value.externalUris.length == 1) {
     notificationStore.addNotification({
       text: t('trans.formModuleVersionSettings.externalUriMinOne'),
     });
     return;
   }
-  let index = formModuleVersion.externalUris
+  let index = formModuleVersion.value.externalUris
     .map((uri) => {
       return uri.id;
     })
     .indexOf(item.id);
-  formModuleVersion.externalUris.splice(index, 1);
+  formModuleVersion.value.externalUris.splice(index, 1);
 }
 
 onMounted(() => {
-  if (!formModuleVersion.id) {
+  if (!formModuleVersion.value.id) {
     addUri();
   }
   nextTick(() => {
@@ -58,7 +62,11 @@ onMounted(() => {
           <template #title>{{
             $t('trans.formModuleVersionSettings.importData')
           }}</template>
-          <v-textarea v-model="importData" name="importData" no-resize>
+          <v-textarea
+            v-model="formModuleVersion.importData"
+            name="importData"
+            no-resize
+          >
           </v-textarea>
         </BasePanel>
       </v-col>
@@ -71,20 +79,25 @@ onMounted(() => {
               $t('trans.formModuleVersionSettings.externalUris')
             }}</span></template
           >
-          <div v-for="(item, index) in externalUris" :key="index">
+          <div
+            v-for="(item, index) in formModuleVersion.externalUris"
+            :key="index"
+          >
             <v-text-field v-model="item.uri" :rules="externalUriRules">
-              <v-icon
-                append-icon="mdi:mdi-minus"
-                color="red"
-                @click="removeUri(item)"
-              >
-              </v-icon>
-              <v-icon
-                prepend-icon="mdi:mdi-plus"
-                color="green"
-                @click="addUri()"
-              >
-              </v-icon>
+              <template #prepend>
+                <v-btn
+                  icon="mdi-minus"
+                  color="red"
+                  @click="removeUri(item)"
+                ></v-btn>
+              </template>
+              <template #append>
+                <v-btn
+                  icon="mdi-plus"
+                  color="primary"
+                  @click="addUri()"
+                ></v-btn>
+              </template>
             </v-text-field>
           </div>
         </BasePanel>
@@ -92,8 +105,3 @@ onMounted(() => {
     </v-row>
   </v-container>
 </template>
-
-<style lang="scss" scoped>
-@import '~font-awesome/css/font-awesome.min.css';
-@import '~formiojs/dist/formio.builder.min.css';
-</style>
