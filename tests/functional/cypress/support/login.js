@@ -54,7 +54,10 @@ export function formsettings(){
     });
     //validate share draft with team is not enabled
     cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.be.enabled');
+    //Save and edit draft
     cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
+    //Upload draft
+    cy.get('[data-test="canUploadDraftCheckbox"]').click();
      //validate share draft with team is enabled
     cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//Update the status of the form
