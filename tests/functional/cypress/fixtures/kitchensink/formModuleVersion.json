@@ -2,9 +2,9 @@
   "id": "44826149-17e4-403e-8b95-8017b7d14de0",
   "formModuleId": "bbaf9835-87ea-4a0e-9681-1d4355ad70b7",
   "externalUris": ["https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.css", "https://jasonchung1871.github.io/chefs_modules/bcgov-formio-components.use.min.js"],
-  "importData": {
+  "config": {
     "components": {
-      "builderCategories": {
+      "categories": {
         "layoutControls": {
           "title": "Basic Layout",
           "default": true,

@@ -1,10 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { ref, onMounted, nextTick } from 'vue';
+import { computed, ref, onMounted, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormModuleStore } from '~/store/formModule';
 import { useNotificationStore } from '~/store/notification';
+
+import { FormDesignerBuilderOptions } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -20,6 +22,19 @@ const externalUriRules = [
 ];
 const externalUriId = ref(1);
 const isLoading = ref(true);
+
+const FORM_DESIGNER_BUILDER_OPTIONS = computed(() => {
+  return JSON.stringify(
+    {
+      components: FormDesignerBuilderOptions,
+      config: {
+        GEO_ADDRESS_API_URL: '/api/v1/bcgeoaddress/advance/address',
+      },
+    },
+    null,
+    2
+  );
+});
 
 function addUri() {
   externalUriId.value++;
@@ -59,13 +74,28 @@ onMounted(() => {
     <v-row>
       <v-col>
         <BasePanel class="fill-height">
-          <template #title>{{
-            $t('trans.formModuleVersionSettings.importData')
-          }}</template>
+          <template #title>
+            <v-row>
+              <v-col class="flex-grow-1 flex-shrink-0">{{
+                $t('trans.formModuleVersionSettings.config')
+              }}</v-col>
+              <v-col class="flex-grow-0 flex-shrink-0" cols="2"
+                ><v-btn
+                  color="primary"
+                  @click="
+                    () =>
+                      (formModuleVersion.config = FORM_DESIGNER_BUILDER_OPTIONS)
+                  "
+                  >Default</v-btn
+                ></v-col
+              >
+            </v-row>
+          </template>
           <v-textarea
-            v-model="formModuleVersion.importData"
-            name="importData"
-            no-resize
+            v-model="formModuleVersion.config"
+            name="config"
+            :placeholder="FORM_DESIGNER_BUILDER_OPTIONS"
+            auto-grow
           >
           </v-textarea>
         </BasePanel>

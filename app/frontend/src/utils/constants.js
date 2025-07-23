@@ -256,13 +256,35 @@ export const FormComponentProactiveHelpValues = Object.freeze({
 });
 
 export const FormDesignerBuilderOptions = Object.freeze({
-  basic: false,
-  premium: false,
-  layoutControls: {
-    title: 'Basic Layout',
-    default: true,
-    weight: 10,
-    components: {
+  categories: {
+    layoutControls: {
+      title: 'Basic Layout',
+      default: true,
+      weight: 10,
+    },
+    entryControls: {
+      title: 'Basic Fields',
+      weight: 20,
+    },
+    layout: {
+      title: 'Advanced Layout',
+      weight: 30,
+    },
+    advanced: {
+      title: 'Advanced Fields',
+      weight: 40,
+    },
+    data: {
+      title: 'Advanced Data',
+      weight: 50,
+    },
+    customControls: {
+      title: 'BC Government',
+      weight: 60,
+    },
+  },
+  builder: {
+    layoutControls: {
       simplecols2: true,
       simplecols3: true,
       simplecols4: true,
@@ -273,11 +295,7 @@ export const FormDesignerBuilderOptions = Object.freeze({
       simpleparagraph: false,
       simpletabs: true,
     },
-  },
-  entryControls: {
-    title: 'Basic Fields',
-    weight: 20,
-    components: {
+    entryControls: {
       simplecheckbox: true,
       simplecheckboxes: true,
       simpledatetime: true,
@@ -291,26 +309,25 @@ export const FormDesignerBuilderOptions = Object.freeze({
       simpletextfield: true,
       simpletime: false,
     },
-  },
-  layout: {
-    title: 'Advanced Layout',
-    weight: 30,
-  },
-  advanced: {
-    title: 'Advanced Fields',
-    weight: 40,
-    components: {
-      // Need to re-define Formio basic fields here
-      // To disable fields make it false here
-      // textfield: true,
-      // textarea: true,
-      // number: true,
-      // password: true,
-      // checkbox: true,
-      // selectboxes: true,
-      // select: true,
-      // radio: true,
-      // button: true,
+    advanced: {
+      simpletextfieldadvanced: true,
+      simpleemailadvanced: true,
+      simpletextareaadvanced: true,
+      simpleurladvanced: true,
+      simplenumberadvanced: true,
+      simplephonenumberadvanced: true,
+      simpleaddressadvanced: true,
+      simplepasswordadvanced: true,
+      simpledatetimeadvanced: true,
+      simplecheckboxadvanced: true,
+      simpledayadvanced: true,
+      simpletimeadvanced: true,
+      simpleselectadvanced: true,
+      simplecurrencyadvanced: true,
+      simpleradioadvanced: true,
+      simplebuttonadvanced: true,
+      simplesurveyadvanced: true,
+      simplesignatureadvanced: true,
       email: false,
       url: false,
       phoneNumber: false,
@@ -322,24 +339,16 @@ export const FormDesignerBuilderOptions = Object.freeze({
       currency: false,
       survey: false,
       signature: false,
-      // Prevent duplicate appearance of orgbook component
       orgbook: false,
       bcaddress: false,
       simplebcaddress: false,
     },
-  },
-  data: {
-    title: 'Advanced Data',
-    weight: 50,
-  },
-  customControls: {
-    title: 'BC Government',
-    weight: 60,
-    components: {
+    customControls: {
       orgbook: true,
       bcaddress: true,
       simplebcaddress: true,
       map: true,
+      simplefile: true,
     },
   },
 });

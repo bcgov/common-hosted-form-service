@@ -73,7 +73,7 @@ describe('Admin Vue', () => {
         }
       });
     });
-    cy.get('textarea[name="importData"]').type(JSON.stringify(formModuleVersionData.importData),{parseSpecialCharSequences: false, delay: 0});
+    cy.get('textarea[name="config"]').type(JSON.stringify(formModuleVersionData.config),{parseSpecialCharSequences: false, delay: 0});
     for (let i = 1; i < formModuleVersionData.externalUris.length; i++) {
       cy.get('button').contains('add').click();
     }
@@ -159,7 +159,7 @@ describe('Admin Vue', () => {
       times: 1
     }).as('getFormModuleVersion');
 
-    cy.get('textarea[name="importData"]').clear().type(JSON.stringify(updatedFormModuleVersionData.importData), {parseSpecialCharSequences: false, delay: 0});
+    cy.get('textarea[name="config"]').clear().type(JSON.stringify(updatedFormModuleVersionData.config), {parseSpecialCharSequences: false, delay: 0});
     let uris = cy.get('div').contains('External URIs').next().find('input');
     uris.each(($el, index) => {
       cy.wrap($el).clear().type(updatedFormModuleVersionData.externalUris[index], {parseSpecialCharSequences: false, delay: 0});
@@ -168,7 +168,7 @@ describe('Admin Vue', () => {
     cy.get('button').contains('Update').click();
     cy.wait(['@updateFormModuleVersion', '@getFormModuleVersion']);
 
-    cy.get('textarea[name="importData"]').should('have.value', JSON.stringify(updatedFormModuleVersionData.importData));
+    cy.get('textarea[name="config"]').should('have.value', JSON.stringify(updatedFormModuleVersionData.config));
     uris = cy.get('div').contains('External URIs').next().find('input');
     uris.each(($el, index) => {
       cy.wrap($el).should('have.value', updatedFormModuleVersionData.externalUris[index]);
@@ -191,7 +191,7 @@ describe('Admin Vue', () => {
       body: secondFormModuleVersionData
     });
     
-    cy.get('textarea[name="importData"]').clear().type(JSON.stringify(secondFormModuleVersionData.importData), {parseSpecialCharSequences: false, delay: 0});let uris = cy.get('div').contains('External URIs').next().find('input');
+    cy.get('textarea[name="config"]').clear().type(JSON.stringify(secondFormModuleVersionData.config), {parseSpecialCharSequences: false, delay: 0});let uris = cy.get('div').contains('External URIs').next().find('input');
     uris.each(($el, index) => {
       cy.wrap($el).clear().type(secondFormModuleVersionData.externalUris[index], {parseSpecialCharSequences: false, delay: 0});
     });

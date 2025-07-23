@@ -950,7 +950,7 @@ const service = {
       for (let i = 0; i < formModules.length; i++) {
         for (let j = 0; j < formModules[i].formModuleVersions.length; j++) {
           let formVersionFormModuleVersion = {
-            id: uuidv4(),
+            id: uuid.v4(),
             formVersionId: version.id,
             formModuleVersionId: formModules[i].formModuleVersions[j].id,
             createdBy: currentUser.usernameIdp,

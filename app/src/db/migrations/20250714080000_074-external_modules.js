@@ -16,7 +16,6 @@ exports.up = function (knex) {
         table.uuid('id').primary();
         table.uuid('formModuleId').notNullable().index().references('id').inTable('form_module').onUpdate('CASCADE').onDelete('CASCADE');
         table.specificType('externalUris', 'text[]').notNullable();
-        table.text('importData');
         table.jsonb('config');
         stamps(knex, table);
       }))

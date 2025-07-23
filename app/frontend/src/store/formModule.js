@@ -25,7 +25,7 @@ const genInitialFormModuleVersion = () => ({
   id: '',
   formModuleId: '',
   externalUris: [],
-  importData: '',
+  config: '',
 });
 
 export const useFormModuleStore = defineStore('formModule', {
@@ -110,7 +110,7 @@ export const useFormModuleStore = defineStore('formModule', {
           id: index,
           uri: uri,
         }));
-        data.importData = JSON.stringify(data.importData);
+        data.config = JSON.stringify(data.config);
         this.formModuleVersion = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -208,7 +208,7 @@ export const useFormModuleStore = defineStore('formModule', {
           this.formModule.id,
           this.formModuleVersion.id,
           {
-            importData: this.formModuleVersion.importData,
+            config: this.formModuleVersion.config,
             externalUris: uris.concat(
               this.formModuleVersion.externalUris.map((euri) => euri.uri)
             ),

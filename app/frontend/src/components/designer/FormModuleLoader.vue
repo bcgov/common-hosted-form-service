@@ -209,71 +209,61 @@ function updateBuilder() {
       });
     });
   } else if (formModuleVersionList.length > 0) {
-    console.log('formModuleVersionList:', formModuleVersionList.value);
     formModuleVersionList.value.forEach((formModuleVersion) => {
       parseFormModuleVersion(formModuleVersion.formModuleVersion);
     });
   }
-  console.log('builder', builder.value);
   formModuleStore.setBuilder(builder.value);
 }
 
 function parseFormModuleVersion(fmv) {
-  window.FORMIO_CONFIG = fmv.config;
   let importData =
-    typeof fmv.importData === 'string'
-      ? JSON.parse(fmv.importData)
-      : JSON.parse(JSON.stringify(fmv.importData));
-  console.log('importData', importData);
+    typeof fmv.config === 'string'
+      ? JSON.parse(fmv.config)
+      : JSON.parse(JSON.stringify(fmv.config));
+  if ('config' in importData) {
+    window.FORMIO_CONFIG = importData.config;
+  }
   if ('components' in importData) {
-    if ('builderCategories' in importData.components) {
+    if ('categories' in importData.components) {
       // Prep any builder categories, if the module creates a category, give it a components object
       for (let [key, value] of Object.entries(
-        importData.components['builderCategories']
+        importData.components['categories']
       )) {
         // If the builder category exists and hasn't been initialized yet
-        if (key in builder.value && typeof builder.value[key] === 'object') {
-          // Map the modules builder category to update it
-          Object.assign(builder.value[key], value);
-        } else {
-          // This is a new builder category
-          builder.value[key] = value;
-        }
-        if (
-          typeof builder.value[key] === 'object' &&
-          !('components' in builder.value[key])
-        ) {
+        builder.value[key] = builder.value[key] || {};
+        // Map the modules builder category to update it
+        Object.assign(builder.value[key], value);
+        if (!('components' in builder.value[key])) {
           builder.value[key]['components'] = {};
         }
       }
     }
 
-    for (const [categoryKey, categoryValue] of Object.entries(
-      importData.components.builder
-    )) {
-      for (const [componentKey, componentValue] of Object.entries(
-        categoryValue
+    if ('builder' in importData.components) {
+      for (const [categoryKey, categoryValue] of Object.entries(
+        importData.components.builder
       )) {
-        if (typeof componentValue === 'boolean') {
-          formModuleStore.registerComponent(
-            categoryKey.toString(),
-            componentKey.toString(),
-            componentValue
-          );
-        } else if (
-          componentValue &&
-          typeof componentValue === 'object' &&
-          'userType' in componentValue &&
-          'denylist' in componentValue.userType
-        ) {
-          const isAllowed = !componentValue.userType.denylist.includes(
-            form.value.userType
-          );
-          formModuleStore.registerComponent(
-            categoryKey.toString(),
-            componentKey.toString(),
-            isAllowed
-          );
+        builder.value[categoryKey] = builder.value[categoryKey] || {};
+        builder.value[categoryKey]['components'] =
+          builder.value[categoryKey]['components'] || {};
+        for (const [componentKey, componentValue] of Object.entries(
+          categoryValue
+        )) {
+          if (typeof componentValue === 'boolean') {
+            builder.value[categoryKey]['components'][componentKey] =
+              componentValue;
+          } else if (
+            componentValue &&
+            typeof componentValue === 'object' &&
+            'userType' in componentValue &&
+            'denylist' in componentValue.userType
+          ) {
+            const isAllowed = !componentValue.userType.denylist.includes(
+              form.value.userType
+            );
+            builder.value[categoryKey]['components'][componentKey] = isAllowed;
+          }
         }
       }
     }

@@ -168,12 +168,12 @@ describe('form module CRUD', () => {
   describe('form module version CRUD', () => {
     const formModuleVersionBody = {
       externalUris: [ 'MOCK_URI' ],
-      importData: {}
+      config: {}
     };
 
     const formModuleVersionUpd = {
       externalUris: [ 'MOCK_URI2' ],
-      importData: {
+      config: {
         matrix: true,
       }
     };
@@ -204,7 +204,7 @@ describe('form module CRUD', () => {
       };
       
       jest.spyOn(controller, 'createFormModuleVersion');
-      service.createFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: [ 'MOCK_URI' ], importData: {}});
+      service.createFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: [ 'MOCK_URI' ], config: {}});
   
       let next = jest.fn();
   
@@ -223,7 +223,7 @@ describe('form module CRUD', () => {
       };
       
       jest.spyOn(controller, 'updateFormModuleVersion');
-      service.updateFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: [ 'MOCK_URI2' ], importData: { matrix: true }});
+      service.updateFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId, formModuleId: formModuleId, externalUris: [ 'MOCK_URI2' ], config: { matrix: true }});
   
       let next = jest.fn();
   

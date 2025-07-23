@@ -43,11 +43,10 @@ async function submitFormModule() {
 
     let euris = [];
 
-    if (!formModuleVersion.value.importData)
-      formModuleVersion.value.importData = '';
+    if (!formModuleVersion.value.config) formModuleVersion.value.config = '';
 
     let formModuleVersionData = {
-      importData: formModuleVersion.value.importData,
+      config: formModuleVersion.value.config,
       externalUris: euris.concat(
         formModuleVersion.value.externalUris.map((i) => i.uri)
       ),

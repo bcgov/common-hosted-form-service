@@ -19,8 +19,8 @@ class FormModule extends Timestamps(Model) {
         modelClass: FormModuleVersion,
         join: {
           from: 'form_module.id',
-          to: 'form_module_version.formModuleId'
-        }
+          to: 'form_module_version.formModuleId',
+        },
       },
       idpHints: {
         relation: Model.HasManyRelation,
@@ -28,8 +28,8 @@ class FormModule extends Timestamps(Model) {
         filter: query => query.select('code'),
         join: {
           from: 'form_module.id',
-          to: 'form_module_identity_provider.formModuleId'
-        }
+          to: 'form_module_identity_provider.formModuleId',
+        },
       },
       identityProviders: {
         relation: Model.ManyToManyRelation,
@@ -38,11 +38,11 @@ class FormModule extends Timestamps(Model) {
           from: 'form_module.id',
           through: {
             from: 'form_module_identity_provider.formModuleId',
-            to: 'form_module_identity_provider.code'
+            to: 'form_module_identity_provider.code',
           },
-          to: 'identity_provider.code'
-        }
-      }
+          to: 'identity_provider.code',
+        },
+      },
     };
   }
 
@@ -68,10 +68,10 @@ class FormModule extends Timestamps(Model) {
       },
       orderPluginNameAscending(builder) {
         builder.orderByRaw('lower("pluginName")');
-      }
+      },
     };
   }
-  
+
   static get jsonSchema() {
     return {
       type: 'object',
@@ -80,9 +80,9 @@ class FormModule extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         pluginName: { type: 'string', minLength: 1, maxLength: 255 },
         active: { type: 'boolean' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 

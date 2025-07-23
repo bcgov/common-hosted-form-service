@@ -17,9 +17,9 @@ class FormModuleVersion extends Timestamps(Model) {
         modelClass: FormVersionFormModuleVersion,
         join: {
           from: 'form_module_version.id',
-          to: 'form_version_form_module_version.formModuleVersionId'
-        }
-      }
+          to: 'form_version_form_module_version.formModuleVersionId',
+        },
+      },
     };
   }
 
@@ -38,14 +38,14 @@ class FormModuleVersion extends Timestamps(Model) {
       },
       orderUpdatedAtDescending(builder) {
         builder.orderBy('updatedAt', 'desc');
-      }
+      },
     };
   }
 
   // exclude externalUris array from explicit JSON conversion
   // encounter malformed array literal
   static get jsonAttributes() {
-    return ['id', 'formModuleId', 'importData', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
+    return ['id', 'formModuleId', 'config', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt'];
   }
 
   static get jsonSchema() {
@@ -56,14 +56,12 @@ class FormModuleVersion extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formModuleId: { type: 'string', pattern: Regex.UUID },
         externalUris: { type: ['array'], items: { type: 'string' } },
-        importData: { type: 'string' },
-        config: { type: 'object' },
-        ...stamps
+        config: { type: 'string' },
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormModuleVersion;

@@ -18,16 +18,16 @@ class FormVersionFormModuleVersion extends Timestamps(Model) {
         modelClass: FormVersion,
         join: {
           from: 'form_version_form_module_version.formVersionId',
-          to: 'form_version.id'
-        }
+          to: 'form_version.id',
+        },
       },
       formModuleVersion: {
         relation: Model.HasOneRelation,
         modelClass: FormModuleVersion,
         join: {
           from: 'form_version_form_module_version.formModuleVersionId',
-          to: 'form_module_version.id'
-        }
+          to: 'form_module_version.id',
+        },
       },
     };
   }
@@ -46,7 +46,7 @@ class FormVersionFormModuleVersion extends Timestamps(Model) {
       },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'desc');
-      }
+      },
     };
   }
 
@@ -58,12 +58,11 @@ class FormVersionFormModuleVersion extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formVersionId: { type: 'string', pattern: Regex.UUID },
         formModuleVersionId: { type: 'string', pattern: Regex.UUID },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormVersionFormModuleVersion;

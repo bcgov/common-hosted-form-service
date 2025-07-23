@@ -1336,8 +1336,8 @@
     "externalUriRequired": "External URI is required",
     "externalUriMaxLength": "External URI must be 255 characters or less",
     "externalUriMinOne": "You need at least one URI",
-    "importData": "Import Data (JSON)",
-    "externalUris": "External URIs"
+    "externalUris": "External URIs",
+    "config": "Configuration (JSON)"
   },
   "manageFormModuleVersion": {
     "updateFormModuleVersionSuccess": "Your form module version settings have been updated successfully.",

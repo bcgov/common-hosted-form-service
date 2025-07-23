@@ -153,12 +153,12 @@ describe('form module CRUD', () => {
   describe('form module version CRUD', () => {
     const formModuleVersionBody = {
       externalUris: [ 'MOCK_URI' ],
-      importData: {}
+      config: {}
     };
 
     const formModuleVersionUpd = {
       externalUris: [ 'MOCK_URI2' ],
-      importData: {
+      config: {
         matrix: true,
       }
     };
@@ -204,7 +204,7 @@ describe('form module CRUD', () => {
       expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
       expect(MockModel.patchAndFetchById).toHaveBeenCalledWith(formModuleVersionId, {
         externalUris: [ 'MOCK_URI2' ],
-        importData: {
+        config: {
           matrix: true,
         },
         updatedBy: currentUser.usernameIdp

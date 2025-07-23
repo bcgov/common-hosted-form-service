@@ -2,12 +2,7 @@ const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 const { queryUtils, falsey } = require('../common/utils');
 
-const {
-  FormModule,
-  FormModuleIdentityProvider,
-  FormModuleVersion,
-  IdentityProvider,
-} = require('../common/models');
+const { FormModule, FormModuleIdentityProvider, FormModuleVersion, IdentityProvider } = require('../common/models');
 
 const service = {
   listFormModules: async (params) => {
@@ -61,7 +56,7 @@ const service = {
       const upd = {
         pluginName: data.pluginName,
         active: data.active,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
       };
 
       await FormModule.query(trx).patchAndFetchById(formModuleId, upd);
@@ -69,11 +64,11 @@ const service = {
       // remove any existing links to identity providers, and the updated ones
       await FormModuleIdentityProvider.query(trx).delete().where('formModuleId', obj.id);
       // insert any new identity providers
-      const fIdps = data.identityProviders.map(p => ({
+      const fIdps = data.identityProviders.map((p) => ({
         id: uuidv4(),
         formModuleId: obj.id,
         code: p.code,
-        createdBy: currentUser.usernameIdp
+        createdBy: currentUser.usernameIdp,
       }));
       if (fIdps && fIdps.length) await FormModuleIdentityProvider.query(trx).insert(fIdps);
 
@@ -94,7 +89,7 @@ const service = {
 
       const upd = {
         active: active,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
       };
 
       await FormModule.query(trx).patchAndFetchById(formModuleId, upd);
@@ -116,9 +111,7 @@ const service = {
       .throwIfNotFound();
   },
   listFormModuleVersions: (formModuleId) => {
-    return FormModuleVersion.query()
-      .modify('filterFormModuleId', formModuleId)
-      .modify('orderCreatedAtDescending');
+    return FormModuleVersion.query().modify('filterFormModuleId', formModuleId).modify('orderCreatedAtDescending');
   },
   createFormModuleVersion: async (formModuleId, data, currentUser) => {
     let trx;
@@ -131,7 +124,7 @@ const service = {
       obj.id = uuidv4();
       obj.formModuleId = formModuleId;
       obj.externalUris = data.externalUris;
-      obj.importData = data.importData;
+      obj.config = data.config;
       obj.createdBy = currentUser.usernameIdp;
 
       await FormModuleVersion.query(trx).insert(obj);
@@ -149,11 +142,11 @@ const service = {
     try {
       const obj = await service.readFormModuleVersion(formModuleVersionId);
       trx = await FormModuleVersion.startTransaction();
-      if (!data.importData) data.importData = '';
+      if (!data.config) data.config = '';
       const upd = {
         externalUris: data.externalUris,
-        importData: data.importData,
-        updatedBy: currentUser.usernameIdp
+        config: data.config,
+        updatedBy: currentUser.usernameIdp,
       };
 
       await FormModuleVersion.query(trx).patchAndFetchById(formModuleVersionId, upd);
@@ -167,13 +160,10 @@ const service = {
     }
   },
   readFormModuleVersion: (formModuleVersionId) => {
-    return FormModuleVersion.query()
-      .findById(formModuleVersionId)
-      .throwIfNotFound();
+    return FormModuleVersion.query().findById(formModuleVersionId).throwIfNotFound();
   },
   listFormModuleIdentityProviders: (formModuleId) => {
-    return FormModuleIdentityProvider.query()
-      .modify('filterFormModuleId', formModuleId);
+    return FormModuleIdentityProvider.query().modify('filterFormModuleId', formModuleId);
   },
 };
 

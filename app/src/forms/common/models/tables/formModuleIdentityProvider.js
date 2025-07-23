@@ -23,7 +23,7 @@ class FormModuleIdentityProvider extends Timestamps(Model) {
       },
       orderDefault(builder) {
         builder.orderByRaw('lower("code")');
-      }
+      },
     };
   }
 
@@ -35,12 +35,11 @@ class FormModuleIdentityProvider extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formModuleId: { type: 'string', pattern: Regex.UUID },
         code: { type: 'string', minLength: 1, maxLength: 255 },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
-
 }
 
 module.exports = FormModuleIdentityProvider;
