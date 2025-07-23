@@ -186,7 +186,7 @@ watch(locale, () => {
 
 watch(loadingFormModules, (value) => {
   if (!value) {
-    this.reRenderFormIo += 1;
+    reRenderFormIo.value += 1;
   }
 });
 

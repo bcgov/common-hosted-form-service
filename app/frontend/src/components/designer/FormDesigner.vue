@@ -95,7 +95,7 @@ watch(locale, (value) => {
 
 watch(loadingFormModules, (value) => {
   if (!value) {
-    this.reRenderFormIo += 1;
+    reRenderFormIo.value += 1;
   }
 });
 
@@ -121,7 +121,7 @@ const designerOptions = computed(() => {
       ALLOWED_TAGS: ['iframe'],
     },
     noDefaultSubmitButton: false,
-    builder: builder,
+    builder: builder.value,
     language: locale.value ? locale.value : 'en',
     i18n: formioIl8next,
     templates: templateExtensions,

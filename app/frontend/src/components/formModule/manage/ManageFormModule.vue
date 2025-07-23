@@ -35,7 +35,7 @@ async function updateSettings() {
         text: t('trans.manageFormModule.updateFormModuleSuccess'),
         ...NotificationTypes.SUCCESS,
       });
-      formModuleStore.fetchFormModule(this.formModule.id);
+      formModuleStore.fetchFormModule(formModule.value.id);
     }
   } catch (error) {
     notificationStore.addNotification({

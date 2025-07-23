@@ -58,16 +58,33 @@ watch(remainingObjects, (value) => {
   }
 });
 
-async function loadDefaultModules() {
-  console.log('loading default modules');
-  await formModuleStore.getFormModuleList({ active: true });
-  for (const module of formModuleList.value) {
-    for (const moduleVersion of module.formModuleVersions) {
-      for (const uri of moduleVersion.externalUris) {
-        formModuleUris.value.push(uri);
+function latestModuleUris(modules) {
+  const uris = [];
+  for (const module of modules) {
+    if (
+      Array.isArray(module.formModuleVersions) &&
+      module.formModuleVersions.length > 0
+    ) {
+      // Get the latest version by updatedAt or createdAt
+      const latestVersion = [...module.formModuleVersions].sort((a, b) => {
+        const aDate = new Date(a.updatedAt || a.createdAt);
+        const bDate = new Date(b.updatedAt || b.createdAt);
+        return bDate - aDate;
+      })[0];
+      if (latestVersion && Array.isArray(latestVersion.externalUris)) {
+        for (const uri of latestVersion.externalUris) {
+          uris.push(typeof uri === 'string' ? uri : uri.uri);
+        }
       }
     }
   }
+  // Deduplicate
+  return [...new Set(uris)];
+}
+
+async function loadDefaultModules() {
+  await formModuleStore.getFormModuleList({ active: true });
+  formModuleUris.value = latestModuleUris(formModuleList.value);
 }
 
 async function loadModulesWithFormVersion(formId, formVersionId) {
@@ -75,6 +92,7 @@ async function loadModulesWithFormVersion(formId, formVersionId) {
     formId: formId,
     formVersionId: formVersionId,
   });
+  const modules = [];
   if (
     formModuleVersionList.value &&
     Array.isArray(formModuleVersionList.value) &&
@@ -85,11 +103,13 @@ async function loadModulesWithFormVersion(formId, formVersionId) {
         formModuleId: fmv.formModuleVersion.formModuleId,
         formModuleVersionId: fmv.formModuleVersionId,
       });
-      for (const uri of formModuleVersion.value.externalUris) {
-        if (typeof uri !== 'string') formModuleUris.value.push(uri.uri);
-        else formModuleUris.value.push(uri);
-      }
+      modules.push({
+        formModuleVersions: [
+          JSON.parse(JSON.stringify(formModuleVersion.value)),
+        ],
+      });
     }
+    formModuleUris.value = latestModuleUris(modules);
   } else {
     await loadDefaultModules();
   }
@@ -172,23 +192,39 @@ function updateBuilder() {
           !properties.formVersionId)
       ) {
         let idps = formModule.identityProviders.map((fm) => fm.idp);
-        if (!idps.includes(user.value.idp)) return;
+        if (!idps.includes(user.value.idp.code)) return;
       }
-      formModule.formModuleVersions.forEach((formModuleVersion) => {
-        parseFormModuleVersion(formModuleVersion);
+      formModuleList.value.forEach((formModule) => {
+        // Only use the latest version for each module
+        const latestVersion = [...formModule.formModuleVersions].sort(
+          (a, b) => {
+            const aDate = new Date(a.updatedAt || a.createdAt);
+            const bDate = new Date(b.updatedAt || b.createdAt);
+            return bDate - aDate;
+          }
+        )[0];
+        if (latestVersion) {
+          parseFormModuleVersion(latestVersion);
+        }
       });
     });
-  } else if (formModuleVersion.valueList.length > 0) {
+  } else if (formModuleVersionList.length > 0) {
+    console.log('formModuleVersionList:', formModuleVersionList.value);
     formModuleVersionList.value.forEach((formModuleVersion) => {
       parseFormModuleVersion(formModuleVersion.formModuleVersion);
     });
   }
+  console.log('builder', builder.value);
   formModuleStore.setBuilder(builder.value);
 }
 
 function parseFormModuleVersion(fmv) {
-  let importData = JSON.parse(JSON.stringify(fmv.importData));
-  console.log(importData);
+  window.FORMIO_CONFIG = fmv.config;
+  let importData =
+    typeof fmv.importData === 'string'
+      ? JSON.parse(fmv.importData)
+      : JSON.parse(JSON.stringify(fmv.importData));
+  console.log('importData', importData);
   if ('components' in importData) {
     if ('builderCategories' in importData.components) {
       // Prep any builder categories, if the module creates a category, give it a components object
@@ -198,9 +234,7 @@ function parseFormModuleVersion(fmv) {
         // If the builder category exists and hasn't been initialized yet
         if (key in builder.value && typeof builder.value[key] === 'object') {
           // Map the modules builder category to update it
-          Object.keys(value).map((entryKey) => {
-            builder.value[key][entryKey] = value[entryKey];
-          });
+          Object.assign(builder.value[key], value);
         } else {
           // This is a new builder category
           builder.value[key] = value;
@@ -226,26 +260,20 @@ function parseFormModuleVersion(fmv) {
             componentKey.toString(),
             componentValue
           );
-        } else {
-          if (
-            'userType' in
-            importData.components.builder[categoryKey][componentKey]
-          ) {
-            if (
-              'denylist' in
-              importData.components.builder[categoryKey][componentKey][
-                'userType'
-              ]
-            ) {
-              formModuleStore.registerComponent(
-                categoryKey.toString(),
-                componentKey.toString(),
-                !importData.components.builder[categoryKey][componentKey][
-                  'userType'
-                ]['denylist'].includes(form.userType)
-              );
-            }
-          }
+        } else if (
+          componentValue &&
+          typeof componentValue === 'object' &&
+          'userType' in componentValue &&
+          'denylist' in componentValue.userType
+        ) {
+          const isAllowed = !componentValue.userType.denylist.includes(
+            form.value.userType
+          );
+          formModuleStore.registerComponent(
+            categoryKey.toString(),
+            componentKey.toString(),
+            isAllowed
+          );
         }
       }
     }
@@ -259,7 +287,6 @@ loadModules();
     <h1 class="text-center" :lang="locale">
       {{ $t('trans.formModuleLoader.loadingFormModules') }}
     </h1>
-    {{ builder }}
     <h5 class="text-center" :lang="locale">
       {{
         $t('trans.formModuleLoader.remainingObjects', {

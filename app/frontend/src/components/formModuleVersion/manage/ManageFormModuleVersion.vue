@@ -10,6 +10,7 @@ import { NotificationTypes } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
+const settingsFormModuleVersion = ref(null);
 const settingsFormModuleVersionValid = ref(false);
 const settingsPanel = ref(0);
 
@@ -19,7 +20,7 @@ const { formModule, formModuleVersion } = storeToRefs(formModuleStore);
 
 async function updateSettings() {
   try {
-    if (this.$refs.settingsFormModuleVersion.validate()) {
+    if (settingsFormModuleVersion.value.validate()) {
       await formModuleStore.updateFormModuleVersion();
       notificationStore.addNotification({
         text: t('trans.manageFormModuleVersion.updateFormModuleVersionSuccess'),
