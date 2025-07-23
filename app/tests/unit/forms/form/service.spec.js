@@ -643,15 +643,14 @@ describe('listFormSubmissions', () => {
     MockModel.mockResolvedValue([]);
   });
 
-  describe('400 response when', () => {
+  describe('should not error when sortBy column is not in select', () => {
     test('sort by column not in select', async () => {
-      await expect(
-        service.listFormSubmissions(formId, {
-          sortBy: {
-            column: 'x',
-          },
-        })
-      ).rejects.toThrow('400');
+      await service.listFormSubmissions(formId, {
+        sortBy: {
+          column: 'x',
+        },
+      });
+      expect(MockModel.select).toBeCalledTimes(1);
     });
   });
 
@@ -1177,6 +1176,30 @@ describe('createOrUpdateEmailTemplates', () => {
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
     expect(MockTransaction.rollback).toBeCalledTimes(1);
+  });
+});
+
+describe('_validateReminderSettings', () => {
+  afterEach(() => {
+    // Restore any mocked functions after each test
+    jest.restoreAllMocks();
+  });
+
+  it('returns false if reminder_enabled is false', () => {
+    const data = { reminder_enabled: false };
+    expect(service._validateReminderSettings(data)).toBe(false);
+  });
+
+  it('returns false if schedule is missing or not enabled or manual type', () => {
+    const cases = [
+      { reminder_enabled: true }, // no schedule
+      { reminder_enabled: true, schedule: { enabled: false } },
+      { reminder_enabled: true, schedule: { enabled: true, scheduleType: ScheduleType.MANUAL } },
+    ];
+
+    cases.forEach((data) => {
+      expect(service._validateReminderSettings(data)).toBe(false);
+    });
   });
 });
 
@@ -1757,17 +1780,10 @@ describe('listFormSubmission helpers', () => {
     const { fields } = service._buildSelectionAndFields(params, true);
     expect(fields).toContain('lateEntry');
   });
-  it('should throw 400 if sortBy column not in selection or fields', () => {
+  it('should remove sortBy if column not in selection or fields', () => {
     const params = { sortBy: { column: 'notAColumn' } };
-    try {
-      service._validateSortBy(params, ['a'], ['b']);
-      // If no error is thrown, fail the test
-      throw new Error('Did not throw');
-    } catch (err) {
-      expect(err).toBeInstanceOf(require('api-problem'));
-      expect(err.status).toBe(400);
-      expect(err.details).toMatch(/orderBy column/);
-    }
+    service._validateSortBy(params, ['a'], ['b']);
+    expect(params.sortBy).toBeUndefined();
   });
 });
 
@@ -2202,21 +2218,27 @@ describe('Branch coverage for assignee and selection helpers', () => {
     it('does not throw if sortBy.column is in selection', () => {
       const params = { sortBy: { column: 'foo' } };
       expect(() => service._validateSortBy(params, ['foo'], ['bar'])).not.toThrow();
+      expect(params.sortBy).toBeDefined();
     });
 
     it('does not throw if sortBy.column is in fields', () => {
       const params = { sortBy: { column: 'bar' } };
       expect(() => service._validateSortBy(params, ['foo'], ['bar'])).not.toThrow();
+      expect(params.sortBy).toBeDefined();
     });
 
-    it('throws Problem 400 if sortBy.column is not in selection or fields', () => {
+    it('does not throw if sortBy.column is not in selection or fields, removes sortBy', () => {
       const params = { sortBy: { column: 'baz' } };
-      expect(() => service._validateSortBy(params, ['foo'], ['bar'])).toThrow(expect.any(require('api-problem')));
+      expect(params.sortBy).toBeDefined();
+      expect(() => service._validateSortBy(params, ['foo'], ['bar'])).not.toThrow();
+      expect(params.sortBy).toBeUndefined();
     });
 
-    it('does not throw if sortBy is missing', () => {
+    it('does not throw if sortBy is missing, removes sortBy', () => {
       const params = {};
+      expect(params.sortBy).toBeUndefined();
       expect(() => service._validateSortBy(params, ['foo'], ['bar'])).not.toThrow();
+      expect(params.sortBy).toBeUndefined();
     });
   });
 });
@@ -2555,5 +2577,68 @@ describe('listFormComponentsProactiveHelp', () => {
 
     const result = await service.listFormComponentsProactiveHelp();
     expect(result).toEqual({});
+  });
+});
+
+describe('_setAllowSubmitterToUploadFile', () => {
+  it('returns true if identityProviders does not include public', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
+  });
+
+  it('returns false if identityProviders includes public and allowSubmitterToUploadFile is truthy', () => {
+    const formData = {
+      identityProviders: [{ code: 'public' }],
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns false if allowSubmitterToUploadFile is false', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      allowSubmitterToUploadFile: false,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns true if identityProviders is missing (team protected) and allow is true', () => {
+    const formData = {
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
+  });
+
+  it('returns false if identityProviders is missing (team protected) and allow is false', () => {
+    const formData = {
+      allowSubmitterToUploadFile: false,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns true if identityProviders is empty and allow is true', () => {
+    const formData = {
+      identityProviders: [],
+      allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
+  });
+
+  it('returns false if identityProviders is empty and allow is false', () => {
+    const formData = {
+      identityProviders: [],
+      allowSubmitterToUploadFile: false,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+
+  it('returns false if allowSubmitterToUploadFile is missing', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
   });
 });

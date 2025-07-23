@@ -86,10 +86,13 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
     <div
       class="d-flex flex-md-row justify-space-between"
       data-test="showNotesPanel"
-      @click="showNotesContent = !showNotesContent"
     >
       <div cols="12" sm="6">
-        <h2 class="note-heading" :lang="locale">
+        <button
+          class="note-heading"
+          :lang="locale"
+          @click="showNotesContent = !showNotesContent"
+        >
           {{ $t('trans.notesPanel.notes') }}
           <v-icon>{{
             showNotesContent
@@ -98,7 +101,7 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
               ? 'mdi:mdi-chevron-left'
               : 'mdi:mdi-chevron-right'
           }}</v-icon>
-        </h2>
+        </button>
       </div>
 
       <div :class="[{ 'text-left': isRTL }, 'd-flex', 'align-items-center']">
@@ -197,6 +200,8 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
 .note-heading {
   color: #003366;
   margin-bottom: 0;
+  font-size: 27px;
+  font-weight: 700;
   .v-icon {
     transition: transform 0.3s ease;
   }
