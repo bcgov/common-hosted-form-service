@@ -210,7 +210,6 @@ export const useFormModuleStore = defineStore('formModule', {
         if (this.formModuleVersion.value.config) {
           try {
             configValue = JSON.parse(this.formModuleVersion.value.config);
-            console.log(configValue);
           } catch (error) {
             notificationStore.addNotification({
               text: i18n.t('trans.formModuleAddVersion.invalidConfigErrMsg'),
@@ -228,7 +227,7 @@ export const useFormModuleStore = defineStore('formModule', {
           this.formModule.id,
           this.formModuleVersion.id,
           {
-            config: this.formModuleVersion.config,
+            config: configValue,
             externalUris: uris.concat(
               this.formModuleVersion.externalUris.map((euri) => euri.uri)
             ),
