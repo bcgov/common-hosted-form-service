@@ -139,7 +139,18 @@ async function loadModules() {
         versionId = properties.formVersionId;
         await loadModulesWithFormVersion(properties.formId, versionId);
       } else if (properties.formDraftId) {
-        await loadDefaultModules();
+        const draftResponse = await formService.readDraft(
+          properties.formId,
+          properties.formDraftId
+        );
+        if (draftResponse.data && draftResponse.data.formVersionId) {
+          await loadModulesWithFormVersion(
+            properties.formId,
+            draftResponse.data.formVersionId
+          );
+        } else {
+          await loadDefaultModules();
+        }
       } else {
         // If getting the HEAD form version (IE making a new submission)
         let response = await formService.readPublished(properties.formId);
@@ -198,31 +209,20 @@ async function loadModules() {
 function updateBuilder() {
   formModuleStore.resetBuilder();
   if (formModuleList.value.length > 0) {
-    formModuleList.value.forEach((formModule) => {
-      if (
-        properties.formDraftId ||
-        (!properties.formId &&
-          !properties.formDraftId &&
-          !properties.formVersionId)
-      ) {
-        let idps = formModule.identityProviders.map((fm) => fm.idp);
-        if (!idps.includes(user.value.idp.code)) return;
+    const filteredModules = properties.formDraftId
+      ? formModuleList.value.filter((module) => {
+          const idps = module.identityProviders.map((fm) => fm.idp);
+          return idps.includes(user.value.idp.code);
+        })
+      : formModuleList.value;
+
+    filteredModules.forEach((formModule) => {
+      const latestVersion = getLatestVersion(formModule.formModuleVersions);
+      if (latestVersion) {
+        parseFormModuleVersion(latestVersion);
       }
-      formModuleList.value.forEach((formModule) => {
-        // Only use the latest version for each module
-        const latestVersion = [...formModule.formModuleVersions].sort(
-          (a, b) => {
-            const aDate = new Date(a.updatedAt || a.createdAt);
-            const bDate = new Date(b.updatedAt || b.createdAt);
-            return bDate - aDate;
-          }
-        )[0];
-        if (latestVersion) {
-          parseFormModuleVersion(latestVersion);
-        }
-      });
     });
-  } else if (formModuleVersionList.length > 0) {
+  } else if (formModuleVersionList.value.length > 0) {
     formModuleVersionList.value.forEach((formModuleVersion) => {
       parseFormModuleVersion(formModuleVersion.formModuleVersion);
     });
