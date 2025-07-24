@@ -139,7 +139,7 @@ describe('form module CRUD', () => {
     MockModel.mockResolvedValue({});
     readFormModuleSpy.mockResolvedValue({});
 
-    await service.toggleFormModule(formModuleId, formModuleToggle, currentUser);
+    await service.toggleFormModule(formModuleId, currentUser, formModuleToggle);
 
     expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
     expect(MockModel.query).toHaveBeenCalledTimes(1);

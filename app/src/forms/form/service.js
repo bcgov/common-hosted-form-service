@@ -24,7 +24,7 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, typeUtils } = require('../common/utils');
+const { falsey, queryUtils, typeUtils, getLatestVersion } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
@@ -947,23 +947,19 @@ const service = {
       // delete the draft...
       await FormVersionDraft.query().deleteById(formVersionDraftId);
 
-      for (let i = 0; i < formModules.length; i++) {
-        const latestVersion = [...formModules[i].formModuleVersions].sort((a, b) => {
-          const aDate = new Date(a.updatedAt || a.createdAt);
-          const bDate = new Date(b.updatedAt || b.createdAt);
-          return bDate - aDate;
-        })[0];
+      // Create links between the form version and the latest module versions
+      const moduleVersionLinks = formModules
+        .map((module) => getLatestVersion(module.formModuleVersions))
+        .filter(Boolean) // Remove null/undefined results
+        .map((latestVersion) => ({
+          id: uuid.v4(),
+          formVersionId: version.id,
+          formModuleVersionId: latestVersion.id,
+          createdBy: currentUser.usernameIdp,
+        }));
 
-        if (latestVersion) {
-          let formVersionFormModuleVersion = {
-            id: uuid.v4(),
-            formVersionId: version.id,
-            formModuleVersionId: latestVersion.id,
-            createdBy: currentUser.usernameIdp,
-          };
-
-          await FormVersionFormModuleVersion.query(trx).insert(formVersionFormModuleVersion);
-        }
+      if (moduleVersionLinks.length > 0) {
+        await FormVersionFormModuleVersion.query(trx).insert(moduleVersionLinks);
       }
 
       await trx.commit();

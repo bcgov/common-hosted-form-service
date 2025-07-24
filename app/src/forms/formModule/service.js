@@ -70,7 +70,7 @@ const service = {
         code: p.code,
         createdBy: currentUser.usernameIdp,
       }));
-      if (fIdps && fIdps.length) await FormModuleIdentityProvider.query(trx).insert(fIdps);
+      if (fIdps?.length) await FormModuleIdentityProvider.query(trx).insert(fIdps);
 
       await trx.commit();
       const result = await service.readFormModule(obj.id);
@@ -80,7 +80,7 @@ const service = {
       throw err;
     }
   },
-  toggleFormModule: async (formModuleId, params = {}, currentUser) => {
+  toggleFormModule: async (formModuleId, currentUser, params = {}) => {
     let trx;
     try {
       const active = !falsey(params.active);

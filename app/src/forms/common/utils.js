@@ -256,6 +256,16 @@ const encodeURI = (unsafe) => {
   return unsafe.replace(textDelimiterRegex, textDelimiter);
 };
 
+const getLatestVersion = (versions) => {
+  if (!versions?.length) return null;
+
+  return [...versions].sort((a, b) => {
+    const aDate = new Date(a.updatedAt || a.createdAt);
+    const bDate = new Date(b.updatedAt || b.createdAt);
+    return bDate - aDate;
+  })[0];
+};
+
 module.exports = {
   falsey,
   getBaseUrl,
@@ -267,4 +277,5 @@ module.exports = {
   unwindPath,
   submissionHeaders,
   encodeURI,
+  getLatestVersion,
 };
