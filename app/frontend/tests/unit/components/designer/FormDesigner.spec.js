@@ -13,7 +13,6 @@ import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { FormDesignerBuilderOptions, IdentityMode } from '~/utils/constants';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
@@ -308,14 +307,11 @@ describe('FormDesigner.vue', () => {
       },
       noDefaultSubmitButton: false,
       builder: {
-        ...FormDesignerBuilderOptions,
-        customControls: {
-          ...FormDesignerBuilderOptions.customControls,
-          components: {
-            ...FormDesignerBuilderOptions.customControls.components,
-            simplefile: formStore.form.userType !== IdentityMode.PUBLIC,
-          },
-        },
+        advanced: false,
+        basic: false,
+        data: false,
+        layout: false,
+        premium: false,
       },
       language: 'en',
       i18n: formioIl8next,

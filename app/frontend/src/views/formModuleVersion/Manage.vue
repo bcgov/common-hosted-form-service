@@ -1,0 +1,25 @@
+<script setup>
+import { computed } from 'vue';
+
+import FormModuleVersionManageLayout from '~/components/formModuleVersion/manage/ManageLayout.vue';
+import { AppPermissions } from '~/utils/constants';
+
+defineProps({
+  fm: {
+    type: String,
+    required: true,
+  },
+  fmv: {
+    type: String,
+    required: true,
+  },
+});
+
+const APP_PERMS = computed(() => AppPermissions);
+</script>
+
+<template>
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_MANAGE">
+    <FormModuleVersionManageLayout :fm="fm" :fmv="fmv" />
+  </BaseSecure>
+</template>

@@ -6,6 +6,7 @@ const externalApiService = require('../../form/externalApi/service');
 const formService = require('../../form/service');
 const submissionService = require('../../submission/service');
 const encryptionKeyService = require('../../form/encryptionKey/service');
+const formModuleService = require('../../formModule/service');
 
 /**
  * Throws a 400 problem if the parameter is not a valid UUID.
@@ -305,6 +306,50 @@ const validateFormEncryptionKeyId = async (req, _res, next, formEncryptionKeyId)
   }
 };
 
+/**
+ * Validates that the :formModuleId route parameter exists and is a UUID.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formModuleId the :formModuleId value from the route.
+ */
+const validateFormModuleId = async (_req, _res, next, formModuleId) => {
+  try {
+    _validateUuid(formModuleId, 'formModuleId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Validates that the :formModuleVersionId route parameter exists and is a UUID. This
+ * validator requires that the :formModuleVersionId route parameter also exists.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formModuleVersionId the :formModuleVersionId value from the route.
+ */
+const validateFormModuleVersionId = async (req, _res, next, formModuleVersionId) => {
+  try {
+    _validateUuid(formModuleVersionId, 'formModuleVersionId');
+
+    const formModuleVersion = await formModuleService.readFormModuleVersion(formModuleVersionId);
+    if (!formModuleVersion || formModuleVersion.formModuleId !== req.params.formModuleId) {
+      throw new Problem(404, {
+        detail: 'formModuleVersion does not exist on this form module',
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   validateComponentId,
   validateDocumentTemplateId,
@@ -318,4 +363,6 @@ module.exports = {
   validateRoleCode,
   validateUserId,
   validateFormEncryptionKeyId,
+  validateFormModuleId,
+  validateFormModuleVersionId,
 };

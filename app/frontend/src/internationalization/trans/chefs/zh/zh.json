@@ -362,6 +362,18 @@
     "actions": "行动",
     "delete": "删除"
   },
+  "adminFormModulesTable": {
+    "search": "搜索",
+    "loadingText": "加载中... 请稍候",
+    "noDataText": "系统中没有表单模块",
+    "showInactive": "显示非活动表单模块",
+    "formModuleName": "表单模块名称",
+    "createdAt": "创建时间",
+    "isInactive": "非活动",
+    "actions": "操作",
+    "importFormModule": "导入表单模块",
+    "manage": "管理"
+  },
   "administerForm": {
     "deleted": "已删除",
     "restoreForm": "恢复此表格",
@@ -389,7 +401,8 @@
     "developer": "开发商",
     "infoLinks": "信息链接",
     "metrics": "指标",
-    "apis": "蜜蜂"
+    "apis": "蜜蜂",
+    "adminFormModulesTable": "表单模块"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "此表单的订阅设置已保存。",
       "saveSubscriptionSettingsErrMsg": "尝试保存订阅设置时出错。",
       "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "尝试获取表单模块时发生错误。",
+      "getFormModuleListConsErrMsg": "获取表单模块错误: {error}",
+      "getFormModuleVersionListErrMsg": "尝试获取表单模块版本时发生错误。",
+      "getFormModuleVersionListConsErrMsg": "获取表单模块版本错误: {error}",
+      "fetchFormModuleErrMsg": "尝试获取表单模块时发生错误。",
+      "fetchFormModuleConsErrMsg": "获取表单模块 {formModuleId} 错误: {error}",
+      "fetchFormModuleVersionErrMsg": "尝试获取表单模块版本时发生错误。",
+      "fetchFormModuleVersionConsErrMsg": "获取表单模块版本 {formModuleVersionId} 错误: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "尝试获取此表单版本的表单模块版本时发生错误。",
+      "getFormVersionFormModuleVersionsConsErrMsg": "获取表单模块版本错误: ${error}",
+      "toggleFormModuleErrMsg": "在{state}表单模块时发生错误。",
+      "toggleFormModuleConsErrMsg": "{state}表单模块 {formModuleId} 错误: {error}",
+      "updateFormModuleErrMsg": "更新表单模块时发生错误。",
+      "updateFormModuleConsErrMsg": "更新表单模块 {formModuleId} 错误: {error}",
+      "updateFormModuleVersionErrMsg": "更新表单模块版本时发生错误。",
+      "updateFormModuleVersionConsErrMsg": "更新表单模块版本 {formModuleVersionId} 错误: {error}",
+      "createFormModuleErr": "尝试保存表单模块时发生错误。",
+      "createFormModuleConsErr": "创建表单模块错误: {error}",
+      "createFormModuleVersionErr": "尝试保存表单模块版本时发生错误。",
+      "createFormModuleVersionConsErr": "创建表单模块版本错误: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
     "shareDraftMessage": "仅与表单团队成员共享草稿"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "未找到表单 {formId} 的已发布版本",
+    "loadingFormModules": "加载表单模块",
+    "loadingFormModulesErr": "加载表单模块时发生错误。",
+    "loadingFormModulesConsErr": "加载表单模块错误: {error}",
+    "remainingObjects": "剩余对象: {remaining} / {total}",
+    "logImport": "正在导入 {uri}",
+    "logImported": "已导入 {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "导入表单模块",
+    "submit": "提交",
+    "confirmLeave": "您确定要离开此页面吗？您所做的更改将不会被保存。",
+    "addFormModuleVersion": "添加表单模块版本",
+    "invalidConfigErrMsg": "配置无效。请检查 JSON 配置。",
+    "invalidConfigConsErrMsg": "配置错误: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "插件名称是必需的",
+    "pluginNameMaxLength": "表单模块名称必须为255个字符或更少",
+    "formModulePluginName": "表单模块插件名称",
+    "pluginName": "插件名称",
+    "formDesignerIDPAccess": "表单设计器 IDP 访问"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "您的表单模块设置已成功更新。",
+    "updateFormModuleErr": "尝试更新此表单模块的设置时发生错误。",
+    "updateFormModuleConsErr": "更新表单模块 {formModuleId} 错误: {error}",
+    "formModuleSettings": "表单模块设置",
+    "formModuleCreated": "创建时间: {createdAt} ({createdBy})",
+    "update": "更新",
+    "formModuleVersions": "表单模块版本",
+    "totalVersions": "总版本数: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "导入表单模块",
+    "active": "活动",
+    "inactive": "非活动",
+    "confirmDeactivationTitle": "确认停用",
+    "confirmDeactivationText": "您确定要停用 <strong>%{pluginName}</strong> 吗？此表单模块将对所有表单设计师停用。它仍将对审阅者和提交者可用。",
+    "deactivate": "停用"
+  },
+  "manageFormModuleVersions": {
+    "version": "版本",
+    "createdAt": "创建时间",
+    "createdBy": "创建者",
+    "actions": "操作",
+    "important": "重要提示！",
+    "importantDescription": "表单模块版本无法删除，但可以更新和覆盖。为防止破坏旧表单，只有在 URL 不起作用时才应替换它。",
+    "info": "最新版本将用于所有表单设计器中。",
+    "tableTemplateVersion": "版本: {version}",
+    "manageFormModuleVersion": "管理表单模块版本"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "管理表单模块",
+    "externalUriRequired": "外部 URI 是必需的",
+    "externalUriMaxLength": "外部 URI 必须为255个字符或更少",
+    "externalUriMinOne": "您至少需要一个 URI",
+    "externalUris": "外部 URI",
+    "config": "配置 (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "您的表单模块版本设置已成功更新。",
+    "updateFormModuleVersionErr": "尝试更新此表单模块版本的设置时发生错误。",
+    "updateFormModuleVersionConsErr": "更新表单模块版本 {formModuleVersionId} 错误: {error}",
+    "formModuleVersionSettings": "表单模块版本设置",
+    "formModuleVersionCreated": "创建时间: {createdAt} ({createdBy})",
+    "update": "更新"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "管理表单模块版本"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "尝试保存表单模块时发生错误。",
+    "createFormModuleVersionConsErr": "创建表单模块版本错误: {error}",
+    "importFormModule": "导入表单模块",
+    "submit": "提交"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "管理表单模块"
   }
 }

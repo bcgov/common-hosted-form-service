@@ -16,6 +16,7 @@ import { useRouter } from 'vue-router';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
+import FormModuleLoader from '~/components/designer/FormModuleLoader.vue';
 import templateExtensions from '~/plugins/templateExtensions';
 import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
@@ -108,6 +109,7 @@ const submissionRecord = ref({});
 const version = ref(0);
 const versionIdToSubmitTo = ref(properties.versionId);
 const isAuthorized = ref(true);
+const loadingFormModules = ref(true);
 
 const appStore = useAppStore();
 const authStore = useAuthStore();
@@ -180,6 +182,12 @@ const canSaveDraft = computed(
 
 watch(locale, () => {
   reRenderFormIo.value += 1;
+});
+
+watch(loadingFormModules, (value) => {
+  if (!value) {
+    reRenderFormIo.value += 1;
+  }
 });
 
 onMounted(async () => {
@@ -836,7 +844,19 @@ async function uploadFile(file, config = {}) {
 </script>
 
 <template>
-  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+  <FormModuleLoader
+    v-if="loadingFormModules"
+    :form-id="formId"
+    :form-version-id="versionId"
+    :form-draft-id="draftId"
+    :submission-id="submissionId"
+    @update:parent="loadingFormModules = $event"
+  />
+  <v-skeleton-loader
+    v-else
+    :loading="loadingSubmission"
+    type="article, actions"
+  >
     <v-container fluid>
       <div v-if="!isAuthorized">
         <v-alert

@@ -362,6 +362,18 @@
     "actions": "Aktionen",
     "delete": "Löschen"
   },
+  "adminFormModulesTable": {
+    "search": "Suche",
+    "loadingText": "Wird geladen... Bitte warten",
+    "noDataText": "Keine Formularmodule im System vorhanden",
+    "showInactive": "Inaktive Formularmodule anzeigen",
+    "formModuleName": "Name des Formularmoduls",
+    "createdAt": "Erstellungsdatum",
+    "isInactive": "Inaktiv",
+    "actions": "Aktionen",
+    "importFormModule": "Formularmodul importieren",
+    "manage": "Verwalten"
+  },
   "administerForm": {
     "deleted": "GELÖSCHT",
     "restoreForm": "Stellen Sie dieses Formular wieder her",
@@ -389,7 +401,8 @@
     "developer": "Entwickler",
     "infoLinks": "Info-Links",
     "metrics": "Metriken",
-    "apis": "APIs"
+    "apis": "APIs",
+    "adminFormModulesTable": "Formularmodule"
   },
   "adminUsersTable": {
     "search": "Suchen",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "Die Abonnementeinstellungen für dieses Formular wurden gespeichert.",
       "saveSubscriptionSettingsErrMsg": "Beim Versuch, die Abonnementeinstellungen zu speichern, ist ein Fehler aufgetreten.",
       "saveSubscriptionSettingsConsErrMsg": "Fehler beim Speichern der Abonnementeinstellungen für das Formular {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "Beim Abrufen der Formularmodule ist ein Fehler aufgetreten.",
+      "getFormModuleListConsErrMsg": "Fehler beim Abrufen der Formularmodule: {error}",
+      "getFormModuleVersionListErrMsg": "Beim Abrufen der Formularmodulversionen ist ein Fehler aufgetreten.",
+      "getFormModuleVersionListConsErrMsg": "Fehler beim Abrufen der Formularmodulversionen: {error}",
+      "fetchFormModuleErrMsg": "Beim Abrufen des Formularmoduls ist ein Fehler aufgetreten.",
+      "fetchFormModuleConsErrMsg": "Fehler beim Abrufen des Formularmoduls {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "Beim Abrufen der Formularmodulversion ist ein Fehler aufgetreten.",
+      "fetchFormModuleVersionConsErrMsg": "Fehler beim Abrufen der Formularmodulversion {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "Beim Abrufen der Formularmodulversionen für diese Formularversion ist ein Fehler aufgetreten.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Fehler beim Abrufen der Formularmodulversionen: ${error}",
+      "toggleFormModuleErrMsg": "Beim {state} des Formularmoduls ist ein Fehler aufgetreten.",
+      "toggleFormModuleConsErrMsg": "Fehler beim {state} des Formularmoduls {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "Beim Aktualisieren des Formularmoduls ist ein Fehler aufgetreten.",
+      "updateFormModuleConsErrMsg": "Fehler beim Aktualisieren des Formularmoduls {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "Beim Aktualisieren der Formularmodulversion ist ein Fehler aufgetreten.",
+      "updateFormModuleVersionConsErrMsg": "Fehler beim Aktualisieren der Formularmodulversion {formModuleVersionId}: {error}",
+      "createFormModuleErr": "Beim Versuch, das Formularmodul zu speichern, ist ein Fehler aufgetreten.",
+      "createFormModuleConsErr": "Fehler beim Erstellen des Formularmoduls: {error}",
+      "createFormModuleVersionErr": "Beim Versuch, die Formularmodulversion zu speichern, ist ein Fehler aufgetreten.",
+      "createFormModuleVersionConsErr": "Fehler beim Erstellen der Formularmodulversion: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
     "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "Keine veröffentlichte Version für Formular {formId} gefunden",
+    "loadingFormModules": "Formularmodule werden geladen",
+    "loadingFormModulesErr": "Beim Laden der Formularmodule ist ein Fehler aufgetreten.",
+    "loadingFormModulesConsErr": "Fehler beim Laden der Formularmodule: {error}",
+    "remainingObjects": "Verbleibende Objekte: {remaining} / {total}",
+    "logImport": "Importiere {uri}",
+    "logImported": "Importiert {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Formularmodul importieren",
+    "submit": "Absenden",
+    "confirmLeave": "Möchten Sie diese Seite wirklich verlassen? Ihre Änderungen werden nicht gespeichert.",
+    "addFormModuleVersion": "Formularmodulversion hinzufügen",
+    "invalidConfigErrMsg": "Ungültige Konfiguration. Bitte überprüfen Sie die JSON-Konfiguration.",
+    "invalidConfigConsErrMsg": "Fehler in der Konfiguration: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Plugin-Name ist erforderlich",
+    "pluginNameMaxLength": "Der Name des Formularmoduls darf maximal 255 Zeichen lang sein",
+    "formModulePluginName": "Name des Formularmodul-Plugins",
+    "pluginName": "Plugin-Name",
+    "formDesignerIDPAccess": "Formular-Designer IDP-Zugriff"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "Die Einstellungen Ihres Formularmoduls wurden erfolgreich aktualisiert.",
+    "updateFormModuleErr": "Beim Versuch, die Einstellungen für dieses Formularmodul zu aktualisieren, ist ein Fehler aufgetreten.",
+    "updateFormModuleConsErr": "Fehler beim Aktualisieren des Formularmoduls {formModuleId}: {error}",
+    "formModuleSettings": "Formularmodul-Einstellungen",
+    "formModuleCreated": "Erstellt: {createdAt} ({createdBy})",
+    "update": "Aktualisieren",
+    "formModuleVersions": "Formularmodulversionen",
+    "totalVersions": "Gesamtversionen: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Formularmodul importieren",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "confirmDeactivationTitle": "Deaktivierung bestätigen",
+    "confirmDeactivationText": "Sind Sie sicher, dass Sie <strong>%{pluginName}</strong> deaktivieren möchten? Dieses Formularmodul wird für alle Formular-Designer deaktiviert. Es bleibt jedoch für Prüfer und Einsender verfügbar.",
+    "deactivate": "Deaktivieren"
+  },
+  "manageFormModuleVersions": {
+    "version": "Version",
+    "createdAt": "Erstellt am",
+    "createdBy": "Erstellt von",
+    "actions": "Aktionen",
+    "important": "WICHTIG!",
+    "importantDescription": "Formularmodulversionen können nicht gelöscht, aber aktualisiert und überschrieben werden. Um ältere Formulare nicht zu beschädigen, sollten Sie eine URL nur ersetzen, wenn sie nicht funktioniert.",
+    "info": "Die neueste Version wird in allen Formular-Designern verwendet.",
+    "tableTemplateVersion": "Version: {version}",
+    "manageFormModuleVersion": "Formularmodulversion verwalten"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Formularmodul verwalten",
+    "externalUriRequired": "Externe URI ist erforderlich",
+    "externalUriMaxLength": "Externe URI darf maximal 255 Zeichen lang sein",
+    "externalUriMinOne": "Sie benötigen mindestens eine URI",
+    "externalUris": "Externe URIs",
+    "config": "Konfiguration (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "Die Einstellungen Ihrer Formularmodulversion wurden erfolgreich aktualisiert.",
+    "updateFormModuleVersionErr": "Beim Versuch, die Einstellungen für diese Formularmodulversion zu aktualisieren, ist ein Fehler aufgetreten.",
+    "updateFormModuleVersionConsErr": "Fehler beim Aktualisieren der Formularmodulversion {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "Formularmodulversion-Einstellungen",
+    "formModuleVersionCreated": "Erstellt: {createdAt} ({createdBy})",
+    "update": "Aktualisieren"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Formularmodulversion verwalten"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "Beim Versuch, das Formularmodul zu speichern, ist ein Fehler aufgetreten.",
+    "createFormModuleVersionConsErr": "Fehler beim Erstellen der Formularmodulversion: {error}",
+    "importFormModule": "Formularmodul importieren",
+    "submit": "Absenden"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Formularmodul verwalten"
   }
 }

@@ -13,6 +13,7 @@ const { eventStreamService } = require('../../../../src/components/eventStreamSe
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
 const eventService = require('../../../../src/forms//event/eventService');
+const formModuleService = require('../../../../src/forms/formModule/service');
 
 const {
   Form,
@@ -30,10 +31,15 @@ const {
   FormApiKey,
   FormSubscription,
   FormComponentsProactiveHelp,
+  FormModule,
+  FormModuleIdentityProvider,
+  FormModuleVersion,
+  FormVersionFormModuleVersion,
 } = require('../../../../src/forms/common/models');
 
 const documentTemplateId = uuid.v4();
 const formId = uuid.v4();
+const pluginName = 'default plugins';
 
 const currentUser = {
   usernameIdp: 'TESTER',
@@ -188,6 +194,50 @@ function resetModels() {
     secret: 'secret',
     filesApiAccess: false,
   });
+
+  // FormModule model setup
+  FormModule.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+  FormModule.query = jest.fn().mockReturnThis();
+  FormModule.where = jest.fn().mockReturnThis();
+  FormModule.modify = jest.fn().mockReturnThis();
+  FormModule.allowGraph = jest.fn().mockReturnThis();
+  FormModule.withGraphFetched = jest.fn().mockReturnThis();
+  FormModule.insert = jest.fn().mockReturnThis();
+  FormModule.patchAndFetchById = jest.fn().mockReturnThis();
+  FormModule.findById = jest.fn().mockReturnThis();
+  FormModule.throwIfNotFound = jest.fn().mockResolvedValue({
+    id: formId,
+    pluginName: pluginName,
+    active: false,
+  });
+
+  // FormModuleIdentityProvider model setup
+  FormModuleIdentityProvider.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+  FormModuleIdentityProvider.query = jest.fn().mockReturnThis();
+  FormModuleIdentityProvider.insert = jest.fn().mockReturnThis();
+  FormModuleIdentityProvider.delete = jest.fn().mockReturnThis();
+  FormModuleIdentityProvider.where = jest.fn().mockReturnThis();
+  FormModuleIdentityProvider.modify = jest.fn().mockReturnThis();
+
+  // FormModuleVersion model setup
+  FormModuleVersion.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+  FormModuleVersion.query = jest.fn().mockReturnThis();
+  FormModuleVersion.modify = jest.fn().mockReturnThis();
+  FormModuleVersion.insert = jest.fn().mockReturnThis();
+  FormModuleVersion.patchAndFetchById = jest.fn().mockReturnThis();
+  FormModuleVersion.findById = jest.fn().mockReturnThis();
+  FormModuleVersion.throwIfNotFound = jest.fn().mockResolvedValue({
+    id: formId,
+    pluginName: pluginName,
+    active: false,
+  });
+
+  // FormVersionFormModuleVersion model setup
+  FormVersionFormModuleVersion.query = jest.fn().mockReturnThis();
+  FormVersionFormModuleVersion.modify = jest.fn().mockReturnThis();
+  FormVersionFormModuleVersion.allowGraph = jest.fn().mockReturnThis();
+  FormVersionFormModuleVersion.withGraphFetched = jest.fn().mockReturnThis();
+  FormVersionFormModuleVersion.insert = jest.fn().mockReturnThis();
 }
 
 beforeEach(() => {
@@ -221,6 +271,19 @@ jest.mock('../../../../src/components/eventStreamService', () => ({
   SUBMISSION_EVENT_TYPES: {
     CREATED: 'created',
   },
+}));
+
+jest.mock('../../../../src/forms/formModule', () => ({
+  listFormModules: jest.fn(),
+  createFormModule: jest.fn(),
+  updateFormModule: jest.fn(),
+  toggleFormModule: jest.fn(),
+  readFormModule: jest.fn(),
+  listFormModuleVersions: jest.fn(),
+  createFormModuleVersion: jest.fn(),
+  updateFormModuleVersion: jest.fn(),
+  readFormModuleVersion: jest.fn(),
+  listFormModuleIdentityProviders: jest.fn(),
 }));
 
 describe('Document Templates', () => {
@@ -1384,6 +1447,24 @@ describe('publishDraft', () => {
   });
 
   it('should trigger event notifications', async () => {
+    const formModules = [
+      {
+        id: 'module1',
+        formModuleVersions: [
+          { id: 'v1', updatedAt: '2024-01-01T00:00:00Z' },
+          { id: 'v2', updatedAt: '2024-06-01T00:00:00Z' }, // latest
+        ],
+      },
+      {
+        id: 'module2',
+        formModuleVersions: [
+          { id: 'v3', updatedAt: '2024-02-01T00:00:00Z' },
+          { id: 'v4', updatedAt: '2024-07-01T00:00:00Z' }, // latest
+        ],
+      },
+    ];
+
+    formModuleService.listFormModules = jest.fn().mockResolvedValue(formModules);
     service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
     service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }] });
     service.readDraft = jest.fn().mockReturnValueOnce({});
@@ -1819,6 +1900,39 @@ describe('publishDraft', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  it('should only associate the latest version of each form module when publishing a draft', async () => {
+    const formModules = [
+      {
+        id: 'module1',
+        formModuleVersions: [
+          { id: 'v1', updatedAt: '2024-01-01T00:00:00Z' },
+          { id: 'v2', updatedAt: '2024-06-01T00:00:00Z' }, // latest
+        ],
+      },
+      {
+        id: 'module2',
+        formModuleVersions: [
+          { id: 'v3', updatedAt: '2024-02-01T00:00:00Z' },
+          { id: 'v4', updatedAt: '2024-07-01T00:00:00Z' }, // latest
+        ],
+      },
+    ];
+
+    service.readForm = jest.fn().mockResolvedValue({ id: formId, versions: [] });
+    service.readDraft = jest.fn().mockResolvedValue({ id: 'draftId', schema: {} });
+    formModuleService.listFormModules = jest.fn().mockResolvedValue(formModules);
+
+    FormVersionFormModuleVersion.insert = jest.fn().mockReturnThis();
+
+    await service.publishDraft(formId, 'draftId', currentUser);
+
+    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledTimes(1);
+    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledWith([
+      expect.objectContaining({ formModuleVersionId: 'v2' }),
+      expect.objectContaining({ formModuleVersionId: 'v4' }),
+    ]);
   });
 
   it('should rollback and throw if publishDraft fails', async () => {

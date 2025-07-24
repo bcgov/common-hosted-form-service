@@ -8,6 +8,7 @@ import AdminAPIsTable from '~/components/admin/AdminAPIsTable.vue';
 import Dashboard from '~/components/admin/Dashboard.vue';
 import Developer from '~/components/admin/Developer.vue';
 import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
+import AdminFormModulesTable from '~/components/admin/AdminFormModulesTable.vue';
 
 import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
@@ -48,6 +49,9 @@ watch(isRTL, () => {
     <v-tab v-if="adminDashboardUrl" value="dashboard" :lang="locale">{{
       $t('trans.adminPage.metrics')
     }}</v-tab>
+    <v-tab value="adminFormModulesTable" :lang="locale">{{
+      $t('trans.adminPage.adminFormModulesTable')
+    }}</v-tab>
   </v-tabs>
 
   <v-card-text>
@@ -69,6 +73,9 @@ watch(isRTL, () => {
       </v-window-item>
       <v-window-item value="dashboard">
         <Dashboard :url="adminDashboardUrl" />
+      </v-window-item>
+      <v-window-item value="adminFormModulesTable">
+        <AdminFormModulesTable />
       </v-window-item>
     </v-window>
   </v-card-text>

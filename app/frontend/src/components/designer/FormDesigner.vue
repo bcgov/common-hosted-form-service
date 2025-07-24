@@ -8,14 +8,15 @@ import { useRouter } from 'vue-router';
 
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import FloatButton from '~/components/designer/FloatButton.vue';
+import FormModuleLoader from '~/components/designer/FormModuleLoader.vue';
 import { exportFormSchema, importFormSchemaFromFile } from '~/composables/form';
 import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useFormModuleStore } from '~/store/formModule';
 import { useNotificationStore } from '~/store/notification';
-import { FormDesignerBuilderOptions } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
 
 const { locale, t } = useI18n({ useScope: 'global' });
@@ -69,13 +70,16 @@ const patch = ref({
 const reRenderFormIo = ref(0);
 const savedStatus = ref(properties.isSavedStatus);
 const saving = ref(false);
+const loadingFormModules = ref(true);
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const formModuleStore = useFormModuleStore();
 const notificationStore = useNotificationStore();
 
 const { tokenParsed, user } = storeToRefs(authStore);
 const { form, isRTL, userLabels } = storeToRefs(formStore);
+const { builder } = storeToRefs(formModuleStore);
 
 watch(form, (newFormValue, oldFormValue) => {
   if (newFormValue.userType != oldFormValue.userType) {
@@ -85,6 +89,12 @@ watch(form, (newFormValue, oldFormValue) => {
 
 watch(locale, (value) => {
   if (value) {
+    reRenderFormIo.value += 1;
+  }
+});
+
+watch(loadingFormModules, (value) => {
+  if (!value) {
     reRenderFormIo.value += 1;
   }
 });
@@ -111,16 +121,7 @@ const designerOptions = computed(() => {
       ALLOWED_TAGS: ['iframe'],
     },
     noDefaultSubmitButton: false,
-    builder: {
-      ...FormDesignerBuilderOptions,
-      customControls: {
-        ...FormDesignerBuilderOptions.customControls,
-        components: {
-          ...FormDesignerBuilderOptions.customControls.components,
-          simplefile: true,
-        },
-      },
-    },
+    builder: builder.value,
     language: locale.value ? locale.value : 'en',
     i18n: formioIl8next,
     templates: templateExtensions,
@@ -539,7 +540,14 @@ async function loadFile(event) {
 defineExpose({ designerOptions, reRenderFormIo });
 </script>
 <template>
-  <div :class="{ 'dir-rtl': isRTL }">
+  <FormModuleLoader
+    v-if="loadingFormModules"
+    :form-id="formId"
+    :form-version-id="versionId"
+    :form-draft-id="draftId"
+    @update:parent="loadingFormModules = $event"
+  />
+  <div v-else :class="{ 'dir-rtl': isRTL }">
     <div class="d-flex flex-wrap">
       <!-- page title -->
       <div :lang="locale" class="flex-1-0">

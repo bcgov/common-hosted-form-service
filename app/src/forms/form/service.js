@@ -14,6 +14,7 @@ const {
   FormRoleUser,
   FormVersion,
   FormVersionDraft,
+  FormVersionFormModuleVersion,
   FormStatusCode,
   FormSubmission,
   FormSubmissionStatus,
@@ -23,10 +24,11 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, typeUtils } = require('../common/utils');
+const { falsey, queryUtils, typeUtils, getLatestVersion } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
+const formModuleService = require('../formModule/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
@@ -923,6 +925,7 @@ const service = {
     try {
       const form = await service.readForm(formId);
       const draft = await service.readDraft(formVersionDraftId);
+      const formModules = await formModuleService.listFormModules();
       trx = await FormVersionDraft.startTransaction();
 
       version = {
@@ -943,6 +946,22 @@ const service = {
 
       // delete the draft...
       await FormVersionDraft.query().deleteById(formVersionDraftId);
+
+      // Create links between the form version and the latest module versions
+      const moduleVersionLinks = formModules
+        .map((module) => getLatestVersion(module.formModuleVersions))
+        .filter(Boolean) // Remove null/undefined results
+        .map((latestVersion) => ({
+          id: uuid.v4(),
+          formVersionId: version.id,
+          formModuleVersionId: latestVersion.id,
+          createdBy: currentUser.usernameIdp,
+        }));
+
+      if (moduleVersionLinks.length > 0) {
+        await FormVersionFormModuleVersion.query(trx).insert(moduleVersionLinks);
+      }
+
       await trx.commit();
 
       eventService.publishFormEvent(formId, version.id, version.published);
@@ -1224,6 +1243,11 @@ const service = {
 
       throw error;
     }
+  },
+  // ----------------------------------------------------------------------Api Key
+
+  listFormVersionFormModuleVersions: (formId, formVersionId) => {
+    return FormVersionFormModuleVersion.query().modify('filterFormVersionId', formVersionId).allowGraph('[formModuleVersion]').withGraphFetched('formModuleVersion');
   },
 };
 

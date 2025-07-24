@@ -362,6 +362,18 @@
     "actions": "Azioni",
     "delete": "Eliminare"
   },
+  "adminFormModulesTable": {
+    "search": "Cerca",
+    "loadingText": "Caricamento in corso... Attendere prego",
+    "noDataText": "Non ci sono moduli di form nel sistema",
+    "showInactive": "Mostra moduli di form inattivi",
+    "formModuleName": "Nome modulo di form",
+    "createdAt": "Data di creazione",
+    "isInactive": "Inattivo",
+    "actions": "Azioni",
+    "importFormModule": "Importa modulo di form",
+    "manage": "Gestisci"
+  },
   "administerForm": {
     "deleted": "CANCELLATO",
     "restoreForm": "Ripristina questo modulo",
@@ -389,7 +401,8 @@
     "developer": "Sviluppatore",
     "infoLinks": "Collegamenti informativi",
     "metrics": "Metrica",
-    "apis": "API"
+    "apis": "API",
+    "adminFormModulesTable": "Moduli di form"
   },
   "adminUsersTable": {
     "search": "Ricerca",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "Le impostazioni di iscrizione per questo modulo sono state salvate.",
       "saveSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di salvare le impostazioni dell'abbonamento.",
       "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "Si è verificato un errore durante il tentativo di recuperare i moduli di form.",
+      "getFormModuleListConsErrMsg": "Errore nel recupero dei moduli di form: {error}",
+      "getFormModuleVersionListErrMsg": "Si è verificato un errore durante il tentativo di recuperare le versioni del modulo di form.",
+      "getFormModuleVersionListConsErrMsg": "Errore nel recupero delle versioni del modulo di form: {error}",
+      "fetchFormModuleErrMsg": "Si è verificato un errore durante il tentativo di recuperare il modulo di form.",
+      "fetchFormModuleConsErrMsg": "Errore nel recupero del modulo di form {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "Si è verificato un errore durante il tentativo di recuperare la versione del modulo di form.",
+      "fetchFormModuleVersionConsErrMsg": "Errore nel recupero della versione del modulo di form {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "Si è verificato un errore durante il tentativo di recuperare le versioni del modulo di form per questa versione del form.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Errore nel recupero delle versioni del modulo di form: ${error}",
+      "toggleFormModuleErrMsg": "Si è verificato un errore durante {state} del modulo di form.",
+      "toggleFormModuleConsErrMsg": "Errore durante {state} del modulo di form {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "Si è verificato un errore durante l'aggiornamento del modulo di form.",
+      "updateFormModuleConsErrMsg": "Errore nell'aggiornamento del modulo di form {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "Si è verificato un errore durante l'aggiornamento della versione del modulo di form.",
+      "updateFormModuleVersionConsErrMsg": "Errore nell'aggiornamento della versione del modulo di form {formModuleVersionId}: {error}",
+      "createFormModuleErr": "Si è verificato un errore durante il tentativo di salvare il modulo di form.",
+      "createFormModuleConsErr": "Errore nella creazione del modulo di form: {error}",
+      "createFormModuleVersionErr": "Si è verificato un errore durante il tentativo di salvare la versione del modulo di form.",
+      "createFormModuleVersionConsErr": "Errore nella creazione della versione del modulo di form: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
     "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "Nessuna versione pubblicata trovata per il form {formId}",
+    "loadingFormModules": "Caricamento dei moduli di form",
+    "loadingFormModulesErr": "Si è verificato un errore durante il caricamento dei moduli di form.",
+    "loadingFormModulesConsErr": "Errore durante il caricamento dei moduli di form: {error}",
+    "remainingObjects": "Oggetti rimanenti: {remaining} / {total}",
+    "logImport": "Importazione di {uri}",
+    "logImported": "Importato {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Importa modulo di form",
+    "submit": "Invia",
+    "confirmLeave": "Vuoi davvero lasciare questa pagina? Le modifiche effettuate non verranno salvate.",
+    "addFormModuleVersion": "Aggiungi versione modulo di form",
+    "invalidConfigErrMsg": "Configurazione non valida. Controlla la configurazione JSON.",
+    "invalidConfigConsErrMsg": "Errore nella configurazione: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Il nome del plugin è obbligatorio",
+    "pluginNameMaxLength": "Il nome del modulo di form deve contenere al massimo 255 caratteri",
+    "formModulePluginName": "Nome plugin del modulo di form",
+    "pluginName": "Nome plugin",
+    "formDesignerIDPAccess": "Accesso IDP del designer di form"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "Le impostazioni del modulo di form sono state aggiornate con successo.",
+    "updateFormModuleErr": "Si è verificato un errore durante il tentativo di aggiornare le impostazioni di questo modulo di form.",
+    "updateFormModuleConsErr": "Errore durante l'aggiornamento del modulo di form {formModuleId}: {error}",
+    "formModuleSettings": "Impostazioni modulo di form",
+    "formModuleCreated": "Creato: {createdAt} ({createdBy})",
+    "update": "Aggiorna",
+    "formModuleVersions": "Versioni del modulo di form",
+    "totalVersions": "Versioni totali: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Importa modulo di form",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "confirmDeactivationTitle": "Conferma disattivazione",
+    "confirmDeactivationText": "Sei sicuro di voler disattivare <strong>%{pluginName}</strong>? Questo modulo di form verrà disattivato per tutti i designer di form. Sarà comunque disponibile per revisori e utenti che inviano.",
+    "deactivate": "Disattiva"
+  },
+  "manageFormModuleVersions": {
+    "version": "Versione",
+    "createdAt": "Data creazione",
+    "createdBy": "Creato da",
+    "actions": "Azioni",
+    "important": "IMPORTANTE!",
+    "importantDescription": "Le versioni dei moduli di form non possono essere eliminate, ma possono essere aggiornate e sovrascritte. Per evitare di danneggiare i form più vecchi, dovresti sostituire un URL solo se non funziona.",
+    "info": "La versione più recente verrà utilizzata in tutti i designer di form.",
+    "tableTemplateVersion": "Versione: {version}",
+    "manageFormModuleVersion": "Gestisci versione modulo di form"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Gestisci modulo di form",
+    "externalUriRequired": "URI esterno è obbligatorio",
+    "externalUriMaxLength": "L'URI esterno deve contenere al massimo 255 caratteri",
+    "externalUriMinOne": "È necessario almeno un URI",
+    "externalUris": "URI esterni",
+    "config": "Configurazione (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "Le impostazioni della versione del modulo di form sono state aggiornate con successo.",
+    "updateFormModuleVersionErr": "Si è verificato un errore durante il tentativo di aggiornare le impostazioni di questa versione del modulo di form.",
+    "updateFormModuleVersionConsErr": "Errore durante l'aggiornamento della versione del modulo di form {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "Impostazioni versione modulo di form",
+    "formModuleVersionCreated": "Creato: {createdAt} ({createdBy})",
+    "update": "Aggiorna"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Gestisci versione modulo di form"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "Si è verificato un errore durante il tentativo di salvare il modulo di form.",
+    "createFormModuleVersionConsErr": "Errore nella creazione della versione del modulo di form: {error}",
+    "importFormModule": "Importa modulo di form",
+    "submit": "Invia"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Gestisci modulo di form"
   }
 }

@@ -397,4 +397,13 @@ module.exports = {
       next(error);
     }
   },
+
+  listFormVersionFormModuleVersions: async (req, res, next) => {
+    try {
+      const response = await service.listFormVersionFormModuleVersions(req.params.formId, req.params.formVersionId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

@@ -63,6 +63,7 @@ MockModel.update = jest.fn().mockReturnThis();
 MockModel.where = jest.fn().mockReturnThis();
 MockModel.whereIn = jest.fn().mockReturnThis();
 MockModel.withGraphFetched = jest.fn().mockReturnThis();
+MockModel.allowGraph = jest.fn().mockReturnThis();
 MockModel.select = jest.fn().mockReturnThis();
 
 // Utility Functions

@@ -28,6 +28,7 @@ describe('AdminPage.vue', () => {
           Developer: true,
           FormComponentsProactiveHelp: true,
           Metrics: true,
+          AdminFormModulesTable: true,
         },
       },
     });

@@ -30,6 +30,10 @@ module.exports = {
   FormMetadata: require('./tables/formMetadata'),
   FormEncryptionKey: require('./tables/formEncryptionKey'),
   FormEventStreamConfig: require('./tables/formEventStreamConfig'),
+  FormModule: require('./tables/formModule'),
+  FormModuleVersion: require('./tables/formModuleVersion'),
+  FormModuleIdentityProvider: require('./tables/formModuleIdentityProvider'),
+  FormVersionFormModuleVersion: require('./tables/formVersionFormModuleVersion'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),

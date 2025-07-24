@@ -362,6 +362,18 @@
     "actions": "أجراءات",
     "delete": "يمسح"
   },
+  "adminFormModulesTable": {
+    "search": "بحث",
+    "loadingText": "جار التحميل... يرجى الانتظار",
+    "noDataText": "لا توجد وحدات نماذج في النظام",
+    "showInactive": "إظهار وحدات النماذج غير النشطة",
+    "formModuleName": "اسم وحدة النموذج",
+    "createdAt": "تاريخ الإنشاء",
+    "isInactive": "غير نشط",
+    "actions": "إجراءات",
+    "importFormModule": "استيراد وحدة نموذج",
+    "manage": "إدارة"
+  },
   "administerForm": {
     "deleted": "تم الحذف",
     "restoreForm": "قم باستعادة هذا النموذج",
@@ -389,7 +401,8 @@
     "developer": "مطور",
     "infoLinks": "روابط المعلومات",
     "metrics": "المقاييس",
-    "apis": "واجهات برمجة التطبيقات"
+    "apis": "واجهات برمجة التطبيقات",
+    "adminFormModulesTable": "وحدات النماذج"
   },
   "adminUsersTable": {
     "search": "يبحث",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "تم حفظ إعدادات الاشتراك لهذا النموذج.",
       "saveSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة حفظ إعدادات الاشتراك.",
       "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "حدث خطأ أثناء محاولة جلب وحدات النماذج.",
+      "getFormModuleListConsErrMsg": "خطأ في الحصول على وحدات النماذج: {error}",
+      "getFormModuleVersionListErrMsg": "حدث خطأ أثناء محاولة جلب إصدارات وحدة النموذج.",
+      "getFormModuleVersionListConsErrMsg": "خطأ في الحصول على إصدارات وحدة النموذج: {error}",
+      "fetchFormModuleErrMsg": "حدث خطأ أثناء محاولة جلب وحدة النموذج.",
+      "fetchFormModuleConsErrMsg": "خطأ في الحصول على وحدة النموذج {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "حدث خطأ أثناء محاولة جلب إصدار وحدة النموذج.",
+      "fetchFormModuleVersionConsErrMsg": "خطأ في الحصول على إصدار وحدة النموذج {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "حدث خطأ أثناء محاولة جلب إصدارات وحدة النموذج لإصدار النموذج هذا.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "خطأ في الحصول على إصدارات وحدة النموذج: ${error}",
+      "toggleFormModuleErrMsg": "حدث خطأ أثناء {state} وحدة النموذج.",
+      "toggleFormModuleConsErrMsg": "خطأ في {state} وحدة النموذج {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "حدث خطأ أثناء تحديث وحدة النموذج.",
+      "updateFormModuleConsErrMsg": "خطأ في تحديث وحدة النموذج {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "حدث خطأ أثناء تحديث إصدار وحدة النموذج.",
+      "updateFormModuleVersionConsErrMsg": "خطأ في تحديث إصدار وحدة النموذج {formModuleVersionId}: {error}",
+      "createFormModuleErr": "حدث خطأ أثناء محاولة حفظ وحدة النموذج.",
+      "createFormModuleConsErr": "خطأ في إنشاء وحدة النموذج: {error}",
+      "createFormModuleVersionErr": "حدث خطأ أثناء محاولة حفظ إصدار وحدة النموذج.",
+      "createFormModuleVersionConsErr": "خطأ في إنشاء إصدار وحدة النموذج: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "لا يُمكنك مشاركة المسودة مع المستخدمين الذين لم تتم إضافتهم إلى النموذج. يُرجى التواصل مع المشرف لإضافتهم.",
     "shareDraftMessage": "مشاركة المسودة مع أعضاء فريق النموذج فقط"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "لم يتم العثور على إصدار منشور للنموذج {formId}",
+    "loadingFormModules": "جار تحميل وحدات النماذج",
+    "loadingFormModulesErr": "حدث خطأ أثناء تحميل وحدات النماذج.",
+    "loadingFormModulesConsErr": "خطأ في تحميل وحدات النماذج: {error}",
+    "remainingObjects": "الكائنات المتبقية: {remaining} / {total}",
+    "logImport": "استيراد {uri}",
+    "logImported": "تم استيراد {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "استيراد وحدة نموذج",
+    "submit": "إرسال",
+    "confirmLeave": "هل تريد حقًا مغادرة هذه الصفحة؟ لن يتم حفظ التغييرات التي أجريتها.",
+    "addFormModuleVersion": "إضافة إصدار وحدة نموذج",
+    "invalidConfigErrMsg": "تكوين غير صالح. يرجى التحقق من تكوين JSON.",
+    "invalidConfigConsErrMsg": "خطأ في التكوين: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "اسم المكون الإضافي مطلوب",
+    "pluginNameMaxLength": "يجب أن يكون اسم وحدة النموذج 255 حرفًا أو أقل",
+    "formModulePluginName": "اسم المكون الإضافي لوحدة النموذج",
+    "pluginName": "اسم المكون الإضافي",
+    "formDesignerIDPAccess": "وصول مزود الهوية لمصمم النماذج"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "تم تحديث إعدادات وحدة النموذج بنجاح.",
+    "updateFormModuleErr": "حدث خطأ أثناء محاولة تحديث إعدادات وحدة النموذج هذه.",
+    "updateFormModuleConsErr": "خطأ في تحديث وحدة النموذج {formModuleId}: {error}",
+    "formModuleSettings": "إعدادات وحدة النموذج",
+    "formModuleCreated": "تم الإنشاء: {createdAt} ({createdBy})",
+    "update": "تحديث",
+    "formModuleVersions": "إصدارات وحدة النموذج",
+    "totalVersions": "إجمالي الإصدارات: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "استيراد وحدة نموذج",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "confirmDeactivationTitle": "تأكيد إلغاء التنشيط",
+    "confirmDeactivationText": "هل أنت متأكد أنك ترغب في إلغاء تنشيط <strong>%{pluginName}</strong>؟ سيتم إلغاء تنشيط وحدة النموذج هذه لجميع مصممي النماذج. ستظل متاحة للمراجعين والمقدمين.",
+    "deactivate": "إلغاء التنشيط"
+  },
+  "manageFormModuleVersions": {
+    "version": "الإصدار",
+    "createdAt": "تاريخ الإنشاء",
+    "createdBy": "تم الإنشاء بواسطة",
+    "actions": "إجراءات",
+    "important": "مهم!",
+    "importantDescription": "لا يمكن حذف إصدارات وحدة النموذج، ولكن يمكن تحديثها واستبدالها. لمنع تعطل النماذج القديمة، يجب عليك استبدال عنوان URL فقط إذا كان لا يعمل.",
+    "info": "سيتم استخدام أحدث إصدار في جميع مصممي النماذج.",
+    "tableTemplateVersion": "الإصدار: {version}",
+    "manageFormModuleVersion": "إدارة إصدار وحدة النموذج"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "إدارة وحدة النموذج",
+    "externalUriRequired": "URI الخارجي مطلوب",
+    "externalUriMaxLength": "يجب أن يكون URI الخارجي 255 حرفًا أو أقل",
+    "externalUriMinOne": "تحتاج إلى URI واحد على الأقل",
+    "externalUris": "عناوين URI الخارجية",
+    "config": "التكوين (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "تم تحديث إعدادات إصدار وحدة النموذج بنجاح.",
+    "updateFormModuleVersionErr": "حدث خطأ أثناء محاولة تحديث إعدادات إصدار وحدة النموذج هذا.",
+    "updateFormModuleVersionConsErr": "خطأ في تحديث إصدار وحدة النموذج {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "إعدادات إصدار وحدة النموذج",
+    "formModuleVersionCreated": "تم الإنشاء: {createdAt} ({createdBy})",
+    "update": "تحديث"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "إدارة إصدار وحدة النموذج"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "حدث خطأ أثناء محاولة حفظ وحدة النموذج.",
+    "createFormModuleVersionConsErr": "خطأ في إنشاء إصدار وحدة النموذج: {error}",
+    "importFormModule": "استيراد وحدة نموذج",
+    "submit": "إرسال"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "إدارة وحدة النموذج"
   }
 }

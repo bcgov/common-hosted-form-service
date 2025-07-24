@@ -362,6 +362,18 @@
     "actions": "行動",
     "delete": "刪除"
   },
+  "adminFormModulesTable": {
+    "search": "搜尋",
+    "loadingText": "載入中... 請稍候",
+    "noDataText": "系統中沒有表單模組",
+    "showInactive": "顯示非啟用的表單模組",
+    "formModuleName": "表單模組名稱",
+    "createdAt": "建立日期",
+    "isInactive": "非啟用",
+    "actions": "動作",
+    "importFormModule": "匯入表單模組",
+    "manage": "管理"
+  },
   "administerForm": {
     "deleted": "已刪除",
     "restoreForm": "恢復此表格",
@@ -389,7 +401,8 @@
     "developer": "開發商",
     "infoLinks": "信息鏈接",
     "metrics": "指標",
-    "apis": "蜜蜂"
+    "apis": "蜜蜂",
+    "adminFormModulesTable": "表單模組"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "此表单的订阅设置已保存。",
       "saveSubscriptionSettingsErrMsg": "尝试保存订阅设置时出错。",
       "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "嘗試取得表單模組時發生錯誤。",
+      "getFormModuleListConsErrMsg": "取得表單模組錯誤: {error}",
+      "getFormModuleVersionListErrMsg": "嘗試取得表單模組版本時發生錯誤。",
+      "getFormModuleVersionListConsErrMsg": "取得表單模組版本錯誤: {error}",
+      "fetchFormModuleErrMsg": "嘗試取得表單模組時發生錯誤。",
+      "fetchFormModuleConsErrMsg": "取得表單模組 {formModuleId} 錯誤: {error}",
+      "fetchFormModuleVersionErrMsg": "嘗試取得表單模組版本時發生錯誤。",
+      "fetchFormModuleVersionConsErrMsg": "取得表單模組版本 {formModuleVersionId} 錯誤: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "嘗試取得此表單版本的表單模組版本時發生錯誤。",
+      "getFormVersionFormModuleVersionsConsErrMsg": "取得表單模組版本錯誤: ${error}",
+      "toggleFormModuleErrMsg": "在{state}表單模組時發生錯誤。",
+      "toggleFormModuleConsErrMsg": "{state}表單模組 {formModuleId} 錯誤: {error}",
+      "updateFormModuleErrMsg": "更新表單模組時發生錯誤。",
+      "updateFormModuleConsErrMsg": "更新表單模組 {formModuleId} 錯誤: {error}",
+      "updateFormModuleVersionErrMsg": "更新表單模組版本時發生錯誤。",
+      "updateFormModuleVersionConsErrMsg": "更新表單模組版本 {formModuleVersionId} 錯誤: {error}",
+      "createFormModuleErr": "嘗試儲存表單模組時發生錯誤。",
+      "createFormModuleConsErr": "建立表單模組錯誤: {error}",
+      "createFormModuleVersionErr": "嘗試儲存表單模組版本時發生錯誤。",
+      "createFormModuleVersionConsErr": "建立表單模組版本錯誤: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "您無法與尚未新增至表單的使用者共用草稿。請聯絡管理員新增它們。",
     "shareDraftMessage": "僅與表單團隊成員分享草稿"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "未找到表單 {formId} 的已發佈版本",
+    "loadingFormModules": "載入表單模組中",
+    "loadingFormModulesErr": "載入表單模組時發生錯誤。",
+    "loadingFormModulesConsErr": "載入表單模組錯誤: {error}",
+    "remainingObjects": "剩餘物件: {remaining} / {total}",
+    "logImport": "正在匯入 {uri}",
+    "logImported": "已匯入 {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "匯入表單模組",
+    "submit": "提交",
+    "confirmLeave": "您確定要離開此頁面嗎？您所做的更改將不會被儲存。",
+    "addFormModuleVersion": "新增表單模組版本",
+    "invalidConfigErrMsg": "設定無效。請檢查 JSON 設定。",
+    "invalidConfigConsErrMsg": "設定錯誤: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "外掛名稱為必填",
+    "pluginNameMaxLength": "表單模組名稱必須為255個字元或更少",
+    "formModulePluginName": "表單模組外掛名稱",
+    "pluginName": "外掛名稱",
+    "formDesignerIDPAccess": "表單設計師 IDP 存取權限"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "您的表單模組設定已成功更新。",
+    "updateFormModuleErr": "嘗試更新此表單模組的設定時發生錯誤。",
+    "updateFormModuleConsErr": "更新表單模組 {formModuleId} 錯誤: {error}",
+    "formModuleSettings": "表單模組設定",
+    "formModuleCreated": "建立時間: {createdAt} ({createdBy})",
+    "update": "更新",
+    "formModuleVersions": "表單模組版本",
+    "totalVersions": "總版本數: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "匯入表單模組",
+    "active": "啟用",
+    "inactive": "非啟用",
+    "confirmDeactivationTitle": "確認停用",
+    "confirmDeactivationText": "您確定要停用 <strong>%{pluginName}</strong> 嗎？此表單模組將對所有表單設計師停用。它仍將對審核者和提交者可用。",
+    "deactivate": "停用"
+  },
+  "manageFormModuleVersions": {
+    "version": "版本",
+    "createdAt": "建立時間",
+    "createdBy": "建立者",
+    "actions": "動作",
+    "important": "重要提示！",
+    "importantDescription": "表單模組版本無法刪除，但可以更新和覆寫。為防止破壞舊表單，只有在 URL 不起作用時才應替換它。",
+    "info": "最新版本將用於所有表單設計師中。",
+    "tableTemplateVersion": "版本: {version}",
+    "manageFormModuleVersion": "管理表單模組版本"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "管理表單模組",
+    "externalUriRequired": "外部 URI 為必填",
+    "externalUriMaxLength": "外部 URI 必須為255個字元或更少",
+    "externalUriMinOne": "您至少需要一個 URI",
+    "externalUris": "外部 URI",
+    "config": "設定 (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "您的表單模組版本設定已成功更新。",
+    "updateFormModuleVersionErr": "嘗試更新此表單模組版本的設定時發生錯誤。",
+    "updateFormModuleVersionConsErr": "更新表單模組版本 {formModuleVersionId} 錯誤: {error}",
+    "formModuleVersionSettings": "表單模組版本設定",
+    "formModuleVersionCreated": "建立時間: {createdAt} ({createdBy})",
+    "update": "更新"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "管理表單模組版本"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "嘗試儲存表單模組時發生錯誤。",
+    "createFormModuleVersionConsErr": "建立表單模組版本錯誤: {error}",
+    "importFormModule": "匯入表單模組",
+    "submit": "提交"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "管理表單模組"
   }
 }
