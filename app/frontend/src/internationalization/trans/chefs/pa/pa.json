@@ -362,6 +362,18 @@
     "actions": "ਕਾਰਵਾਈਆਂ",
     "delete": "ਮਿਟਾਓ"
   },
+  "adminFormModulesTable": {
+    "search": "ਖੋਜ",
+    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
+    "noDataText": "ਸਿਸਟਮ ਵਿੱਚ ਕੋਈ ਫਾਰਮ ਮੋਡਿਊਲ ਨਹੀਂ ਹਨ",
+    "showInactive": "ਨਿਸ਼ਕਰਿਆ ਫਾਰਮ ਮੋਡਿਊਲ ਦਿਖਾਓ",
+    "formModuleName": "ਫਾਰਮ ਮੋਡਿਊਲ ਦਾ ਨਾਮ",
+    "createdAt": "ਬਣਾਇਆ ਗਿਆ",
+    "isInactive": "ਨਿਸ਼ਕਰਿਆ ਹੈ",
+    "actions": "ਕਾਰਵਾਈਆਂ",
+    "importFormModule": "ਫਾਰਮ ਮੋਡਿਊਲ ਆਯਾਤ ਕਰੋ",
+    "manage": "ਪ੍ਰਬੰਧ ਕਰੋ"
+  },
   "administerForm": {
     "deleted": "ਮਿਟਾਇਆ ਗਿਆ",
     "restoreForm": "ਇਸ ਫਾਰਮ ਨੂੰ ਰੀਸਟੋਰ ਕਰੋ",
@@ -389,7 +401,8 @@
     "developer": "ਵਿਕਾਸਕਾਰ",
     "infoLinks": "ਜਾਣਕਾਰੀ ਲਿੰਕ",
     "metrics": "ਮੈਟ੍ਰਿਕਸ",
-    "apis": "APIs"
+    "apis": "APIs",
+    "adminFormModulesTable": "ਫਾਰਮ ਮੋਡਿਊਲ"
   },
   "adminUsersTable": {
     "search": "ਖੋਜ",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "ਇਸ ਫਾਰਮ ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।",
       "saveSubscriptionSettingsErrMsg": "ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "saveSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "getFormModuleListConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getFormModuleVersionListErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "getFormModuleVersionListConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchFormModuleErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "fetchFormModuleConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ {formModuleId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchFormModuleVersionErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "fetchFormModuleVersionConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ {formModuleVersionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "ਇਸ ਫਾਰਮ ਵਰਜਨ ਲਈ ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "getFormVersionFormModuleVersionsConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}",
+      "toggleFormModuleErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ {state} ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "toggleFormModuleConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ {formModuleId} ਨੂੰ {state} ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "updateFormModuleErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਅੱਪਡੇਟ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "updateFormModuleConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ {formModuleId} ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "updateFormModuleVersionErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਅੱਪਡੇਟ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "updateFormModuleVersionConsErrMsg": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ {formModuleVersionId} ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "createFormModuleErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "createFormModuleConsErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "createFormModuleVersionErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "createFormModuleVersionConsErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਉਪਭੋਗਤਾਵਾਂ ਨਾਲ ਡਰਾਫਟ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਿਨ੍ਹਾਂ ਨੂੰ ਫਾਰਮ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।",
     "shareDraftMessage": "ਡਰਾਫਟ ਸਿਰਫ਼ ਫਾਰਮ ਟੀਮ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "ਫਾਰਮ {formId} ਲਈ ਕੋਈ ਪ੍ਰਕਾਸ਼ਿਤ ਵਰਜਨ ਨਹੀਂ ਮਿਲਿਆ",
+    "loadingFormModules": "ਫਾਰਮ ਮੋਡਿਊਲ ਲੋਡ ਹੋ ਰਹੇ ਹਨ",
+    "loadingFormModulesErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਲੋਡ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+    "loadingFormModulesConsErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+    "remainingObjects": "ਬਾਕੀ ਵਸਤੂਆਂ: {remaining} / {total}",
+    "logImport": "{uri} ਆਯਾਤ ਕਰ ਰਿਹਾ ਹੈ",
+    "logImported": "{uri} ਆਯਾਤ ਕੀਤਾ ਗਿਆ"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "ਫਾਰਮ ਮੋਡਿਊਲ ਆਯਾਤ ਕਰੋ",
+    "submit": "ਜਮ੍ਹਾਂ ਕਰੋ",
+    "confirmLeave": "ਕੀ ਤੁਸੀਂ ਸੱਚਮੁੱਚ ਇਸ ਪੰਨੇ ਨੂੰ ਛੱਡਣਾ ਚਾਹੁੰਦੇ ਹੋ? ਤੁਹਾਡੇ ਦੁਆਰਾ ਕੀਤੇ ਗਏ ਬਦਲਾਵ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੋਣਗੇ।",
+    "addFormModuleVersion": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਜੋੜੋ",
+    "invalidConfigErrMsg": "ਅਵੈਧ ਕੌਨਫਿਗਰੇਸ਼ਨ। ਕਿਰਪਾ ਕਰਕੇ JSON ਕੌਨਫਿਗਰੇਸ਼ਨ ਜਾਂਚੋ।",
+    "invalidConfigConsErrMsg": "ਕੌਨਫਿਗਰੇਸ਼ਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "ਪਲੱਗਇਨ ਨਾਮ ਜ਼ਰੂਰੀ ਹੈ",
+    "pluginNameMaxLength": "ਫਾਰਮ ਮੋਡਿਊਲ ਨਾਮ 255 ਅੱਖਰ ਜਾਂ ਘੱਟ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ",
+    "formModulePluginName": "ਫਾਰਮ ਮੋਡਿਊਲ ਪਲੱਗਇਨ ਨਾਮ",
+    "pluginName": "ਪਲੱਗਇਨ ਨਾਮ",
+    "formDesignerIDPAccess": "ਫਾਰਮ ਡਿਜ਼ਾਇਨਰ IDP ਪਹੁੰਚ"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "ਤੁਹਾਡੇ ਫਾਰਮ ਮੋਡਿਊਲ ਸੈਟਿੰਗਾਂ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਡੇਟ ਹੋ ਗਈਆਂ ਹਨ।",
+    "updateFormModuleErr": "ਇਸ ਫਾਰਮ ਮੋਡਿਊਲ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+    "updateFormModuleConsErr": "ਫਾਰਮ ਮੋਡਿਊਲ {formModuleId} ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+    "formModuleSettings": "ਫਾਰਮ ਮੋਡਿਊਲ ਸੈਟਿੰਗਾਂ",
+    "formModuleCreated": "ਬਣਾਇਆ ਗਿਆ: {createdAt} ({createdBy})",
+    "update": "ਅੱਪਡੇਟ",
+    "formModuleVersions": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ",
+    "totalVersions": "ਕੁੱਲ ਵਰਜਨ: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "ਫਾਰਮ ਮੋਡਿਊਲ ਆਯਾਤ ਕਰੋ",
+    "active": "ਸਕਿਰਿਆ",
+    "inactive": "ਨਿਸ਼ਕਿਰਿਆ",
+    "confirmDeactivationTitle": "ਨਿਸ਼ਕਿਰਿਆਕਰਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+    "confirmDeactivationText": "ਕੀ ਤੁਸੀਂ ਨਿਸ਼ਚਤ ਰੂਪ ਵਿੱਚ <strong>%{pluginName}</strong> ਨੂੰ ਨਿਸ਼ਕਿਰਿਆ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਇਹ ਫਾਰਮ ਮੋਡਿਊਲ ਸਾਰੇ ਫਾਰਮ ਡਿਜ਼ਾਇਨਰਾਂ ਲਈ ਨਿਸ਼ਕਿਰਿਆ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਹ ਸਮੀਖਿਆਕਾਰਾਂ ਅਤੇ ਜਮ੍ਹਾਂਕਰਤਾਵਾਂ ਲਈ ਅਜੇ ਵੀ ਉਪਲਬਧ ਹੋਵੇਗਾ।",
+    "deactivate": "ਨਿਸ਼ਕਿਰਿਆ ਕਰੋ"
+  },
+  "manageFormModuleVersions": {
+    "version": "ਵਰਜਨ",
+    "createdAt": "ਬਣਾਇਆ ਗਿਆ",
+    "createdBy": "ਬਣਾਉਣ ਵਾਲਾ",
+    "actions": "ਕਾਰਵਾਈਆਂ",
+    "important": "ਮਹੱਤਵਪੂਰਣ!",
+    "importantDescription": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਮਿਟਾਏ ਨਹੀਂ ਜਾ ਸਕਦੇ, ਪਰ ਉਹਨਾਂ ਨੂੰ ਅੱਪਡੇਟ ਅਤੇ ਓਵਰਰਾਈਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਪੁਰਾਣੇ ਫਾਰਮਾਂ ਨੂੰ ਖਰਾਬ ਹੋਣ ਤੋਂ ਬਚਾਉਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਿਰਫ਼ ਤਾਂ ਹੀ URL ਨੂੰ ਬਦਲਣਾ ਚਾਹੀਦਾ ਹੈ ਜੇਕਰ ਇਹ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ।",
+    "info": "ਸਾਰੇ ਫਾਰਮ ਡਿਜ਼ਾਇਨਰਾਂ ਵਿੱਚ ਨਵੀਨਤਮ ਵਰਜਨ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਵੇਗੀ।",
+    "tableTemplateVersion": "ਵਰਜਨ: {version}",
+    "manageFormModuleVersion": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਪ੍ਰਬੰਧਨ"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "ਫਾਰਮ ਮੋਡਿਊਲ ਪ੍ਰਬੰਧਨ",
+    "externalUriRequired": "ਬਾਹਰੀ URI ਜ਼ਰੂਰੀ ਹੈ",
+    "externalUriMaxLength": "ਬਾਹਰੀ URI 255 ਅੱਖਰ ਜਾਂ ਘੱਟ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ",
+    "externalUriMinOne": "ਤੁਹਾਨੂੰ ਘੱਟੋ-ਘੱਟ ਇੱਕ URI ਦੀ ਲੋੜ ਹੈ",
+    "externalUris": "ਬਾਹਰੀ URIs",
+    "config": "ਕੌਨਫਿਗਰੇਸ਼ਨ (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "ਤੁਹਾਡੇ ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਸੈਟਿੰਗਾਂ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਡੇਟ ਹੋ ਗਈਆਂ ਹਨ।",
+    "updateFormModuleVersionErr": "ਇਸ ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+    "updateFormModuleVersionConsErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ {formModuleVersionId} ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+    "formModuleVersionSettings": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਸੈਟਿੰਗਾਂ",
+    "formModuleVersionCreated": "ਬਣਾਇਆ ਗਿਆ: {createdAt} ({createdBy})",
+    "update": "ਅੱਪਡੇਟ"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਪ੍ਰਬੰਧਨ"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+    "createFormModuleVersionConsErr": "ਫਾਰਮ ਮੋਡਿਊਲ ਵਰਜਨ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+    "importFormModule": "ਫਾਰਮ ਮੋਡਿਊਲ ਆਯਾਤ ਕਰੋ",
+    "submit": "ਜਮ੍ਹਾਂ ਕਰੋ"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "ਫਾਰਮ ਮੋਡਿਊਲ ਪ੍ਰਬੰਧਨ"
   }
 }

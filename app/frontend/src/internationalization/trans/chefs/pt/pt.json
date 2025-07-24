@@ -362,6 +362,18 @@
     "actions": "Ações",
     "delete": "Excluir"
   },
+  "adminFormModulesTable": {
+    "search": "Pesquisar",
+    "loadingText": "Carregando... Por favor aguarde",
+    "noDataText": "Não há módulos de formulário no sistema",
+    "showInactive": "Mostrar módulos de formulário inativos",
+    "formModuleName": "Nome do módulo de formulário",
+    "createdAt": "Data de criação",
+    "isInactive": "Inativo",
+    "actions": "Ações",
+    "importFormModule": "Importar módulo de formulário",
+    "manage": "Gerenciar"
+  },
   "administerForm": {
     "deleted": "EXCLUÍDO",
     "restoreForm": "Restaurar este formulário",
@@ -389,7 +401,8 @@
     "developer": "Desenvolvedor",
     "infoLinks": "Links de informações",
     "metrics": "Métricas",
-    "apis": "APIs"
+    "apis": "APIs",
+    "adminFormModulesTable": "Módulos de formulário"
   },
   "adminUsersTable": {
     "search": "Procurar",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "As configurações de inscrição para este formulário foram salvas.",
       "saveSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar salvar as configurações de assinatura.",
       "saveSubscriptionSettingsConsErrMsg": "Erro ao salvar as configurações de assinatura para o formulário {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "Ocorreu um erro ao tentar buscar os módulos de formulário.",
+      "getFormModuleListConsErrMsg": "Erro ao obter módulos de formulário: {error}",
+      "getFormModuleVersionListErrMsg": "Ocorreu um erro ao tentar buscar as versões do módulo de formulário.",
+      "getFormModuleVersionListConsErrMsg": "Erro ao obter versões do módulo de formulário: {error}",
+      "fetchFormModuleErrMsg": "Ocorreu um erro ao tentar buscar o módulo de formulário.",
+      "fetchFormModuleConsErrMsg": "Erro ao obter módulo de formulário {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "Ocorreu um erro ao tentar buscar a versão do módulo de formulário.",
+      "fetchFormModuleVersionConsErrMsg": "Erro ao obter versão do módulo de formulário {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "Ocorreu um erro ao tentar buscar as versões do módulo de formulário para esta versão do formulário.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Erro ao obter versões do módulo de formulário: ${error}",
+      "toggleFormModuleErrMsg": "Ocorreu um erro ao {state} o módulo de formulário.",
+      "toggleFormModuleConsErrMsg": "Erro ao {state} o módulo de formulário {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "Ocorreu um erro ao atualizar o módulo de formulário.",
+      "updateFormModuleConsErrMsg": "Erro ao atualizar o módulo de formulário {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "Ocorreu um erro ao atualizar a versão do módulo de formulário.",
+      "updateFormModuleVersionConsErrMsg": "Erro ao atualizar a versão do módulo de formulário {formModuleVersionId}: {error}",
+      "createFormModuleErr": "Ocorreu um erro ao tentar salvar o módulo de formulário.",
+      "createFormModuleConsErr": "Erro ao criar módulo de formulário: {error}",
+      "createFormModuleVersionErr": "Ocorreu um erro ao tentar salvar a versão do módulo de formulário.",
+      "createFormModuleVersionConsErr": "Erro ao criar versão do módulo de formulário: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
     "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "Nenhuma versão publicada encontrada para o formulário {formId}",
+    "loadingFormModules": "Carregando módulos de formulário",
+    "loadingFormModulesErr": "Ocorreu um erro ao carregar os módulos de formulário.",
+    "loadingFormModulesConsErr": "Erro ao carregar módulos de formulário: {error}",
+    "remainingObjects": "Objetos restantes: {remaining} / {total}",
+    "logImport": "Importando {uri}",
+    "logImported": "Importado {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Importar módulo de formulário",
+    "submit": "Enviar",
+    "confirmLeave": "Deseja realmente sair desta página? As alterações feitas não serão salvas.",
+    "addFormModuleVersion": "Adicionar versão do módulo de formulário",
+    "invalidConfigErrMsg": "Configuração inválida. Verifique a configuração JSON.",
+    "invalidConfigConsErrMsg": "Erro na configuração: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Nome do plugin é obrigatório",
+    "pluginNameMaxLength": "O nome do módulo de formulário deve ter 255 caracteres ou menos",
+    "formModulePluginName": "Nome do plugin do módulo de formulário",
+    "pluginName": "Nome do plugin",
+    "formDesignerIDPAccess": "Acesso IDP do designer de formulário"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "As configurações do seu módulo de formulário foram atualizadas com sucesso.",
+    "updateFormModuleErr": "Ocorreu um erro ao tentar atualizar as configurações deste módulo de formulário.",
+    "updateFormModuleConsErr": "Erro ao atualizar o módulo de formulário {formModuleId}: {error}",
+    "formModuleSettings": "Configurações do módulo de formulário",
+    "formModuleCreated": "Criado: {createdAt} ({createdBy})",
+    "update": "Atualizar",
+    "formModuleVersions": "Versões do módulo de formulário",
+    "totalVersions": "Total de versões: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Importar módulo de formulário",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "confirmDeactivationTitle": "Confirmar desativação",
+    "confirmDeactivationText": "Tem certeza de que deseja desativar <strong>%{pluginName}</strong>? Este módulo de formulário será desativado para todos os designers de formulário. Ele ainda estará disponível para revisores e remetentes.",
+    "deactivate": "Desativar"
+  },
+  "manageFormModuleVersions": {
+    "version": "Versão",
+    "createdAt": "Criado em",
+    "createdBy": "Criado por",
+    "actions": "Ações",
+    "important": "IMPORTANTE!",
+    "importantDescription": "As versões do módulo de formulário não podem ser excluídas, mas podem ser atualizadas e substituídas. Para evitar quebrar formulários mais antigos, você deve substituir uma URL apenas se ela não estiver funcionando.",
+    "info": "A versão mais recente será usada em todos os designers de formulário.",
+    "tableTemplateVersion": "Versão: {version}",
+    "manageFormModuleVersion": "Gerenciar versão do módulo de formulário"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Gerenciar módulo de formulário",
+    "externalUriRequired": "URI externo é obrigatório",
+    "externalUriMaxLength": "URI externo deve ter 255 caracteres ou menos",
+    "externalUriMinOne": "Você precisa de pelo menos um URI",
+    "externalUris": "URIs externos",
+    "config": "Configuração (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "As configurações da versão do seu módulo de formulário foram atualizadas com sucesso.",
+    "updateFormModuleVersionErr": "Ocorreu um erro ao tentar atualizar as configurações desta versão do módulo de formulário.",
+    "updateFormModuleVersionConsErr": "Erro ao atualizar a versão do módulo de formulário {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "Configurações da versão do módulo de formulário",
+    "formModuleVersionCreated": "Criado: {createdAt} ({createdBy})",
+    "update": "Atualizar"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Gerenciar versão do módulo de formulário"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "Ocorreu um erro ao tentar salvar o módulo de formulário.",
+    "createFormModuleVersionConsErr": "Erro ao criar versão do módulo de formulário: {error}",
+    "importFormModule": "Importar módulo de formulário",
+    "submit": "Enviar"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Gerenciar módulo de formulário"
   }
 }

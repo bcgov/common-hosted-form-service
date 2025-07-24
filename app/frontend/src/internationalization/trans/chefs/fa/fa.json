@@ -362,6 +362,18 @@
     "actions": "اقدامات",
     "delete": "حذف"
   },
+  "adminFormModulesTable": {
+    "search": "جستجو",
+    "loadingText": "در حال بارگیری... لطفا صبر کنید",
+    "noDataText": "هیچ ماژول فرمی در سیستم وجود ندارد",
+    "showInactive": "نمایش ماژول‌های فرم غیرفعال",
+    "formModuleName": "نام ماژول فرم",
+    "createdAt": "تاریخ ایجاد",
+    "isInactive": "غیرفعال",
+    "actions": "عملیات",
+    "importFormModule": "وارد کردن ماژول فرم",
+    "manage": "مدیریت"
+  },
   "administerForm": {
     "deleted": "حذف شده",
     "restoreForm": "این فرم را بازیابی کنید",
@@ -389,7 +401,8 @@
     "developer": "توسعه دهنده",
     "infoLinks": "لینک های اطلاعات",
     "metrics": "معیارهای",
-    "apis": "API ها"
+    "apis": "API ها",
+    "adminFormModulesTable": "ماژول‌های فرم"
   },
   "adminUsersTable": {
     "search": "جستجو کردن",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "تنظیمات اشتراک برای این فرم ذخیره شده است.",
       "saveSubscriptionSettingsErrMsg": "هنگام تلاش برای ذخیره تنظیمات اشتراک خطایی روی داد.",
       "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "هنگام تلاش برای دریافت ماژول‌های فرم خطایی رخ داد.",
+      "getFormModuleListConsErrMsg": "خطا در دریافت ماژول‌های فرم: {error}",
+      "getFormModuleVersionListErrMsg": "هنگام تلاش برای دریافت نسخه‌های ماژول فرم خطایی رخ داد.",
+      "getFormModuleVersionListConsErrMsg": "خطا در دریافت نسخه‌های ماژول فرم: {error}",
+      "fetchFormModuleErrMsg": "هنگام تلاش برای دریافت ماژول فرم خطایی رخ داد.",
+      "fetchFormModuleConsErrMsg": "خطا در دریافت ماژول فرم {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "هنگام تلاش برای دریافت نسخه ماژول فرم خطایی رخ داد.",
+      "fetchFormModuleVersionConsErrMsg": "خطا در دریافت نسخه ماژول فرم {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "هنگام تلاش برای دریافت نسخه‌های ماژول فرم برای این نسخه فرم خطایی رخ داد.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "خطا در دریافت نسخه‌های ماژول فرم: ${error}",
+      "toggleFormModuleErrMsg": "هنگام {state} ماژول فرم خطایی رخ داد.",
+      "toggleFormModuleConsErrMsg": "خطا در {state} ماژول فرم {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "هنگام به‌روزرسانی ماژول فرم خطایی رخ داد.",
+      "updateFormModuleConsErrMsg": "خطا در به‌روزرسانی ماژول فرم {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "هنگام به‌روزرسانی نسخه ماژول فرم خطایی رخ داد.",
+      "updateFormModuleVersionConsErrMsg": "خطا در به‌روزرسانی نسخه ماژول فرم {formModuleVersionId}: {error}",
+      "createFormModuleErr": "هنگام تلاش برای ذخیره ماژول فرم خطایی رخ داد.",
+      "createFormModuleConsErr": "خطا در ایجاد ماژول فرم: {error}",
+      "createFormModuleVersionErr": "هنگام تلاش برای ذخیره نسخه ماژول فرم خطایی رخ داد.",
+      "createFormModuleVersionConsErr": "خطا در ایجاد نسخه ماژول فرم: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "شما نمی توانید پیش نویس را با کاربرانی که به فرم اضافه نشده اند به اشتراک بگذارید. لطفا با ادمین تماس بگیرید تا آنها را اضافه کنید.",
     "shareDraftMessage": "پیش نویس را فقط با اعضای تیم فرم به اشتراک بگذارید"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "نسخه منتشر شده‌ای برای فرم {formId} یافت نشد",
+    "loadingFormModules": "بارگیری ماژول‌های فرم",
+    "loadingFormModulesErr": "هنگام بارگیری ماژول‌های فرم خطایی رخ داد.",
+    "loadingFormModulesConsErr": "خطا در بارگیری ماژول‌های فرم: {error}",
+    "remainingObjects": "اشیاء باقی‌مانده: {remaining} / {total}",
+    "logImport": "در حال وارد کردن {uri}",
+    "logImported": "وارد شد {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "وارد کردن ماژول فرم",
+    "submit": "ارسال",
+    "confirmLeave": "آیا واقعاً می‌خواهید این صفحه را ترک کنید؟ تغییراتی که ایجاد کرده‌اید ذخیره نخواهد شد.",
+    "addFormModuleVersion": "افزودن نسخه ماژول فرم",
+    "invalidConfigErrMsg": "پیکربندی نامعتبر. لطفاً پیکربندی JSON را بررسی کنید.",
+    "invalidConfigConsErrMsg": "خطا در پیکربندی: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "نام افزونه مورد نیاز است",
+    "pluginNameMaxLength": "نام ماژول فرم باید ۲۵۵ کاراکتر یا کمتر باشد",
+    "formModulePluginName": "نام افزونه ماژول فرم",
+    "pluginName": "نام افزونه",
+    "formDesignerIDPAccess": "دسترسی IDP طراح فرم"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "تنظیمات ماژول فرم شما با موفقیت به‌روزرسانی شد.",
+    "updateFormModuleErr": "هنگام تلاش برای به‌روزرسانی تنظیمات این ماژول فرم خطایی رخ داد.",
+    "updateFormModuleConsErr": "خطا در به‌روزرسانی ماژول فرم {formModuleId}: {error}",
+    "formModuleSettings": "تنظیمات ماژول فرم",
+    "formModuleCreated": "ایجاد شده: {createdAt} ({createdBy})",
+    "update": "به‌روزرسانی",
+    "formModuleVersions": "نسخه‌های ماژول فرم",
+    "totalVersions": "کل نسخه‌ها: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "وارد کردن ماژول فرم",
+    "active": "فعال",
+    "inactive": "غیرفعال",
+    "confirmDeactivationTitle": "تأیید غیرفعال‌سازی",
+    "confirmDeactivationText": "آیا مطمئن هستید که می‌خواهید <strong>%{pluginName}</strong> را غیرفعال کنید؟ این ماژول فرم برای همه طراحان فرم غیرفعال خواهد شد. هنوز برای بررسی‌کنندگان و ارسال‌کنندگان در دسترس خواهد بود.",
+    "deactivate": "غیرفعال کردن"
+  },
+  "manageFormModuleVersions": {
+    "version": "نسخه",
+    "createdAt": "تاریخ ایجاد",
+    "createdBy": "ایجاد شده توسط",
+    "actions": "عملیات",
+    "important": "مهم!",
+    "importantDescription": "نسخه‌های ماژول فرم را نمی‌توان حذف کرد، اما می‌توان آنها را به‌روزرسانی و بازنویسی کرد. برای جلوگیری از خراب شدن فرم‌های قدیمی، فقط در صورتی که یک آدرس کار نمی‌کند، باید آن را جایگزین کنید.",
+    "info": "آخرین نسخه در تمام طراحان فرم استفاده خواهد شد.",
+    "tableTemplateVersion": "نسخه: {version}",
+    "manageFormModuleVersion": "مدیریت نسخه ماژول فرم"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "مدیریت ماژول فرم",
+    "externalUriRequired": "URI خارجی مورد نیاز است",
+    "externalUriMaxLength": "URI خارجی باید ۲۵۵ کاراکتر یا کمتر باشد",
+    "externalUriMinOne": "شما به حداقل یک URI نیاز دارید",
+    "externalUris": "URIهای خارجی",
+    "config": "پیکربندی (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "تنظیمات نسخه ماژول فرم شما با موفقیت به‌روزرسانی شد.",
+    "updateFormModuleVersionErr": "هنگام تلاش برای به‌روزرسانی تنظیمات این نسخه ماژول فرم خطایی رخ داد.",
+    "updateFormModuleVersionConsErr": "خطا در به‌روزرسانی نسخه ماژول فرم {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "تنظیمات نسخه ماژول فرم",
+    "formModuleVersionCreated": "ایجاد شده: {createdAt} ({createdBy})",
+    "update": "به‌روزرسانی"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "مدیریت نسخه ماژول فرم"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "هنگام تلاش برای ذخیره ماژول فرم خطایی رخ داد.",
+    "createFormModuleVersionConsErr": "خطا در ایجاد نسخه ماژول فرم: {error}",
+    "importFormModule": "وارد کردن ماژول فرم",
+    "submit": "ارسال"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "مدیریت ماژول فرم"
   }
 }

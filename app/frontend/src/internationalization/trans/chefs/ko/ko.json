@@ -362,6 +362,18 @@
     "actions": "행위",
     "delete": "삭제"
   },
+  "adminFormModulesTable": {
+    "search": "검색",
+    "loadingText": "로딩 중... 잠시만 기다려주세요",
+    "noDataText": "시스템에 폼 모듈이 없습니다",
+    "showInactive": "비활성화된 폼 모듈 표시",
+    "formModuleName": "폼 모듈 이름",
+    "createdAt": "생성일",
+    "isInactive": "비활성화",
+    "actions": "작업",
+    "importFormModule": "폼 모듈 가져오기",
+    "manage": "관리"
+  },
   "administerForm": {
     "deleted": "삭제됨",
     "restoreForm": "이 양식 복원",
@@ -389,7 +401,8 @@
     "developer": "개발자",
     "infoLinks": "정보 링크",
     "metrics": "측정항목",
-    "apis": "아피스"
+    "apis": "아피스",
+    "adminFormModulesTable": "폼 모듈"
   },
   "adminUsersTable": {
     "search": "찾다",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "이 양식에 대한 구독 설정이 저장되었습니다.",
       "saveSubscriptionSettingsErrMsg": "구독 설정을 저장하는 동안 오류가 발생했습니다.",
       "saveSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정 저장 오류: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "폼 모듈을 가져오는 중 오류가 발생했습니다.",
+      "getFormModuleListConsErrMsg": "폼 모듈 가져오기 오류: {error}",
+      "getFormModuleVersionListErrMsg": "폼 모듈 버전을 가져오는 중 오류가 발생했습니다.",
+      "getFormModuleVersionListConsErrMsg": "폼 모듈 버전 가져오기 오류: {error}",
+      "fetchFormModuleErrMsg": "폼 모듈을 가져오는 중 오류가 발생했습니다.",
+      "fetchFormModuleConsErrMsg": "폼 모듈 {formModuleId} 가져오기 오류: {error}",
+      "fetchFormModuleVersionErrMsg": "폼 모듈 버전을 가져오는 중 오류가 발생했습니다.",
+      "fetchFormModuleVersionConsErrMsg": "폼 모듈 버전 {formModuleVersionId} 가져오기 오류: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "이 폼 버전의 폼 모듈 버전을 가져오는 중 오류가 발생했습니다.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "폼 모듈 버전 가져오기 오류: ${error}",
+      "toggleFormModuleErrMsg": "폼 모듈을 {state}하는 중 오류가 발생했습니다.",
+      "toggleFormModuleConsErrMsg": "폼 모듈 {formModuleId}을(를) {state}하는 중 오류: {error}",
+      "updateFormModuleErrMsg": "폼 모듈을 업데이트하는 중 오류가 발생했습니다.",
+      "updateFormModuleConsErrMsg": "폼 모듈 {formModuleId} 업데이트 오류: {error}",
+      "updateFormModuleVersionErrMsg": "폼 모듈 버전을 업데이트하는 중 오류가 발생했습니다.",
+      "updateFormModuleVersionConsErrMsg": "폼 모듈 버전 {formModuleVersionId} 업데이트 오류: {error}",
+      "createFormModuleErr": "폼 모듈을 저장하는 중 오류가 발생했습니다.",
+      "createFormModuleConsErr": "폼 모듈 생성 오류: {error}",
+      "createFormModuleVersionErr": "폼 모듈 버전을 저장하는 중 오류가 발생했습니다.",
+      "createFormModuleVersionConsErr": "폼 모듈 버전 생성 오류: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "양식에 추가되지 않은 사용자와 초안을 공유할 수 없습니다. 관리자에게 연락하여 추가하세요.",
     "shareDraftMessage": "초안을 양식 팀원과만 공유하세요"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "폼 {formId}에 대한 게시된 버전을 찾을 수 없습니다",
+    "loadingFormModules": "폼 모듈 로딩 중",
+    "loadingFormModulesErr": "폼 모듈을 로딩하는 중 오류가 발생했습니다.",
+    "loadingFormModulesConsErr": "폼 모듈 로딩 오류: {error}",
+    "remainingObjects": "남은 객체: {remaining} / {total}",
+    "logImport": "{uri} 가져오는 중",
+    "logImported": "{uri} 가져오기 완료"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "폼 모듈 가져오기",
+    "submit": "제출",
+    "confirmLeave": "정말로 이 페이지를 떠나시겠습니까? 변경 사항이 저장되지 않습니다.",
+    "addFormModuleVersion": "폼 모듈 버전 추가",
+    "invalidConfigErrMsg": "잘못된 구성입니다. JSON 구성을 확인하세요.",
+    "invalidConfigConsErrMsg": "구성 오류: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "플러그인 이름이 필요합니다",
+    "pluginNameMaxLength": "폼 모듈 이름은 255자 이하여야 합니다",
+    "formModulePluginName": "폼 모듈 플러그인 이름",
+    "pluginName": "플러그인 이름",
+    "formDesignerIDPAccess": "폼 디자이너 IDP 접근"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "폼 모듈 설정이 성공적으로 업데이트되었습니다.",
+    "updateFormModuleErr": "이 폼 모듈의 설정을 업데이트하는 중 오류가 발생했습니다.",
+    "updateFormModuleConsErr": "폼 모듈 {formModuleId} 업데이트 오류: {error}",
+    "formModuleSettings": "폼 모듈 설정",
+    "formModuleCreated": "생성: {createdAt} ({createdBy})",
+    "update": "업데이트",
+    "formModuleVersions": "폼 모듈 버전",
+    "totalVersions": "총 버전 수: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "폼 모듈 가져오기",
+    "active": "활성화",
+    "inactive": "비활성화",
+    "confirmDeactivationTitle": "비활성화 확인",
+    "confirmDeactivationText": "<strong>%{pluginName}</strong>을(를) 비활성화하시겠습니까? 이 폼 모듈은 모든 폼 디자이너에서 비활성화됩니다. 검토자 및 제출자는 계속 사용할 수 있습니다.",
+    "deactivate": "비활성화"
+  },
+  "manageFormModuleVersions": {
+    "version": "버전",
+    "createdAt": "생성일",
+    "createdBy": "생성자",
+    "actions": "작업",
+    "important": "중요!",
+    "importantDescription": "폼 모듈 버전은 삭제할 수 없지만 업데이트하고 덮어쓸 수 있습니다. 이전 폼이 손상되지 않도록 URL이 작동하지 않는 경우에만 교체해야 합니다.",
+    "info": "최신 버전이 모든 폼 디자이너에서 사용됩니다.",
+    "tableTemplateVersion": "버전: {version}",
+    "manageFormModuleVersion": "폼 모듈 버전 관리"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "폼 모듈 관리",
+    "externalUriRequired": "외부 URI가 필요합니다",
+    "externalUriMaxLength": "외부 URI는 255자 이하여야 합니다",
+    "externalUriMinOne": "최소한 하나의 URI가 필요합니다",
+    "externalUris": "외부 URI",
+    "config": "구성 (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "폼 모듈 버전 설정이 성공적으로 업데이트되었습니다.",
+    "updateFormModuleVersionErr": "이 폼 모듈 버전의 설정을 업데이트하는 중 오류가 발생했습니다.",
+    "updateFormModuleVersionConsErr": "폼 모듈 버전 {formModuleVersionId} 업데이트 오류: {error}",
+    "formModuleVersionSettings": "폼 모듈 버전 설정",
+    "formModuleVersionCreated": "생성: {createdAt} ({createdBy})",
+    "update": "업데이트"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "폼 모듈 버전 관리"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "폼 모듈을 저장하는 중 오류가 발생했습니다.",
+    "createFormModuleVersionConsErr": "폼 모듈 버전 생성 오류: {error}",
+    "importFormModule": "폼 모듈 가져오기",
+    "submit": "제출"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "폼 모듈 관리"
   }
 }

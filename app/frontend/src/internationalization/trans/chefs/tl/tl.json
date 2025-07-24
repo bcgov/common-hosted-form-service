@@ -362,6 +362,18 @@
     "actions": "Mga aksyon",
     "delete": "Tanggalin"
   },
+  "adminFormModulesTable": {
+    "search": "Maghanap",
+    "loadingText": "Naglo-load... Pakihintay lamang",
+    "noDataText": "Walang mga module ng form sa sistema",
+    "showInactive": "Ipakita ang mga hindi aktibong module ng form",
+    "formModuleName": "Pangalan ng Module ng Form",
+    "createdAt": "Petsa ng Paglikha",
+    "isInactive": "Hindi Aktibo",
+    "actions": "Mga Aksyon",
+    "importFormModule": "Mag-import ng Module ng Form",
+    "manage": "Pamahalaan"
+  },
   "administerForm": {
     "deleted": "NABURA",
     "restoreForm": "Ibalik ang form na ito",
@@ -389,7 +401,8 @@
     "developer": "Developer",
     "infoLinks": "Mga Link ng Impormasyon",
     "metrics": "Mga sukatan",
-    "apis": "Mga API"
+    "apis": "Mga API",
+    "adminFormModulesTable": "Mga Module ng Form"
   },
   "adminUsersTable": {
     "search": "Maghanap",
@@ -1114,6 +1127,28 @@
       "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
       "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
       "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "May naganap na error habang sinusubukang kunin ang mga module ng form.",
+      "getFormModuleListConsErrMsg": "Error sa pagkuha ng mga module ng form: {error}",
+      "getFormModuleVersionListErrMsg": "May naganap na error habang sinusubukang kunin ang mga bersyon ng module ng form.",
+      "getFormModuleVersionListConsErrMsg": "Error sa pagkuha ng mga bersyon ng module ng form: {error}",
+      "fetchFormModuleErrMsg": "May naganap na error habang sinusubukang kunin ang module ng form.",
+      "fetchFormModuleConsErrMsg": "Error sa pagkuha ng module ng form {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "May naganap na error habang sinusubukang kunin ang bersyon ng module ng form.",
+      "fetchFormModuleVersionConsErrMsg": "Error sa pagkuha ng bersyon ng module ng form {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "May naganap na error habang sinusubukang kunin ang mga bersyon ng module ng form para sa bersyon ng form na ito.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Error sa pagkuha ng mga bersyon ng module ng form: ${error}",
+      "toggleFormModuleErrMsg": "May naganap na error habang {state} ng module ng form.",
+      "toggleFormModuleConsErrMsg": "Error sa {state} ng module ng form {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "May naganap na error habang ina-update ang module ng form.",
+      "updateFormModuleConsErrMsg": "Error sa pag-update ng module ng form {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "May naganap na error habang ina-update ang bersyon ng module ng form.",
+      "updateFormModuleVersionConsErrMsg": "Error sa pag-update ng bersyon ng module ng form {formModuleVersionId}: {error}",
+      "createFormModuleErr": "May naganap na error habang sinusubukang i-save ang module ng form.",
+      "createFormModuleConsErr": "Error sa paglikha ng module ng form: {error}",
+      "createFormModuleVersionErr": "May naganap na error habang sinusubukang i-save ang bersyon ng module ng form.",
+      "createFormModuleVersionConsErr": "Error sa paglikha ng bersyon ng module ng form: {error}"
     }
   },
   "admin": {
@@ -1230,5 +1265,86 @@
   "canShareDraft": {
     "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
     "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "Walang nahanap na nai-publish na bersyon para sa form {formId}",
+    "loadingFormModules": "Naglo-load ng mga module ng form",
+    "loadingFormModulesErr": "May naganap na error habang naglo-load ng mga module ng form.",
+    "loadingFormModulesConsErr": "Error sa paglo-load ng mga module ng form: {error}",
+    "remainingObjects": "Natitirang mga bagay: {remaining} / {total}",
+    "logImport": "Nag-i-import ng {uri}",
+    "logImported": "Na-import na {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Mag-import ng Module ng Form",
+    "submit": "Isumite",
+    "confirmLeave": "Gusto mo bang talaga umalis sa pahinang ito? Ang mga pagbabagong ginawa mo ay hindi mai-save.",
+    "addFormModuleVersion": "Magdagdag ng Bersyon ng Module ng Form",
+    "invalidConfigErrMsg": "Hindi wastong configuration. Mangyaring suriin ang JSON configuration.",
+    "invalidConfigConsErrMsg": "Error sa configuration: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Kailangan ang pangalan ng plugin",
+    "pluginNameMaxLength": "Ang pangalan ng module ng form ay dapat 255 karakter o mas mababa",
+    "formModulePluginName": "Pangalan ng Plugin ng Module ng Form",
+    "pluginName": "Pangalan ng Plugin",
+    "formDesignerIDPAccess": "Access sa IDP ng Form Designer"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "Matagumpay na na-update ang mga setting ng iyong module ng form.",
+    "updateFormModuleErr": "May naganap na error habang sinusubukang i-update ang mga setting para sa module ng form na ito.",
+    "updateFormModuleConsErr": "Error sa pag-update ng module ng form {formModuleId}: {error}",
+    "formModuleSettings": "Mga Setting ng Module ng Form",
+    "formModuleCreated": "Nilikha: {createdAt} ({createdBy})",
+    "update": "I-update",
+    "formModuleVersions": "Mga Bersyon ng Module ng Form",
+    "totalVersions": "Kabuuang mga Bersyon: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Mag-import ng Module ng Form",
+    "active": "Aktibo",
+    "inactive": "Hindi Aktibo",
+    "confirmDeactivationTitle": "Kumpirmahin ang Pag-deactivate",
+    "confirmDeactivationText": "Sigurado ka bang nais mong i-deactivate ang <strong>%{pluginName}</strong>? Ang module ng form na ito ay made-deactivate para sa lahat ng mga designer ng form. Ito ay mananatiling available para sa mga reviewer at submitter.",
+    "deactivate": "I-deactivate"
+  },
+  "manageFormModuleVersions": {
+    "version": "Bersyon",
+    "createdAt": "Nilikha Noong",
+    "createdBy": "Nilikha Ni",
+    "actions": "Mga Aksyon",
+    "important": "MAHALAGA!",
+    "importantDescription": "Ang mga Bersyon ng Module ng Form ay hindi maaaring burahin, ngunit maaari silang i-update at i-overwrite. Para maiwasan ang pagsira sa mga lumang form, dapat mo lamang palitan ang url kung ito ay hindi gumagana.",
+    "info": "Ang pinakabagong bersyon ang gagamitin sa lahat ng mga designer ng form.",
+    "tableTemplateVersion": "Bersyon: {version}",
+    "manageFormModuleVersion": "Pamahalaan ang Bersyon ng Module ng Form"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Pamahalaan ang Module ng Form",
+    "externalUriRequired": "Kailangan ang External URI",
+    "externalUriMaxLength": "Ang External URI ay dapat 255 karakter o mas mababa",
+    "externalUriMinOne": "Kailangan mo ng hindi bababa sa isang URI",
+    "externalUris": "Mga External URI",
+    "config": "Configuration (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "Matagumpay na na-update ang mga setting ng bersyon ng iyong module ng form.",
+    "updateFormModuleVersionErr": "May naganap na error habang sinusubukang i-update ang mga setting para sa bersyon ng module ng form na ito.",
+    "updateFormModuleVersionConsErr": "Error sa pag-update ng bersyon ng module ng form {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "Mga Setting ng Bersyon ng Module ng Form",
+    "formModuleVersionCreated": "Nilikha: {createdAt} ({createdBy})",
+    "update": "I-update"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Pamahalaan ang Bersyon ng Module ng Form"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "May naganap na error habang sinusubukang i-save ang module ng form.",
+    "createFormModuleVersionConsErr": "Error sa paglikha ng bersyon ng module ng form: {error}",
+    "importFormModule": "Mag-import ng Module ng Form",
+    "submit": "Isumite"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Pamahalaan ang Module ng Form"
   }
 }

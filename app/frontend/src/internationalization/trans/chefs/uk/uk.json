@@ -362,6 +362,18 @@
     "actions": "Дії",
     "delete": "Видалити"
   },
+  "adminFormModulesTable": {
+    "search": "Пошук",
+    "loadingText": "Завантаження... Будь ласка, зачекайте",
+    "noDataText": "В системі немає модулів форм",
+    "showInactive": "Показати неактивні модулі форм",
+    "formModuleName": "Назва модуля форми",
+    "createdAt": "Дата створення",
+    "isInactive": "Неактивний",
+    "actions": "Дії",
+    "importFormModule": "Імпортувати модуль форми",
+    "manage": "Керувати"
+  },
   "administerForm": {
     "deleted": "ВИДАЛЕНО",
     "restoreForm": "Відновіть цю форму",
@@ -389,7 +401,8 @@
     "developer": "Розробник",
     "infoLinks": "Інформаційні посилання",
     "metrics": "Метрики",
-    "apis": "API"
+    "apis": "API",
+    "adminFormModulesTable": "Модулі форм"
   },
   "adminUsersTable": {
     "search": "Пошук",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "Налаштування підписки на цю форму збережено.",
       "saveSubscriptionSettingsErrMsg": "Під час спроби зберегти налаштування підписки сталася помилка.",
       "saveSubscriptionSettingsConsErrMsg": "Помилка збереження налаштувань підписки для форми {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "Сталася помилка під час спроби отримати модулі форм.",
+      "getFormModuleListConsErrMsg": "Помилка отримання модулів форм: {error}",
+      "getFormModuleVersionListErrMsg": "Сталася помилка під час спроби отримати версії модуля форми.",
+      "getFormModuleVersionListConsErrMsg": "Помилка отримання версій модуля форми: {error}",
+      "fetchFormModuleErrMsg": "Сталася помилка під час спроби отримати модуль форми.",
+      "fetchFormModuleConsErrMsg": "Помилка отримання модуля форми {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "Сталася помилка під час спроби отримати версію модуля форми.",
+      "fetchFormModuleVersionConsErrMsg": "Помилка отримання версії модуля форми {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "Сталася помилка під час спроби отримати версії модуля форми для цієї версії форми.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Помилка отримання версій модуля форми: ${error}",
+      "toggleFormModuleErrMsg": "Сталася помилка під час {state} модуля форми.",
+      "toggleFormModuleConsErrMsg": "Помилка {state} модуля форми {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "Сталася помилка під час оновлення модуля форми.",
+      "updateFormModuleConsErrMsg": "Помилка оновлення модуля форми {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "Сталася помилка під час оновлення версії модуля форми.",
+      "updateFormModuleVersionConsErrMsg": "Помилка оновлення версії модуля форми {formModuleVersionId}: {error}",
+      "createFormModuleErr": "Сталася помилка під час спроби зберегти модуль форми.",
+      "createFormModuleConsErr": "Помилка створення модуля форми: {error}",
+      "createFormModuleVersionErr": "Сталася помилка під час спроби зберегти версію модуля форми.",
+      "createFormModuleVersionConsErr": "Помилка створення версії модуля форми: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "Ви не можете поділитися чернеткою з користувачами, які не були додані до форми. Щоб додати їх, зверніться до адміністратора.",
     "shareDraftMessage": "Діліться чернеткою лише з членами команди форми"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "Не знайдено опублікованої версії для форми {formId}",
+    "loadingFormModules": "Завантаження модулів форм",
+    "loadingFormModulesErr": "Сталася помилка під час завантаження модулів форм.",
+    "loadingFormModulesConsErr": "Помилка завантаження модулів форм: {error}",
+    "remainingObjects": "Залишилось об'єктів: {remaining} / {total}",
+    "logImport": "Імпортування {uri}",
+    "logImported": "Імпортовано {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Імпортувати модуль форми",
+    "submit": "Надіслати",
+    "confirmLeave": "Ви дійсно хочете покинути цю сторінку? Внесені зміни не будуть збережені.",
+    "addFormModuleVersion": "Додати версію модуля форми",
+    "invalidConfigErrMsg": "Недійсна конфігурація. Будь ласка, перевірте конфігурацію JSON.",
+    "invalidConfigConsErrMsg": "Помилка в конфігурації: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Необхідно вказати назву плагіна",
+    "pluginNameMaxLength": "Назва модуля форми повинна містити не більше 255 символів",
+    "formModulePluginName": "Назва плагіна модуля форми",
+    "pluginName": "Назва плагіна",
+    "formDesignerIDPAccess": "Доступ IDP для конструктора форм"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "Налаштування вашого модуля форми успішно оновлено.",
+    "updateFormModuleErr": "Сталася помилка під час спроби оновити налаштування цього модуля форми.",
+    "updateFormModuleConsErr": "Помилка оновлення модуля форми {formModuleId}: {error}",
+    "formModuleSettings": "Налаштування модуля форми",
+    "formModuleCreated": "Створено: {createdAt} ({createdBy})",
+    "update": "Оновити",
+    "formModuleVersions": "Версії модуля форми",
+    "totalVersions": "Загальна кількість версій: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Імпортувати модуль форми",
+    "active": "Активний",
+    "inactive": "Неактивний",
+    "confirmDeactivationTitle": "Підтвердити деактивацію",
+    "confirmDeactivationText": "Ви впевнені, що хочете деактивувати <strong>%{pluginName}</strong>? Цей модуль форми буде деактивовано для всіх конструкторів форм. Він залишиться доступним для рецензентів та відправників.",
+    "deactivate": "Деактивувати"
+  },
+  "manageFormModuleVersions": {
+    "version": "Версія",
+    "createdAt": "Дата створення",
+    "createdBy": "Створено",
+    "actions": "Дії",
+    "important": "ВАЖЛИВО!",
+    "importantDescription": "Версії модуля форми не можна видалити, але їх можна оновлювати та перезаписувати. Щоб не порушити роботу старіших форм, замінюйте URL тільки в тому випадку, якщо він не працює.",
+    "info": "Остання версія буде використовуватись у всіх конструкторах форм.",
+    "tableTemplateVersion": "Версія: {version}",
+    "manageFormModuleVersion": "Керування версією модуля форми"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Керування модулем форми",
+    "externalUriRequired": "Зовнішній URI є обов'язковим",
+    "externalUriMaxLength": "Зовнішній URI має містити не більше 255 символів",
+    "externalUriMinOne": "Потрібен принаймні один URI",
+    "externalUris": "Зовнішні URI",
+    "config": "Конфігурація (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "Налаштування версії вашого модуля форми успішно оновлено.",
+    "updateFormModuleVersionErr": "Сталася помилка під час спроби оновити налаштування цієї версії модуля форми.",
+    "updateFormModuleVersionConsErr": "Помилка оновлення версії модуля форми {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "Налаштування версії модуля форми",
+    "formModuleVersionCreated": "Створено: {createdAt} ({createdBy})",
+    "update": "Оновити"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Керування версією модуля форми"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "Сталася помилка під час спроби зберегти модуль форми.",
+    "createFormModuleVersionConsErr": "Помилка створення версії модуля форми: {error}",
+    "importFormModule": "Імпортувати модуль форми",
+    "submit": "Надіслати"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Керування модулем форми"
   }
 }

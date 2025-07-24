@@ -362,6 +362,18 @@
     "actions": "hành động",
     "delete": "Xóa bỏ"
   },
+  "adminFormModulesTable": {
+    "search": "Tìm kiếm",
+    "loadingText": "Đang tải... Vui lòng đợi",
+    "noDataText": "Không có mô-đun biểu mẫu nào trong hệ thống",
+    "showInactive": "Hiển thị các mô-đun biểu mẫu không hoạt động",
+    "formModuleName": "Tên mô-đun biểu mẫu",
+    "createdAt": "Ngày tạo",
+    "isInactive": "Không hoạt động",
+    "actions": "Thao tác",
+    "importFormModule": "Nhập mô-đun biểu mẫu",
+    "manage": "Quản lý"
+  },
   "administerForm": {
     "deleted": "ĐÃ XÓA",
     "restoreForm": "Khôi phục biểu mẫu này",
@@ -389,7 +401,8 @@
     "developer": "nhà phát triển",
     "infoLinks": "Liên kết thông tin",
     "metrics": "số liệu",
-    "apis": "API"
+    "apis": "API",
+    "adminFormModulesTable": "Mô-đun biểu mẫu"
   },
   "adminUsersTable": {
     "search": "Tìm kiếm",
@@ -1114,6 +1127,28 @@
       "saveSubscriptionSettingsNotifyMsg": "Cài đặt đăng ký cho biểu mẫu này đã được lưu.",
       "saveSubscriptionSettingsErrMsg": "Đã xảy ra lỗi khi cố lưu cài đặt đăng ký.",
       "saveSubscriptionSettingsConsErrMsg": "Lỗi khi lưu cài đặt đăng ký cho biểu mẫu {formId}: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "Đã xảy ra lỗi khi cố gắng lấy các mô-đun biểu mẫu.",
+      "getFormModuleListConsErrMsg": "Lỗi khi lấy mô-đun biểu mẫu: {error}",
+      "getFormModuleVersionListErrMsg": "Đã xảy ra lỗi khi cố gắng lấy các phiên bản mô-đun biểu mẫu.",
+      "getFormModuleVersionListConsErrMsg": "Lỗi khi lấy phiên bản mô-đun biểu mẫu: {error}",
+      "fetchFormModuleErrMsg": "Đã xảy ra lỗi khi cố gắng lấy mô-đun biểu mẫu.",
+      "fetchFormModuleConsErrMsg": "Lỗi khi lấy mô-đun biểu mẫu {formModuleId}: {error}",
+      "fetchFormModuleVersionErrMsg": "Đã xảy ra lỗi khi cố gắng lấy phiên bản mô-đun biểu mẫu.",
+      "fetchFormModuleVersionConsErrMsg": "Lỗi khi lấy phiên bản mô-đun biểu mẫu {formModuleVersionId}: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "Đã xảy ra lỗi khi cố gắng lấy phiên bản mô-đun biểu mẫu cho phiên bản biểu mẫu này.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Lỗi khi lấy phiên bản mô-đun biểu mẫu: ${error}",
+      "toggleFormModuleErrMsg": "Đã xảy ra lỗi khi {state} mô-đun biểu mẫu.",
+      "toggleFormModuleConsErrMsg": "Lỗi khi {state} mô-đun biểu mẫu {formModuleId}: {error}",
+      "updateFormModuleErrMsg": "Đã xảy ra lỗi khi cập nhật mô-đun biểu mẫu.",
+      "updateFormModuleConsErrMsg": "Lỗi khi cập nhật mô-đun biểu mẫu {formModuleId}: {error}",
+      "updateFormModuleVersionErrMsg": "Đã xảy ra lỗi khi cập nhật phiên bản mô-đun biểu mẫu.",
+      "updateFormModuleVersionConsErrMsg": "Lỗi khi cập nhật phiên bản mô-đun biểu mẫu {formModuleVersionId}: {error}",
+      "createFormModuleErr": "Đã xảy ra lỗi khi cố gắng lưu mô-đun biểu mẫu.",
+      "createFormModuleConsErr": "Lỗi khi tạo mô-đun biểu mẫu: {error}",
+      "createFormModuleVersionErr": "Đã xảy ra lỗi khi cố gắng lưu phiên bản mô-đun biểu mẫu.",
+      "createFormModuleVersionConsErr": "Lỗi khi tạo phiên bản mô-đun biểu mẫu: {error}"
     }
   },
   "admin": {
@@ -1230,5 +1265,86 @@
   "canShareDraft": {
     "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
     "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "Không tìm thấy phiên bản đã xuất bản cho biểu mẫu {formId}",
+    "loadingFormModules": "Đang tải mô-đun biểu mẫu",
+    "loadingFormModulesErr": "Đã xảy ra lỗi khi tải mô-đun biểu mẫu.",
+    "loadingFormModulesConsErr": "Lỗi khi tải mô-đun biểu mẫu: {error}",
+    "remainingObjects": "Đối tượng còn lại: {remaining} / {total}",
+    "logImport": "Đang nhập {uri}",
+    "logImported": "Đã nhập {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Nhập mô-đun biểu mẫu",
+    "submit": "Gửi",
+    "confirmLeave": "Bạn có thực sự muốn rời khỏi trang này không? Các thay đổi bạn đã thực hiện sẽ không được lưu.",
+    "addFormModuleVersion": "Thêm phiên bản mô-đun biểu mẫu",
+    "invalidConfigErrMsg": "Cấu hình không hợp lệ. Vui lòng kiểm tra cấu hình JSON.",
+    "invalidConfigConsErrMsg": "Lỗi trong cấu hình: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Tên plugin là bắt buộc",
+    "pluginNameMaxLength": "Tên mô-đun biểu mẫu phải có 255 ký tự hoặc ít hơn",
+    "formModulePluginName": "Tên plugin mô-đun biểu mẫu",
+    "pluginName": "Tên plugin",
+    "formDesignerIDPAccess": "Quyền truy cập IDP của người thiết kế biểu mẫu"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "Cài đặt mô-đun biểu mẫu của bạn đã được cập nhật thành công.",
+    "updateFormModuleErr": "Đã xảy ra lỗi khi cố gắng cập nhật cài đặt cho mô-đun biểu mẫu này.",
+    "updateFormModuleConsErr": "Lỗi khi cập nhật mô-đun biểu mẫu {formModuleId}: {error}",
+    "formModuleSettings": "Cài đặt mô-đun biểu mẫu",
+    "formModuleCreated": "Đã tạo: {createdAt} ({createdBy})",
+    "update": "Cập nhật",
+    "formModuleVersions": "Phiên bản mô-đun biểu mẫu",
+    "totalVersions": "Tổng số phiên bản: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Nhập mô-đun biểu mẫu",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "confirmDeactivationTitle": "Xác nhận vô hiệu hóa",
+    "confirmDeactivationText": "Bạn có chắc chắn muốn vô hiệu hóa <strong>%{pluginName}</strong>? Mô-đun biểu mẫu này sẽ bị vô hiệu hóa cho tất cả người thiết kế biểu mẫu. Nó vẫn sẽ có sẵn cho người xem xét và người gửi.",
+    "deactivate": "Vô hiệu hóa"
+  },
+  "manageFormModuleVersions": {
+    "version": "Phiên bản",
+    "createdAt": "Ngày tạo",
+    "createdBy": "Người tạo",
+    "actions": "Thao tác",
+    "important": "QUAN TRỌNG!",
+    "importantDescription": "Phiên bản mô-đun biểu mẫu không thể bị xóa, nhưng chúng có thể được cập nhật và ghi đè. Để tránh làm hỏng các biểu mẫu cũ, bạn chỉ nên thay thế url nếu nó không hoạt động.",
+    "info": "Phiên bản mới nhất sẽ được sử dụng trong tất cả các trình thiết kế biểu mẫu.",
+    "tableTemplateVersion": "Phiên bản: {version}",
+    "manageFormModuleVersion": "Quản lý phiên bản mô-đun biểu mẫu"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Quản lý mô-đun biểu mẫu",
+    "externalUriRequired": "URI bên ngoài là bắt buộc",
+    "externalUriMaxLength": "URI bên ngoài phải có 255 ký tự hoặc ít hơn",
+    "externalUriMinOne": "Bạn cần ít nhất một URI",
+    "externalUris": "URIs bên ngoài",
+    "config": "Cấu hình (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "Cài đặt phiên bản mô-đun biểu mẫu của bạn đã được cập nhật thành công.",
+    "updateFormModuleVersionErr": "Đã xảy ra lỗi khi cố gắng cập nhật cài đặt cho phiên bản mô-đun biểu mẫu này.",
+    "updateFormModuleVersionConsErr": "Lỗi khi cập nhật phiên bản mô-đun biểu mẫu {formModuleVersionId}: {error}",
+    "formModuleVersionSettings": "Cài đặt phiên bản mô-đun biểu mẫu",
+    "formModuleVersionCreated": "Đã tạo: {createdAt} ({createdBy})",
+    "update": "Cập nhật"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Quản lý phiên bản mô-đun biểu mẫu"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "Đã xảy ra lỗi khi cố gắng lưu mô-đun biểu mẫu.",
+    "createFormModuleVersionConsErr": "Lỗi khi tạo phiên bản mô-đun biểu mẫu: {error}",
+    "importFormModule": "Nhập mô-đun biểu mẫu",
+    "submit": "Gửi"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Quản lý mô-đun biểu mẫu"
   }
 }

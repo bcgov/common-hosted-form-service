@@ -362,6 +362,18 @@
     "actions": "行動",
     "delete": "消去"
   },
+  "adminFormModulesTable": {
+    "search": "検索",
+    "loadingText": "読み込み中...お待ちください",
+    "noDataText": "システムにフォームモジュールはありません",
+    "showInactive": "非アクティブなフォームモジュールを表示",
+    "formModuleName": "フォームモジュール名",
+    "createdAt": "作成日",
+    "isInactive": "非アクティブ",
+    "actions": "アクション",
+    "importFormModule": "フォームモジュールをインポート",
+    "manage": "管理"
+  },
   "administerForm": {
     "deleted": "削除されました",
     "restoreForm": "このフォームを復元する",
@@ -389,7 +401,8 @@
     "developer": "デベロッパー",
     "infoLinks": "情報リンク",
     "metrics": "メトリクス",
-    "apis": "APIについて"
+    "apis": "APIについて",
+    "adminFormModulesTable": "フォームモジュール"
   },
   "adminUsersTable": {
     "search": "検索",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "このフォームの購読設定が保存されました。",
       "saveSubscriptionSettingsErrMsg": "サブスクリプション設定を保存しようとしたときにエラーが発生しました。",
       "saveSubscriptionSettingsConsErrMsg": "フォーム {formId} のサブスクリプション設定を保存中にエラーが発生しました: {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "フォームモジュールの取得中にエラーが発生しました。",
+      "getFormModuleListConsErrMsg": "フォームモジュールの取得エラー: {error}",
+      "getFormModuleVersionListErrMsg": "フォームモジュールバージョンの取得中にエラーが発生しました。",
+      "getFormModuleVersionListConsErrMsg": "フォームモジュールバージョンの取得エラー: {error}",
+      "fetchFormModuleErrMsg": "フォームモジュールの取得中にエラーが発生しました。",
+      "fetchFormModuleConsErrMsg": "フォームモジュール {formModuleId} の取得エラー: {error}",
+      "fetchFormModuleVersionErrMsg": "フォームモジュールバージョンの取得中にエラーが発生しました。",
+      "fetchFormModuleVersionConsErrMsg": "フォームモジュールバージョン {formModuleVersionId} の取得エラー: {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "このフォームバージョンのフォームモジュールバージョンの取得中にエラーが発生しました。",
+      "getFormVersionFormModuleVersionsConsErrMsg": "フォームモジュールバージョンの取得エラー: ${error}",
+      "toggleFormModuleErrMsg": "フォームモジュールの{state}中にエラーが発生しました。",
+      "toggleFormModuleConsErrMsg": "フォームモジュール {formModuleId} の{state}エラー: {error}",
+      "updateFormModuleErrMsg": "フォームモジュールの更新中にエラーが発生しました。",
+      "updateFormModuleConsErrMsg": "フォームモジュール {formModuleId} の更新エラー: {error}",
+      "updateFormModuleVersionErrMsg": "フォームモジュールバージョンの更新中にエラーが発生しました。",
+      "updateFormModuleVersionConsErrMsg": "フォームモジュールバージョン {formModuleVersionId} の更新エラー: {error}",
+      "createFormModuleErr": "フォームモジュールの保存中にエラーが発生しました。",
+      "createFormModuleConsErr": "フォームモジュールの作成エラー: {error}",
+      "createFormModuleVersionErr": "フォームモジュールバージョンの保存中にエラーが発生しました。",
+      "createFormModuleVersionConsErr": "フォームモジュールバージョンの作成エラー: {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
     "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "フォーム {formId} の公開バージョンが見つかりません",
+    "loadingFormModules": "フォームモジュールを読み込み中",
+    "loadingFormModulesErr": "フォームモジュールの読み込み中にエラーが発生しました。",
+    "loadingFormModulesConsErr": "フォームモジュールの読み込みエラー: {error}",
+    "remainingObjects": "残りのオブジェクト: {remaining} / {total}",
+    "logImport": "{uri} をインポート中",
+    "logImported": "{uri} をインポート完了"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "フォームモジュールをインポート",
+    "submit": "送信",
+    "confirmLeave": "このページから離れてもよろしいですか？変更内容は保存されません。",
+    "addFormModuleVersion": "フォームモジュールバージョンを追加",
+    "invalidConfigErrMsg": "設定が無効です。JSON設定を確認してください。",
+    "invalidConfigConsErrMsg": "設定エラー: {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "プラグイン名は必須です",
+    "pluginNameMaxLength": "フォームモジュール名は255文字以内である必要があります",
+    "formModulePluginName": "フォームモジュールプラグイン名",
+    "pluginName": "プラグイン名",
+    "formDesignerIDPAccess": "フォームデザイナーIDPアクセス"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "フォームモジュールの設定が正常に更新されました。",
+    "updateFormModuleErr": "このフォームモジュールの設定を更新中にエラーが発生しました。",
+    "updateFormModuleConsErr": "フォームモジュール {formModuleId} の更新エラー: {error}",
+    "formModuleSettings": "フォームモジュール設定",
+    "formModuleCreated": "作成: {createdAt} ({createdBy})",
+    "update": "更新",
+    "formModuleVersions": "フォームモジュールバージョン",
+    "totalVersions": "総バージョン数: {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "フォームモジュールをインポート",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "confirmDeactivationTitle": "非アクティブ化の確認",
+    "confirmDeactivationText": "<strong>%{pluginName}</strong>を非アクティブにしてもよろしいですか？このフォームモジュールはすべてのフォームデザイナーで非アクティブになります。レビュアーと提出者は引き続き利用できます。",
+    "deactivate": "非アクティブ化"
+  },
+  "manageFormModuleVersions": {
+    "version": "バージョン",
+    "createdAt": "作成日",
+    "createdBy": "作成者",
+    "actions": "アクション",
+    "important": "重要！",
+    "importantDescription": "フォームモジュールバージョンは削除できませんが、更新や上書きは可能です。古いフォームが破損するのを防ぐため、URLが機能していない場合にのみ置き換えてください。",
+    "info": "最新バージョンがすべてのフォームデザイナーで使用されます。",
+    "tableTemplateVersion": "バージョン: {version}",
+    "manageFormModuleVersion": "フォームモジュールバージョンの管理"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "フォームモジュールを管理",
+    "externalUriRequired": "外部URIは必須です",
+    "externalUriMaxLength": "外部URIは255文字以内である必要があります",
+    "externalUriMinOne": "少なくとも1つのURIが必要です",
+    "externalUris": "外部URI",
+    "config": "設定 (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "フォームモジュールバージョンの設定が正常に更新されました。",
+    "updateFormModuleVersionErr": "このフォームモジュールバージョンの設定を更新中にエラーが発生しました。",
+    "updateFormModuleVersionConsErr": "フォームモジュールバージョン {formModuleVersionId} の更新エラー: {error}",
+    "formModuleVersionSettings": "フォームモジュールバージョン設定",
+    "formModuleVersionCreated": "作成: {createdAt} ({createdBy})",
+    "update": "更新"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "フォームモジュールバージョンの管理"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "フォームモジュールの保存中にエラーが発生しました。",
+    "createFormModuleVersionConsErr": "フォームモジュールバージョンの作成エラー: {error}",
+    "importFormModule": "フォームモジュールをインポート",
+    "submit": "送信"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "フォームモジュールを管理"
   }
 }

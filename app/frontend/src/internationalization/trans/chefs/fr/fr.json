@@ -362,6 +362,18 @@
     "actions": "Actions",
     "delete": "Supprimer"
   },
+  "adminFormModulesTable": {
+    "search": "Rechercher",
+    "loadingText": "Chargement... Veuillez patienter",
+    "noDataText": "Il n'y a pas de modules de formulaire dans le système",
+    "showInactive": "Afficher les modules de formulaire inactifs",
+    "formModuleName": "Nom du module de formulaire",
+    "createdAt": "Créé le",
+    "isInactive": "Inactif",
+    "actions": "Actions",
+    "importFormModule": "Importer un module de formulaire",
+    "manage": "Gérer"
+  },
   "administerForm": {
     "deleted": "SUPPRIMÉ",
     "restoreForm": "Restaurer ce formulaire",
@@ -389,7 +401,8 @@
     "developer": "Développeur",
     "infoLinks": "Liens d'information",
     "metrics": "Métrique",
-    "apis": "Apis"
+    "apis": "Apis",
+    "adminFormModulesTable": "Modules de formulaire"
   },
   "adminUsersTable": {
     "search": "Recherche",
@@ -1116,6 +1129,28 @@
       "saveSubscriptionSettingsNotifyMsg": "Les paramètres d'abonnement pour ce formulaire ont été enregistrés.",
       "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
+    },
+    "formModule": {
+      "getFormModuleListErrMsg": "Une erreur s'est produite lors de la récupération des modules de formulaire.",
+      "getFormModuleListConsErrMsg": "Erreur lors de la récupération des modules de formulaire : {error}",
+      "getFormModuleVersionListErrMsg": "Une erreur s'est produite lors de la récupération des versions de module de formulaire.",
+      "getFormModuleVersionListConsErrMsg": "Erreur lors de la récupération des versions de module de formulaire : {error}",
+      "fetchFormModuleErrMsg": "Une erreur s'est produite lors de la récupération du module de formulaire.",
+      "fetchFormModuleConsErrMsg": "Erreur lors de la récupération du module de formulaire {formModuleId} : {error}",
+      "fetchFormModuleVersionErrMsg": "Une erreur s'est produite lors de la récupération de la version du module de formulaire.",
+      "fetchFormModuleVersionConsErrMsg": "Erreur lors de la récupération de la version du module de formulaire {formModuleVersionId} : {error}",
+      "getFormVersionFormModuleVersionsErrMsg": "Une erreur s'est produite lors de la récupération des versions du module de formulaire pour cette version de formulaire.",
+      "getFormVersionFormModuleVersionsConsErrMsg": "Erreur lors de la récupération des versions du module de formulaire : ${error}",
+      "toggleFormModuleErrMsg": "Une erreur s'est produite lors de {state} du module de formulaire.",
+      "toggleFormModuleConsErrMsg": "Erreur lors de {state} du module de formulaire {formModuleId} : {error}",
+      "updateFormModuleErrMsg": "Une erreur s'est produite lors de la mise à jour du module de formulaire.",
+      "updateFormModuleConsErrMsg": "Erreur lors de la mise à jour du module de formulaire {formModuleId} : {error}",
+      "updateFormModuleVersionErrMsg": "Une erreur s'est produite lors de la mise à jour de la version du module de formulaire.",
+      "updateFormModuleVersionConsErrMsg": "Erreur lors de la mise à jour de la version du module de formulaire {formModuleVersionId} : {error}",
+      "createFormModuleErr": "Une erreur s'est produite lors de l'enregistrement du module de formulaire.",
+      "createFormModuleConsErr": "Erreur lors de la création du module de formulaire : {error}",
+      "createFormModuleVersionErr": "Une erreur s'est produite lors de l'enregistrement de la version du module de formulaire.",
+      "createFormModuleVersionConsErr": "Erreur lors de la création de la version du module de formulaire : {error}"
     }
   },
   "admin": {
@@ -1226,5 +1261,86 @@
   "canShareDraft": {
     "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
     "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
+  },
+  "formModuleLoader": {
+    "noPublishedVersion": "Aucune version publiée trouvée pour le formulaire {formId}",
+    "loadingFormModules": "Chargement des modules de formulaire",
+    "loadingFormModulesErr": "Une erreur s'est produite lors du chargement des modules de formulaire.",
+    "loadingFormModulesConsErr": "Erreur lors du chargement des modules de formulaire : {error}",
+    "remainingObjects": "Objets restants : {remaining} / {total}",
+    "logImport": "Importation de {uri}",
+    "logImported": "Importé {uri}"
+  },
+  "formModuleAddVersion": {
+    "importFormModule": "Importer un module de formulaire",
+    "submit": "Soumettre",
+    "confirmLeave": "Voulez-vous vraiment quitter cette page? Les modifications que vous avez apportées ne seront pas sauvegardées.",
+    "addFormModuleVersion": "Ajouter une version de module de formulaire",
+    "invalidConfigErrMsg": "Configuration invalide. Veuillez vérifier la configuration JSON.",
+    "invalidConfigConsErrMsg": "Erreur dans la configuration : {error}"
+  },
+  "formModuleSettings": {
+    "pluginNameRequired": "Le nom du plugin est requis",
+    "pluginNameMaxLength": "Le nom du module de formulaire doit comporter 255 caractères ou moins",
+    "formModulePluginName": "Nom du plugin du module de formulaire",
+    "pluginName": "Nom du plugin",
+    "formDesignerIDPAccess": "Accès IDP du concepteur de formulaire"
+  },
+  "manageFormModule": {
+    "updateFormModuleSuccess": "Les paramètres de votre module de formulaire ont été mis à jour avec succès.",
+    "updateFormModuleErr": "Une erreur s'est produite lors de la tentative de mise à jour des paramètres de ce module de formulaire.",
+    "updateFormModuleConsErr": "Erreur lors de la mise à jour du module de formulaire {formModuleId} : {error}",
+    "formModuleSettings": "Paramètres du module de formulaire",
+    "formModuleCreated": "Créé le : {createdAt} ({createdBy})",
+    "update": "Mettre à jour",
+    "formModuleVersions": "Versions du module de formulaire",
+    "totalVersions": "Nombre total de versions : {versionCount}"
+  },
+  "manageFormModuleActions": {
+    "importFormModule": "Importer un module de formulaire",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "confirmDeactivationTitle": "Confirmer la désactivation",
+    "confirmDeactivationText": "Êtes-vous sûr de vouloir désactiver <strong>%{pluginName}</strong> ? Ce module de formulaire sera désactivé pour tous les concepteurs de formulaires. Il sera toujours disponible pour les réviseurs et les soumissionnaires.",
+    "deactivate": "Désactiver"
+  },
+  "manageFormModuleVersions": {
+    "version": "Version",
+    "createdAt": "Créé le",
+    "createdBy": "Créé par",
+    "actions": "Actions",
+    "important": "IMPORTANT !",
+    "importantDescription": "Les versions des modules de formulaire ne peuvent pas être supprimées, mais elles peuvent être mises à jour et écrasées. Pour éviter de perturber les formulaires plus anciens, vous ne devez remplacer une URL que si elle ne fonctionne pas.",
+    "info": "La dernière version sera utilisée dans tous les concepteurs de formulaires.",
+    "tableTemplateVersion": "Version : {version}",
+    "manageFormModuleVersion": "Gérer la version du module de formulaire"
+  },
+  "formModuleVersionSettings": {
+    "manageFormModule": "Gérer le module de formulaire",
+    "externalUriRequired": "L'URI externe est requis",
+    "externalUriMaxLength": "L'URI externe doit comporter 255 caractères ou moins",
+    "externalUriMinOne": "Vous avez besoin d'au moins un URI",
+    "externalUris": "URIs externes",
+    "config": "Configuration (JSON)"
+  },
+  "manageFormModuleVersion": {
+    "updateFormModuleVersionSuccess": "Les paramètres de version de votre module de formulaire ont été mis à jour avec succès.",
+    "updateFormModuleVersionErr": "Une erreur s'est produite lors de la tentative de mise à jour des paramètres de cette version du module de formulaire.",
+    "updateFormModuleVersionConsErr": "Erreur lors de la mise à jour de la version du module de formulaire {formModuleVersionId} : {error}",
+    "formModuleVersionSettings": "Paramètres de la version du module de formulaire",
+    "formModuleVersionCreated": "Créé le : {createdAt} ({createdBy})",
+    "update": "Mettre à jour"
+  },
+  "formModuleVersionManageLayout": {
+    "manageFormModuleVersion": "Gérer la version du module de formulaire"
+  },
+  "formModuleImport": {
+    "createFormModuleVersionErr": "Une erreur s'est produite lors de l'enregistrement du module de formulaire.",
+    "createFormModuleVersionConsErr": "Erreur lors de la création de la version du module de formulaire : {error}",
+    "importFormModule": "Importer un module de formulaire",
+    "submit": "Soumettre"
+  },
+  "formModuleManageLayout": {
+    "manageFormModule": "Gérer le module de formulaire"
   }
 }
