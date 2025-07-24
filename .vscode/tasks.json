@@ -63,18 +63,79 @@
       "label": "chefs_local up",
       "type": "shell",
       "command": "docker-compose",
-      "args": ["-f", "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml", "up", "-d"],
+      "args": [
+        "-f",
+        "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml",
+        "up",
+        "-d"
+      ],
       "isBackground": true,
-      "problemMatcher": [],
+      "problemMatcher": []
     },
     {
       "label": "chefs_local down",
       "type": "shell",
       "command": "docker-compose",
-      "args": ["-f", "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml", "down"],
+      "args": [
+        "-f",
+        "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml",
+        "down"
+      ],
       "isBackground": true,
-      "problemMatcher": [],
+      "problemMatcher": []
     },
+    {
+      "label": "Install Cypress",
+      "type": "shell",
+      "command": "npm",
+      "args": ["ci"],
+      "options": {
+        "cwd": "${workspaceFolder}/tests/functional/cypress"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install Cypress (Interactive)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/install-cypress.sh",
+      "options": {
+        "cwd": "${workspaceFolder}/tests/functional/cypress"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Cypress Tests",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "test"],
+      "options": {
+        "cwd": "${workspaceFolder}/tests/functional/cypress"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
   ],
   "version": "2.0.0"
 }
