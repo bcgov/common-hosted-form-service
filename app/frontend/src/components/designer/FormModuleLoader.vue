@@ -58,26 +58,40 @@ watch(remainingObjects, (value) => {
   }
 });
 
+// Extract helper function to get latest version
+function getLatestVersion(versions) {
+  if (!Array.isArray(versions) || versions.length === 0) return null;
+
+  return [...versions].sort((a, b) => {
+    const aDate = new Date(a.updatedAt || a.createdAt);
+    const bDate = new Date(b.updatedAt || b.createdAt);
+    return bDate - aDate;
+  })[0];
+}
+
+// Extract helper function to get URIs from a version
+function getUrisFromVersion(version) {
+  if (!version || !Array.isArray(version.externalUris)) return [];
+
+  return version.externalUris.map((uri) =>
+    typeof uri === 'string' ? uri : uri.uri
+  );
+}
+
 function latestModuleUris(modules) {
-  const uris = [];
-  for (const module of modules) {
-    if (
-      Array.isArray(module.formModuleVersions) &&
-      module.formModuleVersions.length > 0
-    ) {
-      // Get the latest version by updatedAt or createdAt
-      const latestVersion = [...module.formModuleVersions].sort((a, b) => {
-        const aDate = new Date(a.updatedAt || a.createdAt);
-        const bDate = new Date(b.updatedAt || b.createdAt);
-        return bDate - aDate;
-      })[0];
-      if (latestVersion && Array.isArray(latestVersion.externalUris)) {
-        for (const uri of latestVersion.externalUris) {
-          uris.push(typeof uri === 'string' ? uri : uri.uri);
-        }
-      }
-    }
-  }
+  if (!Array.isArray(modules)) return [];
+
+  // Use flatMap to reduce nesting
+  const uris = modules
+    .filter(
+      (module) =>
+        Array.isArray(module.formModuleVersions) &&
+        module.formModuleVersions.length > 0
+    )
+    .map((module) => getLatestVersion(module.formModuleVersions))
+    .filter(Boolean) // Remove null/undefined versions
+    .flatMap((version) => getUrisFromVersion(version));
+
   // Deduplicate
   return [...new Set(uris)];
 }
@@ -160,7 +174,7 @@ async function loadModules() {
       await loadDefaultModules();
     }
 
-    var uris = JSON.parse(JSON.stringify(formModuleUris.value));
+    const uris = JSON.parse(JSON.stringify(formModuleUris.value));
     for (const uri of uris) {
       log.value.push(t('trans.formModuleLoader.logImport', { uri: uri }));
       importExternalFile(document, uri, () => {
@@ -216,57 +230,87 @@ function updateBuilder() {
   formModuleStore.setBuilder(builder.value);
 }
 
+// Helper to parse config data safely
+function parseConfig(config) {
+  return typeof config === 'string'
+    ? JSON.parse(config)
+    : JSON.parse(JSON.stringify(config));
+}
+
+// Helper to process categories section
+function processCategories(categories) {
+  if (!categories) return;
+
+  Object.entries(categories).forEach(([key, value]) => {
+    // Initialize category if needed
+    builder.value[key] = builder.value[key] || {};
+
+    // Update with module values
+    Object.assign(builder.value[key], value);
+
+    // Ensure components object exists
+    if (!('components' in builder.value[key])) {
+      builder.value[key]['components'] = {};
+    }
+  });
+}
+
+// Helper to determine if component should be enabled for current user
+function shouldEnableComponent(componentValue) {
+  if (typeof componentValue === 'boolean') {
+    return componentValue;
+  }
+
+  if (
+    componentValue &&
+    typeof componentValue === 'object' &&
+    'userType' in componentValue &&
+    'denylist' in componentValue.userType
+  ) {
+    return !componentValue.userType.denylist.includes(form.value.userType);
+  }
+
+  return false;
+}
+
+// Helper to process builder components section
+function processBuilderComponents(builderData) {
+  if (!builderData) return;
+
+  Object.entries(builderData).forEach(([categoryKey, categoryValue]) => {
+    // Initialize category and components
+    builder.value[categoryKey] = builder.value[categoryKey] || {};
+    builder.value[categoryKey]['components'] =
+      builder.value[categoryKey]['components'] || {};
+
+    // Process each component
+    Object.entries(categoryValue).forEach(([componentKey, componentValue]) => {
+      builder.value[categoryKey]['components'][componentKey] =
+        shouldEnableComponent(componentValue);
+    });
+  });
+}
+
+// Main function with reduced complexity
 function parseFormModuleVersion(fmv) {
-  let importData =
-    typeof fmv.config === 'string'
-      ? JSON.parse(fmv.config)
-      : JSON.parse(JSON.stringify(fmv.config));
+  const importData = parseConfig(fmv.config);
+
+  // Apply global config if available
   if ('config' in importData) {
     window.FORMIO_CONFIG = importData.config;
   }
-  if ('components' in importData) {
-    if ('categories' in importData.components) {
-      // Prep any builder categories, if the module creates a category, give it a components object
-      for (let [key, value] of Object.entries(
-        importData.components['categories']
-      )) {
-        // If the builder category exists and hasn't been initialized yet
-        builder.value[key] = builder.value[key] || {};
-        // Map the modules builder category to update it
-        Object.assign(builder.value[key], value);
-        if (!('components' in builder.value[key])) {
-          builder.value[key]['components'] = {};
-        }
-      }
-    }
 
-    if ('builder' in importData.components) {
-      for (const [categoryKey, categoryValue] of Object.entries(
-        importData.components.builder
-      )) {
-        builder.value[categoryKey] = builder.value[categoryKey] || {};
-        builder.value[categoryKey]['components'] =
-          builder.value[categoryKey]['components'] || {};
-        for (const [componentKey, componentValue] of Object.entries(
-          categoryValue
-        )) {
-          if (typeof componentValue === 'boolean') {
-            builder.value[categoryKey]['components'][componentKey] =
-              componentValue;
-          } else if (
-            componentValue &&
-            typeof componentValue === 'object' &&
-            'userType' in componentValue &&
-            'denylist' in componentValue.userType
-          ) {
-            const isAllowed = !componentValue.userType.denylist.includes(
-              form.value.userType
-            );
-            builder.value[categoryKey]['components'][componentKey] = isAllowed;
-          }
-        }
-      }
-    }
+  // Exit early if no components
+  if (!('components' in importData)) return;
+
+  // Process categories if present
+  if ('categories' in importData.components) {
+    processCategories(importData.components.categories);
+  }
+
+  // Process builder components if present
+  if ('builder' in importData.components) {
+    processBuilderComponents(importData.components.builder);
   }
 }
 

@@ -36,20 +36,14 @@ async function submitFormModule() {
     saving.value = true;
     await formModuleStore.setDirtyFlag(false);
 
-    let idps = [];
-
     let formModuleData = {
       pluginName: formModule.value.pluginName,
-      identityProviders: idps.concat(
-        formModule.value.idpTypes.map((i) => ({ code: i }))
-      ),
+      identityProviders: formModule.value.idpTypes.map((i) => ({ code: i })),
     };
 
     const formModuleResponse = await formModuleService.createFormModule(
       formModuleData
     );
-
-    let euris = [];
 
     let configValue = null;
     if (formModuleVersion.value.config) {
@@ -72,9 +66,7 @@ async function submitFormModule() {
 
     let formModuleVersionData = {
       config: configValue,
-      externalUris: euris.concat(
-        formModuleVersion.value.externalUris.map((i) => i.uri)
-      ),
+      externalUris: formModuleVersion.value.externalUris.map((i) => i.uri),
     };
 
     await formModuleService.createFormModuleVersion(
@@ -132,5 +124,3 @@ onBeforeRouteLeave((_to, _from, next) => {
     </v-btn>
   </v-container>
 </template>
-
-<style lang="scss" scoped></style>

@@ -180,12 +180,9 @@ export const useFormModuleStore = defineStore('formModule', {
     },
     async updateFormModule() {
       try {
-        let identityProviders = [];
         await formModuleService.updateFormModule(this.formModule.id, {
           pluginName: this.formModule.pluginName,
-          identityProviders: identityProviders.concat(
-            this.formModule.idpTypes.map((i) => ({ code: i }))
-          ),
+          identityProviders: this.formModule.idpTypes.map((i) => ({ code: i })),
         });
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -204,12 +201,10 @@ export const useFormModuleStore = defineStore('formModule', {
     async updateFormModuleVersion() {
       const notificationStore = useNotificationStore();
       try {
-        let uris = [];
-
         let configValue = null;
-        if (this.formModuleVersion.value.config) {
+        if (this.formModuleVersion.config) {
           try {
-            configValue = JSON.parse(this.formModuleVersion.value.config);
+            configValue = JSON.parse(this.formModuleVersion.config);
           } catch (error) {
             notificationStore.addNotification({
               text: i18n.t('trans.formModuleAddVersion.invalidConfigErrMsg'),
@@ -228,8 +223,8 @@ export const useFormModuleStore = defineStore('formModule', {
           this.formModuleVersion.id,
           {
             config: configValue,
-            externalUris: uris.concat(
-              this.formModuleVersion.externalUris.map((euri) => euri.uri)
+            externalUris: this.formModuleVersion.externalUris.map(
+              (euri) => euri.uri
             ),
           }
         );

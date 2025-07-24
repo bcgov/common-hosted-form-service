@@ -84,17 +84,21 @@ app.component('BasePanel', BasePanel);
 app.component('BasePrintButton', BasePrintButton);
 app.component('BaseSecure', BaseSecure);
 
-// IE11 Detection (https://stackoverflow.com/a/21825207)
-if (!!window.MSInputMethodContext && !!document.documentMode) {
-  document.write(`<div style="padding-top: 5em; text-align: center;">
+// Modern browsers
+// https://developer.mozilla.org/en-US/docs/Web/API/HTMLScriptElement/noModule
+if ('noModule' in HTMLScriptElement.prototype) {
+  loadConfig();
+} else {
+  const container = document.getElementById('app');
+  if (container) {
+    container.innerHTML = `<div style="padding-top: 5em; text-align: center;">
       <h1>We're sorry but ${
         import.meta.env.VITE_TITLE
       } is not supported in Internet Explorer.</h1>
       <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
-    </div>`);
+    </div>`;
+  }
   NProgress.done();
-} else {
-  loadConfig();
 }
 
 /**
@@ -167,11 +171,9 @@ async function loadConfig() {
     }
 
     if (
-      !config ||
-      !config.oidc ||
-      !config.oidc.clientId ||
-      !config.oidc.realm ||
-      !config.oidc.serverUrl
+      !config?.oidc?.clientId ||
+      !config?.oidc?.realm ||
+      !config?.oidc?.serverUrl
     ) {
       throw new Error('Keycloak is misconfigured');
     }

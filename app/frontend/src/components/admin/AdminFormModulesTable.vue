@@ -63,23 +63,16 @@ onMounted(async () => {
       <v-col class="text-right">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
-            <router-link
-              v-slot="{ navigate }"
+            <v-btn
+              v-bind="props"
+              class="mx-1"
+              color="primary"
+              icon="mdi-plus"
+              size="x-small"
+              :title="$t('trans.adminFormModulesTable.importFormModule')"
               :to="{ name: 'ImportFormModuleView' }"
-              custom
             >
-              <v-btn
-                v-bind="props"
-                class="mx-1"
-                color="primary"
-                icon="mdi-plus"
-                role="link"
-                size="x-small"
-                :title="$t('trans.adminFormModulesTable.importFormModule')"
-                @click="navigate"
-              >
-              </v-btn>
-            </router-link>
+            </v-btn>
           </template>
           <span :lang="locale">{{
             $t('trans.adminFormModulesTable.importFormModule')

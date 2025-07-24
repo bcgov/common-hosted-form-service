@@ -6,7 +6,7 @@ import { onBeforeRouteLeave } from 'vue-router';
 
 import FormModuleVersionSettings from '~/components/formModuleVersion/FormModuleVersionSettings.vue';
 import { formModuleService } from '~/services';
-import { useFormModuleStore } from '/store/formModule';
+import { useFormModuleStore } from '~/store/formModule';
 import { useNotificationStore } from '~/store/notification';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -33,13 +33,10 @@ async function submitFormModule() {
     saving.value = true;
     await formModuleStore.setDirtyFlag(false);
 
-    let euris = [];
-
     let configValue = null;
     if (formModuleVersion.value.config) {
       try {
         configValue = JSON.parse(formModuleVersion.value.config);
-        console.log(configValue);
       } catch (error) {
         notificationStore.addNotification({
           text: t('trans.formModuleAddVersion.invalidConfigErrMsg'),
@@ -57,9 +54,7 @@ async function submitFormModule() {
 
     let formModuleVersionData = {
       config: configValue,
-      externalUris: euris.concat(
-        formModuleVersion.value.externalUris.map((i) => i.uri)
-      ),
+      externalUris: formModuleVersion.value.externalUris.map((i) => i.uri),
     };
 
     await formModuleService.createFormModuleVersion(
@@ -107,4 +102,3 @@ onBeforeRouteLeave((_to, _from, next) => {
     </v-btn>
   </v-container>
 </template>
-<style lang="scss" scoped></style>

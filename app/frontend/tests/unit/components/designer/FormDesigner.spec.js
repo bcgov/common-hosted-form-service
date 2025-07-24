@@ -13,7 +13,6 @@ import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { FormDesignerBuilderOptions, IdentityMode } from '~/utils/constants';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
