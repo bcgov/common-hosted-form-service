@@ -9,9 +9,6 @@ COPY . /opt/app-root/src
 
 RUN npm run all:ci \
   && npm run all:build \
-  && npm run frontend:purge \
-  && npm run components:clean \
-  && npm run components:purge \
   && mkdir /.npm \
   && chgrp -R 0 /.npm \
   && chmod -R g=u /.npm

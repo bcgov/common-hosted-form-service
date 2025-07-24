@@ -47,7 +47,6 @@ async function submitFormModule() {
     if (formModuleVersion.value.config) {
       try {
         configValue = JSON.parse(formModuleVersion.value.config);
-        console.log(configValue);
       } catch (error) {
         notificationStore.addNotification({
           text: t('trans.formModuleAddVersion.invalidConfigErrMsg'),
