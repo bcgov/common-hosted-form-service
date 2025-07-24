@@ -21,10 +21,8 @@ const notificationStore = useNotificationStore();
 
 const { formModule } = storeToRefs(formModuleStore);
 
-const versionCount = computed(() =>
-  formModule.value && formModule.value.formModuleVersions
-    ? formModule.value.formModuleVersions.length
-    : 0
+const versionCount = computed(
+  () => formModule?.value?.formModuleVersions?.length || 0
 );
 
 async function updateSettings() {
@@ -35,7 +33,7 @@ async function updateSettings() {
         text: t('trans.manageFormModule.updateFormModuleSuccess'),
         ...NotificationTypes.SUCCESS,
       });
-      formModuleStore.fetchFormModule(formModule.value.id);
+      await formModuleStore.fetchFormModule(formModule.value.id);
     }
   } catch (error) {
     notificationStore.addNotification({
