@@ -106,7 +106,10 @@
       "type": "shell",
       "command": "${workspaceFolder}/.devcontainer/install-cypress.sh",
       "options": {
-        "cwd": "${workspaceFolder}/tests/functional/cypress"
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "WORKSPACE_ROOT": "${workspaceFolder}"
+        }
       },
       "group": "build",
       "presentation": {
