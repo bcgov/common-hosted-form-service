@@ -77,6 +77,26 @@ export const useFormModuleStore = defineStore('formModule', {
         });
       }
     },
+    async createFormModule(formModuleData) {
+      try {
+        this.formModule = {};
+        const { data } = await formModuleService.createFormModule(
+          formModuleData
+        );
+        this.formModule = data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.formModule.createFormModuleErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.formModule.createFormModuleConsErrMsg',
+            {
+              error: error,
+            }
+          ),
+        });
+      }
+    },
     async fetchFormModule(formModuleId) {
       try {
         this.formModule = {};

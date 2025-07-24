@@ -1447,6 +1447,24 @@ describe('publishDraft', () => {
   });
 
   it('should trigger event notifications', async () => {
+    const formModules = [
+      {
+        id: 'module1',
+        formModuleVersions: [
+          { id: 'v1', updatedAt: '2024-01-01T00:00:00Z' },
+          { id: 'v2', updatedAt: '2024-06-01T00:00:00Z' }, // latest
+        ],
+      },
+      {
+        id: 'module2',
+        formModuleVersions: [
+          { id: 'v3', updatedAt: '2024-02-01T00:00:00Z' },
+          { id: 'v4', updatedAt: '2024-07-01T00:00:00Z' }, // latest
+        ],
+      },
+    ];
+
+    formModuleService.listFormModules = jest.fn().mockResolvedValue(formModules);
     service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
     service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }] });
     service.readDraft = jest.fn().mockReturnValueOnce({});
@@ -1910,9 +1928,11 @@ describe('publishDraft', () => {
 
     await service.publishDraft(formId, 'draftId', currentUser);
 
-    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledTimes(2);
-    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledWith(expect.objectContaining({ formModuleVersionId: 'v2' }));
-    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledWith(expect.objectContaining({ formModuleVersionId: 'v4' }));
+    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledTimes(1);
+    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledWith([
+      expect.objectContaining({ formModuleVersionId: 'v2' }),
+      expect.objectContaining({ formModuleVersionId: 'v4' }),
+    ]);
   });
 
   it('should rollback and throw if publishDraft fails', async () => {

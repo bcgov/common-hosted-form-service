@@ -1211,7 +1211,9 @@
       "updateFormModuleConsErrMsg": "Error updating form module {formModuleId}: {error}",
       "updateFormModuleVersionErrMsg": "An error occurred while updating the form module version.",
       "updateFormModuleVersionConsErrMsg": "Error updating form module version {formModuleVersionId}: {error}",
-      "createFormModuleVersionErr": "An error occurred while attempting to save the form module.",
+      "createFormModuleErr": "An error occurred while attempting to save the form module.",
+      "createFormModuleConsErr": "Error creating form module: {error}",
+      "createFormModuleVersionErr": "An error occurred while attempting to save the form module version.",
       "createFormModuleVersionConsErr": "Error creating form module version: {error}"
     }
   },

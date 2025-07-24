@@ -38,7 +38,7 @@ export function useFormModuleVersion() {
    * Submit the form module version
    * @returns {Promise<boolean>} Success state
    */
-  async function submitFormModuleVersion(formModuleId = null) {
+  async function submitFormModuleVersion() {
     try {
       saving.value = true;
       await formModuleStore.setDirtyFlag(false);
@@ -55,7 +55,7 @@ export function useFormModuleVersion() {
       };
 
       await formModuleService.createFormModuleVersion(
-        formModuleId ? formModuleId : formModule.value.id,
+        formModule.value.id,
         formModuleVersionData
       );
     } catch (error) {

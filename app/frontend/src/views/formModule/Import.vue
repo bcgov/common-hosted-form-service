@@ -38,21 +38,17 @@ watch(
 
 async function handleSubmit() {
   try {
-    let formModuleData = {
+    await formModuleStore.createFormModule({
       pluginName: formModule.value.pluginName,
       identityProviders: formModule.value.idpTypes.map((i) => ({ code: i })),
-    };
+    });
 
-    const formModuleResponse = await formModuleService.createFormModule(
-      formModuleData
-    );
-
-    await submitFormModuleVersion(formModuleResponse.data.id);
+    await submitFormModuleVersion();
 
     router.push({
       name: 'FormModuleManage',
       query: {
-        fm: formModuleResponse.data.id,
+        fm: formModule.value.id,
       },
     });
   } catch (error) {
