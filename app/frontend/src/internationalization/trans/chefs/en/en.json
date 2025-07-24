@@ -1293,7 +1293,9 @@
     "createFormModuleVersionErr": "An error occurred while attempting to save the form module.",
     "createFormModuleVersionConsErr": "Error creating form module version: {error}",
     "confirmLeave": "Do you really want to leave this page? Changes you made will not be saved.",
-    "addFormModuleVersion": "Add Form Module Version"
+    "addFormModuleVersion": "Add Form Module Version",
+    "invalidConfigErrMsg": "Invalid configuration. Please check the JSON configuration.",
+    "invalidConfigConsErrMsg": "Error in configuration: {error}"
   },
   "formModuleSettings": {
     "pluginNameRequired": "Plugin name is required",

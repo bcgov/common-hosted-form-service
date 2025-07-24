@@ -56,7 +56,7 @@ class FormModuleVersion extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formModuleId: { type: 'string', pattern: Regex.UUID },
         externalUris: { type: ['array'], items: { type: 'string' } },
-        config: { type: 'string' },
+        config: { type: 'object' },
         ...stamps,
       },
       additionalProperties: false,

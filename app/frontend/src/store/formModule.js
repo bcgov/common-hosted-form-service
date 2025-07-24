@@ -202,8 +202,28 @@ export const useFormModuleStore = defineStore('formModule', {
       }
     },
     async updateFormModuleVersion() {
+      const notificationStore = useNotificationStore();
       try {
         let uris = [];
+
+        let configValue = null;
+        if (this.formModuleVersion.value.config) {
+          try {
+            configValue = JSON.parse(this.formModuleVersion.value.config);
+            console.log(configValue);
+          } catch (error) {
+            notificationStore.addNotification({
+              text: i18n.t('trans.formModuleAddVersion.invalidConfigErrMsg'),
+              consoleError: i18n.t(
+                'trans.formModuleAddVersion.invalidConfigConsErrMsg',
+                {
+                  error: error.message,
+                }
+              ),
+            });
+            return;
+          }
+        }
         await formModuleService.updateFormModuleVersion(
           this.formModule.id,
           this.formModuleVersion.id,
@@ -215,7 +235,6 @@ export const useFormModuleStore = defineStore('formModule', {
           }
         );
       } catch (error) {
-        const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.formModule.updateFormModuleVersionErrMsg'),
           consoleError: i18n.t(

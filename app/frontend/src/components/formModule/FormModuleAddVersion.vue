@@ -35,10 +35,28 @@ async function submitFormModule() {
 
     let euris = [];
 
-    if (!formModuleVersion.value.config) formModuleVersion.value.config = '';
+    let configValue = null;
+    if (formModuleVersion.value.config) {
+      try {
+        configValue = JSON.parse(formModuleVersion.value.config);
+        console.log(configValue);
+      } catch (error) {
+        notificationStore.addNotification({
+          text: t('trans.formModuleAddVersion.invalidConfigErrMsg'),
+          consoleError: t(
+            'trans.formModuleAddVersion.invalidConfigConsErrMsg',
+            {
+              error: error.message,
+            }
+          ),
+        });
+        saving.value = false;
+        return;
+      }
+    }
 
     let formModuleVersionData = {
-      config: formModuleVersion.value.config,
+      config: configValue,
       externalUris: euris.concat(
         formModuleVersion.value.externalUris.map((i) => i.uri)
       ),
