@@ -180,6 +180,26 @@ describe('form module CRUD', () => {
       },
     };
 
+    it('should list form module versions', async () => {
+      const req = { params: { formModuleId }, currentUser };
+      service.listFormModuleVersions = jest.fn().mockReturnValue([{ id: 'ver1' }]);
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+      await controller.listFormModuleVersions(req, res, next);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith([{ id: 'ver1' }]);
+    });
+
+    it('should read form module version by id', async () => {
+      const req = { params: { formModuleVersionId }, currentUser };
+      service.readFormModuleVersion = jest.fn().mockReturnValue({ id: formModuleVersionId });
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+      await controller.readFormModuleVersion(req, res, next);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ id: formModuleVersionId });
+    });
+
     it('should throw when invalid options are provided', async () => {
       const req = {
         currentUser: currentUser,
@@ -213,6 +233,15 @@ describe('form module CRUD', () => {
       await controller.createFormModuleVersion(req, {}, next);
 
       expect(controller.createFormModuleVersion).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle errors in createFormModuleVersion', async () => {
+      const req = { params: {}, body: {}, currentUser: {} };
+      const error = new Error('fail');
+      service.createFormModuleVersion = jest.fn().mockRejectedValue(error);
+      const next = jest.fn();
+      await controller.createFormModuleVersion(req, {}, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
 
     it('should update form module version', async () => {

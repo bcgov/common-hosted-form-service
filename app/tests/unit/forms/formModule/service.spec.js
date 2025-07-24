@@ -180,6 +180,10 @@ describe('form module CRUD', () => {
       expect(MockModel.query).toHaveBeenCalledTimes(0);
     });
 
+    it('should throw if creating a module version without externalUris', async () => {
+      await expect(service.createFormModuleVersion(formModuleId, {}, currentUser)).rejects.toThrow('External URI required.');
+    });
+
     it('should insert form module version', async () => {
       MockModel.mockResolvedValue(undefined);
       readFormModuleSpy.mockResolvedValue(undefined);
@@ -212,6 +216,11 @@ describe('form module CRUD', () => {
         updatedBy: currentUser.usernameIdp,
       });
       expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle updating a module version with empty config', async () => {
+      readFormModuleVersionSpy.mockResolvedValue({ id: formModuleVersionId });
+      await expect(service.updateFormModuleVersion(formModuleVersionId, { externalUris: ['MOCK_URI2'] }, currentUser)).resolves.not.toThrow();
     });
   });
 

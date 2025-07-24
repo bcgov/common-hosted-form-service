@@ -3,8 +3,11 @@ const routes = require('express').Router();
 const { currentUser } = require('../auth/middleware/userAccess');
 const jwtService = require('../../components/jwtService');
 const controller = require('./controller');
+const validateParameter = require('../common/middleware/validateParameter');
 
 routes.use(currentUser);
+routes.param('formModuleId', validateParameter.validateFormModuleId);
+routes.param('formModuleVersionId', validateParameter.validateFormModuleVersionId);
 
 routes.get('/', async (req, res, next) => {
   await controller.listFormModules(req, res, next);

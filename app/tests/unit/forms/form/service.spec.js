@@ -13,7 +13,7 @@ const { eventStreamService } = require('../../../../src/components/eventStreamSe
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
 const eventService = require('../../../../src/forms//event/eventService');
-// const formModuleService = require('../../../../src/forms/formModule/service');
+const formModuleService = require('../../../../src/forms/formModule/service');
 
 const {
   Form,
@@ -1882,6 +1882,37 @@ describe('publishDraft', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  it('should only associate the latest version of each form module when publishing a draft', async () => {
+    const formModules = [
+      {
+        id: 'module1',
+        formModuleVersions: [
+          { id: 'v1', updatedAt: '2024-01-01T00:00:00Z' },
+          { id: 'v2', updatedAt: '2024-06-01T00:00:00Z' }, // latest
+        ],
+      },
+      {
+        id: 'module2',
+        formModuleVersions: [
+          { id: 'v3', updatedAt: '2024-02-01T00:00:00Z' },
+          { id: 'v4', updatedAt: '2024-07-01T00:00:00Z' }, // latest
+        ],
+      },
+    ];
+
+    service.readForm = jest.fn().mockResolvedValue({ id: formId, versions: [] });
+    service.readDraft = jest.fn().mockResolvedValue({ id: 'draftId', schema: {} });
+    formModuleService.listFormModules = jest.fn().mockResolvedValue(formModules);
+
+    FormVersionFormModuleVersion.insert = jest.fn().mockReturnThis();
+
+    await service.publishDraft(formId, 'draftId', currentUser);
+
+    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledTimes(2);
+    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledWith(expect.objectContaining({ formModuleVersionId: 'v2' }));
+    expect(FormVersionFormModuleVersion.insert).toHaveBeenCalledWith(expect.objectContaining({ formModuleVersionId: 'v4' }));
   });
 
   it('should rollback and throw if publishDraft fails', async () => {

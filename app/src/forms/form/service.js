@@ -948,11 +948,17 @@ const service = {
       await FormVersionDraft.query().deleteById(formVersionDraftId);
 
       for (let i = 0; i < formModules.length; i++) {
-        for (let j = 0; j < formModules[i].formModuleVersions.length; j++) {
+        const latestVersion = [...formModules[i].formModuleVersions].sort((a, b) => {
+          const aDate = new Date(a.updatedAt || a.createdAt);
+          const bDate = new Date(b.updatedAt || b.createdAt);
+          return bDate - aDate;
+        })[0];
+
+        if (latestVersion) {
           let formVersionFormModuleVersion = {
             id: uuid.v4(),
             formVersionId: version.id,
-            formModuleVersionId: formModules[i].formModuleVersions[j].id,
+            formModuleVersionId: latestVersion.id,
             createdBy: currentUser.usernameIdp,
           };
 
