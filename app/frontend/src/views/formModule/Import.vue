@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import FormModuleSettings from '~/components/formModule/FormModuleSettings.vue';
 import FormModuleVersionSettings from '~/components/formModuleVersion/FormModuleVersionSettings.vue';
+import { useFormModuleVersion } from '~/composables/formModule';
 import { formModuleService } from '~/services';
 import { useFormModuleStore } from '~/store/formModule';
 import { useNotificationStore } from '~/store/notification';
@@ -16,11 +17,15 @@ const router = useRouter();
 const formModuleStore = useFormModuleStore();
 const notificationStore = useNotificationStore();
 
-const { formModule, formModuleVersion } = storeToRefs(formModuleStore);
+const { formModule } = storeToRefs(formModuleStore);
 
 const settingsFormModule = ref(null);
-const settingsFormModuleValid = ref(false);
-const saving = ref(false);
+
+const {
+  saving,
+  valid: settingsFormModuleValid,
+  submitFormModuleVersion,
+} = useFormModuleVersion();
 
 watch(
   () => formModule.value.identityProviders,
@@ -31,11 +36,8 @@ watch(
   }
 );
 
-async function submitFormModule() {
+async function handleSubmit() {
   try {
-    saving.value = true;
-    await formModuleStore.setDirtyFlag(false);
-
     let formModuleData = {
       pluginName: formModule.value.pluginName,
       identityProviders: formModule.value.idpTypes.map((i) => ({ code: i })),
@@ -45,34 +47,7 @@ async function submitFormModule() {
       formModuleData
     );
 
-    let configValue = null;
-    if (formModuleVersion.value.config) {
-      try {
-        configValue = JSON.parse(formModuleVersion.value.config);
-      } catch (error) {
-        notificationStore.addNotification({
-          text: t('trans.formModuleAddVersion.invalidConfigErrMsg'),
-          consoleError: t(
-            'trans.formModuleAddVersion.invalidConfigConsErrMsg',
-            {
-              error: error.message,
-            }
-          ),
-        });
-        saving.value = false;
-        return;
-      }
-    }
-
-    let formModuleVersionData = {
-      config: configValue,
-      externalUris: formModuleVersion.value.externalUris.map((i) => i.uri),
-    };
-
-    await formModuleService.createFormModuleVersion(
-      formModuleResponse.data.id,
-      formModuleVersionData
-    );
+    await submitFormModuleVersion(formModuleResponse.data.id);
 
     router.push({
       name: 'FormModuleManage',
@@ -81,15 +56,12 @@ async function submitFormModule() {
       },
     });
   } catch (error) {
-    await formModuleStore.setDirtyFlag(true);
     notificationStore.addNotification({
       text: t('trans.formModuleImport.createFormModuleVersionErr'),
       consoleError: t('trans.formModuleImport.createFormModuleVersionConsErr', {
         error: error,
       }),
     });
-  } finally {
-    saving.value = false;
   }
 }
 
@@ -118,7 +90,8 @@ onBeforeRouteLeave((_to, _from, next) => {
       size="large"
       color="primary"
       :disabled="!settingsFormModuleValid"
-      @click="submitFormModule"
+      :loading="saving"
+      @click="handleSubmit"
     >
       {{ $t('trans.formModuleImport.submit') }}
     </v-btn>

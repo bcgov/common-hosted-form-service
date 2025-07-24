@@ -1210,7 +1210,9 @@
       "updateFormModuleErrMsg": "An error occurred while updating the form module.",
       "updateFormModuleConsErrMsg": "Error updating form module {formModuleId}: {error}",
       "updateFormModuleVersionErrMsg": "An error occurred while updating the form module version.",
-      "updateFormModuleVersionConsErrMsg": "Error updating form module version {formModuleVersionId}: {error}"
+      "updateFormModuleVersionConsErrMsg": "Error updating form module version {formModuleVersionId}: {error}",
+      "createFormModuleVersionErr": "An error occurred while attempting to save the form module.",
+      "createFormModuleVersionConsErr": "Error creating form module version: {error}"
     }
   },
   "permissionUtils": {
@@ -1290,8 +1292,6 @@
   "formModuleAddVersion": {
     "importFormModule": "Import Form Module",
     "submit": "Submit",
-    "createFormModuleVersionErr": "An error occurred while attempting to save the form module.",
-    "createFormModuleVersionConsErr": "Error creating form module version: {error}",
     "confirmLeave": "Do you really want to leave this page? Changes you made will not be saved.",
     "addFormModuleVersion": "Add Form Module Version",
     "invalidConfigErrMsg": "Invalid configuration. Please check the JSON configuration.",
