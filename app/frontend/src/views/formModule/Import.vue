@@ -7,7 +7,6 @@ import { useI18n } from 'vue-i18n';
 import FormModuleSettings from '~/components/formModule/FormModuleSettings.vue';
 import FormModuleVersionSettings from '~/components/formModuleVersion/FormModuleVersionSettings.vue';
 import { useFormModuleVersion } from '~/composables/formModule';
-import { formModuleService } from '~/services';
 import { useFormModuleStore } from '~/store/formModule';
 import { useNotificationStore } from '~/store/notification';
 
