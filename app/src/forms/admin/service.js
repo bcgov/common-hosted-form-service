@@ -17,7 +17,7 @@ const service = {
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     const query = Form.query()
-      .modify('filterActive', params.active)
+      .modify('filterActive', params.activeOnly)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
