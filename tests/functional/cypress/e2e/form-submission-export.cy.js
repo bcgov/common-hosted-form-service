@@ -32,7 +32,7 @@ describe("Form Designer", () => {
         .contains("Text Field")
 
         .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -50, { force: true })
+        .trigger("mousemove", coords.x, -110, { force: true })
         .trigger("mouseup", { force: true });
       cy.get("button").contains("Save").click();
     });
@@ -187,9 +187,7 @@ describe("Form Designer", () => {
     cy.get('input[type="checkbox"]').should('not.be.checked');
     cy.get('input[type="checkbox"]').click();
     cy.get('input[type="checkbox"]').should('be.checked');
-
     cy.get('.v-window-item--active > .flex-container > .more-info-link').should('exist');
-
     //print option for submission files
     cy.get('[tabindex="-1"] > .v-btn__content').click();
     let fileUploadInputField = cy.get('input[type=file]');
@@ -199,7 +197,6 @@ describe("Form Designer", () => {
     cy.get('label').contains('Upload template file').click({multiple:true,force:true});
     cy.get('.v-messages__message').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx');
     cy.get('#file-input-submit').should('not.be.enabled');
-    //
     cy.waitForLoad();
     //Upload print template
     cy.get('.v-slide-group__content > [tabindex="-1"]').click();
@@ -208,10 +205,8 @@ describe("Form Designer", () => {
     cy.get('.mdi-close-circle').click();
     cy.get('input[type=file]').attachFile('test.docx');
     cy.waitForLoad();
-    //cy.get('.v-selection-control-group > .v-input--dirty > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
     cy.get('.v-selection-control-group > .v-text-field > .v-input__control > .v-field').click();
     cy.contains('pdf').should('be.visible');
-    //cy.get('span').contains('docx').should('exist');
     cy.contains('pdf').click();
     cy.get('#file-input-submit').should('be.enabled');
     cy.get('.v-card-actions > .flex-container > .text-textLink').should('be.enabled');
@@ -222,7 +217,25 @@ describe("Form Designer", () => {
     cy.get('body').click(0,0);
     cy.wait(2000);
     cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
-
+    cy.get('.mdi-list-box-outline').click();
+    //Manage form settings
+    cy.get('.mdi-cog').click();
+    cy.wait(2000);
+    //Unpublish the form
+    cy.get(".v-label > span").click();
+    cy.contains("Continue").should("be.visible");
+    cy.contains("Continue").trigger("click");
+    //Go to Export Submissions
+    cy.get('.mdi-list-box-outline').click();
+    cy.wait(2000);
+    cy.get('.mdi-download').click();
+    cy.wait(2000);
+    //Validate form version is selected and visible
+    cy.get('input[value="csv"]').click();
+    cy.get('span[class="v-select__selection-text"]').then($el => {
+    const rem=$el[0];
+    cy.get(rem).contains('1');
+    });
     //Delete form after test run
     cy.get('.mdi-list-box-outline').click();
     cy.location("search").then((search) => {
