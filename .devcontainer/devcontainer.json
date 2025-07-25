@@ -8,7 +8,9 @@
   },
 
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+
   },
 
   // Use this environment variable if you need to bind mount your local source code into a new container.
@@ -28,7 +30,7 @@
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bash ./.devcontainer/post-install.sh",
+  "postCreateCommand": "chmod +x ./.devcontainer/*.sh && bash ./.devcontainer/post-install.sh",
 
   // Configure tool-specific properties.
   "customizations": {
@@ -46,7 +48,11 @@
       "settings": {
         "database-client.telemetry.usesOnlineServices": false,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "sonarlint.autoDownload": true,
+        "sonarlint.ls.javaHome": "/usr/lib/jvm/java-17-openjdk-amd64",
+        "sonarlint.analysisExcludesStandalone": "**/*.{c,cpp,h,hpp,cc,cxx}"
+
       }
     }
   },
@@ -79,5 +85,7 @@
     "64120": {
       "label": "Sonarlint IDE"
     }
-  }
+  },
+  "mounts": ["source=npm-cache,target=/root/.npm,type=volume"]
+
 }
