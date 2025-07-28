@@ -94,9 +94,7 @@ describe('Form Designer', () => {
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
         cy.get('button').contains('Submit').click();
-        //cy.get('[data-test="continue-btn-continue"]').click();
         cy.get('label').contains('Text Field').should('be.visible');
-        //cy.get('label').contains('Applying for self').should('be.visible');
         cy.location('pathname').should('eq', `/${depEnv}/form/success`);
         cy.contains('h1', 'Your form has been submitted successfully');
         cy.wait(4000);
@@ -148,7 +146,7 @@ describe('Form Designer', () => {
         cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
         cy.wait(2000);
         });
-        //Assign remaing statuses
+        //Assign remaining statuses
         cy.get('.status-heading > .mdi-chevron-right').click();
         cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
         cy.contains('REVISING').click();
