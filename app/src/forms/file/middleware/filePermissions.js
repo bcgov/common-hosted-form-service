@@ -40,8 +40,8 @@ const currentFileRecord = async (req, _res, next) => {
  */
 const hasFileCreate = async (req, res, next) => {
   try {
-    // If authenticated user, always allow
-    if (req.currentUser && req.currentUser.idpUserId) {
+    // If authenticated user OR API user, always allow
+    if ((req.currentUser && req.currentUser.idpUserId) || req.apiUser) {
       return next();
     }
 
