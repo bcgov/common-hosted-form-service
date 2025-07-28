@@ -45,12 +45,12 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.wait(2000);
+    cy.wait(4000);
         // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.should('be.visible').trigger('click');
-    cy.wait(2000);
+    cy.wait(4000);
         // Filter the newly created form
     cy.location('search').then(search => {
         
