@@ -33,7 +33,7 @@ describe("Form Designer", () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
@@ -52,10 +52,8 @@ describe("Form Designer", () => {
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     });
-
     //Go to Team Management
-
-    cy.get(".mdi-account-multiple").click();
+    cy.get('[data-test="canManageTeammembers"]').click();
     cy.get(".mdi-account-plus").click();
     //Search for a member to add
     cy.get(

@@ -38,7 +38,7 @@ it('Verify draft submission', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
@@ -96,12 +96,12 @@ it('Submission revise status Assignment', () => {
         let arr = search.split('=');
         let arrayValues = arr[1].split('&');
         cy.log(arrayValues[0]);
-    //Manage  members for draft management
     cy.get('.mdi-pencil').click();
-    cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
+    cy.get(':nth-child(4) > .v-btn').click();
     cy.waitForLoad();
     cy.get('.v-alert__content > div').contains('Draft Saved');
-    cy.get(':nth-child(2) > :nth-child(4) > :nth-child(1) > .v-btn').click();
+    //Manage  members for draft management
+    cy.get('.mdi-account-multiple').click();
     cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
     cy.waitForLoad();

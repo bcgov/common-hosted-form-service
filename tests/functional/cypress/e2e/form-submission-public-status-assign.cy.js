@@ -39,7 +39,7 @@ describe('Form Designer', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
       cy.waitForLoad();
@@ -80,24 +80,30 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
-    cy.get('input[value="public"]').click();
+    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('Public (anonymous)').click();
     cy.waitForLoad();
     cy.get('input[type="checkbox"]').then($el => {
             const rem=$el[0];//save and edit drafts
-            const rem2=$el[2];//multiple draft upload
-            const rem3=$el[3];//form submission schedule settings
-            const rem4=$el[4];//copy submission
-            const rem5=$el[5];//event subscription
+            const rem1=$el[1];//Reviewers can update the status
+            const rem2=$el[2];//display assignee column
+            const rem4=$el[4];//form submission schedule settings
+            const rem5=$el[5];//copy existing submission
+            const rem6=$el[6];//Event Subscription
+            const rem7=$el[7];//Wide form layout
+            const rem8=$el[8];//Share draft with team members
             cy.get(rem).should("not.be.enabled");
-            //cy.get(rem2).should("not.be.enabled");
-            cy.get(rem3).should("be.enabled");
-            cy.get(rem4).should("not.be.enabled");
-            cy.get(rem5).should("be.enabled");      
+            cy.get(rem1).should("be.enabled");
+            cy.get(rem2).should("be.enabled");
+            cy.get(rem4).should("be.enabled");
+            cy.get(rem5).should("not.be.enabled");
+            cy.get(rem6).should("be.enabled"); 
+            cy.get(rem7).should("be.enabled");
+            cy.get(rem8).should("not.be.enabled");      
     });
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
-    
-    cy.get('.mdi-account-multiple').click();
+    cy.get('[data-test="canManageTeammembers"]').click();
     cy.get('.mdi-account-plus').click();
     //Search for a member to add
     cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
@@ -109,7 +115,7 @@ describe('Form Designer', () => {
     cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
     cy.log('Page visited, checking for logout button');
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-        //Form submission and verification for public forms
+    //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
@@ -123,32 +129,28 @@ describe('Form Designer', () => {
     cy.get('label').contains('Text Field').should('be.visible');
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
-    
     cy.contains('h1', 'Your form has been submitted successfully');
     if(depEnv=="app")
-          {
-              cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
-          }
+      {
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
+      }
     else
-          {
-              cy.visit(`/${depEnv}`);
-              
-          }
-          
+      {
+        cy.visit(`/${depEnv}`);
+      }      
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
-    cy.get('[data-test="idir"]').click();
-          
+    cy.get('[data-test="idir"]').click();     
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
     cy.wait(2000);
-        //view submission
-        
+    //view submission   
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
-    cy.get(':nth-child(6) > a > .v-btn').click();
-
+    cy.contains('Assigned to me').should('exist');//Assigned to me checkbox
+    //View the submission
+    cy.get(':nth-child(7) > a > .v-btn').click();
     });
     //Assign status submission
     cy.get('.status-heading > .mdi-chevron-right').click();
@@ -173,12 +175,9 @@ describe('Form Designer', () => {
     //Adding notes to submission
     cy.get('.mdi-plus').click();
     cy.get('div').find('textarea').then($el => {
-
       const rem=$el[0];
       rem.click();
       cy.get(rem).type('some notes');
-      
-      
     });
     //Verify  submitted by label is public
     cy.get('p').contains('public').should('be.visible');
@@ -203,8 +202,6 @@ describe('Form Designer', () => {
     cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
-    
-    
   });
-
+    
 });

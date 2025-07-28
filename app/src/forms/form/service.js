@@ -24,7 +24,7 @@ const {
   FormSubscription,
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
-const { checkIsFormExpired, isDateValid } = require('../common/scheduleService');
+const { checkIsFormExpired, isDateValid, isDateInFuture } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
@@ -120,16 +120,61 @@ function isClosingMessageValid(schedule) {
 }
 
 const service = {
+  /**
+   * Validates reminder settings against schedule configuration
+   * Ensures reminders are only enabled when a valid schedule exists
+   * Uses scheduleService for proper date validation and timezone handling
+   * @param {Object} data Form data containing schedule and reminder_enabled
+   * @returns {boolean} Validated reminder_enabled value
+   */
+  _validateReminderSettings: (data) => {
+    // If reminders are not enabled, no validation needed
+    if (!data.reminder_enabled) {
+      return false;
+    }
+
+    // Check if schedule exists and is properly configured
+    if (!data.schedule || !data.schedule.enabled || !data.schedule.scheduleType || data.schedule.scheduleType === ScheduleType.MANUAL) {
+      return false;
+    }
+
+    // For CLOSINGDATE schedules, validate using scheduleService
+    if (data.schedule.scheduleType === ScheduleType.CLOSINGDATE) {
+      // Use checkIsFormExpired to validate the schedule
+      const scheduleStatus = checkIsFormExpired(data.schedule);
+
+      // If form is expired (not yet open or past closing), disable reminders
+      if (scheduleStatus.expire && !scheduleStatus.allowLateSubmissions) {
+        return false;
+      }
+
+      // Validate dates are properly set
+      if (!isDateValid(data.schedule.openSubmissionDateTime)) {
+        return false;
+      }
+
+      // Check if open date is in the future (reminders only make sense for future dates)
+      const isOpenDateInFuture = isDateInFuture(data.schedule.openSubmissionDateTime, data.schedule.timezone || 'America/Vancouver');
+
+      if (!isOpenDateInFuture) {
+        return false;
+      }
+    }
+
+    return true;
+  },
   // Form schedule validation functions moved from scheduleService
   validateScheduleObject,
   isLateSubmissionConfigValid,
   isClosingMessageValid,
 
   _setAssigneeInSubmissionsTable: (formData) => {
-    const identityProviders = formData.identityProviders || [];
-    const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
-
-    return formData.showAssigneeInSubmissionsTable === true && !isPublicForm && formData.enableStatusUpdates;
+    return formData.showAssigneeInSubmissionsTable === true && formData.enableStatusUpdates;
+  },
+  _setAllowSubmitterToUploadFile: (formData) => {
+    // do not allow submitter to upload files if the form is public, or if allowSubmitterToUploadFile is false.
+    const isPublicForm = formData.identityProviders && Array.isArray(formData.identityProviders) && formData.identityProviders.some((idp) => idp.code === 'public');
+    return !isPublicForm && !falsey(formData.allowSubmitterToUploadFile);
   },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
@@ -188,7 +233,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser?.usernameIdp || 'public';
-      obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
+      obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
       obj.schedule = data.schedule;
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
@@ -259,6 +304,8 @@ const service = {
       if (scheduleData.status !== 'success') {
         throw new Problem(422, `${scheduleData.message}`);
       }
+
+      const validatedReminderEnabled = service._validateReminderSettings(data);
       const upd = {
         name: data.name,
         description: data.description,
@@ -270,10 +317,10 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
-        allowSubmitterToUploadFile: data.allowSubmitterToUploadFile,
+        allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
         schedule: data.schedule,
         subscribe: data.subscribe,
-        reminder_enabled: data.reminder_enabled,
+        reminder_enabled: validatedReminderEnabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
         deploymentLevel: data.deploymentLevel,
         wideFormLayout: data.wideFormLayout,
@@ -485,7 +532,7 @@ const service = {
   },
 
   _shouldIncludeAssignee: (form) => {
-    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
+    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates;
   },
 
   _buildSelectionAndFields: (params, shouldIncludeAssignee) => {
@@ -516,9 +563,8 @@ const service = {
 
   _validateSortBy: (params, selection, fields) => {
     if (params.sortBy?.column && !selection.includes(params.sortBy.column) && !fields.includes(params.sortBy.column)) {
-      throw new Problem(400, {
-        details: `orderBy column '${params.sortBy.column}' not in selected columns`,
-      });
+      // don't throw an error, just remove the sortBy column, user can choose a different column
+      delete params.sortBy;
     }
   },
 
@@ -528,9 +574,9 @@ const service = {
 
     // Determine if assignee data should be included in response
     const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
-    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
     const { selection, fields } = service._buildSelectionAndFields(params, shouldIncludeAssignee);
     service._validateSortBy(params, selection, fields);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
 
     query.select(
       selection,

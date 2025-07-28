@@ -99,7 +99,7 @@ defineExpose({
       </template>
     </v-checkbox>
     <v-checkbox
-      v-if="form.enableStatusUpdates && form.userType !== ID_MODE.PUBLIC"
+      v-if="form.enableStatusUpdates"
       v-model="form.showAssigneeInSubmissionsTable"
       data-test="showAssigneeInSubmissionsTableCheckbox"
       hide-details="auto"
@@ -119,6 +119,7 @@ defineExpose({
       data-test="canUploadDraftCheckbox"
       hide-details="auto"
       class="my-0"
+      :disabled="form.userType === ID_MODE.PUBLIC"
       @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>

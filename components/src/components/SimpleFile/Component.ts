@@ -25,7 +25,7 @@ export default class Component extends ParentComponent {
         webcamSize: 320,
         privateDownload: false,
         imageSize: '200',
-        filePattern: '*',
+        filePattern: '',
         fileMinSize: '0KB',
         fileMaxSize: '1GB',
         uploadOnly: false,
@@ -103,15 +103,49 @@ export default class Component extends ParentComponent {
           status: 'info',
           message: this.t('Starting upload'),
         };
-
-        // Check file pattern
+        const fileNameLower = file.name.toLowerCase();
+        const systemBlockedExtensions = [
+          '.exe',
+          '.bat',
+          '.scr',
+          '.com',
+          '.pif',
+          '.cmd',
+          '.jar',
+          '.app',
+          '.deb',
+          '.dmg',
+          '.msi',
+          '.run',
+          '.bin',
+          '.sh',
+          '.ps1',
+          '.vbs',
+          '.js',
+          '.html',
+          '.php',
+          '.py',
+          '.rb',
+        ];
         if (
-          this.component.filePattern &&
-          !this.validatePattern(file, this.component.filePattern)
+          systemBlockedExtensions.some((ext) => fileNameLower.endsWith(ext))
         ) {
           fileUpload.status = 'error';
           fileUpload.message = this.t(
-            'File is the wrong type; it must be {{ pattern }}',
+            'This file type is not supported for security reasons.'
+          );
+          this.statuses.push(fileUpload);
+          this.redraw();
+          return; // Stop processing this file immediately
+        }
+
+        // Check file pattern
+        const pattern = this.component.filePattern ?? undefined;
+
+        if (pattern && !this.validatePattern(file, pattern)) {
+          fileUpload.status = 'error';
+          fileUpload.message = this.t(
+            'File type not allowed. Supported: {{ pattern }}',
             {
               pattern: this.component.filePattern,
             }

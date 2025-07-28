@@ -1,12 +1,64 @@
 const config = require('config');
 const uuid = require('uuid');
+const path = require('path');
 const { FileStorage } = require('../common/models');
 const storageService = require('./storage/storageService');
 
 const PERMANENT_STORAGE = config.get('files.permanent');
 
+const BLOCKED_EXTENSIONS = [
+  '.exe',
+  '.bat',
+  '.scr',
+  '.com',
+  '.pif',
+  '.cmd',
+  '.jar',
+  '.app',
+  '.deb',
+  '.dmg',
+  '.msi',
+  '.run',
+  '.bin',
+  '.sh',
+  '.ps1',
+  '.vbs',
+  '.js',
+  '.html',
+  '.php',
+  '.py',
+  '.rb',
+  '.jsp',
+  '.asp',
+  '.aspx',
+];
+
+/**
+ * CRITICAL SECURITY: File validation at service layer
+ */
+const validateFileSecurity = (file) => {
+  if (!file || !file.originalname) {
+    throw new Error('No file provided for upload');
+  }
+
+  const fileName = file.originalname.toLowerCase();
+  const fileExtension = path.extname(fileName);
+
+  if (BLOCKED_EXTENSIONS.some((ext) => fileName.endsWith(ext))) {
+    throw new Error(`File type ${fileExtension} is not allowed for security reasons`);
+  }
+
+  if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
+    throw new Error('Filename contains dangerous characters');
+  }
+
+  return true;
+};
+
 const service = {
   create: async (data, currentUser, folder = 'uploads') => {
+    validateFileSecurity(data);
+
     let trx;
     try {
       trx = await FileStorage.startTransaction();

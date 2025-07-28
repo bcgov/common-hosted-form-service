@@ -1,4 +1,5 @@
 <script setup>
+import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -27,10 +28,18 @@ const editDialog = ref({
   show: false,
 });
 
+const firstDataLoad = ref(true);
+const forceTableRefresh = ref(0);
+const debounceInput = ref(null);
+const debounceTime = ref(1000);
+const currentPage = ref(1);
+const itemsPP = ref(10);
+
 const adminStore = useAdminStore();
 const formStore = useFormStore();
 
-const { externalAPIList, externalAPIStatusCodes } = storeToRefs(adminStore);
+const { externalAPIList, externalAPIStatusCodes, apiTotal } =
+  storeToRefs(adminStore);
 const { isRTL, lang } = storeToRefs(formStore);
 
 const headers = computed(() => [
@@ -88,9 +97,25 @@ const items = computed(() =>
   }))
 );
 
+async function getApis() {
+  loading.value = true;
+  adminStore.getExternalAPIs({
+    paginationEnabled: true,
+    page: currentPage.value - 1,
+    itemsPerPage: itemsPP.value,
+    search: search.value,
+    searchEnabled: search.value.length > 0,
+  });
+  loading.value = false;
+}
+
 onMounted(async () => {
+  loading.value = true;
   await adminStore.getExternalAPIStatusCodes();
-  await adminStore.getExternalAPIs();
+  await getApis();
+  debounceInput.value = _.debounce(async () => {
+    forceTableRefresh.value += 1;
+  }, debounceTime.value);
   loading.value = false;
 });
 
@@ -136,6 +161,34 @@ async function saveItem() {
   await adminStore.getExternalAPIs();
   loading.value = false;
 }
+
+async function updateOptions(options) {
+  const { page, itemsPerPage } = options;
+  if (page) {
+    currentPage.value = page;
+  }
+  if (itemsPerPage) {
+    itemsPP.value = itemsPerPage;
+  }
+  if (!firstDataLoad.value) {
+    await getApis();
+  }
+  firstDataLoad.value = false;
+}
+
+const debouncedSearch = _.debounce(async (value) => {
+  search.value = value;
+  await getApis();
+}, debounceTime.value);
+
+async function handleSearch(value) {
+  if (value === '') {
+    search.value = value;
+    await getApis();
+  } else {
+    debouncedSearch(value);
+  }
+}
 </script>
 
 <template>
@@ -159,22 +212,26 @@ async function saveItem() {
             class="pb-5"
             :class="{ 'dir-rtl': isRTL, label: isRTL }"
             :lang="lang"
+            @update:modelValue="handleSearch"
           />
         </div>
       </v-col>
     </v-row>
 
     <!-- table header -->
-    <v-data-table
+    <v-data-table-server
       class="submissions-table"
       hover
       :headers="headers"
       item-key="title"
       :items="items"
+      :items-per-page="itemsPP"
+      :items-length="apiTotal === undefined ? 0 : apiTotal"
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminAPIsTable.loadingText')"
       :lang="lang"
+      @update:options="updateOptions"
     >
       <template #item.ministry="{ item }">
         {{ item.ministry }}
@@ -214,7 +271,7 @@ async function saveItem() {
           </v-tooltip>
         </span>
       </template>
-    </v-data-table>
+    </v-data-table-server>
   </div>
   <BaseDialog
     v-model="editDialog.show"
