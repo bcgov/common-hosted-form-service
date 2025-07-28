@@ -1226,5 +1226,23 @@
   "canShareDraft": {
     "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
     "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "このサービスは一時的に利用できません。",
+    "chefsUnavailableBoilerplate": "しばらくしてから再試行してください。問題が続く場合は、チームのITサポートまたはシステム管理者にお問い合わせください。",
+    "moreInfo": "詳細情報",
+    "lessInfo": "戻る",
+    "moreInfoIntro": "この問題は、接続された1つまたは複数のサービスの中断が原因です：",
+    "moreInfoOutro": "アクセスの復元に取り組んでいます。問題が続く場合は、ITサポートまたはシステム管理者が{linkOne}または{linkTwo}を通じてお問い合わせいただけます。",
+    "name": "サービス",
+    "status": "ステータス",
+    "connected": "接続済み",
+    "disconnected": "切断",
+    "msTeamsChannel": "MS Teamsチャンネル",
+    "rocketChatChannel": "Rocket.Chatチャンネル",
+    "defaultStatusMessage": "サービスは一時的に利用できません（503）。後でもう一度お試しください。",
+    "shuttingDown": "CHEFSがシャットダウンしています。",
+    "notReady": "CHEFSは必要なすべてのサービスに接続できません。",
+    "unableToReachBackend": "バックエンドサービスに到達できません。"
   }
 }
