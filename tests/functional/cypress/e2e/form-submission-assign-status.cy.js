@@ -30,9 +30,6 @@ describe('Form Designer', () => {
         
     }); 
     it('Form Submission and Updation', () => {
-
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
     cy.viewport(1000, 1800);
     cy.waitForLoad();
     cy.get('button').contains('Basic Fields').click();
@@ -45,12 +42,12 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.wait(4000);
+    cy.wait(2000);
         // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.should('be.visible').trigger('click');
-    cy.wait(4000);
+    cy.wait(2000);
         // Filter the newly created form
     cy.location('search').then(search => {
         
@@ -68,7 +65,7 @@ describe('Form Designer', () => {
         cy.contains('Continue').trigger('click');
         //Submit the form
         cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-        cy.wait(4000);
+        cy.wait(2000);
         cy.get('button').contains('Submit').should('be.visible');
         cy.waitForLoad();
         cy.contains('Text Field').click();
@@ -77,17 +74,17 @@ describe('Form Designer', () => {
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
         cy.get('button').contains('Submit').click();
-        cy.wait(4000);
+        cy.wait(2000);
         cy.get('label').contains('Text Field').should('be.visible');
         cy.get('label').contains('Text Field').should('be.visible');
         cy.location('pathname').should('eq', `/${depEnv}/form/success`);
         cy.contains('h1', 'Your form has been submitted successfully');
-        cy.wait(4000);
+        cy.wait(2000);
         //Update submission
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-        cy.wait(4000);
+        cy.wait(2000);
         cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-        cy.wait(4000);
+        cy.wait(2000);
         cy.get('button').contains('Submit').should('be.visible');
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Smith');
@@ -97,9 +94,9 @@ describe('Form Designer', () => {
         cy.get('label').contains('Text Field').should('be.visible');
         cy.location('pathname').should('eq', `/${depEnv}/form/success`);
         cy.contains('h1', 'Your form has been submitted successfully');
-        cy.wait(4000);
+        cy.wait(2000);
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-        cy.wait(4000);
+        cy.wait(2000);
         cy.get('.mdi-list-box-outline').click();
         cy.waitForLoad();
         //Verify pagination for submission
@@ -114,13 +111,13 @@ describe('Form Designer', () => {
         cy.get('button[title="Delete Submission"]').should('exist');
          //view submission
         cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
-        cy.wait(4000);
+        cy.wait(2000);
       });
 
     });
     it('Submission status Assignment', () => {
         cy.viewport(1000, 1100);
-        cy.wait(4000);
+        cy.wait(2000);
         //Assign status submission
         cy.get('.status-heading > .mdi-chevron-right').click();
         cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
@@ -130,7 +127,7 @@ describe('Form Designer', () => {
         cy.get('[data-test="showAssigneeList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').type('ch');
         cy.get('div').contains('CHEFS Testing').click();
         cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
-        cy.wait(4000);
+        cy.wait(2000);
         cy.get('.mdi-list-box-outline').click();
         cy.get('input[type="checkbox"]').then($el => {
           const rem1=$el[2];////Assigned to me checkbox
@@ -155,7 +152,7 @@ describe('Form Designer', () => {
         cy.get('textarea[rows="1"]').type('some comments');
         cy.get('button').contains('REVISE').click();
         cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
-        cy.wait(4000);
+        cy.wait(2000);
         //Verify Edit submission button is disabled
         cy.get('button[title="Edit This Submission"]').should('be.disabled');
         //Verify Submission edit users history
@@ -200,7 +197,7 @@ describe('Form Designer', () => {
         cy.get('.v-data-table__tbody > :nth-child(2) > :nth-child(2)').should('not.exist');
         //Delete form after test run
         cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
-        cy.wait(4000);
+        cy.wait(2000);
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
         cy.get('#logoutButton > .v-btn__content > span').click();
