@@ -25,6 +25,11 @@ security:
   - BearerAuth: []
     OpenID: []
 tags:
+  - name: Form Module
+    description: >-
+      These API endpoints handle operations related to form modules. Form modules allow for extending
+      forms with additional functionality from external scripts that can be imported and used across different
+      forms in the system.
   - name: Form
     description: >-
       The API paths in this section are used to read and write data that make up
@@ -118,6 +123,445 @@ tags:
     description: >-
       These API endpoints are used for for health checks of CHEFS and its required services.
 paths:
+  /form_modules:
+    get:
+      summary: List all form modules
+      operationId: listFormModules
+      tags:
+        - Form Module
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormModule'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new form module
+      operationId: createFormModule
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      tags:
+        - Form Module
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormModuleInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormModule'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /form_modules/{formModuleId}:
+    get:
+      summary: Get a form module
+      operationId: readFormModule
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module to retrieve
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormModule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a form module
+      operationId: updateFormModule
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormModuleInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormModule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /form_modules/{formModuleId}/toggle:
+    post:
+      summary: Toggle form module active status
+      operationId: toggleFormModule
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module to toggle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                active:
+                  type: boolean
+                  description: The desired active state
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormModule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /form_modules/{formModuleId}/version:
+    get:
+      summary: List form module versions
+      operationId: listFormModuleVersions
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormModuleVersion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a form module version
+      operationId: createFormModuleVersion
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormModuleVersionInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormModuleVersion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /form_modules/{formModuleId}/version/{formModuleVersionId}:
+    get:
+      summary: Get a form module version
+      operationId: readFormModuleVersion
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module
+        - name: formModuleVersionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module version
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormModuleVersion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a form module version
+      operationId: updateFormModuleVersion
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module
+        - name: formModuleVersionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormModuleVersionInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormModuleVersion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /form_modules/{formModuleId}/idp:
+    get:
+      summary: List form module identity providers
+      operationId: listFormModuleIdentityProviders
+      tags:
+        - Form Module
+      parameters:
+        - name: formModuleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the form module
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdentityProvider'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /forms/{formId}/versions/{formVersionId}/formModuleVersions:
+    get:
+      summary: List form module versions for a form version
+      operationId: listFormVersionFormModuleVersions
+      tags:
+        - Form Module
+        - Version
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/formVersionIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormVersionFormModuleVersion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /forms:
     get:
       summary: List all forms
@@ -5792,6 +6236,138 @@ components:
           type: integer
           description: The version number of the form for a submission
           example: 1
+    FormModule:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the form module
+        pluginName:
+          type: string
+          description: The name of the plugin associated with this form module
+        active:
+          type: boolean
+          description: Indicates if this form module is active
+        formDesignerIdps:
+          type: array
+          description: List of identity provider codes that can access this form module in the form designer
+          items:
+            type: string
+        createdBy:
+          type: string
+          description: The user who created the form module
+        createdAt:
+          type: string
+          format: date-time
+          description: When the form module was created
+        updatedBy:
+          type: string
+          description: The user who last updated the form module
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the form module was last updated
+
+    FormModuleInput:
+      type: object
+      properties:
+        pluginName:
+          type: string
+          description: The name of the plugin associated with this form module
+        active:
+          type: boolean
+          description: Indicates if this form module is active
+        formDesignerIdps:
+          type: array
+          description: List of identity provider codes that can access this form module in the form designer
+          items:
+            type: string
+      required:
+        - pluginName
+
+    FormModuleVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the form module version
+        formModuleId:
+          type: string
+          format: uuid
+          description: The ID of the parent form module
+        version:
+          type: integer
+          description: The version number
+        externalUris:
+          type: array
+          description: List of external URIs used by this form module version
+          items:
+            type: string
+        config:
+          type: object
+          description: Configuration for this form module version
+        createdBy:
+          type: string
+          description: The user who created the form module version
+        createdAt:
+          type: string
+          format: date-time
+          description: When the form module version was created
+        updatedBy:
+          type: string
+          description: The user who last updated the form module version
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the form module version was last updated
+
+    FormModuleVersionInput:
+      type: object
+      properties:
+        externalUris:
+          type: array
+          description: List of external URIs used by this form module version
+          items:
+            type: string
+        config:
+          type: object
+          description: Configuration for this form module version
+      required:
+        - externalUris
+
+    FormVersionFormModuleVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the association
+        formVersionId:
+          type: string
+          format: uuid
+          description: The ID of the form version
+        formModuleVersionId:
+          type: string
+          format: uuid
+          description: The ID of the form module version
+        createdBy:
+          type: string
+          description: The user who created the association
+        createdAt:
+          type: string
+          format: date-time
+          description: When the association was created
+        updatedBy:
+          type: string
+          description: The user who last updated the association
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the association was last updated
+        formModuleVersion:
+          $ref: '#/components/schemas/FormModuleVersion'
   responses:
     Accepted:
       description: Accepted
