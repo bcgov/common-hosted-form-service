@@ -12,26 +12,40 @@
  * - https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
  */
 export interface RoundingConfig {
-    enabled: boolean;
     method: 'round' | 'floor' | 'ceil';
-    decimalPlaces: number;
 }
 
 // Add this to your Rounding.mixin.ts file
 export const RoundingEditFormComponents = [
     {
-        type: 'panel',
-        title: 'Rounding',
-        key: 'rounding-panel',
-        weight: 100,
-        customClass: 'mixin-top-margin',
+        type: 'fieldset',
+        title: 'Number Precision & Rounding',
+        key: 'precision-fieldset',
         components: [
             {
                 type: 'checkbox',
-                key: 'rounding.enabled',
-                label: 'Enable Rounding',
-                tooltip: 'Enable automatic rounding of decimal values',
-                input: true
+                key: 'requireDecimal',
+                label: 'Require Decimal',
+                tooltip: 'Always show decimals, even if trailing zeros.',
+                input: true,
+                weight: 100,
+                defaultValue: false
+            },
+            {
+                type: 'number',
+                input: true,
+                weight: 80,
+                key: 'decimalLimit',
+                label: 'Decimal Places',
+                tooltip: 'The maximum number of decimal places',
+                validate: {
+                    integer: true,
+                },
+                conditional: {
+                    show: true,
+                    when: 'requireDecimal',
+                    eq: true
+                },
             },
             {
                 type: 'select',
@@ -46,26 +60,10 @@ export const RoundingEditFormComponents = [
                 },
                 defaultValue: 'round',
                 input: true,
+                weight: 101,
                 conditional: {
                     show: true,
-                    when: 'rounding.enabled',
-                    eq: true
-                }
-            },
-            {
-                type: 'number',
-                key: 'rounding.decimalPlaces',
-                label: 'Decimal Places',
-                defaultValue: 2,
-                input: true,
-                validate: {
-                    min: 0,
-                    max: 10,
-                    integer: true
-                },
-                conditional: {
-                    show: true,
-                    when: 'rounding.enabled',
+                    when: 'requireDecimal',
                     eq: true
                 }
             }
@@ -80,9 +78,7 @@ export function addRoundingToSchema(schema: any) {
     return {
         ...schema,
         rounding: {
-            enabled: false,
             method: 'round' as const,
-            decimalPlaces: 2
         }
     };
 }

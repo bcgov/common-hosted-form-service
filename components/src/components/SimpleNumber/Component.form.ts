@@ -10,17 +10,10 @@ import { RoundingEditFormComponents } from '../Common/Rounding.mixin';
 
 export default function(...extend) {
     return baseEditForm([
-        {
-            key: 'display',
-            weight: 5,
-            components: [
-                ...EditDisplay.components,
-                ...RoundingEditFormComponents,
-            ],
-        },
+        EditDisplay,
         {
             key: 'data',
-            ignore: true,
+            ignore: true
         },
         {
             key: 'api',
@@ -46,7 +39,10 @@ export default function(...extend) {
             label: 'Data',
             key: 'customData',
             weight: 10,
-            components: EditData
+            components: [
+                ...EditData,
+                ...RoundingEditFormComponents,
+            ],
         },
         {
             label: 'Validation',

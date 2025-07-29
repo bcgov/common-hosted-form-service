@@ -1,110 +1,17 @@
 /* tslint:disable */
 import { Components } from 'formiojs';
+import _ from 'lodash';
 import editForm from './Component.form';
 import { addRoundingToSchema, RoundingConfig } from '../Common/Rounding.mixin';
 import { Constants } from '../Common/Constants';
 
+const ParentComponent = (Components as any).components.number;
+
 const ID = 'simplenumber';
 const DISPLAY = 'Number';
 
-// Define an interface for the methods we need from the base component
-interface FormioComponentMethods {
-    setValue(value: any, flags?: any): any;
-    getValue(): any;
-    calculateValue(data: any, flags: any, row: any): any;
-    getValueAsString(value: any, options: any): string;
-    component: {
-        rounding?: RoundingConfig;
-        [key: string]: any;
-    };
-}
-
-interface FormioNumberComponentConstructor {
-    new (component: any, options: any, data: any): FormioComponentMethods;
-    schema(...extend: any[]): any;
-}
-
-const ParentComponent: FormioNumberComponentConstructor = (Components as any).components.number;
-
-// Define the mixin as a function that takes a base class with the required methods
-type Constructor<T = {}> = new (...args: any[]) => T;
-
-function WithRounding<TBase extends Constructor<FormioComponentMethods>>(Base: TBase) {
-    return class extends Base {
-        /**
-         * Apply rounding to a numeric value based on component configuration
-         */
-        applyRounding(value: number): number {
-            const roundingConfig = this.component.rounding;
-            
-            if (!roundingConfig?.enabled) {
-                return value;
-            }
-            
-            const decimalPlaces = roundingConfig.decimalPlaces || 2;
-            const multiplier = Math.pow(10, decimalPlaces);
-            
-            switch (roundingConfig.method) {
-                case 'floor':
-                    return Math.floor(value * multiplier) / multiplier;
-                case 'ceil':
-                    return Math.ceil(value * multiplier) / multiplier;
-                case 'round':
-                default:
-                    return Math.round(value * multiplier) / multiplier;
-            }
-        }
-
-        /**
-         * Process value with rounding if applicable
-         */
-        processValueWithRounding(value: any): any {
-            if (value === null || value === undefined || value === '') {
-                return value;
-            }
-            
-            const numValue = parseFloat(value);
-            if (isNaN(numValue)) {
-                return value;
-            }
-            
-            return this.applyRounding(numValue);
-        }
-
-        setValue(value: any, flags: any = {}) {
-            const processedValue = this.processValueWithRounding(value);
-            return super.setValue(processedValue, flags);
-        }
-
-        getValue() {
-            const value = super.getValue();
-            return this.processValueWithRounding(value);
-        }
-
-        calculateValue(data: any, flags: any, row: any) {
-            const value = super.calculateValue(data, flags, row);
-            return this.processValueWithRounding(value);
-        }
-
-        getValueAsString(value: any, options: any): string {
-            const roundingConfig = this.component.rounding;
-
-            if (roundingConfig && roundingConfig.enabled && value !== null && value !== undefined && value !== '') {
-                const numValue = parseFloat(value);
-                if (!isNaN(numValue)) {
-                    const roundedValue = this.applyRounding(numValue);
-                    return roundedValue.toFixed(roundingConfig.decimalPlaces || 2);
-                }
-            }
-            
-            const originalResult = super.getValueAsString(value, options);
-            return String(originalResult);
-        }
-    };
-}
-
 // Apply the mixin to create the final component class
-export default class Component extends WithRounding(ParentComponent) {
+export default class Component extends (ParentComponent as any) {
     constructor(component: any, options: any, data: any) {
         super(component, options, data);
     }
@@ -136,5 +43,30 @@ export default class Component extends WithRounding(ParentComponent) {
             documentation: Constants.DEFAULT_HELP_LINK,
             schema: Component.schema(),
         };
+    }
+
+    formatValue(value: any) {
+        if (this.component.requireDecimal && value !== null && value !== undefined && value !== '') {
+            const decimalPlaces = this.component.decimalLimit || 2;
+            const multiplier = Math.pow(10, decimalPlaces);
+            let numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                switch (this.component.rounding.method) {
+                    case 'floor':
+                        numValue = Math.floor(numValue * multiplier) / multiplier, decimalPlaces;
+                        break;
+                    case 'ceil':
+                        numValue = Math.ceil(numValue * multiplier) / multiplier;
+                        break;
+                    case 'round':
+                    default:
+                        numValue = Math.round(numValue * multiplier) / multiplier;
+                        break;
+                }
+                return numValue.toFixed(decimalPlaces);
+            }
+        }
+
+        return super.formatValue(value);
     }
 }
