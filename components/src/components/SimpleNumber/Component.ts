@@ -3,13 +3,12 @@ import { Components } from 'formiojs';
 const ParentComponent = (Components as any).components.number;
 import editForm from './Component.form';
 import { addRoundingToSchema, RoundingMixin } from '../Common/Rounding.mixin';
-
 import { Constants } from '../Common/Constants';
 
 const ID = 'simplenumber';
 const DISPLAY = 'Number';
 
-export default class Component extends (ParentComponent as any) {
+export default class Component extends ParentComponent {
     constructor(component, options, data) {
         super(component, options, data);
         

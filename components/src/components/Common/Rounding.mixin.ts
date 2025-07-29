@@ -23,8 +23,8 @@ export const RoundingMixin = {
      */
     applyRounding(value: number): number {
         const roundingConfig = this.component.rounding as RoundingConfig;
-        
-        if (!roundingConfig || !roundingConfig.enabled) {
+
+        if (!roundingConfig?.enabled) {
             return value;
         }
         
@@ -63,14 +63,20 @@ export const RoundingMixin = {
      */
     setValue(value: any, flags: any = {}) {
         const processedValue = this.processValueWithRounding(value);
-        return this.constructor.prototype.setValue.call(this, processedValue, flags);
+        if (!this._originalSetValue) {
+            this._originalSetValue = Object.getPrototypeOf(Object.getPrototypeOf(this)).setValue;
+        }
+        return this._originalSetValue.call(this, processedValue, flags);
     },
 
     /**
      * Override getValue to apply rounding
      */
     getValue() {
-        const value = this.constructor.prototype.getValue.call(this);
+        if (!this._originalGetValue) {
+            this._originalGetValue = Object.getPrototypeOf(Object.getPrototypeOf(this)).getValue;
+        }
+        const value = this._originalGetValue.call(this);
         return this.processValueWithRounding(value);
     },
 
@@ -78,7 +84,10 @@ export const RoundingMixin = {
      * Override calculateValue to apply rounding
      */
     calculateValue(data: any, flags: any, row: any) {
-        const value = this.constructor.prototype.calculateValue.call(this, data, flags, row);
+        if (!this._originalCalculateValue) {
+            this._originalCalculateValue = Object.getPrototypeOf(Object.getPrototypeOf(this)).calculateValue;
+        }
+        const value = this._originalCalculateValue.call(this, data, flags, row);
         return this.processValueWithRounding(value);
     },
 
@@ -96,7 +105,10 @@ export const RoundingMixin = {
             }
         }
         
-        return this.constructor.prototype.getValueAsString.call(this, value, options);
+        if (!this._originalGetValueAsString) {
+            this._originalGetValueAsString = Object.getPrototypeOf(Object.getPrototypeOf(this)).getValueAsString;
+        }
+        return this._originalGetValueAsString.call(this, value, options);
     }
 };
 

@@ -93,7 +93,7 @@ function deployComponents() {
   if (fs.existsSync(`${COMPONENTS_DIR}/dist`)) {
     const cssFiles = fs
       .readdirSync(`${COMPONENTS_DIR}/dist`)
-      .filter((file) => file.endsWith('.css'));
+      .filter((file) => file.endsWith('.css') || file.endsWith('.css.map'));
 
     if (cssFiles.length > 0) {
       const cssDir = path.join(FORMIO_DIR, 'css');
