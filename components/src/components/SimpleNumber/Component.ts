@@ -1,6 +1,5 @@
 /* tslint:disable */
 import { Components } from 'formiojs';
-const ParentComponent = (Components as any).components.number;
 import editForm from './Component.form';
 import { addRoundingToSchema, RoundingConfig } from '../Common/Rounding.mixin';
 import { Constants } from '../Common/Constants';
@@ -14,8 +13,18 @@ interface FormioComponentMethods {
     getValue(): any;
     calculateValue(data: any, flags: any, row: any): any;
     getValueAsString(value: any, options: any): string;
-    component: any;
+    component: {
+        rounding?: RoundingConfig;
+        [key: string]: any;
+    };
 }
+
+interface FormioNumberComponentConstructor {
+    new (component: any, options: any, data: any): FormioComponentMethods;
+    schema(...extend: any[]): any;
+}
+
+const ParentComponent: FormioNumberComponentConstructor = (Components as any).components.number;
 
 // Define the mixin as a function that takes a base class with the required methods
 type Constructor<T = {}> = new (...args: any[]) => T;
@@ -26,7 +35,7 @@ function WithRounding<TBase extends Constructor<FormioComponentMethods>>(Base: T
          * Apply rounding to a numeric value based on component configuration
          */
         applyRounding(value: number): number {
-            const roundingConfig = (this as any).component.rounding as RoundingConfig;
+            const roundingConfig = this.component.rounding;
             
             if (!roundingConfig?.enabled) {
                 return value;
@@ -78,8 +87,8 @@ function WithRounding<TBase extends Constructor<FormioComponentMethods>>(Base: T
         }
 
         getValueAsString(value: any, options: any): string {
-            const roundingConfig = (this as any).component.rounding as RoundingConfig;
-            
+            const roundingConfig = this.component.rounding;
+
             if (roundingConfig && roundingConfig.enabled && value !== null && value !== undefined && value !== '') {
                 const numValue = parseFloat(value);
                 if (!isNaN(numValue)) {
@@ -95,9 +104,9 @@ function WithRounding<TBase extends Constructor<FormioComponentMethods>>(Base: T
 }
 
 // Apply the mixin to create the final component class
-export default class Component extends WithRounding(ParentComponent as Constructor<FormioComponentMethods>) {
+export default class Component extends WithRounding(ParentComponent) {
     constructor(component: any, options: any, data: any) {
-        super(component, options, data); // NOSONAR - ParentComponent is a valid FormIO constructor
+        super(component, options, data);
     }
 
     static schema(...extend: any[]) {
