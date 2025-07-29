@@ -116,6 +116,7 @@
     "loginRequired": "Необхідно ввійти",
     "canSaveAndEditDraftLabel": "Автори можуть <strong>зберігати та редагувати чернетки</strong>",
     "canUpdateStatusAsReviewer": "Рецензенти можуть <strong>оновити статус</strong> цієї форми (наприклад, подано, призначено, завершено)",
+    "enableSubmitterRevision": "Відправники можуть <strong>переглядати свої власні подання</strong> та повторно подавати",
     "submitterCanCopyExistingSubmissn": "Відправники можуть <strong>скопіювати наявне подання</strong>",
     "submissionConfirmationToolTip": "Вибір цього параметра визначає, що користувач, який надсилає цю форму, бачитиме після успішного надсилання.<br /> Якщо позначено, воно відображатиметься",
     "emailNotificatnToTeam": "Надіслати моїй команді сповіщення електронною поштою",

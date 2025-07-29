@@ -103,7 +103,7 @@
     "referenceGuideB": "Benutzerhandbuch",
     "referenceGuideC": "für weitere Details",
     "specificTeamMembers": "Spezifische Teammitglieder",
-    "teamMemberTooltip": "Nachdem Sie das Formular erstellt haben, haben Sie Zugriff auf die Teamverwaltungsseite, auf der Sie Benutzer hinzufügen und Rollen zuweisen können. Suchen Sie nach dem Personen-Symbol auf der Seite „Formular verwalten“ ",
+    "teamMemberTooltip": "Nachdem Sie das Formular erstellt haben, haben Sie Zugriff auf die Teamverwaltungsseite, auf der Sie Benutzer hinzufügen und Rollen zuweisen können. Suchen Sie nach dem Personen-Symbol auf der Seite \"Formular verwalten\" ",
     "formFunctionality": "Formularfunktionalität",
     "formSubmissinScheduleMsg": "Der Formulareinreichungsplan ist in den Formulareinstellungen verfügbar, nachdem das Formular veröffentlicht wurde.",
     "formSubmissionsSchedule": "Zeitplan für Formulareinreichungen",
@@ -115,7 +115,8 @@
     "infoB": "die Option für den Benutzer, sich selbst eine Übermittlungsbestätigung per E-Mail zu senden",
     "loginRequired": "Anmeldung erforderlich",
     "canSaveAndEditDraftLabel": "Einreicher können <strong>Entwürfe speichern und bearbeiten</strong>",
-    "canUpdateStatusAsReviewer": "Prüfer können <strong>den Status dieses Formulars aktualisieren</strong> (z. B. „Eingereicht“, „Zugewiesen“, „Abgeschlossen“).",
+    "canUpdateStatusAsReviewer": "Prüfer können <strong>den Status dieses Formulars aktualisieren</strong> (z. B. \"Eingereicht\", \"Zugewiesen\", \"Abgeschlossen\").",
+    "enableSubmitterRevision": "Einreicher können <strong>ihre eigenen Einreichungen überarbeiten</strong> und erneut einreichen",
     "submitterCanCopyExistingSubmissn": "Einreicher können <strong>eine vorhandene Einreichung kopieren</strong>",
     "submissionConfirmationToolTip": "Durch Auswahl dieser Option wird gesteuert, was der einreichende Benutzer dieses Formulars bei erfolgreicher Übermittlung sieht.<br /> Wenn aktiviert, wird es angezeigt",
     "emailNotificatnToTeam": "Senden Sie meinem Team eine Benachrichtigungs-E-Mail",
@@ -172,7 +173,7 @@
     "selectAnOptions": "Bitte wählen Sie mindestens 1 Option aus",
     "validInterval": "Dies sollte ein gültiges Intervall sein.",
     "fieldRequiredAndInterval": "Dieses Feld ist erforderlich und sollte ein Intervall sein.",
-    "dateGrtOpenSubmissnDate": "Das Datum „Wiederholen bis“ sollte größer sein als das Datum der offenen Einreichung",
+    "dateGrtOpenSubmissnDate": "Das Datum „Wiederholen bis" sollte größer sein als das Datum der offenen Einreichung",
     "public": "Öffentlich (anonym)",
     "allowEventSubscription": "Ereignisabonnement zulassen",
     "eventSubscription": "Ereignisabonnement",
@@ -345,7 +346,7 @@
   },
   "addOwner": {
     "infoA": "Dies sollte nur für den Fall erfolgen, dass der aktuelle Formulareigentümer nicht mehr aktiv ist oder bei einem vorrangigen Ereignis keinen Kontakt mehr hat. Andernfalls lassen Sie dies vom aktuellen Eigentümer oder einem Teamadministrator für das Formular selbst erledigen.",
-    "hint": "Um die benötigte Benutzer-ID zu finden, können Sie im Admin-Portal auf die Registerkarte „BENUTZER“ gehen und nach ihnen suchen.",
+    "hint": "Um die benötigte Benutzer-ID zu finden, können Sie im Admin-Portal auf die Registerkarte „BENUTZER" gehen und nach ihnen suchen.",
     "addowner": "Besitzer hinzufügen",
     "label": "Benutzer-ID (Guid)"
   },
@@ -455,7 +456,7 @@
     "downloadJson": "JSON herunterladen",
     "uploadJson": "JSON hochladen",
     "important": "WICHTIG",
-    "formDesignInfoA": "Verwenden Sie die Schaltfläche <strong>„DESIGN SPEICHERN“</strong> , wenn Sie mit der Erstellung dieses Formulars fertig sind.",
+    "formDesignInfoA": "Verwenden Sie die Schaltfläche <strong>„DESIGN SPEICHERN" </strong> , wenn Sie mit der Erstellung dieses Formulars fertig sind.",
     "formDesignInfoB": "Die Schaltfläche <strong>SENDEN</strong> steht Ihrem Benutzer zum Absenden dieses Formulars zur Verfügung und wird nach dem Speichern aktiviert.",
     "formLoadErrMsg": "Beim Laden des Formularentwurfs ist ein Fehler aufgetreten.",
     "formLoadConsoleErrMsg": "Fehler beim Laden des Schemas des Formulars {formId} (Version: {versionId}, Entwurf: {draftId}): {error}",
@@ -663,7 +664,7 @@
     "display": "Anzeige",
     "statusIsRequired": "Status ist erforderlich",
     "assignTo": "Zuweisen",
-    "noDataText": "Keine Ergebnisse gefunden. Bitte fügen Sie Teammitglieder auf der Seite „Entwurf/Einreichung verwalten“ hinzu.",
+    "noDataText": "Keine Ergebnisse gefunden. Bitte fügen Sie Teammitglieder auf der Seite „Entwurf/Einreichung verwalten" hinzu.",
     "assigneeIsRequired": "Bevollmächtigter ist erforderlich",
     "assignToMe": "MIR ZUWEISEN",
     "recipientEmail": "Empfänger E-Mail",
@@ -685,7 +686,7 @@
     "notifyConsoleErrorCode": "Fehler beim Abrufen der Status:",
     "fetchSubmissionUsersErr": "Beim Versuch, die Empfänger-E-Mails für diese Übermittlung abzurufen, ist ein Fehler aufgetreten.",
     "fetchSubmissionUsersConsErr": "Fehler beim Abrufen der Empfänger-E-Mails für",
-    "assignSubmissnToFormReviewer": "Einreichungen können Formularprüfern zugewiesen werden.<br /> Um weitere Teammitglieder als Formularprüfer hinzuzufügen, gehen Sie zur Seite „Verwalten“ für dieses Formular.",
+    "assignSubmissnToFormReviewer": "Einreichungen können Formularprüfern zugewiesen werden.<br /> Um weitere Teammitglieder als Formularprüfer hinzuzufügen, gehen Sie zur Seite „Verwalten" für dieses Formular.",
     "update": "AKTUALISIEREN",
     "revise": "ÜBERARBEITEN",
     "complete": "VOLLSTÄNDIG",
@@ -880,7 +881,7 @@
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
     "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet",
     "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang.",
-    "fileUploadWarning": "Um Ihre Anhänge hochzuladen, müssen Sie entweder auf die Schaltfläche „Als Entwurf speichern“ klicken oder Ihr Formular absenden. Wenn Sie diesen Bildschirm verlassen, gehen Ihre Anhänge verloren."
+    "fileUploadWarning": "Um Ihre Anhänge hochzuladen, müssen Sie entweder auf die Schaltfläche „Als Entwurf speichern" klicken oder Ihr Formular absenden. Wenn Sie diesen Bildschirm verlassen, gehen Ihre Anhänge verloren."
   },
   "bCGovFooter": {
     "home": "Heim",
@@ -1202,8 +1203,8 @@
     "formNameReq": "Name ist erforderlich.",
     "formNameMaxChars": "Der Name darf höchstens 255 Zeichen lang sein.",
     "validEndpointRequired": "Bitte geben Sie einen gültigen Endpunkt ein, der mit http:// oder https:// beginnt.",
-    "apiKeyFieldRequired": "Erforderlich, wenn „API-Schlüssel senden“ ausgewählt ist.",
-    "userTokenFieldRequired": "Erforderlich, wenn „Benutzertoken senden“ ausgewählt ist."
+    "apiKeyFieldRequired": "Erforderlich, wenn „API-Schlüssel senden" ausgewählt ist.",
+    "userTokenFieldRequired": "Erforderlich, wenn „Benutzertoken senden" ausgewählt ist."
   },
   "adminAPIsTable": {
     "search": "Suchen",
@@ -1218,7 +1219,7 @@
     "actions": "Aktionen",
     "edit": "Bearbeiten",
     "editTitle": "Externen API-Status aktualisieren",
-    "allowSendUserToken": "„Benutzertoken senden“ zulassen"
+    "allowSendUserToken": "„Benutzertoken senden" zulassen"
   },
   "test": {
     "customError": "This is a custom error message for testing."

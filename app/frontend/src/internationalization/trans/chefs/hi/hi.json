@@ -116,6 +116,7 @@
     "loginRequired": "लॉगिन आवश्यक",
     "canSaveAndEditDraftLabel": "जमाकर्ता <strong>ड्राफ्ट सहेज और संपादित</strong> कर सकते हैं",
     "canUpdateStatusAsReviewer": "समीक्षक इस फॉर्म की <strong>स्थिति को अपडेट</strong> कर सकते हैं (अर्थात सबमिट किया गया, सौंपा गया, पूरा किया गया)",
+    "enableSubmitterRevision": "सबमिटर्स अपने <strong>स्वयं के सबमिशन को संशोधित</strong> कर सकते हैं और पुनः सबमिट कर सकते हैं",
     "submitterCanCopyExistingSubmissn": "सबमिटर्स <strong>मौजूदा सबमिशन की प्रतिलिपि</strong> बना सकते हैं",
     "submissionConfirmationToolTip": "इस विकल्प का चयन यह नियंत्रित करता है कि इस फॉर्म को सबमिट करने वाला उपयोगकर्ता सफल सबमिशन पर क्या देखेगा।<br /> यदि जांच की जाए तो यह प्रदर्शित हो जाएगा",
     "emailNotificatnToTeam": "मेरी टीम को एक अधिसूचना ईमेल भेजें",

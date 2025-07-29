@@ -116,6 +116,7 @@
     "loginRequired": "Login obrigatório",
     "canSaveAndEditDraftLabel": "Os remetentes podem <strong>salvar e editar rascunhos</strong>",
     "canUpdateStatusAsReviewer": "Os revisores podem <strong>atualizar o status</strong> deste formulário (ou seja, enviado, atribuído, concluído)",
+    "enableSubmitterRevision": "Os remetentes podem <strong>revisar suas próprias submissões</strong> e reenviar",
     "submitterCanCopyExistingSubmissn": "Os remetentes podem <strong>copiar um envio existente</strong>",
     "submissionConfirmationToolTip": "Selecionar esta opção controla o que o usuário que enviou este formulário verá no envio bem-sucedido.<br /> Se marcado, ele exibirá",
     "emailNotificatnToTeam": "Enviar um e-mail de notificação para minha equipe",

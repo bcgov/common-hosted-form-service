@@ -116,6 +116,7 @@
     "loginRequired": "Connexion requise",
     "canSaveAndEditDraftLabel": "Les expéditeurs peuvent <strong>enregistrer et modifier des brouillons</strong>",
     "canUpdateStatusAsReviewer": "Les réviseurs peuvent <strong>mettre à jour le statut</strong> de ce formulaire (c.-à-d. Soumis, Attribué, Terminé)",
+    "enableSubmitterRevision": "Les soumissionnaires peuvent <strong>réviser leurs propres soumissions</strong> et les resoumettre",
     "submitterCanCopyExistingSubmissn": "Les soumissionnaires peuvent <strong>copier une soumission existante</strong>",
     "submissionConfirmationToolTip": "La sélection de cette option contrôle ce que l'utilisateur soumettant ce formulaire verra en cas de soumission réussie.<br /> Si coché, il affichera",
     "emailNotificatnToTeam": "Envoyer à mon équipe un e-mail de notification",

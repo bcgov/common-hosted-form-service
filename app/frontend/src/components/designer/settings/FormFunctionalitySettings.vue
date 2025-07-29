@@ -99,7 +99,21 @@ defineExpose({
       </template>
     </v-checkbox>
     <v-checkbox
-      v-if="form.enableStatusUpdates"
+      v-model="form.enableSubmitterRevision"
+      data-test="canSubmitterRevisionFormCheckbox"
+      hide-details="auto"
+      class="my-0"
+    >
+      <template #label>
+        <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="locale"
+          v-html="$t('trans.formSettings.enableSubmitterRevision')"
+        ></span>
+      </template>
+    </v-checkbox>
+    <v-checkbox
+      v-if="form.enableStatusUpdates || form.enableSubmitterRevision"
       v-model="form.showAssigneeInSubmissionsTable"
       data-test="showAssigneeInSubmissionsTableCheckbox"
       hide-details="auto"

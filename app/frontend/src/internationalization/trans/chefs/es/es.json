@@ -116,6 +116,7 @@
     "loginRequired": "Necesario iniciar sesión",
     "canSaveAndEditDraftLabel": "Los remitentes pueden <strong>guardar y editar borradores</strong>",
     "canUpdateStatusAsReviewer": "Los revisores pueden <strong>actualizar el estado</strong> de este formulario (es decir, enviado, asignado, completado)",
+    "enableSubmitterRevision": "Los remitentes pueden <strong>revisar sus propias presentaciones</strong> y volver a enviarlas",
     "submitterCanCopyExistingSubmissn": "Los remitentes pueden <strong>copiar un envío existente</strong>",
     "submissionConfirmationToolTip": "Al seleccionar esta opción, se controla lo que verá el usuario que envía este formulario cuando se envíe correctamente.<br /> Si está marcada, se mostrará",
     "emailNotificatnToTeam": "Enviar a mi equipo un correo electrónico de notificación",
