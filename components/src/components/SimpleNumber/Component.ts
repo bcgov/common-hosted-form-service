@@ -1,8 +1,7 @@
 /* tslint:disable */
 import { Components } from 'formiojs';
-import _ from 'lodash';
 import editForm from './Component.form';
-import { addRoundingToSchema, RoundingConfig } from '../Common/Rounding.mixin';
+import { addRoundingToSchema } from '../Common/Rounding.mixin';
 import { Constants } from '../Common/Constants';
 
 const ParentComponent = (Components as any).components.number;
@@ -12,10 +11,6 @@ const DISPLAY = 'Number';
 
 // Apply the mixin to create the final component class
 export default class Component extends (ParentComponent as any) {
-    constructor(component: any, options: any, data: any) {
-        super(component, options, data);
-    }
-
     static schema(...extend: any[]) {
         const baseSchema = ParentComponent.schema({
             type: ID,
@@ -53,7 +48,7 @@ export default class Component extends (ParentComponent as any) {
             if (!isNaN(numValue)) {
                 switch (this.component.rounding.method) {
                     case 'floor':
-                        numValue = Math.floor(numValue * multiplier) / multiplier, decimalPlaces;
+                        numValue = Math.floor(numValue * multiplier) / multiplier;
                         break;
                     case 'ceil':
                         numValue = Math.ceil(numValue * multiplier) / multiplier;
