@@ -6,10 +6,18 @@ import EditValidation from './editForm/Component.edit.validation';
 
 import SimpleApi from '../Common/Simple.edit.api';
 import SimpleConditional from '../Common/Simple.edit.conditional';
+import { RoundingEditFormComponents } from '../Common/Rounding.mixin';
 
 export default function(...extend) {
     return baseEditForm([
-        EditDisplay,
+        {
+            key: 'display',
+            weight: 5,
+            components: [
+                ...EditDisplay.components,
+                ...RoundingEditFormComponents,
+            ],
+        },
         {
             key: 'data',
             ignore: true,
@@ -57,6 +65,6 @@ export default function(...extend) {
             key: 'customConditional',
             weight: 40,
             components: SimpleConditional
-        }
+        },
     ], ...extend);
 }
