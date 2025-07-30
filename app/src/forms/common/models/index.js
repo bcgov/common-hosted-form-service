@@ -43,4 +43,8 @@ module.exports = {
   UserFormAccess: require('./views/userFormAccess'),
   UserSubmissions: require('./views/userSubmissions'),
   AdminExternalAPI: require('./views/adminExternalAPI'),
+
+  ApprovalStatusCode: require('./tables/approvalStatusCode'),
+  ApprovalStatusHistory: require('./tables/approvalStatusHistory'),
+  CorsDomainRequest: require('./tables/corsDomainRequest'),
 };

@@ -112,4 +112,10 @@ module.exports = Object.freeze({
     APPROVED: 'APPROVED',
     DENIED: 'DENIED',
   },
+  ApprovalStatusCodes: {
+    REQUESTED: 'REQUESTED',
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    DENIED: 'DENIED',
+  },
 });

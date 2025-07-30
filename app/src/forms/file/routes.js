@@ -8,12 +8,17 @@ const controller = require('./controller');
 const { currentFileRecord, hasFileCreate, hasFileDelete, hasFilePermissions } = require('./middleware/filePermissions');
 const fileUpload = require('./middleware/upload').fileUpload;
 const virusScan = require('./middleware/virusScan');
+const { corsMiddleware } = require('../common/middleware/cors');
 
 routes.use(currentUser);
+
+routes.use(corsMiddleware);
 
 routes.param('fileId', validateParameter.validateFileId);
 // Initialize Multer to expect the 'files' field from FormData
 fileUpload.init({ fieldName: 'files' });
+
+routes.options('*', corsMiddleware);
 
 routes.post('/', apiAccess, hasFileCreate, fileUpload.upload, virusScan.scanFile, async (req, res, next) => {
   await controller.create(req, res, next);

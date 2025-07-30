@@ -112,5 +112,13 @@
       "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
       "precisionPoints": 100
     }
+  },
+  "cors": {
+    "allowedOrigins": [
+      "http://localhost:8080",
+      "http://localhost:3000",
+      "http://localhost:4173",
+      "http://localhost:5173"
+    ]
   }
 }
