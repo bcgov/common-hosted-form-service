@@ -1,6 +1,5 @@
 const { Model } = require('objection');
 const { Regex } = require('../../constants');
-const c = require('config');
 const stamps = require('../jsonSchema').stamps;
 
 class CorsDomainRequest extends Model {
