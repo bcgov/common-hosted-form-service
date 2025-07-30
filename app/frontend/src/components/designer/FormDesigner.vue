@@ -541,6 +541,7 @@ defineExpose({ designerOptions, reRenderFormIo });
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <FloatButton
+      v-model:form-schema="formSchema"
       style="right: 0"
       :saved-status="savedStatus"
       :is-form-saved="isFormSaved"
@@ -555,46 +556,14 @@ defineExpose({ designerOptions, reRenderFormIo });
       @undo="onUndoClick"
       @redo="onRedoClick"
       @save="submitFormSchema"
+      @export="exportFormSchema"
+      @import="loadFile"
     />
     <div class="d-flex flex-wrap">
       <!-- page title -->
       <div :lang="locale" class="flex-1-0">
         <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
         <h3 v-if="form.name">{{ form.name }}</h3>
-      </div>
-    </div>
-    <!-- buttons -->
-    <div class="d-flex">
-      <div class="d-flex flex-column ma-2" style="align-items: center">
-        <v-btn
-          class="mx-1"
-          color="primary"
-          :title="$t('trans.formDesigner.downloadJson')"
-          :lang="locale"
-          prepend-icon="mdi:mdi-download"
-          @click="exportFormSchema(form.name, formSchema, form.snake)"
-        >
-          {{ $t('trans.formDesigner.downloadJson') }}
-        </v-btn>
-      </div>
-      <div class="d-flex flex-column ma-2" style="align-items: center">
-        <v-btn
-          class="mx-1"
-          color="primary"
-          :lang="locale"
-          prepend-icon="mdi:mdi-publish"
-          :title="$t('trans.formDesigner.uploadJson')"
-          @click="$refs.uploader.click()"
-        >
-          {{ $t('trans.formDesigner.uploadJson') }}
-          <input
-            ref="uploader"
-            class="d-none"
-            type="file"
-            accept=".json"
-            @change="loadFile"
-          />
-        </v-btn>
       </div>
     </div>
     <div>

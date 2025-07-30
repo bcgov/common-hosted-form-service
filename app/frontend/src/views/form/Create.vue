@@ -126,13 +126,3 @@ formStore.resetForm();
     </v-stepper>
   </BaseSecure>
 </template>
-
-<style lang="scss" scoped>
-::v-deep(.v-stepper),
-::v-deep(.v-sheet.v-stepper),
-::v-deep(.v-stepper__wrapper),
-::v-deep(.v-stepper-window),
-::v-deep(.v-stepper-window-item) {
-  overflow: visible !important;
-}
-</style>

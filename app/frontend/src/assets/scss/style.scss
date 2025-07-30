@@ -613,4 +613,11 @@ a,
   }
 }
 
+.v-window {
+  overflow: visible !important;
+}
+.v-stepper.v-sheet {
+  overflow: visible !important;
+}
+
 @import 'global-status-overlay.scss';

@@ -1,13 +1,21 @@
 <script setup>
-import { computed, onUnmounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useFormStore } from '~/store/form';
+
+const formStore = useFormStore();
 
 const { locale, t } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 
 const properties = defineProps({
+  formSchema: {
+    type: Object,
+    required: true,
+  },
   formId: {
     type: String,
     default: null,
@@ -50,16 +58,18 @@ const properties = defineProps({
   },
 });
 
-const emit = defineEmits(['redo', 'save', 'undo']);
+const { form } = storeToRefs(formStore);
+
+const emit = defineEmits(['redo', 'save', 'undo', 'export', 'import']);
 
 const isAtTopOfPage = ref(true);
 
-// We need to handle scroll through an event listener because computed values do not update on a scroll event
-window.addEventListener('scroll', onEventScroll);
+// // We need to handle scroll through an event listener because computed values do not update on a scroll event
+// window.addEventListener('scroll', onEventScroll);
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', onEventScroll);
-});
+// onUnmounted(() => {
+//   window.removeEventListener('scroll', onEventScroll);
+// });
 
 // This is the icon for the button that lets you scroll to the bottom or top of the page
 const SCROLL_ICON = computed(() => {
@@ -70,12 +80,12 @@ const SCROLL_ICON = computed(() => {
 });
 
 // This is the text for the button that lets you scroll to the bottom or top of the page
-const SCROLL_TEXT = computed(() => {
-  if (!isAtTopOfPage.value) {
-    return t('trans.floatButton.top');
-  }
-  return t('trans.floatButton.bottom');
-});
+// const SCROLL_TEXT = computed(() => {
+//   if (!isAtTopOfPage.value) {
+//     return t('trans.floatButton.top');
+//   }
+//   return t('trans.floatButton.bottom');
+// });
 
 // This is the text for the button that lets you save
 const SAVE_TEXT = computed(() => {
@@ -95,21 +105,21 @@ const isPublishEnabled = computed(() =>
   properties.newVersion ? false : properties.formId && properties.draftId
 );
 
-function onEventScroll() {
-  isAtTopOfPage.value = window.scrollY === 0 ? true : false;
-}
+// function onEventScroll() {
+//   isAtTopOfPage.value = window.scrollY === 0 ? true : false;
+// }
 
 function onClickSave() {
   emit('save');
 }
 
-function onClickScroll() {
-  window.scrollTo({
-    left: 0,
-    top: isAtTopOfPage.value ? document.body.scrollHeight : 0,
-    behavior: 'smooth',
-  });
-}
+// function onClickScroll() {
+//   window.scrollTo({
+//     left: 0,
+//     top: isAtTopOfPage.value ? document.body.scrollHeight : 0,
+//     behavior: 'smooth',
+//   });
+// }
 
 const canPreview = computed(() => {
   return !!(properties.formId && properties.draftId);
@@ -132,25 +142,61 @@ function goToPreview() {
 defineExpose({
   isAtTopOfPage,
   onClickSave,
-  onClickScroll,
-  onEventScroll,
+  //onClickScroll,
+  // onEventScroll,
   SAVE_TEXT,
   SCROLL_ICON,
-  SCROLL_TEXT,
+  //SCROLL_TEXT,
 });
 </script>
 
 <template>
-  <v-toolbar class="sticky-toolbar" color="white" density="comfortable" flat>
+  <v-toolbar
+    class="sticky-toolbar pt-2"
+    color="white"
+    density="comfortable"
+    flat
+  >
     <!-- Scroll Button -->
-    <div class="d-flex flex-column align-center mx-2">
+    <!-- <div class="d-flex flex-column align-center mx-2">
       <span :lang="locale">{{ SCROLL_TEXT }}</span>
       <v-btn density="compact" icon @click="onClickScroll">
         <v-icon :icon="SCROLL_ICON"></v-icon>
       </v-btn>
-    </div>
+    </div> -->
 
     <v-spacer></v-spacer>
+
+    <div class="d-flex flex-column align-center mx-2">
+      <span>{{ $t('trans.formDesigner.downloadJson') }}</span>
+      <v-btn
+        density="compact"
+        icon
+        :lang="locale"
+        @click="$emit('export', form.name, formSchema, form.snake)"
+      >
+        <v-icon icon="mdi:mdi-cloud-download" />
+      </v-btn>
+    </div>
+
+    <div class="d-flex flex-column align-center mx-2">
+      <span> {{ $t('trans.formDesigner.uploadJson') }} </span>
+      <v-btn
+        density="compact"
+        icon
+        :lang="locale"
+        @click="$refs.uploader.click()"
+      >
+        <v-icon icon="mdi:mdi-file-upload" />
+        <input
+          ref="uploader"
+          class="d-none"
+          type="file"
+          accept=".json"
+          @change="$emit('import')"
+        />
+      </v-btn>
+    </div>
 
     <!-- Save Button -->
     <div class="d-flex flex-column align-center mx-2" data-cy="saveButton">
