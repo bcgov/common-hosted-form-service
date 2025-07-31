@@ -158,7 +158,7 @@ defineExpose({
     flat
   >
     <!-- Scroll Button -->
-    <!-- <div class="d-flex flex-column align-center mx-2">
+    <!-- <div class="d-flex flex-column align-center  ">
       <span :lang="locale">{{ SCROLL_TEXT }}</span>
       <v-btn density="compact" icon @click="onClickScroll">
         <v-icon :icon="SCROLL_ICON"></v-icon>
@@ -167,8 +167,7 @@ defineExpose({
 
     <v-spacer></v-spacer>
 
-    <div class="d-flex flex-column align-center mx-2">
-      <span>{{ $t('trans.formDesigner.downloadJson') }}</span>
+    <div class="d-flex flex-column align-center">
       <v-btn
         density="compact"
         icon
@@ -177,10 +176,10 @@ defineExpose({
       >
         <v-icon icon="mdi:mdi-cloud-download" />
       </v-btn>
+      <span>{{ $t('trans.formDesigner.downloadJson') }}</span>
     </div>
 
-    <div class="d-flex flex-column align-center mx-2">
-      <span> {{ $t('trans.formDesigner.uploadJson') }} </span>
+    <div class="d-flex flex-column align-center">
       <v-btn
         density="compact"
         icon
@@ -196,11 +195,13 @@ defineExpose({
           @change="$emit('import')"
         />
       </v-btn>
+      <span> {{ $t('trans.formDesigner.uploadJson') }} </span>
     </div>
 
+    <v-divider vertical inset :thickness="2" />
+
     <!-- Save Button -->
-    <div class="d-flex flex-column align-center mx-2" data-cy="saveButton">
-      <span :lang="locale">{{ SAVE_TEXT }}</span>
+    <div class="d-flex flex-column align-center" data-cy="saveButton">
       <v-btn
         :disabled="!properties.canSave && properties.isFormSaved"
         density="compact"
@@ -210,45 +211,20 @@ defineExpose({
         <v-icon v-if="!properties.isSaving" icon="mdi:mdi-content-save" />
         <v-progress-circular v-else indeterminate size="20" />
       </v-btn>
+      <span :lang="locale">{{ SAVE_TEXT }}</span>
     </div>
 
     <!-- Preview Button -->
     <div
-      class="d-flex flex-column align-center mx-2"
+      class="d-flex flex-column align-center"
       :class="{ 'disabled-router': !canPreview }"
       data-cy="previewRouterLink"
       @click="handlePreviewClick"
     >
-      <span :lang="locale">{{ $t('trans.floatButton.preview') }}</span>
       <v-btn :disabled="!canPreview" density="compact" icon>
         <v-icon icon="mdi:mdi-eye" />
       </v-btn>
-    </div>
-
-    <!-- Undo Button -->
-    <div class="d-flex flex-column align-center mx-2" data-cy="undoButton">
-      <span :lang="locale">{{ $t('trans.floatButton.undo') }}</span>
-      <v-btn
-        :disabled="!properties.undoEnabled"
-        density="compact"
-        icon
-        @click="$emit('undo')"
-      >
-        <v-icon icon="mdi:mdi-undo" />
-      </v-btn>
-    </div>
-
-    <!-- Redo Button -->
-    <div class="d-flex flex-column align-center mx-2" data-cy="redoButton">
-      <span :lang="locale">{{ $t('trans.floatButton.redo') }}</span>
-      <v-btn
-        :disabled="!properties.redoEnabled"
-        density="compact"
-        icon
-        @click="$emit('redo')"
-      >
-        <v-icon icon="mdi:mdi-redo" />
-      </v-btn>
+      <span :lang="locale">{{ $t('trans.floatButton.preview') }}</span>
     </div>
 
     <!-- Manage Button (Router-link) -->
@@ -261,11 +237,10 @@ defineExpose({
       custom
     >
       <div
-        class="d-flex flex-column align-center mx-2"
+        class="d-flex flex-column align-center"
         :class="{ 'disabled-router': !isManageEnabled }"
         data-cy="settingsRouterLink"
       >
-        <span :lang="locale">{{ $t('trans.floatButton.manage') }}</span>
         <v-btn
           :disabled="!isManageEnabled"
           density="compact"
@@ -275,6 +250,7 @@ defineExpose({
         >
           <v-icon icon="mdi:mdi-cog" />
         </v-btn>
+        <span :lang="locale">{{ $t('trans.floatButton.manage') }}</span>
       </div>
     </router-link>
 
@@ -288,12 +264,11 @@ defineExpose({
       custom
     >
       <div
-        class="d-flex flex-column align-center mx-2"
+        class="d-flex flex-column align-center"
         :class="{ 'disabled-router': !isPublishEnabled }"
         data-cy="publishRouterLink"
         role="link"
       >
-        <span :lang="locale">{{ $t('trans.floatButton.publish') }}</span>
         <v-btn
           :disabled="!isPublishEnabled"
           density="compact"
@@ -303,8 +278,37 @@ defineExpose({
         >
           <v-icon icon="mdi:mdi-file-upload" />
         </v-btn>
+        <span :lang="locale">{{ $t('trans.floatButton.publish') }}</span>
       </div>
     </router-link>
+
+    <v-divider vertical inset :thickness="2" />
+
+    <!-- Undo Button -->
+    <div class="d-flex flex-column align-center" data-cy="undoButton">
+      <v-btn
+        :disabled="!properties.undoEnabled"
+        density="compact"
+        icon
+        @click="$emit('undo')"
+      >
+        <v-icon icon="mdi:mdi-undo" />
+      </v-btn>
+      <span :lang="locale">{{ $t('trans.floatButton.undo') }}</span>
+    </div>
+
+    <!-- Redo Button -->
+    <div class="d-flex flex-column align-center" data-cy="redoButton">
+      <v-btn
+        :disabled="!properties.redoEnabled"
+        density="compact"
+        icon
+        @click="$emit('redo')"
+      >
+        <v-icon icon="mdi:mdi-redo" />
+      </v-btn>
+      <span :lang="locale">{{ $t('trans.floatButton.redo') }}</span>
+    </div>
   </v-toolbar>
 </template>
 
