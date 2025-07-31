@@ -357,6 +357,30 @@ export default {
   },
 
   /**
+   * @function checkSubmitterRevision
+   * Can the current user revise this submission?
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
+  checkSubmitterRevision(submissionId) {
+    return appAxios().get(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/submitterRevision`
+    );
+  },
+
+  /**
+   * @function performSubmitterRevision
+   * Submitter change status to REVISING
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
+  performSubmitterRevision(submissionId) {
+    return appAxios().post(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/submitterRevision`
+    );
+  },
+
+  /**
    * @function getSubmissionOptions
    * Get pre-flight details for a form submission
    * @param {string} submissionId The form submission identifier

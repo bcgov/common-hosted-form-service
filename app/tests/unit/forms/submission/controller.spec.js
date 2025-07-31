@@ -406,3 +406,107 @@ describe('restoreMultipleSubmissions', () => {
     expect(service.restoreMultipleSubmissions).toBeCalledWith(req.body.submissionIds, req.currentUser);
   });
 });
+
+describe('submitterRevision', () => {
+  const submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
+  const currentUser = { id: 'user-123', username: 'test@idir' };
+
+  describe('checkSubmitterRevision', () => {
+    const req = {
+      params: { formSubmissionId: submissionId },
+      currentUser: currentUser,
+    };
+
+    it('should call checkSubmitterRevision service and return 200 with canRevise true', async () => {
+      const returnValue = { canRevise: true };
+      service.checkSubmitterRevision = jest.fn().mockReturnValue(returnValue);
+      const { res, next } = getMockRes();
+
+      await controller.checkSubmitterRevision(req, res, next);
+
+      expect(service.checkSubmitterRevision).toBeCalledTimes(1);
+      expect(service.checkSubmitterRevision).toBeCalledWith(submissionId, currentUser);
+      expect(res.status).toBeCalledWith(200);
+      expect(res.json).toBeCalledWith(returnValue);
+      expect(next).not.toBeCalled();
+    });
+
+    it('should call checkSubmitterRevision service and return 200 with canRevise false', async () => {
+      const returnValue = { canRevise: false };
+      service.checkSubmitterRevision = jest.fn().mockReturnValue(returnValue);
+      const { res, next } = getMockRes();
+
+      await controller.checkSubmitterRevision(req, res, next);
+
+      expect(service.checkSubmitterRevision).toBeCalledTimes(1);
+      expect(service.checkSubmitterRevision).toBeCalledWith(submissionId, currentUser);
+      expect(res.status).toBeCalledWith(200);
+      expect(res.json).toBeCalledWith(returnValue);
+      expect(next).not.toBeCalled();
+    });
+
+    it('should handle service error and call next with error', async () => {
+      const error = new Error('Service error');
+      service.checkSubmitterRevision = jest.fn().mockRejectedValue(error);
+      const { res, next } = getMockRes();
+
+      await controller.checkSubmitterRevision(req, res, next);
+
+      expect(service.checkSubmitterRevision).toBeCalledTimes(1);
+      expect(service.checkSubmitterRevision).toBeCalledWith(submissionId, currentUser);
+      expect(res.status).not.toBeCalled();
+      expect(res.json).not.toBeCalled();
+      expect(next).toBeCalledWith(error);
+    });
+  });
+
+  describe('performSubmitterRevision', () => {
+    const req = {
+      params: { formSubmissionId: submissionId },
+      currentUser: currentUser,
+    };
+
+    it('should call performSubmitterRevision service and return 200 with success', async () => {
+      const returnValue = { success: true, message: 'Revision initiated successfully' };
+      service.performSubmitterRevision = jest.fn().mockReturnValue(returnValue);
+      const { res, next } = getMockRes();
+
+      await controller.performSubmitterRevision(req, res, next);
+
+      expect(service.performSubmitterRevision).toBeCalledTimes(1);
+      expect(service.performSubmitterRevision).toBeCalledWith(submissionId, currentUser);
+      expect(res.status).toBeCalledWith(200);
+      expect(res.json).toBeCalledWith(returnValue);
+      expect(next).not.toBeCalled();
+    });
+
+    it('should handle service error and call next with error', async () => {
+      const error = new Error('Service error');
+      service.performSubmitterRevision = jest.fn().mockRejectedValue(error);
+      const { res, next } = getMockRes();
+
+      await controller.performSubmitterRevision(req, res, next);
+
+      expect(service.performSubmitterRevision).toBeCalledTimes(1);
+      expect(service.performSubmitterRevision).toBeCalledWith(submissionId, currentUser);
+      expect(res.status).not.toBeCalled();
+      expect(res.json).not.toBeCalled();
+      expect(next).toBeCalledWith(error);
+    });
+
+    it('should handle bad request by passing error to next', async () => {
+      const error = new Error('Bad request');
+      error.status = 400;
+      service.performSubmitterRevision = jest.fn().mockRejectedValue(error);
+      const { res, next } = getMockRes();
+
+      await controller.performSubmitterRevision(req, res, next);
+
+      expect(service.performSubmitterRevision).toBeCalledTimes(1);
+      expect(service.performSubmitterRevision).toBeCalledWith(submissionId, currentUser);
+      expect(res.status).not.toBeCalled();
+      expect(res.json).not.toBeCalled();
+      expect(next).toBeCalledWith(error);
+    });
+  });
+});

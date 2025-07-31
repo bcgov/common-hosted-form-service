@@ -1248,5 +1248,10 @@
     "shuttingDown": "CHEFS is shutting down.",
     "notReady": "CHEFS cannot connect to all required services.",
     "unableToReachBackend": "Unable to reach backend service."
+  },
+  "submitterRevision": {
+    "recall": "Recall Submission",
+    "recallErrMsg": "An error occurred while recalling this submission",
+    "recallConsErrMsg": "Error recalling submission {submissionId}: {error}"
   }
 }
