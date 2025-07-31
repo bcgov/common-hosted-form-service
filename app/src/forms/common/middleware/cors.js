@@ -4,7 +4,7 @@ const log = require('../../../components/log')(module.filename);
 
 const corsOriginRequestService = require('../../cors/service');
 const { ApprovalStatusCodes } = require('../constants');
-const CorsError = require('../errors/CorsError');
+const CorsError = require('../errors/corsError');
 
 /**
  * Get allowed origins for CORS
