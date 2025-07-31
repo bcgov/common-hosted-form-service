@@ -35,6 +35,7 @@ class Form extends Timestamps(Model) {
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
     const FormMetadata = require('./formMetadata');
+    const CorsOriginRequest = require('./corsOriginRequest');
     return {
       drafts: {
         relation: Model.HasManyRelation,
@@ -83,6 +84,14 @@ class Form extends Timestamps(Model) {
         join: {
           from: 'form.id',
           to: 'form_metadata.formId',
+        },
+      },
+      corsOriginRequests: {
+        relation: Model.HasManyRelation,
+        modelClass: CorsOriginRequest,
+        join: {
+          from: 'form.id',
+          to: 'cors_origin_request.formId',
         },
       },
     };

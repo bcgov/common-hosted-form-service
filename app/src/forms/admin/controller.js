@@ -2,6 +2,7 @@ const Problem = require('api-problem');
 const service = require('./service');
 const formService = require('../form/service');
 const rbacService = require('../rbac/service');
+const corsService = require('../cors/service');
 
 module.exports = {
   //
@@ -164,6 +165,24 @@ module.exports = {
   listFormComponentsProactiveHelp: async (req, res, next) => {
     try {
       const response = await service.listFormComponentsProactiveHelp();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  listCorsOriginRequests: async (req, res, next) => {
+    try {
+      const response = await corsService.listCorsOriginRequests(req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateCorsOriginRequest: async (req, res, next) => {
+    try {
+      const response = await corsService.updateCorsOriginRequest(req.params.corsOriginRequestId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);

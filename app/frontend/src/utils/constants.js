@@ -20,6 +20,8 @@ export const ApiRoutes = Object.freeze({
   EVENT_STREAM_CONFIG: '/eventStreamConfig',
   ENCRYPTION_KEY: '/encryptionKey',
   FORMMODULES: '/form_modules',
+  CORS: '/cors',
+  APPROVAL_STATUS: '/approvalStatus',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */

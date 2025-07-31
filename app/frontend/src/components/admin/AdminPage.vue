@@ -9,6 +9,7 @@ import Dashboard from '~/components/admin/Dashboard.vue';
 import Developer from '~/components/admin/Developer.vue';
 import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
 import AdminFormModulesTable from '~/components/admin/AdminFormModulesTable.vue';
+import AdminCorsApprovalTable from '~/components/admin/AdminCorsApprovalTable.vue';
 
 import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
@@ -52,6 +53,9 @@ watch(isRTL, () => {
     <v-tab value="adminFormModulesTable" :lang="locale">{{
       $t('trans.adminPage.adminFormModulesTable')
     }}</v-tab>
+    <v-tab value="adminCorsApprovalTable" :lang="locale">{{
+      $t('trans.adminPage.adminCorsApprovalTable')
+    }}</v-tab>
   </v-tabs>
 
   <v-card-text>
@@ -76,6 +80,9 @@ watch(isRTL, () => {
       </v-window-item>
       <v-window-item value="adminFormModulesTable">
         <AdminFormModulesTable />
+      </v-window-item>
+      <v-window-item value="adminCorsApprovalTable">
+        <AdminCorsApprovalTable />
       </v-window-item>
     </v-window>
   </v-card-text>

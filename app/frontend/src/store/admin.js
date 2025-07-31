@@ -10,6 +10,7 @@ export const useAdminStore = defineStore('admin', {
     apiKey: undefined,
     form: {},
     formList: [],
+    corsOriginRequestList: [],
     formTotal: undefined,
     roles: [],
     user: {},
@@ -334,6 +335,40 @@ export const useAdminStore = defineStore('admin', {
           consoleError: i18n.t(
             'trans.store.admin.fecthingFormBuilderCompsConsErrMsg',
             { error: error }
+          ),
+        });
+      }
+    },
+
+    async listCorsOriginRequests() {
+      try {
+        this.corsOriginRequestList = [];
+        const response = await adminService.listCorsOriginRequests();
+        this.corsOriginRequestList = response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.listCorsOriginRequestsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.listCorsOriginRequestsConsErrMsg',
+            { error: error }
+          ),
+        });
+      }
+    },
+
+    async updateCorsOriginRequest(data) {
+      try {
+        await adminService.updateCorsOriginRequest(data);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.updatingCorsOriginRequestErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.updatingCorsOriginRequestConsErrMsg',
+            {
+              error: error,
+            }
           ),
         });
       }

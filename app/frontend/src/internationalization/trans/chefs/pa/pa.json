@@ -72,7 +72,8 @@
     "eventSubscription": "د پیښې ګډون",
     "cdogsTemplate": "CDOGS ਟੈਂਪਲੇਟ",
     "externalAPIs": "ਬਾਹਰੀ APIs",
-    "eventStreamConfig": "ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਕੌਂਫਿਗਰੇਸ਼ਨ"
+    "eventStreamConfig": "ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਕੌਂਫਿਗਰੇਸ਼ਨ",
+    "corsOrigin": "CORS ਮੂਲ"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
@@ -402,7 +403,8 @@
     "infoLinks": "ਜਾਣਕਾਰੀ ਲਿੰਕ",
     "metrics": "ਮੈਟ੍ਰਿਕਸ",
     "apis": "APIs",
-    "adminFormModulesTable": "ਫਾਰਮ ਮੋਡਿਊਲ"
+    "adminFormModulesTable": "ਫਾਰਮ ਮੋਡਿਊਲ",
+    "adminCorsApprovalTable": "CORS ਮਨਜ਼ੂਰੀ"
   },
   "adminUsersTable": {
     "search": "ਖੋਜ",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "ਬਾਹਰੀ API ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ।",
       "updateAPIsConsErrMsg": "ਬਾਹਰੀ API ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "getAPICodesErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ।",
-      "getAPICodesConsErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+      "getAPICodesConsErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "listCorsOriginRequestsErrMsg": "CORS ਮੂਲ ਬੇਨਤੀਆਂ ਲੈਣ ਵਿੱਚ ਗਲਤੀ ਆਈ ਹੈ।",
+      "listCorsOriginRequestsConsErrMsg": "CORS ਮੂਲ ਬੇਨਤੀਆਂ ਲੈਣ ਵਿੱਚ ਗਲਤੀ: {error}",
+      "updatingCorsOriginRequestErrMsg": "CORS ਮੂਲ ਬੇਨਤੀ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਗਲਤੀ ਆਈ ਹੈ।",
+      "updatingCorsOriginRequestConsErrMsg": "CORS ਮੂਲ ਬੇਨਤੀ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "ਫਾਰਮ ਮੋਡਿਊਲ ਪ੍ਰਬੰਧਨ"
+  },
+  "adminCorsApprovalTable": {
+    "search": "ਖੋਜੋ",
+    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
+    "noDataText": "ਸਿਸਟਮ ਵਿੱਚ ਕੋਈ CORS ਮੂਲ ਬੇਨਤੀਆਂ ਨਹੀਂ ਹਨ",
+    "formId": "ਫਾਰਮ ਆਈਡੀ",
+    "origin": "ਮੂਲ",
+    "createdAt": "ਬਣਾਉਣ ਦੀ ਤਾਰੀਖ",
+    "statusCode": "ਸਥਿਤੀ ਕੋਡ",
+    "actions": "ਕਾਰਵਾਈਆਂ",
+    "manage": "ਪ੍ਰਬੰਧਨ ਕਰੋ",
+    "delete": "ਹਟਾਓ",
+    "editTitle": "CORS ਮੂਲ ਸੋਧੋ",
+    "edit": "ਸੋਧੋ",
+    "saveItemErrMsg": "CORS ਮੂਲ ਸੰਭਾਲਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ।",
+    "saveItemConsErrMsg": "CORS ਮੂਲ ਸੰਭਾਲਣ ਵਿੱਚ ਗਲਤੀ: {error}",
+    "display": "ਵੇਖਾਓ"
+  },
+  "corsOrigin": {
+    "disclaimer": "ਅਸਵੀਕਰਨ",
+    "infoA": "ਯਕੀਨੀ ਬਣਾਓ ਕਿ CORS ਮੂਲ ਠੀਕ ਤਰ੍ਹਾਂ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ।",
+    "infoB": "CORS (ਕਰਾਸ-ਓਰੀਜਿਨ ਰਿਸੋਰਸ ਸ਼ੇਅਰਿੰਗ) ਇੱਕ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ ਜੋ ਵੈੱਬ ਬਰਾਊਜ਼ਰਾਂ ਵੱਲੋਂ ਲਾਗੂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਤਾਂ ਜੋ ਦੁਸ਼ਟ ਵੈੱਬਸਾਈਟਾਂ ਵੈੱਬ ਪੇਜ ਦੇਣ ਵਾਲੇ ਮੂਲ ਤੋਂ ਵੱਖਰੇ ਮੂਲ ਤੇ ਬੇਨਤੀਆਂ ਨਾ ਭੇਜ ਸਕਣ।",
+    "infoC": "ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਮੂਲ ਦੀ ਵਰਤੋਂ ਲਈ ਲੋੜੀਂਦੀਆਂ ਇਜਾਜ਼ਤਾਂ ਹਨ।",
+    "origin": "ਮੂਲ",
+    "statusCode": "ਸਥਿਤੀ ਕੋਡ",
+    "actions": "ਕਾਰਵਾਈਆਂ",
+    "noData": "ਕੋਈ CORS ਮੂਲ ਬੇਨਤੀ ਨਹੀਂ ਮਿਲੀ",
+    "addNew": "ਨਵਾਂ CORS ਮੂਲ ਸ਼ਾਮਲ ਕਰੋ",
+    "originRequired": "ਮੂਲ ਲਾਜ਼ਮੀ ਹੈ।",
+    "originInvalid": "ਮੂਲ ਗਲਤ ਹੈ।",
+    "saveSuccessMsg": "CORS ਮੂਲ ਸਫਲਤਾਪੂਰਵਕ ਸੰਭਾਲਿਆ ਗਿਆ।",
+    "updateSuccessMsg": "CORS ਮੂਲ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ।",
+    "saveErrorMsg": "CORS ਮੂਲ ਸੰਭਾਲਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ।",
+    "saveErrorConsMsg": "CORS ਮੂਲ ਸੰਭਾਲਣ ਵਿੱਚ ਗਲਤੀ: {error}",
+    "editTitle": "CORS ਮੂਲ ਸੋਧੋ",
+    "addTitle": "CORS ਮੂਲ ਸ਼ਾਮਲ ਕਰੋ",
+    "edit": "ਸੋਧੋ",
+    "delete": "ਹਟਾਓ",
+    "deleteSuccessMsg": "CORS ਮੂਲ ਸਫਲਤਾਪੂਰਵਕ ਹਟਾਇਆ ਗਿਆ।",
+    "deleteErrorMsg": "CORS ਮੂਲ ਹਟਾਉਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ।",
+    "deleteErrorConsMsg": "CORS ਮੂਲ ਹਟਾਉਣ ਵਿੱਚ ਗਲਤੀ: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "ਮਨਜ਼ੂਰੀ ਸਥਿਤੀ ਕੋਡ ਲੈਣ ਵਿੱਚ ਗਲਤੀ ਆਈ ਹੈ।",
+    "getApprovalStatusCodesConsErrMsg": "ਮਨਜ਼ੂਰੀ ਸਥਿਤੀ ਕੋਡ ਲੈਣ ਵਿੱਚ ਗਲਤੀ: {error}"
   }
 }

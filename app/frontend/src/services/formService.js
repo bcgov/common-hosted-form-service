@@ -760,4 +760,14 @@ export default {
       `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/formModuleVersions`
     );
   },
+
+  /**
+   * @function listCorsOriginRequests
+   * List all CORS origin requests for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  listCorsOriginRequests(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/cors`);
+  },
 };

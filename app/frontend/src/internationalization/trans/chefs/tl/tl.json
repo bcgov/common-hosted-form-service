@@ -72,7 +72,8 @@
     "eventSubscription": "Subscription sa Kaganapan",
     "cdogsTemplate": "template ng CDOGS",
     "externalAPIs": "Mga panlabas na API",
-    "eventStreamConfig": "Configuration ng Stream ng Event"
+    "eventStreamConfig": "Configuration ng Stream ng Event",
+    "corsOrigin": "Pinagmulan ng CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "I-upload ang Template ng CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Mga Link ng Impormasyon",
     "metrics": "Mga sukatan",
     "apis": "Mga API",
-    "adminFormModulesTable": "Mga Module ng Form"
+    "adminFormModulesTable": "Mga Module ng Form",
+    "adminCorsApprovalTable": "Pag-apruba ng CORS"
   },
   "adminUsersTable": {
     "search": "Maghanap",
@@ -1054,7 +1056,11 @@
       "updateAPIsErrMsg": "Error sa pag-update ng External API.",
       "updateAPIsConsErrMsg": "Error sa pag-update ng External API: {error}",
       "getAPICodesErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes.",
-      "getAPICodesConsErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes: {error}"
+      "getAPICodesConsErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes: {error}",
+      "listCorsOriginRequestsErrMsg": "Nagkaroon ng error sa pagkuha ng mga kahilingan ng CORS origin.",
+      "listCorsOriginRequestsConsErrMsg": "Error sa pagkuha ng mga kahilingan ng CORS origin: {error}",
+      "updatingCorsOriginRequestErrMsg": "Nagkaroon ng error sa pag-update ng kahilingan ng CORS origin.",
+      "updatingCorsOriginRequestConsErrMsg": "Error sa pag-update ng kahilingan ng CORS origin: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error sa paglo-load ng mga template ng email para sa {formId}: {error}",
@@ -1346,5 +1352,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Pamahalaan ang Module ng Form"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Maghanap",
+    "loadingText": "Naglo-load... Pakihintay",
+    "noDataText": "Walang mga kahilingan ng CORS origin sa sistema",
+    "formId": "Form ID",
+    "origin": "Pinagmulan",
+    "createdAt": "Petsa ng Paglikha",
+    "statusCode": "Status Code",
+    "actions": "Mga Aksyon",
+    "manage": "Pamahalaan",
+    "delete": "Tanggalin",
+    "editTitle": "I-edit ang CORS origin",
+    "edit": "I-edit",
+    "saveItemErrMsg": "Nagkaroon ng error habang sinusubukang i-save ang CORS origin.",
+    "saveItemConsErrMsg": "Error sa pag-save ng CORS origin: {error}",
+    "display": "Ipakita"
+  },
+  "corsOrigin": {
+    "disclaimer": "Paunawa",
+    "infoA": "Siguraduhing tama ang pagkaka-set ng CORS origin.",
+    "infoB": "Ang CORS (Cross-Origin Resource Sharing) ay isang tampok ng seguridad na ipinatutupad ng mga web browser upang pigilan ang mga mapanirang site na magpadala ng mga request sa ibang pinagmulan maliban sa nagbigay ng web page.",
+    "infoC": "Siguraduhing may sapat kang pahintulot para gamitin ang pinagmulan na ito.",
+    "origin": "Pinagmulan",
+    "statusCode": "Status Code",
+    "actions": "Mga Aksyon",
+    "noData": "Walang nahanap na kahilingan ng CORS origin",
+    "addNew": "Magdagdag ng bagong CORS origin",
+    "originRequired": "Kinakailangan ang pinagmulan.",
+    "originInvalid": "Hindi wasto ang pinagmulan.",
+    "saveSuccessMsg": "Matagumpay na na-save ang CORS origin.",
+    "updateSuccessMsg": "Matagumpay na na-update ang CORS origin.",
+    "saveErrorMsg": "Nagkaroon ng error habang sine-save ang CORS origin.",
+    "saveErrorConsMsg": "Error sa pag-save ng CORS origin: {error}",
+    "editTitle": "I-edit ang CORS origin",
+    "addTitle": "Magdagdag ng CORS origin",
+    "edit": "I-edit",
+    "delete": "Tanggalin",
+    "deleteSuccessMsg": "Matagumpay na natanggal ang CORS origin.",
+    "deleteErrorMsg": "Nagkaroon ng error habang tinatanggal ang CORS origin.",
+    "deleteErrorConsMsg": "Error sa pagtanggal ng CORS origin: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Nagkaroon ng error sa pagkuha ng mga approval status code.",
+    "getApprovalStatusCodesConsErrMsg": "Error sa pagkuha ng mga approval status code: {error}"
   }
 }

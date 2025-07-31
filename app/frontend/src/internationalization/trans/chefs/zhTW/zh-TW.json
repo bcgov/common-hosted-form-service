@@ -72,7 +72,8 @@
     "eventSubscription": "活動訂閱",
     "cdogsTemplate": "CDOGS 模板",
     "externalAPIs": "外部API",
-    "eventStreamConfig": "事件流配置"
+    "eventStreamConfig": "事件流配置",
+    "corsOrigin": "CORS來源"
   },
   "documentTemplate": {
     "uploadTemplate": "上傳CDOGS範本",
@@ -402,7 +403,8 @@
     "infoLinks": "信息鏈接",
     "metrics": "指標",
     "apis": "蜜蜂",
-    "adminFormModulesTable": "表單模組"
+    "adminFormModulesTable": "表單模組",
+    "adminCorsApprovalTable": "CORS審核"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "更新外部 API 時發生錯誤。",
       "updateAPIsConsErrMsg": "更新外部 API 時發生錯誤：{error}",
       "getAPICodesErrMsg": "取得外部 API 狀態代碼清單時發生錯誤。",
-      "getAPICodesConsErrMsg": "取得外部 API 狀態代碼清單時發生錯誤：{error}"
+      "getAPICodesConsErrMsg": "取得外部 API 狀態代碼清單時發生錯誤：{error}",
+      "listCorsOriginRequestsErrMsg": "取得CORS來源請求時發生錯誤。",
+      "listCorsOriginRequestsConsErrMsg": "取得CORS來源請求時發生錯誤: {error}",
+      "updatingCorsOriginRequestErrMsg": "更新CORS來源請求時發生錯誤。",
+      "updatingCorsOriginRequestConsErrMsg": "更新CORS來源請求時發生錯誤: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "加載 {formId} 的電子郵件模板時出錯：{error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "管理表單模組"
+  },
+  "adminCorsApprovalTable": {
+    "search": "搜尋",
+    "loadingText": "載入中...請稍候",
+    "noDataText": "系統中沒有CORS來源請求",
+    "formId": "表單ID",
+    "origin": "來源",
+    "createdAt": "建立日期",
+    "statusCode": "狀態碼",
+    "actions": "操作",
+    "manage": "管理",
+    "delete": "刪除",
+    "editTitle": "編輯CORS來源",
+    "edit": "編輯",
+    "saveItemErrMsg": "儲存CORS來源時發生錯誤。",
+    "saveItemConsErrMsg": "儲存CORS來源時發生錯誤: {error}",
+    "display": "顯示"
+  },
+  "corsOrigin": {
+    "disclaimer": "免責聲明",
+    "infoA": "請確保CORS來源設定正確。",
+    "infoB": "CORS（跨來源資源共享）是由網頁瀏覽器實作的一項安全功能，用於防止惡意網站向與提供網頁的來源不同的來源發送請求。",
+    "infoC": "請確保您有使用此來源的必要權限。",
+    "origin": "來源",
+    "statusCode": "狀態碼",
+    "actions": "操作",
+    "noData": "未找到CORS來源請求",
+    "addNew": "新增CORS來源",
+    "originRequired": "來源為必填項。",
+    "originInvalid": "來源無效。",
+    "saveSuccessMsg": "CORS來源已成功儲存。",
+    "updateSuccessMsg": "CORS來源已成功更新。",
+    "saveErrorMsg": "儲存CORS來源時發生錯誤。",
+    "saveErrorConsMsg": "儲存CORS來源時發生錯誤: {error}",
+    "editTitle": "編輯CORS來源",
+    "addTitle": "新增CORS來源",
+    "edit": "編輯",
+    "delete": "刪除",
+    "deleteSuccessMsg": "CORS來源已成功刪除。",
+    "deleteErrorMsg": "刪除CORS來源時發生錯誤。",
+    "deleteErrorConsMsg": "刪除CORS來源時發生錯誤: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "取得審核狀態碼時發生錯誤。",
+    "getApprovalStatusCodesConsErrMsg": "取得審核狀態碼時發生錯誤: {error}"
   }
 }

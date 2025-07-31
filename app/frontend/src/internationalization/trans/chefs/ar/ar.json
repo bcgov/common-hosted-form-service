@@ -72,7 +72,8 @@
     "eventSubscription": "اشتراك الحدث",
     "cdogsTemplate": "قالب CDOGS",
     "externalAPIs": "واجهات برمجة التطبيقات الخارجية",
-    "eventStreamConfig": "تكوين تدفق الحدث"
+    "eventStreamConfig": "تكوين تدفق الحدث",
+    "corsOrigin": "أصل CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "تحميل قالب CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "روابط المعلومات",
     "metrics": "المقاييس",
     "apis": "واجهات برمجة التطبيقات",
-    "adminFormModulesTable": "وحدات النماذج"
+    "adminFormModulesTable": "وحدات النماذج",
+    "adminCorsApprovalTable": "موافقات CORS"
   },
   "adminUsersTable": {
     "search": "يبحث",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية.",
       "updateAPIsConsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية: {error}",
       "getAPICodesErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية.",
-      "getAPICodesConsErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية: {error}"
+      "getAPICodesConsErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية: {error}",
+      "listCorsOriginRequestsErrMsg": "حدث خطأ أثناء جلب طلبات أصل CORS.",
+      "listCorsOriginRequestsConsErrMsg": "خطأ في جلب طلبات أصل CORS: {error}",
+      "updatingCorsOriginRequestErrMsg": "حدث خطأ أثناء تحديث طلب أصل CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "خطأ في تحديث طلب أصل CORS: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطأ في تحميل قوالب البريد الإلكتروني لـ {formId}: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "إدارة وحدة النموذج"
+  },
+  "adminCorsApprovalTable": {
+    "search": "بحث",
+    "loadingText": "جار التحميل... يرجى الانتظار",
+    "noDataText": "لا توجد طلبات أصل CORS في النظام",
+    "formId": "معرف النموذج",
+    "origin": "الأصل",
+    "createdAt": "تاريخ الإنشاء",
+    "statusCode": "رمز الحالة",
+    "actions": "إجراءات",
+    "manage": "إدارة",
+    "delete": "حذف",
+    "editTitle": "تعديل أصل CORS",
+    "edit": "تعديل",
+    "saveItemErrMsg": "حدث خطأ أثناء محاولة حفظ أصل CORS.",
+    "saveItemConsErrMsg": "خطأ في حفظ أصل CORS: {error}",
+    "display": "عرض"
+  },
+  "corsOrigin": {
+    "disclaimer": "تنصل",
+    "infoA": "تأكد من تعيين أصل CORS بشكل صحيح.",
+    "infoB": "CORS (مشاركة الموارد عبر الأصل) هي ميزة أمان تنفذها متصفحات الويب لمنع المواقع الضارة من إجراء طلبات إلى أصل مختلف عن الذي قدم صفحة الويب.",
+    "infoC": "تأكد من أن لديك الأذونات اللازمة لاستخدام هذا الأصل.",
+    "origin": "الأصل",
+    "statusCode": "رمز الحالة",
+    "actions": "إجراءات",
+    "noData": "لم يتم العثور على طلبات أصل CORS",
+    "addNew": "إضافة أصل CORS جديد",
+    "originRequired": "الأصل مطلوب.",
+    "originInvalid": "الأصل غير صالح.",
+    "saveSuccessMsg": "تم حفظ أصل CORS بنجاح.",
+    "updateSuccessMsg": "تم تحديث أصل CORS بنجاح.",
+    "saveErrorMsg": "حدث خطأ أثناء حفظ أصل CORS.",
+    "saveErrorConsMsg": "خطأ في حفظ أصل CORS: {error}",
+    "editTitle": "تعديل أصل CORS",
+    "addTitle": "إضافة أصل CORS",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "deleteSuccessMsg": "تم حذف أصل CORS بنجاح.",
+    "deleteErrorMsg": "حدث خطأ أثناء حذف أصل CORS.",
+    "deleteErrorConsMsg": "خطأ في حذف أصل CORS: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "حدث خطأ أثناء جلب رموز حالة الموافقة.",
+    "getApprovalStatusCodesConsErrMsg": "خطأ في جلب رموز حالة الموافقة: {error}"
   }
 }

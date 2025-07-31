@@ -386,9 +386,10 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .allowGraph('[formMetadata,identityProviders,versions]')
+      .allowGraph('[formMetadata,identityProviders,corsOriginRequests,versions]')
       .withGraphFetched('formMetadata')
       .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('corsOriginRequests(orderDescending)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },

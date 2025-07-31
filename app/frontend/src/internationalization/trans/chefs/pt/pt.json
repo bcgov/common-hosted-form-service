@@ -72,7 +72,8 @@
     "eventSubscription": "Assinatura de evento",
     "cdogsTemplate": "modelo CDOGS",
     "externalAPIs": "APIs externas",
-    "eventStreamConfig": "Configuração do fluxo de eventos"
+    "eventStreamConfig": "Configuração do fluxo de eventos",
+    "corsOrigin": "Origem CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "Carregar modelo CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Links de informações",
     "metrics": "Métricas",
     "apis": "APIs",
-    "adminFormModulesTable": "Módulos de formulário"
+    "adminFormModulesTable": "Módulos de formulário",
+    "adminCorsApprovalTable": "Aprovação de CORS"
   },
   "adminUsersTable": {
     "search": "Procurar",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "Erro ao atualizar API externa.",
       "updateAPIsConsErrMsg": "Erro ao atualizar API externa: {error}",
       "getAPICodesErrMsg": "Erro ao buscar a lista de códigos de status da API externa.",
-      "getAPICodesConsErrMsg": "Erro ao buscar a lista de códigos de status da API externa: {error}"
+      "getAPICodesConsErrMsg": "Erro ao buscar a lista de códigos de status da API externa: {error}",
+      "listCorsOriginRequestsErrMsg": "Erro ao buscar solicitações de origem CORS.",
+      "listCorsOriginRequestsConsErrMsg": "Erro ao buscar solicitações de origem CORS: {error}",
+      "updatingCorsOriginRequestErrMsg": "Erro ao atualizar a solicitação de origem CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "Erro ao atualizar a solicitação de origem CORS: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Erro ao carregar modelos de e-mail para {formId}: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Gerenciar módulo de formulário"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Pesquisar",
+    "loadingText": "Carregando... Por favor, aguarde",
+    "noDataText": "Nenhuma solicitação de origem CORS no sistema",
+    "formId": "ID do formulário",
+    "origin": "Origem",
+    "createdAt": "Data de criação",
+    "statusCode": "Código de status",
+    "actions": "Ações",
+    "manage": "Gerenciar",
+    "delete": "Excluir",
+    "editTitle": "Editar origem CORS",
+    "edit": "Editar",
+    "saveItemErrMsg": "Ocorreu um erro ao salvar a origem CORS.",
+    "saveItemConsErrMsg": "Erro ao salvar a origem CORS: {error}",
+    "display": "Exibir"
+  },
+  "corsOrigin": {
+    "disclaimer": "Aviso",
+    "infoA": "Certifique-se de que a origem CORS está configurada corretamente.",
+    "infoB": "CORS (Compartilhamento de Recursos entre Origens Diferentes) é um recurso de segurança implementado pelos navegadores para impedir que sites maliciosos façam solicitações para uma origem diferente daquela que forneceu a página da web.",
+    "infoC": "Certifique-se de que você tem as permissões necessárias para usar esta origem.",
+    "origin": "Origem",
+    "statusCode": "Código de status",
+    "actions": "Ações",
+    "noData": "Nenhuma solicitação de origem CORS encontrada",
+    "addNew": "Adicionar nova origem CORS",
+    "originRequired": "A origem é obrigatória.",
+    "originInvalid": "A origem é inválida.",
+    "saveSuccessMsg": "Origem CORS salva com sucesso.",
+    "updateSuccessMsg": "Origem CORS atualizada com sucesso.",
+    "saveErrorMsg": "Ocorreu um erro ao salvar a origem CORS.",
+    "saveErrorConsMsg": "Erro ao salvar a origem CORS: {error}",
+    "editTitle": "Editar origem CORS",
+    "addTitle": "Adicionar origem CORS",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "deleteSuccessMsg": "Origem CORS excluída com sucesso.",
+    "deleteErrorMsg": "Ocorreu um erro ao excluir a origem CORS.",
+    "deleteErrorConsMsg": "Erro ao excluir a origem CORS: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Erro ao buscar os códigos de status de aprovação.",
+    "getApprovalStatusCodesConsErrMsg": "Erro ao buscar os códigos de status de aprovação: {error}"
   }
 }

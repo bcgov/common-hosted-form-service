@@ -350,6 +350,25 @@ const validateFormModuleVersionId = async (req, _res, next, formModuleVersionId)
   }
 };
 
+/**
+ * Validates that the :corsOriginRequestId route parameter exists and is a UUID.
+ * This validator requires that the current user is the creator of the CORS Origin request.
+ *
+ * @param {*} _req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} corsOriginRequestId the :corsOriginRequestId value from the route.
+ */
+const validateCorsOriginRequestId = async (_req, _res, next, corsOriginRequestId) => {
+  try {
+    _validateUuid(corsOriginRequestId, 'corsOriginRequestId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   validateComponentId,
   validateDocumentTemplateId,
@@ -365,4 +384,5 @@ module.exports = {
   validateFormEncryptionKeyId,
   validateFormModuleId,
   validateFormModuleVersionId,
+  validateCorsOriginRequestId,
 };

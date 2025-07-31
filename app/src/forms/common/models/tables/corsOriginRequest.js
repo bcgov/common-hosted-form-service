@@ -2,9 +2,9 @@ const { Model } = require('objection');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-class CorsDomainRequest extends Model {
+class CorsOriginRequest extends Model {
   static get tableName() {
-    return 'cors_domain_request';
+    return 'cors_origin_request';
   }
 
   static get relationMappings() {
@@ -24,7 +24,7 @@ class CorsDomainRequest extends Model {
         relation: Model.HasOneRelation,
         modelClass: Form,
         join: {
-          from: 'cors_domain_request.formId',
+          from: 'cors_origin_request.formId',
           to: 'form.id',
         },
       },
@@ -38,14 +38,19 @@ class CorsDomainRequest extends Model {
           query.where('formId', value);
         }
       },
-      filterDomain(query, value) {
+      filterOrigin(query, value) {
         if (value !== undefined) {
-          query.where('domain', value);
+          query.where('origin', value);
         }
       },
       filterStatusCode(query, value) {
         if (value !== undefined) {
           query.where('statusCode', value);
+        }
+      },
+      filterCreatedBy(query, value) {
+        if (value !== undefined) {
+          query.where('createdBy', value);
         }
       },
       orderDescending(builder) {
@@ -57,11 +62,11 @@ class CorsDomainRequest extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['formId', 'domain', 'statusCode'],
+      required: ['formId', 'origin', 'statusCode'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', minLength: 1, pattern: Regex.UUID },
-        domain: { type: 'string', minLength: 1, maxLength: 255 },
+        origin: { type: 'string', minLength: 1, maxLength: 255 },
         statusCode: { type: 'string', minLength: 1 },
         createdBy: stamps.createdBy,
         createdAt: stamps.createdAt,
@@ -71,4 +76,4 @@ class CorsDomainRequest extends Model {
   }
 }
 
-module.exports = CorsDomainRequest;
+module.exports = CorsOriginRequest;

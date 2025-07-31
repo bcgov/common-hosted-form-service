@@ -72,7 +72,8 @@
     "eventSubscription": "Підписка на подію",
     "cdogsTemplate": "Шаблон CDOGS",
     "externalAPIs": "Зовнішні API",
-    "eventStreamConfig": "Конфігурація потоку подій"
+    "eventStreamConfig": "Конфігурація потоку подій",
+    "corsOrigin": "Джерело CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "Завантажити шаблон CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Інформаційні посилання",
     "metrics": "Метрики",
     "apis": "API",
-    "adminFormModulesTable": "Модулі форм"
+    "adminFormModulesTable": "Модулі форм",
+    "adminCorsApprovalTable": "Затвердження CORS"
   },
   "adminUsersTable": {
     "search": "Пошук",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "Помилка оновлення зовнішнього API.",
       "updateAPIsConsErrMsg": "Помилка оновлення зовнішнього API: {error}",
       "getAPICodesErrMsg": "Помилка отримання списку кодів стану зовнішнього API.",
-      "getAPICodesConsErrMsg": "Помилка отримання списку кодів стану зовнішнього API: {error}"
+      "getAPICodesConsErrMsg": "Помилка отримання списку кодів стану зовнішнього API: {error}",
+      "listCorsOriginRequestsErrMsg": "Сталася помилка під час отримання запитів на джерело CORS.",
+      "listCorsOriginRequestsConsErrMsg": "Помилка при отриманні запитів на джерело CORS: {error}",
+      "updatingCorsOriginRequestErrMsg": "Сталася помилка під час оновлення запиту на джерело CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "Помилка при оновленні запиту на джерело CORS: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Помилка завантаження шаблонів електронних листів для {formId}: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Керування модулем форми"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Пошук",
+    "loadingText": "Завантаження... Будь ласка, зачекайте",
+    "noDataText": "У системі немає запитів на джерело CORS",
+    "formId": "ID форми",
+    "origin": "Джерело",
+    "createdAt": "Дата створення",
+    "statusCode": "Код статусу",
+    "actions": "Дії",
+    "manage": "Керувати",
+    "delete": "Видалити",
+    "editTitle": "Редагувати джерело CORS",
+    "edit": "Редагувати",
+    "saveItemErrMsg": "Під час збереження джерела CORS сталася помилка.",
+    "saveItemConsErrMsg": "Помилка при збереженні джерела CORS: {error}",
+    "display": "Показати"
+  },
+  "corsOrigin": {
+    "disclaimer": "Відмова від відповідальності",
+    "infoA": "Переконайтеся, що джерело CORS налаштовано правильно.",
+    "infoB": "CORS (спільне використання ресурсів між джерелами) — це функція безпеки, яку реалізують веб-браузери, щоб запобігти надсиланню шкідливими сайтами запитів до іншого джерела, ніж те, яке надало веб-сторінку.",
+    "infoC": "Переконайтеся, що у вас є необхідні дозволи для використання цього джерела.",
+    "origin": "Джерело",
+    "statusCode": "Код статусу",
+    "actions": "Дії",
+    "noData": "Запитів на джерело CORS не знайдено",
+    "addNew": "Додати нове джерело CORS",
+    "originRequired": "Джерело є обов'язковим.",
+    "originInvalid": "Джерело недійсне.",
+    "saveSuccessMsg": "Джерело CORS успішно збережено.",
+    "updateSuccessMsg": "Джерело CORS успішно оновлено.",
+    "saveErrorMsg": "Під час збереження джерела CORS сталася помилка.",
+    "saveErrorConsMsg": "Помилка при збереженні джерела CORS: {error}",
+    "editTitle": "Редагувати джерело CORS",
+    "addTitle": "Додати джерело CORS",
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "deleteSuccessMsg": "Джерело CORS успішно видалено.",
+    "deleteErrorMsg": "Під час видалення джерела CORS сталася помилка.",
+    "deleteErrorConsMsg": "Помилка при видаленні джерела CORS: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Сталася помилка під час отримання кодів статусу затвердження.",
+    "getApprovalStatusCodesConsErrMsg": "Помилка при отриманні кодів статусу затвердження: {error}"
   }
 }

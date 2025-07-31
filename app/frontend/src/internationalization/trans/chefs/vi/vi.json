@@ -72,7 +72,8 @@
     "eventSubscription": "Đăng ký sự kiện",
     "cdogsTemplate": "mẫu CDOGS",
     "externalAPIs": "API bên ngoài",
-    "eventStreamConfig": "Cấu hình luồng sự kiện"
+    "eventStreamConfig": "Cấu hình luồng sự kiện",
+    "corsOrigin": "Nguồn CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "Tải lên mẫu CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Liên kết thông tin",
     "metrics": "số liệu",
     "apis": "API",
-    "adminFormModulesTable": "Mô-đun biểu mẫu"
+    "adminFormModulesTable": "Mô-đun biểu mẫu",
+    "adminCorsApprovalTable": "Phê duyệt CORS"
   },
   "adminUsersTable": {
     "search": "Tìm kiếm",
@@ -1054,7 +1056,11 @@
       "updateAPIsErrMsg": "Lỗi khi cập nhật API bên ngoài.",
       "updateAPIsConsErrMsg": "Lỗi khi cập nhật API bên ngoài: {error}",
       "getAPICodesErrMsg": "Có lỗi khi tải danh sách Mã trạng thái API bên ngoài.",
-      "getAPICodesConsErrMsg": "Lỗi khi tải danh sách Mã trạng thái API bên ngoài: {error}"
+      "getAPICodesConsErrMsg": "Lỗi khi tải danh sách Mã trạng thái API bên ngoài: {error}",
+      "listCorsOriginRequestsErrMsg": "Đã xảy ra lỗi khi lấy các yêu cầu nguồn CORS.",
+      "listCorsOriginRequestsConsErrMsg": "Lỗi khi lấy các yêu cầu nguồn CORS: {error}",
+      "updatingCorsOriginRequestErrMsg": "Đã xảy ra lỗi khi cập nhật yêu cầu nguồn CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "Lỗi khi cập nhật yêu cầu nguồn CORS: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Lỗi tải mẫu email cho {formId}: {error}",
@@ -1346,5 +1352,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Quản lý mô-đun biểu mẫu"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Tìm kiếm",
+    "loadingText": "Đang tải... Vui lòng chờ",
+    "noDataText": "Không có yêu cầu nguồn CORS nào trong hệ thống",
+    "formId": "ID biểu mẫu",
+    "origin": "Nguồn",
+    "createdAt": "Ngày tạo",
+    "statusCode": "Mã trạng thái",
+    "actions": "Hành động",
+    "manage": "Quản lý",
+    "delete": "Xóa",
+    "editTitle": "Chỉnh sửa nguồn CORS",
+    "edit": "Chỉnh sửa",
+    "saveItemErrMsg": "Đã xảy ra lỗi khi lưu nguồn CORS.",
+    "saveItemConsErrMsg": "Lỗi khi lưu nguồn CORS: {error}",
+    "display": "Hiển thị"
+  },
+  "corsOrigin": {
+    "disclaimer": "Tuyên bố miễn trừ trách nhiệm",
+    "infoA": "Hãy đảm bảo nguồn CORS được thiết lập đúng.",
+    "infoB": "CORS (Chia sẻ tài nguyên giữa các nguồn khác nhau) là một tính năng bảo mật được các trình duyệt web triển khai để ngăn các trang web độc hại gửi yêu cầu đến nguồn khác với nguồn đã cung cấp trang web.",
+    "infoC": "Hãy đảm bảo bạn có quyền cần thiết để sử dụng nguồn này.",
+    "origin": "Nguồn",
+    "statusCode": "Mã trạng thái",
+    "actions": "Hành động",
+    "noData": "Không tìm thấy yêu cầu nguồn CORS nào",
+    "addNew": "Thêm nguồn CORS mới",
+    "originRequired": "Nguồn là bắt buộc.",
+    "originInvalid": "Nguồn không hợp lệ.",
+    "saveSuccessMsg": "Đã lưu nguồn CORS thành công.",
+    "updateSuccessMsg": "Đã cập nhật nguồn CORS thành công.",
+    "saveErrorMsg": "Đã xảy ra lỗi khi lưu nguồn CORS.",
+    "saveErrorConsMsg": "Lỗi khi lưu nguồn CORS: {error}",
+    "editTitle": "Chỉnh sửa nguồn CORS",
+    "addTitle": "Thêm nguồn CORS",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "deleteSuccessMsg": "Đã xóa nguồn CORS thành công.",
+    "deleteErrorMsg": "Đã xảy ra lỗi khi xóa nguồn CORS.",
+    "deleteErrorConsMsg": "Lỗi khi xóa nguồn CORS: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Đã xảy ra lỗi khi lấy mã trạng thái phê duyệt.",
+    "getApprovalStatusCodesConsErrMsg": "Lỗi khi lấy mã trạng thái phê duyệt: {error}"
   }
 }

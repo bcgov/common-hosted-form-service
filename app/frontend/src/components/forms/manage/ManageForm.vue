@@ -13,12 +13,14 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import FormProfile from '~/components/designer/FormProfile.vue';
+import CorsOrigin from '~/components/forms/manage/CorsOrigin.vue';
 
 const { locale } = useI18n({ useScope: 'global' });
 
 const apiKeyPanel = ref(1);
 const cdogsPanel = ref(1);
 const externalAPIsPanel = ref(1);
+const corsOriginRequestsPanel = ref(1);
 const formSettingsDisabled = ref(true);
 const settingsForm = ref(null);
 const settingsPanel = ref(1);
@@ -307,6 +309,24 @@ defineExpose({
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ExternalAPIs />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- CORS Origin Requests -->
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="corsOriginRequestsPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="locale">
+            <strong>{{ $t('trans.manageForm.corsOrigin') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <CorsOrigin />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>

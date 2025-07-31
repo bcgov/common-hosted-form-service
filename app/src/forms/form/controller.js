@@ -4,6 +4,7 @@ const emailService = require('../email/emailService');
 const exportService = require('./exportService');
 const service = require('./service');
 const fileService = require('../file/service');
+const corsService = require('../cors/service');
 
 module.exports = {
   /**
@@ -401,6 +402,15 @@ module.exports = {
   listFormVersionFormModuleVersions: async (req, res, next) => {
     try {
       const response = await service.listFormVersionFormModuleVersions(req.params.formId, req.params.formVersionId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  listCorsOriginRequests: async (req, res, next) => {
+    try {
+      const response = await corsService.getCurrentUserCorsOriginRequests(req.currentUser, req.params);
       res.status(200).json(response);
     } catch (error) {
       next(error);

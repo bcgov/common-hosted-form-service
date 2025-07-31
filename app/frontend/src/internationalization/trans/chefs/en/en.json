@@ -68,7 +68,8 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
-    "eventStreamConfig": "Event Stream Configuration"
+    "eventStreamConfig": "Event Stream Configuration",
+    "corsOrigin": "CORS Origin"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -437,6 +438,23 @@
     "importFormModule": "Import Form Module",
     "manage": "Manage"
   },
+  "adminCorsApprovalTable": {
+    "search": "Search",
+    "loadingText": "Loading... Please wait",
+    "noDataText": "There are no CORS Origin Requests in your system",
+    "formId": "Form ID",
+    "origin": "Origin",
+    "createdAt": "Created At",
+    "statusCode": "Status Code",
+    "actions": "Actions",
+    "manage": "Manage",
+    "delete": "Delete",
+    "editTitle": "Edit CORS Origin",
+    "edit": "Edit",
+    "saveItemErrMsg": "An error occurred while attempting to save the CORS Origin.",
+    "saveItemConsErrMsg": "Error saving CORS Origin: {error}",
+    "display": "Display"
+  },
   "administerForm": {
     "deleted": "DELETED",
     "restoreForm": "Restore this form",
@@ -465,7 +483,8 @@
     "developer": "Developer",
     "infoLinks": "Info Links",
     "metrics": "Metrics",
-    "adminFormModulesTable": "Form Modules"
+    "adminFormModulesTable": "Form Modules",
+    "adminCorsApprovalTable": "CORS Approvals"
   },
   "adminAPIsTable": {
     "search": "Search",
@@ -1120,7 +1139,11 @@
       "updateAPIsErrMsg": "Error updating External API.",
       "updateAPIsConsErrMsg": "Error updating External API: {error}",
       "getAPICodesErrMsg": "Error fetching External API Status Codes list.",
-      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}"
+      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}",
+      "listCorsOriginRequestsErrMsg": "An error occurred while fetching CORS Origin requests.",
+      "listCorsOriginRequestsConsErrMsg": "Error fetching CORS Origin requests: {error}",
+      "updatingCorsOriginRequestErrMsg": "An error occurred while updating CORS Origin request.",
+      "updatingCorsOriginRequestConsErrMsg": "Error updating CORS Origin request: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",
@@ -1362,5 +1385,33 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Manage Form Module"
+  },
+  "corsOrigin": {
+    "disclaimer": "Disclaimer",
+    "infoA": "Ensure that the CORS origin is set correctly.",
+    "infoB": "CORS (Cross-Origin Resource Sharing) is a security feature implemented by web browsers to prevent malicious websites from making requests to a different origin than the one that served the web page.",
+    "infoC": "Ensure you have the permissions necessary to use this origin.",
+    "origin": "Origin",
+    "statusCode": "Status Code",
+    "actions": "Actions",
+    "noData": "No CORS origin requests found",
+    "addNew": "Add New CORS Origin",
+    "originRequired": "Origin is required.",
+    "originInvalid": "Origin is invalid.",
+    "saveSuccessMsg": "CORS origin saved successfully.",
+    "updateSuccessMsg": "CORS origin updated successfully.",
+    "saveErrorMsg": "An error occurred while saving the CORS origin.",
+    "saveErrorConsMsg": "Error saving CORS origin: {error}",
+    "editTitle": "Edit CORS Origin",
+    "addTitle": "Add CORS Origin",
+    "edit":"Edit",
+    "delete": "Delete",
+    "deleteSuccessMsg": "CORS origin deleted successfully.",
+    "deleteErrorMsg": "An error occurred while deleting the CORS origin.",
+    "deleteErrorConsMsg": "Error deleting CORS origin: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "An error occurred while fetching the approval status codes.",
+    "getApprovalStatusCodesConsErrMsg": "Error fetching approval status codes: {error}"
   }
 }

@@ -46,5 +46,5 @@ module.exports = {
 
   ApprovalStatusCode: require('./tables/approvalStatusCode'),
   ApprovalStatusHistory: require('./tables/approvalStatusHistory'),
-  CorsDomainRequest: require('./tables/corsDomainRequest'),
+  CorsOriginRequest: require('./tables/corsOriginRequest'),
 };

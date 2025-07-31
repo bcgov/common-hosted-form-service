@@ -72,7 +72,8 @@
     "eventSubscription": "イベントのサブスクリプション",
     "cdogsTemplate": "CDOGS テンプレート",
     "externalAPIs": "外部API",
-    "eventStreamConfig": "イベントストリームの構成"
+    "eventStreamConfig": "イベントストリームの構成",
+    "corsOrigin": "CORSオリジン"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGSテンプレートをアップロード",
@@ -402,7 +403,8 @@
     "infoLinks": "情報リンク",
     "metrics": "メトリクス",
     "apis": "APIについて",
-    "adminFormModulesTable": "フォームモジュール"
+    "adminFormModulesTable": "フォームモジュール",
+    "adminCorsApprovalTable": "CORS承認"
   },
   "adminUsersTable": {
     "search": "検索",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "外部 API の更新中にエラーが発生しました。",
       "updateAPIsConsErrMsg": "外部 API の更新中にエラーが発生しました: {error}",
       "getAPICodesErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました。",
-      "getAPICodesConsErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました: {error}"
+      "getAPICodesConsErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました: {error}",
+      "listCorsOriginRequestsErrMsg": "CORSオリジンリクエストの取得中にエラーが発生しました。",
+      "listCorsOriginRequestsConsErrMsg": "CORSオリジンリクエストの取得エラー: {error}",
+      "updatingCorsOriginRequestErrMsg": "CORSオリジンリクエストの更新中にエラーが発生しました。",
+      "updatingCorsOriginRequestConsErrMsg": "CORSオリジンリクエストの更新エラー: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} の電子メール テンプレートの読み込みエラー: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "フォームモジュールを管理"
+  },
+  "adminCorsApprovalTable": {
+    "search": "検索",
+    "loadingText": "読み込み中...お待ちください",
+    "noDataText": "システムにCORSオリジンリクエストがありません",
+    "formId": "フォームID",
+    "origin": "オリジン",
+    "createdAt": "作成日",
+    "statusCode": "ステータスコード",
+    "actions": "操作",
+    "manage": "管理",
+    "delete": "削除",
+    "editTitle": "CORSオリジンを編集",
+    "edit": "編集",
+    "saveItemErrMsg": "CORSオリジンの保存中にエラーが発生しました。",
+    "saveItemConsErrMsg": "CORSオリジンの保存エラー: {error}",
+    "display": "表示"
+  },
+  "corsOrigin": {
+    "disclaimer": "免責事項",
+    "infoA": "CORSオリジンが正しく設定されていることを確認してください。",
+    "infoB": "CORS（オリジン間リソース共有）は、ウェブブラウザが実装するセキュリティ機能であり、悪意のあるサイトがウェブページを提供したオリジンとは異なるオリジンにリクエストを送信するのを防ぎます。",
+    "infoC": "このオリジンを使用するために必要な権限があることを確認してください。",
+    "origin": "オリジン",
+    "statusCode": "ステータスコード",
+    "actions": "操作",
+    "noData": "CORSオリジンリクエストが見つかりません",
+    "addNew": "新しいCORSオリジンを追加",
+    "originRequired": "オリジンは必須です。",
+    "originInvalid": "オリジンが無効です。",
+    "saveSuccessMsg": "CORSオリジンが正常に保存されました。",
+    "updateSuccessMsg": "CORSオリジンが正常に更新されました。",
+    "saveErrorMsg": "CORSオリジンの保存中にエラーが発生しました。",
+    "saveErrorConsMsg": "CORSオリジンの保存エラー: {error}",
+    "editTitle": "CORSオリジンを編集",
+    "addTitle": "CORSオリジンを追加",
+    "edit": "編集",
+    "delete": "削除",
+    "deleteSuccessMsg": "CORSオリジンが正常に削除されました。",
+    "deleteErrorMsg": "CORSオリジンの削除中にエラーが発生しました。",
+    "deleteErrorConsMsg": "CORSオリジンの削除エラー: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "承認ステータスコードの取得中にエラーが発生しました。",
+    "getApprovalStatusCodesConsErrMsg": "承認ステータスコードの取得エラー: {error}"
   }
 }

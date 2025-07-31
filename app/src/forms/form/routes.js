@@ -174,4 +174,8 @@ routes.put('/:formId/subscriptions', hasFormPermissions([P.FORM_READ, P.FORM_UPD
   await controller.createOrUpdateSubscriptionDetails(req, res, next);
 });
 
+routes.get('/:formId/cors', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.listCorsOriginRequests(req, res, next);
+});
+
 module.exports = routes;

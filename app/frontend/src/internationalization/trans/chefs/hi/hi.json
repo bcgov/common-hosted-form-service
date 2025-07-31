@@ -72,7 +72,8 @@
     "eventSubscription": "इवेंट सदस्यता",
     "cdogsTemplate": "सीडीओजीएस टेम्पलेट",
     "externalAPIs": "बाह्य एपीआई",
-    "eventStreamConfig": "इवेंट स्ट्रीम कॉन्फ़िगरेशन"
+    "eventStreamConfig": "इवेंट स्ट्रीम कॉन्फ़िगरेशन",
+    "corsOrigin": "CORS स्रोत"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS टेम्पलेट अपलोड करें",
@@ -402,7 +403,8 @@
     "infoLinks": "जानकारी लिंक",
     "metrics": "मेट्रिक्स",
     "apis": "शहद की मक्खी",
-    "adminFormModulesTable": "फॉर्म मॉड्यूल"
+    "adminFormModulesTable": "फॉर्म मॉड्यूल",
+    "adminCorsApprovalTable": "CORS अनुमोदन"
   },
   "adminUsersTable": {
     "search": "खोज",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "बाह्य API अद्यतन करने में त्रुटि.",
       "updateAPIsConsErrMsg": "बाहरी API अपडेट करते समय त्रुटि: {error}",
       "getAPICodesErrMsg": "बाह्य API स्थिति कोड सूची प्राप्त करने में त्रुटि हुई.",
-      "getAPICodesConsErrMsg": "बाहरी API स्थिति कोड सूची प्राप्त करने में त्रुटि: {त्रुटि}"
+      "getAPICodesConsErrMsg": "बाहरी API स्थिति कोड सूची प्राप्त करने में त्रुटि: {त्रुटि}",
+      "listCorsOriginRequestsErrMsg": "CORS स्रोत अनुरोध प्राप्त करने में त्रुटि।",
+      "listCorsOriginRequestsConsErrMsg": "CORS स्रोत अनुरोध प्राप्त करने में त्रुटि: {error}",
+      "updatingCorsOriginRequestErrMsg": "CORS स्रोत अनुरोध अपडेट करने में त्रुटि।",
+      "updatingCorsOriginRequestConsErrMsg": "CORS स्रोत अनुरोध अपडेट करने में त्रुटि: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} के लिए ईमेल टेम्पलेट लोड करने में त्रुटि: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "फॉर्म मॉड्यूल प्रबंधित करें"
+  },
+  "adminCorsApprovalTable": {
+    "search": "खोजें",
+    "loadingText": "लोड हो रहा है... कृपया प्रतीक्षा करें",
+    "noDataText": "सिस्टम में कोई CORS स्रोत अनुरोध नहीं है",
+    "formId": "फॉर्म आईडी",
+    "origin": "स्रोत",
+    "createdAt": "निर्माण तिथि",
+    "statusCode": "स्थिति कोड",
+    "actions": "क्रियाएँ",
+    "manage": "प्रबंधित करें",
+    "delete": "हटाएँ",
+    "editTitle": "CORS स्रोत संपादित करें",
+    "edit": "संपादित करें",
+    "saveItemErrMsg": "CORS स्रोत सहेजते समय एक त्रुटि हुई।",
+    "saveItemConsErrMsg": "CORS स्रोत सहेजने में त्रुटि: {error}",
+    "display": "प्रदर्शित करें"
+  },
+  "corsOrigin": {
+    "disclaimer": "अस्वीकरण",
+    "infoA": "सुनिश्चित करें कि CORS स्रोत सही ढंग से सेट किया गया है।",
+    "infoB": "CORS (क्रॉस-ओरिजिन रिसोर्स शेयरिंग) एक सुरक्षा सुविधा है जिसे वेब ब्राउज़र लागू करते हैं ताकि दुर्भावनापूर्ण साइटें उस स्रोत के अलावा किसी अन्य स्रोत पर अनुरोध न भेज सकें जिसने वेब पेज प्रदान किया है।",
+    "infoC": "सुनिश्चित करें कि आपके पास इस स्रोत का उपयोग करने के लिए आवश्यक अनुमतियाँ हैं।",
+    "origin": "स्रोत",
+    "statusCode": "स्थिति कोड",
+    "actions": "क्रियाएँ",
+    "noData": "कोई CORS स्रोत अनुरोध नहीं मिला",
+    "addNew": "नया CORS स्रोत जोड़ें",
+    "originRequired": "स्रोत आवश्यक है।",
+    "originInvalid": "स्रोत अमान्य है।",
+    "saveSuccessMsg": "CORS स्रोत सफलतापूर्वक सहेजा गया।",
+    "updateSuccessMsg": "CORS स्रोत सफलतापूर्वक अपडेट किया गया।",
+    "saveErrorMsg": "CORS स्रोत सहेजते समय एक त्रुटि हुई।",
+    "saveErrorConsMsg": "CORS स्रोत सहेजने में त्रुटि: {error}",
+    "editTitle": "CORS स्रोत संपादित करें",
+    "addTitle": "CORS स्रोत जोड़ें",
+    "edit": "संपादित करें",
+    "delete": "हटाएँ",
+    "deleteSuccessMsg": "CORS स्रोत सफलतापूर्वक हटाया गया।",
+    "deleteErrorMsg": "CORS स्रोत हटाते समय एक त्रुटि हुई।",
+    "deleteErrorConsMsg": "CORS स्रोत हटाने में त्रुटि: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "अनुमोदन स्थिति कोड प्राप्त करने में त्रुटि।",
+    "getApprovalStatusCodesConsErrMsg": "अनुमोदन स्थिति कोड प्राप्त करने में त्रुटि: {error}"
   }
 }

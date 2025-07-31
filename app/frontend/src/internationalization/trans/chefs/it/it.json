@@ -72,7 +72,8 @@
     "eventSubscription": "Abbonamento all'evento",
     "cdogsTemplate": "Modello CDOGS",
     "externalAPIs": "API esterne",
-    "eventStreamConfig": "Configurazione del flusso di eventi"
+    "eventStreamConfig": "Configurazione del flusso di eventi",
+    "corsOrigin": "Origine CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "Carica template CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Collegamenti informativi",
     "metrics": "Metrica",
     "apis": "API",
-    "adminFormModulesTable": "Moduli di form"
+    "adminFormModulesTable": "Moduli di form",
+    "adminCorsApprovalTable": "Approvazioni CORS"
   },
   "adminUsersTable": {
     "search": "Ricerca",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "Errore durante l'aggiornamento dell'API esterna.",
       "updateAPIsConsErrMsg": "Errore durante l'aggiornamento dell'API esterna: {error}",
       "getAPICodesErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna.",
-      "getAPICodesConsErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna: {error}"
+      "getAPICodesConsErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna: {error}",
+      "listCorsOriginRequestsErrMsg": "Si è verificato un errore durante il recupero delle richieste di origine CORS.",
+      "listCorsOriginRequestsConsErrMsg": "Errore durante il recupero delle richieste di origine CORS: {error}",
+      "updatingCorsOriginRequestErrMsg": "Si è verificato un errore durante l'aggiornamento della richiesta di origine CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "Errore durante l'aggiornamento della richiesta di origine CORS: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Errore durante il caricamento dei modelli di email per {formId}: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Gestisci modulo di form"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Cerca",
+    "loadingText": "Caricamento... Attendere prego",
+    "noDataText": "Nessuna richiesta di origine CORS nel sistema",
+    "formId": "ID modulo",
+    "origin": "Origine",
+    "createdAt": "Data di creazione",
+    "statusCode": "Codice stato",
+    "actions": "Azioni",
+    "manage": "Gestisci",
+    "delete": "Elimina",
+    "editTitle": "Modifica origine CORS",
+    "edit": "Modifica",
+    "saveItemErrMsg": "Si è verificato un errore durante il salvataggio dell'origine CORS.",
+    "saveItemConsErrMsg": "Errore durante il salvataggio dell'origine CORS: {error}",
+    "display": "Visualizza"
+  },
+  "corsOrigin": {
+    "disclaimer": "Disclaimer",
+    "infoA": "Assicurati che l'origine CORS sia impostata correttamente.",
+    "infoB": "CORS (Condivisione delle risorse tra origini diverse) è una funzionalità di sicurezza implementata dai browser web per impedire che siti dannosi effettuino richieste a un'origine diversa da quella che ha fornito la pagina web.",
+    "infoC": "Assicurati di avere le autorizzazioni necessarie per utilizzare questa origine.",
+    "origin": "Origine",
+    "statusCode": "Codice stato",
+    "actions": "Azioni",
+    "noData": "Nessuna richiesta di origine CORS trovata",
+    "addNew": "Aggiungi nuova origine CORS",
+    "originRequired": "L'origine è obbligatoria.",
+    "originInvalid": "L'origine non è valida.",
+    "saveSuccessMsg": "Origine CORS salvata con successo.",
+    "updateSuccessMsg": "Origine CORS aggiornata con successo.",
+    "saveErrorMsg": "Si è verificato un errore durante il salvataggio dell'origine CORS.",
+    "saveErrorConsMsg": "Errore durante il salvataggio dell'origine CORS: {error}",
+    "editTitle": "Modifica origine CORS",
+    "addTitle": "Aggiungi origine CORS",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "deleteSuccessMsg": "Origine CORS eliminata con successo.",
+    "deleteErrorMsg": "Si è verificato un errore durante l'eliminazione dell'origine CORS.",
+    "deleteErrorConsMsg": "Errore durante l'eliminazione dell'origine CORS: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Si è verificato un errore durante il recupero dei codici di stato di approvazione.",
+    "getApprovalStatusCodesConsErrMsg": "Errore durante il recupero dei codici di stato di approvazione: {error}"
   }
 }

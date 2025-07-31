@@ -72,7 +72,8 @@
     "eventSubscription": "Подписка на события",
     "cdogsTemplate": "Шаблон CDOGS",
     "externalAPIs": "Внешние API",
-    "eventStreamConfig": "Конфигурация потока событий"
+    "eventStreamConfig": "Конфигурация потока событий",
+    "corsOrigin": "CORS-источник"
   },
   "documentTemplate": {
     "uploadTemplate": "Загрузить шаблон CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Информационные ссылки",
     "metrics": "Метрики",
     "apis": "API-интерфейсы",
-    "adminFormModulesTable": "Модули форм"
+    "adminFormModulesTable": "Модули форм",
+    "adminCorsApprovalTable": "Одобрение CORS"
   },
   "adminUsersTable": {
     "search": "Поиск",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "Ошибка обновления внешнего API.",
       "updateAPIsConsErrMsg": "Ошибка обновления внешнего API: {error}",
       "getAPICodesErrMsg": "Ошибка при получении списка кодов состояния внешнего API.",
-      "getAPICodesConsErrMsg": "Ошибка при получении списка кодов состояния внешнего API: {error}"
+      "getAPICodesConsErrMsg": "Ошибка при получении списка кодов состояния внешнего API: {error}",
+      "listCorsOriginRequestsErrMsg": "Ошибка при получении запросов CORS-источника.",
+      "listCorsOriginRequestsConsErrMsg": "Ошибка при получении запросов CORS-источника: {error}",
+      "updatingCorsOriginRequestErrMsg": "Ошибка при обновлении запроса CORS-источника.",
+      "updatingCorsOriginRequestConsErrMsg": "Ошибка при обновлении запроса CORS-источника: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Ошибка загрузки шаблонов электронной почты для {formId}: {error}.",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Управление модулем формы"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Поиск",
+    "loadingText": "Загрузка... Пожалуйста, подождите",
+    "noDataText": "В системе нет запросов CORS-источника",
+    "formId": "ID формы",
+    "origin": "Источник",
+    "createdAt": "Дата создания",
+    "statusCode": "Код статуса",
+    "actions": "Действия",
+    "manage": "Управлять",
+    "delete": "Удалить",
+    "editTitle": "Редактировать CORS-источник",
+    "edit": "Редактировать",
+    "saveItemErrMsg": "Произошла ошибка при сохранении CORS-источника.",
+    "saveItemConsErrMsg": "Ошибка при сохранении CORS-источника: {error}",
+    "display": "Показать"
+  },
+  "corsOrigin": {
+    "disclaimer": "Отказ от ответственности",
+    "infoA": "Убедитесь, что CORS-источник настроен правильно.",
+    "infoB": "CORS (совместное использование ресурсов между источниками) — это функция безопасности, реализованная веб-браузерами для предотвращения отправки вредоносными сайтами запросов к источнику, отличному от того, который предоставил веб-страницу.",
+    "infoC": "Убедитесь, что у вас есть необходимые разрешения для использования этого источника.",
+    "origin": "Источник",
+    "statusCode": "Код статуса",
+    "actions": "Действия",
+    "noData": "Запросы CORS-источника не найдены",
+    "addNew": "Добавить новый CORS-источник",
+    "originRequired": "Источник обязателен.",
+    "originInvalid": "Источник недействителен.",
+    "saveSuccessMsg": "CORS-источник успешно сохранён.",
+    "updateSuccessMsg": "CORS-источник успешно обновлён.",
+    "saveErrorMsg": "Произошла ошибка при сохранении CORS-источника.",
+    "saveErrorConsMsg": "Ошибка при сохранении CORS-источника: {error}",
+    "editTitle": "Редактировать CORS-источник",
+    "addTitle": "Добавить CORS-источник",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "deleteSuccessMsg": "CORS-источник успешно удалён.",
+    "deleteErrorMsg": "Произошла ошибка при удалении CORS-источника.",
+    "deleteErrorConsMsg": "Ошибка при удалении CORS-источника: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Ошибка при получении кодов статуса одобрения.",
+    "getApprovalStatusCodesConsErrMsg": "Ошибка при получении кодов статуса одобрения: {error}"
   }
 }

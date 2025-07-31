@@ -17,6 +17,8 @@ const formModule = require('../forms/formModule');
 const utils = require('../forms/utils');
 const index = require('../forms/public');
 const proxy = require('../forms/proxy');
+const cors = require('../forms/cors');
+const approvalStatus = require('../forms/approvalStatus');
 
 const statusService = require('../components/statusService');
 
@@ -33,6 +35,8 @@ const formModulePath = formModule.mount(router);
 const utilsPath = utils.mount(router);
 const publicPath = index.mount(router);
 const proxyPath = proxy.mount(router);
+const corsPath = cors.mount(router);
+const approvalStatusPath = approvalStatus.mount(router);
 
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
@@ -45,7 +49,24 @@ const getSpec = () => {
 // Base v1 Responder
 router.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: ['/docs', '/status', proxyPath, filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath, formModulePath],
+    endpoints: [
+      '/docs',
+      '/status',
+      proxyPath,
+      filePath,
+      formPath,
+      permissionPath,
+      rbacPath,
+      rolePath,
+      submissionPath,
+      userPath,
+      bcaddress,
+      publicPath,
+      utilsPath,
+      formModulePath,
+      corsPath,
+      approvalStatusPath,
+    ],
   });
 });
 

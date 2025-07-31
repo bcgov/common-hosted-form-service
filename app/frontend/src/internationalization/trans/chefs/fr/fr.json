@@ -72,7 +72,8 @@
     "eventSubscription": "Abonnement à l'événement",
     "cdogsTemplate": "Modèle CDOGS",
     "externalAPIs": "API externes",
-    "eventStreamConfig": "Configuration du flux d'événements"
+    "eventStreamConfig": "Configuration du flux d'événements",
+    "corsOrigin": "Origine CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "Télécharger le modèle CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Liens d'information",
     "metrics": "Métrique",
     "apis": "Apis",
-    "adminFormModulesTable": "Modules de formulaire"
+    "adminFormModulesTable": "Modules de formulaire",
+    "adminCorsApprovalTable": "Approbations CORS"
   },
   "adminUsersTable": {
     "search": "Recherche",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "Erreur lors de la mise à jour de l'API externe.",
       "updateAPIsConsErrMsg": "Erreur lors de la mise à jour de l'API externe : {error}",
       "getAPICodesErrMsg": "Erreur lors de la récupération de la liste des codes d'état de l'API externe.",
-      "getAPICodesConsErrMsg": "Erreur lors de la récupération de la liste des codes d'état de l'API externe : {error}"
+      "getAPICodesConsErrMsg": "Erreur lors de la récupération de la liste des codes d'état de l'API externe : {error}",
+      "listCorsOriginRequestsErrMsg": "Erreur lors de la récupération des demandes d'origine CORS.",
+      "listCorsOriginRequestsConsErrMsg": "Erreur lors de la récupération des demandes d'origine CORS : {error}",
+      "updatingCorsOriginRequestErrMsg": "Erreur lors de la mise à jour de la demande d'origine CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "Erreur lors de la mise à jour de la demande d'origine CORS : {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Erreur lors du chargement des modèles d'e-mail pour {formId} : {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Gérer le module de formulaire"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Recherche",
+    "loadingText": "Chargement... Veuillez patienter",
+    "noDataText": "Aucune demande d'origine CORS dans le système",
+    "formId": "ID du formulaire",
+    "origin": "Origine",
+    "createdAt": "Date de création",
+    "statusCode": "Code d'état",
+    "actions": "Actions",
+    "manage": "Gérer",
+    "delete": "Supprimer",
+    "editTitle": "Modifier l'origine CORS",
+    "edit": "Modifier",
+    "saveItemErrMsg": "Une erreur s'est produite lors de l'enregistrement de l'origine CORS.",
+    "saveItemConsErrMsg": "Erreur lors de l'enregistrement de l'origine CORS : {error}",
+    "display": "Afficher"
+  },
+  "corsOrigin": {
+    "disclaimer": "Avertissement",
+    "infoA": "Assurez-vous que l'origine CORS est correctement configurée.",
+    "infoB": "CORS (partage de ressources entre origines multiples) est une fonctionnalité de sécurité mise en œuvre par les navigateurs web pour empêcher les sites malveillants d'effectuer des requêtes vers une origine différente de celle qui a fourni la page web.",
+    "infoC": "Assurez-vous d'avoir les autorisations nécessaires pour utiliser cette origine.",
+    "origin": "Origine",
+    "statusCode": "Code d'état",
+    "actions": "Actions",
+    "noData": "Aucune demande d'origine CORS trouvée",
+    "addNew": "Ajouter une nouvelle origine CORS",
+    "originRequired": "L'origine est requise.",
+    "originInvalid": "L'origine n'est pas valide.",
+    "saveSuccessMsg": "Origine CORS enregistrée avec succès.",
+    "updateSuccessMsg": "Origine CORS mise à jour avec succès.",
+    "saveErrorMsg": "Une erreur s'est produite lors de l'enregistrement de l'origine CORS.",
+    "saveErrorConsMsg": "Erreur lors de l'enregistrement de l'origine CORS : {error}",
+    "editTitle": "Modifier l'origine CORS",
+    "addTitle": "Ajouter une origine CORS",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteSuccessMsg": "Origine CORS supprimée avec succès.",
+    "deleteErrorMsg": "Une erreur s'est produite lors de la suppression de l'origine CORS.",
+    "deleteErrorConsMsg": "Erreur lors de la suppression de l'origine CORS : {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Erreur lors de la récupération des codes d'état d'approbation.",
+    "getApprovalStatusCodesConsErrMsg": "Erreur lors de la récupération des codes d'état d'approbation : {error}"
   }
 }

@@ -72,7 +72,8 @@
     "eventSubscription": "اشتراک رویداد",
     "cdogsTemplate": "قالب CDOGS",
     "externalAPIs": "API های خارجی",
-    "eventStreamConfig": "پیکربندی جریان رویداد"
+    "eventStreamConfig": "پیکربندی جریان رویداد",
+    "corsOrigin": "مبدأ CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "بارگذاری قالب CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "لینک های اطلاعات",
     "metrics": "معیارهای",
     "apis": "API ها",
-    "adminFormModulesTable": "ماژول‌های فرم"
+    "adminFormModulesTable": "ماژول‌های فرم",
+    "adminCorsApprovalTable": "تأییدیه‌های CORS"
   },
   "adminUsersTable": {
     "search": "جستجو کردن",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "خطا در به‌روزرسانی API خارجی.",
       "updateAPIsConsErrMsg": "خطا در به‌روزرسانی API خارجی: {error}",
       "getAPICodesErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی.",
-      "getAPICodesConsErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی: {error}"
+      "getAPICodesConsErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی: {error}",
+      "listCorsOriginRequestsErrMsg": "خطا در دریافت درخواست‌های مبدأ CORS.",
+      "listCorsOriginRequestsConsErrMsg": "خطا در دریافت درخواست‌های مبدأ CORS: {error}",
+      "updatingCorsOriginRequestErrMsg": "خطا در به‌روزرسانی درخواست مبدأ CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "خطا در به‌روزرسانی درخواست مبدأ CORS: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطا در بارگیری الگوهای ایمیل برای {formId}: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "مدیریت ماژول فرم"
+  },
+  "adminCorsApprovalTable": {
+    "search": "جستجو",
+    "loadingText": "در حال بارگذاری... لطفاً صبر کنید",
+    "noDataText": "درخواستی برای مبدأ CORS در سیستم وجود ندارد",
+    "formId": "شناسه فرم",
+    "origin": "مبدأ",
+    "createdAt": "تاریخ ایجاد",
+    "statusCode": "کد وضعیت",
+    "actions": "اقدامات",
+    "manage": "مدیریت",
+    "delete": "حذف",
+    "editTitle": "ویرایش مبدأ CORS",
+    "edit": "ویرایش",
+    "saveItemErrMsg": "خطایی در هنگام ذخیره مبدأ CORS رخ داد.",
+    "saveItemConsErrMsg": "خطا در ذخیره مبدأ CORS: {error}",
+    "display": "نمایش"
+  },
+  "corsOrigin": {
+    "disclaimer": "سلب مسئولیت",
+    "infoA": "اطمینان حاصل کنید که مبدأ CORS به درستی تنظیم شده است.",
+    "infoB": "CORS (اشتراک‌گذاری منابع بین مبدأها) یک ویژگی امنیتی است که توسط مرورگرهای وب پیاده‌سازی می‌شود تا از ارسال درخواست توسط سایت‌های مخرب به مبدأیی متفاوت از مبدأ صفحه وب جلوگیری کند.",
+    "infoC": "اطمینان حاصل کنید که مجوزهای لازم برای استفاده از این مبدأ را دارید.",
+    "origin": "مبدأ",
+    "statusCode": "کد وضعیت",
+    "actions": "اقدامات",
+    "noData": "هیچ درخواست مبدأ CORS یافت نشد",
+    "addNew": "افزودن مبدأ جدید CORS",
+    "originRequired": "مبدأ الزامی است.",
+    "originInvalid": "مبدأ نامعتبر است.",
+    "saveSuccessMsg": "مبدأ CORS با موفقیت ذخیره شد.",
+    "updateSuccessMsg": "مبدأ CORS با موفقیت به‌روزرسانی شد.",
+    "saveErrorMsg": "خطایی در هنگام ذخیره مبدأ CORS رخ داد.",
+    "saveErrorConsMsg": "خطا در ذخیره مبدأ CORS: {error}",
+    "editTitle": "ویرایش مبدأ CORS",
+    "addTitle": "افزودن مبدأ CORS",
+    "edit": "ویرایش",
+    "delete": "حذف",
+    "deleteSuccessMsg": "مبدأ CORS با موفقیت حذف شد.",
+    "deleteErrorMsg": "خطا در حذف مبدأ CORS رخ داد.",
+    "deleteErrorConsMsg": "خطا در حذف مبدأ CORS: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "خطا در دریافت کدهای وضعیت تأیید.",
+    "getApprovalStatusCodesConsErrMsg": "خطا در دریافت کدهای وضعیت تأیید: {error}"
   }
 }

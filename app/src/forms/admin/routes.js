@@ -18,6 +18,7 @@ routes.param('externalApiId', validateParameter.validateExternalAPIId);
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formVersionId', validateParameter.validateFormVersionId);
 routes.param('userId', validateParameter.validateUserId);
+routes.param('corsOriginRequestId', validateParameter.validateCorsOriginRequestId);
 
 //
 // Forms
@@ -101,6 +102,18 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
 
 routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
+});
+
+//
+// CORS Origin Requests
+//
+
+routes.get('/cors', async (req, res, next) => {
+  await controller.listCorsOriginRequests(req, res, next);
+});
+
+routes.put('/cors/:corsOriginRequestId', async (req, res, next) => {
+  await controller.updateCorsOriginRequest(req, res, next);
 });
 
 module.exports = routes;

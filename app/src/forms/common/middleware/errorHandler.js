@@ -1,6 +1,8 @@
 const Problem = require('api-problem');
 const Objection = require('objection');
 
+const CorsError = require('../errors/CorsError');
+
 /**
  * Given a subclass of DBError will create and throw the corresponding Problem.
  * If the error is of an unknown type it will not be converted.
@@ -47,6 +49,11 @@ const _throwObjectionProblem = (error) => {
  */
 module.exports.errorHandler = async (err, _req, res, next) => {
   try {
+    if (err instanceof CorsError) {
+      // Don't reset DB pool, just send error response
+      return res.status(err.status || 403).json({ error: err.message });
+    }
+
     if (err instanceof Objection.DBError || err instanceof Objection.NotFoundError || err instanceof Objection.ValidationError) {
       _throwObjectionProblem(err);
     }

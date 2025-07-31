@@ -72,7 +72,8 @@
     "eventSubscription": "E活动订阅",
     "cdogsTemplate": "CDOGS 模板",
     "externalAPIs": "外部 API",
-    "eventStreamConfig": "事件流配置"
+    "eventStreamConfig": "事件流配置",
+    "corsOrigin": "CORS来源"
   },
   "documentTemplate": {
     "uploadTemplate": "上传CDOGS模板",
@@ -402,7 +403,8 @@
     "infoLinks": "信息链接",
     "metrics": "指标",
     "apis": "蜜蜂",
-    "adminFormModulesTable": "表单模块"
+    "adminFormModulesTable": "表单模块",
+    "adminCorsApprovalTable": "CORS审批"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "更新外部 API 时出错。",
       "updateAPIsConsErrMsg": "更新外部 API 时出错：{error}",
       "getAPICodesErrMsg": "获取外部 API 状态代码列表时出错。",
-      "getAPICodesConsErrMsg": "获取外部 API 状态代码列表时出错：{error}"
+      "getAPICodesConsErrMsg": "获取外部 API 状态代码列表时出错：{error}",
+      "listCorsOriginRequestsErrMsg": "获取CORS来源请求时发生错误。",
+      "listCorsOriginRequestsConsErrMsg": "获取CORS来源请求时出错: {error}",
+      "updatingCorsOriginRequestErrMsg": "更新CORS来源请求时发生错误。",
+      "updatingCorsOriginRequestConsErrMsg": "更新CORS来源请求时出错: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "加载 {formId} 的电子邮件模板时出错：{error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "管理表单模块"
+  },
+  "adminCorsApprovalTable": {
+    "search": "搜索",
+    "loadingText": "加载中...请稍候",
+    "noDataText": "系统中没有CORS来源请求",
+    "formId": "表单ID",
+    "origin": "来源",
+    "createdAt": "创建日期",
+    "statusCode": "状态码",
+    "actions": "操作",
+    "manage": "管理",
+    "delete": "删除",
+    "editTitle": "编辑CORS来源",
+    "edit": "编辑",
+    "saveItemErrMsg": "保存CORS来源时发生错误。",
+    "saveItemConsErrMsg": "保存CORS来源时出错: {error}",
+    "display": "显示"
+  },
+  "corsOrigin": {
+    "disclaimer": "免责声明",
+    "infoA": "请确保CORS来源设置正确。",
+    "infoB": "CORS（跨来源资源共享）是由网页浏览器实现的一项安全功能，用于防止恶意网站向与提供网页的来源不同的来源发送请求。",
+    "infoC": "请确保您有使用此来源的必要权限。",
+    "origin": "来源",
+    "statusCode": "状态码",
+    "actions": "操作",
+    "noData": "未找到CORS来源请求",
+    "addNew": "添加新的CORS来源",
+    "originRequired": "来源为必填项。",
+    "originInvalid": "来源无效。",
+    "saveSuccessMsg": "CORS来源已成功保存。",
+    "updateSuccessMsg": "CORS来源已成功更新。",
+    "saveErrorMsg": "保存CORS来源时发生错误。",
+    "saveErrorConsMsg": "保存CORS来源时出错: {error}",
+    "editTitle": "编辑CORS来源",
+    "addTitle": "添加CORS来源",
+    "edit": "编辑",
+    "delete": "删除",
+    "deleteSuccessMsg": "CORS来源已成功删除。",
+    "deleteErrorMsg": "删除CORS来源时发生错误。",
+    "deleteErrorConsMsg": "删除CORS来源时出错: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "获取审批状态码时发生错误。",
+    "getApprovalStatusCodesConsErrMsg": "获取审批状态码时出错: {error}"
   }
 }

@@ -235,4 +235,27 @@ export default {
       `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`
     );
   },
+
+  /**
+   * listCorsOriginRequests
+   * @function listCorsOriginRequests
+   * Reads all CORS Origin requests
+   * @returns {Promise} An axios response
+   */
+  async listCorsOriginRequests(params) {
+    return appAxios().get(`${ApiRoutes.ADMIN}/cors`, {
+      params: params,
+    });
+  },
+
+  /**
+   * updateCorsOriginRequest
+   * @function updateCorsOriginRequest
+   * Update a CORS Origin request
+   * @param {Object} obj An object containing the CORS Origin request data
+   * @returns {Promise} An axios response
+   */
+  async updateCorsOriginRequest(obj) {
+    return appAxios().put(`${ApiRoutes.ADMIN}/cors/${obj.id}`, obj);
+  },
 };

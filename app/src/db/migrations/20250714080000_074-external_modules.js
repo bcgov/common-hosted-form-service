@@ -220,7 +220,7 @@ exports.up = function (knex) {
         // The modules that a form version is using
         knex.schema.createTable('approval_status_history', (table) => {
           table.uuid('id').primary();
-          table.string('entityType', 255).notNullable(); // e.g., 'cors_domain_request'
+          table.string('entityType', 255).notNullable(); // e.g., 'cors_origin_request'
           table.uuid('entityId').notNullable().index();
           table.string('statusCode').notNullable().references('code').inTable('approval_status_code').onUpdate('CASCADE').onDelete('CASCADE');
           table.string('comment');
@@ -228,10 +228,10 @@ exports.up = function (knex) {
         })
       )
       .then(() =>
-        knex.schema.createTable('cors_domain_request', (table) => {
+        knex.schema.createTable('cors_origin_request', (table) => {
           table.uuid('id').primary();
           table.uuid('formId').notNullable().index().references('id').inTable('form').onUpdate('CASCADE').onDelete('CASCADE');
-          table.string('domain', 255).notNullable();
+          table.string('origin', 255).notNullable();
           table.string('statusCode').notNullable().references('code').inTable('approval_status_code').onUpdate('CASCADE').onDelete('CASCADE');
           table.string('createdBy').defaultTo('public');
           table.timestamp('createdAt', { useTz: true }).defaultTo(knex.fn.now());
@@ -242,7 +242,7 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return Promise.resolve()
-    .then(() => knex.schema.dropTableIfExists('cors_domain_request'))
+    .then(() => knex.schema.dropTableIfExists('cors_origin_request'))
     .then(() => knex.schema.dropTableIfExists('approval_status_history'))
     .then(() => knex.schema.dropTableIfExists('approval_status_code'))
     .then(() => knex.schema.dropTableIfExists('form_version_form_module_version'))

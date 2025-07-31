@@ -9,3 +9,5 @@ export { default as utilsService } from './utilsService';
 export { default as encryptionKeyService } from './encryptionKeyService';
 export { default as eventStreamConfigService } from './eventStreamConfigService';
 export { default as formModuleService } from './formModuleService';
+export { default as approvalStatusService } from './approvalStatusService';
+export { default as corsOriginRequestService } from './corsOriginRequestService';

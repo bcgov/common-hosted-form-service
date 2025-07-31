@@ -72,7 +72,8 @@
     "eventSubscription": "Suscripción a eventos",
     "cdogsTemplate": "Plantilla CDDOGS",
     "externalAPIs": "API externas",
-    "eventStreamConfig": "Configuración de la secuencia de eventos"
+    "eventStreamConfig": "Configuración de la secuencia de eventos",
+    "corsOrigin": "Origen CORS"
   },
   "documentTemplate": {
     "uploadTemplate": "Subir plantilla de CDOGS",
@@ -402,7 +403,8 @@
     "infoLinks": "Enlaces de información",
     "metrics": "Métrica",
     "apis": "API",
-    "adminFormModulesTable": "Módulos de formulario"
+    "adminFormModulesTable": "Módulos de formulario",
+    "adminCorsApprovalTable": "Aprobaciones CORS"
   },
   "adminUsersTable": {
     "search": "Buscar",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "Error al actualizar la API externa.",
       "updateAPIsConsErrMsg": "Error al actualizar la API externa: {error}",
       "getAPICodesErrMsg": "Error al obtener la lista de códigos de estado de API externas.",
-      "getAPICodesConsErrMsg": "Error al obtener la lista de códigos de estado de API externas: {error}"
+      "getAPICodesConsErrMsg": "Error al obtener la lista de códigos de estado de API externas: {error}",
+      "listCorsOriginRequestsErrMsg": "Ocurrió un error al obtener las solicitudes de origen CORS.",
+      "listCorsOriginRequestsConsErrMsg": "Error al obtener las solicitudes de origen CORS: {error}",
+      "updatingCorsOriginRequestErrMsg": "Ocurrió un error al actualizar la solicitud de origen CORS.",
+      "updatingCorsOriginRequestConsErrMsg": "Error al actualizar la solicitud de origen CORS: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error al cargar plantillas de correo electrónico para {formId}: {error}",

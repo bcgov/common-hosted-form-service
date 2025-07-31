@@ -72,7 +72,8 @@
     "eventSubscription": "Ereignisabonnement",
     "cdogsTemplate": "CDOGS-Vorlage",
     "externalAPIs": "Externe APIs",
-    "eventStreamConfig": "Event Stream-Konfiguration"
+    "eventStreamConfig": "Event Stream-Konfiguration",
+    "corsOrigin": "CORS-Ursprung"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS-Vorlage hochladen",
@@ -402,7 +403,8 @@
     "infoLinks": "Info-Links",
     "metrics": "Metriken",
     "apis": "APIs",
-    "adminFormModulesTable": "Formularmodule"
+    "adminFormModulesTable": "Formularmodule",
+    "adminCorsApprovalTable": "CORS-Genehmigungen"
   },
   "adminUsersTable": {
     "search": "Suchen",
@@ -1056,7 +1058,11 @@
       "updateAPIsErrMsg": "Fehler beim Aktualisieren der externen API.",
       "updateAPIsConsErrMsg": "Fehler beim Aktualisieren der externen API: {error}",
       "getAPICodesErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes.",
-      "getAPICodesConsErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes: {error}"
+      "getAPICodesConsErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes: {error}",
+      "listCorsOriginRequestsErrMsg": "Fehler beim Abrufen der CORS-Ursprungsanfragen.",
+      "listCorsOriginRequestsConsErrMsg": "Fehler beim Abrufen der CORS-Ursprungsanfragen: {error}",
+      "updatingCorsOriginRequestErrMsg": "Fehler beim Aktualisieren der CORS-Ursprungsanfrage.",
+      "updatingCorsOriginRequestConsErrMsg": "Fehler beim Aktualisieren der CORS-Ursprungsanfrage: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Fehler beim Laden der E-Mail-Vorlagen für {formId}: {error}",
@@ -1342,5 +1348,50 @@
   },
   "formModuleManageLayout": {
     "manageFormModule": "Formularmodul verwalten"
+  },
+  "adminCorsApprovalTable": {
+    "search": "Suche",
+    "loadingText": "Laden... Bitte warten",
+    "noDataText": "Keine CORS-Ursprungsanfragen im System",
+    "formId": "Formular-ID",
+    "origin": "Ursprung",
+    "createdAt": "Erstellungsdatum",
+    "statusCode": "Statuscode",
+    "actions": "Aktionen",
+    "manage": "Verwalten",
+    "delete": "Löschen",
+    "editTitle": "CORS-Ursprung bearbeiten",
+    "edit": "Bearbeiten",
+    "saveItemErrMsg": "Beim Speichern des CORS-Ursprungs ist ein Fehler aufgetreten.",
+    "saveItemConsErrMsg": "Fehler beim Speichern des CORS-Ursprungs: {error}",
+    "display": "Anzeigen"
+  },
+  "corsOrigin": {
+    "disclaimer": "Haftungsausschluss",
+    "infoA": "Stellen Sie sicher, dass der CORS-Ursprung korrekt festgelegt ist.",
+    "infoB": "CORS (Cross-Origin Resource Sharing) ist eine Sicherheitsfunktion, die von Webbrowsern implementiert wird, um zu verhindern, dass bösartige Websites Anfragen an einen anderen Ursprung als den, der die Webseite bereitgestellt hat, stellen.",
+    "infoC": "Stellen Sie sicher, dass Sie die erforderlichen Berechtigungen für die Verwendung dieses Ursprungs haben.",
+    "origin": "Ursprung",
+    "statusCode": "Statuscode",
+    "actions": "Aktionen",
+    "noData": "Keine CORS-Ursprungsanfragen gefunden",
+    "addNew": "Neuen CORS-Ursprung hinzufügen",
+    "originRequired": "Ursprung ist erforderlich.",
+    "originInvalid": "Ursprung ist ungültig.",
+    "saveSuccessMsg": "CORS-Ursprung erfolgreich gespeichert.",
+    "updateSuccessMsg": "CORS-Ursprung erfolgreich aktualisiert.",
+    "saveErrorMsg": "Fehler beim Speichern des CORS-Ursprungs.",
+    "saveErrorConsMsg": "Fehler beim Speichern des CORS-Ursprungs: {error}",
+    "editTitle": "CORS-Ursprung bearbeiten",
+    "addTitle": "CORS-Ursprung hinzufügen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "deleteSuccessMsg": "CORS-Ursprung erfolgreich gelöscht.",
+    "deleteErrorMsg": "Fehler beim Löschen des CORS-Ursprungs.",
+    "deleteErrorConsMsg": "Fehler beim Löschen des CORS-Ursprungs: {error}"
+  },
+  "approvalStatus": {
+    "getApprovalStatusCodesErrMsg": "Fehler beim Abrufen der Genehmigungsstatuscodes.",
+    "getApprovalStatusCodesConsErrMsg": "Fehler beim Abrufen der Genehmigungsstatuscodes: {error}"
   }
 }
