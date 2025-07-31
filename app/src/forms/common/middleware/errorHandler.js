@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const Objection = require('objection');
 
-const CorsError = require('../errors/CorsError');
+const CorsError = require('../errors/corsError');
 
 /**
  * Given a subclass of DBError will create and throw the corresponding Problem.
