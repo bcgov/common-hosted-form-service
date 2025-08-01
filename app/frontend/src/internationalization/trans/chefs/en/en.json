@@ -1231,11 +1231,12 @@
     "warning": "Warning"
   },
   "statusOverlay": {
-    "chefsUnavailableBoilerplate": "The Common Hosted Forms Service is temporarily unavailable. Please wait a few moments and try again, or contact your team's IT support or system administrator if the problem persists.",
-    "moreInfo": "Show More Info...",
-    "lessInfo": "Show Less Info...",
-    "moreInfoIntro": "This issue may be caused by interruption of one or more of the following services:",
-    "moreInfoOutro": "We are actively working to restore access. If you need further assistance, please have your IT support/System Admin contact us at {linkOne} or {linkTwo}.",
+    "chefsUnavailableHeader": "This service is temporarily unavailable.",
+    "chefsUnavailableBoilerplate": "Please try again shortly. If the issue continues, contact your team's IT support or system administrator.",
+    "moreInfo": "More Info",
+    "lessInfo": "Back",
+    "moreInfoIntro": "This issue is due to interruptions in one or more connected services:",
+    "moreInfoOutro": "We're working to restore access. If the issue continues, your IT support or system admin can reach out to us via the {linkOne} or {linkTwo}.",
     "name": "Service",
     "status": "Status",
     "connected": "Connected",
