@@ -333,6 +333,15 @@ export default class Component extends (FieldComponent as any) {
     return result;
   }
 
+  isEmpty() {
+    //This is in case a form designer makes the map read only and accidentally sets it as required
+    if (!this.component.allowSubmissions) return false;
+    return (
+      this.getValue().features.length === 0 ||
+      this.getValue().features.length === this.defaultValue?.features.length
+    );
+  }
+
   saveBaseLayer(layerName) {
     const currentValue = this.getValue() ?? {
       features: [],
