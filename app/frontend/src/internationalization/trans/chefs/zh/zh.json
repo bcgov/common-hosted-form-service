@@ -1227,5 +1227,23 @@
   "canShareDraft": {
     "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
     "shareDraftMessage": "仅与表单团队成员共享草稿"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "此服务暂时不可用。",
+    "chefsUnavailableBoilerplate": "请稍后再试。如果问题持续存在，请联系您团队的 IT 支持或系统管理员。",
+    "moreInfo": "更多信息",
+    "lessInfo": "返回",
+    "moreInfoIntro": "此问题是由于一个或多个连接服务的中断造成的：",
+    "moreInfoOutro": "我们正在努力恢复访问权限。如果问题持续存在，您的 IT 支持或系统管理员可以通过 {linkOne} 或 {linkTwo} 联系我们。",
+    "name": "服务",
+    "status": "状态",
+    "connected": "已连接",
+    "disconnected": "已断开",
+    "msTeamsChannel": "MS Teams 频道",
+    "rocketChatChannel": "Rocket.Chat 频道",
+    "defaultStatusMessage": "服务暂时不可用 (503)。请稍后再试。",
+    "shuttingDown": "CHEFS 正在关闭。",
+    "notReady": "CHEFS 无法连接到所有必需的服务。",
+    "unableToReachBackend": "无法访问后端服务。"
   }
 }

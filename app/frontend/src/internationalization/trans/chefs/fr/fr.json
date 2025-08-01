@@ -1227,5 +1227,23 @@
   "canShareDraft": {
     "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
     "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "Ce service est temporairement indisponible.",
+    "chefsUnavailableBoilerplate": "Veuillez réessayer sous peu. Si le problème persiste, contactez le support informatique de votre équipe ou l'administrateur système.",
+    "moreInfo": "Plus d'informations",
+    "lessInfo": "Retour",
+    "moreInfoIntro": "Ce problème est dû à des interruptions dans un ou plusieurs services connectés :",
+    "moreInfoOutro": "Nous travaillons à rétablir l'accès. Si le problème persiste, votre support informatique ou administrateur système peut nous contacter via {linkOne} ou {linkTwo}.",
+    "name": "Service",
+    "status": "Statut",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "msTeamsChannel": "Canal MS Teams",
+    "rocketChatChannel": "Canal Rocket.Chat",
+    "defaultStatusMessage": "Le service est temporairement indisponible (503). Veuillez réessayer plus tard.",
+    "shuttingDown": "CHEFS s'arrête.",
+    "notReady": "CHEFS ne peut pas se connecter à tous les services requis.",
+    "unableToReachBackend": "Impossible d'atteindre le service backend."
   }
 }

@@ -1227,5 +1227,23 @@
   "canShareDraft": {
     "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
     "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "Questo servizio non è temporaneamente disponibile.",
+    "chefsUnavailableBoilerplate": "Riprova tra poco. Se il problema persiste, contatta il supporto IT del tuo team o l'amministratore di sistema.",
+    "moreInfo": "Maggiori informazioni",
+    "lessInfo": "Indietro",
+    "moreInfoIntro": "Questo problema è dovuto a interruzioni in uno o più servizi connessi:",
+    "moreInfoOutro": "Stiamo lavorando per ripristinare l'accesso. Se il problema persiste, il tuo supporto IT o amministratore di sistema può contattarci tramite {linkOne} o {linkTwo}.",
+    "name": "Servizio",
+    "status": "Stato",
+    "connected": "Connesso",
+    "disconnected": "Disconnesso",
+    "msTeamsChannel": "Canale MS Teams",
+    "rocketChatChannel": "Canale Rocket.Chat",
+    "defaultStatusMessage": "Il servizio non è temporaneamente disponibile (503). Riprova più tardi.",
+    "shuttingDown": "CHEFS si sta spegnendo.",
+    "notReady": "CHEFS non può connettersi a tutti i servizi richiesti.",
+    "unableToReachBackend": "Impossibile raggiungere il servizio backend."
   }
 }
