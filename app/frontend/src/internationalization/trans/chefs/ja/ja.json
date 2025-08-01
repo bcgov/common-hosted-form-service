@@ -116,6 +116,7 @@
     "loginRequired": "ログインが必要です",
     "canSaveAndEditDraftLabel": "提出者は<strong>下書きを保存および編集</strong>できます",
     "canUpdateStatusAsReviewer": "レビュー担当者はこのフォームの<strong>ステータス (つまり、送信済み、割り当て済み、完了) を更新</strong>できます。",
+    "enableSubmitterRevision": "提出者は<strong>自分の提出物を修正</strong>して再提出できます",
     "submitterCanCopyExistingSubmissn": "提出者は<strong>既存の提出物をコピー</strong>できます",
     "submissionConfirmationToolTip": "このオプションを選択すると、このフォームを送信したユーザーが送信に成功したときに表示される内容が制御されます。<br />チェックを入れると表示されます",
     "emailNotificatnToTeam": "チームに通知メールを送信する",

@@ -4,6 +4,7 @@ import { computed, inject, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
+import SubmitterRevision from '~/components/forms/submission/SubmitterRevision.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
 import { FormPermissions } from '~/utils/constants';
 
@@ -148,7 +149,8 @@ watch(
           }}</span>
         </v-tooltip>
       </span>
-
+      <!-- Submitter Revision -->
+      <SubmitterRevision :submission-id="submissionId" class="ml-2" />
       <!-- Wide layout button -->
       <span>
         <v-tooltip location="bottom">
@@ -168,7 +170,7 @@ watch(
           <span>{{ $t('trans.formViewerActions.wideLayout') }}</span>
         </v-tooltip>
       </span>
-
+      <!-- Print options -->
       <span class="ml-2 d-print-none">
         <PrintOptions
           :submission="submission"
@@ -220,7 +222,7 @@ watch(
         </router-link>
       </span>
 
-      <!-- Go to draft edit -->
+      <!-- Manage submission users -->
       <span v-if="submissionId && draftEnabled && !publicForm" class="ml-2">
         <ManageSubmissionUsers
           :is-draft="isDraft"

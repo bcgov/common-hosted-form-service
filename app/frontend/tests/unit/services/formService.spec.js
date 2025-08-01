@@ -455,6 +455,71 @@ describe('Form Service', () => {
     });
   });
 
+  describe('GET submission/{submissionId}/submitterRevision', () => {
+    const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/submitterRevision`;
+
+    it('calls check submitter revision endpoint', async () => {
+      const responseData = true;
+      mockAxios.onGet(endpoint).reply(200, responseData);
+
+      const result = await formService.checkSubmitterRevision(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(responseData);
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+
+    it('handles false response when revision not allowed', async () => {
+      const responseData = false;
+      mockAxios.onGet(endpoint).reply(200, responseData);
+
+      const result = await formService.checkSubmitterRevision(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(responseData);
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('POST submission/{submissionId}/submitterRevision', () => {
+    const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/submitterRevision`;
+
+    it('calls perform submitter revision endpoint successfully', async () => {
+      const responseData = { success: true, message: 'Revision initiated' };
+      mockAxios.onPost(endpoint).reply(200, responseData);
+
+      const result = await formService.performSubmitterRevision(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(responseData);
+      expect(result.status).toBe(200);
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+
+    it('handles 400 response when revision not allowed', async () => {
+      mockAxios
+        .onPost(endpoint)
+        .reply(400, { message: 'Revision not allowed' });
+
+      try {
+        await formService.performSubmitterRevision(zeroUuid);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error.response.status).toBe(400);
+      }
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+
+    it('handles 403 response when user lacks permission', async () => {
+      mockAxios.onPost(endpoint).reply(403, { message: 'Permission denied' });
+
+      try {
+        await formService.performSubmitterRevision(zeroUuid);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error.response.status).toBe(403);
+      }
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
   describe('submissions/${submissionId}/${formId}/submissions', () => {
     let submissionId = 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745';
     let formId = 'd15a8c14-c78a-42fa-8afd-b3f1fed59159';

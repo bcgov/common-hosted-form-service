@@ -116,6 +116,7 @@
     "loginRequired": "Kailangang mag-login",
     "canSaveAndEditDraftLabel": "Maaaring <strong>Mag-save at Mag-edit ng mga Draft</strong> ang mga nagsumite",
     "canUpdateStatusAsReviewer": "Maaaring <strong>I-update ng mga tagasuri ang Katayuan</strong> ng form na ito (ibig sabihin, Naisumite, Nakatalaga, Nakumpleto)",
+    "enableSubmitterRevision": "Maaaring <strong>I-revise ng mga nagsumite ang kanilang sariling mga pagsusumite</strong> at muling magsumite",
     "submitterCanCopyExistingSubmissn": "Maaaring <strong>Kopyahin ng mga nagsumite ang isang umiiral nang pagsusumite</strong>",
     "submissionConfirmationToolTip": "Kinokontrol ng pagpili sa opsyong ito kung ano ang makikita ng nagsusumite ng user ng form na ito sa matagumpay na pagsusumite.<br /> Kung naka-check, ito ay ipapakita",
     "emailNotificatnToTeam": "Padalhan ang aking koponan ng email ng notification",

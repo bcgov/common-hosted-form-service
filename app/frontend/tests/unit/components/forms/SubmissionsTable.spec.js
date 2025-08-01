@@ -1176,6 +1176,310 @@ describe('SubmissionsTable.vue', () => {
 
     expect(assigneeHeader).toBeFalsy();
   });
+
+  it('BASE_HEADERS includes assignee column when enableSubmitterRevision is true and showAssigneeInSubmissionsTable is true', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      // Set form with enableSubmitterRevision enabled and showAssigneeInSubmissionsTable enabled
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: false,
+        enableSubmitterRevision: true,
+        showAssigneeInSubmissionsTable: true,
+        schedule: { enabled: false },
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Should include assignee column when enableSubmitterRevision is true
+    const headers = wrapper.vm.BASE_HEADERS;
+    const assigneeHeader = headers.find((h) => h.key === 'assignee');
+
+    expect(assigneeHeader).toBeTruthy();
+    expect(assigneeHeader.title).toBe('trans.submissionsTable.assignee');
+    expect(assigneeHeader.align).toBe('start');
+    expect(assigneeHeader.key).toBe('assignee');
+  });
+
+  it('BASE_HEADERS does not include assignee column when enableSubmitterRevision is false and enableStatusUpdates is false', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      // Set form with both enableSubmitterRevision and enableStatusUpdates disabled
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: false,
+        enableSubmitterRevision: false,
+        showAssigneeInSubmissionsTable: true,
+        schedule: { enabled: false },
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Should NOT include assignee column when both are false
+    const headers = wrapper.vm.BASE_HEADERS;
+    const assigneeHeader = headers.find((h) => h.key === 'assignee');
+
+    expect(assigneeHeader).toBeFalsy();
+  });
+
+  it('BASE_HEADERS includes assignee column when both enableStatusUpdates and enableSubmitterRevision are true', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      // Set form with both enableStatusUpdates and enableSubmitterRevision enabled
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        enableSubmitterRevision: true,
+        showAssigneeInSubmissionsTable: true,
+        schedule: { enabled: false },
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Should include assignee column when both are true
+    const headers = wrapper.vm.BASE_HEADERS;
+    const assigneeHeader = headers.find((h) => h.key === 'assignee');
+
+    expect(assigneeHeader).toBeTruthy();
+    expect(assigneeHeader.title).toBe('trans.submissionsTable.assignee');
+    expect(assigneeHeader.align).toBe('start');
+    expect(assigneeHeader.key).toBe('assignee');
+  });
+
+  it('showAssigneeColumn returns true when enableSubmitterRevision is true and showAssigneeInSubmissionsTable is true', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: false,
+        enableSubmitterRevision: true,
+        showAssigneeInSubmissionsTable: true,
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.showAssigneeColumn).toBe(true);
+  });
+
+  it('showAssigneeColumn returns false when enableSubmitterRevision is false and enableStatusUpdates is false', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: false,
+        enableSubmitterRevision: false,
+        showAssigneeInSubmissionsTable: true,
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.showAssigneeColumn).toBe(false);
+  });
+
+  it('showAssigneeColumn returns true when enableStatusUpdates is true and enableSubmitterRevision is false', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        enableSubmitterRevision: false,
+        showAssigneeInSubmissionsTable: true,
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.showAssigneeColumn).toBe(true);
+  });
+
+  it('showAssigneeColumn returns true when both enableStatusUpdates and enableSubmitterRevision are true', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        enableSubmitterRevision: true,
+        showAssigneeInSubmissionsTable: true,
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.showAssigneeColumn).toBe(true);
+  });
   it('filterAssignedToCurrentUser should be passed correctly when enabled', async () => {
     const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
     getFormRolesForUserSpy.mockImplementation(() => {

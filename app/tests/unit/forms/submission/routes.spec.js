@@ -375,3 +375,54 @@ describe(`${basePath}/:formSubmissionId/template/render`, () => {
     expect(validateParameter.validateFormSubmissionId).toBeCalledTimes(1);
   });
 });
+
+describe(`${basePath}/:formSubmissionId/submitterRevision`, () => {
+  const formSubmissionId = uuid.v4();
+  const path = `${basePath}/${formSubmissionId}/submitterRevision`;
+
+  it('should have correct middleware for GET', async () => {
+    controller.checkSubmitterRevision = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(apiAccess).toBeCalledTimes(0);
+    expect(controller.checkSubmitterRevision).toBeCalledTimes(1);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.filterMultipleSubmissions).toBeCalledTimes(0);
+    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormSubmissionId).toBeCalledTimes(1);
+  });
+
+  it('should have correct middleware for POST', async () => {
+    controller.performSubmitterRevision = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.post(path);
+
+    expect(apiAccess).toBeCalledTimes(0);
+    expect(controller.performSubmitterRevision).toBeCalledTimes(1);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.filterMultipleSubmissions).toBeCalledTimes(0);
+    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormSubmissionId).toBeCalledTimes(1);
+  });
+
+  it('should return 404 for PUT method', async () => {
+    const response = await appRequest.put(path);
+
+    expect(response.status).toBe(404);
+  });
+
+  it('should return 404 for DELETE method', async () => {
+    const response = await appRequest.delete(path);
+
+    expect(response.status).toBe(404);
+  });
+});

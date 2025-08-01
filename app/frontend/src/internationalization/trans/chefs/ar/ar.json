@@ -116,6 +116,7 @@
     "loginRequired": "تسجيل الدخول مطلوب",
     "canSaveAndEditDraftLabel": "يمكن للمرسلين <strong>حفظ المسودات وتحريرها</strong>",
     "canUpdateStatusAsReviewer": "يمكن للمراجعين <strong>تحديث حالة</strong> هذا النموذج (أي مُرسَل ، مُعين ، مكتمل)",
+    "enableSubmitterRevision": "يمكن للمرسلين <strong>مراجعة إرسالاتهم الخاصة</strong> وإعادة إرسالها",
     "submitterCanCopyExistingSubmissn": "يمكن للمرسلين <strong>نسخ إرسال موجود</strong>",
     "submissionConfirmationToolTip": "يتحكم تحديد هذا الخيار في ما سيراه المستخدم المرسل لهذا النموذج عند الإرسال الناجح.<br /> إذا تم تحديده ، فسيتم عرضه",
     "emailNotificatnToTeam": "أرسل إلى فريقي إشعارًا بالبريد الإلكتروني",

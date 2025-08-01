@@ -116,6 +116,7 @@
     "loginRequired": "ورود به سیستم الزامی است",
     "canSaveAndEditDraftLabel": "ارسال کنندگان می توانند <strong>پیش نویس ها را ذخیره و ویرایش کنند</strong>",
     "canUpdateStatusAsReviewer": "بازبینان می توانند <strong>وضعیت این فرم را به روز کنند</strong> (یعنی ارسال شده، اختصاص داده شده، تکمیل شده)",
+    "enableSubmitterRevision": "ارسال کنندگان می توانند <strong>ارسال های خود را بازبینی کنند</strong> و دوباره ارسال کنند",
     "submitterCanCopyExistingSubmissn": "ارسال کنندگان می توانند <strong>یک ارسال موجود را کپی کنند</strong>",
     "submissionConfirmationToolTip": "انتخاب این گزینه کنترل می کند که کاربر ارسال کننده این فرم در ارسال موفقیت آمیز چه چیزی را ببیند.<br /> اگر علامت زده شود نمایش داده می شود",
     "emailNotificatnToTeam": "برای تیم من یک ایمیل اعلان ارسال کنید",

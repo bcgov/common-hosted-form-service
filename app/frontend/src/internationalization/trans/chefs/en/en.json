@@ -178,6 +178,7 @@
     "loginRequired": "Log-in Required",
     "canSaveAndEditDraftLabel": "Submitters can <strong>Save and Edit Drafts</strong>",
     "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
+    "enableSubmitterRevision": "Submitters can <strong>Revise their own submissions</strong> and resubmit",
     "displayAssigneeColumn": "Display assignee column for reviewers",
     "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
     "submissionConfirmationToolTip": "Selecting this option controls what the submitting user of this form will see on successful submission. <br /> If checked, it will display",
@@ -782,7 +783,8 @@
     "dateStatusChanged": "Date Status Changed",
     "updatedBy": "Updated By",
     "getSubmissionStatusErr": "An error occurred while trying to fetch statuses.",
-    "getSubmissionStatusConsErr": "Error adding note:"
+    "getSubmissionStatusConsErr": "Error adding note:",
+    "assignee": "Assignee"
   },
   "exportSubmissions": {
     "exportSubmissionsToFile": "Export Submissions to File",
@@ -1247,5 +1249,10 @@
     "shuttingDown": "CHEFS is shutting down.",
     "notReady": "CHEFS cannot connect to all required services.",
     "unableToReachBackend": "Unable to reach backend service."
+  },
+  "submitterRevision": {
+    "recall": "Recall Submission",
+    "recallErrMsg": "An error occurred while recalling this submission",
+    "recallConsErrMsg": "Error recalling submission {submissionId}: {error}"
   }
 }

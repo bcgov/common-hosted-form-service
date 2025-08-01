@@ -110,7 +110,7 @@ const showSubmissionsExport = computed(() =>
 const showAssigneeColumn = computed(() => {
   return (
     form.value &&
-    form.value.enableStatusUpdates &&
+    (form.value.enableStatusUpdates || form.value.enableSubmitterRevision) &&
     form.value.showAssigneeInSubmissionsTable
   );
 });
@@ -155,7 +155,7 @@ const BASE_HEADERS = computed(() => {
   ];
   if (
     form.value &&
-    form.value.enableStatusUpdates &&
+    (form.value.enableStatusUpdates || form.value.enableSubmitterRevision) &&
     form.value.showAssigneeInSubmissionsTable
   ) {
     headers.push({

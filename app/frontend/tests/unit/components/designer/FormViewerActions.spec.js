@@ -25,6 +25,9 @@ const STUBS = {
   ManageSubmissionUsers: {
     template: '<div class="manage-submission-users-stub"><slot /></div>',
   },
+  SubmitterRevision: {
+    template: '<div class="submitter-revision-stub"><slot /></div>',
+  },
 };
 
 describe('FormDisclaimer.vue', () => {

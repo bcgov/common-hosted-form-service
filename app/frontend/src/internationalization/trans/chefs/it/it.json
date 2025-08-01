@@ -116,6 +116,7 @@
     "loginRequired": "Accesso richiesto",
     "canSaveAndEditDraftLabel": "I sottoscrittori possono <strong>salvare e modificare le bozze</strong>",
     "canUpdateStatusAsReviewer": "I revisori possono <strong>aggiornare lo stato</strong> di questo modulo (ovvero inviato, assegnato, completato)",
+    "enableSubmitterRevision": "I mittenti possono <strong>rivedere le proprie presentazioni</strong> e reinviarle",
     "submitterCanCopyExistingSubmissn": "I sottomittenti possono <strong>copiare un invio esistente</strong>",
     "submissionConfirmationToolTip": "La selezione di questa opzione controlla ciò che l'utente che invia questo modulo vedrà in caso di invio riuscito.<br /> Se selezionato, verrà visualizzato",
     "emailNotificatnToTeam": "Invia al mio team un'e-mail di notifica",

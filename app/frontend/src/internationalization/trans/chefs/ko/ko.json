@@ -116,6 +116,7 @@
     "loginRequired": "로그인 필요",
     "canSaveAndEditDraftLabel": "제출자는 <strong>초안을 저장하고 편집</strong> 할 수 있습니다.",
     "canUpdateStatusAsReviewer": "검토자는 이 양식의 <strong>상태를 업데이트</strong> 할 수 있습니다(예: 제출됨, 지정됨, 완료됨).",
+    "enableSubmitterRevision": "제출자는 <strong>자신의 제출을 수정</strong>하고 다시 제출할 수 있습니다",
     "submitterCanCopyExistingSubmissn": "제출자는 <strong>기존 제출을 복사</strong> 할 수 있습니다.",
     "submissionConfirmationToolTip": "이 옵션을 선택하면 이 양식을 제출하는 사용자가 성공적으로 제출했을 때 보게 될 내용을 제어할 수 있습니다.<br /> 체크하면 표시됩니다",
     "emailNotificatnToTeam": "내 팀에 알림 이메일 보내기",

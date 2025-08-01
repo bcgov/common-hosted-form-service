@@ -78,6 +78,7 @@ describe('FormDesigner.vue', () => {
         submissionReceivedEmails: [],
         enableStatusUpdates: true,
         enableSubmitterDraft: true,
+        enableSubmitterRevision: false,
         schedule: {
           enabled: null,
           scheduleType: null,

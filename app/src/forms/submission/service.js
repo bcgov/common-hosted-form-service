@@ -390,6 +390,37 @@ const service = {
   },
 
   // -------------------------------------------------------------------------------------------------/Notes
+  checkSubmitterRevision: async (submissionId, currentUser) => {
+    const meta = await SubmissionMetadata.query().where('submissionId', submissionId).first();
+    if (!meta) {
+      return false;
+    }
+    let submission;
+    let form;
+    let status;
+    await Promise.all([
+      FormSubmission.query().findById(meta.submissionId),
+      FormSubmissionStatus.query().modify('filterSubmissionId', meta.submissionId).withGraphFetched('user').modify('orderDescending').first(),
+      Form.query().findById(meta.formId),
+    ]).then((data) => {
+      submission = data[0];
+      status = data[1];
+      form = data[2];
+    });
+
+    const isMine = submission && submission.createdBy === currentUser.usernameIdp;
+    const isSubmitted = status && status.code === Statuses.SUBMITTED;
+    const submitterRevisionEnabeled = form && form.enableSubmitterRevision;
+    return isMine && isSubmitted && submitterRevisionEnabeled;
+  },
+
+  performSubmitterRevision: async (submissionId, currentUser) => {
+    const allowed = await service.checkSubmitterRevision(submissionId, currentUser);
+    if (!allowed) {
+      return false;
+    }
+    return await service.changeStatusState(submissionId, { code: Statuses.REVISING }, currentUser);
+  },
 };
 
 module.exports = service;
