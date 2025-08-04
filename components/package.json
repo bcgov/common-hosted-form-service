@@ -27,7 +27,7 @@
     "webpack:prod": "webpack --config webpack.prod.js",
     "webpack:use": "webpack --config webpack.use.js",
     "webpack": "npm run webpack:dev && npm run webpack:prod && npm run webpack:use",
-    "build": "tsc && gulp templates && npm run webpack && sass ./src/sass/contrib.scss ./dist/bcgov-formio-components.css",
+    "build": "tsc && gulp templates && npm run webpack && sass ./src/sass/contrib.scss ./dist/bcgov-formio-components.css && sass ./src/sass/bcgov-styles.scss ./dist/bcgov-webcomponent-styles.css",
     "clean": "rm -rf coverage dist lib",
     "purge": "rm -rf node_modules",
     "lint": "tslint -p ."
