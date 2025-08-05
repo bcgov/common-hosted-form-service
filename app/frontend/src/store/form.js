@@ -721,9 +721,17 @@ export const useFormStore = defineStore('form', {
               filterAssignedToCurrentUser: filterAssignedToCurrentUser,
             });
         if (paginationEnabled) {
-          this.submissionList = response.data.results;
-          this.totalSubmissions = response.data.total;
+          console.log(response);
+          if (response.data.total) {
+            this.submissionList = response.data.results;
+            this.totalSubmissions = response.data.total;
+          } else {
+            this.submissionList = response.data;
+            this.totalSubmissions = response.data.length;
+          }
         } else {
+          console.log(itemsPerPage);
+          console.log(response.data.length);
           this.submissionList = response.data;
         }
       } catch (error) {

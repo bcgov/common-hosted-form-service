@@ -624,11 +624,10 @@ const service = {
       let end = page * itemsPerPage + itemsPerPage;
       result.results = searchedData.slice(start, end);
       return result;
-    } else if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
+    } else if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
       return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
+    return await query;
   },
 
   publishVersion: async (formId, formVersionId, currentUser, params = {}) => {
