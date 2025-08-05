@@ -262,6 +262,12 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-event-stream-service"
+                - name: CORS_ALLOWED_ORIGINS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${APP_NAME}-cors-config
+                      key: CORS_ALLOWED_ORIGINS
+                    
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:

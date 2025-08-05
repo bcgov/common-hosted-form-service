@@ -10,9 +10,13 @@ const CorsError = require('../errors/corsError');
  * Get allowed origins for CORS
  * This can be extended to read from database, config file, or environment variables
  */
-async function getAllowedOrigins(origin, formId) {
+async function getAllowedOrigins(formId) {
   const allowedCorsOrigins = await corsOriginRequestService.listCorsOriginRequests({ statusCode: ApprovalStatusCodes.APPROVED, formId });
-  return allowedCorsOrigins.map((corsOrigin) => corsOrigin.origin).concat(config.get('cors.allowedOrigins'));
+  let configOrigins = config.get('cors.allowedOrigins');
+  if (typeof configOrigins === 'string') {
+    configOrigins = configOrigins.split(',').map((o) => o.trim());
+  }
+  return allowedCorsOrigins.map((corsOrigin) => corsOrigin.origin).concat(configOrigins);
 }
 
 function corsMiddleware(req, res, next) {
@@ -21,7 +25,7 @@ function corsMiddleware(req, res, next) {
   cors({
     ...corsOptions,
     origin: async (origin, callback) => {
-      const allowedOrigins = await getAllowedOrigins(origin, formId);
+      const allowedOrigins = await getAllowedOrigins(formId);
 
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);

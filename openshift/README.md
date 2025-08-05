@@ -96,6 +96,13 @@ oc create -n $NAMESPACE configmap $APP_NAME-files-config \
   --from-literal=FILES_OBJECTSTORAGE_KEY=chefs/dev/ \
 ```
 
+_Note:_ This allows us to allow our application by default to access all forms.
+
+```sh
+oc create -n a12c97-dev configmap chefs-cors-config 
+    --from-literal=CORS_ALLOWED_ORIGINS=https://submit.digital.gov.bc.ca,https://chefs-test.apps.silver.devops.gov.bc.ca,https://chefs-dev.apps.silver.devops.gov.bc.ca
+```
+
 ### Secrets
 
 ```sh

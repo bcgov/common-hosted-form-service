@@ -93,5 +93,12 @@
         "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
       }
     }
+  },
+  "cors": {
+    "allowedOrigins": [
+      "https://submit.digital.gov.bc.ca",
+      "https://chefs-test.apps.silver.devops.gov.bc.ca",
+      "https://chefs-dev.apps.silver.devops.gov.bc.ca"
+    ]
   }
 }
