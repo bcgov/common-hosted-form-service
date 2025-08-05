@@ -95,10 +95,6 @@
     }
   },
   "cors": {
-    "allowedOrigins": [
-      "https://submit.digital.gov.bc.ca",
-      "https://chefs-test.apps.silver.devops.gov.bc.ca",
-      "https://chefs-dev.apps.silver.devops.gov.bc.ca"
-    ]
+    "allowedOrigins": "CORS_ALLOWED_ORIGINS"
   }
 }
