@@ -21,7 +21,7 @@ const cors = require('../forms/cors');
 const approvalStatus = require('../forms/approvalStatus');
 
 const statusService = require('../components/statusService');
-const { corsMiddleware } = require('../common/middleware/cors');
+const { corsMiddleware } = require('../forms/common/middleware/cors');
 
 router.use(corsMiddleware);
 
