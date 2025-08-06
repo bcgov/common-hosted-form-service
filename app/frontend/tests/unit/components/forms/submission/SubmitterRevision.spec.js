@@ -211,7 +211,7 @@ describe('SubmitterRevision.vue', () => {
       );
     });
 
-    it('navigates to UserFormView on successful response (200)', async () => {
+    it('navigates to UserFormDraftEdit on successful response (200)', async () => {
       formService.checkSubmitterRevision.mockResolvedValue({ data: true });
       formService.performSubmitterRevision.mockResolvedValue({ status: 200 });
 
@@ -225,7 +225,7 @@ describe('SubmitterRevision.vue', () => {
       await flushPromises();
 
       expect(mockRouter.push).toHaveBeenCalledWith({
-        name: 'UserFormView',
+        name: 'UserFormDraftEdit',
         query: {
           s: submissionId,
         },
@@ -310,6 +310,182 @@ describe('SubmitterRevision.vue', () => {
 
       expect(wrapper.vm.canReviseSubmission).toBeDefined();
       expect(wrapper.vm.canReviseSubmission).toBe(true);
+    });
+
+    it('exposes isEnablingRevision ref', async () => {
+      formService.checkSubmitterRevision.mockResolvedValue({ data: true });
+
+      const wrapper = createWrapper();
+
+      await flushPromises();
+
+      expect(wrapper.vm.isEnablingRevision).toBeDefined();
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+    });
+  });
+
+  describe('isEnablingRevision Loading State', () => {
+    it('prevents multiple clicks while request is in progress', async () => {
+      formService.checkSubmitterRevision.mockResolvedValue({ data: true });
+
+      // Mock a delayed response to simulate network request
+      formService.performSubmitterRevision.mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ status: 200 }), 100)
+          )
+      );
+
+      const wrapper = createWrapper();
+
+      await flushPromises();
+
+      const button = wrapper.find('.v-btn-stub');
+
+      // First click - should start the request
+      await button.trigger('click');
+
+      // Immediately try to click again
+      await button.trigger('click');
+
+      // Wait a bit for the first request to start
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // Check that only one request was made despite multiple clicks
+      expect(formService.performSubmitterRevision).toHaveBeenCalledTimes(1);
+
+      // Wait for the request to complete
+      await flushPromises();
+    });
+
+    it('sets isEnablingRevision to true when request starts', async () => {
+      formService.checkSubmitterRevision.mockResolvedValue({ data: true });
+
+      // Mock a delayed response
+      formService.performSubmitterRevision.mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ status: 200 }), 100)
+          )
+      );
+
+      const wrapper = createWrapper();
+
+      await flushPromises();
+
+      const button = wrapper.find('.v-btn-stub');
+
+      // Initial state should be false
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+
+      // Click the button
+      await button.trigger('click');
+
+      // Wait a bit for the request to start
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // Should be true while request is in progress
+      expect(wrapper.vm.isEnablingRevision).toBe(true);
+
+      // Wait a bit more for the request to finish
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      await flushPromises();
+
+      // Should be false after request completes
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+    });
+
+    it('resets isEnablingRevision to false on successful response', async () => {
+      formService.checkSubmitterRevision.mockResolvedValue({ data: true });
+      formService.performSubmitterRevision.mockResolvedValue({ status: 200 });
+
+      const wrapper = createWrapper();
+
+      await flushPromises();
+
+      const button = wrapper.find('.v-btn-stub');
+
+      // Initial state
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+
+      // Click the button
+      await button.trigger('click');
+
+      // Wait for request to complete
+      await flushPromises();
+
+      // Should be false after successful completion
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+    });
+
+    it('resets isEnablingRevision to false on error response', async () => {
+      formService.checkSubmitterRevision.mockResolvedValue({ data: true });
+      formService.performSubmitterRevision.mockRejectedValue(
+        new Error('Network error')
+      );
+
+      const wrapper = createWrapper();
+
+      await flushPromises();
+
+      const button = wrapper.find('.v-btn-stub');
+
+      // Initial state
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+
+      // Click the button
+      await button.trigger('click');
+
+      // Wait for request to complete
+      await flushPromises();
+
+      // Should be false after error completion
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+    });
+
+    it('resets isEnablingRevision to false on 400 response', async () => {
+      formService.checkSubmitterRevision.mockResolvedValue({ data: true });
+      formService.performSubmitterRevision.mockResolvedValue({ status: 400 });
+
+      const wrapper = createWrapper();
+
+      await flushPromises();
+
+      const button = wrapper.find('.v-btn-stub');
+
+      // Initial state
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+
+      // Click the button
+      await button.trigger('click');
+
+      // Wait for request to complete
+      await flushPromises();
+
+      // Should be false after 400 response
+      expect(wrapper.vm.isEnablingRevision).toBe(false);
+    });
+
+    it('allows clicking again after request completes', async () => {
+      formService.checkSubmitterRevision.mockResolvedValue({ data: true });
+      formService.performSubmitterRevision.mockResolvedValue({ status: 200 });
+
+      const wrapper = createWrapper();
+
+      await flushPromises();
+
+      const button = wrapper.find('.v-btn-stub');
+
+      // First click
+      await button.trigger('click');
+      await flushPromises();
+
+      // Should be able to click again
+      await button.trigger('click');
+      await flushPromises();
+
+      // Should have been called twice
+      expect(formService.performSubmitterRevision).toHaveBeenCalledTimes(2);
     });
   });
 

@@ -32,6 +32,9 @@ const spanClass = computed(() => ({
 // Reactive ref to store the result of the async check
 const canReviseSubmission = ref(false);
 
+// Loading state to prevent multiple clicks
+const isEnablingRevision = ref(false);
+
 // Async function to check if submission can be revised
 async function checkCanReviseSubmission() {
   try {
@@ -48,15 +51,22 @@ const router = useRouter();
 const notificationStore = useNotificationStore();
 
 async function handleRevision() {
+  // Prevent multiple clicks while request is in progress
+  if (isEnablingRevision.value) {
+    return;
+  }
+
+  isEnablingRevision.value = true;
+
   try {
     const response = await formService.performSubmitterRevision(
       properties.submissionId
     );
 
-    // If response is 200, navigate to FormView
+    // If response is 200, navigate to Edit Revision
     if (response.status === 200) {
       router.push({
-        name: 'UserFormView',
+        name: 'UserFormDraftEdit',
         query: {
           s: properties.submissionId,
         },
@@ -74,6 +84,9 @@ async function handleRevision() {
         error: error,
       }),
     });
+  } finally {
+    // Always reset loading state when request completes
+    isEnablingRevision.value = false;
   }
 }
 
@@ -98,24 +111,22 @@ onMounted(() => {
 defineExpose({
   handleRevision,
   canReviseSubmission,
+  isEnablingRevision,
 });
 </script>
 
 <template>
   <span v-if="canReviseSubmission" :class="spanClass">
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
-        <v-btn
-          color="primary"
-          variant="outlined"
-          v-bind="props"
-          :title="$t('trans.submitterRevision.recall')"
-          @click="handleRevision"
-          ><span :lang="locale">{{
-            $t('trans.submitterRevision.recall')
-          }}</span></v-btn
-        >
-      </template>
-    </v-tooltip>
+    <v-btn
+      color="primary"
+      variant="outlined"
+      :title="$t('trans.submitterRevision.recall')"
+      :loading="isEnablingRevision"
+      :disabled="isEnablingRevision"
+      @click="handleRevision"
+      ><span :lang="locale">{{
+        $t('trans.submitterRevision.recall')
+      }}</span></v-btn
+    >
   </span>
 </template>
