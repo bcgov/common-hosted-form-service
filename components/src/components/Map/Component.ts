@@ -335,10 +335,11 @@ export default class Component extends (FieldComponent as any) {
 
   isEmpty() {
     //This is in case a form designer makes the map read only and accidentally sets it as required
+
     if (!this.component.allowSubmissions) return false;
     return (
-      this.getValue().features.length === 0 ||
-      this.getValue().features.length === this.defaultValue?.features.length
+      this.getValue()?.features?.length === 0 ||
+      this.getValue()?.features?.length === this.defaultValue?.features.length
     );
   }
 
