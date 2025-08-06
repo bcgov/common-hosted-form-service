@@ -721,8 +721,7 @@ export const useFormStore = defineStore('form', {
               filterAssignedToCurrentUser: filterAssignedToCurrentUser,
             });
         if (paginationEnabled) {
-          console.log(response);
-          if (response.data.total) {
+          if (response.data?.total >= 0) {
             this.submissionList = response.data.results;
             this.totalSubmissions = response.data.total;
           } else {
@@ -730,8 +729,6 @@ export const useFormStore = defineStore('form', {
             this.totalSubmissions = response.data.length;
           }
         } else {
-          console.log(itemsPerPage);
-          console.log(response.data.length);
           this.submissionList = response.data;
         }
       } catch (error) {
