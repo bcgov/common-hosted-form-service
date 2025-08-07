@@ -78,12 +78,14 @@ describe('FormAccessSettings.vue', () => {
     expect(wrapper.vm.idpType).toEqual(['idir']);
   });
 
-  it('if the form is changed to public, disable submitter drafts and submission copying', async () => {
+  it('if the form is changed to public, disable some settings', async () => {
     formStore.form = ref({
       userType: 'login',
       idps: ['idir'],
       enableSubmitterDraft: true,
       enableCopyExistingSubmission: true,
+      allowSubmitterToUploadFile: true,
+      enableSubmitterRevision: true,
     });
     const wrapper = mount(FormAccessSettings, {
       global: {
@@ -103,6 +105,8 @@ describe('FormAccessSettings.vue', () => {
 
     expect(formStore.form.enableSubmitterDraft).toBeTruthy();
     expect(formStore.form.enableCopyExistingSubmission).toBeTruthy();
+    expect(formStore.form.allowSubmitterToUploadFile).toBeTruthy();
+    expect(formStore.form.enableSubmitterRevision).toBeTruthy();
 
     formStore.form.userType = IdentityMode.PUBLIC;
 
@@ -112,6 +116,8 @@ describe('FormAccessSettings.vue', () => {
 
     expect(formStore.form.enableSubmitterDraft).toBeFalsy();
     expect(formStore.form.enableCopyExistingSubmission).toBeFalsy();
+    expect(formStore.form.allowSubmitterToUploadFile).toBeFalsy();
+    expect(formStore.form.enableSubmitterRevision).toBeFalsy();
   });
 
   it('if the form is changed from team, disable reminders', async () => {
