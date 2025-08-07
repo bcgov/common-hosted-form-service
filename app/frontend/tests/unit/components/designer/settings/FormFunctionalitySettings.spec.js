@@ -117,6 +117,7 @@ const createFormObject = (overrides = {}) => ({
   enableSubmitterDraft: false,
   allowSubmitterToUploadFile: true,
   enableStatusUpdates: true,
+  enableSubmitterRevision: false,
   showAssigneeInSubmissionsTable: false,
   enableCopyExistingSubmission: false,
   enableMultiDraft: false,
@@ -175,6 +176,9 @@ describe('FormFunctionalitySettings.vue', () => {
     );
     expect(wrapper.text()).toMatch(
       'trans.formSettings.canUpdateStatusAsReviewer'
+    );
+    expect(wrapper.text()).toMatch(
+      'trans.formSettings.enableSubmitterRevision'
     );
     expect(wrapper.text()).toMatch('trans.formSettings.allowMultiDraft');
     expect(wrapper.text()).toMatch(
@@ -400,5 +404,157 @@ describe('FormFunctionalitySettings.vue', () => {
 
     // Verify that unchecking the box updated the form store
     expect(formStore.form.showAssigneeInSubmissionsTable).toBe(false);
+  });
+
+  it('renders enableSubmitterRevision checkbox and toggles correctly', async () => {
+    formStore.form = ref(createFormObject({ enableSubmitterRevision: false }));
+
+    const wrapper = mount(FormFunctionalitySettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    // Check that the checkbox exists
+    const revisionCheckbox = wrapper.findComponent(
+      '[data-test="canSubmitterRevisionFormCheckbox"]'
+    );
+    expect(revisionCheckbox.exists()).toBe(true);
+
+    // Initial state should be false
+    expect(formStore.form.enableSubmitterRevision).toBe(false);
+
+    // Test: User checks the checkbox -> should update the form store
+    revisionCheckbox.setValue(true);
+    await nextTick();
+
+    // Verify that checking the box updated the form store
+    expect(formStore.form.enableSubmitterRevision).toBe(true);
+
+    // Test: User unchecks the checkbox -> should update the form store
+    revisionCheckbox.setValue(false);
+    await nextTick();
+
+    // Verify that unchecking the box updated the form store
+    expect(formStore.form.enableSubmitterRevision).toBe(false);
+  });
+
+  it('displays assignee checkbox when submitter revision is enabled', async () => {
+    formStore.form = ref(
+      createFormObject({
+        enableStatusUpdates: false, // Status updates disabled
+        enableSubmitterRevision: true, // But revision enabled
+        showAssigneeInSubmissionsTable: false,
+        userType: IdentityMode.TEAM,
+      })
+    );
+
+    const wrapper = mount(FormFunctionalitySettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    // Should show assignee checkbox when revision is enabled
+    const assigneeCheckbox = wrapper.findComponent(
+      '[data-test="showAssigneeInSubmissionsTableCheckbox"]'
+    );
+    expect(assigneeCheckbox.exists()).toBe(true);
+  });
+
+  it('displays assignee checkbox when both status updates and submitter revision are enabled', async () => {
+    formStore.form = ref(
+      createFormObject({
+        enableStatusUpdates: true,
+        enableSubmitterRevision: true,
+        showAssigneeInSubmissionsTable: false,
+        userType: IdentityMode.TEAM,
+      })
+    );
+
+    const wrapper = mount(FormFunctionalitySettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    // Should show assignee checkbox when both are enabled
+    const assigneeCheckbox = wrapper.findComponent(
+      '[data-test="showAssigneeInSubmissionsTableCheckbox"]'
+    );
+    expect(assigneeCheckbox.exists()).toBe(true);
+  });
+
+  it('enableSubmitterRevision checkbox works for public forms', async () => {
+    formStore.form = ref(
+      createFormObject({
+        enableSubmitterRevision: false,
+        userType: IdentityMode.PUBLIC, // Public form
+      })
+    );
+
+    const wrapper = mount(FormFunctionalitySettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    const revisionCheckbox = wrapper.findComponent(
+      '[data-test="canSubmitterRevisionFormCheckbox"]'
+    );
+    expect(revisionCheckbox.exists()).toBe(true);
+
+    // Should be able to toggle for public forms
+    revisionCheckbox.setValue(true);
+    await nextTick();
+    expect(formStore.form.enableSubmitterRevision).toBe(true);
   });
 });
