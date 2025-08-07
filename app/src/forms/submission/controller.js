@@ -264,4 +264,24 @@ module.exports = {
       next(error);
     }
   },
+  checkSubmitterRevision: async (req, res, next) => {
+    try {
+      const response = await service.checkSubmitterRevision(req.params.formSubmissionId, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  performSubmitterRevision: async (req, res, next) => {
+    try {
+      const response = await service.performSubmitterRevision(req.params.formSubmissionId, req.currentUser);
+      if (!response) {
+        res.status(400).json({ detail: 'Incorrect Submission status.' });
+      } else {
+        res.status(200).json(response);
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
 };
