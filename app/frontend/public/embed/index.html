@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHEFS Form Viewer Widget - Demo</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #003366 0%, #fcba19 100%);
+        color: white;
+        border-radius: 8px;
+      }
+      .demo-section {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f9f9f9;
+      }
+      .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .form-container {
+        margin: 1rem 0;
+        padding: 1rem;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        background: white;
+      }
+      .download-links {
+        display: flex;
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .download-btn {
+        padding: 0.75rem 1.5rem;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+      }
+      .download-btn:hover {
+        background: #0056b3;
+      }
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      .feature-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+      .feature-card h3 {
+        color: #003366;
+        margin-top: 0;
+      }
+      .alert {
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 4px;
+        border-left: 4px solid;
+      }
+      .alert-info {
+        background: #d1ecf1;
+        border-color: #17a2b8;
+        color: #0c5460;
+      }
+      .alert-warning {
+        background: #fff3cd;
+        border-color: #ffc107;
+        color: #856404;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>CHEFS Form Viewer Widget</h1>
+      <p>A web component for embedding CHEFS forms in external applications</p>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>Note:</strong> This is a demo page. Replace the form-id and
+      api-key with your actual values to see the widget in action.
+    </div>
+
+    <div class="demo-section">
+      <h2>Quick Start</h2>
+      <p>Include the web component script and use it in your HTML:</p>
+             <div class="code-block">
+         <pre><code>&lt;!-- Include the web component --&gt;
+ &lt;script src="/widgets/chefs-form-viewer.js"&gt;&lt;/script&gt;
+
+&lt;!-- Use the component --&gt;
+&lt;chefs-form-viewer
+  form-id="your-form-id"
+  api-key="your-api-key"
+  theme="bcgov"&gt;
+&lt;/chefs-form-viewer&gt;</code></pre>
+      </div>
+
+      <div class="form-container">
+        <h3>Demo Form</h3>
+        <p>
+          <em>Replace with your actual form-id and api-key to see the form</em>
+        </p>
+        <chefs-form-viewer
+          form-id="demo-form-id"
+          api-key="demo-api-key"
+          theme="bcgov"
+        >
+        </chefs-form-viewer>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>🔧 Easy Integration</h3>
+        <p>
+          Simple HTML tag integration with no framework dependencies. Works with
+          React, Vue, Angular, or plain HTML.
+        </p>
+      </div>
+      <div class="feature-card">
+        <h3>🎨 Customizable Themes</h3>
+        <p>
+          Multiple theme options including BC Government branding, modern, and
+          default styles.
+        </p>
+      </div>
+      <div class="feature-card">
+        <h3>🌐 Multi-language Support</h3>
+        <p>Built-in internationalization support for multiple languages.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📱 Responsive Design</h3>
+        <p>
+          Fully responsive design that works on desktop, tablet, and mobile
+          devices.
+        </p>
+      </div>
+      <div class="feature-card">
+        <h3>🔒 Secure</h3>
+        <p>
+          API key authentication and CORS support for secure form submissions.
+        </p>
+      </div>
+      <div class="feature-card">
+        <h3>⚡ Event Driven</h3>
+        <p>
+          Custom events for form submission, errors, and changes for easy
+          integration.
+        </p>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Advanced Usage</h2>
+      <div class="code-block">
+        <pre><code>&lt;chefs-form-viewer
+  form-id="your-form-id"
+  api-key="your-api-key"
+  submission-id="existing-submission-id"
+  read-only="true"
+  theme="modern"
+  language="en"
+  base-url="https://your-chefs-domain.com"&gt;
+&lt;/chefs-form-viewer&gt;</code></pre>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Event Handling</h2>
+      <p>Listen for form events to integrate with your application:</p>
+      <div class="code-block">
+        <pre><code>// Form submitted successfully
+document.addEventListener('formSubmit', (event) => {
+  console.log('Form submitted:', event.detail.submission);
+  // Handle successful submission
+});
+
+// Form submission error
+document.addEventListener('formError', (event) => {
+  console.error('Form error:', event.detail.error);
+  // Handle error
+});
+
+// Form data changed
+document.addEventListener('formChange', (event) => {
+  console.log('Form changed:', event.detail);
+  // Handle form changes
+});
+
+// Form rendered
+document.addEventListener('formRender', (event) => {
+  console.log('Form rendered:', event.detail.form);
+  // Form is ready
+});</code></pre>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Available Attributes</h2>
+      <table style="width: 100%; border-collapse: collapse">
+        <thead>
+          <tr style="background: #f5f5f5">
+            <th
+              style="padding: 0.5rem; text-align: left; border: 1px solid #ddd"
+            >
+              Attribute
+            </th>
+            <th
+              style="padding: 0.5rem; text-align: left; border: 1px solid #ddd"
+            >
+              Type
+            </th>
+            <th
+              style="padding: 0.5rem; text-align: left; border: 1px solid #ddd"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              <code>form-id</code>
+            </td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">string</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              Required. The ID of the form to display
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              <code>api-key</code>
+            </td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">string</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              Required. Your API key for authentication
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              <code>submission-id</code>
+            </td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">string</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              Optional. Load existing submission data
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              <code>read-only</code>
+            </td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">boolean</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              Optional. Display form in read-only mode
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              <code>theme</code>
+            </td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">string</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              Optional. Theme: 'bcgov', 'modern', or 'default'
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              <code>language</code>
+            </td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">string</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              Optional. Language code (e.g., 'en', 'fr')
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              <code>base-url</code>
+            </td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">string</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd">
+              Optional. Custom base URL for API calls
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="demo-section">
+      <h2>Download</h2>
+      <div class="download-links">
+        <a href="chefs-form-viewer.js" class="download-btn"
+          >Development Version</a
+        >
+        <a href="chefs-form-viewer.min.js" class="download-btn"
+          >Minified Version</a
+        >
+      </div>
+             <p>Or include directly in your HTML:</p>
+       <div class="code-block">
+         <pre><code>&lt;script src="/widgets/chefs-form-viewer.js"&gt;&lt;/script&gt;</code></pre>
+       </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Framework Integration Examples</h2>
+
+      <h3>React</h3>
+      <div class="code-block">
+        <pre><code>import React, { useEffect, useRef } from 'react';
+
+function CHEFSForm({ formId, apiKey, onSuccess, onError }) {
+  const formRef = useRef();
+
+  useEffect(() => {
+    const form = formRef.current;
+    
+    form.addEventListener('formSubmit', (event) => {
+      onSuccess(event.detail.submission);
+    });
+    
+    form.addEventListener('formError', (event) => {
+      onError(event.detail.error);
+    });
+  }, [onSuccess, onError]);
+
+  return (
+    &lt;chefs-form-viewer
+      ref={formRef}
+      form-id={formId}
+      api-key={apiKey}
+      theme="modern"
+    /&gt;
+  );
+}</code></pre>
+      </div>
+
+      <h3>Vue</h3>
+      <div class="code-block">
+        <pre><code>&lt;template&gt;
+  &lt;chefs-form-viewer
+    ref="formRef"
+    :form-id="formId"
+    :api-key="apiKey"
+    theme="bcgov"
+    @formSubmit="handleSuccess"
+    @formError="handleError"
+  /&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default {
+  data() {
+    return {
+      formId: 'abc123-def456',
+      apiKey: 'your-api-key'
+    };
+  },
+  methods: {
+    handleSuccess(event) {
+      this.$emit('submission-success', event.detail.submission);
+    },
+    handleError(event) {
+      this.$emit('submission-error', event.detail.error);
+    }
+  }
+};
+&lt;/script&gt;</code></pre>
+      </div>
+
+      <h3>WordPress</h3>
+      <div class="code-block">
+        <pre><code>&lt;?php
+// In your WordPress theme or plugin
+function add_chefs_form() {
+    wp_enqueue_script('chefs-form-viewer', 
+        'https://your-domain.com/widgets/chefs-form-viewer.js');
+    
+    return '&lt;chefs-form-viewer 
+              form-id="abc123-def456" 
+              api-key="your-api-key"
+              theme="bcgov"&gt;
+            &lt;/chefs-form-viewer&gt;';
+}
+add_shortcode('chefs_form', 'add_chefs_form');
+?&gt;</code></pre>
+      </div>
+    </div>
+
+         <div class="alert alert-warning">
+       <strong>Important:</strong> The web component files are served from the same domain as your CHEFS application.
+     </div>
+
+    <script src="chefs-form-viewer.js"></script>
+    <script>
+      // Demo event handlers
+      document.addEventListener('formSubmit', (event) => {
+        console.log('Form submitted:', event.detail.submission);
+        alert('Form submitted successfully! Check the console for details.');
+      });
+
+      document.addEventListener('formError', (event) => {
+        console.error('Form error:', event.detail.error);
+        alert('Form error: ' + event.detail.error);
+      });
+
+      document.addEventListener('formChange', (event) => {
+        console.log('Form changed:', event.detail);
+      });
+
+      document.addEventListener('formRender', (event) => {
+        console.log('Form rendered:', event.detail.form);
+      });
+    </script>
+  </body>
+</html>

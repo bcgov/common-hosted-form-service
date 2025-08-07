@@ -22,10 +22,13 @@ export default defineConfig(({ command, mode }) => {
       proxy: {
         '^/pr-*/api': proxyObject,
         '^/pr-*/config': proxyObject,
+        '^/pr-*/webcomponents': proxyObject,
         '^/app/api': proxyObject,
         '^/app/config': proxyObject,
+        '^/app/webcomponents': proxyObject,
       },
     },
+    publicDir: 'public',
     plugins: [Vue(), vuetify(), eslint()],
     resolve: {
       alias: {

@@ -10,6 +10,7 @@ const httpLogger = require('./src/components/log').httpLogger;
 const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
+const webcomponentRouter = require('./src/webcomponents');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
@@ -99,6 +100,9 @@ apiRouter.get('/api', (_req, res) => {
 // Host API endpoints
 apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
+
+// Host web component endpoints (separate from API)
+app.use(`${config.get('server.basePath')}/webcomponents`, webcomponentRouter);
 app.use(middleware.errorHandler);
 
 // Host the static frontend assets

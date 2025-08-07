@@ -1,0 +1,961 @@
+// BC Gov Web Component Styles
+// Essential styling for BC Gov forms in web components
+
+// BC Gov Colors (matching CHEFS Vuetify theme)
+$bcgov-blue: #003366;
+$bcgov-blue-secondary: #38598a;
+$bcgov-orange: #fcba19;
+$bcgov-grey: #efefef;
+$bcgov-font: #313132;
+$bcgov-error: #d8292f;
+$bcgov-link: #1a5a96;
+$bcgov-link-hover: #3b99fc;
+$bcgov-input-placeholder: #606060;
+$bcgov-font-error: #a12622;
+$bcgov-font-warning: #6c4a00;
+$bcgov-font-success: #2d4821;
+$bcgov-alert-error: #f2dede;
+$bcgov-alert-warning: #f9f1c6;
+$bcgov-alert-info: #d9eaf7;
+$bcgov-alert-success: #dff0d8;
+
+//FORMS-1640 Update contrast for accessibility
+$danger-bg-accessible: #e35f6c;
+$secondary-bg-accessible: #848d94;
+$success-bg-accessible: #1d9f63;
+
+// Vuetify CSS Variables (matching CHEFS theme)
+:root {
+  --v-theme-primary: #{$bcgov-blue};
+  --v-theme-secondary: #{$bcgov-orange};
+  --v-theme-surface: #ffffff;
+  --v-theme-surface-variant: #{$bcgov-blue};
+  --v-theme-background: #ffffff;
+  --v-theme-error: #{$bcgov-error};
+  --v-theme-on-primary: #ffffff;
+  --v-theme-on-secondary: #000000;
+  --v-theme-on-surface: #{$bcgov-font};
+  --v-theme-on-background: #{$bcgov-font};
+  --v-theme-on-error: #ffffff;
+  --v-theme-outline: #{$bcgov-blue};
+  --v-theme-outline-variant: #{$bcgov-blue-secondary};
+}
+
+// BC Sans font - using fallback approach instead of external import
+// The font will be loaded by the main page if available, otherwise fallback to system fonts
+
+// Global BC Gov styling for the entire shadow DOM
+* {
+  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
+    sans-serif !important;
+  line-height: 1.4;
+  font-size: 0.875rem;
+  color: $bcgov-font;
+}
+
+// Base typography
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $bcgov-font;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 1.9em;
+}
+h2 {
+  font-size: 1.7em;
+}
+h3 {
+  font-size: 1.3em;
+}
+h4 {
+  font-size: 1.05em;
+}
+
+// Links
+a {
+  color: $bcgov-link;
+  text-decoration: none;
+
+  &:hover {
+    color: $bcgov-link-hover;
+    text-decoration: underline;
+  }
+}
+
+// Form elements
+input,
+textarea,
+select {
+  font-family: inherit;
+  color: $bcgov-font;
+
+  &::placeholder {
+    color: $bcgov-input-placeholder;
+  }
+}
+
+// Bootstrap form-control class (essential for Form.io components)
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: $bcgov-font;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:focus {
+    color: $bcgov-font;
+    background-color: #fff;
+    border-color: $bcgov-blue;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba($bcgov-blue, 0.25);
+  }
+
+  &::placeholder {
+    color: $bcgov-input-placeholder;
+    opacity: 1;
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+  }
+}
+
+// Form-select (for dropdowns)
+.form-select {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: $bcgov-font;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:focus {
+    border-color: $bcgov-blue;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba($bcgov-blue, 0.25);
+  }
+
+  &:disabled {
+    background-color: #e9ecef;
+  }
+}
+
+// Bootstrap Form Group Styling
+.form-group {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.form-group.has-feedback {
+  position: relative;
+}
+
+// Bootstrap Form Label Styling
+.col-form-label {
+  padding-top: calc(0.375rem + 1px);
+  padding-bottom: calc(0.375rem + 1px);
+  margin-bottom: 0;
+  font-size: inherit;
+  line-height: 1.5;
+  color: $bcgov-font;
+  font-weight: 500;
+}
+
+.form-label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: $bcgov-font;
+}
+
+// Label display override (matching CHEFS inline style)
+label {
+  display: inline-block;
+}
+
+// Form-check (for checkboxes and radio buttons)
+.form-check {
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 1.5em;
+  margin-bottom: 0.125rem;
+
+  .form-check-input {
+    float: left;
+    margin-left: -1.5em;
+  }
+
+  .form-check-label {
+    color: $bcgov-font;
+    cursor: pointer;
+  }
+}
+
+.form-check-input {
+  width: 1em;
+  height: 1em;
+  margin-top: 0.25em;
+  vertical-align: top;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  appearance: none;
+  color-adjust: exact;
+
+  &[type='checkbox'] {
+    border-radius: 0.25em;
+  }
+
+  &[type='radio'] {
+    border-radius: 50%;
+  }
+
+  &:active {
+    filter: brightness(90%);
+  }
+
+  &:focus {
+    border-color: $bcgov-blue;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba($bcgov-blue, 0.25);
+  }
+
+  &:checked {
+    background-color: $bcgov-blue;
+    border-color: $bcgov-blue;
+  }
+
+  &[type='checkbox']:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+  }
+
+  &[type='radio']:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+  }
+}
+
+// Buttons (Bootstrap + Vuetify compatibility)
+button,
+.btn {
+  font-family: inherit;
+  font-weight: bold;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.btn-primary {
+    background-color: $bcgov-blue;
+    border-color: $bcgov-blue;
+
+    &:hover {
+      background-color: darken($bcgov-blue, 10%);
+      border-color: darken($bcgov-blue, 10%);
+    }
+  }
+
+  &.btn-secondary {
+    background-color: $bcgov-blue-secondary;
+    border-color: $bcgov-blue-secondary;
+
+    &:hover {
+      background-color: darken($bcgov-blue-secondary, 10%);
+      border-color: darken($bcgov-blue-secondary, 10%);
+    }
+  }
+}
+
+// Vuetify Button Styling (matching CHEFS application)
+.v-btn {
+  font-family: inherit;
+  font-weight: bold;
+  text-transform: none;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  .v-btn__content {
+    font-weight: bold;
+  }
+
+  &.v-btn--disabled {
+    color: #777;
+    opacity: 0.6;
+  }
+
+  &.v-btn--outlined {
+    border: 2px solid currentColor;
+
+    &.v-btn--disabled {
+      border-color: rgba(0, 0, 0, 0.26);
+    }
+  }
+
+  // Primary button styling
+  &.v-btn--variant-elevated,
+  &.v-btn--variant-filled {
+    background-color: var(--v-theme-primary);
+    color: var(--v-theme-on-primary);
+
+    &:hover {
+      background-color: darken($bcgov-blue, 10%);
+    }
+  }
+
+  // Secondary button styling
+  &.v-btn--variant-outlined {
+    color: var(--v-theme-primary);
+    border-color: var(--v-theme-primary);
+
+    &:hover {
+      background-color: var(--v-theme-primary);
+      color: var(--v-theme-on-primary);
+    }
+  }
+}
+
+// Vuetify Application Container
+.v-application {
+  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
+    sans-serif !important;
+  line-height: 1.4;
+  font-size: 0.875rem;
+  color: var(--v-theme-on-surface);
+  background-color: var(--v-theme-background);
+}
+
+// Vuetify Typography
+.v-typography {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--v-theme-on-surface);
+    font-weight: bold;
+  }
+
+  h1 {
+    font-size: 1.9em;
+  }
+  h2 {
+    font-size: 1.7em;
+  }
+  h3 {
+    font-size: 1.3em;
+  }
+  h4 {
+    font-size: 1.05em;
+  }
+}
+
+// Vuetify Spacing Utilities (matching CHEFS)
+.ma-2 {
+  margin: 8px !important;
+}
+.mt-2 {
+  margin-top: 8px !important;
+}
+.mb-2 {
+  margin-bottom: 8px !important;
+}
+.ml-2 {
+  margin-left: 8px !important;
+}
+.mr-2 {
+  margin-right: 8px !important;
+}
+.pa-2 {
+  padding: 8px !important;
+}
+.pt-2 {
+  padding-top: 8px !important;
+}
+.pb-2 {
+  padding-bottom: 8px !important;
+}
+.pl-2 {
+  padding-left: 8px !important;
+}
+.pr-2 {
+  padding-right: 8px !important;
+}
+
+// Vuetify Density
+.v-btn--density-compact {
+  height: 32px;
+  min-width: 32px;
+}
+
+// Vuetify Form Components
+.v-text-field {
+  .v-field {
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+
+    &:focus-within {
+      border-color: var(--v-theme-primary);
+      box-shadow: 0 0 0 0.25rem rgba($bcgov-blue, 0.25);
+    }
+  }
+
+  .v-field__input {
+    color: var(--v-theme-on-surface);
+    font-family: inherit;
+  }
+
+  .v-field__outline {
+    color: #dee2e6;
+  }
+}
+
+.v-select {
+  .v-field {
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+
+    &:focus-within {
+      border-color: var(--v-theme-primary);
+      box-shadow: 0 0 0 0.25rem rgba($bcgov-blue, 0.25);
+    }
+  }
+}
+
+.v-checkbox {
+  .v-selection-control {
+    color: var(--v-theme-primary);
+  }
+
+  .v-selection-control__input {
+    color: var(--v-theme-primary);
+  }
+}
+
+.v-radio-group {
+  .v-selection-control {
+    color: var(--v-theme-primary);
+  }
+}
+
+// Vuetify Card Components
+.v-card {
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  background-color: var(--v-theme-surface);
+  color: var(--v-theme-on-surface);
+}
+
+.v-card-title {
+  color: var(--v-theme-on-surface);
+  font-weight: bold;
+}
+
+// Vuetify Dialog Components
+.v-dialog {
+  .v-card {
+    border-radius: 4px;
+  }
+}
+
+// Vuetify Alert Components
+.v-alert {
+  border-radius: 4px;
+  border: 1px solid transparent;
+
+  &.v-alert--type-error {
+    background-color: $bcgov-alert-error;
+    border-color: $bcgov-error;
+    color: $bcgov-font-error;
+  }
+
+  &.v-alert--type-warning {
+    background-color: $bcgov-alert-warning;
+    border-color: $bcgov-font-warning;
+    color: $bcgov-font-warning;
+  }
+
+  &.v-alert--type-info {
+    background-color: $bcgov-alert-info;
+    border-color: $bcgov-blue;
+    color: $bcgov-blue;
+  }
+
+  &.v-alert--type-success {
+    background-color: $bcgov-alert-success;
+    border-color: $bcgov-font-success;
+    color: $bcgov-font-success;
+  }
+}
+
+// Alerts
+.alert {
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+
+  &.alert-error,
+  &.alert-danger {
+    background-color: $bcgov-alert-error;
+    border: 1px solid $bcgov-error;
+    color: $bcgov-font-error;
+  }
+
+  &.alert-warning {
+    background-color: $bcgov-alert-warning;
+    border: 1px solid $bcgov-font-warning;
+    color: $bcgov-font-warning;
+  }
+
+  &.alert-info {
+    background-color: $bcgov-alert-info;
+    border: 1px solid $bcgov-blue;
+    color: $bcgov-blue;
+  }
+
+  &.alert-success {
+    background-color: $bcgov-alert-success;
+    border: 1px solid $bcgov-font-success;
+    color: $bcgov-font-success;
+  }
+}
+
+// Form validation
+.form-control.is-invalid {
+  border-color: $bcgov-error;
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba($bcgov-error, 0.25);
+  }
+}
+
+.invalid-feedback {
+  color: $bcgov-error;
+}
+
+// Loading states
+.loading {
+  color: $bcgov-blue;
+}
+
+// Success states
+.success {
+  color: $bcgov-font-success;
+}
+
+// Error states
+.error {
+  color: $bcgov-error;
+}
+
+// Comprehensive Form.io styling (matching CHEFS application)
+// This section replicates the complete Form.io styling from CHEFS
+
+// Form.io form wrapper and components
+.formio-form,
+.form-wrapper,
+.form-designer,
+.component-preview {
+  // Table styling
+  .formio-component .table {
+    word-break: break-word;
+  }
+
+  // Error wrapper styling (FORMS-1640 accessibility improvements)
+  .formio-error-wrapper {
+    background-color: transparent;
+    padding: 0;
+  }
+
+  .formio-warning-wrapper {
+    padding: 0;
+  }
+
+  // Form inputs with BC Gov styling
+  .form-control {
+    // placeholder text to match bcgov
+    &::placeholder,
+    .choices__placeholder {
+      color: $bcgov-input-placeholder;
+      opacity: inherit;
+    }
+
+    &:not(.is-invalid) {
+      // input borders to match bcgov (exclude invalid fields that should be red)
+      border: 1px solid $bcgov-input-placeholder;
+    }
+  }
+
+  // remove alert icons from invalid fields
+  .form-control.is-invalid,
+  .was-validated .form-control:invalid {
+    background-image: none;
+  }
+
+  // add rounded corners to Date / Time Component input groups and red border if invalid
+  .input-group > .flatpickr-input.form-control {
+    & + .form-control.input {
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+    // if validation error make borders red;
+    &.is-invalid + .form-control.input {
+      border: 1px solid #dc3545;
+
+      &:focus {
+        border-color: #dc3545;
+        -webkit-box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+    }
+  }
+
+  // Buttons with Vuetify integration
+  .btn {
+    font-family: inherit;
+    font-weight: bold;
+    text-transform: none;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .btn.btn-primary {
+    background-color: $bcgov-blue;
+    border: none;
+    color: white;
+
+    &:hover {
+      background-color: $bcgov-blue;
+      text-decoration: underline;
+    }
+
+    &:disabled,
+    &[disabled='disabled'],
+    &[disabled='disabled'] &:hover {
+      cursor: default;
+      text-decoration: none;
+      background-color: rgba(0, 0, 0, 0.12);
+      opacity: 1;
+      color: rgba(0, 0, 0, 0.26) !important;
+    }
+  }
+
+  // Form.io submit buttons (matching CHEFS exactly)
+  .formio-component-button .btn {
+    text-transform: uppercase;
+    padding: 8px 16px;
+    line-height: 21px;
+    font-weight: 700;
+    letter-spacing: 0.0892857143em;
+    font-size: 0.875rem;
+  }
+
+  // add margin to create space between the button and form.io inputs
+  .formio-component-button {
+    margin-top: 1rem;
+  }
+
+  // Tooltips
+  .tooltip-inner {
+    background-color: #606060;
+    border-radius: 3px;
+    box-shadow: 0 2px 8px 0 rgba(175, 175, 175, 0.5);
+    font-size: 0.85em;
+  }
+
+  // Validation messages and help text
+  .form-text {
+    font-size: 0.85em;
+  }
+
+  .invalid-feedback {
+    font-size: 100%; // reset this wrapper
+  }
+
+  .form-text.error {
+    background: none !important;
+    color: $bcgov-error;
+  }
+
+  // Hide asterisks after input in Data Grid when labels appear as table headers
+  .formio-component-datagrid {
+    label.field-required.control-label--hidden::after {
+      content: '';
+    }
+  }
+
+  // Dropdowns (Choices.js)
+  .choices__list--dropdown {
+    .choices__item {
+      &:not(.is-selected) {
+        color: $bcgov-font;
+      }
+      &:hover {
+        background-color: $bcgov-link-hover;
+        color: white;
+      }
+    }
+  }
+
+  .choices__list--multiple {
+    .choices__item {
+      margin-bottom: 0;
+      font-size: 90%;
+    }
+    .choices__item,
+    .choices__button {
+      background-color: white;
+      color: $bcgov-link;
+      border-color: $bcgov-link;
+      &:hover {
+        background-color: $bcgov-link-hover;
+        border-color: $bcgov-link-hover;
+        color: white;
+      }
+    }
+  }
+
+  // Hide 'X' (button that removes selected option) on dropdown, when placeholder exists and no selection has been made
+  .choices__placeholder button {
+    display: none;
+  }
+
+  // Radio buttons and checkboxes
+  .form-radio {
+    .form-check {
+      margin-bottom: 5px;
+      .form-check-label {
+        font-size: 1em;
+
+        .form-check-input {
+          transform: scale(1.3);
+        }
+        span {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+
+  // Tabs component
+  .formio-component-simpletabs {
+    & > .card {
+      border: 0;
+
+      & > .card-body {
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.125);
+        border-width: 0 1px 1px 1px;
+        border-radius: 0;
+      }
+    }
+    & > .card > .card-header {
+      background: none;
+
+      .nav-item {
+        background-color: $bcgov-grey;
+        margin-right: 3px;
+
+        .nav-link {
+          color: $bcgov-link;
+          font-weight: normal;
+
+          &.active {
+            color: $bcgov-font;
+            background: white;
+
+            &:hover {
+              color: $bcgov-font;
+              cursor: default;
+              text-decoration: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // File component styling
+  .formio-component-file {
+    .fileSelector {
+      background-color: $bcgov-grey;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+    }
+  }
+
+  // Read-only form styling
+  &.formio-read-only {
+    // in submission review mode, make readonly formio fields consistently greyed-out
+    .form-control,
+    .formio-component-simpletextarea .card-body.bg-light,
+    .choices.is-disabled .choices__input {
+      background-color: #e9ecef !important;
+    }
+    .formio-component-simpletextarea .card-body.bg-light {
+      border: 1px solid #606060;
+    }
+  }
+
+  // Accessibility improvements (FORMS-1640)
+  .btn.btn-danger {
+    background-color: $danger-bg-accessible;
+    border-color: $danger-bg-accessible;
+  }
+  .btn.btn-secondary {
+    background-color: $secondary-bg-accessible;
+    border-color: $secondary-bg-accessible;
+  }
+  .btn.btn-success {
+    background-color: $success-bg-accessible;
+    border-color: $success-bg-accessible;
+  }
+}
+
+// Dropdown styling (Choices.js)
+.choices__list--dropdown {
+  .choices__item {
+    &:not(.is-selected) {
+      color: $bcgov-font;
+    }
+    &:hover {
+      background-color: $bcgov-link-hover;
+      color: white;
+    }
+  }
+}
+
+.choices__list--multiple {
+  .choices__item {
+    margin-bottom: 0;
+    font-size: 90%;
+  }
+  .choices__item,
+  .choices__button {
+    background-color: white;
+    color: $bcgov-link;
+    border-color: $bcgov-link;
+    &:hover {
+      background-color: $bcgov-link-hover;
+      border-color: $bcgov-link-hover;
+      color: white;
+    }
+  }
+}
+
+// Hide placeholder button
+.choices__placeholder button {
+  display: none;
+}
+
+// Radio buttons and checkboxes
+.form-radio {
+  .form-check {
+    margin-bottom: 5px;
+    .form-check-label {
+      font-size: 1em;
+
+      .form-check-input {
+        transform: scale(1.3);
+      }
+      span {
+        margin-left: 5px;
+      }
+    }
+  }
+}
+
+// Tooltips
+.tooltip-inner {
+  background-color: #606060;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px 0 rgba(175, 175, 175, 0.5);
+  font-size: 0.85em;
+}
+
+// Validation messages and help text
+.form-text {
+  font-size: 0.85em;
+}
+
+.invalid-feedback {
+  font-size: 100%;
+}
+
+.form-text.error {
+  background: none !important;
+  color: $bcgov-error;
+}
+
+// Card styling
+.card-header {
+  font-weight: bold;
+  color: $bcgov-font;
+  opacity: 1;
+}
+
+// Global Form.io styles that should apply to the entire shadow DOM
+.formio-component {
+  // Ensure all Form.io components inherit BC Gov styling
+  font-family: inherit;
+  color: $bcgov-font;
+}
+
+// Form.io form wrapper styles (similar to main application)
+.form-wrapper,
+.form-designer,
+.component-preview {
+  // Apply BC Gov styling to form containers
+  font-family: inherit;
+  color: $bcgov-font;
+
+  // Ensure buttons have BC Gov styling
+  .btn {
+    font-family: inherit;
+    font-weight: bold;
+
+    &.btn-primary {
+      background-color: $bcgov-blue;
+      border-color: $bcgov-blue;
+
+      &:hover {
+        background-color: darken($bcgov-blue, 10%);
+        border-color: darken($bcgov-blue, 10%);
+      }
+    }
+  }
+}

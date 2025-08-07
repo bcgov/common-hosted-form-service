@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHEFS Form Viewer Widget - Test</title>
+
+    <!-- Essential CSS imports from main application -->
+    <!-- BC Sans font - using system fonts as fallback to avoid MIME type issues -->
+    <!-- The web component will handle its own font loading -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.form.io/formiojs/formio.full.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    />
+
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Verdana, Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.4;
+        font-size: 0.875rem;
+        color: #313132;
+      }
+      .test-section {
+        margin: 2rem 0;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .log {
+        background: #f5f5f5;
+        padding: 1rem;
+        border-radius: 4px;
+        font-family: monospace;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      .info {
+        color: blue;
+      }
+
+      /* BC Gov styling for test page */
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #313132;
+        line-height: 1.2;
+        font-weight: bold;
+      }
+
+      a {
+        color: #1a5a96;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #3b99fc;
+        text-decoration: underline;
+      }
+
+      button {
+        background-color: #003366;
+        border-color: #003366;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #001a33;
+        border-color: #001a33;
+        opacity: 0.8;
+      }
+
+      input,
+      select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: inherit;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #003366;
+        box-shadow: 0 0 0 0.2rem rgba(0, 51, 102, 0.25);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CHEFS Form Viewer Widget - Test Page</h1>
+
+    <div class="test-section">
+      <h2>Test Configuration</h2>
+      <p>
+        This page tests the web component functionality. Check the console and
+        log below for results.
+      </p>
+
+      <label for="formId">Form ID:</label>
+      <input
+        type="text"
+        id="formId"
+        value="test-form-id"
+        style="margin: 0 1rem"
+      />
+      <br />
+      <label for="apiKey">API Key:</label>
+      <input
+        type="text"
+        id="apiKey"
+        value="test-api-key"
+        style="margin: 0 1rem"
+      />
+      <br />
+      <label for="baseUrl">Base URL:</label>
+      <input
+        type="text"
+        id="baseUrl"
+        value=""
+        placeholder="http://localhost:8080"
+        style="margin: 0 1rem; width: 200px"
+      />
+      <br />
+      <label for="theme">Theme:</label>
+      <select id="theme" style="margin: 0 1rem; padding: 0.25rem">
+        <option value="default">Default</option>
+        <option value="bcgov">BC Government</option>
+        <option value="modern">Modern</option>
+      </select>
+      <br />
+      <label for="readonly">Read Only:</label>
+      <input type="checkbox" id="readonly" style="margin: 0 1rem" />
+      <br />
+      <label for="submissionId">Submission ID (for readonly):</label>
+      <input
+        type="text"
+        id="submissionId"
+        value=""
+        placeholder="Leave empty for new form"
+        style="margin: 0 1rem; width: 200px"
+      />
+      <br />
+      <button onclick="loadForm()">Load Form</button>
+      <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Form Display</h2>
+      <div id="formContainer">
+        <p>Click "Load Form" to test the component</p>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>Event Log</h2>
+      <div id="log" class="log"></div>
+    </div>
+
+    <script src="chefs-form-viewer.js"></script>
+    <script>
+      function log(message, type = 'info') {
+        const logElement = document.getElementById('log');
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = document.createElement('div');
+        logEntry.className = type;
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        logElement.appendChild(logEntry);
+        logElement.scrollTop = logElement.scrollHeight;
+        console.log(`[${type.toUpperCase()}] ${message}`);
+      }
+
+      function clearLog() {
+        document.getElementById('log').innerHTML = '';
+      }
+
+      function loadForm() {
+        const formId = document.getElementById('formId').value;
+        const apiKey = document.getElementById('apiKey').value;
+        const baseUrl = document.getElementById('baseUrl').value;
+        const theme = document.getElementById('theme').value;
+        const readonly = document.getElementById('readonly').checked;
+        const submissionId = document.getElementById('submissionId').value;
+        const container = document.getElementById('formContainer');
+
+        // Clear previous form
+        container.innerHTML = '';
+
+        if (!formId || !apiKey) {
+          log('Please provide both Form ID and API Key', 'error');
+          return;
+        }
+
+        log(
+          `Loading form with ID: ${formId} from ${
+            baseUrl || 'default URL'
+          } with theme: ${theme} (readonly: ${readonly})`,
+          'info'
+        );
+
+        // Create the web component
+        const formElement = document.createElement('chefs-form-viewer');
+
+        // Set all attributes BEFORE adding to DOM to prevent race conditions
+        // Set them in a batch to minimize attributeChangedCallback calls
+        const attributes = {
+          'form-id': formId,
+          'api-key': apiKey,
+          theme: theme,
+          'read-only': readonly.toString(),
+        };
+
+        // Add submission ID if provided
+        if (submissionId) {
+          attributes['submission-id'] = submissionId;
+        }
+
+        // Add base URL if provided
+        if (baseUrl) {
+          attributes['base-url'] = baseUrl;
+        }
+
+        // Set all attributes at once
+        Object.entries(attributes).forEach(([name, value]) => {
+          formElement.setAttribute(name, value);
+        });
+
+        // Add to DOM after ALL attributes are set
+        container.appendChild(formElement);
+
+        // Store reference to form element for reloading
+        window.currentFormElement = formElement;
+
+        // Add event listeners
+        formElement.addEventListener('formRender', (event) => {
+          log('Form rendered successfully', 'success');
+        });
+
+        formElement.addEventListener('formSubmit', (event) => {
+          log('Form submitted successfully', 'success');
+          log(`Submission ID: ${event.detail.submission.id}`, 'info');
+
+          // Auto-reload in readonly mode after successful submission
+          setTimeout(() => {
+            log(
+              'Auto-reloading form in readonly mode with submitted data...',
+              'info'
+            );
+            // Use the new loadWithSubmission method for better performance
+            if (
+              window.currentFormElement &&
+              window.currentFormElement.loadWithSubmission
+            ) {
+              window.currentFormElement.loadWithSubmission(
+                event.detail.submission.id,
+                true // Set readonly mode
+              );
+              document.getElementById('readonly').checked = true;
+              document.getElementById('submissionId').value =
+                event.detail.submission.id;
+            } else {
+              // Fallback to full reload
+              document.getElementById('submissionId').value =
+                event.detail.submission.id;
+              document.getElementById('readonly').checked = true;
+              loadForm();
+            }
+          }, 2000);
+        });
+
+        formElement.addEventListener('formError', (event) => {
+          log(`Form error: ${event.detail.error}`, 'error');
+        });
+
+        formElement.addEventListener('formChange', (event) => {
+          log('Form data changed', 'info');
+        });
+
+        formElement.addEventListener('formBeforeSubmit', (event) => {
+          log('Form submission starting', 'info');
+        });
+
+        // Test component methods after a delay
+        setTimeout(() => {
+          try {
+            const formData = formElement.getFormData();
+            log(
+              `Form data retrieved: ${formData ? 'success' : 'no data'}`,
+              'info'
+            );
+          } catch (error) {
+            log(`Error getting form data: ${error.message}`, 'error');
+          }
+        }, 2000);
+      }
+      // Test component registration
+      document.addEventListener('DOMContentLoaded', () => {
+        if (customElements.get('chefs-form-viewer')) {
+          log('Web component registered successfully', 'success');
+        } else {
+          log('Web component not registered', 'error');
+        }
+
+        // Set default base URL
+        const baseUrlInput = document.getElementById('baseUrl');
+        baseUrlInput.value = window.location.origin + '/app';
+      });
+
+      // Global error handler
+      window.addEventListener('error', (event) => {
+        log(`Global error: ${event.error.message}`, 'error');
+      });
+    </script>
+  </body>
+</html>
