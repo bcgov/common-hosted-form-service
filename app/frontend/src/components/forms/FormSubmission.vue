@@ -176,7 +176,7 @@ defineExpose({
     <v-row>
       <!-- Status updates and notes -->
       <v-col
-        v-if="form.enableStatusUpdates"
+        v-if="form.enableStatusUpdates || form.enableSubmitterRevision"
         cols="12"
         class="pl-0 pt-0 d-print-none"
         order="first"
@@ -185,11 +185,13 @@ defineExpose({
         <v-card
           variant="outlined"
           class="review-form"
+          data-test="status-panel-card"
           :disabled="!submissionReadOnly"
         >
           <StatusPanel
             :submission-id="submissionId"
             :form-id="form.id"
+            data-test="status-panel"
             @note-updated="refreshNotes"
             @draft-enabled="setDraft"
           />
@@ -197,9 +199,14 @@ defineExpose({
         <v-card
           variant="outlined"
           class="review-form"
+          data-test="notes-panel-card"
           :disabled="!submissionReadOnly"
         >
-          <NotesPanel ref="notesPanel" :submission-id="submissionId" />
+          <NotesPanel
+            ref="notesPanel"
+            :submission-id="submissionId"
+            data-test="notes-panel"
+          />
         </v-card>
       </v-col>
     </v-row>
@@ -228,7 +235,7 @@ defineExpose({
               </v-col>
               <v-spacer />
               <v-col
-                v-if="form.enableStatusUpdates"
+                v-if="form.enableStatusUpdates || form.enableSubmitterRevision"
                 :class="isRTL ? 'text-left' : 'text-right'"
                 class="d-print-none"
                 cols="2"

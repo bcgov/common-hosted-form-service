@@ -141,7 +141,7 @@ const service = {
     // Custom columns not defined - return default column selection behavior
     let columns = ['submissionId', 'confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'submittedAt'];
     // if form has 'status updates' enabled in the form settings include these in export
-    if (form.enableStatusUpdates) {
+    if (form.enableStatusUpdates || form.enableSubmitterRevision) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);
     }
     // Let's add form level columns like deleted or draft
