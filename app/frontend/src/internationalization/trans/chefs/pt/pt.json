@@ -116,6 +116,7 @@
     "loginRequired": "Login obrigatório",
     "canSaveAndEditDraftLabel": "Os remetentes podem <strong>salvar e editar rascunhos</strong>",
     "canUpdateStatusAsReviewer": "Os revisores podem <strong>atualizar o status</strong> deste formulário (ou seja, enviado, atribuído, concluído)",
+    "enableSubmitterRevision": "Os remetentes podem <strong>revisar suas próprias submissões</strong> e reenviar",
     "submitterCanCopyExistingSubmissn": "Os remetentes podem <strong>copiar um envio existente</strong>",
     "submissionConfirmationToolTip": "Selecionar esta opção controla o que o usuário que enviou este formulário verá no envio bem-sucedido.<br /> Se marcado, ele exibirá",
     "emailNotificatnToTeam": "Enviar um e-mail de notificação para minha equipe",
@@ -1226,5 +1227,23 @@
   "canShareDraft": {
     "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
     "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "Este serviço está temporariamente indisponível.",
+    "chefsUnavailableBoilerplate": "Por favor, tente novamente em breve. Se o problema persistir, entre em contato com o suporte de TI da sua equipe ou o administrador do sistema.",
+    "moreInfo": "Mais informações",
+    "lessInfo": "Voltar",
+    "moreInfoIntro": "Este problema é devido a interrupções em um ou mais serviços conectados:",
+    "moreInfoOutro": "Estamos trabalhando para restaurar o acesso. Se o problema persistir, seu suporte de TI ou administrador do sistema pode nos contatar através de {linkOne} ou {linkTwo}.",
+    "name": "Serviço",
+    "status": "Status",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "msTeamsChannel": "Canal MS Teams",
+    "rocketChatChannel": "Canal Rocket.Chat",
+    "defaultStatusMessage": "O serviço está temporariamente indisponível (503). Por favor, tente novamente mais tarde.",
+    "shuttingDown": "CHEFS está sendo desligado.",
+    "notReady": "CHEFS não consegue se conectar a todos os serviços necessários.",
+    "unableToReachBackend": "Não é possível alcançar o serviço backend."
   }
 }

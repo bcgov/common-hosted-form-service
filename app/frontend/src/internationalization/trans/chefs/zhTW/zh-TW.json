@@ -116,6 +116,7 @@
     "loginRequired": "要求登錄",
     "canSaveAndEditDraftLabel": "提交者可以<strong>保存和編輯草稿</strong>",
     "canUpdateStatusAsReviewer": "審閱者可以<strong>更新此表單的狀態</strong>（即已提交、已分配、已完成）",
+    "enableSubmitterRevision": "提交者可以<strong>修改自己的提交</strong>並重新提交",
     "submitterCanCopyExistingSubmissn": "提交者可以<strong>複製現有提交</strong>",
     "submissionConfirmationToolTip": "選擇此選項可控制此表單的提交用戶在成功提交後將看到的內容。<br />如果勾選的話會顯示",
     "emailNotificatnToTeam": "向我的團隊發送通知電子郵件",
@@ -1226,5 +1227,23 @@
   "canShareDraft": {
     "canShareMessage": "您無法與尚未新增至表單的使用者共用草稿。請聯絡管理員新增它們。",
     "shareDraftMessage": "僅與表單團隊成員分享草稿"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "此服務暫時無法使用。",
+    "chefsUnavailableBoilerplate": "請稍後再試。如果問題持續存在，請聯絡您團隊的 IT 支援或系統管理員。",
+    "moreInfo": "更多資訊",
+    "lessInfo": "返回",
+    "moreInfoIntro": "此問題是由於一個或多個連接服務的中斷造成的：",
+    "moreInfoOutro": "我們正在努力恢復存取權限。如果問題持續存在，您的 IT 支援或系統管理員可以透過 {linkOne} 或 {linkTwo} 聯絡我們。",
+    "name": "服務",
+    "status": "狀態",
+    "connected": "已連接",
+    "disconnected": "已斷開",
+    "msTeamsChannel": "MS Teams 頻道",
+    "rocketChatChannel": "Rocket.Chat 頻道",
+    "defaultStatusMessage": "服務暫時無法使用 (503)。請稍後再試。",
+    "shuttingDown": "CHEFS 正在關閉。",
+    "notReady": "CHEFS 無法連接到所有必需的服務。",
+    "unableToReachBackend": "無法存取後端服務。"
   }
 }

@@ -39,7 +39,7 @@ describe('GlobalStatusOverlay', () => {
     await wrapper.vm.$nextTick();
 
     // Click the Show More Info button
-    const button = wrapper.find('button.info-links');
+    const button = wrapper.find('[data-test="more-info-button"]');
     await button.trigger('click');
 
     // Assert the more info section is visible
@@ -57,7 +57,7 @@ describe('GlobalStatusOverlay', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.status-overlay').exists()).toBe(true);
     // Find and click the Show More Info button
-    const button = wrapper.find('button.info-links');
+    const button = wrapper.find('[data-test="more-info-button"]');
     await button.trigger('click');
 
     expect(wrapper.text()).toContain('defaultStatusMessage');
@@ -83,7 +83,7 @@ describe('GlobalStatusOverlay', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.status-overlay').exists()).toBe(true);
     // Find and click the Show More Info button
-    const button = wrapper.find('button.info-links');
+    const button = wrapper.find('[data-test="more-info-button"]');
     await button.trigger('click');
 
     expect(wrapper.text()).toContain('notReady');
@@ -97,7 +97,7 @@ describe('GlobalStatusOverlay', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.status-overlay').exists()).toBe(true);
     // Find and click the Show More Info button
-    const button = wrapper.find('button.info-links');
+    const button = wrapper.find('[data-test="more-info-button"]');
     await button.trigger('click');
 
     expect(wrapper.text()).toContain('shuttingDown');
@@ -108,7 +108,7 @@ describe('GlobalStatusOverlay', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.status-overlay').exists()).toBe(true);
     // Find and click the Show More Info button
-    const button = wrapper.find('button.info-links');
+    const button = wrapper.find('[data-test="more-info-button"]');
     await button.trigger('click');
 
     expect(wrapper.text()).toContain('notReady');
