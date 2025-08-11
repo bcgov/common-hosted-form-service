@@ -22,7 +22,6 @@ describe('Form Designer', () => {
   });
   it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
@@ -31,12 +30,10 @@ describe('Form Designer', () => {
 it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
-      
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
@@ -55,13 +52,9 @@ it('Verify draft submission', () => {
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      
-   
     //Publish the form
     cy.get('.v-label > span').click();
-
     cy.get('span').contains('Publish Version 1');
-
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
     //Share link verification
@@ -90,7 +83,7 @@ it('Verify draft submission', () => {
 });
 it('Submission revise status Assignment', () => {
     cy.viewport(1000, 1100);
-    cy.wait(4000);
+    cy.wait(2000);
     cy.location('search').then(search => {
         //let pathName = fullUrl.pathname
         let arr = search.split('=');
@@ -149,7 +142,7 @@ it('Submission revise status Assignment', () => {
     cy.get('[data-test="showAssigneeList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').type('ch');
     cy.get('div').contains('CHEFS Testing').click();
     cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
-    cy.wait(4000);
+    cy.wait(2000);
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
     cy.contains('REVISING').click();
     //cy.get('.v-selection-control > .v-label').click();
@@ -166,11 +159,9 @@ it('Submission revise status Assignment', () => {
     cy.get('textarea[rows="1"]').type('some comments');
     cy.get('button').contains('REVISE').click();
     cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
-    cy.wait(4000);
-    
+    cy.wait(2000);
     //Verify Edit submission button is disabled
     cy.get('button[title="Edit This Submission"]').should('be.disabled');
-
     //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
