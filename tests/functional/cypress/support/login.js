@@ -61,6 +61,7 @@ export function formsettings(){
      //validate share draft with team is enabled
     cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//Update the status of the form
+    cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').click();//Submitter revision option
     cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').click();//Copy existing submission
     cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').click();//Wide form Layout
     cy.get('[data-test="enableTeamMemberDraftShare"]').click();//share form drafts with team members only
