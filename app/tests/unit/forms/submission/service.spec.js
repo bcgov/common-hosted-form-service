@@ -3,6 +3,9 @@ const uuid = require('uuid');
 
 jest.mock('../../../../src/forms/common/models/tables/formSubmissionStatus', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formSubmission', () => MockModel);
+jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/form', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/formVersion', () => MockModel);
 
 const service = require('../../../../src/forms/submission/service');
 
@@ -111,5 +114,236 @@ describe('restoreMultipleSubmissions', () => {
     expect(MockModel.whereIn).toBeCalledWith('id', submissionIds);
     expect(spy).toBeCalledWith(submissionIds);
     expect(res).toEqual(returnValue);
+  });
+});
+
+describe('submitterRevision', () => {
+  const submissionId = uuid.v4();
+  const currentUser = { id: 'user-123', usernameIdp: 'test@idir' };
+
+  beforeEach(() => {
+    // Reset all mocks before each test
+    MockModel.mockReset();
+  });
+
+  describe('checkSubmitterRevision', () => {
+    it('should return canRevise true when user can revise submission', async () => {
+      // Mock SubmissionMetadata.query().where().first()
+      const mockMetadata = { submissionId: submissionId, formVersionId: 'version-123', formId: 'form-123' };
+      const mockWhereChain = {
+        first: jest.fn().mockResolvedValue(mockMetadata),
+      };
+      MockModel.query.mockReturnValue({
+        where: jest.fn().mockReturnValue(mockWhereChain),
+      });
+
+      // Mock FormSubmission.query().findById()
+      const mockSubmission = { id: submissionId, createdBy: 'test@idir' };
+      const mockFormSubmissionQuery = {
+        findById: jest.fn().mockResolvedValue(mockSubmission),
+      };
+
+      // Mock FormSubmissionStatus.query().modify().withGraphFetched().modify().first()
+      const mockStatus = { code: 'SUBMITTED' };
+      const mockStatusChain = {
+        modify: jest.fn().mockReturnThis(),
+        withGraphFetched: jest.fn().mockReturnThis(),
+        orderDescending: jest.fn().mockReturnThis(),
+        first: jest.fn().mockResolvedValue(mockStatus),
+      };
+
+      // Mock Form.query().findById()
+      const mockForm = { id: 'form-123', enableSubmitterRevision: true };
+      const mockFormQuery = {
+        findById: jest.fn().mockResolvedValue(mockForm),
+      };
+
+      // Set up the mock to return different values for different calls
+      MockModel.query
+        .mockReturnValueOnce({ where: jest.fn().mockReturnValue(mockWhereChain) }) // SubmissionMetadata
+        .mockReturnValueOnce(mockFormSubmissionQuery) // FormSubmission
+        .mockReturnValueOnce(mockStatusChain) // FormSubmissionStatus
+        .mockReturnValueOnce(mockFormQuery); // Form
+
+      const result = await service.checkSubmitterRevision(submissionId, currentUser);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return canRevise false when form does not have enableSubmitterRevision', async () => {
+      // Mock SubmissionMetadata.query().where().first()
+      const mockMetadata = { submissionId: submissionId, formVersionId: 'version-123', formId: 'form-123' };
+      const mockWhereChain = {
+        first: jest.fn().mockResolvedValue(mockMetadata),
+      };
+
+      // Mock FormSubmission.query().findById()
+      const mockSubmission = { id: submissionId, createdBy: 'test@idir' };
+      const mockFormSubmissionQuery = {
+        findById: jest.fn().mockResolvedValue(mockSubmission),
+      };
+
+      // Mock FormSubmissionStatus.query().modify().withGraphFetched().modify().first()
+      const mockStatus = { code: 'SUBMITTED' };
+      const mockStatusChain = {
+        modify: jest.fn().mockReturnThis(),
+        withGraphFetched: jest.fn().mockReturnThis(),
+        orderDescending: jest.fn().mockReturnThis(),
+        first: jest.fn().mockResolvedValue(mockStatus),
+      };
+
+      // Mock Form.query().findById()
+      const mockForm = { id: 'form-123', enableSubmitterRevision: false };
+      const mockFormQuery = {
+        findById: jest.fn().mockResolvedValue(mockForm),
+      };
+
+      // Set up the mock to return different values for different calls
+      MockModel.query
+        .mockReturnValueOnce({ where: jest.fn().mockReturnValue(mockWhereChain) }) // SubmissionMetadata
+        .mockReturnValueOnce(mockFormSubmissionQuery) // FormSubmission
+        .mockReturnValueOnce(mockStatusChain) // FormSubmissionStatus
+        .mockReturnValueOnce(mockFormQuery); // Form
+
+      const result = await service.checkSubmitterRevision(submissionId, currentUser);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return canRevise false when submission status is not SUBMITTED', async () => {
+      // Mock SubmissionMetadata.query().where().first()
+      const mockMetadata = { submissionId: submissionId, formVersionId: 'version-123', formId: 'form-123' };
+      const mockWhereChain = {
+        first: jest.fn().mockResolvedValue(mockMetadata),
+      };
+
+      // Mock FormSubmission.query().findById()
+      const mockSubmission = { id: submissionId, createdBy: 'test@idir' };
+      const mockFormSubmissionQuery = {
+        findById: jest.fn().mockResolvedValue(mockSubmission),
+      };
+
+      // Mock FormSubmissionStatus.query().modify().withGraphFetched().modify().first()
+      const mockStatus = { code: 'DRAFT' };
+      const mockStatusChain = {
+        modify: jest.fn().mockReturnThis(),
+        withGraphFetched: jest.fn().mockReturnThis(),
+        orderDescending: jest.fn().mockReturnThis(),
+        first: jest.fn().mockResolvedValue(mockStatus),
+      };
+
+      // Mock Form.query().findById()
+      const mockForm = { id: 'form-123', enableSubmitterRevision: true };
+      const mockFormQuery = {
+        findById: jest.fn().mockResolvedValue(mockForm),
+      };
+
+      // Set up the mock to return different values for different calls
+      MockModel.query
+        .mockReturnValueOnce({ where: jest.fn().mockReturnValue(mockWhereChain) }) // SubmissionMetadata
+        .mockReturnValueOnce(mockFormSubmissionQuery) // FormSubmission
+        .mockReturnValueOnce(mockStatusChain) // FormSubmissionStatus
+        .mockReturnValueOnce(mockFormQuery); // Form
+
+      const result = await service.checkSubmitterRevision(submissionId, currentUser);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return canRevise false when user is not the creator', async () => {
+      // Mock SubmissionMetadata.query().where().first()
+      const mockMetadata = { submissionId: submissionId, formVersionId: 'version-123', formId: 'form-123' };
+      const mockWhereChain = {
+        first: jest.fn().mockResolvedValue(mockMetadata),
+      };
+
+      // Mock FormSubmission.query().findById()
+      const mockSubmission = { id: submissionId, createdBy: 'other@idir' };
+      const mockFormSubmissionQuery = {
+        findById: jest.fn().mockResolvedValue(mockSubmission),
+      };
+
+      // Mock FormSubmissionStatus.query().modify().withGraphFetched().modify().first()
+      const mockStatus = { code: 'SUBMITTED' };
+      const mockStatusChain = {
+        modify: jest.fn().mockReturnThis(),
+        withGraphFetched: jest.fn().mockReturnThis(),
+        orderDescending: jest.fn().mockReturnThis(),
+        first: jest.fn().mockResolvedValue(mockStatus),
+      };
+
+      // Mock Form.query().findById()
+      const mockForm = { id: 'form-123', enableSubmitterRevision: true };
+      const mockFormQuery = {
+        findById: jest.fn().mockResolvedValue(mockForm),
+      };
+
+      // Set up the mock to return different values for different calls
+      MockModel.query
+        .mockReturnValueOnce({ where: jest.fn().mockReturnValue(mockWhereChain) }) // SubmissionMetadata
+        .mockReturnValueOnce(mockFormSubmissionQuery) // FormSubmission
+        .mockReturnValueOnce(mockStatusChain) // FormSubmissionStatus
+        .mockReturnValueOnce(mockFormQuery); // Form
+
+      const result = await service.checkSubmitterRevision(submissionId, currentUser);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false when submission metadata is not found', async () => {
+      // Mock SubmissionMetadata.query().where().first() to return null
+      const mockWhereChain = {
+        first: jest.fn().mockResolvedValue(null),
+      };
+      MockModel.query.mockReturnValue({
+        where: jest.fn().mockReturnValue(mockWhereChain),
+      });
+
+      const result = await service.checkSubmitterRevision(submissionId, currentUser);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('performSubmitterRevision', () => {
+    it('should successfully perform revision when all conditions are met', async () => {
+      // Mock checkSubmitterRevision to return true
+      service.checkSubmitterRevision = jest.fn().mockResolvedValue(true);
+
+      // Mock changeStatusState to return success
+      const mockStatusResult = [{ id: 1, code: 'REVISING' }];
+      service.changeStatusState = jest.fn().mockResolvedValue(mockStatusResult);
+
+      const checkSpy = jest.spyOn(service, 'checkSubmitterRevision');
+      const changeStatusSpy = jest.spyOn(service, 'changeStatusState');
+
+      const result = await service.performSubmitterRevision(submissionId, currentUser);
+
+      expect(checkSpy).toBeCalledWith(submissionId, currentUser);
+      expect(changeStatusSpy).toBeCalledWith(submissionId, { code: 'REVISING' }, currentUser);
+      expect(result).toEqual(mockStatusResult);
+    });
+
+    it('should return false when checkSubmitterRevision returns false', async () => {
+      // Mock checkSubmitterRevision to return false
+      service.checkSubmitterRevision = jest.fn().mockResolvedValue(false);
+
+      const checkSpy = jest.spyOn(service, 'checkSubmitterRevision');
+
+      const result = await service.performSubmitterRevision(submissionId, currentUser);
+
+      expect(checkSpy).toBeCalledWith(submissionId, currentUser);
+      expect(result).toBe(false);
+    });
+
+    it('should throw error when changeStatusState fails', async () => {
+      // Mock checkSubmitterRevision to return true
+      service.checkSubmitterRevision = jest.fn().mockResolvedValue(true);
+
+      // Mock changeStatusState to throw error
+      service.changeStatusState = jest.fn().mockRejectedValue(new Error('Status change failed'));
+
+      await expect(service.performSubmitterRevision(submissionId, currentUser)).rejects.toThrow('Status change failed');
+    });
   });
 });
