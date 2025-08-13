@@ -64,25 +64,36 @@ runs:
         openshift_token: ${{ inputs.openshift_token }}
         insecure_skip_tls_verify: true
         namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
-
-    - name: Deploy Patroni Secret
-      shell: bash
-      run: >-
-        oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret patroni-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/patroni.secret.yaml -p APP_DB_NAME=${{ inputs.acronym }} -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-
-    - name: Deploy Patroni
+    - name: Debug File Existence
       shell: bash
       run: |
-        if [[ "${{ inputs.job_name }}" == pr-* ]]; then
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/patroni-ephemeral.dc.yaml -p APP_NAME=${{ inputs.acronym }} -p INSTANCE=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-        else
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/patroni.dc.yaml -p INSTANCE=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} --param-file=openshift/patroni.${{ inputs.namespace_environment }}.param | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-        fi
-
-    - name: Wait on Patroni
+        ls -l openshift/crunchydb/charts/crunchy-postgres/
+        cat openshift/crunchydb/charts/crunchy-postgres/values.yaml
+    - name: Check File Permissions
       shell: bash
-      run: |
-        oc rollout --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} status statefulset/patroni-${{ inputs.job_name }} --watch=true
+      run: ls -l openshift/crunchydb/charts/crunchy-postgres/values.yaml
+    - name: Validate Helm Values File
+      shell: bash
+      run: helm template --values openshift/crunchydb/charts/crunchy-postgres/values.yaml openshift/crunchydb/charts/crunchy-postgres/ --debug
+    - name: Deploy Database (PR)
+      if: inputs.namespace_environment == 'pr'
+      uses: bcgov/action-crunchy@v1.1.0
+      id: deploy-db-pr
+      with:
+        oc_namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment}}
+        oc_token: ${{ inputs.openshift_token }}
+        values_file: openshift/crunchydb/charts/crunchy-postgres/values.yaml
+        triggers: .github/**,openshift/crunchydb/charts/crunchy-postgres/**
+    - name: Deploy Database (Non-PR)
+      if: inputs.namespace_environment != 'pr'
+      uses: bcgov/action-crunchy@v1.1.0
+      id: deploy-db
+      with:
+        oc_namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment}}
+        oc_token: ${{ inputs.openshift_token }}
+        environment: ${{ inputs.namespace_environment }}
+        values_file: openshift/crunchydb/charts/crunchy-postgres/values.yaml
+        triggers: .github/**,openshift/crunchydb/charts/crunchy-postgres/**
 
     - name: Deploy App Secret
       shell: bash
