@@ -80,4 +80,12 @@ routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions
   await controller.deleteMultipleSubmissions(req, res, next);
 });
 
+routes.get('/:formSubmissionId/submitterRevision', hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.checkSubmitterRevision(req, res, next);
+});
+
+routes.post('/:formSubmissionId/submitterRevision', hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.performSubmitterRevision(req, res, next);
+});
+
 module.exports = routes;

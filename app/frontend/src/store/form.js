@@ -71,6 +71,7 @@ const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
+  enableSubmitterRevision: false,
   allowSubmitterToUploadFile: false,
   showAssigneeInSubmissionsTable: false,
   id: '',
@@ -471,6 +472,7 @@ export const useFormStore = defineStore('form', {
           description: this.form.description,
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
+          enableSubmitterRevision: this.form.enableSubmitterRevision,
           enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
           showAssigneeInSubmissionsTable:
             this.form.showAssigneeInSubmissionsTable,
