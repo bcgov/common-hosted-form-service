@@ -94,13 +94,24 @@ describe('Form Designer', () => {
         cy.get('button[title="Email a receipt of this submission"]').click();
         cy.get('span').contains('SEND').click();
         cy.get('.v-alert__content').contains('div','An email has been sent to chefs.testing@gov.bc.ca.').should('be.visible');
+        //Recall submission
+        cy.get('button[title="Recall Submission"]').should('be.visible');
+        cy.get('button[title="Recall Submission"]').click();
+        cy.wait(1000);
+        //Update form and resubmit
+        cy.get('input[name="data[simpletextfield]"]').click();
+        cy.get('input[name="data[simpletextfield]"]').type('{selectall}{backspace}');
+        cy.get('input[name="data[simpletextfield]"]').type('Nancy');
+        //Verify submission has revision status after recall
+        cy.get('.mt-6 > :nth-child(1) > .v-btn').click();
+        cy.get('.v-data-table__tr > :nth-child(4)').contains('REVISING').should('be.visible');
+        cy.get('.v-data-table__tr > :nth-child(2)').should('exist');
         //view submission
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-        cy.wait(4000);
+        cy.wait(2000);
         cy.get('.mdi-list-box-outline').click();
-        cy.wait(4000);
+        cy.wait(2000);
         cy.waitForLoad();
-        cy.get('.v-data-table__tr > :nth-child(2)').should('exist');
         cy.get('input[type="checkbox"]').then($el => {
           const rem=$el[0];
           rem.click();
@@ -122,28 +133,28 @@ describe('Form Designer', () => {
           cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
           cy.get('.v-data-table__tr > :nth-child(2)').should('not.exist');
           cy.get(rem).click({ force: true });
-          
           cy.get('.v-data-table__tr > :nth-child(2)').should('exist');
-
-
         });
-        
         cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
+        //Change status to "Assigned" to edit submission data
+        cy.get('.status-heading > .mdi-chevron-right').click();
+        cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+        cy.waitForLoad();
+        cy.contains('ASSIGNED').click();
+        cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
+        cy.wait(2000);
         //Edit submission
         cy.get('.mdi-pencil').click();
         //check visibility of cancel button
         cy.get('.v-col-2 > .v-btn').should('be.visible');
         cy.get('button').contains('Submit').should('be.visible');
-        
         //Edit submission data
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Smith');
-
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
         cy.get('[data-test="continue-btn-continue"]').click();
         cy.wait(2000);
-        
         //Adding notes to submission
         cy.get('.mdi-plus').click();
         cy.get('div').find('textarea').then($el => {
@@ -151,9 +162,7 @@ describe('Form Designer', () => {
           const rem=$el[0];
           rem.click();
           cy.get(rem).type('some notes');
-          
-          
-          });
+        });
         cy.get('[data-test="canCancelNote"]').should('be.visible');
         cy.get('[data-test="btn-add-note"]').click();
         cy.get('.notes-text').contains('1');
