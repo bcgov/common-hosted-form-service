@@ -620,9 +620,13 @@ const service = {
           return false;
         });
       });
-      let start = page * itemsPerPage;
-      let end = page * itemsPerPage + itemsPerPage;
-      result.results = searchedData.slice(start, end);
+      if (itemsPerPage !== -1) {
+        let start = page * itemsPerPage;
+        let end = page * itemsPerPage + itemsPerPage;
+        result.results = searchedData.slice(start, end);
+      } else {
+        result.results = searchedData;
+      }
       return result;
     } else if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
       return await query.page(parseInt(page), parseInt(itemsPerPage));
