@@ -198,35 +198,31 @@ describe('Form Designer', () => {
       
       cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
       cy.get('.mt-6 > :nth-child(2) > .mdi-help-circle-outline').should('exist');
-      /*
       cy.get('.mdi-plus-circle').click({ force: true });
       cy.wait(2000);
-      cy.get('input[type="text"]').then($el => {
-        cy.get('.mdi-plus-circle').click();
-        const api_name=$el[16];
-        cy.get(api_name).click({ force: true });
-        cy.get('[data-test="text-endpointUrl"]').click();
-        
-        cy.wait(2000);
-        cy.contains('div','Name is required.').should('be.visible');
-        cy.get('[data-test="text-apiKeyHeader"]').click();
-        cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
-        cy.get(api_name).click({ force: true });
-        cy.get(api_name).type('chefs_name');
-        cy.get('[data-test="text-endpointUrl"]').type('chefs_endpoint');
-        //cy.contains('div','Name is required.').should('not.exist');
-        cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
-        cy.get('[data-test="text-endpointUrl"]').type('{selectall}{backspace}');
-        cy.get('[data-test="text-endpointUrl"]').type('https://chefs-dev.apps.silver.devops.gov.bc.ca/');
-        cy.get('[data-test="text-apiKeyHeader"]').type('header');
-        cy.get('[data-test="text-apiKey"]').type('keyvalue');
+      cy.get('.mdi-plus-circle').click();  
+      cy.get('[data-test="text-name"]').find('input[type="text"]').then($el => {
+      const api_name=$el[1];
+      cy.get(api_name).click();
+      cy.get('[data-test="text-endpointUrl"]').click();
+      cy.wait(2000);
+      cy.contains('div','Name is required.').should('be.visible');
+      cy.get('[data-test="text-apiKeyHeader"]').click();
+      cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
+      cy.get(api_name).click({ force: true });
+      cy.get(api_name).type('chefs_name');
       });
+      cy.get('[data-test="text-endpointUrl"]').type('chefs_endpoint');
+      cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
+      cy.get('[data-test="text-endpointUrl"]').type('{selectall}{backspace}');
+      cy.get('[data-test="text-endpointUrl"]').type('https://chefs-dev.apps.silver.devops.gov.bc.ca/');
+      cy.get('[data-test="text-apiKeyHeader"]').type('header');
+      cy.get('[data-test="text-apiKey"]').type('keyvalue');
       cy.get('span').contains('Send API Key').click();
       cy.get('span').contains('Send User Information').click();
       cy.get('[data-test="continue-btn-continue"]').should('be.enabled');
       cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
-      cy.get('[data-test="continue-btn-continue"]').click();
-          
+      cy.get('[data-test="continue-btn-continue"]').click();  
       cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(3)').contains('Submitted');
       cy.get(':nth-child(1) > .v-btn > .v-btn__content > .mdi-pencil').click();
       cy.get('span').contains('Submitted').should('exist');
@@ -236,7 +232,6 @@ describe('Form Designer', () => {
       cy.get('.v-data-table__tbody > .v-data-table__tr > .v-data-table-column--align-end > :nth-child(2) > [targetref="[object Object]"] > .v-btn').click(); 
       cy.wait(2000);
       cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(1)').should('not.exist'); 
-      */
        //Delete form after test run
       cy.get('[data-test="canRemoveForm"]').then($el => {
       const delform=$el[0];
