@@ -14,6 +14,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
+import FormDataRecoveryDialog from '~/components/designer/FormDataRecoveryDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
 import templateExtensions from '~/plugins/templateExtensions';
@@ -22,6 +23,7 @@ import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useFormAutoSave } from '~/composables/useFormAutoSave';
 
 import { isFormPublic } from '~/utils/permissionUtils';
 import {
@@ -114,6 +116,20 @@ const authStore = useAuthStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
+// Auto-save functionality
+const {
+  createDebouncedSave,
+  hasAutoSavedData,
+  getAutoSavedData,
+  clearAutoSavedData,
+  isStorageSupported,
+  cleanupOldAutoSaves,
+} = useFormAutoSave();
+
+const showDataRecoveryDialog = ref(false);
+const recoveryData = ref(null);
+const debouncedAutoSave = ref(null);
+
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
 const { downloadedFile, isRTL } = storeToRefs(formStore);
@@ -183,6 +199,15 @@ watch(locale, () => {
 });
 
 onMounted(async () => {
+  // Clean up old auto-save entries on mount (only if not done recently)
+  const lastCleanup = localStorage.getItem('chefs_last_cleanup');
+  const now = Date.now();
+  if (!lastCleanup || now - parseInt(lastCleanup) > 6 * 60 * 60 * 1000) {
+    // 6 hours
+    cleanupOldAutoSaves();
+    localStorage.setItem('chefs_last_cleanup', now.toString());
+  }
+
   // load up headers for any External API calls
   // from components.
   await setProxyHeaders();
@@ -197,6 +222,10 @@ onMounted(async () => {
     showModal.value = true;
     await getFormSchema();
   }
+
+  // Initialize auto-save after form is loaded
+  initializeAutoSave();
+
   window.addEventListener('beforeunload', beforeWindowUnload);
 
   reRenderFormIo.value += 1;
@@ -205,6 +234,14 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', beforeWindowUnload);
   clearTimeout(downloadTimeout.value);
+
+  // Cleanup auto-save debounced function
+  if (
+    debouncedAutoSave.value &&
+    typeof debouncedAutoSave.value.cleanup === 'function'
+  ) {
+    debouncedAutoSave.value.cleanup();
+  }
 });
 
 onBeforeUpdate(() => {
@@ -215,6 +252,89 @@ onBeforeUpdate(() => {
 
 function getCurrentAuthHeader() {
   return `Bearer ${keycloak.value.token}`;
+}
+
+function initializeAutoSave() {
+  // Handle enableAutoSave field - default to false if undefined
+  const enableAutoSave = form.value?.enableAutoSave === true;
+
+  if (
+    !properties.formId ||
+    properties.readOnly ||
+    properties.preview ||
+    !isStorageSupported() ||
+    !enableAutoSave
+  ) {
+    return;
+  }
+
+  // Create debounced auto-save function with error handling
+  debouncedAutoSave.value = createDebouncedSave(
+    properties.formId,
+    versionIdToSubmitTo.value || 'latest',
+    form.value?.name || ''
+  );
+
+  // Check for existing auto-saved data
+  const hasData = hasAutoSavedData(
+    properties.formId,
+    versionIdToSubmitTo.value || 'latest'
+  );
+
+  if (hasData) {
+    const result = getAutoSavedData(
+      properties.formId,
+      versionIdToSubmitTo.value || 'latest'
+    );
+
+    if (result.error) {
+      // Auto-save recovery errors are handled silently
+      // The feature gracefully degrades without user interruption
+    }
+
+    if (
+      result.data &&
+      result.data.data &&
+      Object.keys(result.data.data).length > 0
+    ) {
+      // Only show recovery dialog if there's meaningful data and no existing submission
+      if (
+        !properties.submissionId ||
+        (properties.submissionId && !submission.value?.data)
+      ) {
+        recoveryData.value = result.data;
+        showDataRecoveryDialog.value = true;
+      }
+    }
+  }
+}
+
+function handleDataRecovery(savedData) {
+  if (savedData && savedData.data) {
+    // Restore the form data
+    submission.value = { data: savedData.data };
+    formDataEntered.value = true;
+
+    // Force form re-render to display restored data
+    reRenderFormIo.value += 1;
+
+    // Clear the auto-saved data since it's been restored
+    clearAutoSavedData(
+      properties.formId,
+      versionIdToSubmitTo.value || 'latest'
+    );
+
+    notificationStore.addNotification({
+      text: t('trans.formDataRecovery.restored'),
+      type: 'success',
+    });
+  }
+}
+
+function dismissDataRecovery() {
+  // Clear the auto-saved data since user dismissed it
+  clearAutoSavedData(properties.formId, versionIdToSubmitTo.value || 'latest');
+  recoveryData.value = null;
 }
 
 async function getFormData() {
@@ -439,6 +559,19 @@ function formChange(e) {
   }
   if (e.changed != undefined && !e.changed.flags.fromSubmission) {
     formDataEntered.value = true;
+
+    const enableAutoSave = form.value?.enableAutoSave === true;
+
+    // Auto-save the form data if conditions are met and auto-save is enabled
+    if (
+      debouncedAutoSave.value &&
+      !properties.readOnly &&
+      !properties.preview &&
+      enableAutoSave &&
+      chefForm.value?.formio?._data
+    ) {
+      debouncedAutoSave.value(chefForm.value.formio._data);
+    }
   }
 
   // Seems to be the only place the form changes on load
@@ -662,6 +795,14 @@ async function doSubmit(sub) {
 }
 
 async function onSubmitDone() {
+  // Clear auto-saved data since form was successfully submitted
+  if (properties.formId) {
+    clearAutoSavedData(
+      properties.formId,
+      versionIdToSubmitTo.value || 'latest'
+    );
+  }
+
   // huzzah!
   // really nothing to do, the formio button has consumed the event and updated its display
   // is there anything here for us to do?
@@ -929,6 +1070,13 @@ async function uploadFile(file, config = {}) {
           </v-alert>
 
           <slot name="alert" :form="form" :class="{ 'dir-rtl': isRTL }" />
+
+          <FormDataRecoveryDialog
+            v-model="showDataRecoveryDialog"
+            :recovery-data="recoveryData"
+            @restore="handleDataRecovery"
+            @dismiss="dismissDataRecovery"
+          />
 
           <BaseDialog
             v-model="showSubmitConfirmDialog"
