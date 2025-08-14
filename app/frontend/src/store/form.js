@@ -724,8 +724,13 @@ export const useFormStore = defineStore('form', {
               filterAssignedToCurrentUser: filterAssignedToCurrentUser,
             });
         if (paginationEnabled) {
-          this.submissionList = response.data.results;
-          this.totalSubmissions = response.data.total;
+          if (response.data?.total >= 0) {
+            this.submissionList = response.data.results;
+            this.totalSubmissions = response.data.total;
+          } else {
+            this.submissionList = response.data;
+            this.totalSubmissions = response.data.length;
+          }
         } else {
           this.submissionList = response.data;
         }
