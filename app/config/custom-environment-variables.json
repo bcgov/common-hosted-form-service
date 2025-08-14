@@ -96,7 +96,7 @@
   },
   "webcomponents": {
     "assets": {
-      "roots": ["WC_ASSETS_ROOTS"]
+      "roots": "WC_ASSETS_ROOTS"
     }
   }
 }

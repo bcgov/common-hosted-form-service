@@ -26,7 +26,9 @@ class FakeFormioInstance {
   async setSubmission(obj) {
     this.submission = obj || { data: {} };
   }
-  async redraw() {}
+  async redraw() {
+    this._redrawCalled = true;
+  }
   getValue() {
     return { fromGetValue: true };
   }
@@ -49,13 +51,15 @@ describe('chefs-form-viewer web component', () => {
     if (faStyle && faStyle.parentNode) faStyle.parentNode.removeChild(faStyle);
 
     // Stable base URL for getBaseUrl
-    // Touch location to satisfy linter about side-effect, then replace to /app
-    void window.location.href;
+    // Replace URL to /app for stable base
     window.history.replaceState({}, '', '/app/demo');
 
     // Stub Formio before loading the component so asset loader skips JS fetches
     // Local construction validates class shape during setup
-    void new FakeFormioInstance();
+    // Construct and discard without using void operator
+    (() => {
+      new FakeFormioInstance();
+    })();
     // createForm returns a fresh instance each time to avoid cross-test pollution
     globalThis.Formio = {
       createForm: vi.fn(() => new FakeFormioInstance()),
@@ -88,8 +92,10 @@ describe('chefs-form-viewer web component', () => {
           const body = JSON.parse((opts && opts.body) || '{}');
           return mkRes(200, body.submission || {});
         }
-      } catch (_) {
-        // ignore URL parsing issues and fall back
+      } catch (err) {
+        // Handle parse issues explicitly and fall back to originalFetch
+        // eslint-disable-next-line no-console
+        console.debug('mock fetch URL parse failed:', err);
       }
       if (typeof originalFetch === 'function') {
         return originalFetch(url, opts);
