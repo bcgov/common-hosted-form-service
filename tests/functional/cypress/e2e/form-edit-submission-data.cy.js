@@ -37,7 +37,7 @@ describe('Form Designer', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
@@ -61,9 +61,7 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         //Publish the form
         cy.get('.v-label > span').click();
-      
         cy.get('span').contains('Publish Version 1');
-      
         cy.contains('Continue').should('be.visible');
         cy.contains('Continue').trigger('click');
         //Submit the form
@@ -81,15 +79,26 @@ describe('Form Designer', () => {
         cy.get('label').contains('Text Field').should('be.visible');
         cy.get('label').contains('Text Field').should('be.visible');
         cy.location('pathname').should('eq', `/${depEnv}/form/success`);
-    
         cy.contains('h1', 'Your form has been submitted successfully');
-        
+        cy.get('button[title="Email a receipt of this submission"]').should('be.visible');
+        cy.get('button[title="Email a receipt of this submission"]').click();
+        cy.get('[data-test="text-form-to"]').find('input[type="text"]').should('have.value','chefs.testing@gov.bc.ca');
+        cy.wait(1000);
+        cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+        cy.contains('Normal').should('exist'); 
+        cy.contains('High').should('exist');
+        cy.contains('Low').should('exist');
+        cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+        cy.get('span').contains('SEND').should('be.visible');
+        cy.get('[data-test="continue-btn-cancel"]').click();
+        cy.get('button[title="Email a receipt of this submission"]').click();
+        cy.get('span').contains('SEND').click();
+        cy.get('.v-alert__content').contains('div','An email has been sent to chefs.testing@gov.bc.ca.').should('be.visible');
         //view submission
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.wait(4000);
         cy.get('.mdi-list-box-outline').click();
         cy.wait(4000);
-        //cy.get('[data-test="canViewFormSubmissions"]').click({multiple:true,force:true});
         cy.waitForLoad();
         cy.get('.v-data-table__tr > :nth-child(2)').should('exist');
         cy.get('input[type="checkbox"]').then($el => {

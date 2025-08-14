@@ -2475,9 +2475,8 @@ describe('processPaginationData', () => {
   });
 
   it('should return all results when itemsPerPage is -1 (no search)', async () => {
-    mockQuery.page.mockResolvedValue({ results: [1, 2, 3], total: 3 });
-    const result = await service.processPaginationData(mockQuery, 0, -1, 3, null, false);
-    expect(mockQuery.page).toHaveBeenCalledWith(0, 3);
+    const query = Promise.resolve({ results: [1, 2, 3], total: 3 });
+    const result = await service.processPaginationData(query, 0, -1, 3, null, false);
     expect(result.results).toEqual([1, 2, 3]);
     expect(result.total).toBe(3);
   });

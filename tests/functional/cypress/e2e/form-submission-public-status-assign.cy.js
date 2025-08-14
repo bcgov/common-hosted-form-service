@@ -83,24 +83,17 @@ describe('Form Designer', () => {
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Public (anonymous)').click();
     cy.waitForLoad();
-    cy.get('input[type="checkbox"]').then($el => {
-            const rem=$el[0];//save and edit drafts
-            const rem1=$el[1];//Reviewers can update the status
-            const rem2=$el[2];//display assignee column
-            const rem4=$el[4];//form submission schedule settings
-            const rem5=$el[5];//copy existing submission
-            const rem6=$el[6];//Event Subscription
-            const rem7=$el[7];//Wide form layout
-            const rem8=$el[8];//Share draft with team members
-            cy.get(rem).should("not.be.enabled");
-            cy.get(rem1).should("be.enabled");
-            cy.get(rem2).should("be.enabled");
-            cy.get(rem4).should("be.enabled");
-            cy.get(rem5).should("not.be.enabled");
-            cy.get(rem6).should("be.enabled"); 
-            cy.get(rem7).should("be.enabled");
-            cy.get(rem8).should("not.be.enabled");      
-    });
+    //Validate checkbox settings on form settings page
+    cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').should("not.be.enabled");
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').find('input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').find('input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').should('be.enabled');
+    cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
+    cy.get('[data-test="canAllowEventSubscriptionCheckbox"]').find('input[type="checkbox"]').should("be.enabled"); 
+    cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
+    cy.get('[data-test="canUploadDraftCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
+    cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').find('input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="enableTeamMemberDraftShare"]').find('input[type="checkbox"]').should("not.be.enabled");    
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
     cy.get('[data-test="canManageTeammembers"]').click();
@@ -130,14 +123,21 @@ describe('Form Designer', () => {
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
-    if(depEnv=="app")
-      {
-        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
-      }
-    else
-      {
-        cy.visit(`/${depEnv}`);
-      }      
+    cy.get('button[title="Email a receipt of this submission"]').should('be.visible');
+    cy.get('button[title="Email a receipt of this submission"]').click();
+    cy.get('[data-test="text-form-to"]').find('input[type="text"]').type('testing@gov.bc.ca');
+    cy.wait(1000);
+    cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.contains('Normal').should('exist'); 
+    cy.contains('High').should('exist');
+    cy.contains('Low').should('exist');
+    cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.get('span').contains('SEND').should('be.visible');
+    cy.get('[data-test="continue-btn-cancel"]').click();
+    cy.get('button[title="Email a receipt of this submission"]').click();
+    cy.get('span').contains('SEND').click();
+    cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
+    cy.visit(`/${depEnv}`);   
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();     
     cy.get('#user').type(username);
