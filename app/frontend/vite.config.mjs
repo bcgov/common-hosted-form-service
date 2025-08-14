@@ -22,8 +22,10 @@ export default defineConfig(({ command, mode }) => {
       proxy: {
         '^/pr-*/api': proxyObject,
         '^/pr-*/config': proxyObject,
+        '^/pr-*/webcomponents': proxyObject,
         '^/app/api': proxyObject,
         '^/app/config': proxyObject,
+        '^/app/webcomponents': proxyObject,
       },
     },
     plugins: [Vue(), vuetify(), eslint()],
