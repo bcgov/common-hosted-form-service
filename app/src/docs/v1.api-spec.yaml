@@ -1968,6 +1968,10 @@ paths:
     get:
       summary: Get the list of notes for a submission
       operationId: readSubmissioNotes
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Status
       parameters:

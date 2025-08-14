@@ -36,7 +36,7 @@ routes.get('/:formSubmissionId/options', async (req, res, next) => {
   await controller.readOptions(req, res, next);
 });
 
-routes.get('/:formSubmissionId/notes', hasSubmissionPermissions([P.SUBMISSION_REVIEW]), async (req, res, next) => {
+routes.get('/:formSubmissionId/notes', apiAccess, hasSubmissionPermissions([P.SUBMISSION_REVIEW]), async (req, res, next) => {
   await controller.getNotes(req, res, next);
 });
 

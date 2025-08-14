@@ -220,7 +220,7 @@ describe(`${basePath}/:formSubmissionId/notes`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(0);
+    expect(apiAccess).toBeCalledTimes(1);
     expect(controller.getNotes).toBeCalledTimes(1);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
