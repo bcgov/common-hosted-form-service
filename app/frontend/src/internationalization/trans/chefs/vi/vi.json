@@ -116,6 +116,7 @@
     "loginRequired": "Yêu cầu đăng nhập",
     "canSaveAndEditDraftLabel": "Người gửi có thể <strong>Lưu và Chỉnh sửa Bản nháp</strong>",
     "canUpdateStatusAsReviewer": "Người đánh giá có thể <strong>Cập nhật Trạng thái</strong> của biểu mẫu này (nghĩa là Đã gửi, Đã giao, Đã hoàn thành)",
+    "enableSubmitterRevision": "Người gửi có thể <strong>Xem lại bài nộp của chính họ</strong> và gửi lại",
     "submitterCanCopyExistingSubmissn": "Người gửi có thể <strong>Sao chép một bài nộp hiện có</strong>",
     "submissionConfirmationToolTip": "Việc chọn tùy chọn này sẽ kiểm soát những gì người dùng gửi biểu mẫu này sẽ thấy khi gửi thành công.<br /> Nếu được chọn, nó sẽ hiển thị",
     "emailNotificatnToTeam": "Gửi cho nhóm của tôi một email thông báo",
@@ -1230,5 +1231,23 @@
   "canShareDraft": {
     "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
     "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "Dịch vụ này tạm thời không khả dụng.",
+    "chefsUnavailableBoilerplate": "Vui lòng thử lại trong thời gian ngắn. Nếu vấn đề vẫn tiếp tục, hãy liên hệ với bộ phận hỗ trợ CNTT của nhóm bạn hoặc quản trị viên hệ thống.",
+    "moreInfo": "Thêm thông tin",
+    "lessInfo": "Quay lại",
+    "moreInfoIntro": "Vấn đề này là do gián đoạn trong một hoặc nhiều dịch vụ được kết nối:",
+    "moreInfoOutro": "Chúng tôi đang làm việc để khôi phục quyền truy cập. Nếu vấn đề vẫn tiếp tục, bộ phận hỗ trợ CNTT hoặc quản trị viên hệ thống của bạn có thể liên hệ với chúng tôi qua {linkOne} hoặc {linkTwo}.",
+    "name": "Dịch vụ",
+    "status": "Trạng thái",
+    "connected": "Đã kết nối",
+    "disconnected": "Đã ngắt kết nối",
+    "msTeamsChannel": "Kênh MS Teams",
+    "rocketChatChannel": "Kênh Rocket.Chat",
+    "defaultStatusMessage": "Dịch vụ tạm thời không khả dụng (503). Vui lòng thử lại sau.",
+    "shuttingDown": "CHEFS đang tắt.",
+    "notReady": "CHEFS không thể kết nối với tất cả các dịch vụ cần thiết.",
+    "unableToReachBackend": "Không thể truy cập dịch vụ backend."
   }
 }

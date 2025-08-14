@@ -116,6 +116,7 @@
     "loginRequired": "Necesario iniciar sesión",
     "canSaveAndEditDraftLabel": "Los remitentes pueden <strong>guardar y editar borradores</strong>",
     "canUpdateStatusAsReviewer": "Los revisores pueden <strong>actualizar el estado</strong> de este formulario (es decir, enviado, asignado, completado)",
+    "enableSubmitterRevision": "Los remitentes pueden <strong>revisar sus propias presentaciones</strong> y volver a enviarlas",
     "submitterCanCopyExistingSubmissn": "Los remitentes pueden <strong>copiar un envío existente</strong>",
     "submissionConfirmationToolTip": "Al seleccionar esta opción, se controla lo que verá el usuario que envía este formulario cuando se envíe correctamente.<br /> Si está marcada, se mostrará",
     "emailNotificatnToTeam": "Enviar a mi equipo un correo electrónico de notificación",
@@ -1226,5 +1227,23 @@
   "canShareDraft": {
     "canShareMessage": "No puedes compartir el borrador con usuarios que no se hayan añadido al formulario. Contacta con el administrador para añadirlos.",
     "shareDraftMessage": "Compartir borrador solo con miembros del equipo del formulario"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "Este servicio no está disponible temporalmente.",
+    "chefsUnavailableBoilerplate": "Por favor, inténtelo de nuevo en breve. Si el problema persiste, contacte con el soporte técnico de su equipo o el administrador del sistema.",
+    "moreInfo": "Más información",
+    "lessInfo": "Atrás",
+    "moreInfoIntro": "Este problema se debe a interrupciones en uno o más servicios conectados:",
+    "moreInfoOutro": "Estamos trabajando para restaurar el acceso. Si el problema persiste, su soporte técnico o administrador del sistema puede contactarnos a través de {linkOne} o {linkTwo}.",
+    "name": "Servicio",
+    "status": "Estado",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "msTeamsChannel": "Canal de MS Teams",
+    "rocketChatChannel": "Canal de Rocket.Chat",
+    "defaultStatusMessage": "El servicio no está disponible temporalmente (503). Por favor, inténtelo más tarde.",
+    "shuttingDown": "CHEFS se está cerrando.",
+    "notReady": "CHEFS no puede conectarse a todos los servicios requeridos.",
+    "unableToReachBackend": "No se puede alcanzar el servicio backend."
   }
 }

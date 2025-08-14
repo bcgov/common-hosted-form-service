@@ -116,6 +116,7 @@
     "loginRequired": "Kailangang mag-login",
     "canSaveAndEditDraftLabel": "Maaaring <strong>Mag-save at Mag-edit ng mga Draft</strong> ang mga nagsumite",
     "canUpdateStatusAsReviewer": "Maaaring <strong>I-update ng mga tagasuri ang Katayuan</strong> ng form na ito (ibig sabihin, Naisumite, Nakatalaga, Nakumpleto)",
+    "enableSubmitterRevision": "Maaaring <strong>I-revise ng mga nagsumite ang kanilang sariling mga pagsusumite</strong> at muling magsumite",
     "submitterCanCopyExistingSubmissn": "Maaaring <strong>Kopyahin ng mga nagsumite ang isang umiiral nang pagsusumite</strong>",
     "submissionConfirmationToolTip": "Kinokontrol ng pagpili sa opsyong ito kung ano ang makikita ng nagsusumite ng user ng form na ito sa matagumpay na pagsusumite.<br /> Kung naka-check, ito ay ipapakita",
     "emailNotificatnToTeam": "Padalhan ang aking koponan ng email ng notification",
@@ -1230,5 +1231,23 @@
   "canShareDraft": {
     "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
     "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
+  },
+  "statusOverlay": {
+    "chefsUnavailableHeader": "Ang serbisyong ito ay pansamantalang hindi available.",
+    "chefsUnavailableBoilerplate": "Mangyaring subukan muli sa lalong madaling panahon. Kung patuloy ang problema, makipag-ugnayan sa IT support ng iyong team o sa system administrator.",
+    "moreInfo": "Karagdagang impormasyon",
+    "lessInfo": "Bumalik",
+    "moreInfoIntro": "Ang problemang ito ay dahil sa mga pagkagambala sa isa o higit pang mga konektadong serbisyo:",
+    "moreInfoOutro": "Nagsusumikap kami upang maibalik ang access. Kung patuloy ang problema, ang iyong IT support o system administrator ay maaaring makipag-ugnayan sa amin sa pamamagitan ng {linkOne} o {linkTwo}.",
+    "name": "Serbisyo",
+    "status": "Katayuan",
+    "connected": "Nakakonekta",
+    "disconnected": "Hindi nakakonekta",
+    "msTeamsChannel": "MS Teams Channel",
+    "rocketChatChannel": "Rocket.Chat Channel",
+    "defaultStatusMessage": "Ang serbisyo ay pansamantalang hindi available (503). Mangyaring subukan muli sa ibang pagkakataon.",
+    "shuttingDown": "Ang CHEFS ay nagsasara.",
+    "notReady": "Hindi makakonekta ang CHEFS sa lahat ng kinakailangang serbisyo.",
+    "unableToReachBackend": "Hindi maabot ang backend service."
   }
 }
