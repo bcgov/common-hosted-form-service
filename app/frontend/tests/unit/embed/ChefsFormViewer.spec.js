@@ -55,11 +55,6 @@ describe('chefs-form-viewer web component', () => {
     window.history.replaceState({}, '', '/app/demo');
 
     // Stub Formio before loading the component so asset loader skips JS fetches
-    // Local construction validates class shape during setup
-    // Construct and discard without using void operator
-    (() => {
-      new FakeFormioInstance();
-    })();
     // createForm returns a fresh instance each time to avoid cross-test pollution
     globalThis.Formio = {
       createForm: vi.fn(() => new FakeFormioInstance()),
