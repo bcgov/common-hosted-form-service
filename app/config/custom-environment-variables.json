@@ -93,5 +93,10 @@
         "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
       }
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": ["WC_ASSETS_ROOTS"]
+    }
   }
 }

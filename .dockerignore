@@ -107,3 +107,8 @@ Thumbs.db
 tests/functional/cypress/videos/
 tests/functional/cypress/screenshots/
 tests/functional/cypress/downloads/
+
+# Do not send demo or minified viewer to build context
+# app/frontend/public/embed/chefs-form-viewer-demo.html
+app/frontend/public/embed/chefs-form-viewer.min.js
+app/frontend/public/embed/chefs-form-viewer.min.js.map
