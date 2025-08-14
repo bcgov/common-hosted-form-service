@@ -211,19 +211,19 @@
             },
             2
           );
-        } catch (_) {
+        } catch (err) {
+          console.debug('safeStringify failed:', err);
           return '[Unserializable]';
         }
       }
 
       function log(line, meta) {
         const el = document.createElement('div');
-        const suffix =
-          meta === undefined
-            ? ''
-            : typeof meta === 'string'
-            ? ' ' + meta
-            : ' ' + safeStringify(meta);
+        let suffix = '';
+        if (meta !== undefined) {
+          suffix =
+            ' ' + (typeof meta === 'string' ? meta : safeStringify(meta));
+        }
         el.textContent = `[${new Date().toISOString()}] ${line}${suffix}`;
         logEl.prepend(el);
       }

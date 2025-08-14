@@ -1,7 +1,7 @@
 {
   "webcomponents": {
     "assets": {
-      "roots": ["/opt/app-root/src/webcomponents/v1/assets/vendor"]
+      "roots": "/opt/app-root/src/webcomponents/v1/assets/vendor"
     }
   }
 }

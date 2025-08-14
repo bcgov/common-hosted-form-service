@@ -9,8 +9,15 @@ const originAccess = require('../../common/middleware/originAccess');
 // Resolve asset roots from config with a local fallback
 const configuredRoots = (() => {
   const hasRoots = typeof config.has === 'function' && config.has('webcomponents.assets.roots');
-  const roots = hasRoots ? config.get('webcomponents.assets.roots') : [];
-  return Array.isArray(roots) ? roots : [];
+  const raw = hasRoots ? config.get('webcomponents.assets.roots') : [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string' && raw.trim().length) {
+    return raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
 })();
 const nodeModulesRoot = path.join(__dirname, '../../../../frontend/node_modules');
 const assetRoots = [...configuredRoots, nodeModulesRoot];
