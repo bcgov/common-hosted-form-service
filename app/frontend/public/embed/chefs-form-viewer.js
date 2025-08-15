@@ -44,6 +44,8 @@
    *     form-id="YOUR_FORM_ID"
    *     api-key="YOUR_API_KEY"
    *     language="en"
+   *     token='{"sub":"user123","roles":["admin"]}'
+   *     user='{"name":"John Doe","email":"john@example.com"}'
    *     read-only
    *     isolate-styles
    *     debug
@@ -66,6 +68,8 @@
    * - theme-css (string): URL of a theme stylesheet loaded after base styles.
    * - isolate-styles (boolean): minimize inherited page styles inside Shadow DOM.
    * - no-icons (boolean): do not load Font Awesome (icons will not render).
+   * - token (string): JSON string containing token object for Form.io evalContext.
+   * - user (string): JSON string containing user object for Form.io evalContext.
    *
    * Notes on boolean attributes
    * - Standard HTML boolean semantics apply: presence, "true", empty string, "1" are treated as true.
@@ -75,6 +79,8 @@
    *   const el = document.querySelector('chefs-form-viewer');
    *   el.formId = '...';
    *   el.apiKey = '...';
+   *   el.token = { sub: 'user123', roles: ['admin'] };
+   *   el.user = { name: 'John Doe', email: 'john@example.com' };
    *   el.endpoints = { themeCss: 'https://example.com/theme.css' };
    *   el.load();
    *
@@ -129,6 +135,8 @@
         'theme-css',
         'isolate-styles',
         'no-icons',
+        'token',
+        'user',
       ];
     }
 
@@ -152,6 +160,8 @@
       this.themeCss = null; // optional theme CSS loaded after stylesCss
       this.isolateStyles = false; // optional isolation of inherited outside styles
       this.noIcons = false; // optional flag to disable loading icon CSS
+      this.token = null; // optional token object for Form.io evalContext
+      this.user = null; // optional user object for Form.io evalContext
 
       // Endpoint overrides via property
       // object is { assetsCss, assetsJs, componentsJs, stylesCss, schema, submit, readSubmission }
@@ -259,6 +269,10 @@
      *   a shell re-render so the isolation rules take effect. In light DOM (no-shadow), strict isolation
      *   is not applied; the attribute is effectively a no-op for isolation in that mode.
      * - no-icons: boolean; when true, skips loading Font Awesome. Form.io icon classes will not render.
+     * - token: string; JSON string containing a token object that will be available in Form.io's evalContext
+     *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
+     * - user: string; JSON string containing a user object that will be available in Form.io's evalContext
+     *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
      */
     attributeChangedCallback(name, _ov, nv) {
       switch (name) {
@@ -300,6 +314,26 @@
         case 'no-icons':
           this.noIcons = bool(nv);
           break;
+        case 'token':
+          this.token = this._parseJsonAttribute(nv, 'token');
+          break;
+        case 'user':
+          this.user = this._parseJsonAttribute(nv, 'user');
+          break;
+      }
+    }
+
+    /** Safely parse JSON attribute values with fallback */
+    _parseJsonAttribute(value, attributeName) {
+      if (!value) return null;
+      try {
+        return JSON.parse(value);
+      } catch (err) {
+        this._log.warn(`Invalid JSON in ${attributeName} attribute:`, {
+          value,
+          error: err.message,
+        });
+        return null;
       }
     }
 
@@ -999,6 +1033,10 @@
         language: this.language,
         sanitizeConfig: {},
         hooks: this._buildHooks(),
+        evalContext: {
+          ...(this.token && { token: this.token }),
+          ...(this.user && { user: this.user }),
+        },
       };
 
       // Prefetch submission and seed into options (if available)

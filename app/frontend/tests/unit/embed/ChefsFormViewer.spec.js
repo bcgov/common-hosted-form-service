@@ -277,6 +277,217 @@ describe('chefs-form-viewer web component', () => {
     return filtered[filtered.length - 1];
   }
 
+  describe('token and user functionality', () => {
+    it('parses token attribute as JSON and sets property', () => {
+      const el = document.createElement('chefs-form-viewer');
+      document.body.appendChild(el);
+      
+      const tokenData = { sub: 'user123', roles: ['admin'], email: 'test@example.com' };
+      el.setAttribute('token', JSON.stringify(tokenData));
+      
+      expect(el.token).toEqual(tokenData);
+    });
+
+    it('parses user attribute as JSON and sets property', () => {
+      const el = document.createElement('chefs-form-viewer');
+      document.body.appendChild(el);
+      
+      const userData = { name: 'John Doe', department: 'IT', id: 123 };
+      el.setAttribute('user', JSON.stringify(userData));
+      
+      expect(el.user).toEqual(userData);
+    });
+
+    it('handles invalid JSON gracefully and logs warning', () => {
+      const el = document.createElement('chefs-form-viewer');
+      document.body.appendChild(el);
+      
+      // Mock the logger
+      const mockWarn = vi.fn();
+      el._log = { warn: mockWarn };
+      
+      el.setAttribute('token', 'invalid-json');
+      el.setAttribute('user', '{"incomplete": json}');
+      
+      expect(el.token).toBeNull();
+      expect(el.user).toBeNull();
+      expect(mockWarn).toHaveBeenCalledTimes(2);
+      expect(mockWarn).toHaveBeenCalledWith(
+        'Invalid JSON in token attribute:',
+        expect.objectContaining({ value: 'invalid-json' })
+      );
+    });
+
+    it('allows direct property assignment of objects', () => {
+      const el = document.createElement('chefs-form-viewer');
+      document.body.appendChild(el);
+      
+      const tokenData = { sub: 'user456', roles: ['user'] };
+      const userData = { name: 'Jane Smith', department: 'HR' };
+      
+      el.token = tokenData;
+      el.user = userData;
+      
+      expect(el.token).toEqual(tokenData);
+      expect(el.user).toEqual(userData);
+    });
+
+    it('includes token and user in Form.io evalContext when set', async () => {
+      const el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+      
+      const tokenData = { sub: 'user123', roles: ['admin'] };
+      const userData = { name: 'John Doe', department: 'IT' };
+      
+      el.token = tokenData;
+      el.user = userData;
+      
+      await el.load();
+      
+      // Check if createForm was called with evalContext
+      const createFormCalls = globalThis.Formio.createForm.mock.calls;
+      const lastCall = createFormCalls[createFormCalls.length - 1];
+      const options = lastCall[2]; // third argument is options
+      
+      expect(options.evalContext.token).toEqual(tokenData);
+      expect(options.evalContext.user).toEqual(userData);
+    });
+
+    it('works without token and user set (evalContext is empty)', async () => {
+      const el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+      
+      await el.load();
+      
+      // Check if createForm was called with empty evalContext
+      const createFormCalls = globalThis.Formio.createForm.mock.calls;
+      const lastCall = createFormCalls[createFormCalls.length - 1];
+      const options = lastCall[2]; // third argument is options
+      
+      expect(options.evalContext).toEqual({});
+    });
+
+    it('includes only token in evalContext when user is not set', async () => {
+      const el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+      
+      const tokenData = { sub: 'user123', roles: ['admin'] };
+      el.token = tokenData;
+      
+      await el.load();
+      
+      const createFormCalls = globalThis.Formio.createForm.mock.calls;
+      const lastCall = createFormCalls[createFormCalls.length - 1];
+      const options = lastCall[2];
+      
+      expect(options.evalContext.token).toEqual(tokenData);
+      expect(options.evalContext.user).toBeUndefined();
+    });
+
+    it('includes only user in evalContext when token is not set', async () => {
+      const el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+      
+      const userData = { name: 'Jane Smith', department: 'HR' };
+      el.user = userData;
+      
+      await el.load();
+      
+      const createFormCalls = globalThis.Formio.createForm.mock.calls;
+      const lastCall = createFormCalls[createFormCalls.length - 1];
+      const options = lastCall[2];
+      
+      expect(options.evalContext.user).toEqual(userData);
+      expect(options.evalContext.token).toBeUndefined();
+    });
+
+    it('handles empty string attributes gracefully', () => {
+      const el = document.createElement('chefs-form-viewer');
+      document.body.appendChild(el);
+      
+      el.setAttribute('token', '');
+      el.setAttribute('user', '');
+      
+      expect(el.token).toBeNull();
+      expect(el.user).toBeNull();
+    });
+
+    it('overrides attribute values with property assignment', () => {
+      const el = document.createElement('chefs-form-viewer');
+      document.body.appendChild(el);
+      
+      // Set via attribute first
+      el.setAttribute('token', '{"from":"attribute"}');
+      expect(el.token).toEqual({ from: 'attribute' });
+      
+      // Override via property
+      const newToken = { from: 'property', roles: ['admin'] };
+      el.token = newToken;
+      expect(el.token).toEqual(newToken);
+    });
+
+    it('preserves complex nested objects in token and user', async () => {
+      const el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+      
+      const complexToken = {
+        sub: 'user123',
+        roles: ['admin', 'user'],
+        metadata: {
+          department: 'IT',
+          permissions: {
+            read: true,
+            write: true,
+            admin: false
+          }
+        },
+        groups: ['group1', 'group2']
+      };
+      
+      const complexUser = {
+        profile: {
+          firstName: 'John',
+          lastName: 'Doe',
+          preferences: {
+            theme: 'dark',
+            language: 'en'
+          }
+        },
+        contact: {
+          email: 'john@example.com',
+          phone: '+1234567890'
+        }
+      };
+      
+      el.token = complexToken;
+      el.user = complexUser;
+      
+      await el.load();
+      
+      const createFormCalls = globalThis.Formio.createForm.mock.calls;
+      const lastCall = createFormCalls[createFormCalls.length - 1];
+      const options = lastCall[2];
+      
+      expect(options.evalContext.token).toEqual(complexToken);
+      expect(options.evalContext.user).toEqual(complexUser);
+    });
+  });
+
   function configureNoNetwork(el, options = {}) {
     const baseCss = 'data:text/css,';
     const baseJs = 'data:text/javascript,';
