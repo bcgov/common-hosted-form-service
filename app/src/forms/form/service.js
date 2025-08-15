@@ -317,6 +317,7 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterRevision: data.enableSubmitterRevision,
         enableSubmitterDraft: data.enableSubmitterDraft,
+        enableAutoSave: data.enableAutoSave,
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
         schedule: data.schedule,

@@ -348,6 +348,23 @@ defineExpose({
         </div>
       </template>
     </v-checkbox>
+
+    <v-checkbox
+      v-model="form.enableAutoSave"
+      data-test="enableAutoSaveCheckbox"
+      hide-details="auto"
+      class="my-0"
+      :disabled="form.userType === ID_MODE.PUBLIC"
+    >
+      <template #label>
+        <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="locale"
+          v-html="$t('trans.formSettings.enableAutoSave')"
+        ></span>
+      </template>
+    </v-checkbox>
+
     <v-checkbox
       v-model="form.enableTeamMemberDraftShare"
       :disabled="!form.enableSubmitterDraft"
