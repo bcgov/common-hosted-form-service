@@ -8,6 +8,7 @@
     "preserve": "node ./component-update.js",
     "build": "vite build",
     "build:watch": "vite build --watch",
+    "build:embed": "terser public/embed/chefs-form-viewer.js -o public/embed/chefs-form-viewer.min.js --source-map \"content=inline,includeSources\"",
     "preview": "vite preview",
     "prebuild": "node ./component-update.js",
     "build:formio": "node ./component-update.js build",

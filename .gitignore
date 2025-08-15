@@ -16,6 +16,11 @@ node_modules
 /package-lock.json
 
 
+# Embed viewer build artifacts
+app/frontend/public/embed/chefs-form-viewer.min.js
+app/frontend/public/embed/chefs-form-viewer.min.js.map
+
+
 
 
 # local env files
