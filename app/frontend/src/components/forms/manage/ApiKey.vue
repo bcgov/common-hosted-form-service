@@ -45,6 +45,7 @@ if (canGenerateKey.value) {
 async function createKey() {
   loading.value = true;
   await formStore.generateApiKey(form.value.id);
+  filesApiAccess.value = apiKey.value?.filesApiAccess;
   showSecret.value = false;
   loading.value = false;
   showConfirmationDialog.value = false;
