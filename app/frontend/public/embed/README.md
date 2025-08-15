@@ -41,6 +41,8 @@ Key features
   form-id="11111111-1111-1111-1111-111111111111"
   api-key="YOUR_API_KEY"
   language="en"
+  token='{"sub":"user123","roles":["admin"],"email":"user@example.com"}'
+  user='{"name":"John Doe","department":"IT"}'
   isolate-styles
 ></chefs-form-viewer>
 
@@ -49,6 +51,38 @@ Key features
   el.load();
   // Optional: listen to lifecycle
   el.addEventListener('formio:ready', (e) => console.log('ready', e.detail));
+</script>
+```
+
+**Alternative programmatic approach:**
+
+```html
+<chefs-form-viewer id="my-form"></chefs-form-viewer>
+
+<script>
+  const el = document.getElementById('my-form');
+  el.formId = '11111111-1111-1111-1111-111111111111';
+  el.apiKey = 'YOUR_API_KEY';
+  el.token = {
+    sub: '123456789',
+    roles: [],
+    email: 'nicholas.cognito@gov.bc.ca',
+  };
+  el.user = {
+    idpUserId: '123456789',
+    username: 'NCOGNITO',
+    firstName: 'Nicholas',
+    lastName: 'Cognito',
+    fullName: 'Nicholas Cognito',
+    email: 'nicholas.cognito@gov.bc.ca',
+    idp: {
+      code: 'idir',
+      display: 'IDIR',
+      hint: 'idir',
+    },
+    public: false,
+  };
+  el.load();
 </script>
 ```
 
@@ -70,7 +104,9 @@ Notes
 - `submit-button-key` (string): data key used to distinguish submit vs draft (default `submit`).
 - `theme-css` (string): absolute URL to a theme stylesheet loaded after base styles.
 - `isolate-styles` (boolean): when in Shadow DOM, adds minimal isolation (`:host { all: initial }`) and a normalized container baseline.
-- `no-icons` (boolean): do not load Font Awesome (Form.io icon classes won’t render).
+- `no-icons` (boolean): do not load Font Awesome (Form.io icon classes won't render).
+- `token` (string): JSON string containing a token object for Form.io evalContext (custom JavaScript access).
+- `user` (string): JSON string containing a user object for Form.io evalContext (custom JavaScript access).
 
 Boolean attribute semantics: presence, `"true"`, empty string, or `"1"` are treated as true.
 
@@ -142,6 +178,35 @@ Security notes
 
 - Set `submission-id` to prefill. The component prefetches the submission and applies data immediately, on the next tick, and once after first render to reduce races with Form.io internals.
 - Set `read-only` to render without allowing edits.
+
+### Using Token and User in Form.io JavaScript
+
+The `token` and `user` objects you provide are made available in Form.io's evalContext, allowing you to use them in:
+
+- **Conditional Logic**: Show/hide components based on user roles or properties
+- **Calculated Values**: Pre-fill fields with user information
+- **Custom Validation**: Validate based on user context
+- **Advanced Logic**: Any custom JavaScript in Form.io components
+
+**Examples:**
+
+```javascript
+// Conditional display based on user role
+show = token.roles && token.roles.includes('admin');
+
+// Pre-fill a field with user email
+value = token.email || '';
+
+// Show component only for specific department
+show = user.department === 'IT';
+
+// Complex logic combining token and user data
+if (token.roles.includes('manager') && user.department === 'HR') {
+  value = 'Manager Access Granted';
+} else {
+  value = 'Standard Access';
+}
+```
 
 ### Authentication
 
