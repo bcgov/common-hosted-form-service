@@ -354,6 +354,7 @@ defineExpose({
       data-test="enableAutoSaveCheckbox"
       hide-details="auto"
       class="my-0"
+      :disabled="form.userType === ID_MODE.PUBLIC"
     >
       <template #label>
         <span

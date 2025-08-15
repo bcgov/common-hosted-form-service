@@ -3,7 +3,6 @@ import { useAuthStore } from '~/store/auth';
 
 const STORAGE_PREFIX = 'chefs_autosave';
 const DEBOUNCE_DELAY = 2000; // 2 seconds
-const SESSION_TOKEN_KEY = 'chefs_anon_session_token';
 
 // Schema validation for saved data
 function isValidSavedData(data) {
@@ -21,22 +20,7 @@ export function useFormAutoSave() {
   const authStore = useAuthStore();
   const { authenticated, user } = storeToRefs(authStore);
 
-  // Generate or retrieve session token for anonymous users
-  function getSessionToken() {
-    let token = sessionStorage.getItem(SESSION_TOKEN_KEY);
-    if (!token) {
-      // Use crypto.getRandomValues for secure token generation
-      const array = new Uint8Array(16);
-      crypto.getRandomValues(array);
-      token = `${Date.now()}_${Array.from(array, (byte) =>
-        byte.toString(36)
-      ).join('')}`;
-      sessionStorage.setItem(SESSION_TOKEN_KEY, token);
-    }
-    return token;
-  }
-
-  // Create storage key based on user type and form details
+  // Create storage key for authenticated users
   function createStorageKey(formId, version) {
     // Input validation
     if (!formId || typeof formId !== 'string') {
@@ -46,13 +30,12 @@ export function useFormAutoSave() {
       throw new Error('Invalid version provided');
     }
 
-    const baseKey = `${STORAGE_PREFIX}_${formId}_v${version}`;
-
-    if (authenticated.value && user.value?.idpUserId) {
-      return `${baseKey}_user_${user.value.idpUserId}`;
-    } else {
-      return `${baseKey}_anon_${getSessionToken()}`;
+    // Auto-save is only available for authenticated users
+    if (!authenticated.value || !user.value?.idpUserId) {
+      throw new Error('Auto-save is only available for authenticated users');
     }
+
+    return `${STORAGE_PREFIX}_${formId}_v${version}_user_${user.value.idpUserId}`;
   }
 
   // Check if localStorage is supported and available
@@ -115,7 +98,7 @@ export function useFormAutoSave() {
         try {
           localStorage.setItem(storageKey, dataString);
           return { success: true };
-        } catch {
+        } catch (retryError) {
           return { success: false, error: 'Storage quota exceeded' };
         }
       }

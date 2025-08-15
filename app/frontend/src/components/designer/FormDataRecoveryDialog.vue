@@ -19,10 +19,9 @@
       <div class="text-body-1">
         <p>{{ $t('trans.formDataRecovery.message') }}</p>
 
-        <div
+        <output
           v-if="recoveryData?.timestamp"
           class="mt-3 mb-3"
-          role="status"
           aria-live="polite"
         >
           <v-chip color="primary" variant="tonal" size="small">
@@ -30,7 +29,6 @@
               >mdi-clock-outline</v-icon
             >
             <span
-              role="text"
               :aria-label="
                 $t('trans.formDataRecovery.savedAt', {
                   time: formatSaveTime.value(recoveryData.timestamp),
@@ -40,7 +38,7 @@
               {{ formatSaveTime.value(recoveryData.timestamp) }}
             </span>
           </v-chip>
-        </div>
+        </output>
 
         <v-alert
           type="info"

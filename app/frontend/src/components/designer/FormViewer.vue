@@ -263,7 +263,8 @@ function initializeAutoSave() {
     properties.readOnly ||
     properties.preview ||
     !isStorageSupported() ||
-    !enableAutoSave
+    !enableAutoSave ||
+    !authenticated.value
   ) {
     return;
   }
