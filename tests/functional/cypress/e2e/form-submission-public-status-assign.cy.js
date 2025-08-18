@@ -115,7 +115,7 @@ describe('Form Designer', () => {
     cy.wait(2000);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
-         //form submission
+    //form submission
     cy.get('button').contains('Submit').click();
     //cy.get('[data-test="continue-btn-continue"]').click({force: true});
     cy.wait(2000);
@@ -123,6 +123,9 @@ describe('Form Designer', () => {
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
+    //Recall submission not avaiable for public forms
+    cy.get('button[title="Recall Submission"]').should('not.exist');
+    //Email notification
     cy.get('button[title="Email a receipt of this submission"]').should('be.visible');
     cy.get('button[title="Email a receipt of this submission"]').click();
     cy.get('[data-test="text-form-to"]').find('input[type="text"]').type('testing@gov.bc.ca');
