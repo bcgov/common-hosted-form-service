@@ -208,7 +208,13 @@
         if (readOnly) scriptParams.set('read-only', 'true');
         if (debugMode) scriptParams.set('debug', 'true');
 
-        const scriptUrl = `/app/embed/chefs-form-viewer-embed.js?${scriptParams.toString()}`;
+        // Dynamically determine the base path (handles /app, /pr-1755, etc.)
+        const currentPath = window.location.pathname;
+        const basePath = currentPath.includes('/embed/')
+          ? currentPath.substring(0, currentPath.indexOf('/embed/'))
+          : '/app'; // fallback for direct file access
+
+        const scriptUrl = `${basePath}/embed/chefs-form-viewer-embed.js?${scriptParams.toString()}`;
 
         // Create script element
         const script = document.createElement('script');
