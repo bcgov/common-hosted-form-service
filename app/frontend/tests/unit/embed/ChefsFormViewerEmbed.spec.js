@@ -1,22 +1,31 @@
-import { describe, expect, it, vi } from 'vitest';
+/* eslint-disable no-console */
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+
+// Import the actual utility functions from the embed script
+let embedUtils;
+beforeAll(async () => {
+  embedUtils = await import('../../../public/embed/chefs-form-viewer-embed.js');
+});
 
 /**
  * Unit tests for chefs-form-viewer-embed.js
  *
- * Tests core functionality of the embed script by testing the individual
- * utility functions and integration patterns.
+ * Tests core functionality of the embed script by testing the actual
+ * utility functions instead of mocking them.
  */
 
 describe('chefs-form-viewer-embed.js', () => {
   // Test utility functions that would be present in the embed script
 
   describe('Parameter Parsing Logic', () => {
-    it('should correctly parse URL parameters', () => {
-      // Test the parseQueryParams equivalent logic
+    it('should correctly parse URL parameters using actual parseQueryParams', () => {
+      // Test the ACTUAL parseQueryParams function from the embed script
+      const { parseQueryParams } = embedUtils;
+
       const testUrl =
-        '/app/embed/chefs-form-viewer-embed.js?form-id=123&api-key=abc&debug=true';
-      const url = new URL('http://example.com' + testUrl);
-      const params = Object.fromEntries(url.searchParams.entries());
+        'https://example.com/app/embed/chefs-form-viewer-embed.js?form-id=123&api-key=abc&debug=true';
+
+      const params = parseQueryParams(testUrl);
 
       expect(params['form-id']).toBe('123');
       expect(params['api-key']).toBe('abc');
@@ -35,20 +44,53 @@ describe('chefs-form-viewer-embed.js', () => {
       expect(decodedToken).toEqual({ sub: 'user123', roles: ['admin'] });
     });
 
-    it('should handle boolean parameter conversion', () => {
-      // Test truthy values
-      expect('true' === 'true' || 'true' === '1' || 'true' === '').toBe(true);
-      expect('1' === 'true' || '1' === '1' || '1' === '').toBe(true);
-      expect('' === 'true' || '' === '1' || '' === '').toBe(true);
+    it('should handle boolean parameter conversion using actual parseBooleanParam', () => {
+      // Test the ACTUAL parseBooleanParam function from the embed script
+      const { parseBooleanParam } = embedUtils;
+
+      // Test truthy values (following HTML attribute conventions)
+      expect(parseBooleanParam('true')).toBe(true);
+      expect(parseBooleanParam('1')).toBe(true);
+      expect(parseBooleanParam('')).toBe(true); // empty string means attribute present
 
       // Test falsy values
-      expect('false' === 'true' || 'false' === '1' || 'false' === '').toBe(
-        false
-      );
-      expect('0' === 'true' || '0' === '1' || '0' === '').toBe(false);
-      expect(
-        undefined === 'true' || undefined === '1' || undefined === ''
-      ).toBe(false);
+      expect(parseBooleanParam('false')).toBe(false);
+      expect(parseBooleanParam('0')).toBe(false);
+      expect(parseBooleanParam(undefined)).toBe(false);
+      expect(parseBooleanParam(null)).toBe(false);
+      expect(parseBooleanParam('anything-else')).toBe(false);
+      expect(parseBooleanParam('no')).toBe(false);
+      expect(parseBooleanParam('off')).toBe(false);
+    });
+
+    it('should convert parameter names to attribute names using actual paramToAttribute', () => {
+      // Test the ACTUAL paramToAttribute function from the embed script
+      const { paramToAttribute } = embedUtils;
+
+      expect(paramToAttribute('formId')).toBe('form-id');
+      expect(paramToAttribute('apiKey')).toBe('api-key');
+      expect(paramToAttribute('readOnly')).toBe('read-only');
+      expect(paramToAttribute('isolateStyles')).toBe('isolate-styles');
+      expect(paramToAttribute('form-id')).toBe('form-id'); // already kebab-case
+      expect(paramToAttribute('language')).toBe('language'); // no change needed
+    });
+
+    it('should parse JSON parameters using actual parseJsonParam', () => {
+      // Test the ACTUAL parseJsonParam function from the embed script
+      const { parseJsonParam } = embedUtils;
+
+      const mockLogger = { warn: vi.fn() };
+
+      // Valid JSON
+      const validJson = '{"sub":"user123","roles":["admin"]}';
+      const parsed = parseJsonParam(validJson, 'token', mockLogger);
+      expect(parsed).toEqual({ sub: 'user123', roles: ['admin'] });
+
+      // Invalid JSON
+      const invalidJson = '{"invalid": json}';
+      const failed = parseJsonParam(invalidJson, 'token', mockLogger);
+      expect(failed).toBe(null);
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
   });
 
@@ -163,33 +205,47 @@ describe('chefs-form-viewer-embed.js', () => {
       expect(mockElement.language).toBe('fr');
     });
 
-    it('should apply boolean parameters as attributes', () => {
+    it('should apply boolean parameters as HTML boolean attributes', () => {
       const mockElement = {
         setAttribute: vi.fn(),
       };
 
-      const booleanParams = {
-        debug: 'true',
-        'read-only': '1',
-        'isolate-styles': '',
+      // Test the parseBooleanParam logic for known boolean parameters
+      const parseBooleanParam = (value) =>
+        value === 'true' || value === '1' || value === '';
+      const booleanParams = ['read-only', 'isolate-styles', 'no-icons'];
+
+      const testParams = {
+        'read-only': 'true', // Should set attribute
+        'isolate-styles': '1', // Should set attribute
+        'no-icons': '', // Should set attribute (empty = present)
+        'other-param': 'false', // Should NOT set attribute (not boolean param)
       };
 
-      // Simulate boolean parameter application
-      Object.entries(booleanParams).forEach(([key, value]) => {
-        const isTrue = value === 'true' || value === '1' || value === '';
-        if (isTrue) {
-          mockElement.setAttribute(key, 'true');
+      // Simulate boolean parameter application from applyQueryParams
+      Object.entries(testParams).forEach(([param, value]) => {
+        if (booleanParams.includes(param)) {
+          const boolValue = parseBooleanParam(value);
+          if (boolValue) {
+            mockElement.setAttribute(param, ''); // HTML boolean attribute behavior
+          }
+        } else {
+          mockElement.setAttribute(param, value); // Regular string attribute
         }
       });
 
-      expect(mockElement.setAttribute).toHaveBeenCalledWith('debug', 'true');
-      expect(mockElement.setAttribute).toHaveBeenCalledWith(
-        'read-only',
-        'true'
-      );
+      // Boolean parameters should be set as empty string (HTML boolean attribute style)
+      expect(mockElement.setAttribute).toHaveBeenCalledWith('read-only', '');
       expect(mockElement.setAttribute).toHaveBeenCalledWith(
         'isolate-styles',
-        'true'
+        ''
+      );
+      expect(mockElement.setAttribute).toHaveBeenCalledWith('no-icons', '');
+
+      // Non-boolean parameters should be set as their value
+      expect(mockElement.setAttribute).toHaveBeenCalledWith(
+        'other-param',
+        'false'
       );
     });
 

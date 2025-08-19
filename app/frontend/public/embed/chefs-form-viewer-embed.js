@@ -117,6 +117,27 @@
 
   const NAMESPACE = 'chefs-form-viewer-embed';
 
+  // Utility functions that can be tested independently
+
+  /**
+   * Parse string parameter value as boolean following web standard conventions.
+   * Treats 'true', '1', and empty string as truthy (HTML attribute behavior).
+   * All other values including 'false', '0', undefined, null are falsy.
+   *
+   * @param {string|undefined|null} value - Parameter value to parse
+   * @returns {boolean} Parsed boolean value
+   * @example
+   * parseBooleanParam('true') // Returns: true
+   * parseBooleanParam('1') // Returns: true
+   * parseBooleanParam('') // Returns: true (HTML attribute present)
+   * parseBooleanParam('false') // Returns: false
+   * parseBooleanParam('0') // Returns: false
+   * parseBooleanParam(undefined) // Returns: false
+   */
+  function parseBooleanParam(value) {
+    return value === 'true' || value === '1' || value === '';
+  }
+
   /**
    * Creates a conditional logger that only outputs when debugging is enabled.
    * Provides consistent logging format with namespace prefix.
@@ -244,6 +265,9 @@
    * @param {Object} logger - Logger instance for debug output
    */
   function applyQueryParams(element, params, logger) {
+    // Boolean parameters that should be parsed as booleans
+    const booleanParams = ['read-only', 'isolate-styles', 'no-icons'];
+
     for (const [param, value] of Object.entries(params)) {
       if (param === 'debug') continue; // Skip debug param
 
@@ -255,7 +279,17 @@
         if (parsed !== null) {
           element[param] = parsed;
         }
-      } else {
+      }
+      // Handle boolean parameters
+      else if (booleanParams.includes(param)) {
+        const boolValue = parseBooleanParam(value);
+        if (boolValue) {
+          element.setAttribute(attrName, '');
+        }
+        // Don't set attribute if false (HTML boolean attribute behavior)
+      }
+      // Handle string parameters
+      else {
         element.setAttribute(attrName, value);
       }
     }
@@ -349,7 +383,8 @@
     // Check for debug mode
     const params = parseQueryParams(script.src);
     const debug =
-      params.debug === 'true' || window.CHEFS_VIEWER_EMBED_DEBUG === true;
+      parseBooleanParam(params.debug) ||
+      window.CHEFS_VIEWER_EMBED_DEBUG === true;
     const logger = createLogger(debug);
 
     logger.info('Initializing embed', { src: script.src });
@@ -433,6 +468,32 @@
     }
   }
 
-  // Execute the embed function
-  embedChefsFormViewer();
+  // Export utilities for testing (only in test environment)
+  if (typeof module !== 'undefined' && module.exports) {
+    // Node.js/testing environment
+    module.exports = {
+      parseBooleanParam,
+      parseQueryParams,
+      parseJsonParam,
+      paramToAttribute,
+      createLogger,
+    };
+  } else if (
+    typeof window !== 'undefined' &&
+    window.__CHEFS_EMBED_TEST_MODE__
+  ) {
+    // Browser testing environment
+    window.__chefsEmbedUtils__ = {
+      parseBooleanParam,
+      parseQueryParams,
+      parseJsonParam,
+      paramToAttribute,
+      createLogger,
+    };
+  }
+
+  // Execute the embed function (only in production)
+  if (typeof module === 'undefined' || !module.exports) {
+    embedChefsFormViewer();
+  }
 })();
