@@ -583,10 +583,21 @@
         updateProgrammaticCode();
       }
 
+      // Helper function to get the current base path (handles /app, /pr-1755, etc.)
+      function getBasePath() {
+        const currentPath = window.location.pathname;
+        return currentPath.includes('/embed/')
+          ? currentPath.substring(0, currentPath.indexOf('/embed/'))
+          : '/app'; // fallback
+      }
+
       function updateEmbedCode() {
         const params = buildQueryParams();
+        const basePath = getBasePath();
         const embedScript =
-          '<script src="/app/embed/chefs-form-viewer-embed.js?' +
+          '<script src="' +
+          basePath +
+          '/embed/chefs-form-viewer-embed.js?' +
           params +
           '"></' +
           'script>';
@@ -595,9 +606,12 @@
 
       function updateComponentCode() {
         const attrs = buildAttributes();
+        const basePath = getBasePath();
         const componentHtml =
           '<!-- Include the component script -->\n' +
-          '<script src="/app/embed/chefs-form-viewer.js"></' +
+          '<script src="' +
+          basePath +
+          '/embed/chefs-form-viewer.js"></' +
           'script>\n\n' +
           '<!-- Add the component to your page -->\n' +
           '<chefs-form-viewer' +
@@ -613,9 +627,12 @@
 
       function updateProgrammaticCode() {
         const jsConfig = buildJavaScriptConfig();
+        const basePath = getBasePath();
         const programmaticCode =
           '// Include the component script\n' +
-          '// <script src="/app/embed/chefs-form-viewer.js"></' +
+          '// <script src="' +
+          basePath +
+          '/embed/chefs-form-viewer.js"></' +
           'script>\n\n' +
           '// Create and configure the element programmatically\n' +
           'const viewer = document.createElement("chefs-form-viewer");\n' +
