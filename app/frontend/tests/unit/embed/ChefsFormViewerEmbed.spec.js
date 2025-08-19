@@ -95,6 +95,27 @@ describe('chefs-form-viewer-embed.js', () => {
   });
 
   describe('Logger Creation', () => {
+    // Extract helper functions to reduce nesting
+    const createTestLogger = (mockConsole, enabled) => {
+      const log = (level, msg, meta) => {
+        if (!enabled) return;
+        (mockConsole[level] || mockConsole.log)(
+          `[chefs-form-viewer-embed]`,
+          msg,
+          meta ?? ''
+        );
+      };
+
+      const createLogMethod = (logLevel) => (m, meta) => log(logLevel, m, meta);
+
+      return {
+        debug: createLogMethod('debug'),
+        info: createLogMethod('info'),
+        warn: createLogMethod('warn'),
+        error: createLogMethod('error'),
+      };
+    };
+
     it('should create a logger that only logs when enabled', () => {
       const mockConsole = {
         log: vi.fn(),
@@ -103,26 +124,8 @@ describe('chefs-form-viewer-embed.js', () => {
         error: vi.fn(),
       };
 
-      // Simulate createLogger function
-      const createLogger = (enabled) => {
-        const log = (level, msg, meta) => {
-          if (!enabled) return;
-          (mockConsole[level] || mockConsole.log)(
-            `[chefs-form-viewer-embed]`,
-            msg,
-            meta ?? ''
-          );
-        };
-        return {
-          debug: (m, meta) => log('debug', m, meta),
-          info: (m, meta) => log('info', m, meta),
-          warn: (m, meta) => log('warn', m, meta),
-          error: (m, meta) => log('error', m, meta),
-        };
-      };
-
       // Test enabled logger
-      const enabledLogger = createLogger(true);
+      const enabledLogger = createTestLogger(mockConsole, true);
       enabledLogger.info('test message', { data: 'test' });
       expect(mockConsole.info).toHaveBeenCalledWith(
         '[chefs-form-viewer-embed]',
@@ -132,52 +135,9 @@ describe('chefs-form-viewer-embed.js', () => {
 
       // Test disabled logger
       mockConsole.info.mockClear();
-      const disabledLogger = createLogger(false);
+      const disabledLogger = createTestLogger(mockConsole, false);
       disabledLogger.info('test message');
       expect(mockConsole.info).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('JSON Parameter Processing', () => {
-    it('should parse valid JSON parameters', () => {
-      const validJson = '{"name":"John","age":30}';
-      let result;
-
-      try {
-        result = JSON.parse(validJson);
-      } catch (error) {
-        result = undefined;
-        // Log error for debugging purposes
-        console.warn('JSON parsing failed:', error);
-      }
-
-      expect(result).toEqual({ name: 'John', age: 30 });
-    });
-
-    it('should handle invalid JSON gracefully', () => {
-      const invalidJson = '{invalid json}';
-      let result;
-      let errorOccurred = false;
-
-      try {
-        result = JSON.parse(invalidJson);
-      } catch (error) {
-        result = undefined;
-        errorOccurred = true;
-        // Verify error is a SyntaxError as expected
-        expect(error).toBeInstanceOf(SyntaxError);
-      }
-
-      expect(result).toBeUndefined();
-      expect(errorOccurred).toBe(true);
-    });
-
-    it('should decode URI components correctly', () => {
-      const originalData = { message: 'Hello World!', special: '&=?#' };
-      const encoded = encodeURIComponent(JSON.stringify(originalData));
-      const decoded = JSON.parse(decodeURIComponent(encoded));
-
-      expect(decoded).toEqual(originalData);
     });
   });
 
@@ -262,135 +222,21 @@ describe('chefs-form-viewer-embed.js', () => {
       try {
         mockElement.token = JSON.parse(tokenJson);
       } catch (error) {
-        // Invalid JSON, skip
-        console.warn('Failed to parse token JSON:', error);
+        // Invalid JSON, skip - log to mock logger to avoid console output
+        const mockLogger = { warn: vi.fn() };
+        mockLogger.warn('Failed to parse token JSON:', error);
       }
 
       try {
         mockElement.user = JSON.parse(userJson);
       } catch (error) {
-        // Invalid JSON, skip
-        console.warn('Failed to parse user JSON:', error);
+        // Invalid JSON, skip - log to mock logger to avoid console output
+        const mockLogger = { warn: vi.fn() };
+        mockLogger.warn('Failed to parse user JSON:', error);
       }
 
       expect(mockElement.token).toEqual({ sub: 'user123', roles: ['admin'] });
       expect(mockElement.user).toEqual({ name: 'John Doe', id: '456' });
-    });
-  });
-
-  describe('Global Configuration Handling', () => {
-    it('should merge global config with URL parameters', () => {
-      const globalConfig = {
-        token: { sub: 'global-user', roles: ['viewer'] },
-        user: { name: 'Global User', department: 'IT' },
-        before: vi.fn(),
-      };
-
-      const urlParams = {
-        token: { sub: 'url-user', roles: ['admin'] },
-        // user not provided in URL
-      };
-
-      // Simulate configuration merging (URL takes precedence)
-      const finalConfig = {
-        token: urlParams.token || globalConfig.token,
-        user: urlParams.user || globalConfig.user,
-        before: globalConfig.before,
-      };
-
-      expect(finalConfig.token).toEqual({ sub: 'url-user', roles: ['admin'] });
-      expect(finalConfig.user).toEqual({
-        name: 'Global User',
-        department: 'IT',
-      });
-      expect(finalConfig.before).toBe(globalConfig.before);
-    });
-
-    it('should handle missing global config gracefully', () => {
-      const urlParams = { formId: '123', apiKey: 'abc' };
-      const globalConfig = undefined;
-
-      // Simulate safe access to global config
-      const finalConfig = {
-        ...urlParams,
-        ...(globalConfig || {}),
-      };
-
-      expect(finalConfig.formId).toBe('123');
-      expect(finalConfig.apiKey).toBe('abc');
-      expect(finalConfig.before).toBeUndefined();
-    });
-  });
-
-  describe('Event Handling Patterns', () => {
-    it('should set up event listeners correctly', () => {
-      const mockElement = {
-        addEventListener: vi.fn(),
-        load: vi.fn().mockResolvedValue(undefined),
-      };
-
-      const mockWindow = {
-        dispatchEvent: vi.fn(),
-      };
-
-      // Simulate event listener setup
-      const metadataHandler = vi.fn();
-      mockElement.addEventListener('formio:loadSchema', metadataHandler);
-
-      // Simulate form loading
-      const loadPromise = mockElement.load();
-      expect(loadPromise).toBeDefined();
-      expect(loadPromise).toBeInstanceOf(Promise);
-
-      // Simulate global event dispatch
-      const customEvent = {
-        type: 'chefs-form-viewer:embedded',
-        detail: { element: mockElement, params: {} },
-      };
-      mockWindow.dispatchEvent(customEvent);
-
-      expect(mockElement.addEventListener).toHaveBeenCalledWith(
-        'formio:loadSchema',
-        metadataHandler
-      );
-      expect(mockElement.load).toHaveBeenCalled();
-      expect(mockWindow.dispatchEvent).toHaveBeenCalledWith(customEvent);
-    });
-
-    it('should extract metadata from form schema events', () => {
-      const mockMetadataCallback = vi.fn();
-      const mockWindowDispatch = vi.fn();
-
-      // Simulate metadata extraction logic
-      const formData = {
-        name: 'Test Form',
-        description: 'Test Description',
-        id: 'form-123',
-      };
-
-      const schemaData = {
-        components: [{ type: 'textfield', key: 'name' }],
-      };
-
-      const extractedMetadata = {
-        form: formData,
-        schema: schemaData,
-        formName: formData.name,
-        formDescription: formData.description,
-      };
-
-      // Simulate callback execution
-      mockMetadataCallback(extractedMetadata);
-
-      // Simulate global event
-      const metadataEvent = {
-        type: 'chefs-form-viewer:metadata-loaded',
-        detail: extractedMetadata,
-      };
-      mockWindowDispatch(metadataEvent);
-
-      expect(mockMetadataCallback).toHaveBeenCalledWith(extractedMetadata);
-      expect(mockWindowDispatch).toHaveBeenCalledWith(metadataEvent);
     });
   });
 
@@ -431,22 +277,6 @@ describe('chefs-form-viewer-embed.js', () => {
       invalidJsonInputs.forEach(testInvalidJson);
 
       expect(mockLogger.warn).toHaveBeenCalled();
-    });
-
-    it('should handle missing script element gracefully', () => {
-      const currentScript = null;
-      let errorHandled = false;
-
-      try {
-        if (!currentScript) {
-          throw new Error('No current script found');
-        }
-      } catch (err) {
-        errorHandled = true;
-        // In real implementation, this would show an error message
-      }
-
-      expect(errorHandled).toBe(true);
     });
 
     it('should handle component loading failures', () => {

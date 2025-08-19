@@ -341,17 +341,34 @@
    * Show user-friendly error message
    */
   function showError(script, err, debug) {
+    const ERROR_STYLES = {
+      padding: '1rem',
+      border: '1px solid #dc3545',
+      background: '#f8d7da',
+      color: '#721c24',
+      borderRadius: '4px',
+      fontFamily: 'sans-serif',
+    };
+
     const errorDiv = document.createElement('div');
-    errorDiv.style.cssText =
-      'padding: 1rem; border: 1px solid #dc3545; background: #f8d7da; color: #721c24; border-radius: 4px; font-family: sans-serif;';
+    errorDiv.style.cssText = Object.entries(ERROR_STYLES)
+      .map(
+        ([key, value]) =>
+          `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`
+      )
+      .join('; ');
     errorDiv.innerHTML = `
       <strong>CHEFS Form Loading Error</strong><br>
       Unable to load the form. Please check your configuration.
       ${debug ? `<br><small>Error: ${err.message}</small>` : ''}
     `;
 
-    script.parentNode.insertBefore(errorDiv, script);
-    script.remove();
+    if (script && script.parentNode) {
+      script.parentNode.insertBefore(errorDiv, script);
+      script.remove();
+    } else {
+      document.body.appendChild(errorDiv);
+    }
   }
 
   /**
