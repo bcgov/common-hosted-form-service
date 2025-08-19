@@ -28,10 +28,24 @@ Key features
 
 ### Quick start (embed and render)
 
+**Simplified One-Line Embedding**
+
+The easiest way to embed a CHEFS form, inspired by Form.io's approach:
+
+```html
+<script src="/app/embed/chefs-form-viewer-embed.min.js?form-id=11111111-1111-1111-1111-111111111111&api-key=YOUR_API_KEY"></script>
+```
+
+That's it! The embed script automatically loads the component, creates the element, applies your parameters, and calls `.load()`.
+
+For a complete interactive demo with all available parameters, see: [`/app/embed/chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html)
+
+**Traditional approach**
+
 1. Include the component script (minified) on your page:
 
 ```html
-<script src="/app/frontend/public/embed/chefs-form-viewer.min.js"></script>
+<script src="/app/embed/chefs-form-viewer.min.js"></script>
 ```
 
 2. Add the element and call `load()`:
@@ -88,7 +102,8 @@ Key features
 
 Notes
 
-- You can also use the non-minified script during development: `chefs-form-viewer.js`.
+- For production, use the minified script: `/app/embed/chefs-form-viewer.min.js` (generated during build, not in source repo).
+- For development, use the non-minified script: `/app/embed/chefs-form-viewer.js`.
 - When using dev servers or PR environments, the component auto-detects a base of `/app` or `/pr-####` from `window.location`.
 
 ### Attributes (configuration)
@@ -105,7 +120,7 @@ Notes
 - `theme-css` (string): absolute URL to a theme stylesheet loaded after base styles.
 - `isolate-styles` (boolean): when in Shadow DOM, adds minimal isolation (`:host { all: initial }`) and a normalized container baseline.
 - `no-icons` (boolean): do not load Font Awesome (Form.io icon classes won't render).
-- `token` (string): JSON string containing a token object for Form.io evalContext (custom JavaScript access).
+- `token` (string): JSON string containing a **parsed token object** for Form.io evalContext (custom JavaScript access). **Warning**: Use parsed token payload only, never raw JWT strings.
 - `user` (string): JSON string containing a user object for Form.io evalContext (custom JavaScript access).
 
 Boolean attribute semantics: presence, `"true"`, empty string, or `"1"` are treated as true.
@@ -179,6 +194,35 @@ Security notes
 - Set `submission-id` to prefill. The component prefetches the submission and applies data immediately, on the next tick, and once after first render to reduce races with Form.io internals.
 - Set `read-only` to render without allowing edits.
 
+### Simplified Embedding Advanced Configuration
+
+When using the simplified embed script, you can provide advanced configuration via the global `ChefsViewerConfig` object:
+
+```html
+<script>
+  window.ChefsViewerConfig = {
+    // Set token and user objects
+    token: { sub: 'user123', roles: ['admin'], email: 'user@example.com' },
+    user: { name: 'John Doe', department: 'IT' },
+
+    // Before hook - modify configuration before loading
+    before: function (element, params) {
+      console.log('About to load form:', params);
+      element.isolateStyles = true;
+    },
+
+    // After hook - add event listeners after form loads
+    after: function (element, formioInstance) {
+      element.addEventListener('formio:submitDone', function (e) {
+        alert('Form submitted successfully!');
+        window.location = '/thank-you';
+      });
+    },
+  };
+</script>
+<script src="/app/embed/chefs-form-viewer-embed.min.js?form-id=YOUR_FORM_ID&api-key=YOUR_API_KEY"></script>
+```
+
 ### Using Token and User in Form.io JavaScript
 
 The `token` and `user` objects you provide are made available in Form.io's evalContext, allowing you to use them in:
@@ -188,11 +232,13 @@ The `token` and `user` objects you provide are made available in Form.io's evalC
 - **Custom Validation**: Validate based on user context
 - **Advanced Logic**: Any custom JavaScript in Form.io components
 
+> **IMPORTANT SECURITY NOTE**: The `token` parameter is intended for **parsed token data only** (like Keycloak's `tokenParsed` object), not raw authorization tokens. In CHEFS, we pass the parsed JWT payload containing user metadata, roles, and claims - never the base64-encoded JWT string that could be used for API authorization. Follow this same approach: provide only the decoded token payload for Form.io logic, never actual authorization credentials.
+
 **Examples:**
 
 ```javascript
 // Conditional display based on user role
-show = token.roles && token.roles.includes('admin');
+show = token.roles && token.roles.includes('my-important-role');
 
 // Pre-fill a field with user email
 value = token.email || '';
@@ -206,6 +252,12 @@ if (token.roles.includes('manager') && user.department === 'HR') {
 } else {
   value = 'Standard Access';
 }
+
+// INCORRECT: Never pass raw JWT strings
+// token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."  // DON'T DO THIS
+
+// CORRECT: Pass parsed token payload only
+// token: { sub: "user123", roles: ["admin"], email: "user@gov.bc.ca", ... }
 ```
 
 ### Authentication
@@ -230,7 +282,34 @@ el.endpoints = {
 };
 ```
 
-### Demo and local testing
+### Code Generator and Demos
 
-- A demo page (`chefs-form-viewer-demo.html`) shows attribute toggles, event logging, and reloading read-only after submit.
-- Use the minified file in demos/prod, non-minified during development.
+#### **Embed Code Generator**
+
+Use the interactive code generator at [`/app/embed/chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html) to:
+
+- Configure all available parameters via a visual form
+- Generate embed code for all three methods (embed script, component HTML, programmatic)
+- Copy-paste ready code snippets
+- Launch live demos with your configuration
+
+#### **Demo Pages**
+
+- **Interactive Embed Demo**: [`/app/embed/chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) - One-line embedding with URL parameters
+- **Traditional Component Demo**: [`/app/embed/chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html) - Direct component usage with attribute toggles and event logging
+
+### Source Code Organization
+
+All embed-related files are located in [`./app/frontend/public/embed/`](./):
+
+| File                                                                       | Purpose                               | HTTP Path                                      |
+| -------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------- |
+| [`chefs-form-viewer.js`](./chefs-form-viewer.js)                           | Main web component (development)      | `/app/embed/chefs-form-viewer.js`              |
+| `chefs-form-viewer.min.js`                                                 | Minified component (production)       | `/app/embed/chefs-form-viewer.min.js`          |
+| [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development) | `/app/embed/chefs-form-viewer-embed.js`        |
+| `chefs-form-viewer-embed.min.js`                                           | Minified embed script (production)    | `/app/embed/chefs-form-viewer-embed.min.js`    |
+| [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                   | `/app/embed/chefs-form-viewer-generator.html`  |
+| [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                | `/app/embed/chefs-form-viewer-embed-demo.html` |
+| [`chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html)             | Traditional component demo            | `/app/embed/chefs-form-viewer-demo.html`       |
+
+**Note**: Minified files (`.min.js`) are available in production builds and should be used for better performance. These files are generated during the build process and are not stored in the source repository. Use non-minified files during development for easier debugging.

@@ -7,15 +7,22 @@
     v === true || v === 'true' || v === '' || v === 1 || v === '1';
 
   /**
-   * Minimal redaction-aware logger.
+   * Creates a minimal redaction-aware logger for the component.
    *
-   * Enabling
+   * @param {boolean} enabled - Whether logging is enabled
+   * @returns {Object} Logger object with debug, info, warn, error methods
+   *
+   * **Enabling:**
    * - Set the custom element attribute `debug` (e.g., `<chefs-form-viewer debug ...>`) OR
    * - Set `window.CHEFS_VIEWER_DEBUG = true` before the element is connected.
    *
-   * Behavior
+   * **Behavior:**
    * - When not enabled, all log calls are effectively no-ops (guarded in the internal `log()` helper).
    * - Usage: `this._log.debug(...)`, `this._log.info(...)`, `this._log.warn(...)`, `this._log.error(...)`.
+   *
+   * @example
+   * const logger = createLogger(true);
+   * logger.info('Form loaded', { formId: '123' });
    */
   function createLogger(enabled) {
     const log = (level, msg, meta) => {
@@ -32,8 +39,15 @@
   }
 
   /**
-   * Custom Element: chefs-form-viewer
-   * Encapsulates Form.io rendering with CHEFS defaults and a clean event API.
+   * CHEFS Form Viewer Web Component
+   *
+   * A custom HTML element that renders CHEFS forms using Form.io with a clean,
+   * event-driven API. Provides Shadow DOM isolation, CHEFS-specific defaults,
+   * and comprehensive configuration options.
+   *
+   * @class ChefsFormViewer
+   * @extends HTMLElement
+   * @since 1.5.0
    *
    * Element name
    * - <chefs-form-viewer>
@@ -323,7 +337,14 @@
       }
     }
 
-    /** Safely parse JSON attribute values with fallback */
+    /**
+     * Safely parses JSON attribute values with error handling.
+     *
+     * @param {string} value - The JSON string to parse
+     * @param {string} attributeName - Name of attribute (for error logging)
+     * @returns {Object|null} Parsed object or null if invalid JSON
+     * @private
+     */
     _parseJsonAttribute(value, attributeName) {
       if (!value) return null;
       try {
@@ -356,10 +377,26 @@
 
     // Public API
     /**
-     * Load the form schema and initialize the Form.io instance
+     * Loads the form schema and initializes the Form.io instance.
      *
-     * This method is responsible for fetching the form schema from the backend,
-     * initializing the Form.io instance, and emitting the formio:ready event.
+     * This is the main entry point for rendering a form. Call this method after
+     * setting all required attributes (form-id, api-key) and any optional configuration.
+     *
+     * @returns {Promise<void>} Resolves when form is loaded and ready
+     * @throws {Error} If form schema fails to load or Form.io initialization fails
+     *
+     * @fires ChefsFormViewer#formio:beforeLoad - Before loading begins (cancelable)
+     * @fires ChefsFormViewer#formio:beforeLoadSchema - Before schema fetch (cancelable)
+     * @fires ChefsFormViewer#formio:loadSchema - After schema is loaded
+     * @fires ChefsFormViewer#formio:beforeInit - Before Form.io initialization (cancelable)
+     * @fires ChefsFormViewer#formio:ready - When form is ready for interaction
+     * @fires ChefsFormViewer#formio:error - If loading fails
+     *
+     * @example
+     * const viewer = document.querySelector('chefs-form-viewer');
+     * viewer.formId = '12345';
+     * viewer.apiKey = 'your-api-key';
+     * await viewer.load();
      */
     async load() {
       if (this._isLoading) {
@@ -384,10 +421,17 @@
     }
 
     /**
-     * Reload the form schema and re-initialize the Form.io instance
+     * Reloads the form schema and re-initializes the Form.io instance.
      *
-     * This method is responsible for destroying the existing Form.io instance,
-     * fetching the form schema from the backend, and re-initializing the Form.io instance.
+     * Destroys the current Form.io instance and loads fresh schema and configuration.
+     * Useful when form definition has changed or you need to reset form state.
+     *
+     * @returns {Promise<void>} Resolves when form is reloaded and ready
+     * @throws {Error} If reload fails (same conditions as load())
+     *
+     * @example
+     * // Reload after form definition changes
+     * await viewer.reload();
      */
     async reload() {
       this._log.info('reload:begin');
@@ -396,29 +440,62 @@
     }
 
     /**
-     * Submit the form data to the backend
+     * Programmatically submits the form data to the backend.
      *
-     * This method is responsible for building the submission payload,
-     * calling the submit endpoint, and emitting the formio:submitDone event.
+     * Sets the submit flag and posts current form data to the submission endpoint.
+     * Equivalent to user clicking a submit button.
+     *
+     * @returns {Promise<void>} Resolves when submission completes
+     *
+     * @fires ChefsFormViewer#formio:beforeSubmit - Before submission begins (cancelable)
+     * @fires ChefsFormViewer#formio:submit - When submission starts
+     * @fires ChefsFormViewer#formio:submitDone - When submission succeeds
+     * @fires ChefsFormViewer#formio:error - If submission fails
+     *
+     * @example
+     * // Submit form programmatically
+     * await viewer.submit();
      */
     async submit() {
       await this._programmaticSubmit(true);
     }
 
     /**
-     * Submit the form data to the backend as a draft
+     * Saves the form data to the backend as a draft (not final submission).
      *
-     * This method is responsible for building the submission payload,
-     * calling the submit endpoint, and emitting the formio:submitDone event.
+     * Sets the submit flag to false and posts current form data. Allows users
+     * to save progress without final submission.
+     *
+     * @returns {Promise<void>} Resolves when draft save completes
+     *
+     * @fires ChefsFormViewer#formio:beforeSubmit - Before save begins (cancelable)
+     * @fires ChefsFormViewer#formio:submit - When save starts
+     * @fires ChefsFormViewer#formio:submitDone - When save succeeds
+     * @fires ChefsFormViewer#formio:error - If save fails
+     *
+     * @example
+     * // Save as draft
+     * await viewer.draft();
      */
     async draft() {
       await this._programmaticSubmit(false);
     }
 
     /**
-     * Set the submission data on the Form.io instance
+     * Sets the form data programmatically (pre-fills the form).
      *
-     * This method is responsible for setting the submission data on the Form.io instance.
+     * Updates the Form.io instance with the provided data object.
+     * Useful for editing existing submissions or pre-populating forms.
+     *
+     * @param {Object} data - The data object to populate the form with
+     *
+     * @example
+     * // Pre-fill form with data
+     * viewer.setSubmission({
+     *   firstName: 'John',
+     *   lastName: 'Doe',
+     *   email: 'john@example.com'
+     * });
      */
     setSubmission(data) {
       if (!this.formioInstance) return;
@@ -428,18 +505,33 @@
     }
 
     /**
-     * Get the submission data from the Form.io instance
+     * Gets the current form data from the Form.io instance.
      *
-     * This method is responsible for returning the submission data from the Form.io instance.
+     * Retrieves the current state of all form fields as a data object.
+     * Returns null if form is not yet initialized.
+     *
+     * @returns {Object|null} Current form data object, or null if not available
+     *
+     * @example
+     * // Get current form data
+     * const data = viewer.getSubmission();
+     * console.log(data?.data?.firstName); // Access field values
      */
     getSubmission() {
       return this.formioInstance?.submission || null;
     }
 
     /**
-     * Destroy the Form.io instance
+     * Destroys the Form.io instance and cleans up resources.
      *
-     * This method is responsible for destroying the Form.io instance.
+     * Safely destroys the current Form.io instance to prevent memory leaks.
+     * Called automatically when the element is disconnected from DOM.
+     *
+     * @returns {Promise<void>} Resolves when cleanup is complete
+     *
+     * @example
+     * // Manually destroy (usually not needed)
+     * await viewer.destroy();
      */
     async destroy() {
       if (this.formioInstance?.destroy) this.formioInstance.destroy();
@@ -828,6 +920,12 @@
       const parsed = this.parsers.schema(data);
       this.form = parsed.form;
       this.formSchema = parsed.schema;
+
+      // Set metadata properties for easy access (Approach 1 support)
+      this.formName = this.form?.name || null;
+      this.formDescription = this.form?.description || null;
+      this.formMetadata = this.form || null;
+
       this._log.info('schema:ok');
       this._emit('formio:loadSchema', {
         form: this.form,

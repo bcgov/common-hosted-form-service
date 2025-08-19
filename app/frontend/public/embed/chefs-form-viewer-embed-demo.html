@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHEFS Form Viewer - Embed Demo</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: #f8f9fa;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin: 2rem 0;
+        min-height: 400px;
+      }
+
+      .status {
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+        text-align: center;
+      }
+
+      .status.loading {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+
+      .status.success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .status.error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+
+      .controls {
+        text-align: center;
+        margin: 2rem 0;
+      }
+
+      .btn {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin: 0 0.5rem;
+      }
+
+      .btn:hover {
+        background: #2980b9;
+      }
+
+      .btn.secondary {
+        background: #6c757d;
+      }
+
+      .btn.secondary:hover {
+        background: #5a6268;
+      }
+
+      .info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+      }
+
+      .code {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 0.5rem;
+        font-family: monospace;
+        font-size: 0.85rem;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🚀 CHEFS Form Viewer - Embed Demo</h1>
+      <p>Direct URL-based form embedding demonstration</p>
+      <div id="formMetadata" style="display: none; margin-top: 1rem">
+        <h3
+          id="formTitle"
+          style="margin: 0; color: #2c3e50"
+          aria-label="Form title"
+        >
+          Form Title
+        </h3>
+        <p
+          id="formDescription"
+          style="margin: 0.5rem 0; color: #6c757d; font-style: italic"
+        ></p>
+      </div>
+    </div>
+
+    <div id="status" class="status loading">Loading form parameters...</div>
+
+    <div class="form-container" id="formContainer">
+      <!-- Form will be embedded here -->
+    </div>
+
+    <div class="controls">
+      <button class="btn secondary" onclick="resetDemo()">Reset Demo</button>
+      <button class="btn secondary" onclick="toggleDebug()">
+        Toggle Debug
+      </button>
+    </div>
+
+    <div class="info">
+      <strong>How to use:</strong><br />
+      Add URL parameters:
+      <code class="code"> ?form-id=YOUR_FORM_ID&api-key=YOUR_API_KEY </code>
+      <br /><br />
+      Optional parameters: <code>language</code>, <code>debug</code>,
+      <code>submission-id</code>, <code>base-url</code>, <code>theme-css</code>,
+      <code>isolate-styles</code>, <code>no-icons</code>, <code>token</code>,
+      <code>user</code>, etc. <br /><br />
+      <strong>Form Metadata Access:</strong><br />
+      This demo shows how to access form metadata (name, description, etc.)
+      using the global event:
+      <code>chefs-form-viewer:metadata-loaded</code>
+      <br />
+      Check browser console for metadata examples!
+    </div>
+
+    <script>
+      let currentSubmissionId = null;
+      let formParams = {};
+      let debugMode = false;
+
+      // Parse URL parameters
+      function parseUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const params = {};
+        for (const [key, value] of urlParams) {
+          params[key] = value;
+        }
+        return params;
+      }
+
+      // Update status message
+      function updateStatus(message, type = 'loading') {
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = message;
+        statusEl.className = `status ${type}`;
+      }
+
+      // Clear the form container
+      function clearForm() {
+        const container = document.getElementById('formContainer');
+        container.innerHTML = '';
+      }
+
+      // Create and inject the embed script
+      function loadForm(params, readOnly = false) {
+        clearForm();
+
+        const container = document.getElementById('formContainer');
+
+        // Build script URL - pass through ALL parameters
+        const scriptParams = new URLSearchParams();
+
+        // Required parameters
+        scriptParams.set('form-id', params['form-id']);
+        scriptParams.set('api-key', params['api-key']);
+
+        // Pass through all other URL parameters to the embed script
+        for (const [key, value] of Object.entries(params)) {
+          if (key !== 'form-id' && key !== 'api-key') {
+            scriptParams.set(key, value);
+          }
+        }
+
+        // Override with runtime values
+        if (readOnly) scriptParams.set('read-only', 'true');
+        if (debugMode) scriptParams.set('debug', 'true');
+
+        const scriptUrl = `/app/embed/chefs-form-viewer-embed.js?${scriptParams.toString()}`;
+
+        // Create script element
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+
+        // Append to container
+        container.appendChild(script);
+
+        updateStatus(
+          readOnly
+            ? 'Loading read-only submission...'
+            : 'Loading form for editing...',
+          'loading'
+        );
+      }
+
+      // Display form metadata in the UI
+      function displayFormMetadata(formName, formDescription) {
+        const metadataDiv = document.getElementById('formMetadata');
+        const titleEl = document.getElementById('formTitle');
+        const descEl = document.getElementById('formDescription');
+
+        if (formName) {
+          titleEl.textContent = formName;
+          metadataDiv.style.display = 'block';
+        }
+
+        if (formDescription) {
+          descEl.textContent = formDescription;
+        } else {
+          descEl.style.display = 'none';
+        }
+      }
+
+      // Setup global configuration for form events
+      function setupFormConfig() {
+        window.ChefsViewerConfig = {
+          after: function (element, formioInstance) {
+            updateStatus('Form loaded successfully!', 'success');
+
+            // Listen for successful submission
+            element.addEventListener('formio:submitDone', function (e) {
+              console.log('Form submitted:', e.detail);
+
+              // Extract submission ID from response
+              const submission = e.detail.submission;
+              if (submission && submission.id) {
+                currentSubmissionId = submission.id;
+                updateStatus(
+                  `Form submitted successfully! Submission ID: ${submission.id}`,
+                  'success'
+                );
+
+                // Wait a moment then show read-only version
+                setTimeout(() => {
+                  showReadOnlySubmission();
+                }, 2000);
+              } else {
+                updateStatus('Form submitted successfully!', 'success');
+              }
+            });
+
+            // Listen for form errors
+            element.addEventListener('formio:error', function (e) {
+              console.error('Form error:', e.detail);
+              updateStatus(`Form error: ${e.detail.error}`, 'error');
+            });
+          },
+        };
+
+        // Listen for the metadata loaded event (only available in embed component)
+        window.addEventListener(
+          'chefs-form-viewer:metadata-loaded',
+          function (e) {
+            console.log('📋 Form metadata loaded:', e.detail);
+
+            // Display the form metadata in the UI
+            displayFormMetadata(e.detail.formName, e.detail.formDescription);
+
+            // Update page title with form name
+            if (e.detail.formName) {
+              document.title = `${e.detail.formName} - CHEFS Demo`;
+            }
+          }
+        );
+      }
+
+      // Show the submitted form as read-only
+      function showReadOnlySubmission() {
+        if (!currentSubmissionId) {
+          updateStatus('No submission ID available', 'error');
+          return;
+        }
+
+        // Create new params with submission ID for read-only viewing
+        const readOnlyParams = {
+          ...formParams,
+          'submission-id': currentSubmissionId,
+        };
+
+        updateStatus('Loading submitted form as read-only...', 'loading');
+        loadForm(readOnlyParams, true);
+      }
+
+      // Reset the demo to initial state
+      function resetDemo() {
+        currentSubmissionId = null;
+        delete formParams['submission-id'];
+        updateStatus('Resetting demo...', 'loading');
+        setTimeout(() => {
+          loadForm(formParams, false);
+        }, 500);
+      }
+
+      // Toggle debug mode
+      function toggleDebug() {
+        debugMode = !debugMode;
+        updateStatus(
+          `Debug mode ${debugMode ? 'enabled' : 'disabled'}. Reloading...`,
+          'loading'
+        );
+        setTimeout(() => {
+          const currentReadOnly = window.location.search.includes('read-only');
+          loadForm(formParams, currentReadOnly);
+        }, 1000);
+      }
+
+      // Initialize the demo
+      function initDemo() {
+        formParams = parseUrlParams();
+
+        // Validate required parameters
+        if (!formParams['form-id'] || !formParams['api-key']) {
+          updateStatus(
+            'Missing required parameters: form-id and api-key are required in URL',
+            'error'
+          );
+          return;
+        }
+
+        // Setup global form event handlers
+        setupFormConfig();
+
+        // Load the form
+        loadForm(formParams);
+      }
+
+      // Start the demo when page loads
+      document.addEventListener('DOMContentLoaded', initDemo);
+    </script>
+  </body>
+</html>
