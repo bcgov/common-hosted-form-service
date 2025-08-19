@@ -192,6 +192,24 @@
 
     <div id="viewerHost" class="viewer"></div>
 
+    <div
+      id="formMetadata"
+      style="
+        margin: 1rem 0;
+        padding: 0.75rem;
+        background: #f0f8ff;
+        border: 1px solid #b0d4f1;
+        border-radius: 4px;
+        display: none;
+      "
+    >
+      <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0">Form Information</h4>
+      <div><strong>Name:</strong> <span id="formNameDisplay">-</span></div>
+      <div>
+        <strong>Description:</strong> <span id="formDescriptionDisplay">-</span>
+      </div>
+    </div>
+
     <div class="log" id="eventLog"></div>
 
     <script>
@@ -211,8 +229,7 @@
             },
             2
           );
-        } catch (err) {
-          console.debug('safeStringify failed:', err);
+        } catch {
           return '[Unserializable]';
         }
       }
@@ -226,6 +243,24 @@
         }
         el.textContent = `[${new Date().toISOString()}] ${line}${suffix}`;
         logEl.prepend(el);
+      }
+
+      function displayFormMetadata(element) {
+        // Access metadata via direct element properties (Approach 1)
+        const formName = element.formName || 'N/A';
+        const formDescription = element.formDescription || 'N/A';
+
+        // Update the display
+        $('formNameDisplay').textContent = formName;
+        $('formDescriptionDisplay').textContent = formDescription;
+        $('formMetadata').style.display = 'block';
+
+        // Log the metadata access method for educational purposes
+        log('Form metadata accessed via element properties:', {
+          formName: element.formName,
+          formDescription: element.formDescription,
+          formMetadata: element.formMetadata ? 'Available' : 'Not available',
+        });
       }
 
       function getBaseUrl() {
@@ -306,7 +341,11 @@
         const logAll = (name) => (e) => log(name, e.detail);
         el.addEventListener('formio:ready', logAll('ready'));
         el.addEventListener('formio:error', logAll('error'));
-        el.addEventListener('formio:loadSchema', logAll('loadSchema'));
+        el.addEventListener('formio:loadSchema', (e) => {
+          logAll('loadSchema')(e);
+          // Display form metadata using direct element properties (Approach 1)
+          displayFormMetadata(el);
+        });
 
         el.addEventListener('formio:submit', logAll('submit'));
         el.addEventListener('formio:submitDone', (e) => {
@@ -340,6 +379,7 @@
       $('loadBtn').addEventListener('click', makeViewer);
       $('clearBtn').addEventListener('click', () => {
         $('viewerHost').innerHTML = '';
+        $('formMetadata').style.display = 'none';
         log('Cleared');
       });
       $('submitBtn').addEventListener('click', () => {
