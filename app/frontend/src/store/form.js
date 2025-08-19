@@ -473,6 +473,7 @@ export const useFormStore = defineStore('form', {
           description: this.form.description,
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
+          enableAutoSave: this.form.enableAutoSave,
           enableSubmitterRevision: this.form.enableSubmitterRevision,
           enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
           showAssigneeInSubmissionsTable:
