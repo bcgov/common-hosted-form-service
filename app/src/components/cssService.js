@@ -22,7 +22,6 @@ class CssService {
   async queryIdirUsers({ email, firstName, lastName, guid }) {
     try {
       const url = `${this.apiV1}/${environment}/idir/users`;
-      log.debug(`GET to ${url}`, { function: 'queryIdirUsers' });
 
       const response = await this.axios.get(url, {
         params: { email, firstName, lastName, guid },
