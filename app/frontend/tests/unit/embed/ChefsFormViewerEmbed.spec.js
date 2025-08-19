@@ -36,20 +36,19 @@ describe('chefs-form-viewer-embed.js', () => {
     });
 
     it('should handle boolean parameter conversion', () => {
-      const testCases = [
-        { input: 'true', expected: true },
-        { input: '1', expected: true },
-        { input: '', expected: true }, // empty string is truthy for attributes
-        { input: 'false', expected: false },
-        { input: '0', expected: false },
-        { input: undefined, expected: false },
-      ];
+      // Test truthy values
+      expect('true' === 'true' || 'true' === '1' || 'true' === '').toBe(true);
+      expect('1' === 'true' || '1' === '1' || '1' === '').toBe(true);
+      expect('' === 'true' || '' === '1' || '' === '').toBe(true);
 
-      testCases.forEach(({ input, expected }) => {
-        // Simulate the boolean conversion logic from the embed script
-        const result = input === 'true' || input === '1' || input === '';
-        expect(result).toBe(expected);
-      });
+      // Test falsy values
+      expect('false' === 'true' || 'false' === '1' || 'false' === '').toBe(
+        false
+      );
+      expect('0' === 'true' || '0' === '1' || '0' === '').toBe(false);
+      expect(
+        undefined === 'true' || undefined === '1' || undefined === ''
+      ).toBe(false);
     });
   });
 
@@ -104,8 +103,10 @@ describe('chefs-form-viewer-embed.js', () => {
 
       try {
         result = JSON.parse(validJson);
-      } catch {
+      } catch (error) {
         result = undefined;
+        // Log error for debugging purposes
+        console.warn('JSON parsing failed:', error);
       }
 
       expect(result).toEqual({ name: 'John', age: 30 });
@@ -118,9 +119,11 @@ describe('chefs-form-viewer-embed.js', () => {
 
       try {
         result = JSON.parse(invalidJson);
-      } catch {
+      } catch (error) {
         result = undefined;
         errorOccurred = true;
+        // Verify error is a SyntaxError as expected
+        expect(error).toBeInstanceOf(SyntaxError);
       }
 
       expect(result).toBeUndefined();
@@ -202,14 +205,16 @@ describe('chefs-form-viewer-embed.js', () => {
       // Simulate JSON parameter application
       try {
         mockElement.token = JSON.parse(tokenJson);
-      } catch {
+      } catch (error) {
         // Invalid JSON, skip
+        console.warn('Failed to parse token JSON:', error);
       }
 
       try {
         mockElement.user = JSON.parse(userJson);
-      } catch {
+      } catch (error) {
         // Invalid JSON, skip
+        console.warn('Failed to parse user JSON:', error);
       }
 
       expect(mockElement.token).toEqual({ sub: 'user123', roles: ['admin'] });
@@ -347,7 +352,8 @@ describe('chefs-form-viewer-embed.js', () => {
         undefined,
       ];
 
-      invalidJsonInputs.forEach((input) => {
+      // Test each invalid JSON input
+      const testInvalidJson = (input) => {
         let parsed = null;
         let errorOccurred = false;
 
@@ -364,7 +370,9 @@ describe('chefs-form-viewer-embed.js', () => {
         if (input) {
           expect(errorOccurred).toBe(true);
         }
-      });
+      };
+
+      invalidJsonInputs.forEach(testInvalidJson);
 
       expect(mockLogger.warn).toHaveBeenCalled();
     });
@@ -400,6 +408,7 @@ describe('chefs-form-viewer-embed.js', () => {
       });
 
       // Wait for promise to resolve
+      const PROMISE_RESOLUTION_DELAY = 0;
       return new Promise((resolve) => {
         setTimeout(() => {
           expect(mockLogger.error).toHaveBeenCalledWith(
@@ -407,7 +416,7 @@ describe('chefs-form-viewer-embed.js', () => {
             expect.any(Error)
           );
           resolve();
-        }, 0);
+        }, PROMISE_RESOLUTION_DELAY);
       });
     });
   });
