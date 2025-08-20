@@ -24,7 +24,7 @@ export default class Component extends (FieldComponent as any) {
       },
       searchDebounce: 300,
       minSearch: 2,
-      apiEndpoint: import.meta.env.VITE_CS_CSS_API_URL,
+      apiEndpoint: `${import.meta.env.VITE_FRONTEND_BASEPATH}/api/v1/cs/css/idir/users`,
     }, ...extend);
   }
 
@@ -51,7 +51,7 @@ export default class Component extends (FieldComponent as any) {
     this.componentID = super.elementInfo().component.id;
     this.component.searchDebounce = this.component.searchDebounce || 300;
     this.component.minSearch = this.component.minSearch || 2;
-    this.component.apiEndpoint = this.component.apiEndpoint || import.meta.env.VITE_CS_CSS_API_URL;
+    this.component.apiEndpoint = this.component.apiEndpoint || `${import.meta.env.VITE_FRONTEND_BASEPATH}/api/v1/cs/css/idir/users`;
   }
 
   render() {
