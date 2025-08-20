@@ -1,4 +1,4 @@
-const controller = require('../../../../src/forms/css/controller');
+const controller = require('../../../../src/forms/commonServices/controller');
 const service = require('../../../../src/components/cssService');
 
 const req = {

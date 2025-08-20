@@ -2,7 +2,7 @@ const routes = require('express').Router();
 
 const controller = require('./controller');
 
-routes.get('/idir/users', async (req, res, next) => {
+routes.get('/css/idir/users', async (req, res, next) => {
   await controller.queryIdirUsers(req, res, next);
 });
 

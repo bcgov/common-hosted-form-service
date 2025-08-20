@@ -283,6 +283,8 @@ objects:
                     name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
                 - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-clamav"
+                - configMapRef:
+                    name: "${APP_NAME}-${JOB_NAME}-common-services"
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           volumes:

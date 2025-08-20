@@ -29,7 +29,7 @@ describe(`${basePath}`, () => {
       expect(response.body.endpoints).toContain('/submissions');
       expect(response.body.endpoints).toContain('/users');
       expect(response.body.endpoints).toContain('/utils');
-      expect(response.body.endpoints).toContain('/css');
+      expect(response.body.endpoints).toContain('/cs');
     });
   });
 });

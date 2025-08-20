@@ -16,7 +16,7 @@ const submission = require('../forms/submission');
 const utils = require('../forms/utils');
 const index = require('../forms/public');
 const proxy = require('../forms/proxy');
-const css = require('../forms/css');
+const commonServices = require('../forms/commonServices');
 
 const statusService = require('../components/statusService');
 
@@ -32,7 +32,7 @@ const submissionPath = submission.mount(router);
 const utilsPath = utils.mount(router);
 const publicPath = index.mount(router);
 const proxyPath = proxy.mount(router);
-const cssPath = css.mount(router);
+const commonServicesPath = commonServices.mount(router);
 
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
@@ -45,7 +45,22 @@ const getSpec = () => {
 // Base v1 Responder
 router.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: ['/docs', '/status', proxyPath, filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath, cssPath],
+    endpoints: [
+      '/docs',
+      '/status',
+      proxyPath,
+      filePath,
+      formPath,
+      permissionPath,
+      rbacPath,
+      rolePath,
+      submissionPath,
+      userPath,
+      bcaddress,
+      publicPath,
+      utilsPath,
+      commonServicesPath,
+    ],
   });
 });
 

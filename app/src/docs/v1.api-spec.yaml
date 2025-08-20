@@ -4080,7 +4080,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /css/idir/users:
+  /cs/css/idir/users:
     get:
       summary: List all idir users
       operationId: queryIdirUsers

@@ -112,6 +112,12 @@ runs:
           oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/clamav.cm.yaml -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} --param-file=openshift/clamav.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
         fi
 
+    - name: Deploy Common Services ConfigMaps
+      shell: bash
+      run: |
+        # Use the same ROUTE_PATH that's used for the app deployment
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/cs.cm.yaml -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+
     - name: Delete pre-job if it exists
       shell: bash
       run: |
