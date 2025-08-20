@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 const FieldComponent = (Components as any).components.field;
 
-export default class Component extends (FieldComponent as any) {
+export default class Component extends FieldComponent {
   static schema(...extend) {
     return FieldComponent.schema({
       type: 'idirusers',
@@ -46,6 +46,7 @@ export default class Component extends (FieldComponent as any) {
   searchResultsData = [];
 
   constructor(component, options, data) {
+    // @SonarIgnore: This super constructor call is required
     super(component, options, data);
     
     this.componentID = super.elementInfo().component.id;
@@ -87,20 +88,25 @@ export default class Component extends (FieldComponent as any) {
   // Attach event handlers after render
   attach(element) {
     const superAttach = super.attach(element);
+    
+    // Start initialization after a small delay
+    setTimeout(() => this.initializeComponent(), 200);
+    
+    return superAttach;
+  }
 
+  initializeComponent() {
     // Find the container
     const container = document.getElementById(`${this.component.key}-${this.id}`);
-    if (!container) return superAttach;
+    if (!container) return;
 
     if (this.options.readOnly || this.disabled) {
-      // Delay rendering to allow Formio to set this.dataValue
-      setTimeout(() => {
-        container.innerHTML = this.renderUserViewHTML(this.dataValue);
-      }, 100);
-      return superAttach;
+      // Render read-only view
+      container.innerHTML = this.renderUserViewHTML(this.dataValue);
+      return;
     }
 
-    // Otherwise, render the full search UI into the container
+    // Render edit mode UI
     container.innerHTML = `
       <div class="idir-user-selector-container">
         <div class="idir-user-search-fields">
@@ -152,7 +158,16 @@ export default class Component extends (FieldComponent as any) {
       </div>
     `;
 
-    // Restore DOM references and event listeners
+    // Set up DOM references and event listeners
+    this.setupEventListeners(container);
+    
+    // If we have an existing value, show the selection
+    if (this.dataValue) {
+      this.showSelectedUser(this.dataValue);
+    }
+  }
+
+  setupEventListeners(container) {
     this.emailInput = container.querySelector(`#${this.id}-email`);
     this.firstNameInput = container.querySelector(`#${this.id}-firstName`);
     this.lastNameInput = container.querySelector(`#${this.id}-lastName`);
@@ -169,13 +184,6 @@ export default class Component extends (FieldComponent as any) {
     if (this.clearSelection) {
       this.addEventListener(this.clearSelection, 'click', this.clearSelectionHandler.bind(this));
     }
-
-    // If we have an existing value, show the selection
-    if (this.dataValue) {
-      this.showSelectedUser(this.dataValue);
-    }
-
-    return superAttach;
   }
 
   // Perform search when button is clicked
@@ -264,21 +272,13 @@ export default class Component extends (FieldComponent as any) {
       
       // Name cell
       const nameCell = document.createElement('td');
-      const displayName = user.attributes && 
-                        user.attributes.display_name && 
-                        user.attributes.display_name[0] 
-                        ? user.attributes.display_name[0] 
-                        : `${user.firstName || ''} ${user.lastName || ''}`;
+      const displayName = user?.attributes?.display_name?.[0] || `${user.firstName || ''} ${user.lastName || ''}`;
       nameCell.textContent = displayName;
       row.appendChild(nameCell);
 
       // Username cell
       const usernameCell = document.createElement('td');
-      const username = user.attributes && 
-                     user.attributes.idir_username && 
-                     user.attributes.idir_username[0]
-                     ? user.attributes.idir_username[0]
-                     : user.username || '';
+      const username =  user?.attributes?.idir_username?.[0] || user.username || '';
       usernameCell.textContent = username;
       row.appendChild(usernameCell);
 
@@ -323,17 +323,9 @@ export default class Component extends (FieldComponent as any) {
     this.userSelection.style.display = 'block';
     
     // Format display info
-    const displayName = user.attributes && 
-                       user.attributes.display_name && 
-                       user.attributes.display_name[0] 
-                       ? user.attributes.display_name[0] 
-                       : `${user.firstName || ''} ${user.lastName || ''}`;
-    
-    const username = user.attributes && 
-                    user.attributes.idir_username && 
-                    user.attributes.idir_username[0]
-                    ? user.attributes.idir_username[0]
-                    : user.username || '';
+    const displayName = user?.attributes?.display_name?.[0] || `${user.firstName || ''} ${user.lastName || ''}`;
+
+    const username = user?.attributes?.idir_username?.[0] || user.username || '';
     
     // Display the user info
     this.selectedUserInfo.innerHTML = `
