@@ -117,7 +117,7 @@ tags:
   - name: Health
     description: >-
       These API endpoints are used for for health checks of CHEFS and its required services.
-  - name: CSS
+  - name: Common Services
     description: >-
       These API endpoints are used to access the CSS (Common Service Showcase)
       services, such as the single sign on service.
@@ -4085,7 +4085,7 @@ paths:
       summary: List all idir users
       operationId: queryIdirUsers
       tags:
-        - CSS
+        - Common Services
       security:
         - BearerAuth: []
           OpenID:
