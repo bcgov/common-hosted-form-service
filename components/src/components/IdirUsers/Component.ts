@@ -108,51 +108,67 @@ export default class Component extends FieldComponent {
 
     // Render edit mode UI
     container.innerHTML = `
-      <div class="idir-user-selector-container">
-        <div class="idir-user-search-fields">
-          <div class="row">
-            <div class="col-md-4 form-group">
-              <label for="${this.id}-email">Email</label>
-              <input type="text" id="${this.id}-email" class="form-control email-field" placeholder="Search by email"/>
-            </div>
-            <div class="col-md-4 form-group">
-              <label for="${this.id}-firstName">First Name</label>
-              <input type="text" id="${this.id}-firstName" class="form-control firstName-field" placeholder="Search by first name"/>
-            </div>
-            <div class="col-md-4 form-group">
-              <label for="${this.id}-lastName">Last Name</label>
-              <input type="text" id="${this.id}-lastName" class="form-control lastName-field" placeholder="Search by last name"/>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 text-right">
-              <button type="button" class="btn btn-primary search-button">Search</button>
-            </div>
-          </div>
-        </div>
-        <div class="idir-user-results mt-3" style="display:none">
-          <h5>Results</h5>
-          <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody class="search-results">
-                <!-- Results will be inserted here -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="idir-user-selection mt-3" style="display:none">
+      <div class="idir-user-container">
+        <!-- Selected user display (outside the search panel) -->
+        <div class="idir-user-selection mb-3" style="display:none">
           <div class="alert alert-info">
             <strong>Selected User:</strong>
             <div class="selected-user-info"></div>
-            <button type="button" class="btn btn-sm btn-warning float-right clear-selection">Clear</button>
+            <button type="button" class="btn btn-sm btn-warning clear-selection" style="position: absolute; right: 15px; top: 15px;">Clear</button>
+          </div>
+        </div>
+        
+        <!-- Search panel -->
+        <div class="card panel panel-default mb-3">
+          <div class="card-header bg-light">
+            <h4 class="mb-0">Search for IDIR User</h4>
+          </div>
+          <div class="card-body">
+            <div class="idir-user-search-fields">
+              <div class="row">
+                <div class="col-md-4 form-group">
+                  <label for="${this.id}-email">Email</label>
+                  <input type="text" id="${this.id}-email" class="form-control email-field" placeholder="Search by email"/>
+                </div>
+                <div class="col-md-4 form-group">
+                  <label for="${this.id}-firstName">First Name</label>
+                  <input type="text" id="${this.id}-firstName" class="form-control firstName-field" placeholder="Search by first name"/>
+                </div>
+                <div class="col-md-4 form-group">
+                  <label for="${this.id}-lastName">Last Name</label>
+                  <input type="text" id="${this.id}-lastName" class="form-control lastName-field" placeholder="Search by last name"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 text-right mt-3">
+                  <button type="button" class="btn btn-primary search-button">Search</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Results panel -->
+        <div class="idir-user-results card panel panel-default" style="display:none">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Search Results</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th style="width: 100px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="search-results">
+                  <!-- Results will be inserted here -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
