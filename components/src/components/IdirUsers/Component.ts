@@ -31,7 +31,7 @@ export default class Component extends FieldComponent {
   static get builderInfo() {
     return {
       title: 'IDIR Users',
-      group: 'advanced',
+      group: 'basic',
       icon: 'user',
       weight: 90,
       schema: Component.schema(),
