@@ -492,6 +492,330 @@ describe('chefs-form-viewer web component', () => {
     });
   });
 
+  describe('refactored _initFormio methods', () => {
+    let el;
+
+    beforeEach(() => {
+      el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+    });
+
+    describe('_buildFormioOptions', () => {
+      it('builds basic options with defaults', () => {
+        const options = el._buildFormioOptions();
+
+        expect(options).toEqual({
+          readOnly: false,
+          language: 'en',
+          sanitizeConfig: {},
+          hooks: expect.any(Object),
+          evalContext: {},
+        });
+      });
+
+      it('includes readOnly when set', () => {
+        el.readOnly = true;
+        const options = el._buildFormioOptions();
+
+        expect(options.readOnly).toBe(true);
+      });
+
+      it('includes custom language', () => {
+        el.language = 'fr';
+        const options = el._buildFormioOptions();
+
+        expect(options.language).toBe('fr');
+      });
+
+      it('includes token in evalContext when set', () => {
+        const token = { sub: 'user123', roles: ['admin'] };
+        el.token = token;
+        const options = el._buildFormioOptions();
+
+        expect(options.evalContext.token).toEqual(token);
+      });
+
+      it('includes user in evalContext when set', () => {
+        const user = { name: 'John Doe', department: 'IT' };
+        el.user = user;
+        const options = el._buildFormioOptions();
+
+        expect(options.evalContext.user).toEqual(user);
+      });
+
+      it('includes both token and user when both set', () => {
+        const token = { sub: 'user123' };
+        const user = { name: 'Jane Doe' };
+        el.token = token;
+        el.user = user;
+        const options = el._buildFormioOptions();
+
+        expect(options.evalContext.token).toEqual(token);
+        expect(options.evalContext.user).toEqual(user);
+      });
+
+      it('excludes token/user from evalContext when not set', () => {
+        el.token = null;
+        el.user = null;
+        const options = el._buildFormioOptions();
+
+        expect(options.evalContext).toEqual({});
+      });
+    });
+
+    describe('_handleRuntimePrefill', () => {
+      it('does nothing when no submissionId', async () => {
+        el.submissionId = null;
+        const fetchSpy = vi.spyOn(global, 'fetch');
+
+        await el._handleRuntimePrefill({
+          readSubmission: '/api/submissions/:submissionId',
+        });
+
+        expect(fetchSpy).not.toHaveBeenCalled();
+        fetchSpy.mockRestore();
+      });
+
+      it('fetches and applies submission data when submissionId exists', async () => {
+        el.submissionId = 'sub123';
+        const expectedData = { firstName: 'John', lastName: 'Doe' };
+        const mockResponse = {
+          ok: true,
+          json: vi
+            .fn()
+            .mockResolvedValue({ submission: { data: expectedData } }),
+        };
+        const fetchSpy = vi
+          .spyOn(global, 'fetch')
+          .mockResolvedValue(mockResponse);
+        const schedulesSpy = vi
+          .spyOn(el, '_schedulePrefillApplications')
+          .mockResolvedValue();
+
+        await el._handleRuntimePrefill({
+          readSubmission: '/api/submissions/:submissionId',
+        });
+
+        expect(fetchSpy).toHaveBeenCalledWith('/api/submissions/sub123', {
+          headers: expect.any(Object),
+        });
+        expect(schedulesSpy).toHaveBeenCalledWith(expectedData);
+
+        fetchSpy.mockRestore();
+        schedulesSpy.mockRestore();
+      });
+
+      it('logs warning when fetch fails', async () => {
+        el.submissionId = 'sub123';
+        const mockResponse = { ok: false, status: 404 };
+        const fetchSpy = vi
+          .spyOn(global, 'fetch')
+          .mockResolvedValue(mockResponse);
+        const logSpy = vi.spyOn(el._log, 'warn');
+
+        await el._handleRuntimePrefill({
+          readSubmission: '/api/submissions/:submissionId',
+        });
+
+        expect(logSpy).toHaveBeenCalledWith('prefill:readSubmission:failed', {
+          status: 404,
+        });
+
+        fetchSpy.mockRestore();
+        logSpy.mockRestore();
+      });
+    });
+
+    describe('_setupFormioInstance', () => {
+      beforeEach(() => {
+        el.formioInstance = new FakeFormioInstance();
+        el._configureInstanceEndpoints = vi.fn();
+        el._wireInstanceEvents = vi.fn();
+        el._addShadowDomCompatibility = vi.fn();
+        el._setupPrefillGuard = vi.fn();
+      });
+
+      it('calls all setup methods', () => {
+        const urls = { submit: '/submit' };
+        el._setupFormioInstance(urls, null);
+
+        expect(el._configureInstanceEndpoints).toHaveBeenCalledWith(urls);
+        expect(el._wireInstanceEvents).toHaveBeenCalled();
+        expect(el._addShadowDomCompatibility).toHaveBeenCalled();
+        expect(el._setupPrefillGuard).not.toHaveBeenCalled();
+      });
+
+      it('sets up prefill guard when prefilledViaOptions provided', () => {
+        const urls = { submit: '/submit' };
+        const prefilledData = { name: 'John' };
+
+        el._setupFormioInstance(urls, prefilledData);
+
+        expect(el._setupPrefillGuard).toHaveBeenCalledWith(prefilledData);
+      });
+    });
+
+    describe('_setupPrefillGuard', () => {
+      let mockInstance;
+
+      beforeEach(() => {
+        mockInstance = new FakeFormioInstance();
+        el.formioInstance = mockInstance;
+        el._setSubmissionOnInstance = vi.fn().mockResolvedValue();
+      });
+
+      it('sets up one-time render event handler', () => {
+        const prefilledData = { name: 'John' };
+        const onSpy = vi.spyOn(mockInstance, 'on');
+
+        el._setupPrefillGuard(prefilledData);
+
+        expect(onSpy).toHaveBeenCalledWith('render', expect.any(Function));
+      });
+
+      it('applies prefilled data on first render only', async () => {
+        const prefilledData = { name: 'John' };
+        el._setupPrefillGuard(prefilledData);
+
+        // Simulate first render
+        mockInstance.emit('render');
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(el._setSubmissionOnInstance).toHaveBeenCalledWith(
+          prefilledData,
+          {
+            fromSubmission: true,
+            noValidate: true,
+          }
+        );
+
+        // Simulate second render - should not apply again
+        el._setSubmissionOnInstance.mockClear();
+        mockInstance.emit('render');
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(el._setSubmissionOnInstance).not.toHaveBeenCalled();
+      });
+
+      it('handles errors gracefully', async () => {
+        const prefilledData = { name: 'John' };
+        el._setSubmissionOnInstance.mockRejectedValue(new Error('Test error'));
+        const logSpy = vi.spyOn(el._log, 'debug').mockImplementation(() => {});
+
+        el._setupPrefillGuard(prefilledData);
+        mockInstance.emit('render');
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(logSpy).toHaveBeenCalledWith('prefill:options:ignored', {
+          message: 'Test error',
+        });
+
+        logSpy.mockRestore();
+      });
+    });
+
+    describe('Shadow DOM compatibility', () => {
+      beforeEach(() => {
+        // Set up shadow DOM
+        el._root = el.shadowRoot;
+        el.formioInstance = new FakeFormioInstance();
+      });
+
+      describe('_addShadowDomCompatibility', () => {
+        it('does nothing when not in shadow DOM mode', () => {
+          el._root = el; // Light DOM mode
+          const addEventListenerSpy = vi.spyOn(
+            el.shadowRoot,
+            'addEventListener'
+          );
+
+          el._addShadowDomCompatibility();
+
+          expect(addEventListenerSpy).not.toHaveBeenCalled();
+          addEventListenerSpy.mockRestore();
+        });
+
+        it('adds click event listener in shadow DOM mode', () => {
+          const addEventListenerSpy = vi.spyOn(
+            el.shadowRoot,
+            'addEventListener'
+          );
+
+          el._addShadowDomCompatibility();
+
+          expect(addEventListenerSpy).toHaveBeenCalledWith(
+            'click',
+            expect.any(Function)
+          );
+          addEventListenerSpy.mockRestore();
+        });
+      });
+
+      describe('_handleChoicesSelectClick', () => {
+        let mockEvent;
+
+        beforeEach(() => {
+          mockEvent = {
+            target: document.createElement('div'),
+            preventDefault: vi.fn(),
+            stopPropagation: vi.fn(),
+          };
+        });
+
+        it('returns false when no choices container found', () => {
+          mockEvent.target.closest = vi.fn().mockReturnValue(null);
+
+          const result = el._handleChoicesSelectClick(mockEvent);
+
+          expect(result).toBe(false);
+        });
+
+        it('returns false when click not on dropdown area', () => {
+          const choicesContainer = document.createElement('div');
+          choicesContainer.className = 'choices';
+          mockEvent.target.closest = vi
+            .fn()
+            .mockReturnValueOnce(choicesContainer) // First call for .choices
+            .mockReturnValueOnce(null); // Second call for form-control
+          mockEvent.target.matches = vi.fn().mockReturnValue(false);
+
+          const result = el._handleChoicesSelectClick(mockEvent);
+
+          expect(result).toBe(false);
+        });
+
+        it('handles valid choices click and returns true', () => {
+          const choicesContainer = document.createElement('div');
+          const mainDropdown = document.createElement('div');
+          choicesContainer.className = 'choices';
+          mainDropdown.className = 'form-control';
+          mainDropdown.focus = vi.fn();
+          mainDropdown.dispatchEvent = vi.fn();
+          choicesContainer.appendChild(mainDropdown);
+
+          mockEvent.target.closest = vi
+            .fn()
+            .mockReturnValueOnce(choicesContainer) // First call for .choices
+            .mockReturnValueOnce(mainDropdown); // Second call for form-control
+          mockEvent.target.matches = vi.fn().mockReturnValue(true);
+          choicesContainer.querySelector = vi
+            .fn()
+            .mockReturnValue(mainDropdown);
+
+          const result = el._handleChoicesSelectClick(mockEvent);
+
+          expect(result).toBe(true);
+          expect(mainDropdown.focus).toHaveBeenCalled();
+          expect(mockEvent.preventDefault).toHaveBeenCalled();
+          expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
   function configureNoNetwork(el, options = {}) {
     const baseCss = 'data:text/css,';
     const baseJs = 'data:text/javascript,';
