@@ -102,13 +102,42 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     //Verify new design is updated in the form
     cy.get('label').contains('Select List').should('be.visible');
-    //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-     cy.waitForLoad();
+    });
+  });
+  it('Checks BCSC login settings on form Settings', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    //Publish the form
+    cy.get('.v-label > span').click();
+    cy.get('span').contains('Publish Version 1');
+    cy.contains('Continue').should('be.visible');
+    cy.contains('Continue').trigger('click');
+    cy.waitForLoad();
+    cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
+    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('Log-in Required').click();
+    cy.contains('BC Services Card').click();
+    cy.waitForLoad();
+    //Validate checkbox settings for BC SC card login on form settings page
+    cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').find('input[type="checkbox"]').should("be.enabled");
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').find('input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').find('input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').should("be.enabled"); 
+    cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').find('input[type="checkbox"]').should("be.checked");
+    cy.get('[data-test="canAllowEventSubscriptionCheckbox"]').find('input[type="checkbox"]').should("be.enabled"); 
+    cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should("be.enabled");
+    cy.get('[data-test="canUploadDraftCheckbox"]').find('input[type="checkbox"]').should("be.enabled");
+    cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').find('input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="enableTeamMemberDraftShare"]').find('input[type="checkbox"]').should("be.enabled");   
+    cy.get('[data-test="canEditForm"]').click();
+    cy.waitForLoad();
+    //Delete form after test run
     cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
-    });
+    
        
 });
 
