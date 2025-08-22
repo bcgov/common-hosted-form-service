@@ -903,6 +903,62 @@
       );
     }
 
+    /** Add Shadow DOM compatibility fixes for Form.io components */
+    _addShadowDomCompatibility() {
+      // Only apply in Shadow DOM mode
+      if (this._root !== this.shadowRoot) return;
+
+      this._log.debug('Adding Shadow DOM compatibility for Form.io components');
+
+      // Global click handler for all Form.io component fixes
+      this.shadowRoot.addEventListener('click', (event) => {
+        // Try each component fix until one handles the event
+        if (this._handleChoicesSelectClick(event)) return;
+        // Add more component handlers here as needed:
+        // if (this._handleDatePickerClick(event)) return;
+        // if (this._handleFileUploadClick(event)) return;
+      });
+    }
+
+    /** Handle Choices.js select component clicks in Shadow DOM */
+    _handleChoicesSelectClick(event) {
+      // Look for Choices.js select components
+      const choicesContainer = event.target.closest('.choices');
+      if (!choicesContainer) return false;
+
+      // Check if click was on the main dropdown area (not on search input or options)
+      const isMainDropdownClick =
+        event.target.matches('.form-control, .choices__list--single') ||
+        event.target.closest('.form-control, .choices__list--single');
+
+      if (!isMainDropdownClick) return false;
+
+      this._log.debug('Choices.js select clicked, triggering keyboard event');
+
+      // Find the main dropdown element and focus it
+      const mainDropdown = choicesContainer.querySelector('.form-control');
+      if (!mainDropdown) return false;
+
+      mainDropdown.focus();
+
+      // Simulate Enter key to open dropdown
+      setTimeout(() => {
+        const enterEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        mainDropdown.dispatchEvent(enterEvent);
+      }, 10);
+
+      event.preventDefault();
+      event.stopPropagation();
+      return true; // Indicate that we handled this event
+    }
+
     /** Fetch and parse the form schema from the backend */
     async _loadSchema() {
       const urls = this._urls();
@@ -1121,14 +1177,9 @@
       return !results.some((r) => r === false);
     }
 
-    async _initFormio() {
-      await this._ensureAssets();
-      this._registerAuthPlugin();
-
-      const container = this._root.querySelector('#formio-container');
-      if (!container) throw new Error('Form container not found');
-
-      const options = {
+    /** Build Form.io options object with all configuration */
+    _buildFormioOptions() {
+      return {
         readOnly: this.readOnly,
         language: this.language,
         sanitizeConfig: {},
@@ -1138,6 +1189,76 @@
           ...(this.user && { user: this.user }),
         },
       };
+    }
+
+    /** Handle runtime prefill when not seeded via options */
+    async _handleRuntimePrefill(urls) {
+      if (!this.submissionId) return;
+
+      const readUrl = urls.readSubmission.replace(
+        '/:submissionId',
+        `/${this.submissionId}`
+      );
+
+      const res = await fetch(readUrl, {
+        headers: this._authHeader(readUrl),
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const { data: dataToApply } = this.parsers.readSubmission(data);
+        await this._schedulePrefillApplications(dataToApply);
+      } else {
+        this._log.warn('prefill:readSubmission:failed', {
+          status: res.status,
+        });
+      }
+    }
+
+    /** Setup Form.io instance after creation (events, endpoints, compatibility) */
+    _setupFormioInstance(urls, prefilledViaOptions) {
+      // Configure endpoints
+      this._configureInstanceEndpoints(urls);
+
+      // Wire events
+      this._wireInstanceEvents();
+
+      // Add Shadow DOM compatibility
+      this._addShadowDomCompatibility();
+
+      // Setup prefill guard if needed
+      if (prefilledViaOptions) {
+        this._setupPrefillGuard(prefilledViaOptions);
+      }
+    }
+
+    /** Setup one-time prefill enforcement after render */
+    _setupPrefillGuard(prefilledData) {
+      let applied = false;
+      this.formioInstance.on('render', async () => {
+        if (applied) return;
+        applied = true;
+        try {
+          await this._setSubmissionOnInstance(prefilledData, {
+            fromSubmission: true,
+            noValidate: true,
+          });
+        } catch (err) {
+          this._log?.debug?.('prefill:options:ignored', {
+            message: err?.message || String(err),
+          });
+        }
+      });
+    }
+
+    async _initFormio() {
+      await this._ensureAssets();
+      this._registerAuthPlugin();
+
+      const container = this._root.querySelector('#formio-container');
+      if (!container) throw new Error('Form container not found');
+
+      const options = this._buildFormioOptions();
 
       // Prefetch submission and seed into options (if available)
       const prefilledViaOptions = await this._prefetchSubmissionForOptions(
@@ -1148,68 +1269,23 @@
       const proceed = this._emitCancelable('formio:beforeInit', { options });
       if (!proceed || !(await this._waitUntil())) return;
 
-      // Create instance
-      if (typeof window.Formio?.createForm === 'function') {
-        this.formioInstance = await window.Formio.createForm(
-          container,
-          this.formSchema,
-          options
-        );
-      } else {
-        this.formioInstance = new window.Formio.Form(
-          container,
-          this.formSchema,
-          options
-        );
-      }
+      // Create Form.io instance
+      this.formioInstance = await this._createFormioInstance(
+        container,
+        this.formSchema,
+        options
+      );
 
-      // Configure endpoints
       const urls = this._urls();
-      this._configureInstanceEndpoints(urls);
-      // Enforce prefill if we seeded via options, else apply via runtime fetch
-      if (prefilledViaOptions)
-        await this._enforcePrefillAfterInit(prefilledViaOptions);
 
-      // Preload submission if provided (apply immediately and once after first render)
-      if (this.submissionId && !prefilledViaOptions) {
-        const readUrl = urls.readSubmission.replace(
-          '/:submissionId',
-          `/${this.submissionId}`
-        );
-        const res = await fetch(readUrl, {
-          headers: this._authHeader(readUrl),
-        });
-        if (res.ok) {
-          const data = await res.json().catch(() => ({}));
-          const { data: dataToApply } = this.parsers.readSubmission(data);
-          await this._schedulePrefillApplications(dataToApply);
-        } else {
-          this._log.warn('prefill:readSubmission:failed', {
-            status: res.status,
-          });
-        }
-      }
+      // Setup instance configuration
+      this._setupFormioInstance(urls, prefilledViaOptions);
 
-      // Wire events
-      this._wireInstanceEvents();
-
-      // If we had prefilled data via options, re-apply once after first render as a final guard
+      // Handle prefill enforcement or runtime fetch
       if (prefilledViaOptions) {
-        let applied = false;
-        this.formioInstance.on('render', async () => {
-          if (applied) return;
-          applied = true;
-          try {
-            await this._setSubmissionOnInstance(prefilledViaOptions, {
-              fromSubmission: true,
-              noValidate: true,
-            });
-          } catch (err) {
-            this._log?.debug?.('prefill:options:ignored', {
-              message: err?.message || String(err),
-            });
-          }
-        });
+        await this._enforcePrefillAfterInit(prefilledViaOptions);
+      } else {
+        await this._handleRuntimePrefill(urls);
       }
 
       this._log.info('ready', { formId: this.formId });
