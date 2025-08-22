@@ -13,6 +13,12 @@
  *   window.ChefsViewerConfig = {
  *     token: { roles: ['admin'], sub: 'user123' },
  *     user: { name: 'John Doe', department: 'IT' },
+ *     // Override endpoints for custom CDN or local assets
+ *     endpoints: {
+ *       mainCss: 'https://mycdn.com/chefs-styles.css',
+ *       formioJs: 'https://mycdn.com/formio.js',
+ *       themeCss: 'https://mycdn.com/custom-theme.css'
+ *     },
  *     before: function(element, params) {
  *       // Configure element before loading
  *       element.isolateStyles = true;

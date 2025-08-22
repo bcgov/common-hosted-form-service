@@ -99,7 +99,7 @@
    *   el.load();
    *
    * Overriding endpoints
-   * - Set el.endpoints = { assetsCss, assetsJs, componentsJs, stylesCss, themeCss, schema, submit, readSubmission, iconsCss }
+   * - Set el.endpoints = { mainCss, formioJs, componentsJs, themeCss, schema, submit, readSubmission, iconsCss }
    *
    * Core events (CustomEvent)
    * - formio:ready, formio:render, formio:change, formio:submit, formio:submitDone, formio:error
@@ -113,7 +113,7 @@
    *    - Guard against concurrent loads; emit `formio:beforeLoad` (cancelable)
    *    - _loadSchema() fetches and parses schema via `parsers.schema`
    *    - _initFormio()
-   *       a) _ensureAssets() in order: assetsCss → iconsCss → assetsJs → stylesCss → themeCss → preload/@font-face → componentsJs
+   *       a) _ensureAssets() in order: mainCss → iconsCss → formioJs → themeCss → preload/@font-face → componentsJs
    *       b) _registerAuthPlugin()
    *       c) Build Form.io options (readOnly, language, hooks)
    *       d) _prefetchSubmissionForOptions() (if `submission-id`) to seed options
@@ -171,14 +171,14 @@
       this._log = createLogger(false);
       this._isLoading = false;
       this.submitButtonKey = 'submit';
-      this.themeCss = null; // optional theme CSS loaded after stylesCss
+      this.themeCss = null; // optional theme CSS loaded after main CSS
       this.isolateStyles = false; // optional isolation of inherited outside styles
       this.noIcons = false; // optional flag to disable loading icon CSS
       this.token = null; // optional token object for Form.io evalContext
       this.user = null; // optional user object for Form.io evalContext
 
       // Endpoint overrides via property
-      // object is { assetsCss, assetsJs, componentsJs, stylesCss, schema, submit, readSubmission }
+      // object is { mainCss, formioJs, componentsJs, themeCss, schema, submit, readSubmission, iconsCss }
       this.endpoints = null;
 
       // Optional: custom auth header hook
@@ -556,11 +556,12 @@
       const fid = this.formId || ':formId';
       const sid = this.submissionId || ':submissionId';
       return {
-        assetsCss: `${base}/webcomponents/v1/assets/formio.css`,
-        assetsJs: `${base}/webcomponents/v1/assets/formio.js`,
+        // Complete CHEFS CSS bundle (includes Bootstrap, Vuetify, Form.io, custom styles)
+        mainCss: `${base}/embed/chefs-index.css`,
+        formioJs: `${base}/webcomponents/v1/assets/formio.js`,
         componentsJs: `${base}/webcomponents/v1/form-viewer/components`,
-        stylesCss: `${base}/webcomponents/v1/form-viewer/styles`,
-        themeCss: `${base}/webcomponents/v1/form-viewer/theme`,
+        // CHEFS theme CSS with CSS variables and theming
+        themeCss: `${base}/embed/chefs-theme.css`,
         // Default to local Font Awesome 4.7 for Form.io icon classes (fa fa-*)
         // Served by backend to ensure fonts load in Shadow DOM without CORS/CSP issues.
         // Embedders can override via endpoints.iconsCss, or disable via 'no-icons'.
@@ -764,12 +765,12 @@
       // Shadow DOM: attach a <link rel="stylesheet"> directly to the shadow root.
       // This preserves correct URL resolution (e.g., @import, url(...)) and avoids CORS issues with fetch.
       await new Promise((resolve) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = href;
-        link.onload = resolve;
-        link.onerror = resolve; // non-blocking
-        this.shadowRoot.appendChild(link);
+        const linkElement = document.createElement('link');
+        linkElement.rel = 'stylesheet';
+        linkElement.href = href;
+        linkElement.onload = () => resolve(linkElement);
+        linkElement.onerror = () => resolve(linkElement); // non-blocking
+        this.shadowRoot.appendChild(linkElement);
       });
     }
 
@@ -937,9 +938,12 @@
     async _ensureAssets() {
       const urls = this._urls();
       this._log.info('assets:ensure');
-      // CSS
-      await this._loadCssIntoRoot(urls.assetsCss);
+
+      // Load complete CHEFS CSS bundle (includes Bootstrap, Vuetify, Form.io, custom styles)
+      await this._loadCssIntoRoot(urls.mainCss);
+
       // Icon font CSS (Font Awesome) unless disabled
+      // Note: Loaded separately to ensure proper font loading in Shadow DOM
       const iconsEnabled = !this.noIcons;
       const iconsHref = iconsEnabled
         ? this.endpoints?.iconsCss || urls.iconsCss
@@ -950,16 +954,14 @@
       // JS
       const haveFormio = !!window.Formio;
       if (!haveFormio) {
-        const loadedLocal = await this._injectScript(urls.assetsJs);
+        const loadedLocal = await this._injectScript(urls.formioJs);
         if (!loadedLocal) {
           await this._injectScript(
             'https://cdn.form.io/formiojs/formio.full.min.js'
           );
         }
       }
-      // Optional styles/components
-      await this._loadCssIntoRoot(urls.stylesCss);
-      // Optional theme CSS (BCGov or other), loaded after stylesCss
+      // Load CHEFS theme CSS (CSS variables and theming)
       const themeHref =
         this.themeCss || this.endpoints?.themeCss || urls.themeCss;
       if (themeHref) {
@@ -1235,10 +1237,35 @@
       this._root.innerHTML = `
           <style>
             ${isolationCss}
-            .container { padding: 1rem; }
+            
+            /* CSS variables and Shadow DOM fixes are provided by chefs-theme.css */
+            
+            /* Form control background safety override */
+            .form-control {
+              background-color: #fff !important;
+              color: #212529 !important;
+            }
+            
+            /* All other styles are loaded from chefs-index.css and chefs-theme.css */
           </style>
-          <div class="container">
-            <div id="formio-container"></div>
+          
+          <!-- Replicate CHEFS structure exactly: div#app > v-layout > v-main > v-container.main > v-skeleton-loader > v-container--fluid > form-wrapper -->
+          <div class="v-application" id="app">
+            <div class="v-layout app">
+              <main class="v-main app">
+                <div class="v-container v-locale--is-ltr main">
+                  <div class="v-skeleton-loader">
+                    <div class="v-container v-container--fluid v-locale--is-ltr">
+                      <div>
+                        <div class="form-wrapper">
+                          <div id="formio-container"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </main>
+            </div>
           </div>
         `;
     }
