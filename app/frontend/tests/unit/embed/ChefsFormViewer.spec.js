@@ -124,13 +124,13 @@ describe('chefs-form-viewer web component', () => {
     document.body.appendChild(el);
     // Default base should include /app
     const urls = el._urls();
-    expect(urls.assetsCss).toMatch('/app/webcomponents/v1/assets/formio.css');
+    expect(urls.mainCss).toMatch('/app/embed/chefs-index.css');
 
     // Override base-url
     el.setAttribute('base-url', 'https://example.com/pr-1234');
     const urls2 = el._urls();
-    expect(urls2.assetsCss).toBe(
-      'https://example.com/pr-1234/webcomponents/v1/assets/formio.css'
+    expect(urls2.mainCss).toBe(
+      'https://example.com/pr-1234/embed/chefs-index.css'
     );
   });
 
@@ -281,34 +281,38 @@ describe('chefs-form-viewer web component', () => {
     it('parses token attribute as JSON and sets property', () => {
       const el = document.createElement('chefs-form-viewer');
       document.body.appendChild(el);
-      
-      const tokenData = { sub: 'user123', roles: ['admin'], email: 'test@example.com' };
+
+      const tokenData = {
+        sub: 'user123',
+        roles: ['admin'],
+        email: 'test@example.com',
+      };
       el.setAttribute('token', JSON.stringify(tokenData));
-      
+
       expect(el.token).toEqual(tokenData);
     });
 
     it('parses user attribute as JSON and sets property', () => {
       const el = document.createElement('chefs-form-viewer');
       document.body.appendChild(el);
-      
+
       const userData = { name: 'John Doe', department: 'IT', id: 123 };
       el.setAttribute('user', JSON.stringify(userData));
-      
+
       expect(el.user).toEqual(userData);
     });
 
     it('handles invalid JSON gracefully and logs warning', () => {
       const el = document.createElement('chefs-form-viewer');
       document.body.appendChild(el);
-      
+
       // Mock the logger
       const mockWarn = vi.fn();
       el._log = { warn: mockWarn };
-      
+
       el.setAttribute('token', 'invalid-json');
       el.setAttribute('user', '{"incomplete": json}');
-      
+
       expect(el.token).toBeNull();
       expect(el.user).toBeNull();
       expect(mockWarn).toHaveBeenCalledTimes(2);
@@ -321,13 +325,13 @@ describe('chefs-form-viewer web component', () => {
     it('allows direct property assignment of objects', () => {
       const el = document.createElement('chefs-form-viewer');
       document.body.appendChild(el);
-      
+
       const tokenData = { sub: 'user456', roles: ['user'] };
       const userData = { name: 'Jane Smith', department: 'HR' };
-      
+
       el.token = tokenData;
       el.user = userData;
-      
+
       expect(el.token).toEqual(tokenData);
       expect(el.user).toEqual(userData);
     });
@@ -338,20 +342,20 @@ describe('chefs-form-viewer web component', () => {
       el.setAttribute('api-key', 'secret');
       document.body.appendChild(el);
       configureNoNetwork(el);
-      
+
       const tokenData = { sub: 'user123', roles: ['admin'] };
       const userData = { name: 'John Doe', department: 'IT' };
-      
+
       el.token = tokenData;
       el.user = userData;
-      
+
       await el.load();
-      
+
       // Check if createForm was called with evalContext
       const createFormCalls = globalThis.Formio.createForm.mock.calls;
       const lastCall = createFormCalls[createFormCalls.length - 1];
       const options = lastCall[2]; // third argument is options
-      
+
       expect(options.evalContext.token).toEqual(tokenData);
       expect(options.evalContext.user).toEqual(userData);
     });
@@ -362,14 +366,14 @@ describe('chefs-form-viewer web component', () => {
       el.setAttribute('api-key', 'secret');
       document.body.appendChild(el);
       configureNoNetwork(el);
-      
+
       await el.load();
-      
+
       // Check if createForm was called with empty evalContext
       const createFormCalls = globalThis.Formio.createForm.mock.calls;
       const lastCall = createFormCalls[createFormCalls.length - 1];
       const options = lastCall[2]; // third argument is options
-      
+
       expect(options.evalContext).toEqual({});
     });
 
@@ -379,16 +383,16 @@ describe('chefs-form-viewer web component', () => {
       el.setAttribute('api-key', 'secret');
       document.body.appendChild(el);
       configureNoNetwork(el);
-      
+
       const tokenData = { sub: 'user123', roles: ['admin'] };
       el.token = tokenData;
-      
+
       await el.load();
-      
+
       const createFormCalls = globalThis.Formio.createForm.mock.calls;
       const lastCall = createFormCalls[createFormCalls.length - 1];
       const options = lastCall[2];
-      
+
       expect(options.evalContext.token).toEqual(tokenData);
       expect(options.evalContext.user).toBeUndefined();
     });
@@ -399,16 +403,16 @@ describe('chefs-form-viewer web component', () => {
       el.setAttribute('api-key', 'secret');
       document.body.appendChild(el);
       configureNoNetwork(el);
-      
+
       const userData = { name: 'Jane Smith', department: 'HR' };
       el.user = userData;
-      
+
       await el.load();
-      
+
       const createFormCalls = globalThis.Formio.createForm.mock.calls;
       const lastCall = createFormCalls[createFormCalls.length - 1];
       const options = lastCall[2];
-      
+
       expect(options.evalContext.user).toEqual(userData);
       expect(options.evalContext.token).toBeUndefined();
     });
@@ -416,10 +420,10 @@ describe('chefs-form-viewer web component', () => {
     it('handles empty string attributes gracefully', () => {
       const el = document.createElement('chefs-form-viewer');
       document.body.appendChild(el);
-      
+
       el.setAttribute('token', '');
       el.setAttribute('user', '');
-      
+
       expect(el.token).toBeNull();
       expect(el.user).toBeNull();
     });
@@ -427,11 +431,11 @@ describe('chefs-form-viewer web component', () => {
     it('overrides attribute values with property assignment', () => {
       const el = document.createElement('chefs-form-viewer');
       document.body.appendChild(el);
-      
+
       // Set via attribute first
       el.setAttribute('token', '{"from":"attribute"}');
       expect(el.token).toEqual({ from: 'attribute' });
-      
+
       // Override via property
       const newToken = { from: 'property', roles: ['admin'] };
       el.token = newToken;
@@ -444,7 +448,7 @@ describe('chefs-form-viewer web component', () => {
       el.setAttribute('api-key', 'secret');
       document.body.appendChild(el);
       configureNoNetwork(el);
-      
+
       const complexToken = {
         sub: 'user123',
         roles: ['admin', 'user'],
@@ -453,36 +457,36 @@ describe('chefs-form-viewer web component', () => {
           permissions: {
             read: true,
             write: true,
-            admin: false
-          }
+            admin: false,
+          },
         },
-        groups: ['group1', 'group2']
+        groups: ['group1', 'group2'],
       };
-      
+
       const complexUser = {
         profile: {
           firstName: 'John',
           lastName: 'Doe',
           preferences: {
             theme: 'dark',
-            language: 'en'
-          }
+            language: 'en',
+          },
         },
         contact: {
           email: 'john@example.com',
-          phone: '+1234567890'
-        }
+          phone: '+1234567890',
+        },
       };
-      
+
       el.token = complexToken;
       el.user = complexUser;
-      
+
       await el.load();
-      
+
       const createFormCalls = globalThis.Formio.createForm.mock.calls;
       const lastCall = createFormCalls[createFormCalls.length - 1];
       const options = lastCall[2];
-      
+
       expect(options.evalContext.token).toEqual(complexToken);
       expect(options.evalContext.user).toEqual(complexUser);
     });
@@ -493,10 +497,9 @@ describe('chefs-form-viewer web component', () => {
     const baseJs = 'data:text/javascript,';
     el.endpoints = {
       ...el.endpoints,
-      assetsCss: baseCss,
-      stylesCss: baseCss,
+      mainCss: baseCss,
       themeCss: baseCss,
-      assetsJs: baseJs,
+      formioJs: baseJs,
       componentsJs: baseJs,
       ...(options.keepDefaultIcons ? {} : { iconsCss: baseCss }),
     };
