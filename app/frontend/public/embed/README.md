@@ -152,12 +152,11 @@ Cancelable events support `waitUntil(promise)` to gate the action asynchronously
 
 By default, the component loads these assets in this order:
 
-1. Form.io base CSS
+1. Complete CHEFS CSS bundle (chefs-index.css - includes Bootstrap, Vuetify, Form.io, custom styles)
 2. Font Awesome CSS (for Form.io icon classes) unless `no-icons`
 3. Form.io JS (if not already present)
-4. Base viewer styles (chefs-form-viewer.css)
-5. Theme CSS (optional; e.g., BCGov theme)
-6. Custom components bundle (chefs-form-viewer-components)
+4. CHEFS theme CSS (chefs-theme.css - CSS variables and theming)
+5. Custom components bundle (chefs-form-viewer-components)
 
 We serve Form.io CSS/JS and Font Awesome from same-origin Express routes to:
 
@@ -171,11 +170,11 @@ If `no-icons` is set, the icons CSS/fonts are not loaded and a tiny neutralizing
 Mounted under `/webcomponents` for complete isolation from `/api`:
 
 - `GET /webcomponents/v1/form-viewer/:formId/schema` → returns `{ form, schema }` for a published form (uses the CHEFS Forms service). Rejects invalid UUIDs.
-- `POST /webcomponents/v1/form-viewer/:formId/submit` → posts `{ submission }` to create a submission against the published version. Uses a mock “external” user.
+- `POST /webcomponents/v1/form-viewer/:formId/submit` → posts `{ submission }` to create a submission against the published version. Uses a mock "external" user.
 - `GET /webcomponents/v1/form-viewer/components` → serves the built `chefs-form-viewer-components.use.min.js` if present.
-- `GET /webcomponents/v1/form-viewer/styles` → serves `chefs-form-viewer.css`.
-- `GET /webcomponents/v1/form-viewer/theme` → serves `chefs-form-viewer-bcgov.css`.
-- `GET /webcomponents/v1/assets/formio.css|formio.js` → serves Form.io assets from local node_modules.
+- `GET /embed/chefs-index.css` → serves the complete CHEFS CSS bundle (Bootstrap, Vuetify, Form.io, custom styles).
+- `GET /embed/chefs-theme.css` → serves CHEFS theme CSS with CSS variables and theming.
+- `GET /webcomponents/v1/assets/formio.js` → serves Form.io JavaScript from local node_modules.
 - `GET /webcomponents/v1/assets/font-awesome/css/font-awesome.min.css` and `/v1/assets/font-awesome/fonts/:file` → serves Font Awesome CSS/fonts locally.
 
 Security notes
@@ -269,13 +268,15 @@ if (token.roles.includes('manager') && user.department === 'HR') {
 
 The component computes defaults from `base-url` (or autodetected base). You can override via `el.endpoints = { ... }` for any of:
 
-- `assetsCss`, `assetsJs`, `componentsJs`, `stylesCss`, `themeCss`, `iconsCss`
+- `mainCss`, `formioJs`, `componentsJs`, `themeCss`, `iconsCss`
 - `schema`, `submit`, `readSubmission`
 
 Example:
 
 ```js
 el.endpoints = {
+  mainCss: 'https://mycdn.com/custom-chefs-styles.css',
+  formioJs: 'https://mycdn.com/formio.js',
   iconsCss:
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
   themeCss: 'https://example.com/theme.css',
@@ -298,6 +299,51 @@ Use the interactive code generator at [`/app/embed/chefs-form-viewer-generator.h
 - **Interactive Embed Demo**: [`/app/embed/chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) - One-line embedding with URL parameters
 - **Traditional Component Demo**: [`/app/embed/chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html) - Direct component usage with attribute toggles and event logging
 
+### Build Process
+
+The CHEFS Form Viewer web component requires a build process to generate production assets and extract theme CSS. This happens automatically during the main CHEFS application build.
+
+#### **Build Steps**
+
+1. **Frontend Build** (`npm run build`)
+
+   - Compiles the main CHEFS application (Vue.js, Vuetify, Bootstrap, etc.)
+   - Generates bundled CSS files in `app/frontend/dist/assets/`
+
+2. **Theme Extraction** (`npm run postbuild` → `extract-theme.js`)
+
+   - Copies the main CSS bundle to `chefs-index.css`
+   - Extracts CSS variables and creates `chefs-theme.css` with Shadow DOM compatibility fixes
+   - Processes only `:root` and `[data-bs-theme="light"]` selectors for light theme support
+
+3. **Component Minification** (`npm run postbuild` → `npm run build:embed`)
+   - Minifies `chefs-form-viewer.js` → `chefs-form-viewer.min.js`
+   - Minifies `chefs-form-viewer-embed.js` → `chefs-form-viewer-embed.min.js`
+   - Generates source maps for debugging
+
+#### **Generated Files**
+
+The build process creates these production assets:
+
+- **`chefs-index.css`**: Complete CHEFS CSS bundle (Bootstrap, Vuetify, Form.io, custom styles)
+- **`chefs-theme.css`**: Extracted CSS variables and Shadow DOM compatibility fixes
+- **`chefs-form-viewer.min.js`**: Minified web component
+- **`chefs-form-viewer-embed.min.js`**: Minified embed script
+- **Source maps**: `.min.js.map` files for debugging
+
+#### **Docker Build Integration**
+
+The build process is integrated into the Docker build pipeline:
+
+```dockerfile
+# Frontend build (includes theme extraction)
+RUN npm run build
+# Component minification
+RUN npm run build:embed
+```
+
+All generated assets are automatically copied to the correct locations for serving by the Express backend.
+
 ### Source Code Organization
 
 All embed-related files are located in [`./app/frontend/public/embed/`](./):
@@ -308,8 +354,19 @@ All embed-related files are located in [`./app/frontend/public/embed/`](./):
 | `chefs-form-viewer.min.js`                                                 | Minified component (production)       | `/app/embed/chefs-form-viewer.min.js`          |
 | [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development) | `/app/embed/chefs-form-viewer-embed.js`        |
 | `chefs-form-viewer-embed.min.js`                                           | Minified embed script (production)    | `/app/embed/chefs-form-viewer-embed.min.js`    |
+| `chefs-index.css`                                                          | Complete CHEFS CSS bundle (generated) | `/app/embed/chefs-index.css`                   |
+| `chefs-theme.css`                                                          | CSS variables and theming (generated) | `/app/embed/chefs-theme.css`                   |
 | [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                   | `/app/embed/chefs-form-viewer-generator.html`  |
 | [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                | `/app/embed/chefs-form-viewer-embed-demo.html` |
 | [`chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html)             | Traditional component demo            | `/app/embed/chefs-form-viewer-demo.html`       |
 
-**Note**: Minified files (`.min.js`) are available in production builds and should be used for better performance. These files are generated during the build process and are not stored in the source repository. Use non-minified files during development for easier debugging.
+#### **Build Scripts and Tools**
+
+| File                                                   | Purpose                                        |
+| ------------------------------------------------------ | ---------------------------------------------- |
+| `app/frontend/scripts/extract-theme.js`                | Orchestrates CSS copying and theme extraction  |
+| `app/frontend/src/embed/themeExtractor.js`             | Core theme extraction and CSS processing logic |
+| `app/frontend/tests/unit/embed/themeExtractor.spec.js` | Unit tests for theme extraction functionality  |
+| `app/frontend/tests/fixtures/chefs-index.fixture.css`  | Test fixture for theme extraction testing      |
+
+**Note**: Generated files (`.min.js`, `.css`) are created during the build process and are not stored in the source repository. For production, always use the minified scripts. For development, use the non-minified versions for easier debugging.

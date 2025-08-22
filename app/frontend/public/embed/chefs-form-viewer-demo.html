@@ -151,20 +151,20 @@
         <legend>Endpoint Overrides</legend>
         <div class="row">
           <div class="col">
-            <label for="assetsCss">assetsCss</label>
-            <input id="assetsCss" type="text" />
+            <label for="mainCss">mainCss</label>
+            <input id="mainCss" type="text" />
           </div>
           <div class="col">
-            <label for="assetsJs">assetsJs</label>
-            <input id="assetsJs" type="text" />
+            <label for="formioJs">formioJs</label>
+            <input id="formioJs" type="text" />
           </div>
           <div class="col">
             <label for="componentsJs">componentsJs</label>
             <input id="componentsJs" type="text" />
           </div>
           <div class="col">
-            <label for="stylesCss">stylesCss</label>
-            <input id="stylesCss" type="text" />
+            <label for="themeCss">themeCss</label>
+            <input id="themeCss" type="text" />
           </div>
         </div>
         <div class="row">
@@ -272,10 +272,10 @@
 
       function defaultsFromBase(base, fid, sid) {
         return {
-          assetsCss: `${base}/webcomponents/v1/assets/formio.css`,
-          assetsJs: `${base}/webcomponents/v1/assets/formio.js`,
+          mainCss: `${base}/embed/chefs-index.css`,
+          formioJs: `${base}/webcomponents/v1/assets/formio.js`,
           componentsJs: `${base}/webcomponents/v1/form-viewer/components`,
-          stylesCss: `${base}/webcomponents/v1/form-viewer/styles`,
+          themeCss: `${base}/embed/chefs-theme.css`,
           schema: `${base}/webcomponents/v1/form-viewer/${
             fid || ':formId'
           }/schema`,
@@ -290,10 +290,10 @@
 
       function fillEndpointInputs(base, fid, sid) {
         const d = defaultsFromBase(base, fid, sid);
-        $('assetsCss').value = d.assetsCss;
-        $('assetsJs').value = d.assetsJs;
+        $('mainCss').value = d.mainCss;
+        $('formioJs').value = d.formioJs;
         $('componentsJs').value = d.componentsJs;
-        $('stylesCss').value = d.stylesCss;
+        $('themeCss').value = d.themeCss;
         $('schemaUrl').value = d.schema;
         $('submitUrl').value = d.submit;
         $('readSubmission').value = d.readSubmission;
@@ -326,10 +326,10 @@
         const r = (s) =>
           s.replace(/:formId/g, formId).replace(/:submissionId/g, submissionId);
         el.endpoints = {
-          assetsCss: r($('assetsCss').value.trim()),
-          assetsJs: r($('assetsJs').value.trim()),
+          mainCss: r($('mainCss').value.trim()),
+          formioJs: r($('formioJs').value.trim()),
           componentsJs: r($('componentsJs').value.trim()),
-          stylesCss: r($('stylesCss').value.trim()),
+          themeCss: r($('themeCss').value.trim()),
           // Icons: override if desired (defaults to FA 4.7 in component)
           // iconsCss: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
           schema: r($('schemaUrl').value.trim()),
