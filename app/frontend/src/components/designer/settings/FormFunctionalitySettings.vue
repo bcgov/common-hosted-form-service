@@ -38,9 +38,19 @@ const primaryIdpUser = computed(() =>
   idpStore.isPrimary(identityProvider?.value?.code)
 );
 
+// Combined disabled states for consistent styling
+const isPublicDisabled = computed(
+  () => form.value.userType === ID_MODE.value.PUBLIC
+);
+const isEventSubscriptionDisabled = computed(
+  () => primaryIdpUser.value === false || !formStore.isFormPublished
+);
+const isDraftShareDisabled = computed(() => !form.value.enableSubmitterDraft);
+
 function enableSubmitterDraftChanged() {
   if (!form.value.enableSubmitterDraft) {
     form.value.allowSubmitterToUploadFile = false;
+    form.value.enableTeamMemberDraftShare = false;
   }
 }
 
@@ -72,12 +82,15 @@ defineExpose({
       data-test="canSaveAndEditDraftsCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="isPublicDisabled"
       @update:model-value="enableSubmitterDraftChanged"
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': isPublicDisabled,
+          }"
           :lang="locale"
           v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
         ></span>
@@ -89,10 +102,19 @@ defineExpose({
       data-test="canUpdateStatusOfFormCheckbox"
       hide-details="auto"
       class="my-0"
+      @update:model-value="
+        () => {
+          if (!form.enableStatusUpdates && !form.enableSubmitterRevision) {
+            form.showAssigneeInSubmissionsTable = false;
+          }
+        }
+      "
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+          }"
           :lang="locale"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
         ></span>
@@ -103,11 +125,14 @@ defineExpose({
       data-test="canSubmitterRevisionFormCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="isPublicDisabled"
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': isPublicDisabled,
+          }"
           :lang="locale"
           v-html="$t('trans.formSettings.enableSubmitterRevision')"
         ></span>
@@ -122,7 +147,9 @@ defineExpose({
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+          }"
           :lang="locale"
           v-html="$t('trans.formSettings.displayAssigneeColumn')"
         ></span>
@@ -134,19 +161,20 @@ defineExpose({
       data-test="canUploadDraftCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="isPublicDisabled"
       @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
+            :class="{ 'text-disabled': isPublicDisabled }"
             :lang="locale"
             v-html="$t('trans.formSettings.allowMultiDraft')"
           />
           <v-tooltip location="bottom" close-delay="2500">
             <template #activator="{ props }">
               <v-icon
-                color="primary"
+                :color="isPublicDisabled ? 'disabled' : 'primary'"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
                 v-bind="props"
@@ -231,19 +259,20 @@ defineExpose({
       hide-details="auto"
       data-test="canCopyExistingSubmissionCheckbox"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="isPublicDisabled"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
+            :class="{ 'text-disabled': isPublicDisabled }"
             :lang="locale"
             v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
           />
           <v-tooltip location="bottom" close-delay="2500">
             <template #activator="{ props }">
               <v-icon
-                color="primary"
+                :color="isPublicDisabled ? 'disabled' : 'primary'"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
                 v-bind="props"
@@ -272,19 +301,20 @@ defineExpose({
       hide-details="auto"
       data-test="canAllowEventSubscriptionCheckbox"
       class="my-0"
-      :disabled="primaryIdpUser === false || !formStore.isFormPublished"
+      :disabled="isEventSubscriptionDisabled"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
+            :class="{ 'text-disabled': isEventSubscriptionDisabled }"
             :lang="locale"
             v-html="$t('trans.formSettings.allowEventSubscription')"
           />
           <v-tooltip location="bottom" close-delay="2500">
             <template #activator="{ props }">
               <v-icon
-                color="primary"
+                :color="isEventSubscriptionDisabled ? 'disabled' : 'primary'"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
                 v-bind="props"
@@ -350,14 +380,17 @@ defineExpose({
     </v-checkbox>
     <v-checkbox
       v-model="form.enableTeamMemberDraftShare"
-      :disabled="!form.enableSubmitterDraft"
+      :disabled="isDraftShareDisabled"
       data-test="enableTeamMemberDraftShare"
       hide-details="auto"
       class="my-0"
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': isDraftShareDisabled,
+          }"
           :lang="locale"
           v-html="$t('trans.canShareDraft.shareDraftMessage')"
         ></span>
