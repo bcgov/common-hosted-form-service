@@ -113,6 +113,9 @@ app.use('/favicon.ico', (_req, res) => {
 });
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
 
+// Host embed assets (CSS and JS files) separately to avoid Vue router conflicts
+app.use(`${config.get('server.basePath')}/embed`, express.static(path.join(__dirname, 'frontend/dist')));
+
 // Handle 500
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
