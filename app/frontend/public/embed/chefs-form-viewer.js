@@ -903,62 +903,6 @@
       );
     }
 
-    /** Add Shadow DOM compatibility fixes for Form.io components */
-    _addShadowDomCompatibility() {
-      // Only apply in Shadow DOM mode
-      if (this._root !== this.shadowRoot) return;
-
-      this._log.debug('Adding Shadow DOM compatibility for Form.io components');
-
-      // Global click handler for all Form.io component fixes
-      this.shadowRoot.addEventListener('click', (event) => {
-        // Try each component fix until one handles the event
-        if (this._handleChoicesSelectClick(event)) return;
-        // Add more component handlers here as needed:
-        // if (this._handleDatePickerClick(event)) return;
-        // if (this._handleFileUploadClick(event)) return;
-      });
-    }
-
-    /** Handle Choices.js select component clicks in Shadow DOM */
-    _handleChoicesSelectClick(event) {
-      // Look for Choices.js select components
-      const choicesContainer = event.target.closest('.choices');
-      if (!choicesContainer) return false;
-
-      // Check if click was on the main dropdown area (not on search input or options)
-      const isMainDropdownClick =
-        event.target.matches('.form-control, .choices__list--single') ||
-        event.target.closest('.form-control, .choices__list--single');
-
-      if (!isMainDropdownClick) return false;
-
-      this._log.debug('Choices.js select clicked, triggering keyboard event');
-
-      // Find the main dropdown element and focus it
-      const mainDropdown = choicesContainer.querySelector('.form-control');
-      if (!mainDropdown) return false;
-
-      mainDropdown.focus();
-
-      // Simulate Enter key to open dropdown
-      setTimeout(() => {
-        const enterEvent = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        });
-        mainDropdown.dispatchEvent(enterEvent);
-      }, 10);
-
-      event.preventDefault();
-      event.stopPropagation();
-      return true; // Indicate that we handled this event
-    }
-
     /** Fetch and parse the form schema from the backend */
     async _loadSchema() {
       const urls = this._urls();
@@ -1188,6 +1132,7 @@
           ...(this.token && { token: this.token }),
           ...(this.user && { user: this.user }),
         },
+        shadowRoot: this._root === this.shadowRoot ? this.shadowRoot : null,
       };
     }
 
@@ -1222,9 +1167,6 @@
 
       // Wire events
       this._wireInstanceEvents();
-
-      // Add Shadow DOM compatibility
-      this._addShadowDomCompatibility();
 
       // Setup prefill guard if needed
       if (prefilledViaOptions) {

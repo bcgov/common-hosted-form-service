@@ -207,49 +207,6 @@ function createMockResponse(expectedData) {
   };
 }
 
-/**
- * Setup mock event for failed choices click (not on dropdown area)
- */
-function setupMockEventForFailedClick(mockEvent, choicesContainer) {
-  mockEvent.target.closest = vi
-    .fn()
-    .mockReturnValueOnce(choicesContainer) // First call for .choices
-    .mockReturnValueOnce(null); // Second call for form-control
-  mockEvent.target.matches = vi.fn().mockReturnValue(false);
-}
-
-/**
- * Setup choices DOM elements for testing
- */
-function setupChoicesElements() {
-  const choicesContainer = document.createElement('div');
-  const mainDropdown = document.createElement('div');
-
-  choicesContainer.className = 'choices';
-  mainDropdown.className = 'form-control';
-  mainDropdown.focus = vi.fn();
-  mainDropdown.dispatchEvent = vi.fn();
-  choicesContainer.appendChild(mainDropdown);
-
-  return { choicesContainer, mainDropdown };
-}
-
-/**
- * Setup mock event for successful choices click
- */
-function setupMockEventForSuccessfulClick(
-  mockEvent,
-  choicesContainer,
-  mainDropdown
-) {
-  mockEvent.target.closest = vi
-    .fn()
-    .mockReturnValueOnce(choicesContainer) // First call for .choices
-    .mockReturnValueOnce(mainDropdown); // Second call for form-control
-  mockEvent.target.matches = vi.fn().mockReturnValue(true);
-  choicesContainer.querySelector = vi.fn().mockReturnValue(mainDropdown);
-}
-
 describe('chefs-form-viewer web component', () => {
   let originalFetch;
   beforeEach(async () => {
@@ -655,6 +612,7 @@ describe('chefs-form-viewer web component', () => {
           sanitizeConfig: {},
           hooks: expect.any(Object),
           evalContext: {},
+          shadowRoot: expect.any(Object),
         });
       });
 
@@ -771,7 +729,7 @@ describe('chefs-form-viewer web component', () => {
         el.formioInstance = new FakeFormioInstance();
         el._configureInstanceEndpoints = vi.fn();
         el._wireInstanceEvents = vi.fn();
-        el._addShadowDomCompatibility = vi.fn();
+
         el._setupPrefillGuard = vi.fn();
       });
 
@@ -781,7 +739,7 @@ describe('chefs-form-viewer web component', () => {
 
         expect(el._configureInstanceEndpoints).toHaveBeenCalledWith(urls);
         expect(el._wireInstanceEvents).toHaveBeenCalled();
-        expect(el._addShadowDomCompatibility).toHaveBeenCalled();
+
         expect(el._setupPrefillGuard).not.toHaveBeenCalled();
       });
 
@@ -853,91 +811,16 @@ describe('chefs-form-viewer web component', () => {
         logSpy.mockRestore();
       });
     });
-
-    describe('Shadow DOM compatibility', () => {
-      beforeEach(() => {
-        // Set up shadow DOM
-        el._root = el.shadowRoot;
-        el.formioInstance = new FakeFormioInstance();
-      });
-
-      describe('_addShadowDomCompatibility', () => {
-        it('does nothing when not in shadow DOM mode', () => {
-          el._root = el; // Light DOM mode
-          const addEventListenerSpy = vi.spyOn(
-            el.shadowRoot,
-            'addEventListener'
-          );
-
-          el._addShadowDomCompatibility();
-
-          expect(addEventListenerSpy).not.toHaveBeenCalled();
-          addEventListenerSpy.mockRestore();
-        });
-
-        it('adds click event listener in shadow DOM mode', () => {
-          const addEventListenerSpy = vi.spyOn(
-            el.shadowRoot,
-            'addEventListener'
-          );
-
-          el._addShadowDomCompatibility();
-
-          expect(addEventListenerSpy).toHaveBeenCalledWith(
-            'click',
-            expect.any(Function)
-          );
-          addEventListenerSpy.mockRestore();
-        });
-      });
-
-      describe('_handleChoicesSelectClick', () => {
-        let mockEvent;
-
-        beforeEach(() => {
-          mockEvent = {
-            target: document.createElement('div'),
-            preventDefault: vi.fn(),
-            stopPropagation: vi.fn(),
-          };
-        });
-
-        it('returns false when no choices container found', () => {
-          mockEvent.target.closest = vi.fn().mockReturnValue(null);
-
-          const result = el._handleChoicesSelectClick(mockEvent);
-
-          expect(result).toBe(false);
-        });
-
-        it('returns false when click not on dropdown area', () => {
-          const choicesContainer = document.createElement('div');
-          choicesContainer.className = 'choices';
-          setupMockEventForFailedClick(mockEvent, choicesContainer);
-
-          const result = el._handleChoicesSelectClick(mockEvent);
-
-          expect(result).toBe(false);
-        });
-
-        it('handles valid choices click and returns true', () => {
-          const { choicesContainer, mainDropdown } = setupChoicesElements();
-          setupMockEventForSuccessfulClick(
-            mockEvent,
-            choicesContainer,
-            mainDropdown
-          );
-
-          const result = el._handleChoicesSelectClick(mockEvent);
-
-          expect(result).toBe(true);
-          expect(mainDropdown.focus).toHaveBeenCalled();
-          expect(mockEvent.preventDefault).toHaveBeenCalled();
-          expect(mockEvent.stopPropagation).toHaveBeenCalled();
-        });
-      });
-    });
   });
+
+  function createMockCssLoader(baseCss) {
+    return vi.fn(async (href) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href || baseCss;
+      document.head.appendChild(link);
+    });
+  }
 
   function configureNoNetwork(el, options = {}) {
     const baseCss = 'data:text/css,';
@@ -955,18 +838,8 @@ describe('chefs-form-viewer web component', () => {
     el._loadCss = vi.fn(async () => {});
     el._injectScript = vi.fn(async () => true);
     if (options.appendHeadLinks) {
-      el._loadCssIntoRoot = vi.fn(async (href) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = href || baseCss;
-        document.head.appendChild(link);
-      });
-      el._loadCss = vi.fn(async (href) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = href || baseCss;
-        document.head.appendChild(link);
-      });
+      el._loadCssIntoRoot = createMockCssLoader(baseCss);
+      el._loadCss = createMockCssLoader(baseCss);
     }
   }
 });
