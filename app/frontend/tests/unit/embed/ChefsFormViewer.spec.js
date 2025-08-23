@@ -42,6 +42,214 @@ class FakeFormioInstance {
 
 /* eslint-env browser, jest */
 /* global globalThis */
+
+/**
+ * Create mock response object for tests
+ */
+function mkRes(status, json) {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => json,
+  };
+}
+
+/**
+ * Mock fetch handler for tests - handles schema, submission, and submit endpoints
+ * @param {string|URL} url - Request URL
+ * @param {Object} opts - Request options
+ * @returns {Promise<Response>} Mock response
+ */
+async function mockFetchHandler(url, opts = {}) {
+  const parsedUrl = parseFetchUrl(url);
+  if (!parsedUrl) {
+    return fallbackFetch(url, opts);
+  }
+
+  const { pathname, method } = parsedUrl;
+
+  if (isSchemaRequest(pathname, method)) {
+    return mkRes(200, { form: { id: 'FORM1' }, schema: { components: [] } });
+  }
+
+  if (isSubmissionRequest(pathname, method)) {
+    return mkRes(200, { submission: { submission: { data: { pre: 1 } } } });
+  }
+
+  if (isSubmitRequest(pathname, method, opts)) {
+    const body = JSON.parse((opts && opts.body) || '{}');
+    return mkRes(200, body.submission || {});
+  }
+
+  return fallbackFetch(url, opts);
+}
+
+/**
+ * Parse URL and method from fetch parameters
+ * @param {string|URL} url - Request URL
+ * @returns {Object|null} Parsed URL info or null if parsing fails
+ */
+function parseFetchUrl(url) {
+  try {
+    const u = new URL(String(url), 'http://localhost');
+    const method = 'GET'; // Will be overridden by specific request handlers
+    return { pathname: u.pathname, method };
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.debug('mock fetch URL parse failed:', err);
+    return null;
+  }
+}
+
+/**
+ * Check if request is for schema endpoint
+ */
+function isSchemaRequest(pathname, method) {
+  return pathname.endsWith('/schema') && method === 'GET';
+}
+
+/**
+ * Check if request is for submission endpoint
+ */
+function isSubmissionRequest(pathname, method) {
+  return pathname.includes('/api/v1/submissions/') && method === 'GET';
+}
+
+/**
+ * Check if request is for submit endpoint
+ */
+function isSubmitRequest(pathname, method, opts) {
+  const actualMethod = (
+    opts && typeof opts === 'object' && 'method' in opts
+      ? String(opts.method)
+      : 'GET'
+  ).toUpperCase();
+  return pathname.endsWith('/submit') && actualMethod === 'POST';
+}
+
+/**
+ * Fallback to original fetch or return 404
+ */
+function fallbackFetch(url, opts) {
+  if (typeof globalThis._originalFetch === 'function') {
+    return globalThis._originalFetch(url, opts);
+  }
+  return mkRes(200, { fallback: true });
+}
+
+/**
+ * Create complex token fixture for testing
+ */
+function createComplexTokenFixture() {
+  return {
+    sub: 'user123',
+    roles: ['admin', 'user'],
+    metadata: createTokenMetadata(),
+    groups: ['group1', 'group2'],
+  };
+}
+
+/**
+ * Create token metadata with permissions
+ */
+function createTokenMetadata() {
+  return {
+    department: 'IT',
+    permissions: {
+      read: true,
+      write: true,
+      admin: false,
+    },
+  };
+}
+
+/**
+ * Create complex user fixture for testing
+ */
+function createComplexUserFixture() {
+  return {
+    profile: createUserProfile(),
+    contact: createUserContact(),
+  };
+}
+
+/**
+ * Create user profile with preferences
+ */
+function createUserProfile() {
+  return {
+    firstName: 'John',
+    lastName: 'Doe',
+    preferences: {
+      theme: 'dark',
+      language: 'en',
+    },
+  };
+}
+
+/**
+ * Create user contact information
+ */
+function createUserContact() {
+  return {
+    email: 'john@example.com',
+    phone: '+1234567890',
+  };
+}
+
+/**
+ * Create mock response for fetch tests
+ */
+function createMockResponse(expectedData) {
+  return {
+    ok: true,
+    json: vi.fn().mockResolvedValue({ submission: { data: expectedData } }),
+  };
+}
+
+/**
+ * Setup mock event for failed choices click (not on dropdown area)
+ */
+function setupMockEventForFailedClick(mockEvent, choicesContainer) {
+  mockEvent.target.closest = vi
+    .fn()
+    .mockReturnValueOnce(choicesContainer) // First call for .choices
+    .mockReturnValueOnce(null); // Second call for form-control
+  mockEvent.target.matches = vi.fn().mockReturnValue(false);
+}
+
+/**
+ * Setup choices DOM elements for testing
+ */
+function setupChoicesElements() {
+  const choicesContainer = document.createElement('div');
+  const mainDropdown = document.createElement('div');
+
+  choicesContainer.className = 'choices';
+  mainDropdown.className = 'form-control';
+  mainDropdown.focus = vi.fn();
+  mainDropdown.dispatchEvent = vi.fn();
+  choicesContainer.appendChild(mainDropdown);
+
+  return { choicesContainer, mainDropdown };
+}
+
+/**
+ * Setup mock event for successful choices click
+ */
+function setupMockEventForSuccessfulClick(
+  mockEvent,
+  choicesContainer,
+  mainDropdown
+) {
+  mockEvent.target.closest = vi
+    .fn()
+    .mockReturnValueOnce(choicesContainer) // First call for .choices
+    .mockReturnValueOnce(mainDropdown); // Second call for form-control
+  mockEvent.target.matches = vi.fn().mockReturnValue(true);
+  choicesContainer.querySelector = vi.fn().mockReturnValue(mainDropdown);
+}
+
 describe('chefs-form-viewer web component', () => {
   let originalFetch;
   beforeEach(async () => {
@@ -63,52 +271,12 @@ describe('chefs-form-viewer web component', () => {
 
     // Mock fetch for schema, submit, readSubmission; fall back to real fetch for everything else
     originalFetch = globalThis.fetch?.bind(globalThis);
-    globalThis.fetch = vi.fn(async (url, opts = {}) => {
-      try {
-        const u = new URL(String(url), 'http://localhost');
-        const method = (
-          opts && typeof opts === 'object' && 'method' in opts
-            ? String(opts.method)
-            : 'GET'
-        ).toUpperCase();
-
-        if (u.pathname.endsWith('/schema') && method === 'GET') {
-          return mkRes(200, {
-            form: { id: 'FORM1' },
-            schema: { components: [] },
-          });
-        }
-        if (u.pathname.includes('/api/v1/submissions/') && method === 'GET') {
-          return mkRes(200, {
-            submission: { submission: { data: { pre: 1 } } },
-          });
-        }
-        if (u.pathname.endsWith('/submit') && method === 'POST') {
-          const body = JSON.parse((opts && opts.body) || '{}');
-          return mkRes(200, body.submission || {});
-        }
-      } catch (err) {
-        // Handle parse issues explicitly and fall back to originalFetch
-        // eslint-disable-next-line no-console
-        console.debug('mock fetch URL parse failed:', err);
-      }
-      if (typeof originalFetch === 'function') {
-        return originalFetch(url, opts);
-      }
-      return mkRes(404, { error: 'not found' });
-    });
+    globalThis._originalFetch = originalFetch;
+    globalThis.fetch = vi.fn(mockFetchHandler);
 
     // Load/execute the component script (registers custom element)
     await import(COMPONENT_PATH);
   });
-
-  function mkRes(status, json) {
-    return {
-      ok: status >= 200 && status < 300,
-      status,
-      json: async () => json,
-    };
-  }
 
   afterEach(() => {
     if (originalFetch) globalThis.fetch = originalFetch;
@@ -449,34 +617,8 @@ describe('chefs-form-viewer web component', () => {
       document.body.appendChild(el);
       configureNoNetwork(el);
 
-      const complexToken = {
-        sub: 'user123',
-        roles: ['admin', 'user'],
-        metadata: {
-          department: 'IT',
-          permissions: {
-            read: true,
-            write: true,
-            admin: false,
-          },
-        },
-        groups: ['group1', 'group2'],
-      };
-
-      const complexUser = {
-        profile: {
-          firstName: 'John',
-          lastName: 'Doe',
-          preferences: {
-            theme: 'dark',
-            language: 'en',
-          },
-        },
-        contact: {
-          email: 'john@example.com',
-          phone: '+1234567890',
-        },
-      };
+      const complexToken = createComplexTokenFixture();
+      const complexUser = createComplexUserFixture();
 
       el.token = complexToken;
       el.user = complexUser;
@@ -582,12 +724,7 @@ describe('chefs-form-viewer web component', () => {
       it('fetches and applies submission data when submissionId exists', async () => {
         el.submissionId = 'sub123';
         const expectedData = { firstName: 'John', lastName: 'Doe' };
-        const mockResponse = {
-          ok: true,
-          json: vi
-            .fn()
-            .mockResolvedValue({ submission: { data: expectedData } }),
-        };
+        const mockResponse = createMockResponse(expectedData);
         const fetchSpy = vi
           .spyOn(global, 'fetch')
           .mockResolvedValue(mockResponse);
@@ -776,11 +913,7 @@ describe('chefs-form-viewer web component', () => {
         it('returns false when click not on dropdown area', () => {
           const choicesContainer = document.createElement('div');
           choicesContainer.className = 'choices';
-          mockEvent.target.closest = vi
-            .fn()
-            .mockReturnValueOnce(choicesContainer) // First call for .choices
-            .mockReturnValueOnce(null); // Second call for form-control
-          mockEvent.target.matches = vi.fn().mockReturnValue(false);
+          setupMockEventForFailedClick(mockEvent, choicesContainer);
 
           const result = el._handleChoicesSelectClick(mockEvent);
 
@@ -788,22 +921,12 @@ describe('chefs-form-viewer web component', () => {
         });
 
         it('handles valid choices click and returns true', () => {
-          const choicesContainer = document.createElement('div');
-          const mainDropdown = document.createElement('div');
-          choicesContainer.className = 'choices';
-          mainDropdown.className = 'form-control';
-          mainDropdown.focus = vi.fn();
-          mainDropdown.dispatchEvent = vi.fn();
-          choicesContainer.appendChild(mainDropdown);
-
-          mockEvent.target.closest = vi
-            .fn()
-            .mockReturnValueOnce(choicesContainer) // First call for .choices
-            .mockReturnValueOnce(mainDropdown); // Second call for form-control
-          mockEvent.target.matches = vi.fn().mockReturnValue(true);
-          choicesContainer.querySelector = vi
-            .fn()
-            .mockReturnValue(mainDropdown);
+          const { choicesContainer, mainDropdown } = setupChoicesElements();
+          setupMockEventForSuccessfulClick(
+            mockEvent,
+            choicesContainer,
+            mainDropdown
+          );
 
           const result = el._handleChoicesSelectClick(mockEvent);
 
