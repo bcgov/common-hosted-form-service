@@ -591,7 +591,7 @@ describe('chefs-form-viewer web component', () => {
     });
   });
 
-  describe('refactored _initFormio methods', () => {
+  describe('_buildFormioOptions method', () => {
     let el;
 
     beforeEach(() => {
@@ -601,245 +601,262 @@ describe('chefs-form-viewer web component', () => {
       document.body.appendChild(el);
       configureNoNetwork(el);
     });
+    it('builds basic options with defaults', () => {
+      const options = el._buildFormioOptions();
 
-    describe('_buildFormioOptions', () => {
-      it('builds basic options with defaults', () => {
-        const options = el._buildFormioOptions();
-
-        expect(options).toEqual({
-          readOnly: false,
-          language: 'en',
-          sanitizeConfig: {},
-          hooks: expect.any(Object),
-          evalContext: {},
-          shadowRoot: expect.any(Object),
-        });
-      });
-
-      it('includes readOnly when set', () => {
-        el.readOnly = true;
-        const options = el._buildFormioOptions();
-
-        expect(options.readOnly).toBe(true);
-      });
-
-      it('includes custom language', () => {
-        el.language = 'fr';
-        const options = el._buildFormioOptions();
-
-        expect(options.language).toBe('fr');
-      });
-
-      it('includes token in evalContext when set', () => {
-        const token = { sub: 'user123', roles: ['admin'] };
-        el.token = token;
-        const options = el._buildFormioOptions();
-
-        expect(options.evalContext.token).toEqual(token);
-      });
-
-      it('includes user in evalContext when set', () => {
-        const user = { name: 'John Doe', department: 'IT' };
-        el.user = user;
-        const options = el._buildFormioOptions();
-
-        expect(options.evalContext.user).toEqual(user);
-      });
-
-      it('includes both token and user when both set', () => {
-        const token = { sub: 'user123' };
-        const user = { name: 'Jane Doe' };
-        el.token = token;
-        el.user = user;
-        const options = el._buildFormioOptions();
-
-        expect(options.evalContext.token).toEqual(token);
-        expect(options.evalContext.user).toEqual(user);
-      });
-
-      it('excludes token/user from evalContext when not set', () => {
-        el.token = null;
-        el.user = null;
-        const options = el._buildFormioOptions();
-
-        expect(options.evalContext).toEqual({});
+      expect(options).toEqual({
+        readOnly: false,
+        language: 'en',
+        sanitizeConfig: {},
+        hooks: expect.any(Object),
+        evalContext: {},
+        shadowRoot: expect.any(Object),
       });
     });
 
-    describe('_handleRuntimePrefill', () => {
-      it('does nothing when no submissionId', async () => {
-        el.submissionId = null;
-        const fetchSpy = vi.spyOn(global, 'fetch');
+    it('includes readOnly when set', () => {
+      el.readOnly = true;
+      const options = el._buildFormioOptions();
 
-        await el._handleRuntimePrefill({
-          readSubmission: '/api/submissions/:submissionId',
-        });
-
-        expect(fetchSpy).not.toHaveBeenCalled();
-        fetchSpy.mockRestore();
-      });
-
-      it('fetches and applies submission data when submissionId exists', async () => {
-        el.submissionId = 'sub123';
-        const expectedData = { firstName: 'John', lastName: 'Doe' };
-        const mockResponse = createMockResponse(expectedData);
-        const fetchSpy = vi
-          .spyOn(global, 'fetch')
-          .mockResolvedValue(mockResponse);
-        const schedulesSpy = vi
-          .spyOn(el, '_schedulePrefillApplications')
-          .mockResolvedValue();
-
-        await el._handleRuntimePrefill({
-          readSubmission: '/api/submissions/:submissionId',
-        });
-
-        expect(fetchSpy).toHaveBeenCalledWith('/api/submissions/sub123', {
-          headers: expect.any(Object),
-        });
-        expect(schedulesSpy).toHaveBeenCalledWith(expectedData);
-
-        fetchSpy.mockRestore();
-        schedulesSpy.mockRestore();
-      });
-
-      it('logs warning when fetch fails', async () => {
-        el.submissionId = 'sub123';
-        const mockResponse = { ok: false, status: 404 };
-        const fetchSpy = vi
-          .spyOn(global, 'fetch')
-          .mockResolvedValue(mockResponse);
-        const logSpy = vi.spyOn(el._log, 'warn');
-
-        await el._handleRuntimePrefill({
-          readSubmission: '/api/submissions/:submissionId',
-        });
-
-        expect(logSpy).toHaveBeenCalledWith('prefill:readSubmission:failed', {
-          status: 404,
-        });
-
-        fetchSpy.mockRestore();
-        logSpy.mockRestore();
-      });
+      expect(options.readOnly).toBe(true);
     });
 
-    describe('_setupFormioInstance', () => {
-      beforeEach(() => {
-        el.formioInstance = new FakeFormioInstance();
-        el._configureInstanceEndpoints = vi.fn();
-        el._wireInstanceEvents = vi.fn();
+    it('includes custom language', () => {
+      el.language = 'fr';
+      const options = el._buildFormioOptions();
 
-        el._setupPrefillGuard = vi.fn();
-      });
-
-      it('calls all setup methods', () => {
-        const urls = { submit: '/submit' };
-        el._setupFormioInstance(urls, null);
-
-        expect(el._configureInstanceEndpoints).toHaveBeenCalledWith(urls);
-        expect(el._wireInstanceEvents).toHaveBeenCalled();
-
-        expect(el._setupPrefillGuard).not.toHaveBeenCalled();
-      });
-
-      it('sets up prefill guard when prefilledViaOptions provided', () => {
-        const urls = { submit: '/submit' };
-        const prefilledData = { name: 'John' };
-
-        el._setupFormioInstance(urls, prefilledData);
-
-        expect(el._setupPrefillGuard).toHaveBeenCalledWith(prefilledData);
-      });
+      expect(options.language).toBe('fr');
     });
 
-    describe('_setupPrefillGuard', () => {
-      let mockInstance;
+    it('includes token in evalContext when set', () => {
+      const token = { sub: 'user123', roles: ['admin'] };
+      el.token = token;
+      const options = el._buildFormioOptions();
 
-      beforeEach(() => {
-        mockInstance = new FakeFormioInstance();
-        el.formioInstance = mockInstance;
-        el._setSubmissionOnInstance = vi.fn().mockResolvedValue();
-      });
+      expect(options.evalContext.token).toEqual(token);
+    });
 
-      it('sets up one-time render event handler', () => {
-        const prefilledData = { name: 'John' };
-        const onSpy = vi.spyOn(mockInstance, 'on');
+    it('includes user in evalContext when set', () => {
+      const user = { name: 'John Doe', department: 'IT' };
+      el.user = user;
+      const options = el._buildFormioOptions();
 
-        el._setupPrefillGuard(prefilledData);
+      expect(options.evalContext.user).toEqual(user);
+    });
 
-        expect(onSpy).toHaveBeenCalledWith('render', expect.any(Function));
-      });
+    it('includes both token and user when both set', () => {
+      const token = { sub: 'user123' };
+      const user = { name: 'Jane Doe' };
+      el.token = token;
+      el.user = user;
+      const options = el._buildFormioOptions();
 
-      it('applies prefilled data on first render only', async () => {
-        const prefilledData = { name: 'John' };
-        el._setupPrefillGuard(prefilledData);
+      expect(options.evalContext.token).toEqual(token);
+      expect(options.evalContext.user).toEqual(user);
+    });
 
-        // Simulate first render
-        mockInstance.emit('render');
-        await new Promise((resolve) => setTimeout(resolve, 0));
+    it('excludes token/user from evalContext when not set', () => {
+      el.token = null;
+      el.user = null;
+      const options = el._buildFormioOptions();
 
-        expect(el._setSubmissionOnInstance).toHaveBeenCalledWith(
-          prefilledData,
-          {
-            fromSubmission: true,
-            noValidate: true,
-          }
-        );
-
-        // Simulate second render - should not apply again
-        el._setSubmissionOnInstance.mockClear();
-        mockInstance.emit('render');
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        expect(el._setSubmissionOnInstance).not.toHaveBeenCalled();
-      });
-
-      it('handles errors gracefully', async () => {
-        const prefilledData = { name: 'John' };
-        el._setSubmissionOnInstance.mockRejectedValue(new Error('Test error'));
-        const logSpy = vi.spyOn(el._log, 'debug').mockImplementation(() => {});
-
-        el._setupPrefillGuard(prefilledData);
-        mockInstance.emit('render');
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        expect(logSpy).toHaveBeenCalledWith('prefill:options:ignored', {
-          message: 'Test error',
-        });
-
-        logSpy.mockRestore();
-      });
+      expect(options.evalContext).toEqual({});
     });
   });
 
-  function createMockCssLoader(baseCss) {
-    return vi.fn(async (href) => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href || baseCss;
-      document.head.appendChild(link);
-    });
-  }
+  describe('_handleRuntimePrefill method', () => {
+    let el;
 
-  function configureNoNetwork(el, options = {}) {
-    const baseCss = 'data:text/css,';
-    const baseJs = 'data:text/javascript,';
-    el.endpoints = {
-      ...el.endpoints,
-      mainCss: baseCss,
-      themeCss: baseCss,
-      formioJs: baseJs,
-      componentsJs: baseJs,
-      ...(options.keepDefaultIcons ? {} : { iconsCss: baseCss }),
-    };
-    // Prevent actual network; resolve loaders immediately
-    el._loadCssIntoRoot = vi.fn(async () => {});
-    el._loadCss = vi.fn(async () => {});
-    el._injectScript = vi.fn(async () => true);
-    if (options.appendHeadLinks) {
-      el._loadCssIntoRoot = createMockCssLoader(baseCss);
-      el._loadCss = createMockCssLoader(baseCss);
-    }
-  }
+    beforeEach(() => {
+      el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+    });
+    it('does nothing when no submissionId', async () => {
+      el.submissionId = null;
+      const fetchSpy = vi.spyOn(global, 'fetch');
+
+      await el._handleRuntimePrefill({
+        readSubmission: '/api/submissions/:submissionId',
+      });
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      fetchSpy.mockRestore();
+    });
+
+    it('fetches and applies submission data when submissionId exists', async () => {
+      el.submissionId = 'sub123';
+      const expectedData = { firstName: 'John', lastName: 'Doe' };
+      const mockResponse = createMockResponse(expectedData);
+      const fetchSpy = vi
+        .spyOn(global, 'fetch')
+        .mockResolvedValue(mockResponse);
+      const schedulesSpy = vi
+        .spyOn(el, '_schedulePrefillApplications')
+        .mockResolvedValue();
+
+      await el._handleRuntimePrefill({
+        readSubmission: '/api/submissions/:submissionId',
+      });
+
+      expect(fetchSpy).toHaveBeenCalledWith('/api/submissions/sub123', {
+        headers: expect.any(Object),
+      });
+      expect(schedulesSpy).toHaveBeenCalledWith(expectedData);
+
+      fetchSpy.mockRestore();
+      schedulesSpy.mockRestore();
+    });
+
+    it('logs warning when fetch fails', async () => {
+      el.submissionId = 'sub123';
+      const mockResponse = { ok: false, status: 404 };
+      const fetchSpy = vi
+        .spyOn(global, 'fetch')
+        .mockResolvedValue(mockResponse);
+      const logSpy = vi.spyOn(el._log, 'warn');
+
+      await el._handleRuntimePrefill({
+        readSubmission: '/api/submissions/:submissionId',
+      });
+
+      expect(logSpy).toHaveBeenCalledWith('prefill:readSubmission:failed', {
+        status: 404,
+      });
+
+      fetchSpy.mockRestore();
+      logSpy.mockRestore();
+    });
+  });
+
+  describe('_setupFormioInstance method', () => {
+    let el;
+
+    beforeEach(() => {
+      el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+      el._configureInstanceEndpoints = vi.fn();
+      el._wireInstanceEvents = vi.fn();
+      el._setupPrefillGuard = vi.fn();
+    });
+
+    it('calls all setup methods', () => {
+      const urls = { submit: '/submit' };
+      el._setupFormioInstance(urls, null);
+
+      expect(el._configureInstanceEndpoints).toHaveBeenCalledWith(urls);
+      expect(el._wireInstanceEvents).toHaveBeenCalled();
+
+      expect(el._setupPrefillGuard).not.toHaveBeenCalled();
+    });
+
+    it('sets up prefill guard when prefilledViaOptions provided', () => {
+      const urls = { submit: '/submit' };
+      const prefilledData = { name: 'John' };
+
+      el._setupFormioInstance(urls, prefilledData);
+
+      expect(el._setupPrefillGuard).toHaveBeenCalledWith(prefilledData);
+    });
+  });
+
+  describe('_setupPrefillGuard method', () => {
+    let el, mockInstance;
+
+    beforeEach(() => {
+      el = document.createElement('chefs-form-viewer');
+      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
+      el.setAttribute('api-key', 'secret');
+      document.body.appendChild(el);
+      configureNoNetwork(el);
+      mockInstance = new FakeFormioInstance();
+      el.formioInstance = mockInstance;
+      el._setSubmissionOnInstance = vi.fn().mockResolvedValue();
+    });
+
+    it('sets up one-time render event handler', () => {
+      const prefilledData = { name: 'John' };
+      const onSpy = vi.spyOn(mockInstance, 'on');
+
+      el._setupPrefillGuard(prefilledData);
+
+      expect(onSpy).toHaveBeenCalledWith('render', expect.any(Function));
+    });
+
+    it('applies prefilled data on first render only', async () => {
+      const prefilledData = { name: 'John' };
+      el._setupPrefillGuard(prefilledData);
+
+      // Simulate first render
+      mockInstance.emit('render');
+      await waitForNextTick();
+
+      expect(el._setSubmissionOnInstance).toHaveBeenCalledWith(prefilledData, {
+        fromSubmission: true,
+        noValidate: true,
+      });
+
+      // Simulate second render - should not apply again
+      el._setSubmissionOnInstance.mockClear();
+      mockInstance.emit('render');
+      await waitForNextTick();
+
+      expect(el._setSubmissionOnInstance).not.toHaveBeenCalled();
+    });
+
+    it('handles errors gracefully', async () => {
+      const prefilledData = { name: 'John' };
+      el._setSubmissionOnInstance.mockRejectedValue(new Error('Test error'));
+      const logSpy = vi.spyOn(el._log, 'debug').mockImplementation(() => {});
+
+      el._setupPrefillGuard(prefilledData);
+      mockInstance.emit('render');
+      await waitForNextTick();
+
+      expect(logSpy).toHaveBeenCalledWith('prefill:options:ignored', {
+        message: 'Test error',
+      });
+
+      logSpy.mockRestore();
+    });
+  });
 });
+
+function createMockCssLoader(baseCss) {
+  return vi.fn(async (href) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href || baseCss;
+    document.head.appendChild(link);
+  });
+}
+
+async function waitForNextTick() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+function configureNoNetwork(el, options = {}) {
+  const baseCss = 'data:text/css,';
+  const baseJs = 'data:text/javascript,';
+  el.endpoints = {
+    ...el.endpoints,
+    mainCss: baseCss,
+    themeCss: baseCss,
+    formioJs: baseJs,
+    componentsJs: baseJs,
+    ...(options.keepDefaultIcons ? {} : { iconsCss: baseCss }),
+  };
+  // Prevent actual network; resolve loaders immediately
+  el._loadCssIntoRoot = vi.fn(async () => {});
+  el._loadCss = vi.fn(async () => {});
+  el._injectScript = vi.fn(async () => true);
+  if (options.appendHeadLinks) {
+    el._loadCssIntoRoot = createMockCssLoader(baseCss);
+    el._loadCss = createMockCssLoader(baseCss);
+  }
+}
