@@ -116,3 +116,4 @@ app/frontend/public/embed/chefs-form-viewer-embed.min.js
 app/frontend/public/embed/chefs-form-viewer-embed.min.js.map
 app/frontend/public/embed/chefs-index.css
 app/frontend/public/embed/chefs-theme.css
+app/webcomponents/*

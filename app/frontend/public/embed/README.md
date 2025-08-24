@@ -309,27 +309,31 @@ The CHEFS Form Viewer web component requires a build process to generate product
 
    - Compiles the main CHEFS application (Vue.js, Vuetify, Bootstrap, etc.)
    - Generates bundled CSS files in `app/frontend/dist/assets/`
+   - **Copies all files** from `app/frontend/public/embed/` to `app/frontend/dist/embed/` (standard Vite behavior)
 
 2. **Theme Extraction** (`npm run postbuild` → `extract-theme.js`)
 
-   - Copies the main CSS bundle to `chefs-index.css`
-   - Extracts CSS variables and creates `chefs-theme.css` with Shadow DOM compatibility fixes
+   - Reads the main CSS bundle from `dist/assets/index-*.css`
+   - **Generates `chefs-index.css` directly in `dist/embed/`** (complete CHEFS CSS bundle)
+   - **Generates `chefs-theme.css` directly in `dist/embed/`** (extracted CSS variables with Shadow DOM compatibility)
    - Processes only `:root` and `[data-bs-theme="light"]` selectors for light theme support
 
 3. **Component Minification** (`npm run postbuild` → `npm run build:embed`)
-   - Minifies `chefs-form-viewer.js` → `chefs-form-viewer.min.js`
-   - Minifies `chefs-form-viewer-embed.js` → `chefs-form-viewer-embed.min.js`
-   - Generates source maps for debugging
+   - **Minifies `public/embed/chefs-form-viewer.js` → `dist/embed/chefs-form-viewer.min.js`**
+   - **Minifies `public/embed/chefs-form-viewer-embed.js` → `dist/embed/chefs-form-viewer-embed.min.js`**
+   - Generates source maps for debugging directly in `dist/embed/`
 
 #### **Generated Files**
 
-The build process creates these production assets:
+The build process creates these production assets in `app/frontend/dist/embed/`:
 
 - **`chefs-index.css`**: Complete CHEFS CSS bundle (Bootstrap, Vuetify, Form.io, custom styles)
 - **`chefs-theme.css`**: Extracted CSS variables and Shadow DOM compatibility fixes
 - **`chefs-form-viewer.min.js`**: Minified web component
 - **`chefs-form-viewer-embed.min.js`**: Minified embed script
 - **Source maps**: `.min.js.map` files for debugging
+
+**Important**: These files are **generated during build** and are **not stored in source control**. They only exist in `dist/embed/` after running the build process.
 
 #### **Docker Build Integration**
 
@@ -346,19 +350,31 @@ All generated assets are automatically copied to the correct locations for servi
 
 ### Source Code Organization
 
-All embed-related files are located in [`./app/frontend/public/embed/`](./):
+#### **Source Files** (in `app/frontend/public/embed/`)
+
+These files are stored in source control and copied to `dist/embed/` during build:
 
 | File                                                                       | Purpose                               | HTTP Path                                      |
 | -------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------- |
 | [`chefs-form-viewer.js`](./chefs-form-viewer.js)                           | Main web component (development)      | `/app/embed/chefs-form-viewer.js`              |
-| `chefs-form-viewer.min.js`                                                 | Minified component (production)       | `/app/embed/chefs-form-viewer.min.js`          |
 | [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development) | `/app/embed/chefs-form-viewer-embed.js`        |
-| `chefs-form-viewer-embed.min.js`                                           | Minified embed script (production)    | `/app/embed/chefs-form-viewer-embed.min.js`    |
-| `chefs-index.css`                                                          | Complete CHEFS CSS bundle (generated) | `/app/embed/chefs-index.css`                   |
-| `chefs-theme.css`                                                          | CSS variables and theming (generated) | `/app/embed/chefs-theme.css`                   |
 | [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                   | `/app/embed/chefs-form-viewer-generator.html`  |
 | [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                | `/app/embed/chefs-form-viewer-embed-demo.html` |
 | [`chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html)             | Traditional component demo            | `/app/embed/chefs-form-viewer-demo.html`       |
+| [`README.md`](./README.md)                                                 | This documentation                    | `/app/embed/README.md`                         |
+
+#### **Generated Files** (created in `dist/embed/` during build)
+
+These files are **not in source control** and are created by the build process:
+
+| File                                 | Purpose                            | HTTP Path                                       | Created By            |
+| ------------------------------------ | ---------------------------------- | ----------------------------------------------- | --------------------- |
+| `chefs-form-viewer.min.js`           | Minified component (production)    | `/app/embed/chefs-form-viewer.min.js`           | `npm run build:embed` |
+| `chefs-form-viewer-embed.min.js`     | Minified embed script (production) | `/app/embed/chefs-form-viewer-embed.min.js`     | `npm run build:embed` |
+| `chefs-form-viewer.min.js.map`       | Source map for debugging           | `/app/embed/chefs-form-viewer.min.js.map`       | `npm run build:embed` |
+| `chefs-form-viewer-embed.min.js.map` | Source map for debugging           | `/app/embed/chefs-form-viewer-embed.min.js.map` | `npm run build:embed` |
+| `chefs-index.css`                    | Complete CHEFS CSS bundle          | `/app/embed/chefs-index.css`                    | `extract-theme.js`    |
+| `chefs-theme.css`                    | CSS variables and theming          | `/app/embed/chefs-theme.css`                    | `extract-theme.js`    |
 
 #### **Build Scripts and Tools**
 
@@ -369,4 +385,18 @@ All embed-related files are located in [`./app/frontend/public/embed/`](./):
 | `app/frontend/tests/unit/embed/themeExtractor.spec.js` | Unit tests for theme extraction functionality  |
 | `app/frontend/tests/fixtures/chefs-index.fixture.css`  | Test fixture for theme extraction testing      |
 
-**Note**: Generated files (`.min.js`, `.css`) are created during the build process and are not stored in the source repository. For production, always use the minified scripts. For development, use the non-minified versions for easier debugging.
+#### **For CHEFS Developers**
+
+- **Source files**: Edit files in `app/frontend/public/embed/`
+- **Generated files**: Available in `app/frontend/dist/embed/` after running `npm run build`
+- **Development**: Use non-minified files (`.js`) for easier debugging
+- **Production**: Use minified files (`.min.js`, `.css`) for better performance
+
+#### **For Embedding Developers**
+
+- **All files are served from `/app/embed/`** (or `/pr-####/embed/` in PR environments)
+- **CSS and minified JS files are only available after CHEFS build process**
+- **Use `.min.js` files in production** for better performance and smaller downloads
+- **CSS files (`chefs-index.css`, `chefs-theme.css`) are automatically generated** and contain the complete CHEFS styling
+
+**Note**: Generated files (`.min.js`, `.css`) are created during the build process and are not stored in the source repository.

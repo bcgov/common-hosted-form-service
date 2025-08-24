@@ -45,7 +45,9 @@ function pickLatestFileByMtime(dir, fileNames) {
 
 function main() {
   const distAssetsDir = getAbsolutePath('./dist/assets');
-  const embedDir = getAbsolutePath('./public/embed');
+  const vendorChefsDir = getAbsolutePath(
+    '../webcomponents/v1/assets/vendor/chefs'
+  );
 
   const candidates = listIndexCssFiles(distAssetsDir);
   if (!candidates.length) {
@@ -61,18 +63,18 @@ function main() {
 
   const cssContent = fs.readFileSync(indexCssPath, 'utf8');
 
-  // 1) Copy consolidated CSS bundle to public/embed
-  ensureDir(embedDir);
-  const outCssPath = path.join(embedDir, 'chefs-index.css');
+  // 1) Write consolidated CSS bundle to vendor directory (served by webcomponents assets)
+  ensureDir(vendorChefsDir);
+  const outCssPath = path.join(vendorChefsDir, 'chefs-index.css');
   fs.writeFileSync(outCssPath, cssContent);
   console.log(
     `[extract-theme] Wrote ${path.relative(process.cwd(), outCssPath)}`
   );
 
-  // 2) Extract variables and write a :host-scoped CSS variables file for direct inclusion
+  // 2) Extract variables and write theme CSS to vendor directory
   const theme = extractThemeVariables(cssContent);
   const themeCss = buildHostThemeCss(theme.variables);
-  const outCssThemePath = path.join(embedDir, 'chefs-theme.css');
+  const outCssThemePath = path.join(vendorChefsDir, 'chefs-theme.css');
   fs.writeFileSync(outCssThemePath, themeCss);
   console.log(
     `[extract-theme] Wrote theme CSS ${path.relative(
