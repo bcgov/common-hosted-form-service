@@ -6,8 +6,8 @@ const config = require('config');
 
 const originAccess = require('../../common/middleware/originAccess');
 
-// Resolve asset roots from config with a local fallback
-const configuredRoots = (() => {
+// Resolve asset roots from config
+const assetRoots = (() => {
   const hasRoots = typeof config.has === 'function' && config.has('webcomponents.assets.roots');
   const raw = hasRoots ? config.get('webcomponents.assets.roots') : [];
   if (Array.isArray(raw)) return raw;
@@ -19,8 +19,6 @@ const configuredRoots = (() => {
   }
   return [];
 })();
-const nodeModulesRoot = path.join(__dirname, '../../../../frontend/node_modules');
-const assetRoots = [...configuredRoots, nodeModulesRoot];
 
 function trySend(res, filePath, contentType) {
   if (fs.existsSync(filePath)) {
@@ -32,11 +30,40 @@ function trySend(res, filePath, contentType) {
   return false;
 }
 
-// Self-hosted Form.io and related assets
+// CHEFS CSS assets for embed components
+// GET /webcomponents/v1/assets/chefs-index.css
+routes.get('/chefs-index.css', cors(), originAccess, async (_req, res, next) => {
+  try {
+    const rel = 'vendor/chefs/chefs-index.css';
+    for (const root of assetRoots) {
+      const p = path.join(root, rel);
+      if (trySend(res, p, 'text/css')) return;
+    }
+    res.status(404).json({ detail: 'CHEFS index CSS not found' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /webcomponents/v1/assets/chefs-theme.css
+routes.get('/chefs-theme.css', cors(), originAccess, async (_req, res, next) => {
+  try {
+    const rel = 'vendor/chefs/chefs-theme.css';
+    for (const root of assetRoots) {
+      const p = path.join(root, rel);
+      if (trySend(res, p, 'text/css')) return;
+    }
+    res.status(404).json({ detail: 'CHEFS theme CSS not found' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Form.io assets
 // GET /webcomponents/v1/assets/formio.js
 routes.get('/formio.js', cors(), originAccess, async (_req, res, next) => {
   try {
-    const rel = 'formiojs/dist/formio.full.min.js';
+    const rel = 'vendor/formiojs/dist/formio.full.min.js';
     for (const root of assetRoots) {
       const p = path.join(root, rel);
       if (trySend(res, p, 'application/javascript')) return;
@@ -50,7 +77,7 @@ routes.get('/formio.js', cors(), originAccess, async (_req, res, next) => {
 // GET /webcomponents/v1/assets/formio.css
 routes.get('/formio.css', cors(), originAccess, async (_req, res, next) => {
   try {
-    const rel = 'formiojs/dist/formio.full.min.css';
+    const rel = 'vendor/formiojs/dist/formio.full.min.css';
     for (const root of assetRoots) {
       const p = path.join(root, rel);
       if (trySend(res, p, 'text/css')) return;
@@ -61,12 +88,11 @@ routes.get('/formio.css', cors(), originAccess, async (_req, res, next) => {
   }
 });
 
-module.exports = routes;
-// Font Awesome 4.7 local serving for icons inside Shadow DOM
+// Font Awesome 4.7 assets for Shadow DOM compatibility
 // GET /webcomponents/v1/assets/font-awesome/css/font-awesome.min.css
 routes.get('/font-awesome/css/font-awesome.min.css', cors(), originAccess, async (_req, res, next) => {
   try {
-    const rel = 'font-awesome/css/font-awesome.min.css';
+    const rel = 'vendor/font-awesome/css/font-awesome.min.css';
     for (const root of assetRoots) {
       const p = path.join(root, rel);
       if (trySend(res, p, 'text/css')) return;
@@ -99,7 +125,7 @@ routes.get('/font-awesome/fonts/:file', cors(), originAccess, async (req, res, n
       '.svg': 'image/svg+xml',
     };
     for (const root of assetRoots) {
-      const fontsDir = path.join(root, 'font-awesome/fonts');
+      const fontsDir = path.join(root, 'vendor/font-awesome/fonts');
       const filePath = path.resolve(fontsDir, file);
       if (!filePath.startsWith(fontsDir + path.sep)) {
         return res.status(400).json({ detail: 'Invalid font path' });
@@ -117,3 +143,5 @@ routes.get('/font-awesome/fonts/:file', cors(), originAccess, async (req, res, n
     next(err);
   }
 });
+
+module.exports = routes;

@@ -11,12 +11,7 @@ RUN npm run all:ci \
   && npm run all:build \
   && cd ../components && npm run build \
   && cd ../app \
-  && cd frontend && npm run build:embed && cd .. \
-  && mkdir -p /opt/app-root/src/webcomponents/v1/assets/vendor/formiojs/dist \
-  && cp -f /opt/app-root/src/app/frontend/node_modules/formiojs/dist/formio.full.min.* /opt/app-root/src/webcomponents/v1/assets/vendor/formiojs/dist/ \
-  && mkdir -p /opt/app-root/src/webcomponents/v1/assets/vendor/font-awesome/css /opt/app-root/src/webcomponents/v1/assets/vendor/font-awesome/fonts \
-  && cp -f /opt/app-root/src/app/frontend/node_modules/font-awesome/css/font-awesome.min.css /opt/app-root/src/webcomponents/v1/assets/vendor/font-awesome/css/ \
-  && cp -f /opt/app-root/src/app/frontend/node_modules/font-awesome/fonts/* /opt/app-root/src/webcomponents/v1/assets/vendor/font-awesome/fonts/ \
+  && npm run webcomponents:build \
   && npm run frontend:purge \
   && npm run components:purge \
   && mkdir /.npm \

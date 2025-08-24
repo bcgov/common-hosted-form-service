@@ -557,11 +557,11 @@
       const sid = this.submissionId || ':submissionId';
       return {
         // Complete CHEFS CSS bundle (includes Bootstrap, Vuetify, Form.io, custom styles)
-        mainCss: `${base}/embed/chefs-index.css`,
+        mainCss: `${base}/webcomponents/v1/assets/chefs-index.css`,
         formioJs: `${base}/webcomponents/v1/assets/formio.js`,
         componentsJs: `${base}/webcomponents/v1/form-viewer/components`,
         // CHEFS theme CSS with CSS variables and theming
-        themeCss: `${base}/embed/chefs-theme.css`,
+        themeCss: `${base}/webcomponents/v1/assets/chefs-theme.css`,
         // Default to local Font Awesome 4.7 for Form.io icon classes (fa fa-*)
         // Served by backend to ensure fonts load in Shadow DOM without CORS/CSP issues.
         // Embedders can override via endpoints.iconsCss, or disable via 'no-icons'.
