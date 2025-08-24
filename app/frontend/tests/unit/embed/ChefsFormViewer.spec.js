@@ -249,13 +249,15 @@ describe('chefs-form-viewer web component', () => {
     document.body.appendChild(el);
     // Default base should include /app
     const urls = el._urls();
-    expect(urls.mainCss).toMatch('/app/embed/chefs-index.css');
+    expect(urls.mainCss).toMatch(
+      '/app/webcomponents/v1/assets/chefs-index.css'
+    );
 
     // Override base-url
     el.setAttribute('base-url', 'https://example.com/pr-1234');
     const urls2 = el._urls();
     expect(urls2.mainCss).toBe(
-      'https://example.com/pr-1234/embed/chefs-index.css'
+      'https://example.com/pr-1234/webcomponents/v1/assets/chefs-index.css'
     );
   });
 
