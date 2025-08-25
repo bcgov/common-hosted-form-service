@@ -39,6 +39,395 @@
   }
 
   /**
+   * Pure utility functions for easier testing
+   *
+   * These functions have no side effects and can be easily unit tested.
+   * They handle data transformation, validation, and computation logic
+   * without touching DOM, network, or global state.
+   */
+  const FormViewerUtils = {
+    /**
+     * Validates asset URL for scripts and stylesheets
+     * Throws an error if invalid
+     * @param {string} url - The asset URL
+     * @param {string} type - 'js' or 'css'
+     */
+    validateAssetUrl(url, type) {
+      if (!url || typeof url !== 'string' || !/^https?:\/\//.test(url)) {
+        throw new Error(
+          `Malformed or missing ${type.toUpperCase()} URL: ${url}`
+        );
+      }
+    },
+    /**
+     * Parses base URL from window location
+     * @param {Object} location - window.location-like object
+     * @returns {string} Base URL
+     */
+    parseBaseUrl(location) {
+      const origin =
+        location && typeof location.origin === 'string'
+          ? location.origin
+          : 'undefined';
+      let pathname =
+        location && typeof location.pathname === 'string'
+          ? location.pathname
+          : '';
+      const match = pathname.match(/^\/(app|pr-\d+)\b/);
+      const baseSegment = match ? `/${match[1]}` : '/app';
+      return `${origin}${baseSegment}`;
+    },
+    /**
+     * Creates Basic auth header
+     * @param {string} formId - Form identifier
+     * @param {string} apiKey - API key
+     * @returns {Object} Auth header object
+     */
+    createBasicAuthHeader(username, password, encoder = window.btoa) {
+      if (
+        typeof username !== 'string' ||
+        typeof password !== 'string' ||
+        !username ||
+        !password
+      )
+        return {};
+      const creds = encoder(`${username}:${password}`);
+      return {
+        Authorization: `Basic ${creds}`,
+      };
+    },
+
+    /**
+     * Safely parses JSON with error handling
+     * @param {string} value - JSON string to parse
+     * @param {string} context - Context for error logging
+     * @returns {Object} { success: boolean, data: any, error: string|null }
+     */
+    safeJsonParse(str, context = '') {
+      if (typeof str !== 'string') {
+        return {
+          success: false,
+          data: null,
+          error: `Invalid JSON in ${context}: Not a string`,
+        };
+      }
+      if (!str.trim()) {
+        // treat empty/whitespace as valid empty JSON
+        return { success: true, data: null, error: null };
+      }
+      try {
+        return { success: true, data: JSON.parse(str), error: null };
+      } catch (e) {
+        return {
+          success: false,
+          data: null,
+          error: `Invalid JSON in ${context}: ${e.message}`,
+        };
+      }
+    },
+
+    /**
+     * Extracts submission data from CHEFS response format
+     * @param {Object} json - Response JSON
+     * @returns {Object} { data: Object|null }
+     */
+    parseSubmissionData(obj) {
+      // Top-level must be a non-null object, not array
+      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+        throw new Error(
+          'Submission payload must be a non-null object, not array'
+        );
+      }
+      // If obj.submission exists, it must be an object
+      if ('submission' in obj) {
+        if (
+          !obj.submission ||
+          typeof obj.submission !== 'object' ||
+          Array.isArray(obj.submission)
+        ) {
+          throw new Error(
+            'submission property must be a non-null object, not array'
+          );
+        }
+        // If obj.submission.submission exists, it must be an object
+        if ('submission' in obj.submission) {
+          if (
+            !obj.submission.submission ||
+            typeof obj.submission.submission !== 'object' ||
+            Array.isArray(obj.submission.submission)
+          ) {
+            throw new Error(
+              'submission.submission property must be a non-null object, not array'
+            );
+          }
+          // Return data from nested submission
+          return {
+            data: obj.submission.submission.data || obj.submission.submission,
+          };
+        }
+        // Return data from submission
+        return { data: obj.submission.data || obj.submission };
+      }
+      // If obj.data exists, it must be an object
+      if ('data' in obj) {
+        if (
+          !obj.data ||
+          typeof obj.data !== 'object' ||
+          Array.isArray(obj.data)
+        ) {
+          throw new Error('data property must be a non-null object, not array');
+        }
+        return { data: obj.data };
+      }
+      // If no valid data found, throw
+      throw new Error('No valid submission data found in payload');
+    },
+
+    /**
+     * Validates and parses schema payload from backend
+     * Throws error if shape is invalid
+     * @param {Object} payload - Backend response JSON
+     * @returns {Object} { form, schema }
+     */
+    parseSchemaPayload(payload) {
+      if (!payload || typeof payload !== 'object') {
+        throw new Error('Schema payload is not an object');
+      }
+      // Require payload.form to be an object
+      const form = payload.form;
+      if (!form || typeof form !== 'object' || Array.isArray(form)) {
+        throw new Error('form property must be a non-null object');
+      }
+      // Require schema to be an object, from payload.schema or payload.form.versions[0].schema
+      let schema = null;
+      if (
+        payload.schema &&
+        typeof payload.schema === 'object' &&
+        !Array.isArray(payload.schema)
+      ) {
+        schema = payload.schema;
+      } else if (
+        form.versions &&
+        Array.isArray(form.versions) &&
+        form.versions[0] &&
+        form.versions[0].schema &&
+        typeof form.versions[0].schema === 'object' &&
+        !Array.isArray(form.versions[0].schema)
+      ) {
+        schema = form.versions[0].schema;
+      }
+      if (!schema) {
+        throw new Error('schema property missing or invalid');
+      }
+      return { form, schema };
+    },
+
+    /**
+     * Validates Form.io global availability
+     * @param {Object} windowObj - window-like object
+     * @returns {Object} { available: boolean, hasCreateForm: boolean }
+     */
+    validateFormioGlobal(windowObj) {
+      const formio = windowObj?.Formio;
+      return {
+        available: !!formio,
+        hasCreateForm: typeof formio?.createForm === 'function',
+      };
+    },
+
+    /**
+     * Generates CSS for Font Awesome font faces
+     * @param {string} baseUrl - Base URL for font assets
+     * @returns {string} CSS string
+     */
+    generateFontFaceCSS(baseUrl) {
+      const fontPath = `${baseUrl}/webcomponents/v1/assets/font-awesome/fonts`;
+      return `@font-face{font-family:'FontAwesome';src:url('${fontPath}/fontawesome-webfont.eot?v=4.7.0');src:url('${fontPath}/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'),url('${fontPath}/fontawesome-webfont.woff2?v=4.7.0') format('woff2'),url('${fontPath}/fontawesome-webfont.woff?v=4.7.0') format('woff'),url('${fontPath}/fontawesome-webfont.ttf?v=4.7.0') format('truetype'),url('${fontPath}/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');font-weight:normal;font-style:normal;font-display:swap;}`;
+    },
+
+    /**
+     * Generates CSS for icon color inheritance
+     * @returns {string} CSS string
+     */
+    generateIconColorCSS() {
+      return `.formio-form .btn .fa,.formio-form .btn [class*="fa-"]{color:currentColor!important;-webkit-text-fill-color:currentColor!important;}`;
+    },
+
+    /**
+     * Generates CSS for icon neutralization
+     * @returns {string} CSS string
+     */
+    generateIconNeutralizeCSS() {
+      return `.formio-form .fa,.formio-form [class*="fa-"]{font-family:inherit!important;}.formio-form .fa::before,.formio-form [class*="fa-"]::before{content:''!important;}`;
+    },
+
+    /**
+     * Merges data objects for prefill application
+     * @param {Object} existingData - Current form data
+     * @param {Object} prefillData - Data to merge in
+     * @returns {Object} Merged data object
+     */
+    mergePrefillData(existingData = {}, prefillData = {}) {
+      return { ...existingData, ...prefillData };
+    },
+
+    /**
+     * Checks if prefill data was successfully applied
+     * @param {Object} currentData - Current form data
+     * @param {Object} expectedData - Expected prefill data
+     * @returns {boolean} True if data appears to be applied
+     */
+    isPrefillDataApplied(currentData, expectedData) {
+      if (
+        !currentData ||
+        typeof currentData !== 'object' ||
+        !expectedData ||
+        typeof expectedData !== 'object'
+      )
+        return false;
+      return Object.keys(expectedData).some(
+        (key) => currentData[key] === expectedData[key]
+      );
+    },
+
+    /**
+     * Resolves a URL with endpoint overrides and parameter substitution
+     * @param {Object} endpoints - All available endpoints
+     * @param {string} endpointKey - Key to resolve
+     * @param {Object} params - Parameters for substitution (formId, submissionId)
+     * @param {Object} overrides - Endpoint overrides (optional)
+     * @returns {string} Resolved URL
+     */
+    resolveUrl(endpoints, endpointKey, params = {}, overrides = {}) {
+      const defaultUrl = endpoints[endpointKey];
+      const overrideUrl = overrides[endpointKey];
+      const baseUrl = overrideUrl || defaultUrl;
+
+      if (!baseUrl) {
+        throw new Error(`Unknown endpoint: ${endpointKey}`);
+      }
+
+      return this.substituteUrlParams(baseUrl, params);
+    },
+
+    /**
+     * Resolves URL with fallback support
+     * @param {Object} endpoints - All available endpoints
+     * @param {string} primaryKey - Primary endpoint key
+     * @param {string} fallbackKey - Fallback endpoint key
+     * @param {Object} params - Parameters for substitution
+     * @param {Object} overrides - Endpoint overrides (optional)
+     * @returns {Object} { primary: string, fallback: string|null }
+     */
+    resolveUrlWithFallback(
+      endpoints,
+      primaryKey,
+      fallbackKey,
+      params = {},
+      overrides = {}
+    ) {
+      const primary = this.resolveUrl(endpoints, primaryKey, params, overrides);
+      const fallback = fallbackKey
+        ? this.resolveUrl(endpoints, fallbackKey, params, overrides)
+        : null;
+      return { primary, fallback };
+    },
+
+    /**
+     * Substitutes URL parameters
+     * @param {string} url - URL template
+     * @param {Object} params - Parameters to substitute
+     * @returns {string} URL with parameters substituted
+     */
+    substituteUrlParams(url, params = {}) {
+      let result = url;
+
+      // Handle :paramName and /:paramName patterns
+      for (const [key, value] of Object.entries(params)) {
+        if (value != null) {
+          result = result
+            .replace(new RegExp(`/:${key}\\b`, 'g'), `/${value}`)
+            .replace(new RegExp(`:${key}\\b`, 'g'), value);
+        }
+      }
+
+      return result;
+    },
+
+    /**
+     * Creates DOM elements with attributes
+     * @param {string} tagName - HTML tag name
+     * @param {Object} attributes - Key-value pairs of attributes
+     * @param {string} textContent - Text content (optional)
+     * @returns {HTMLElement} Created element
+     */
+    createElement(tagName, attrs = {}, text = '') {
+      if (typeof tagName !== 'string' || !tagName) {
+        throw new DOMException('Invalid tagName');
+      }
+      const el = document.createElement(tagName);
+      Object.entries(attrs).forEach(([k, v]) => {
+        el.setAttribute(k, v);
+      });
+      if (text) el.textContent = text;
+      return el;
+    },
+
+    /**
+     * Safely appends element to parent, handling Shadow DOM vs Light DOM
+     * @param {HTMLElement} element - Element to append
+     * @param {HTMLElement|ShadowRoot} parent - Parent to append to
+     * @param {HTMLElement} fallbackParent - Fallback parent (e.g., document.head)
+     */
+    appendElement(element, parent, fallbackParent = null) {
+      if (parent) {
+        parent.appendChild(element);
+      } else if (fallbackParent) {
+        fallbackParent.appendChild(element);
+      }
+    },
+
+    /**
+     * Creates and appends a style element with CSS
+     * @param {string} css - CSS content
+     * @param {HTMLElement|ShadowRoot} parent - Where to append the style
+     * @param {string} id - Optional ID for the style element
+     * @returns {HTMLElement} The created style element
+     */
+    injectStyle(css, parent, id = null) {
+      // Check if style with ID already exists
+      if (
+        id &&
+        parent &&
+        parent.querySelector &&
+        parent.querySelector(`#${id}`)
+      ) {
+        return null;
+      }
+      const style = document.createElement('style');
+      if (id) style.id = id;
+      style.textContent = css;
+      if (parent && parent.appendChild) parent.appendChild(style);
+      return style;
+    },
+
+    /**
+     * Validates if a global object has required methods
+     * @param {Object} globalObj - Global object to validate
+     * @param {string} property - Property name to check
+     * @param {Array<string>} methods - Method names that should exist
+     * @returns {boolean} True if all methods exist
+     */
+    validateGlobalMethods(globalObj, property, methods = []) {
+      const target = globalObj?.[property];
+      if (!target) return false;
+
+      return methods.every((method) => typeof target[method] === 'function');
+    },
+  };
+
+  window.FormViewerUtils = FormViewerUtils;
+  /**
    * CHEFS Form Viewer Web Component
    *
    * A custom HTML element that renders CHEFS forms using Form.io with a clean,
@@ -113,13 +502,13 @@
    *    - Guard against concurrent loads; emit `formio:beforeLoad` (cancelable)
    *    - _loadSchema() fetches and parses schema via `parsers.schema`
    *    - _initFormio()
-   *       a) _ensureAssets() in order: mainCss → iconsCss → formioJs → themeCss → preload/@font-face → componentsJs
+   *       a) _ensureAssets() state machine: HINTS → CSS → JS → FONTS → READY
    *       b) _registerAuthPlugin()
-   *       c) Build Form.io options (readOnly, language, hooks)
-   *       d) _prefetchSubmissionForOptions() (if `submission-id`) to seed options
+   *       c) _loadPrefillData() (parallel with setup)
+   *       d) Build Form.io options (readOnly, language, hooks)
    *       e) Emit `formio:beforeInit` (cancelable with waitUntil)
    *       f) Create Form.io instance; _configureInstanceEndpoints()
-   *       g) Apply/enforce prefill; or fetch and schedule prefill after render
+   *       g) _applyPrefill() with single, robust strategy
    *       h) _wireInstanceEvents(); log `ready`
    *    - Emit `formio:ready`
    * 3) submit()/draft()
@@ -169,13 +558,19 @@
       this.formioInstance = null;
       this._root = this.shadowRoot;
       this._log = createLogger(false);
-      this._isLoading = false;
+      this._isBusy = false; // shared lock for load/submit/draft
       this.submitButtonKey = 'submit';
       this.themeCss = null; // optional theme CSS loaded after main CSS
       this.isolateStyles = false; // optional isolation of inherited outside styles
       this.noIcons = false; // optional flag to disable loading icon CSS
       this.token = null; // optional token object for Form.io evalContext
       this.user = null; // optional user object for Form.io evalContext
+      this._prefillData = null; // cached prefill data for submission
+
+      // Asset loading state machine
+      this._assetState = 'IDLE';
+      this._assetErrors = [];
+      this._loadedAssets = new Map();
 
       // Endpoint overrides via property
       // object is { mainCss, formioJs, componentsJs, themeCss, schema, submit, readSubmission, iconsCss }
@@ -186,77 +581,11 @@
 
       /**
        * Overrideable parsers for backend payloads (CHEFS-compatible defaults)
-       *
-       * Why override?
-       * - If your backend returns different JSON shapes than CHEFS, you can adapt them here
-       *   without forking the component. This keeps integration glue localized and testable.
-       *
-       * How to override (before calling load()):
-       *   const el = document.querySelector('chefs-form-viewer');
-       *   el.parsers = {
-       *     ...el.parsers,
-       *     schema: (json) => ({ form: json.meta, schema: json.payload }),
-       *     readSubmission: (json) => ({ data: json.result?.data || null }),
-       *     submitResult: (json) => ({ submission: json }),
-       *     error: (json) => json?.errorMessage || null,
-       *   };
-       *   el.load();
-       *
-       * Expected return shapes:
-       * - schema(json) -> { form, schema }
-       *   form: original form metadata (optional), schema: Form.io schema object
-       * - readSubmission(json) -> { data }
-       *   data: plain object to merge into Form.io submission { data }
-       * - submitResult(json) -> { submission }
-       *   submission: any value you want emitted as formio:submitDone.detail.submission
-       * - error(json) -> string | null
-       *   returns a user-facing error message extracted from backend error payload
+       * ...existing code...
        */
       this.parsers = {
-        schema: (json) => ({
-          form: json?.form || json,
-          schema: json?.schema || json?.form?.versions?.[0]?.schema || json,
-        }),
-        readSubmission: (json) => {
-          // CHEFS default: { submission: { ..., submission: { data: {...} } } }
-          const candidates = [
-            json?.submission?.submission?.data,
-            json?.submission?.data,
-            json?.data,
-            json?.submission?.submission,
-            json?.submission,
-          ];
-          const pick = candidates.find(
-            (v) => v && (typeof v !== 'object' || Object.keys(v).length > 0)
-          );
-          if (pick) {
-            if (
-              typeof pick === 'object' &&
-              typeof pick.data === 'object' &&
-              Object.keys(pick.data || {}).length > 0
-            ) {
-              return { data: pick.data };
-            }
-            return { data: pick };
-          }
-          // Fallback: deep search for a non-empty "data" object anywhere
-          const stack = [json];
-          const seen = new Set();
-          while (stack.length) {
-            const cur = stack.shift();
-            if (!cur || typeof cur !== 'object' || seen.has(cur)) continue;
-            seen.add(cur);
-            if (
-              cur.data &&
-              typeof cur.data === 'object' &&
-              Object.keys(cur.data).length > 0
-            ) {
-              return { data: cur.data };
-            }
-            for (const v of Object.values(cur)) stack.push(v);
-          }
-          return { data: null };
-        },
+        schema: (json) => this._verifyAndParseSchema(json),
+        readSubmission: (json) => this._verifyAndParseSubmissionData(json),
         submitResult: (json) => ({ submission: json }),
         error: (json) => json?.detail || json?.message || null,
       };
@@ -346,16 +675,14 @@
      * @private
      */
     _parseJsonAttribute(value, attributeName) {
-      if (!value) return null;
-      try {
-        return JSON.parse(value);
-      } catch (err) {
-        this._log.warn(`Invalid JSON in ${attributeName} attribute:`, {
-          value,
-          error: err.message,
-        });
-        return null;
+      const result = FormViewerUtils.safeJsonParse(
+        value,
+        `${attributeName} attribute`
+      );
+      if (!result.success) {
+        this._log.warn(result.error, { value });
       }
+      return result.data;
     }
 
     /** Initialize logger, decide render root, and paint shell */
@@ -368,6 +695,7 @@
       // Set render root by attribute
       if (this.hasAttribute('no-shadow')) this._root = this;
       this.render();
+
       // Do not autoload; avoid double-load races with attribute changes and external callers
     }
 
@@ -399,24 +727,28 @@
      * await viewer.load();
      */
     async load() {
-      if (this._isLoading) {
-        this._log.info('load:skip:already-loading');
-        return;
-      }
-      this._isLoading = true;
+      if (!this._acquireBusyLock('load')) return;
       this._log.info('load:begin', { formId: this.formId });
-      this._emit(
+
+      const proceed = this._emit(
         'formio:beforeLoad',
         { formId: this.formId },
         { cancelable: true }
       );
+      if (!proceed) {
+        this._releaseBusyLock();
+        return;
+      }
+
       try {
         await this._loadSchema();
         await this._initFormio();
+        this._releaseBusyLock(); // Unlock before emitting ready
         this._emit('formio:ready', { form: this.form });
         this._log.info('load:done');
-      } finally {
-        this._isLoading = false;
+      } catch (e) {
+        this._releaseBusyLock();
+        throw e;
       }
     }
 
@@ -457,7 +789,12 @@
      * await viewer.submit();
      */
     async submit() {
-      await this._programmaticSubmit(true);
+      if (!this._acquireBusyLock('submit')) return;
+      try {
+        await this._programmaticSubmit(true);
+      } finally {
+        this._releaseBusyLock();
+      }
     }
 
     /**
@@ -478,7 +815,33 @@
      * await viewer.draft();
      */
     async draft() {
-      await this._programmaticSubmit(false);
+      if (!this._acquireBusyLock('draft')) return;
+      try {
+        await this._programmaticSubmit(false);
+      } finally {
+        this._releaseBusyLock();
+      }
+    }
+    /**
+     * Attempts to acquire the busy lock for an action.
+     * Logs and returns false if already busy, otherwise sets busy and returns true.
+     * @param {string} actionName - Name of the action (for logging)
+     * @returns {boolean} True if lock acquired, false if busy
+     */
+    _acquireBusyLock(actionName) {
+      if (this._isBusy) {
+        this._log.info(`${actionName}:skip:busy`);
+        return false;
+      }
+      this._isBusy = true;
+      return true;
+    }
+
+    /**
+     * Releases the busy lock.
+     */
+    _releaseBusyLock() {
+      this._isBusy = false;
     }
 
     /**
@@ -542,12 +905,7 @@
     /** Compute base URL when not explicitly provided */
     getBaseUrl() {
       if (this.baseUrl) return this.baseUrl;
-      const { origin, pathname } = window.location;
-      const match = pathname.match(/^\/(app|pr-\d+)\b/);
-      const baseSegment = match ? `/${match[1]}` : '/app';
-      const url = `${origin}${baseSegment}`;
-      // debug: getBaseUrl
-      return url;
+      return FormViewerUtils.parseBaseUrl(window.location);
     }
 
     /** Default backend endpoints; embedders can override via .endpoints */
@@ -566,6 +924,13 @@
         // Served by backend to ensure fonts load in Shadow DOM without CORS/CSP issues.
         // Embedders can override via endpoints.iconsCss, or disable via 'no-icons'.
         iconsCss: `${base}/webcomponents/v1/assets/font-awesome/css/font-awesome.min.css`,
+
+        // CDN fallback URLs
+        formioJsFallback:
+          'https://cdn.jsdelivr.net/npm/formiojs@4.17.4/dist/formio.full.min.js',
+        iconsCssFallback:
+          'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+
         schema: `${base}/webcomponents/v1/form-viewer/${fid}/schema`,
         submit: `${base}/webcomponents/v1/form-viewer/${fid}/submit`,
         readSubmission: `${base}/api/v1/submissions/${sid}`,
@@ -584,17 +949,64 @@
         if (h && typeof h === 'object') return h;
       }
       // Default Basic: formId:apiKey
-      if (this.formId && this.apiKey && url.startsWith(this.getBaseUrl())) {
-        const basicToken = btoa(`${this.formId}:${this.apiKey}`);
-        return {
-          Authorization: `Basic ${basicToken}`,
-        };
+      if (url.startsWith(this.getBaseUrl())) {
+        try {
+          return FormViewerUtils.createBasicAuthHeader(
+            this.formId,
+            this.apiKey
+          );
+        } catch (e) {
+          this._log.warn('Failed to create Basic Auth header', {
+            error: e.message,
+          });
+          return {};
+        }
       }
       return {};
     }
 
     _getSubmitButtonKey() {
       return this.submitButtonKey || 'submit';
+    }
+
+    /**
+     * Resolve URL using pure function with current component state
+     * @param {string} endpointKey - Endpoint key to resolve
+     * @param {Object} customParams - Custom parameters (optional)
+     * @returns {string} Resolved URL
+     */
+    _resolveUrl(endpointKey, customParams = {}) {
+      const params = {
+        formId: this.formId,
+        submissionId: this.submissionId,
+        ...customParams,
+      };
+      return FormViewerUtils.resolveUrl(
+        this._urls(),
+        endpointKey,
+        params,
+        this.endpoints || {}
+      );
+    }
+
+    /**
+     * Resolve URL with fallback support
+     * @param {string} primaryKey - Primary endpoint key
+     * @param {string} fallbackKey - Fallback endpoint key
+     * @returns {Object} { primary: string, fallback: string|null }
+     */
+    _resolveUrlWithFallback(primaryKey, fallbackKey) {
+      const params = {
+        formId: this.formId,
+        submissionId: this.submissionId,
+      };
+      return FormViewerUtils.resolveUrlWithFallback(
+        this._urls(),
+        primaryKey,
+        fallbackKey,
+        params,
+        this.endpoints || {}
+      );
     }
 
     /**
@@ -626,36 +1038,21 @@
       return this.dispatchEvent(ev);
     }
 
-    /** Prefetch submission and seed into options to reduce flicker */
-    async _prefetchSubmissionForOptions(options) {
-      if (!this.submissionId) return null;
-      const urls = this._urls();
-      const result = await this._fetchPrefillData(urls);
-      if (!result.ok) {
-        this._log.warn('prefill(options):readSubmission:failed', {
-          status: result.status,
-        });
-        return null;
-      }
-      if (result.dataToApply && typeof result.dataToApply === 'object') {
-        options.submission = { data: result.dataToApply };
-        return result.dataToApply;
-      }
-      return null;
-    }
-
     async _createFormioInstance(container, schema, options) {
-      if (typeof window.Formio?.createForm === 'function') {
+      const hasCreateForm = FormViewerUtils.validateGlobalMethods(
+        window,
+        'Formio',
+        ['createForm']
+      );
+
+      if (hasCreateForm) {
         return window.Formio.createForm(container, schema, options);
       }
       return new window.Formio.Form(container, schema, options);
     }
 
-    _configureInstanceEndpoints(urls) {
-      this.formioInstance.url = urls.submit.replace(
-        '/:formId',
-        `/${this.formId}`
-      );
+    _configureInstanceEndpoints() {
+      this.formioInstance.url = this._resolveUrl('submit');
     }
 
     async _parseError(res, fallback) {
@@ -663,125 +1060,133 @@
       return this.parsers.error(errJson) || fallback;
     }
 
-    async _fetchPrefillData(urls) {
-      if (!this.submissionId)
-        return { ok: false, readUrl: null, dataToApply: null };
-      const readUrl = urls.readSubmission.replace(
-        '/:submissionId',
-        `/${this.submissionId}`
-      );
-      const res = await fetch(readUrl, { headers: this._authHeader(readUrl) });
-      if (!res.ok)
-        return { ok: false, status: res.status, readUrl, dataToApply: null };
-      const data = await res.json().catch(() => ({}));
-      const { data: dataToApply } = this.parsers.readSubmission(data);
-      return { ok: true, readUrl, dataToApply };
-    }
-
-    _loadCss(href) {
-      return new Promise((resolve) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = href;
-        link.onload = resolve;
-        link.onerror = resolve;
-        document.head.appendChild(link);
-      });
-    }
-
-    /** Preload FA fonts when using default iconsCss */
-    _preloadFontAwesomeFontsIfDefault(urls) {
-      const isDefaultIcons =
-        !this.endpoints?.iconsCss || this.endpoints.iconsCss === urls.iconsCss;
-      if (!isDefaultIcons) return;
-      const base = this.getBaseUrl();
-      // Preload only woff2 to avoid "preloaded but not used" warnings for legacy formats
-      const href = `${base}/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0`;
-      if (
-        !document.querySelector(
-          `link[rel="preload"][as="font"][href="${href}"]`
-        )
-      ) {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'font';
-        link.href = href;
-        link.type = 'font/woff2';
-        link.crossOrigin = 'anonymous';
-        document.head.appendChild(link);
-      }
-    }
-
     /**
-     * Register a global @font-face for Font Awesome when using the default iconsCss
-     *
-     * Why
-     * - In Shadow DOM, even with a <link rel="stylesheet"> inside the shadow root, some browsers may not
-     *   consistently initiate font requests for glyphs (e.g., ::before content) until a matching @font-face
-     *   is known at the document level. By defining @font-face in document.head we ensure the font-family
-     *   'FontAwesome' is globally registered, so when the shadow CSS requests it, the browser loads it.
-     * - We serve the font files from same-origin routes to avoid CSP/CORS issues that can block font loads.
-     *
-     * What style is added
-     * - A single @font-face rule for 'FontAwesome' with woff2/woff/ttf sources and font-display:swap:
-     *   @font-face {
-     *     font-family: 'FontAwesome';
-     *     src: url('<base>/.../fontawesome-webfont.woff2?v=4.7.0') format('woff2'),
-     *          url('<base>/.../fontawesome-webfont.woff?v=4.7.0') format('woff'),
-     *          url('<base>/.../fontawesome-webfont.ttf?v=4.7.0') format('truetype');
-     *     font-weight: normal;
-     *     font-style: normal;
-     *     font-display: swap;
-     *   }
-     *
-     * Note
-     * - Separately, in _ensureAssets() we also inject a tiny style in the shadow root to make FA icons
-     *   inherit the button text color (color: currentColor). That is not part of this method.
+     * Generic resource hint helper
+     * @param {string} rel - The relationship type (preload, prefetch, preconnect, dns-prefetch)
+     * @param {string} href - The URL to hint
+     * @param {Object} options - Additional options (as, type, crossOrigin, etc.)
      */
-    _ensureFontAwesomeFaceIfDefault(urls) {
-      const isDefaultIcons =
-        !this.endpoints?.iconsCss || this.endpoints.iconsCss === urls.iconsCss;
-      if (!isDefaultIcons) return;
-      const styleId = 'cfv-fa-face';
-      if (document.getElementById(styleId)) return;
-      const base = this.getBaseUrl();
-      const woff2 = `${base}/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0`;
-      const woff = `${base}/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.woff?v=4.7.0`;
-      const ttf = `${base}/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.ttf?v=4.7.0`;
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.textContent = `@font-face{font-family:'FontAwesome';src:url('${woff2}') format('woff2'),url('${woff}') format('woff'),url('${ttf}') format('truetype');font-weight:normal;font-style:normal;font-display:swap;}`;
-      document.head.appendChild(style);
-    }
-
-    /** Load a stylesheet into shadow or document head preserving URL resolution */
-    async _loadCssIntoRoot(href) {
+    _addResourceHint(rel, href, options = {}) {
       if (!href) return;
-      // If rendering into light DOM (no-shadow), use document head link tag
-      if (this._root !== this.shadowRoot) {
-        await this._loadCss(href);
-        return;
+
+      // Check if hint already exists
+      const selector = `link[rel="${rel}"][href="${href}"]`;
+      if (document.querySelector(selector)) return;
+
+      const attributes = {
+        rel,
+        href,
+        ...options,
+      };
+
+      const link = FormViewerUtils.createElement('link', attributes);
+      FormViewerUtils.appendElement(link, null, document.head);
+      this._log.debug(`Added ${rel} hint for: ${href}`);
+    }
+
+    /** Load a stylesheet into shadow or document head preserving URL resolution, with timeout and error handling */
+    async _loadCssIntoRoot(href) {
+      try {
+        FormViewerUtils.validateAssetUrl(href, 'css');
+      } catch (err) {
+        this._log.error(err.message, { href });
+        return false;
       }
-      // Shadow DOM: attach a <link rel="stylesheet"> directly to the shadow root.
-      // This preserves correct URL resolution (e.g., @import, url(...)) and avoids CORS issues with fetch.
-      await new Promise((resolve) => {
-        const linkElement = document.createElement('link');
-        linkElement.rel = 'stylesheet';
-        linkElement.href = href;
-        linkElement.onload = () => resolve(linkElement);
-        linkElement.onerror = () => resolve(linkElement); // non-blocking
-        this.shadowRoot.appendChild(linkElement);
+      return await new Promise((resolve) => {
+        let settled = false;
+        const timeout = setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            this._log.error('CSS load timed out', { href });
+            resolve(false);
+          }
+        }, 10000); // 10s timeout
+        const linkElement = FormViewerUtils.createElement('link', {
+          rel: 'stylesheet',
+          href,
+        });
+        linkElement.onload = () => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timeout);
+            resolve(true);
+          }
+        };
+        linkElement.onerror = () => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timeout);
+            this._log.error('CSS load failed', { href });
+            resolve(false);
+          }
+        };
+        const targetParent =
+          this._root === this.shadowRoot ? this.shadowRoot : document.head;
+        FormViewerUtils.appendElement(linkElement, targetParent);
       });
     }
 
+    /** Injects a script into document head, with timeout and error handling */
     _injectScript(src) {
+      try {
+        FormViewerUtils.validateAssetUrl(src, 'js');
+      } catch (err) {
+        this._log.error(err.message, { src });
+        return Promise.resolve(false);
+      }
       return new Promise((resolve) => {
-        const s = document.createElement('script');
-        s.src = src;
-        s.onload = () => resolve(true);
-        s.onerror = () => resolve(false);
-        document.head.appendChild(s);
+        let settled = false;
+        const timeout = setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            this._log.error('Script load timed out', { src });
+            resolve(false);
+          }
+        }, 10000); // 10s timeout
+        const script = FormViewerUtils.createElement('script', { src });
+        script.onload = () => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timeout);
+            resolve(true);
+          }
+        };
+        script.onerror = () => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timeout);
+            this._log.error('Script load failed', { src });
+            resolve(false);
+          }
+        };
+        FormViewerUtils.appendElement(script, null, document.head);
       });
+    }
+
+    /** Generate Font Awesome @font-face CSS */
+    _getFontFaceCSS() {
+      return FormViewerUtils.generateFontFaceCSS(this.getBaseUrl());
+    }
+
+    /** Generate icon color inheritance CSS */
+    _getIconColorCSS() {
+      return FormViewerUtils.generateIconColorCSS();
+    }
+
+    /** Generate icon neutralization CSS */
+    _getNeutralizeCSS() {
+      return FormViewerUtils.generateIconNeutralizeCSS();
+    }
+
+    /** Inject global style (document head) */
+    _injectGlobalStyle(id, css) {
+      FormViewerUtils.injectStyle(css, document.head, id);
+    }
+
+    /** Inject style into Shadow DOM */
+    _injectShadowStyle(css) {
+      if (this._root !== this.shadowRoot) return;
+      FormViewerUtils.injectStyle(css, this.shadowRoot);
     }
 
     /** Apply submission data to the live instance with best-effort redraw */
@@ -794,91 +1199,6 @@
       if (typeof this.formioInstance?.redraw === 'function') {
         await this.formioInstance.redraw();
       }
-    }
-
-    /** Ensure prefilled data remains after initial render */
-    async _enforcePrefillAfterInit(prefilledData) {
-      if (!prefilledData) return;
-      try {
-        await this._setSubmissionOnInstance(prefilledData, {
-          fromSubmission: true,
-          noValidate: true,
-        });
-      } catch (err) {
-        this._log?.debug?.('prefill:afterInit:ignored', {
-          message: err?.message || String(err),
-        });
-      }
-    }
-
-    /**
-     * Apply prefill data to the live Form.io instance
-     *
-     * When
-     * - Invoked by `_schedulePrefillApplications` immediately, on next tick, and after first render
-     * - Used after fetching a submission during init when options seeding wasn’t applied
-     *
-     * Why
-     * - Different Form.io versions/components can override or delay state; multiple applications reduce
-     *   races and ensure the UI reflects the intended prefill. We merge into instance state and call
-     *   `setValue` when available for maximal effect without relying on a single code path.
-     */
-    async _applyPrefillData(dataToApply) {
-      if (!dataToApply) return;
-      await this._setSubmissionOnInstance(dataToApply);
-      try {
-        this.formioInstance.data = {
-          ...(this.formioInstance.data || {}),
-          ...dataToApply,
-        };
-        if (typeof this.formioInstance?.setValue === 'function') {
-          this.formioInstance.setValue(dataToApply);
-        }
-      } catch (err) {
-        this._log?.debug?.('prefill:apply:ignored', {
-          message: err?.message || String(err),
-        });
-      }
-      this._log.info('prefill:applied');
-    }
-
-    /** Apply immediately, on next tick, and after first render to reduce races */
-    async _schedulePrefillApplications(dataToApply) {
-      await this._applyPrefillData(dataToApply);
-      setTimeout(() => {
-        this._applyPrefillData(dataToApply).catch(() => {});
-      }, 0);
-      let appliedAfterRender = false;
-      this.formioInstance.on('render', async () => {
-        if (appliedAfterRender) return;
-        appliedAfterRender = true;
-        await this._applyPrefillData(dataToApply);
-      });
-    }
-
-    /**
-     * Fetch and schedule prefill after the Form.io instance has been created
-     *
-     * When
-     * - Called during initialization if a `submission-id` is present and we did not already seed prefill
-     *   data via options (i.e., prefilledViaOptions is falsy). This handles cases where options seeding
-     *   wasn't possible/timely but prefill is still desired.
-     *
-     * Why
-     * - Some versions/flows need the instance to exist before reliably applying prefill. We fetch the
-     *   submission and use `_schedulePrefillApplications` to apply immediately, on the next tick, and once
-     *   after the first render. This reduces visual flicker and race conditions across component setups.
-     */
-    async _applyPrefillAfterInit(urls) {
-      if (!this.submissionId) return;
-      const result = await this._fetchPrefillData(urls);
-      if (!result.ok) {
-        this._log.warn('prefill:readSubmission:failed', {
-          status: result.status,
-        });
-        return;
-      }
-      await this._schedulePrefillApplications(result.dataToApply);
     }
 
     /** Re-emit core Form.io events as component-level CustomEvents */
@@ -905,11 +1225,11 @@
 
     /** Fetch and parse the form schema from the backend */
     async _loadSchema() {
-      const urls = this._urls();
-      const url = urls.schema;
+      const url = this._resolveUrl('schema');
       this._log.info('schema:request', { url });
       if (!this._emit('formio:beforeLoadSchema', { url }, { cancelable: true }))
         return;
+
       const res = await fetch(url, { headers: this._authHeader(url) });
       if (!res.ok) {
         const msg = await this._parseError(res, 'Failed to load form schema');
@@ -934,78 +1254,347 @@
       });
     }
 
-    /** Load assets in a deterministic order to avoid race conditions */
+    /**
+     * Asset Loading State Machine - simplified and integrated
+     * States: IDLE → HINTS → CSS → JS → FONTS → READY
+     */
     async _ensureAssets() {
-      const urls = this._urls();
       this._log.info('assets:ensure');
+      this._assetState = 'IDLE';
+      this._assetErrors = [];
+      this._loadedAssets = new Map();
 
-      // Load complete CHEFS CSS bundle (includes Bootstrap, Vuetify, Form.io, custom styles)
-      await this._loadCssIntoRoot(urls.mainCss);
+      try {
+        await this._transitionAssetState('HINTS');
+        await this._transitionAssetState('CSS');
+        await this._transitionAssetState('JS');
+        await this._transitionAssetState('FONTS');
+        await this._transitionAssetState('READY');
 
-      // Icon font CSS (Font Awesome) unless disabled
-      // Note: Loaded separately to ensure proper font loading in Shadow DOM
-      const iconsEnabled = !this.noIcons;
-      const iconsHref = iconsEnabled
-        ? this.endpoints?.iconsCss || urls.iconsCss
-        : null;
-      if (iconsHref) {
-        await this._loadCssIntoRoot(iconsHref);
+        this._log.info('assets:complete', {
+          success: true,
+          errors: this._assetErrors.length,
+        });
+
+        return { success: true, errors: this._assetErrors };
+      } catch (error) {
+        this._assetState = 'ERROR';
+        this._log.error('Asset loading failed', error);
+        throw error;
       }
-      // JS
-      const haveFormio = !!window.Formio;
-      if (!haveFormio) {
-        const loadedLocal = await this._injectScript(urls.formioJs);
-        if (!loadedLocal) {
-          await this._injectScript(
-            'https://cdn.form.io/formiojs/formio.full.min.js'
-          );
-        }
+    }
+
+    async _transitionAssetState(newState) {
+      const oldState = this._assetState;
+      this._log.debug(`Asset loading: ${oldState} → ${newState}`);
+      this._assetState = newState;
+
+      // Execute state-specific loading
+      switch (newState) {
+        case 'HINTS':
+          await this._loadAssetHints();
+          break;
+        case 'CSS':
+          await this._loadCssAssets();
+          break;
+        case 'JS':
+          await this._loadJsAssets();
+          break;
+        case 'FONTS':
+          await this._loadFontsAndStyles();
+          break;
+        case 'READY':
+          this._log.info('Asset loading complete');
+          break;
       }
-      // Load CHEFS theme CSS (CSS variables and theming)
-      const themeHref =
-        this.themeCss || this.endpoints?.themeCss || urls.themeCss;
+
+      // Emit state change event
+      this._emit('formio:assetStateChange', {
+        from: oldState,
+        to: newState,
+        assets: Array.from(this._loadedAssets.keys()),
+        errors: this._assetErrors.length,
+      });
+    }
+
+    async _loadAssetHints() {
+      // CDN preconnects for fallbacks
+      this._addResourceHint('preconnect', 'https://cdn.jsdelivr.net', {
+        crossOrigin: 'anonymous',
+      });
+      this._addResourceHint('preconnect', 'https://cdnjs.cloudflare.com', {
+        crossOrigin: 'anonymous',
+      });
+      this._addResourceHint('dns-prefetch', 'https://cdn.form.io');
+
+      // Critical asset preloads
+      this._addResourceHint('preload', this._resolveUrl('mainCss'), {
+        as: 'style',
+      });
+
+      const formioAvailable = FormViewerUtils.validateGlobalMethods(
+        window,
+        'Formio',
+        []
+      );
+      if (!formioAvailable) {
+        this._addResourceHint('preload', this._resolveUrl('formioJs'), {
+          as: 'script',
+        });
+      }
+
+      // Note: We don't prefetch resources that are loaded immediately
+      // (schema, componentsJs, readSubmission) to avoid NS_BINDING_ABORTED errors.
+      // The browser would abort the prefetch and start a new request anyway.
+    }
+
+    async _loadCssAssets() {
+      // Critical CSS (required)
+      await this._loadAssetWithFallback(
+        this._resolveUrl('mainCss'),
+        null, // no fallback
+        true, // required
+        'critical-css'
+      );
+
+      // Icons CSS (optional, with fallback)
+      if (!this.noIcons) {
+        const { primary, fallback } = this._resolveUrlWithFallback(
+          'iconsCss',
+          'iconsCssFallback'
+        );
+        await this._loadAssetWithFallback(
+          primary,
+          fallback,
+          false, // optional
+          'icons-css'
+        );
+      }
+
+      // Theme CSS (optional)
+      const themeHref = this.themeCss || this._resolveUrl('themeCss');
       if (themeHref) {
-        await this._loadCssIntoRoot(themeHref);
+        await this._loadAssetWithFallback(themeHref, null, false, 'theme-css');
       }
-      if (iconsEnabled) {
-        // Preload FA fonts if using default iconsCss (avoid if embedder overrides)
-        this._preloadFontAwesomeFontsIfDefault(urls);
-        // Register @font-face for FA when using default iconsCss so glyphs render
-        this._ensureFontAwesomeFaceIfDefault(urls);
-        // Minimal icon color fix: make Font Awesome icons inherit button text color
+    }
+
+    async _loadJsAssets() {
+      // Form.io JS (required, with fallback and validation)
+      const formioStatus = FormViewerUtils.validateFormioGlobal(window);
+      if (!formioStatus.available) {
+        const { primary, fallback } = this._resolveUrlWithFallback(
+          'formioJs',
+          'formioJsFallback'
+        );
+        await this._loadAssetWithFallback(
+          primary,
+          fallback,
+          true, // required
+          'formio-js',
+          () => FormViewerUtils.validateFormioGlobal(window).hasCreateForm
+        );
+      }
+
+      // Components JS (required)
+      await this._loadAssetWithFallback(
+        this._resolveUrl('componentsJs'),
+        null,
+        true,
+        'components-js'
+      );
+    }
+
+    async _loadFontsAndStyles() {
+      if (this.noIcons) {
+        // Neutralize icons in Shadow DOM
         if (this._root === this.shadowRoot) {
-          const iconStyle = document.createElement('style');
-          iconStyle.textContent = `
-            .formio-form .btn .fa,
-            .formio-form .btn [class*="fa-"] {
-              color: currentColor !important;
-              -webkit-text-fill-color: currentColor !important;
-            }
-          `;
-          this.shadowRoot.appendChild(iconStyle);
+          this._injectShadowStyle(this._getNeutralizeCSS());
         }
-      } else if (this._root === this.shadowRoot) {
-        // Explicitly neutralize FA icons if disabled, in case base CSS defines FA classes/content
-        const noIconStyle = document.createElement('style');
-        noIconStyle.textContent = `
-          .formio-form .fa,
-          .formio-form [class*="fa-"] {
-            font-family: inherit !important;
-          }
-          .formio-form .fa::before,
-          .formio-form [class*="fa-"]::before {
-            content: '' !important;
-          }
-        `;
-        this.shadowRoot.appendChild(noIconStyle);
+        return;
       }
-      // No additional refine layer needed; theme is final override
-      await this._injectScript(urls.componentsJs);
+
+      const usingCustomIcons = !!this.endpoints?.iconsCss;
+      const shouldPreloadFonts = !usingCustomIcons;
+
+      // Inject @font-face CSS first (only for default setup)
+      if (shouldPreloadFonts) {
+        // Inject @font-face CSS first so fonts can be discovered
+        this._injectGlobalStyle('cfv-fa-face', this._getFontFaceCSS());
+
+        // Preload font after @font-face is available
+        const fontHref = `${this.getBaseUrl()}/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0`;
+        this._addResourceHint('preload', fontHref, {
+          as: 'font',
+          type: 'font/woff2',
+          crossOrigin: 'anonymous',
+        });
+      }
+
+      // Icon color inheritance for Shadow DOM
+      if (this._root === this.shadowRoot) {
+        this._injectShadowStyle(this._getIconColorCSS());
+      }
+    }
+
+    // Asset loader with fallback, timeout, and error handling
+    async _loadAssetWithFallback(
+      primaryUrl,
+      fallbackUrl,
+      required,
+      assetType,
+      validateFn
+    ) {
+      if (this._isAssetPreLoaded(assetType, validateFn)) return true;
+
+      this._log.info('Loading asset', { assetType, primaryUrl, fallbackUrl });
+      const loadFn = this._getAssetLoadFunction(primaryUrl);
+      let loaded;
+      try {
+        loaded = await this._tryLoadWithFallback(
+          primaryUrl,
+          fallbackUrl,
+          assetType,
+          loadFn,
+          !required
+        );
+      } catch (err) {
+        this._log.error('Asset load threw error', {
+          assetType,
+          error: err.message,
+        });
+        loaded = false;
+      }
+
+      try {
+        this._validateLoadedAsset(loaded, assetType, validateFn);
+      } catch (err) {
+        this._log.error('Asset validation failed', {
+          assetType,
+          error: err.message,
+        });
+        loaded = false;
+      }
+      this._handleLoadResult(
+        loaded,
+        primaryUrl,
+        fallbackUrl,
+        required,
+        assetType
+      );
+
+      return loaded;
+    }
+
+    _isAssetPreLoaded(assetType, validateFn) {
+      if (validateFn && validateFn()) {
+        this._loadedAssets.set(assetType, 'pre-loaded');
+        return true;
+      }
+      return false;
+    }
+
+    /**
+     * Detect asset type by Content-Type header using HEAD request
+     * Returns 'js', 'css', or null
+     */
+    async _detectAssetTypeByContentType(url) {
+      try {
+        const resp = await fetch(url, { method: 'HEAD' });
+        const ct = resp.headers.get('content-type') || '';
+        if (ct.includes('javascript')) return 'js';
+        if (ct.includes('css')) return 'css';
+        this._log.error('Unknown asset Content-Type', { url, contentType: ct });
+        return null;
+      } catch (err) {
+        this._log.error('Failed to detect asset Content-Type', {
+          url,
+          error: err.message,
+        });
+        return null;
+      }
+    }
+
+    _getAssetLoadFunction(url) {
+      if (!url || typeof url !== 'string') {
+        return () => Promise.resolve(false);
+      }
+      // Content-Type detection first
+      return async (url) => {
+        const assetType = await this._detectAssetTypeByContentType(url);
+        if (assetType === 'js') return await this._injectScript(url);
+        if (assetType === 'css') return await this._loadCssIntoRoot(url);
+        // Fallback to extension if Content-Type is unknown or HEAD fails
+        if (url.endsWith('.js')) return await this._injectScript(url);
+        if (url.endsWith('.css')) return await this._loadCssIntoRoot(url);
+        // Unknown type
+        this._log.error('Unknown asset type for URL', { url });
+        return false;
+      };
+    }
+
+    async _tryLoadWithFallback(primaryUrl, fallbackUrl, assetType, loadFn) {
+      let loaded = false;
+      try {
+        loaded = await loadFn(primaryUrl);
+      } catch (err) {
+        this._log.error('Primary asset load threw error', {
+          assetType,
+          error: err.message,
+        });
+        loaded = false;
+      }
+
+      if (!loaded && fallbackUrl) {
+        this._log.warn(`Using fallback for ${assetType}`, { fallbackUrl });
+        // Use content detection for fallback as well
+        const fallbackLoadFn = this._getAssetLoadFunction(fallbackUrl);
+        try {
+          loaded = await fallbackLoadFn(fallbackUrl);
+        } catch (err) {
+          this._log.error('Fallback asset load threw error', {
+            assetType,
+            error: err.message,
+          });
+          loaded = false;
+        }
+        if (loaded) {
+          this._loadedAssets.set(`${assetType}-fallback`, fallbackUrl);
+        }
+      }
+
+      return loaded;
+    }
+
+    _validateLoadedAsset(loaded, assetType, validateFn) {
+      if (loaded && validateFn && !validateFn()) {
+        throw new Error(`Asset validation failed: ${assetType}`);
+      }
+    }
+
+    _handleLoadResult(loaded, primaryUrl, fallbackUrl, required, assetType) {
+      if (!loaded) {
+        if (required) {
+          throw new Error(`Failed to load required asset: ${assetType}`);
+        }
+        this._assetErrors.push({
+          type: assetType,
+          url: primaryUrl,
+          fallback: fallbackUrl,
+          error: 'Optional asset failed to load',
+        });
+      } else if (!this._loadedAssets.has(assetType)) {
+        this._loadedAssets.set(assetType, primaryUrl);
+      }
     }
 
     /** Register a minimal auth plugin to attach auth headers to CHEFS requests */
     _registerAuthPlugin() {
-      if (!window.Formio || window.__formioWcAuth) return;
+      const formioAvailable = FormViewerUtils.validateGlobalMethods(
+        window,
+        'Formio',
+        ['registerPlugin']
+      );
+      if (!formioAvailable || window.__formioWcAuth) return;
       const base = this.getBaseUrl();
       const authHeader = this._authHeader(base);
       // debug: auth plugin register
@@ -1071,8 +1660,7 @@
       });
       if (!allow) return;
 
-      const urls = this._urls();
-      const url = urls.submit.replace('/:formId', `/${this.formId}`);
+      const url = this._resolveUrl('submit');
       // debug: submit post
       this._emit('formio:submit', { submission });
       const res = await fetch(url, {
@@ -1136,76 +1724,164 @@
       };
     }
 
-    /** Handle runtime prefill when not seeded via options */
-    async _handleRuntimePrefill(urls) {
-      if (!this.submissionId) return;
+    /**
+     * Unified prefill data loader - handles all data fetching
+     * Called once during initialization, stores result for later use
+     */
+    async _loadPrefillData() {
+      if (!this.submissionId) {
+        this._prefillData = null;
+        return;
+      }
 
-      const readUrl = urls.readSubmission.replace(
-        '/:submissionId',
-        `/${this.submissionId}`
-      );
+      const readUrl = this._resolveUrl('readSubmission');
 
-      const res = await fetch(readUrl, {
-        headers: this._authHeader(readUrl),
-      });
-
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        const { data: dataToApply } = this.parsers.readSubmission(data);
-        await this._schedulePrefillApplications(dataToApply);
-      } else {
-        this._log.warn('prefill:readSubmission:failed', {
-          status: res.status,
+      try {
+        const response = await fetch(readUrl, {
+          headers: this._authHeader(readUrl),
         });
-      }
-    }
-
-    /** Setup Form.io instance after creation (events, endpoints, compatibility) */
-    _setupFormioInstance(urls, prefilledViaOptions) {
-      // Configure endpoints
-      this._configureInstanceEndpoints(urls);
-
-      // Wire events
-      this._wireInstanceEvents();
-
-      // Setup prefill guard if needed
-      if (prefilledViaOptions) {
-        this._setupPrefillGuard(prefilledViaOptions);
-      }
-    }
-
-    /** Setup one-time prefill enforcement after render */
-    _setupPrefillGuard(prefilledData) {
-      let applied = false;
-      this.formioInstance.on('render', async () => {
-        if (applied) return;
-        applied = true;
-        try {
-          await this._setSubmissionOnInstance(prefilledData, {
-            fromSubmission: true,
-            noValidate: true,
+        if (!response.ok) {
+          this._log.warn('Prefill data fetch error', {
+            status: response.status,
           });
-        } catch (err) {
-          this._log?.debug?.('prefill:options:ignored', {
-            message: err?.message || String(err),
+          this._prefillData = null;
+          return;
+        }
+
+        const data = await response.json();
+        const { data: parsedData } = this._verifyAndParseSubmissionData(data);
+        this._prefillData = parsedData;
+        this._log.info('Prefill data loaded', { hasData: !!parsedData });
+      } catch (error) {
+        this._log.warn('Prefill data fetch error', { error: error.message });
+        this._prefillData = null;
+      }
+    }
+
+    /**
+     * Verifies and parses submission data payload
+     * Logs a warning if the payload is invalid (e.g., array)
+     * @param {Object} payload - Backend response JSON
+     * @returns {Object} { data: Object|null }
+     * @private
+     */
+    _verifyAndParseSubmissionData(payload) {
+      try {
+        return FormViewerUtils.parseSubmissionData(payload);
+      } catch (err) {
+        this._log.warn('Invalid submission payload', {
+          error: err.message,
+          payload,
+        });
+        return { data: null };
+      }
+    }
+
+    /**
+     * Verifies and parses schema payload
+     * Logs a warning if the payload is invalid
+     * @param {Object} payload - Backend response JSON
+     * @returns {Object} { form, schema }
+     * @private
+     */
+    _verifyAndParseSchema(payload) {
+      try {
+        return FormViewerUtils.parseSchemaPayload(payload);
+      } catch (err) {
+        this._log.warn('Invalid schema payload', {
+          error: err.message,
+          payload,
+        });
+        return { form: null, schema: null };
+      }
+    }
+
+    /**
+     * Unified prefill application - single, robust strategy
+     * Called after Form.io instance is ready
+     */
+    async _applyPrefill() {
+      if (!this._prefillData || !this.formioInstance) return;
+
+      // Single application with comprehensive approach
+      try {
+        // Method 1: Use Form.io's native setSubmission (preferred)
+        if (typeof this.formioInstance.setSubmission === 'function') {
+          await this.formioInstance.setSubmission(
+            {
+              data: this._prefillData,
+            },
+            {
+              fromSubmission: true,
+              noValidate: true,
+            }
+          );
+          this._log.info('Prefill applied via setSubmission');
+          return;
+        }
+
+        // Method 2: Direct assignment + redraw (fallback)
+        const mergedData = FormViewerUtils.mergePrefillData(
+          this.formioInstance.data,
+          this._prefillData
+        );
+        this.formioInstance.submission = { data: this._prefillData };
+        this.formioInstance.data = mergedData;
+
+        if (typeof this.formioInstance.redraw === 'function') {
+          await this.formioInstance.redraw();
+        }
+
+        this._log.info('Prefill applied via direct assignment');
+      } catch (error) {
+        this._log.warn('Prefill application failed', { error: error.message });
+      }
+    }
+
+    /**
+     * Setup prefill flow - coordinates loading and application
+     * Single entry point for all prefill logic
+     */
+    async _setupPrefill() {
+      // Load data early (can be done during schema loading)
+      await this._loadPrefillData();
+
+      // Apply after instance is ready
+      if (this.formioInstance) {
+        await this._applyPrefill();
+
+        // Single retry after first render (if data wasn't applied)
+        if (this._prefillData) {
+          this.formioInstance.once('render', () => {
+            const currentData = this.formioInstance.submission?.data || {};
+            const isApplied = FormViewerUtils.isPrefillDataApplied(
+              currentData,
+              this._prefillData
+            );
+
+            if (!isApplied) {
+              this._log.info('Retrying prefill after render');
+              this._applyPrefill();
+            }
           });
         }
-      });
+      }
     }
 
     async _initFormio() {
       await this._ensureAssets();
       this._registerAuthPlugin();
 
+      // Load prefill data early (parallel with other setup)
+      const prefillPromise = this._loadPrefillData();
+
       const container = this._root.querySelector('#formio-container');
       if (!container) throw new Error('Form container not found');
 
       const options = this._buildFormioOptions();
 
-      // Prefetch submission and seed into options (if available)
-      const prefilledViaOptions = await this._prefetchSubmissionForOptions(
-        options
-      );
+      // Wait for prefill data to be loaded
+      await prefillPromise;
 
       // beforeInit interception
       const proceed = this._emitCancelable('formio:beforeInit', { options });
@@ -1218,17 +1894,12 @@
         options
       );
 
-      const urls = this._urls();
+      // Setup instance configuration (simplified - no prefill complexity)
+      this._configureInstanceEndpoints();
+      this._wireInstanceEvents();
 
-      // Setup instance configuration
-      this._setupFormioInstance(urls, prefilledViaOptions);
-
-      // Handle prefill enforcement or runtime fetch
-      if (prefilledViaOptions) {
-        await this._enforcePrefillAfterInit(prefilledViaOptions);
-      } else {
-        await this._handleRuntimePrefill(urls);
-      }
+      // now Apply prefill in one shot
+      await this._applyPrefill();
 
       this._log.info('ready', { formId: this.formId });
     }

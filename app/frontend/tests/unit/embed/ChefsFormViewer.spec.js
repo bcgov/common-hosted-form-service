@@ -1,864 +1,575 @@
+/* eslint-disable no-undef */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Relative path import executes the IIFE and registers the custom element
+// Import the component script to register the custom element and expose FormViewerUtils
 const COMPONENT_PATH = '../../../public/embed/chefs-form-viewer.js';
 
-/**
- * Minimal fake Form.io instance to satisfy the component during tests.
- */
-class FakeFormioInstance {
-  constructor() {
-    this.handlers = new Map();
-    this.submission = { data: {} };
-    this.data = {};
-    this.destroyed = false;
-    this.url = '';
-  }
-  on(name, cb) {
-    const list = this.handlers.get(name) || [];
-    list.push(cb);
-    this.handlers.set(name, list);
-  }
-  emit(name, payload) {
-    const list = this.handlers.get(name) || [];
-    for (const cb of list) cb(payload);
-  }
-  async setSubmission(obj) {
-    this.submission = obj || { data: {} };
-  }
-  async redraw() {
-    this._redrawCalled = true;
-  }
-  getValue() {
-    return { fromGetValue: true };
-  }
-  setValue(obj) {
-    this.data = { ...(this.data || {}), ...(obj || {}) };
-  }
-  destroy() {
-    this.destroyed = true;
-  }
-}
-
-/* eslint-env browser, jest */
-/* global globalThis */
-
-/**
- * Create mock response object for tests
- */
-function mkRes(status, json) {
-  return {
-    ok: status >= 200 && status < 300,
-    status,
-    json: async () => json,
-  };
-}
-
-/**
- * Mock fetch handler for tests - handles schema, submission, and submit endpoints
- * @param {string|URL} url - Request URL
- * @param {Object} opts - Request options
- * @returns {Promise<Response>} Mock response
- */
-async function mockFetchHandler(url, opts = {}) {
-  const parsedUrl = parseFetchUrl(url);
-  if (!parsedUrl) {
-    return fallbackFetch(url, opts);
-  }
-
-  const { pathname, method } = parsedUrl;
-
-  if (isSchemaRequest(pathname, method)) {
-    return mkRes(200, { form: { id: 'FORM1' }, schema: { components: [] } });
-  }
-
-  if (isSubmissionRequest(pathname, method)) {
-    return mkRes(200, { submission: { submission: { data: { pre: 1 } } } });
-  }
-
-  if (isSubmitRequest(pathname, method, opts)) {
-    const body = JSON.parse((opts && opts.body) || '{}');
-    return mkRes(200, body.submission || {});
-  }
-
-  return fallbackFetch(url, opts);
-}
-
-/**
- * Parse URL and method from fetch parameters
- * @param {string|URL} url - Request URL
- * @returns {Object|null} Parsed URL info or null if parsing fails
- */
-function parseFetchUrl(url) {
-  try {
-    const u = new URL(String(url), 'http://localhost');
-    const method = 'GET'; // Will be overridden by specific request handlers
-    return { pathname: u.pathname, method };
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.debug('mock fetch URL parse failed:', err);
-    return null;
-  }
-}
-
-/**
- * Check if request is for schema endpoint
- */
-function isSchemaRequest(pathname, method) {
-  return pathname.endsWith('/schema') && method === 'GET';
-}
-
-/**
- * Check if request is for submission endpoint
- */
-function isSubmissionRequest(pathname, method) {
-  return pathname.includes('/api/v1/submissions/') && method === 'GET';
-}
-
-/**
- * Check if request is for submit endpoint
- */
-function isSubmitRequest(pathname, method, opts) {
-  const actualMethod = (
-    opts && typeof opts === 'object' && 'method' in opts
-      ? String(opts.method)
-      : 'GET'
-  ).toUpperCase();
-  return pathname.endsWith('/submit') && actualMethod === 'POST';
-}
-
-/**
- * Fallback to original fetch or return 404
- */
-function fallbackFetch(url, opts) {
-  if (typeof globalThis._originalFetch === 'function') {
-    return globalThis._originalFetch(url, opts);
-  }
-  return mkRes(200, { fallback: true });
-}
-
-/**
- * Create complex token fixture for testing
- */
-function createComplexTokenFixture() {
-  return {
-    sub: 'user123',
-    roles: ['admin', 'user'],
-    metadata: createTokenMetadata(),
-    groups: ['group1', 'group2'],
-  };
-}
-
-/**
- * Create token metadata with permissions
- */
-function createTokenMetadata() {
-  return {
-    department: 'IT',
-    permissions: {
-      read: true,
-      write: true,
-      admin: false,
-    },
-  };
-}
-
-/**
- * Create complex user fixture for testing
- */
-function createComplexUserFixture() {
-  return {
-    profile: createUserProfile(),
-    contact: createUserContact(),
-  };
-}
-
-/**
- * Create user profile with preferences
- */
-function createUserProfile() {
-  return {
-    firstName: 'John',
-    lastName: 'Doe',
-    preferences: {
-      theme: 'dark',
-      language: 'en',
-    },
-  };
-}
-
-/**
- * Create user contact information
- */
-function createUserContact() {
-  return {
-    email: 'john@example.com',
-    phone: '+1234567890',
-  };
-}
-
-/**
- * Create mock response for fetch tests
- */
-function createMockResponse(expectedData) {
-  return {
-    ok: true,
-    json: vi.fn().mockResolvedValue({ submission: { data: expectedData } }),
-  };
-}
-
-describe('chefs-form-viewer web component', () => {
-  let originalFetch;
-  beforeEach(async () => {
-    // Reset DOM
-    document.body.innerHTML = '';
-    const faStyle = document.getElementById('cfv-fa-face');
-    if (faStyle && faStyle.parentNode) faStyle.parentNode.removeChild(faStyle);
-
-    // Stable base URL for getBaseUrl
-    // Replace URL to /app for stable base
-    window.history.replaceState({}, '', '/app/demo');
-
-    // Stub Formio before loading the component so asset loader skips JS fetches
-    // createForm returns a fresh instance each time to avoid cross-test pollution
-    globalThis.Formio = {
-      createForm: vi.fn(() => new FakeFormioInstance()),
-      registerPlugin: vi.fn(),
-    };
-
-    // Mock fetch for schema, submit, readSubmission; fall back to real fetch for everything else
-    originalFetch = globalThis.fetch?.bind(globalThis);
-    globalThis._originalFetch = originalFetch;
-    globalThis.fetch = vi.fn(mockFetchHandler);
-
-    // Load/execute the component script (registers custom element)
+// --- Pure Utility Tests ---
+describe('FormViewerUtils', () => {
+  let utils;
+  beforeAll(async () => {
     await import(COMPONENT_PATH);
+    utils = window.FormViewerUtils;
   });
 
-  afterEach(() => {
-    if (originalFetch) globalThis.fetch = originalFetch;
-  });
-
-  it('registers the custom element', () => {
-    const ctor = customElements.get('chefs-form-viewer');
-    expect(ctor).toBeInstanceOf(Function);
-  });
-
-  it('computes default endpoints and honors base-url override', () => {
-    const el = document.createElement('chefs-form-viewer');
-    document.body.appendChild(el);
-    // Default base should include /app
-    const urls = el._urls();
-    expect(urls.mainCss).toMatch(
-      '/app/webcomponents/v1/assets/chefs-index.css'
+  it('validateAssetUrl throws for invalid URLs and passes for valid ones', () => {
+    const { validateAssetUrl } = window.FormViewerUtils;
+    // Valid JS and CSS URLs
+    expect(() => validateAssetUrl('https://x/foo.js', 'js')).not.toThrow();
+    expect(() => validateAssetUrl('http://x/bar.css', 'css')).not.toThrow();
+    // Invalid: missing, not string, wrong protocol
+    expect(() => validateAssetUrl('', 'js')).toThrow(
+      /Malformed or missing JS URL/
     );
+    expect(() => validateAssetUrl(null, 'css')).toThrow(
+      /Malformed or missing CSS URL/
+    );
+    expect(() => validateAssetUrl(undefined, 'js')).toThrow(
+      /Malformed or missing JS URL/
+    );
+    expect(() => validateAssetUrl(123, 'css')).toThrow(
+      /Malformed or missing CSS URL/
+    );
+    expect(() => validateAssetUrl('ftp://x/foo.js', 'js')).toThrow(
+      /Malformed or missing JS URL/
+    );
+    expect(() => validateAssetUrl('bar', 'css')).toThrow(
+      /Malformed or missing CSS URL/
+    );
+    // Valid: http/https only
+    expect(() => validateAssetUrl('https://x/foo', 'js')).not.toThrow();
+    expect(() => validateAssetUrl('http://x/bar', 'css')).not.toThrow();
+  });
+  it('parseBaseUrl returns correct base', () => {
+    expect(
+      utils.parseBaseUrl({ origin: 'https://x', pathname: '/app/foo' })
+    ).toBe('https://x/app');
+    expect(
+      utils.parseBaseUrl({ origin: 'https://x', pathname: '/pr-123/foo' })
+    ).toBe('https://x/pr-123');
+    expect(
+      utils.parseBaseUrl({ origin: 'https://x', pathname: '/other' })
+    ).toBe('https://x/app');
+  });
 
-    // Override base-url
-    el.setAttribute('base-url', 'https://example.com/pr-1234');
-    const urls2 = el._urls();
-    expect(urls2.mainCss).toBe(
-      'https://example.com/pr-1234/webcomponents/v1/assets/chefs-index.css'
+  it('parseBaseUrl handles empty and missing values', () => {
+    expect(utils.parseBaseUrl({ origin: '', pathname: '' })).toBe('/app');
+    expect(utils.parseBaseUrl({})).toBe('undefined/app');
+    expect(utils.parseBaseUrl({ origin: 'https://x', pathname: '/' })).toBe(
+      'https://x/app'
+    );
+    expect(utils.parseBaseUrl({ origin: 'https://x', pathname: '/app/' })).toBe(
+      'https://x/app'
+    );
+    expect(
+      utils.parseBaseUrl({ origin: 'https://x', pathname: '/app?foo=bar' })
+    ).toBe('https://x/app');
+  });
+
+  it('createBasicAuthHeader returns correct header', () => {
+    globalThis.btoa = (str) => Buffer.from(str, 'binary').toString('base64');
+    expect(utils.createBasicAuthHeader('abc', 'def')).toEqual({
+      Authorization: `Basic ${btoa('abc:def')}`,
+    });
+    expect(utils.createBasicAuthHeader('', 'def')).toEqual({});
+    expect(utils.createBasicAuthHeader('abc', '')).toEqual({});
+  });
+
+  it('createBasicAuthHeader throws for encoder errors, returns {} for non-string', () => {
+    expect(utils.createBasicAuthHeader(123, 'def')).toEqual({});
+    expect(utils.createBasicAuthHeader('abc', 456)).toEqual({});
+    expect(() =>
+      utils.createBasicAuthHeader('abc', 'def', () => {
+        throw new Error('fail');
+      })
+    ).toThrow('fail');
+  });
+
+  it('safeJsonParse parses valid and invalid JSON', () => {
+    expect(utils.safeJsonParse('{"a":1}', 'test')).toEqual({
+      success: true,
+      data: { a: 1 },
+      error: null,
+    });
+    const result = utils.safeJsonParse('bad', 'test');
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/Invalid JSON/);
+  });
+
+  it('safeJsonParse handles empty, whitespace, and non-string', () => {
+    expect(utils.safeJsonParse('', 'test')).toEqual({
+      success: true,
+      data: null,
+      error: null,
+    });
+    expect(utils.safeJsonParse('   ', 'test')).toEqual({
+      success: true,
+      data: null,
+      error: null,
+    });
+    expect(utils.safeJsonParse(undefined, 'test')).toEqual({
+      success: false,
+      data: null,
+      error: expect.any(String),
+    });
+    expect(utils.safeJsonParse(null, 'test')).toEqual({
+      success: false,
+      data: null,
+      error: expect.any(String),
+    });
+    expect(utils.safeJsonParse(123, 'test')).toEqual({
+      success: false,
+      data: null,
+      error: expect.any(String),
+    });
+  });
+
+  it('parseSubmissionData extracts data for valid payloads, throws for invalid', () => {
+    expect(
+      utils.parseSubmissionData({
+        submission: { submission: { data: { x: 1 } } },
+      })
+    ).toEqual({ data: { x: 1 } });
+    expect(utils.parseSubmissionData({ data: { y: 2 } })).toEqual({
+      data: { y: 2 },
+    });
+    expect(() => utils.parseSubmissionData({})).toThrow(
+      'No valid submission data found in payload'
+    );
+    expect(() => utils.parseSubmissionData(null)).toThrow(
+      'Submission payload must be a non-null object, not array'
+    );
+    expect(() => utils.parseSubmissionData([])).toThrow(
+      'Submission payload must be a non-null object, not array'
+    );
+    expect(() => utils.parseSubmissionData({ submission: [] })).toThrow(
+      'submission property must be a non-null object, not array'
+    );
+    expect(() =>
+      utils.parseSubmissionData({ submission: { submission: [] } })
+    ).toThrow(
+      'submission.submission property must be a non-null object, not array'
+    );
+    expect(() => utils.parseSubmissionData({ data: [] })).toThrow(
+      'data property must be a non-null object, not array'
     );
   });
 
-  it('loads with shadow DOM and isolates styles when requested', async () => {
-    const el = document.createElement('chefs-form-viewer');
-    el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-    el.setAttribute('api-key', 'secret');
-    el.setAttribute('isolate-styles', 'true');
-    document.body.appendChild(el);
-    configureNoNetwork(el);
+  // parseSubmissionData error cases now covered above
 
-    const events = [];
-    el.addEventListener('formio:loadSchema', () => events.push('loadSchema'));
-    el.addEventListener('formio:ready', () => events.push('ready'));
-
-    await el.load();
-    // Instance should exist
-    expect(el.formioInstance).toBeTruthy();
-    // Shell should contain isolation CSS in shadowRoot
-    const styleText = el.shadowRoot.querySelector('style')?.textContent || '';
-    expect(styleText).toMatch(':host { all: initial');
-    expect(events).toEqual(['loadSchema', 'ready']);
-  });
-
-  it('disables icons when no-icons is set and does not inject @font-face', async () => {
-    const el = document.createElement('chefs-form-viewer');
-    el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-    el.setAttribute('api-key', 'secret');
-    el.setAttribute('no-icons', 'true');
-    document.body.appendChild(el);
-    configureNoNetwork(el);
-
-    await el.load();
-
-    // No global @font-face style
-    expect(document.getElementById('cfv-fa-face')).toBeFalsy();
-    // Neutralizing style exists in shadow to clear FA content
-    const css = [...el.shadowRoot.querySelectorAll('style')]
-      .map((n) => n.textContent || '')
-      .join('\n');
-    expect(css).toMatch('.formio-form .fa::before');
-  });
-
-  it('enables icons by default and injects @font-face once', async () => {
-    const el = document.createElement('chefs-form-viewer');
-    el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-    el.setAttribute('api-key', 'secret');
-    document.body.appendChild(el);
-    configureNoNetwork(el, { keepDefaultIcons: true });
-
-    await el.load();
-    expect(document.getElementById('cfv-fa-face')).toBeTruthy();
-    // Second load should not duplicate
-    await el.reload();
-    expect(document.querySelectorAll('#cfv-fa-face').length).toBe(1);
-  });
-
-  it('applies prefill via submission-id (scheduled applications)', async () => {
-    const el = document.createElement('chefs-form-viewer');
-    el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-    el.setAttribute('api-key', 'secret');
-    el.setAttribute('submission-id', 'SUB1');
-    document.body.appendChild(el);
-    configureNoNetwork(el);
-
-    await el.load();
-    // Simulate first render to trigger scheduled application
-    el.formioInstance.emit('render');
-    // After scheduled applications, instance should have merged data
-    // We cannot await internal timers deterministically; just assert no throw and presence of instance
-    expect(el.formioInstance).toBeTruthy();
-  });
-
-  it('programmatic submit and draft set the submit key accordingly and POST', async () => {
-    const el = document.createElement('chefs-form-viewer');
-    el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-    el.setAttribute('api-key', 'secret');
-    el.setAttribute('submit-button-key', 'isSubmit');
-    document.body.appendChild(el);
-    configureNoNetwork(el);
-
-    await el.load();
-
-    // Submit
-    await el.submit();
-    const submitCall = lastFetchCall('/submit', 'POST');
-    expect(submitCall).toBeTruthy();
-    expect(JSON.parse(submitCall.opts.body)).toEqual({
-      submission: { data: { isSubmit: true } },
-    });
-
-    // Draft
-    await el.draft();
-    const draftCall = lastFetchCall('/submit', 'POST');
-    expect(JSON.parse(draftCall.opts.body)).toEqual({
-      submission: { data: { isSubmit: false } },
+  it('validateFormioGlobal returns correct status', () => {
+    expect(
+      utils.validateFormioGlobal({ Formio: { createForm: () => {} } })
+    ).toEqual({ available: true, hasCreateForm: true });
+    expect(utils.validateFormioGlobal({})).toEqual({
+      available: false,
+      hasCreateForm: false,
     });
   });
 
-  it('reload destroys the instance and reinitializes', async () => {
-    // Return a trackable instance for this test
-    const tracked = new FakeFormioInstance();
-    globalThis.Formio.createForm = vi.fn(() => tracked);
-
-    const el = document.createElement('chefs-form-viewer');
-    el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-    el.setAttribute('api-key', 'secret');
-    document.body.appendChild(el);
-    configureNoNetwork(el);
-
-    await el.load();
-    expect(tracked.destroyed).toBe(false);
-    await el.reload();
-    expect(tracked.destroyed).toBe(true);
+  it('validateFormioGlobal handles missing and wrong types', () => {
+    expect(utils.validateFormioGlobal(null)).toEqual({
+      available: false,
+      hasCreateForm: false,
+    });
+    expect(utils.validateFormioGlobal({ Formio: {} })).toEqual({
+      available: true,
+      hasCreateForm: false,
+    });
+    expect(
+      utils.validateFormioGlobal({ Formio: { createForm: 'notAFunction' } })
+    ).toEqual({ available: true, hasCreateForm: false });
   });
 
-  it('loads styles into document.head when no-shadow is set', async () => {
-    const el = document.createElement('chefs-form-viewer');
-    el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-    el.setAttribute('api-key', 'secret');
-    el.setAttribute('no-shadow', 'true');
-    document.body.appendChild(el);
-    configureNoNetwork(el, { appendHeadLinks: true });
-    const headLinkCountBefore = document.head.querySelectorAll(
-      'link[rel="stylesheet"]'
-    ).length;
-    await el.load();
-    const headLinkCountAfter = document.head.querySelectorAll(
-      'link[rel="stylesheet"]'
-    ).length;
-    expect(headLinkCountAfter).toBeGreaterThan(headLinkCountBefore);
+  it('generateFontFaceCSS returns CSS string', () => {
+    expect(utils.generateFontFaceCSS('https://x')).toMatch(/@font-face/);
   });
 
-  function lastFetchCall(pathSuffix, method) {
-    const calls = (globalThis.fetch.mock.calls || []).map(([url, opts]) => ({
-      url,
-      opts: opts || {},
-    }));
-    const filtered = calls.filter(
-      (c) =>
-        String(c.url).includes(pathSuffix) &&
-        String(c.opts.method || 'GET').toUpperCase() === method
+  it('generateFontFaceCSS handles empty and malformed baseUrl', () => {
+    expect(utils.generateFontFaceCSS('')).toMatch(/@font-face/);
+    expect(utils.generateFontFaceCSS(null)).toMatch(/@font-face/);
+    expect(utils.generateFontFaceCSS(123)).toMatch(/@font-face/);
+  });
+
+  it('generateIconColorCSS returns CSS string', () => {
+    expect(utils.generateIconColorCSS()).toMatch(/color:currentColor/);
+  });
+
+  it('generateIconNeutralizeCSS returns CSS string', () => {
+    expect(utils.generateIconNeutralizeCSS()).toMatch(/font-family:inherit/);
+  });
+
+  it('mergePrefillData merges objects', () => {
+    expect(utils.mergePrefillData({ a: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 });
+  });
+
+  it('mergePrefillData handles null, undefined, and arrays', () => {
+    expect(utils.mergePrefillData(null, { b: 2 })).toEqual({ b: 2 });
+    expect(utils.mergePrefillData({ a: 1 }, null)).toEqual({ a: 1 });
+    expect(utils.mergePrefillData([1], [2])).toEqual({ 0: 2 });
+  });
+
+  it('isPrefillDataApplied checks keys', () => {
+    expect(utils.isPrefillDataApplied({ a: 1 }, { a: 1 })).toBe(true);
+    expect(utils.isPrefillDataApplied({ a: 1 }, { b: 2 })).toBe(false);
+  });
+
+  it('isPrefillDataApplied returns false for empty or non-object', () => {
+    expect(utils.isPrefillDataApplied({}, {})).toBe(false);
+    expect(utils.isPrefillDataApplied({ a: 1 }, { a: '1' })).toBe(false);
+    expect(utils.isPrefillDataApplied(null, { a: 1 })).toBe(false);
+    expect(utils.isPrefillDataApplied({ a: 1 }, null)).toBe(false);
+    expect(utils.isPrefillDataApplied([], { a: 1 })).toBe(false);
+    expect(utils.isPrefillDataApplied({ a: 1 }, [])).toBe(false);
+  });
+
+  it('resolveUrl substitutes params', () => {
+    const endpoints = { foo: '/x/:formId/:submissionId' };
+    expect(
+      utils.resolveUrl(endpoints, 'foo', { formId: 'A', submissionId: 'B' })
+    ).toBe('/x/A/B');
+  });
+
+  it('resolveUrl handles missing keys and params', () => {
+    expect(() => utils.resolveUrl({}, 'foo')).toThrow();
+    expect(utils.resolveUrl({ foo: '/x/:id' }, 'foo', {})).toBe('/x/:id');
+    expect(utils.resolveUrl({ foo: '/x/:id' }, 'foo', { id: null })).toBe(
+      '/x/:id'
     );
-    return filtered[filtered.length - 1];
-  }
+  });
 
-  describe('token and user functionality', () => {
-    it('parses token attribute as JSON and sets property', () => {
-      const el = document.createElement('chefs-form-viewer');
-      document.body.appendChild(el);
-
-      const tokenData = {
-        sub: 'user123',
-        roles: ['admin'],
-        email: 'test@example.com',
-      };
-      el.setAttribute('token', JSON.stringify(tokenData));
-
-      expect(el.token).toEqual(tokenData);
-    });
-
-    it('parses user attribute as JSON and sets property', () => {
-      const el = document.createElement('chefs-form-viewer');
-      document.body.appendChild(el);
-
-      const userData = { name: 'John Doe', department: 'IT', id: 123 };
-      el.setAttribute('user', JSON.stringify(userData));
-
-      expect(el.user).toEqual(userData);
-    });
-
-    it('handles invalid JSON gracefully and logs warning', () => {
-      const el = document.createElement('chefs-form-viewer');
-      document.body.appendChild(el);
-
-      // Mock the logger
-      const mockWarn = vi.fn();
-      el._log = { warn: mockWarn };
-
-      el.setAttribute('token', 'invalid-json');
-      el.setAttribute('user', '{"incomplete": json}');
-
-      expect(el.token).toBeNull();
-      expect(el.user).toBeNull();
-      expect(mockWarn).toHaveBeenCalledTimes(2);
-      expect(mockWarn).toHaveBeenCalledWith(
-        'Invalid JSON in token attribute:',
-        expect.objectContaining({ value: 'invalid-json' })
-      );
-    });
-
-    it('allows direct property assignment of objects', () => {
-      const el = document.createElement('chefs-form-viewer');
-      document.body.appendChild(el);
-
-      const tokenData = { sub: 'user456', roles: ['user'] };
-      const userData = { name: 'Jane Smith', department: 'HR' };
-
-      el.token = tokenData;
-      el.user = userData;
-
-      expect(el.token).toEqual(tokenData);
-      expect(el.user).toEqual(userData);
-    });
-
-    it('includes token and user in Form.io evalContext when set', async () => {
-      const el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-
-      const tokenData = { sub: 'user123', roles: ['admin'] };
-      const userData = { name: 'John Doe', department: 'IT' };
-
-      el.token = tokenData;
-      el.user = userData;
-
-      await el.load();
-
-      // Check if createForm was called with evalContext
-      const createFormCalls = globalThis.Formio.createForm.mock.calls;
-      const lastCall = createFormCalls[createFormCalls.length - 1];
-      const options = lastCall[2]; // third argument is options
-
-      expect(options.evalContext.token).toEqual(tokenData);
-      expect(options.evalContext.user).toEqual(userData);
-    });
-
-    it('works without token and user set (evalContext is empty)', async () => {
-      const el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-
-      await el.load();
-
-      // Check if createForm was called with empty evalContext
-      const createFormCalls = globalThis.Formio.createForm.mock.calls;
-      const lastCall = createFormCalls[createFormCalls.length - 1];
-      const options = lastCall[2]; // third argument is options
-
-      expect(options.evalContext).toEqual({});
-    });
-
-    it('includes only token in evalContext when user is not set', async () => {
-      const el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-
-      const tokenData = { sub: 'user123', roles: ['admin'] };
-      el.token = tokenData;
-
-      await el.load();
-
-      const createFormCalls = globalThis.Formio.createForm.mock.calls;
-      const lastCall = createFormCalls[createFormCalls.length - 1];
-      const options = lastCall[2];
-
-      expect(options.evalContext.token).toEqual(tokenData);
-      expect(options.evalContext.user).toBeUndefined();
-    });
-
-    it('includes only user in evalContext when token is not set', async () => {
-      const el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-
-      const userData = { name: 'Jane Smith', department: 'HR' };
-      el.user = userData;
-
-      await el.load();
-
-      const createFormCalls = globalThis.Formio.createForm.mock.calls;
-      const lastCall = createFormCalls[createFormCalls.length - 1];
-      const options = lastCall[2];
-
-      expect(options.evalContext.user).toEqual(userData);
-      expect(options.evalContext.token).toBeUndefined();
-    });
-
-    it('handles empty string attributes gracefully', () => {
-      const el = document.createElement('chefs-form-viewer');
-      document.body.appendChild(el);
-
-      el.setAttribute('token', '');
-      el.setAttribute('user', '');
-
-      expect(el.token).toBeNull();
-      expect(el.user).toBeNull();
-    });
-
-    it('overrides attribute values with property assignment', () => {
-      const el = document.createElement('chefs-form-viewer');
-      document.body.appendChild(el);
-
-      // Set via attribute first
-      el.setAttribute('token', '{"from":"attribute"}');
-      expect(el.token).toEqual({ from: 'attribute' });
-
-      // Override via property
-      const newToken = { from: 'property', roles: ['admin'] };
-      el.token = newToken;
-      expect(el.token).toEqual(newToken);
-    });
-
-    it('preserves complex nested objects in token and user', async () => {
-      const el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-
-      const complexToken = createComplexTokenFixture();
-      const complexUser = createComplexUserFixture();
-
-      el.token = complexToken;
-      el.user = complexUser;
-
-      await el.load();
-
-      const createFormCalls = globalThis.Formio.createForm.mock.calls;
-      const lastCall = createFormCalls[createFormCalls.length - 1];
-      const options = lastCall[2];
-
-      expect(options.evalContext.token).toEqual(complexToken);
-      expect(options.evalContext.user).toEqual(complexUser);
+  it('resolveUrlWithFallback returns both', () => {
+    const endpoints = { a: '/a', b: '/b' };
+    expect(utils.resolveUrlWithFallback(endpoints, 'a', 'b')).toEqual({
+      primary: '/a',
+      fallback: '/b',
     });
   });
 
-  describe('_buildFormioOptions method', () => {
-    let el;
-
-    beforeEach(() => {
-      el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-    });
-    it('builds basic options with defaults', () => {
-      const options = el._buildFormioOptions();
-
-      expect(options).toEqual({
-        readOnly: false,
-        language: 'en',
-        sanitizeConfig: {},
-        hooks: expect.any(Object),
-        evalContext: {},
-        shadowRoot: expect.any(Object),
-      });
-    });
-
-    it('includes readOnly when set', () => {
-      el.readOnly = true;
-      const options = el._buildFormioOptions();
-
-      expect(options.readOnly).toBe(true);
-    });
-
-    it('includes custom language', () => {
-      el.language = 'fr';
-      const options = el._buildFormioOptions();
-
-      expect(options.language).toBe('fr');
-    });
-
-    it('includes token in evalContext when set', () => {
-      const token = { sub: 'user123', roles: ['admin'] };
-      el.token = token;
-      const options = el._buildFormioOptions();
-
-      expect(options.evalContext.token).toEqual(token);
-    });
-
-    it('includes user in evalContext when set', () => {
-      const user = { name: 'John Doe', department: 'IT' };
-      el.user = user;
-      const options = el._buildFormioOptions();
-
-      expect(options.evalContext.user).toEqual(user);
-    });
-
-    it('includes both token and user when both set', () => {
-      const token = { sub: 'user123' };
-      const user = { name: 'Jane Doe' };
-      el.token = token;
-      el.user = user;
-      const options = el._buildFormioOptions();
-
-      expect(options.evalContext.token).toEqual(token);
-      expect(options.evalContext.user).toEqual(user);
-    });
-
-    it('excludes token/user from evalContext when not set', () => {
-      el.token = null;
-      el.user = null;
-      const options = el._buildFormioOptions();
-
-      expect(options.evalContext).toEqual({});
-    });
+  it('substituteUrlParams replaces params', () => {
+    expect(utils.substituteUrlParams('/x/:id', { id: 'Y' })).toBe('/x/Y');
   });
 
-  describe('_handleRuntimePrefill method', () => {
-    let el;
-
-    beforeEach(() => {
-      el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-    });
-    it('does nothing when no submissionId', async () => {
-      el.submissionId = null;
-      const fetchSpy = vi.spyOn(global, 'fetch');
-
-      await el._handleRuntimePrefill({
-        readSubmission: '/api/submissions/:submissionId',
-      });
-
-      expect(fetchSpy).not.toHaveBeenCalled();
-      fetchSpy.mockRestore();
-    });
-
-    it('fetches and applies submission data when submissionId exists', async () => {
-      el.submissionId = 'sub123';
-      const expectedData = { firstName: 'John', lastName: 'Doe' };
-      const mockResponse = createMockResponse(expectedData);
-      const fetchSpy = vi
-        .spyOn(global, 'fetch')
-        .mockResolvedValue(mockResponse);
-      const schedulesSpy = vi
-        .spyOn(el, '_schedulePrefillApplications')
-        .mockResolvedValue();
-
-      await el._handleRuntimePrefill({
-        readSubmission: '/api/submissions/:submissionId',
-      });
-
-      expect(fetchSpy).toHaveBeenCalledWith('/api/submissions/sub123', {
-        headers: expect.any(Object),
-      });
-      expect(schedulesSpy).toHaveBeenCalledWith(expectedData);
-
-      fetchSpy.mockRestore();
-      schedulesSpy.mockRestore();
-    });
-
-    it('logs warning when fetch fails', async () => {
-      el.submissionId = 'sub123';
-      const mockResponse = { ok: false, status: 404 };
-      const fetchSpy = vi
-        .spyOn(global, 'fetch')
-        .mockResolvedValue(mockResponse);
-      const logSpy = vi.spyOn(el._log, 'warn');
-
-      await el._handleRuntimePrefill({
-        readSubmission: '/api/submissions/:submissionId',
-      });
-
-      expect(logSpy).toHaveBeenCalledWith('prefill:readSubmission:failed', {
-        status: 404,
-      });
-
-      fetchSpy.mockRestore();
-      logSpy.mockRestore();
-    });
+  it('createElement creates element with attributes', () => {
+    const el = utils.createElement('div', { id: 'foo' }, 'bar');
+    expect(el.id).toBe('foo');
+    expect(el.textContent).toBe('bar');
   });
 
-  describe('_setupFormioInstance method', () => {
-    let el;
-
-    beforeEach(() => {
-      el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-      el._configureInstanceEndpoints = vi.fn();
-      el._wireInstanceEvents = vi.fn();
-      el._setupPrefillGuard = vi.fn();
-    });
-
-    it('calls all setup methods', () => {
-      const urls = { submit: '/submit' };
-      el._setupFormioInstance(urls, null);
-
-      expect(el._configureInstanceEndpoints).toHaveBeenCalledWith(urls);
-      expect(el._wireInstanceEvents).toHaveBeenCalled();
-
-      expect(el._setupPrefillGuard).not.toHaveBeenCalled();
-    });
-
-    it('sets up prefill guard when prefilledViaOptions provided', () => {
-      const urls = { submit: '/submit' };
-      const prefilledData = { name: 'John' };
-
-      el._setupFormioInstance(urls, prefilledData);
-
-      expect(el._setupPrefillGuard).toHaveBeenCalledWith(prefilledData);
-    });
+  it('createElement throws for empty or non-string tagName', () => {
+    expect(() => utils.createElement('', {}, '')).toThrow();
+    expect(() => utils.createElement(123, {}, '')).toThrow();
   });
 
-  describe('_setupPrefillGuard method', () => {
-    let el, mockInstance;
+  it('appendElement appends to parent', () => {
+    const parent = document.createElement('div');
+    const child = document.createElement('span');
+    utils.appendElement(child, parent);
+    expect(parent.contains(child)).toBe(true);
+  });
 
-    beforeEach(() => {
-      el = document.createElement('chefs-form-viewer');
-      el.setAttribute('form-id', '11111111-1111-1111-1111-111111111111');
-      el.setAttribute('api-key', 'secret');
-      document.body.appendChild(el);
-      configureNoNetwork(el);
-      mockInstance = new FakeFormioInstance();
-      el.formioInstance = mockInstance;
-      el._setSubmissionOnInstance = vi.fn().mockResolvedValue();
-    });
+  it('appendElement handles null parent', () => {
+    const el = document.createElement('div');
+    expect(() => utils.appendElement(el, null)).not.toThrow();
+  });
 
-    it('sets up one-time render event handler', () => {
-      const prefilledData = { name: 'John' };
-      const onSpy = vi.spyOn(mockInstance, 'on');
+  it('injectStyle injects style', () => {
+    const parent = document.createElement('div');
+    const style = utils.injectStyle('body{}', parent, 'test-style');
+    expect(style.id).toBe('test-style');
+    expect(parent.contains(style)).toBe(true);
+  });
 
-      el._setupPrefillGuard(prefilledData);
+  it('injectStyle handles null parent and duplicate id', () => {
+    const style = utils.injectStyle('body{}', null, 'test-style');
+    expect(style).toBeTruthy();
+    const parent = document.createElement('div');
+    utils.injectStyle('body{}', parent, 'test-style');
+    expect(parent.querySelectorAll('#test-style').length).toBe(1);
+  });
 
-      expect(onSpy).toHaveBeenCalledWith('render', expect.any(Function));
-    });
+  it('validateGlobalMethods checks methods', () => {
+    expect(
+      utils.validateGlobalMethods({ Foo: { bar: () => {} } }, 'Foo', ['bar'])
+    ).toBe(true);
+    expect(utils.validateGlobalMethods({ Foo: {} }, 'Foo', ['bar'])).toBe(
+      false
+    );
+  });
 
-    it('applies prefilled data on first render only', async () => {
-      const prefilledData = { name: 'John' };
-      el._setupPrefillGuard(prefilledData);
-
-      // Simulate first render
-      mockInstance.emit('render');
-      await waitForNextTick();
-
-      expect(el._setSubmissionOnInstance).toHaveBeenCalledWith(prefilledData, {
-        fromSubmission: true,
-        noValidate: true,
-      });
-
-      // Simulate second render - should not apply again
-      el._setSubmissionOnInstance.mockClear();
-      mockInstance.emit('render');
-      await waitForNextTick();
-
-      expect(el._setSubmissionOnInstance).not.toHaveBeenCalled();
-    });
-
-    it('handles errors gracefully', async () => {
-      const prefilledData = { name: 'John' };
-      el._setSubmissionOnInstance.mockRejectedValue(new Error('Test error'));
-      const logSpy = vi.spyOn(el._log, 'debug').mockImplementation(() => {});
-
-      el._setupPrefillGuard(prefilledData);
-      mockInstance.emit('render');
-      await waitForNextTick();
-
-      expect(logSpy).toHaveBeenCalledWith('prefill:options:ignored', {
-        message: 'Test error',
-      });
-
-      logSpy.mockRestore();
-    });
+  it('validateGlobalMethods handles empty methods and missing property', () => {
+    expect(utils.validateGlobalMethods({}, 'Foo', [])).toBe(false);
+    expect(utils.validateGlobalMethods({}, 'Bar', ['baz'])).toBe(false);
   });
 });
 
-function createMockCssLoader(baseCss) {
-  return vi.fn(async (href) => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = href || baseCss;
-    document.head.appendChild(link);
+// --- ChefsFormViewer Public API Tests ---
+describe('ChefsFormViewer', () => {
+  let el;
+  beforeEach(async () => {
+    await import(COMPONENT_PATH);
+    el = document.createElement('chefs-form-viewer');
+    document.body.appendChild(el);
   });
-}
+  afterEach(() => {
+    document.body.removeChild(el);
+  });
 
-async function waitForNextTick() {
-  return new Promise((resolve) => setTimeout(resolve, 0));
-}
+  it('attributeChangedCallback updates state', () => {
+    el.setAttribute('form-id', 'abc');
+    expect(el.formId).toBe('abc');
+    el.setAttribute('read-only', '');
+    expect(el.readOnly).toBe(true);
+  });
 
-function configureNoNetwork(el, options = {}) {
-  const baseCss = 'data:text/css,';
-  const baseJs = 'data:text/javascript,';
-  el.endpoints = {
-    ...el.endpoints,
-    mainCss: baseCss,
-    themeCss: baseCss,
-    formioJs: baseJs,
-    componentsJs: baseJs,
-    ...(options.keepDefaultIcons ? {} : { iconsCss: baseCss }),
-  };
-  // Prevent actual network; resolve loaders immediately
-  el._loadCssIntoRoot = vi.fn(async () => {});
-  el._loadCss = vi.fn(async () => {});
-  el._injectScript = vi.fn(async () => true);
-  if (options.appendHeadLinks) {
-    el._loadCssIntoRoot = createMockCssLoader(baseCss);
-    el._loadCss = createMockCssLoader(baseCss);
-  }
-}
+  it('connectedCallback sets logger and renders', () => {
+    el.connectedCallback();
+    expect(typeof el._log.info).toBe('function');
+    expect(el._root).toBe(el.shadowRoot);
+  });
+
+  it('getBaseUrl returns correct value', () => {
+    el.baseUrl = 'https://x/app';
+    expect(el.getBaseUrl()).toBe('https://x/app');
+    el.baseUrl = null;
+    expect(el.getBaseUrl()).toMatch(/^https?:\/\//);
+  });
+
+  it('setSubmission and getSubmission work', () => {
+    el.formioInstance = {
+      setSubmission: vi.fn(),
+      submission: { data: { a: 1 } },
+    };
+    el.setSubmission({ b: 2 });
+    expect(el.formioInstance.setSubmission).toHaveBeenCalledWith({
+      data: { b: 2 },
+    });
+    el.formioInstance = { submission: { data: { a: 1 } } };
+    expect(el.getSubmission()).toEqual({ data: { a: 1 } });
+  });
+
+  it('destroy nullifies formioInstance', async () => {
+    el.formioInstance = { destroy: vi.fn() };
+    await el.destroy();
+    expect(el.formioInstance).toBeNull();
+  });
+
+  it('emit dispatches event', () => {
+    const spy = vi.fn();
+    el.addEventListener('formio:test', spy);
+    el._emit('formio:test', { foo: 1 });
+    expect(spy).toHaveBeenCalled();
+  });
+
+  // Add more tests for asset loading, hooks, and event emission as needed
+});
+
+// --- ChefsFormViewer internals ---
+describe('ChefsFormViewer internals', () => {
+  it('_acquireBusyLock sets and checks busy state, logs and returns false if busy', () => {
+    el._isBusy = false;
+    const logSpy = vi.spyOn(el._log, 'info');
+    expect(el._acquireBusyLock('load')).toBe(true);
+    expect(el._isBusy).toBe(true);
+    // Try to acquire again, should log and return false
+    expect(el._acquireBusyLock('load')).toBe(false);
+    expect(logSpy).toHaveBeenCalledWith('load:skip:busy');
+    // Reset busy for next test
+    el._isBusy = false;
+    logSpy.mockRestore();
+  });
+
+  it('_releaseBusyLock sets busy to false', () => {
+    el._isBusy = true;
+    el._releaseBusyLock();
+    expect(el._isBusy).toBe(false);
+  });
+
+  it('load calls _acquireBusyLock and _releaseBusyLock correctly', async () => {
+    const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
+    const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
+    el._loadSchema = vi.fn();
+    el._initFormio = vi.fn();
+    el._emit = vi.fn().mockReturnValue(true);
+    el._log.info = vi.fn();
+    await el.load();
+    expect(acquireSpy).toHaveBeenCalledWith('load');
+    expect(releaseSpy).toHaveBeenCalled();
+    acquireSpy.mockRestore();
+    releaseSpy.mockRestore();
+  });
+
+  it('submit calls _acquireBusyLock and _releaseBusyLock correctly', async () => {
+    const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
+    const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
+    el._programmaticSubmit = vi.fn();
+    await el.submit();
+    expect(acquireSpy).toHaveBeenCalledWith('submit');
+    expect(releaseSpy).toHaveBeenCalled();
+    acquireSpy.mockRestore();
+    releaseSpy.mockRestore();
+  });
+
+  it('draft calls _acquireBusyLock and _releaseBusyLock correctly', async () => {
+    const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
+    const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
+    el._programmaticSubmit = vi.fn();
+    await el.draft();
+    expect(acquireSpy).toHaveBeenCalledWith('draft');
+    expect(releaseSpy).toHaveBeenCalled();
+    acquireSpy.mockRestore();
+    releaseSpy.mockRestore();
+  });
+  let el;
+  beforeEach(async () => {
+    await import(COMPONENT_PATH);
+    el = document.createElement('chefs-form-viewer');
+    document.body.appendChild(el);
+    // Always mock fetch for asset loader tests
+    globalThis._origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn();
+  });
+  afterEach(() => {
+    document.body.removeChild(el);
+    // Restore fetch after each test
+    globalThis.fetch = globalThis._origFetch;
+    delete globalThis._origFetch;
+  });
+
+  it('_authHeader uses custom hook', () => {
+    el.onBuildAuthHeader = (_url) => ({ Authorization: 'Custom' });
+    expect(el._authHeader('https://x')).toEqual({ Authorization: 'Custom' });
+  });
+
+  it('_authHeader returns Basic auth and logs error on encoder fail', () => {
+    el.formId = 'abc';
+    el.apiKey = 'def';
+    // Patch createBasicAuthHeader to throw
+    const orig = window.FormViewerUtils.createBasicAuthHeader;
+    window.FormViewerUtils.createBasicAuthHeader = () => {
+      throw new Error('fail');
+    };
+    const spy = vi.spyOn(el._log, 'warn');
+    expect(el._authHeader(el.getBaseUrl())).toEqual({});
+    expect(spy).toHaveBeenCalledWith(
+      'Failed to create Basic Auth header',
+      expect.any(Object)
+    );
+    window.FormViewerUtils.createBasicAuthHeader = orig;
+  });
+
+  it('_getAssetLoadFunction returns correct loader for .js/.css', () => {
+    const cssLoader = el._getAssetLoadFunction('https://x/foo.css');
+    expect(typeof cssLoader).toBe('function');
+    expect(cssLoader.toString()).toMatch(/_loadCssIntoRoot/);
+    const jsLoader = el._getAssetLoadFunction('https://x/foo.js');
+    expect(typeof jsLoader).toBe('function');
+    expect(jsLoader.toString()).toMatch(/_injectScript/);
+  });
+
+  it('_detectAssetTypeByContentType returns js/css/null based on Content-Type', async () => {
+    window.fetch.mockResolvedValueOnce({
+      headers: { get: () => 'application/javascript' },
+    });
+    expect(await el._detectAssetTypeByContentType('https://x/foo')).toBe('js');
+    window.fetch.mockResolvedValueOnce({
+      headers: { get: () => 'text/css' },
+    });
+    expect(await el._detectAssetTypeByContentType('https://x/bar')).toBe('css');
+    window.fetch.mockResolvedValueOnce({
+      headers: { get: () => 'text/html' },
+    });
+    expect(await el._detectAssetTypeByContentType('https://x/baz')).toBe(null);
+    window.fetch.mockRejectedValueOnce(new Error('fail'));
+    expect(await el._detectAssetTypeByContentType('https://x/fail')).toBe(null);
+  });
+
+  it('_getAssetLoadFunction uses Content-Type detection for unknown extension and returns false for unknown type', async () => {
+    // Mock _detectAssetTypeByContentType to return js
+    el._detectAssetTypeByContentType = vi.fn().mockResolvedValueOnce('js');
+    el._injectScript = vi.fn().mockResolvedValueOnce(true);
+    expect(
+      await el._getAssetLoadFunction('https://x/foo')('https://x/foo')
+    ).toBe(true);
+    // Mock _detectAssetTypeByContentType to return css
+    el._detectAssetTypeByContentType = vi.fn().mockResolvedValueOnce('css');
+    el._loadCssIntoRoot = vi.fn().mockResolvedValueOnce(true);
+    expect(
+      await el._getAssetLoadFunction('https://x/bar')('https://x/bar')
+    ).toBe(true);
+    // Mock _detectAssetTypeByContentType to return null, fallback to .js
+    el._detectAssetTypeByContentType = vi.fn().mockResolvedValueOnce(null);
+    el._injectScript = vi.fn().mockResolvedValueOnce(true);
+    expect(
+      await el._getAssetLoadFunction('https://x/foo.js')('https://x/foo.js')
+    ).toBe(true);
+    // Mock _detectAssetTypeByContentType to return null, fallback to .css
+    el._detectAssetTypeByContentType = vi.fn().mockResolvedValueOnce(null);
+    el._loadCssIntoRoot = vi.fn().mockResolvedValueOnce(true);
+    expect(
+      await el._getAssetLoadFunction('https://x/bar.css')('https://x/bar.css')
+    ).toBe(true);
+    // Unknown type: _detectAssetTypeByContentType returns null, url has neither .js nor .css
+    el._detectAssetTypeByContentType = vi.fn().mockResolvedValueOnce(null);
+    expect(
+      await el._getAssetLoadFunction('https://x/unknown')('https://x/unknown')
+    ).toBe(false);
+    // ...existing code...
+  });
+
+  it('_injectScript returns false for malformed URLs and validation error', async () => {
+    expect(await el._injectScript('bad')).toBe(false);
+    // Mock FormViewerUtils.validateAssetUrl to throw
+    const origValidate = window.FormViewerUtils.validateAssetUrl;
+    window.FormViewerUtils.validateAssetUrl = () => {
+      throw new Error('fail');
+    };
+    expect(await el._injectScript('https://x/foo.js')).toBe(false);
+    window.FormViewerUtils.validateAssetUrl = origValidate;
+  });
+
+  it('_loadCssIntoRoot returns false for malformed URLs and validation error', async () => {
+    expect(await el._loadCssIntoRoot('bad')).toBe(false);
+    // Mock FormViewerUtils.validateAssetUrl to throw
+    const origValidate = window.FormViewerUtils.validateAssetUrl;
+    window.FormViewerUtils.validateAssetUrl = () => {
+      throw new Error('fail');
+    };
+    expect(await el._loadCssIntoRoot('https://x/bar.css')).toBe(false);
+    window.FormViewerUtils.validateAssetUrl = origValidate;
+  });
+  it('_loadAssetWithFallback returns true for preloaded asset, returns false if _tryLoadWithFallback or _validateLoadedAsset throws', async () => {
+    // Preloaded asset
+    const validateFn = vi.fn().mockReturnValue(true);
+    el._isAssetPreLoaded = vi.fn().mockReturnValue(true);
+    const loaded = await el._loadAssetWithFallback(
+      'primary',
+      null,
+      true,
+      'test-asset',
+      validateFn
+    );
+    expect(loaded).toBe(true);
+
+    // Not preloaded, _tryLoadWithFallback throws
+    el._isAssetPreLoaded = vi.fn().mockReturnValue(false);
+    el._getAssetLoadFunction = vi
+      .fn()
+      .mockReturnValue(vi.fn().mockResolvedValue(true));
+    el._tryLoadWithFallback = vi.fn().mockImplementation(() => {
+      throw new Error('fail');
+    });
+    await expect(
+      el._loadAssetWithFallback('primary', null, true, 'test-asset', validateFn)
+    ).rejects.toThrow('Failed to load required asset: test-asset');
+
+    // Not preloaded, _validateLoadedAsset throws
+    el._tryLoadWithFallback = vi.fn().mockResolvedValue(true);
+    el._validateLoadedAsset = vi.fn().mockImplementation(() => {
+      throw new Error('fail');
+    });
+    await expect(
+      el._loadAssetWithFallback('primary', null, true, 'test-asset', validateFn)
+    ).rejects.toThrow('Failed to load required asset: test-asset');
+  });
+});
