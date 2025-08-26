@@ -102,6 +102,7 @@ defineExpose({
       data-test="canUpdateStatusOfFormCheckbox"
       hide-details="auto"
       class="my-0"
+      :disabled="isPublicDisabled"
       @update:model-value="
         () => {
           if (!form.enableStatusUpdates && !form.enableSubmitterRevision) {
@@ -114,7 +115,7 @@ defineExpose({
         <span
           :class="{
             'mr-2': isRTL,
-            'text-disabled': form.userType === ID_MODE.PUBLIC,
+            'text-disabled': isPublicDisabled,
           }"
           :lang="locale"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
@@ -145,12 +146,13 @@ defineExpose({
       data-test="showAssigneeInSubmissionsTableCheckbox"
       hide-details="auto"
       class="my-0 ml-6"
+      :disabled="isPublicDisabled"
     >
       <template #label>
         <span
           :class="{
             'mr-2': isRTL,
-            'text-disabled': form.userType === ID_MODE.PUBLIC,
+            'text-disabled': isPublicDisabled,
           }"
           :lang="locale"
           v-html="$t('trans.formSettings.displayAssigneeColumn')"
@@ -355,7 +357,7 @@ defineExpose({
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
-            :class="{ 'text-disabled': form.userType === ID_MODE.PUBLIC }"
+            :class="{ 'text-disabled': isPublicDisabled }"
             :lang="locale"
             v-html="$t('trans.formSettings.wideFormLayout')"
           />
