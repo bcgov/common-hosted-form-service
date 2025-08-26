@@ -77,7 +77,10 @@ defineExpose({
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': form.userType === ID_MODE.value.PUBLIC,
+          }"
           :lang="locale"
           v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
         ></span>
@@ -107,7 +110,10 @@ defineExpose({
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': form.userType === ID_MODE.value.PUBLIC,
+          }"
           :lang="locale"
           v-html="$t('trans.formSettings.enableSubmitterRevision')"
         ></span>
@@ -140,6 +146,7 @@ defineExpose({
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
+            :class="{ 'text-disabled': form.userType === ID_MODE.value.PUBLIC }"
             :lang="locale"
             v-html="$t('trans.formSettings.allowMultiDraft')"
           />
@@ -180,7 +187,12 @@ defineExpose({
       class="my-0"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="locale"
+        <span
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': true,
+          }"
+          :lang="locale"
           >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
         </span>
       </template>
@@ -237,6 +249,7 @@ defineExpose({
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
+            :class="{ 'text-disabled': form.userType === ID_MODE.value.PUBLIC }"
             :lang="locale"
             v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
           />
@@ -278,6 +291,7 @@ defineExpose({
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
+            :class="{ 'text-disabled': primaryIdpUser === false || !formStore.isFormPublished }"
             :lang="locale"
             v-html="$t('trans.formSettings.allowEventSubscription')"
           />
@@ -357,7 +371,10 @@ defineExpose({
     >
       <template #label>
         <span
-          :class="{ 'mr-2': isRTL }"
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': !form.enableSubmitterDraft,
+          }"
           :lang="locale"
           v-html="$t('trans.canShareDraft.shareDraftMessage')"
         ></span>
