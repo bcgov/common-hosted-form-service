@@ -291,7 +291,10 @@ defineExpose({
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
-            :class="{ 'text-disabled': primaryIdpUser === false || !formStore.isFormPublished }"
+            :class="{
+              'text-disabled':
+                primaryIdpUser === false || !formStore.isFormPublished,
+            }"
             :lang="locale"
             v-html="$t('trans.formSettings.allowEventSubscription')"
           />
