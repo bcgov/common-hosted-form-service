@@ -72,7 +72,7 @@ defineExpose({
       data-test="canSaveAndEditDraftsCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.value.PUBLIC"
+      :disabled="form.userType === ID_MODE.PUBLIC"
       @update:model-value="enableSubmitterDraftChanged"
     >
       <template #label>
@@ -103,7 +103,7 @@ defineExpose({
       data-test="canSubmitterRevisionFormCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.value.PUBLIC"
+      :disabled="form.userType === ID_MODE.PUBLIC"
     >
       <template #label>
         <span
@@ -134,7 +134,7 @@ defineExpose({
       data-test="canUploadDraftCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.value.PUBLIC"
+      :disabled="form.userType === ID_MODE.PUBLIC"
       @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>
@@ -147,9 +147,7 @@ defineExpose({
             <template #activator="{ props }">
               <v-icon
                 :color="
-                  form.userType === ID_MODE.value.PUBLIC
-                    ? 'disabled'
-                    : 'primary'
+                  form.userType === ID_MODE.PUBLIC ? 'disabled' : 'primary'
                 "
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
@@ -235,7 +233,7 @@ defineExpose({
       hide-details="auto"
       data-test="canCopyExistingSubmissionCheckbox"
       class="my-0"
-      :disabled="form.userType === ID_MODE.value.PUBLIC"
+      :disabled="form.userType === ID_MODE.PUBLIC"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
@@ -248,9 +246,7 @@ defineExpose({
             <template #activator="{ props }">
               <v-icon
                 :color="
-                  form.userType === ID_MODE.value.PUBLIC
-                    ? 'disabled'
-                    : 'primary'
+                  form.userType === ID_MODE.PUBLIC ? 'disabled' : 'primary'
                 "
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
@@ -337,9 +333,7 @@ defineExpose({
             <template #activator="{ props }">
               <v-icon
                 :color="
-                  form.userType === ID_MODE.value.PUBLIC
-                    ? 'disabled'
-                    : 'primary'
+                  form.userType === ID_MODE.PUBLIC ? 'disabled' : 'primary'
                 "
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
