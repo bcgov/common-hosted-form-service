@@ -146,7 +146,11 @@ defineExpose({
           <v-tooltip location="bottom" close-delay="2500">
             <template #activator="{ props }">
               <v-icon
-                :color="form.userType === ID_MODE.value.PUBLIC ? 'disabled' : 'primary'"
+                :color="
+                  form.userType === ID_MODE.value.PUBLIC
+                    ? 'disabled'
+                    : 'primary'
+                "
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
                 v-bind="props"
@@ -180,9 +184,7 @@ defineExpose({
       class="my-0"
     >
       <template #label>
-        <span
-          :class="{ 'mr-2': isRTL }"
-          :lang="locale"
+        <span :class="{ 'mr-2': isRTL }" :lang="locale"
           >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
         </span>
       </template>
@@ -245,7 +247,11 @@ defineExpose({
           <v-tooltip location="bottom" close-delay="2500">
             <template #activator="{ props }">
               <v-icon
-                :color="form.userType === ID_MODE.value.PUBLIC ? 'disabled' : 'primary'"
+                :color="
+                  form.userType === ID_MODE.value.PUBLIC
+                    ? 'disabled'
+                    : 'primary'
+                "
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
                 v-bind="props"
@@ -286,7 +292,11 @@ defineExpose({
           <v-tooltip location="bottom" close-delay="2500">
             <template #activator="{ props }">
               <v-icon
-                :color="primaryIdpUser === false || !formStore.isFormPublished ? 'disabled' : 'primary'"
+                :color="
+                  primaryIdpUser === false || !formStore.isFormPublished
+                    ? 'disabled'
+                    : 'primary'
+                "
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
                 v-bind="props"
@@ -326,7 +336,11 @@ defineExpose({
           <v-tooltip location="bottom" close-delay="2500">
             <template #activator="{ props }">
               <v-icon
-                :color="form.userType === ID_MODE.value.PUBLIC ? 'disabled' : 'primary'"
+                :color="
+                  form.userType === ID_MODE.value.PUBLIC
+                    ? 'disabled'
+                    : 'primary'
+                "
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
                 v-bind="props"
