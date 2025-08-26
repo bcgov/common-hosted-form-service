@@ -139,6 +139,7 @@ const service = {
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
         deleted: true,
         updatedBy: currentUser.usernameIdp,
+        updatedAt: new Date(),
       });
       await trx.commit();
       result = await service.read(formSubmissionId);

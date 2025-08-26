@@ -1,0 +1,109 @@
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+exports.up = function (knex) {
+  return Promise.all([
+    // Add classification fields directly to form table
+    knex.schema.alterTable('form', (table) => {
+      table.string('classificationType').comment('Classification name (e.g., internal, public, sensitive)');
+      table.integer('retentionDays').comment('Retention period in days before deletion is allowed');
+      table.text('classificationDescription').comment('Description of the classification');
+    }),
+
+    // Create form audit table to track changes
+    knex.schema.createTable('form_audit', (table) => {
+      table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+      table.uuid('formId').notNullable().comment('Form ID that was changed');
+      table.timestamp('actionTimestamp').notNullable().defaultTo(knex.fn.now()).comment('When the change occurred');
+      table.string('action').notNullable().comment('Type of action (U=Update, D=Delete)');
+      table.string('dbUser').notNullable().comment('Database user that made the change');
+      table.string('updatedByUsername').comment('Application username that made the change');
+      table.jsonb('originalData').comment('JSON snapshot of form data before change');
+      table.jsonb('newData').comment('JSON snapshot of form data after change (for updates)');
+
+      // Add indexes for efficient querying
+      table.index(['formId']);
+      table.index(['actionTimestamp']);
+      table.index(['updatedByUsername']);
+    }),
+
+    // Create a database trigger function for form audit
+    knex.raw(`
+      CREATE OR REPLACE FUNCTION form_audited_func() RETURNS trigger AS $body$
+      DECLARE
+        v_old_data jsonb;
+        v_new_data jsonb;
+      BEGIN
+        if (TG_OP = 'UPDATE') then
+          v_old_data := row_to_json(OLD)::jsonb;
+          v_new_data := row_to_json(NEW)::jsonb;
+          insert into public.form_audit (
+            "formId",
+            "dbUser",
+            "actionTimestamp",
+            "action",
+            "originalData",
+            "newData"
+          ) values (
+            OLD.id,
+            SESSION_USER,
+            now(),
+            'U',
+            v_old_data,
+            v_new_data
+          );
+          RETURN NEW;
+        elsif (TG_OP = 'DELETE') then
+          v_old_data := row_to_json(OLD)::jsonb;
+          insert into public.form_audit (
+            "formId",
+            "dbUser",
+            "actionTimestamp",
+            "action",
+            "originalData"
+          ) values (
+            OLD.id,
+            SESSION_USER,
+            now(),
+            'D',
+            v_old_data
+          );
+          RETURN OLD;
+        end if;
+      END;
+      $body$ LANGUAGE plpgsql;
+    `),
+
+    // Add the trigger to the form table
+    knex.raw(`
+      CREATE TRIGGER form_audit_trigger
+      AFTER UPDATE OR DELETE ON public.form
+      FOR EACH ROW EXECUTE PROCEDURE form_audited_func();
+    `),
+  ]);
+};
+
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+exports.down = function (knex) {
+  return Promise.all([
+    // Remove trigger first
+    knex.raw('DROP TRIGGER IF EXISTS form_audit_trigger ON public.form'),
+
+    // Remove trigger function
+    knex.raw('DROP FUNCTION IF EXISTS form_audited_func()'),
+
+    // Drop audit table
+    knex.schema.dropTableIfExists('form_audit'),
+
+    // Remove classification fields
+    knex.schema.alterTable('form', (table) => {
+      table.dropColumn('classificationDescription');
+      table.dropColumn('retentionDays');
+      table.dropColumn('classificationType');
+    }),
+  ]);
+};
