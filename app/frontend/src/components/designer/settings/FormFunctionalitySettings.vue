@@ -114,6 +114,7 @@ defineExpose({
         <span
           :class="{
             'mr-2': isRTL,
+            'text-disabled': form.userType === ID_MODE.PUBLIC,
           }"
           :lang="locale"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
@@ -149,6 +150,7 @@ defineExpose({
         <span
           :class="{
             'mr-2': isRTL,
+            'text-disabled': form.userType === ID_MODE.PUBLIC,
           }"
           :lang="locale"
           v-html="$t('trans.formSettings.displayAssigneeColumn')"
@@ -208,7 +210,12 @@ defineExpose({
       class="my-0"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="locale"
+        <span
+          :class="{
+            'mr-2': isRTL,
+            'text-disabled': true,
+          }"
+          :lang="locale"
           >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
         </span>
       </template>
@@ -348,6 +355,7 @@ defineExpose({
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
+            :class="{ 'text-disabled': form.userType === ID_MODE.PUBLIC }"
             :lang="locale"
             v-html="$t('trans.formSettings.wideFormLayout')"
           />
