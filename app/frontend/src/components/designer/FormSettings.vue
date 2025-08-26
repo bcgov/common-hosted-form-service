@@ -30,7 +30,7 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
         <FormAccessSettings />
       </v-col>
       <v-col cols="12" md="6">
-        <FormFunctionalitySettings />
+        <FormFunctionalitySettings :disabled="disabled" />
       </v-col>
       <v-col cols="12" md="6">
         <FormSubmissionSettings />
