@@ -72,7 +72,7 @@ defineExpose({
       data-test="canSaveAndEditDraftsCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="form.userType === ID_MODE.value.PUBLIC"
       @update:model-value="enableSubmitterDraftChanged"
     >
       <template #label>
@@ -106,7 +106,7 @@ defineExpose({
       data-test="canSubmitterRevisionFormCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="form.userType === ID_MODE.value.PUBLIC"
     >
       <template #label>
         <span
@@ -140,7 +140,7 @@ defineExpose({
       data-test="canUploadDraftCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="form.userType === ID_MODE.value.PUBLIC"
       @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>
@@ -243,7 +243,7 @@ defineExpose({
       hide-details="auto"
       data-test="canCopyExistingSubmissionCheckbox"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      :disabled="form.userType === ID_MODE.value.PUBLIC"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
