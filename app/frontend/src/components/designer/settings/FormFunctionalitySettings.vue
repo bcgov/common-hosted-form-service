@@ -8,13 +8,6 @@ import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { IdentityMode } from '~/utils/constants';
 
-const props = defineProps({
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-});
-
 const { locale } = useI18n({ useScope: 'global' });
 
 const githubLinkBulkUpload = ref(
@@ -47,22 +40,12 @@ const primaryIdpUser = computed(() =>
 
 // Combined disabled states for consistent styling
 const isPublicDisabled = computed(
-  () => props.disabled || form.value.userType === ID_MODE.value.PUBLIC
+  () => form.value.userType === ID_MODE.value.PUBLIC
 );
 const isEventSubscriptionDisabled = computed(
-  () =>
-    props.disabled ||
-    primaryIdpUser.value === false ||
-    !formStore.isFormPublished
+  () => primaryIdpUser.value === false || !formStore.isFormPublished
 );
-const isDraftShareDisabled = computed(
-  () => props.disabled || !form.value.enableSubmitterDraft
-);
-const isFormScheduleDisabled = computed(
-  () => props.disabled || !formStore.isFormPublished
-);
-const isGeneralFormDisabled = computed(() => props.disabled);
-const isWideFormLayoutDisabled = computed(() => props.disabled);
+const isDraftShareDisabled = computed(() => !form.value.enableSubmitterDraft);
 
 function enableSubmitterDraftChanged() {
   if (!form.value.enableSubmitterDraft) {
@@ -119,7 +102,6 @@ defineExpose({
       data-test="canUpdateStatusOfFormCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="isGeneralFormDisabled"
       @update:model-value="
         () => {
           if (!form.enableStatusUpdates && !form.enableSubmitterRevision) {
@@ -132,7 +114,6 @@ defineExpose({
         <span
           :class="{
             'mr-2': isRTL,
-            'text-disabled': isGeneralFormDisabled,
           }"
           :lang="locale"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
@@ -163,13 +144,11 @@ defineExpose({
       data-test="showAssigneeInSubmissionsTableCheckbox"
       hide-details="auto"
       class="my-0 ml-6"
-      :disabled="isGeneralFormDisabled"
     >
       <template #label>
         <span
           :class="{
             'mr-2': isRTL,
-            'text-disabled': isGeneralFormDisabled,
           }"
           :lang="locale"
           v-html="$t('trans.formSettings.displayAssigneeColumn')"
@@ -193,12 +172,12 @@ defineExpose({
             v-html="$t('trans.formSettings.allowMultiDraft')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props: activatorProps }">
+            <template #activator="{ props }">
               <v-icon
                 :color="isPublicDisabled ? 'disabled' : 'primary'"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="activatorProps"
+                v-bind="props"
                 icon="mdi:mdi-flask"
               />
             </template>
@@ -229,12 +208,7 @@ defineExpose({
       class="my-0"
     >
       <template #label>
-        <span
-          :class="{
-            'mr-2': isRTL,
-            'text-disabled': true,
-          }"
-          :lang="locale"
+        <span :class="{ 'mr-2': isRTL }" :lang="locale"
           >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
         </span>
       </template>
@@ -246,22 +220,19 @@ defineExpose({
       hide-details="auto"
       data-test="canScheduleFormSubmissionCheckbox"
       class="my-0"
-      :disabled="isFormScheduleDisabled"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
-          <span
-            :class="{ 'text-disabled': isFormScheduleDisabled }"
-            :lang="locale"
-            >{{ $t('trans.formSettings.formSubmissionsSchedule') }}</span
-          >
+          <span :lang="locale">{{
+            $t('trans.formSettings.formSubmissionsSchedule')
+          }}</span>
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props: activatorProps }">
+            <template #activator="{ props }">
               <v-icon
-                :color="isFormScheduleDisabled ? 'disabled' : 'primary'"
+                color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="activatorProps"
+                v-bind="props"
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
@@ -299,12 +270,12 @@ defineExpose({
             v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props: activatorProps }">
+            <template #activator="{ props }">
               <v-icon
                 :color="isPublicDisabled ? 'disabled' : 'primary'"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="activatorProps"
+                v-bind="props"
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
@@ -341,12 +312,12 @@ defineExpose({
             v-html="$t('trans.formSettings.allowEventSubscription')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props: activatorProps }">
+            <template #activator="{ props }">
               <v-icon
                 :color="isEventSubscriptionDisabled ? 'disabled' : 'primary'"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="activatorProps"
+                v-bind="props"
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
@@ -372,23 +343,21 @@ defineExpose({
       hide-details="auto"
       data-test="canAllowWideFormLayoutCheckbox"
       class="my-0"
-      :disabled="isWideFormLayoutDisabled"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
-            :class="{ 'text-disabled': isWideFormLayoutDisabled }"
             :lang="locale"
             v-html="$t('trans.formSettings.wideFormLayout')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props: activatorProps }">
+            <template #activator="{ props }">
               <v-icon
-                :color="isWideFormLayoutDisabled ? 'disabled' : 'primary'"
+                color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="activatorProps"
+                v-bind="props"
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
