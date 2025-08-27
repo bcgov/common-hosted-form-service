@@ -172,7 +172,7 @@ defineExpose({
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="slotProps"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
               />
             </template>
@@ -220,7 +220,7 @@ defineExpose({
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="slotProps"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
               />
             </template>
@@ -262,7 +262,7 @@ defineExpose({
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="slotProps"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
               />
             </template>
@@ -304,7 +304,7 @@ defineExpose({
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="slotProps"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
               />
             </template>
@@ -346,7 +346,7 @@ defineExpose({
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="slotProps"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
               />
             </template>
@@ -374,6 +374,7 @@ defineExpose({
       hide-details="auto"
       class="my-0"
       data-test="enableTeamMemberDraftShare"
+      @update:model-value="enableSubmitterDraftChanged"
     >
       <template #label>
         <span
