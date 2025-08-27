@@ -14,7 +14,6 @@ const props = defineProps({
 
 const { locale } = useI18n({ useScope: 'global' });
 
-// External docs links
 const githubLinkBulkUpload = ref(
   'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Allow-multiple-draft-upload/'
 );
@@ -42,7 +41,7 @@ const primaryIdpUser = computed(() =>
   idpStore.isPrimary(identityProvider?.value?.code)
 );
 
-// ✅ Centralized disabled states
+//Centralized disabled states
 const disabledStates = computed(() => {
   const base = props.disabled;
   return {
@@ -57,8 +56,10 @@ const disabledStates = computed(() => {
 
 // Dependency handlers
 function enableSubmitterDraftChanged() {
-  if (!form.value.enableSubmitterDraft)
+  if (!form.value.enableSubmitterDraft) {
     form.value.allowSubmitterToUploadFile = false;
+    form.value.enableTeamMemberDraftShare = false;
+  }
 }
 
 function allowSubmitterToUploadFileChanged() {
