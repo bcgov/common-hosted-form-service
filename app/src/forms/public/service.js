@@ -6,8 +6,8 @@ const service = {
     return await reminderService._init();
   },
 
-  processHardDeletions: async () => {
-    return await deletionService.processHardDeletions();
+  processHardDeletions: async (options) => {
+    return await deletionService.processHardDeletions(options);
   },
 };
 

@@ -81,6 +81,42 @@ exports.up = function (knex) {
       AFTER UPDATE OR DELETE ON public.form
       FOR EACH ROW EXECUTE PROCEDURE form_audited_func();
     `),
+
+    knex.raw(`
+     CREATE OR REPLACE FUNCTION public.submission_audited_func()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        v_old_data json;
+    BEGIN
+        IF (TG_OP = 'UPDATE') THEN
+            v_old_data := row_to_json(OLD);
+            INSERT INTO public.form_submission_audit ("submissionId", "dbUser", "updatedByUsername", "actionTimestamp", "action", "originalData")
+            VALUES (
+                OLD.id,
+                SESSION_USER,
+                NEW."updatedBy",
+                now(),
+                'U',
+                v_old_data
+            );
+            RETURN NEW;
+        ELSIF (TG_OP = 'DELETE') THEN
+            v_old_data := row_to_json(OLD);
+            INSERT INTO public.form_submission_audit ("submissionId", "dbUser", "actionTimestamp", "action", "originalData")
+            VALUES (
+                OLD.id,
+                SESSION_USER,
+                now(),
+                'D',
+                v_old_data
+            );
+            RETURN OLD;
+        END IF;
+        
+        RETURN NULL;
+    END;
+    $$ LANGUAGE plpgsql;
+  `),
   ]);
 };
 
@@ -90,6 +126,35 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return Promise.all([
+    knex.raw(`
+    CREATE OR REPLACE FUNCTION public.submission_audited_func() RETURNS trigger AS $body$
+    DECLARE
+        v_old_data json;
+    BEGIN
+        if (TG_OP = 'UPDATE') then
+            v_old_data := row_to_json(OLD);
+            insert into public.form_submission_audit ("submissionId", "dbUser", "updatedByUsername", "actionTimestamp", "action", "originalData")
+            values (
+            OLD.id,
+            SESSION_USER,
+            NEW."updatedBy",
+            now(),
+            'U',
+            v_old_data);
+            RETURN NEW;
+        elsif (TG_OP = 'DELETE') then
+            v_old_data := row_to_json(OLD);
+            insert into public.form_submission_audit ("submissionId", "dbUser", "actionTimestamp", "action", "originalData")
+            values (
+            OLD.id,
+            SESSION_USER,
+            now(),
+            'D',
+            v_old_data);
+        end if;
+    END;
+    $body$ LANGUAGE plpgsql
+  `),
     // Remove trigger first
     knex.raw('DROP TRIGGER IF EXISTS form_audit_trigger ON public.form'),
 

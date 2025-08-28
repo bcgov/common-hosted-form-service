@@ -136,10 +136,11 @@ const service = {
     let result;
     try {
       trx = await FormSubmission.startTransaction();
+      const now = new Date().toISOString();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
         deleted: true,
         updatedBy: currentUser.usernameIdp,
-        updatedAt: new Date(),
+        updatedAt: now,
       });
       await trx.commit();
       result = await service.read(formSubmissionId);
@@ -157,7 +158,8 @@ const service = {
     let trx;
     try {
       trx = await FormSubmission.startTransaction();
-      await FormSubmission.query(trx).patch({ deleted: true, updatedBy: currentUser.usernameIdp }).whereIn('id', submissionIds);
+      const now = new Date().toISOString();
+      await FormSubmission.query(trx).patch({ deleted: true, updatedBy: currentUser.usernameIdp, updatedAt: now }).whereIn('id', submissionIds);
       await trx.commit();
       return await service.readSubmissionData(submissionIds);
     } catch (err) {
