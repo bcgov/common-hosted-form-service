@@ -424,9 +424,46 @@
 
       return methods.every((method) => typeof target[method] === 'function');
     },
+
+    /**
+     * Decodes a JWT and returns the exp (expiration time) claim as a Unix timestamp (seconds).
+     * Returns null if token is invalid or exp is missing.
+     * @param {string} token - JWT string
+     * @returns {number|null} Expiry timestamp in seconds, or null if not found/invalid
+     */
+    getJwtExpiry(token) {
+      if (!token || typeof token !== 'string') return null;
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      try {
+        // Decode base64url
+        let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4) base64 += '=';
+        const json = atob(base64);
+        const payload = JSON.parse(json);
+        return typeof payload.exp === 'number' ? payload.exp : null;
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(`[${NAMESPACE}] Error decoding JWT:`, e);
+        return null;
+      }
+    },
+
+    /**
+     * Returns the number of seconds until expiry for a JWT token.
+     * Returns null if token is invalid or exp is missing.
+     * @param {string} token - JWT string
+     * @returns {number|null} Seconds until expiry, or null if not found/invalid
+     */
+    secondsUntilExpiry(token) {
+      const exp = this.getJwtExpiry(token);
+      if (!exp) return null;
+      return exp - Math.floor(Date.now() / 1000);
+    },
   };
 
   window.FormViewerUtils = FormViewerUtils;
+
   /**
    * CHEFS Form Viewer Web Component
    *
@@ -445,7 +482,7 @@
    * - Add the script to your page, then place the element and call load():
    *   <chefs-form-viewer
    *     form-id="YOUR_FORM_ID"
-   *     api-key="YOUR_API_KEY"
+   *     auth-token="YOUR_JWT_TOKEN"
    *     language="en"
    *     token='{"sub":"user123","roles":["admin"]}'
    *     user='{"name":"John Doe","email":"john@example.com"}'
@@ -460,7 +497,12 @@
    *
    * Configuration via attributes
    * - form-id (string): required. The CHEFS/Form.io form identifier.
-   * - api-key (string): required. Used with form-id for same-origin Basic auth.
+   * - auth-token (string): JWT authentication token (preferred).
+   *   - The auth-token should be fetched by your backend server using the protected api-key and form-id via POST /app/gateway/v1/auth/token/forms/<form-id>.
+   *   - The backend should return the short-lived, refreshable token to the frontend for embedding and authenticating form access.
+   *   - Enables automatic token refresh based on expiry time. Refreshed 60 seconds before expiry.
+   * - api-key (string): API access key (fallback, only if auth-token is not available).
+   *   - Used with form-id for same-origin Basic auth when auth-token is not available.
    * - submission-id (string): optional. Prefills from an existing submission.
    * - read-only (boolean): when present/"true"/empty/1 enables read-only.
    * - language (string): i18n language code (default: "en").
@@ -481,7 +523,7 @@
    * - Properties can be set directly prior to calling load():
    *   const el = document.querySelector('chefs-form-viewer');
    *   el.formId = '...';
-   *   el.apiKey = '...';
+   *   el.authToken = '...';
    *   el.token = { sub: 'user123', roles: ['admin'] };
    *   el.user = { name: 'John Doe', email: 'john@example.com' };
    *   el.endpoints = { themeCss: 'https://example.com/theme.css' };
@@ -492,6 +534,7 @@
    *
    * Core events (CustomEvent)
    * - formio:ready, formio:render, formio:change, formio:submit, formio:submitDone, formio:error
+   * - formio:authTokenRefreshed: fired when auth token is refreshed (includes new and old tokens)
    *
    * Lifecycle overview
    * 1) connectedCallback
@@ -503,13 +546,14 @@
    *    - _loadSchema() fetches and parses schema via `parsers.schema`
    *    - _initFormio()
    *       a) _ensureAssets() state machine: HINTS → CSS → JS → FONTS → READY
-   *       b) _registerAuthPlugin()
-   *       c) _loadPrefillData() (parallel with setup)
-   *       d) Build Form.io options (readOnly, language, hooks)
-   *       e) Emit `formio:beforeInit` (cancelable with waitUntil)
-   *       f) Create Form.io instance; _configureInstanceEndpoints()
-   *       g) _applyPrefill() with single, robust strategy
-   *       h) _wireInstanceEvents(); log `ready`
+   *       b) _registerAuthPlugin() with dynamic header resolution
+   *       c) _initAuthTokenRefresh() to set up automatic token refresh cycle
+   *       d) _loadPrefillData() (parallel with setup)
+   *       e) Build Form.io options (readOnly, language, hooks)
+   *       f) Emit `formio:beforeInit` (cancelable with waitUntil)
+   *       g) Create Form.io instance; _configureInstanceEndpoints()
+   *       h) _applyPrefill() with single, robust strategy
+   *       i) _wireInstanceEvents(); log `ready`
    *    - Emit `formio:ready`
    * 3) submit()/draft()
    *    - _programmaticSubmit(true|false) sets submitKey and calls _manualSubmit()
@@ -527,6 +571,7 @@
     static get observedAttributes() {
       return [
         'form-id',
+        'auth-token',
         'api-key',
         'submission-id',
         'read-only',
@@ -549,6 +594,7 @@
 
       // State
       this.formId = null;
+      this.authToken = null;
       this.apiKey = null;
       this.submissionId = null;
       this.readOnly = false;
@@ -579,6 +625,12 @@
       // Optional: custom auth header hook
       this.onBuildAuthHeader = null; // (url) => ({ Authorization: '...' })
 
+      // if using authToken, then we can set an auto-refresh
+      this._jwtRefreshTimer = null;
+
+      // Track auth plugin registration to avoid re-registration
+      this._authPluginRegistered = false;
+
       /**
        * Overrideable parsers for backend payloads (CHEFS-compatible defaults)
        * ...existing code...
@@ -596,6 +648,9 @@
      *
      * Attributes and effects
      * - form-id: string; the form identifier to load.
+     * - auth-token: string; JWT authentication token from CHEFS for this form-id. Preferred over api-key.
+     *   When set, enables automatic token refresh based on expiry time and dynamic authentication
+     *   for all same-origin requests. The token is refreshed 60 seconds before expiry.
      * - api-key: string; pairs with form-id to generate Basic auth for same-origin requests.
      * - submission-id: string; when set, the component will prefetch and apply submission data.
      * - read-only: boolean; passes readOnly to Form.io to disable editing.
@@ -621,6 +676,9 @@
       switch (name) {
         case 'form-id':
           this.formId = nv;
+          break;
+        case 'auth-token':
+          this.authToken = nv;
           break;
         case 'api-key':
           this.apiKey = nv;
@@ -723,6 +781,11 @@
      * @example
      * const viewer = document.querySelector('chefs-form-viewer');
      * viewer.formId = '12345';
+     * // Set either authToken or apiKey for authentication
+     * // authToken is short lived and secured token from CHEFS
+     * viewer.authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....';
+     * // or use apiKey (not both)
+     * // apiKey is last resort as it should not be publically known/shared.
      * viewer.apiKey = 'your-api-key';
      * await viewer.load();
      */
@@ -769,6 +832,76 @@
       this._log.info('reload:begin');
       await this.destroy();
       await this.load();
+    }
+
+    /**
+     * Refreshes the authentication token by POSTing to the backend refresh endpoint.
+     * Updates this.authToken with the new token if successful and automatically
+     * schedules the next refresh based on the token's expiry time.
+     *
+     * The new token is immediately available to all Form.io requests through the
+     * dynamic auth plugin without requiring any plugin re-registration.
+     *
+     * @returns {Promise<void>} Resolves when refresh completes
+     *
+     * @fires ChefsFormViewer#formio:authTokenRefreshed - When token refresh succeeds
+     * @fires ChefsFormViewer#formio:error - When token refresh fails
+     *
+     * @example
+     * // Manually refresh the token
+     * await viewer.refreshAuthToken();
+     *
+     * @example
+     * // Listen for token refresh events
+     * viewer.addEventListener('formio:authTokenRefreshed', (event) => {
+     *   console.log('New token:', event.detail.authToken);
+     *   console.log('Old token:', event.detail.oldToken);
+     * });
+     */
+    async refreshAuthToken() {
+      const base = this.getBaseUrl();
+      const refreshUrl = `${base}/gateway/v1/auth/refresh`;
+      try {
+        const res = await fetch(refreshUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(this.authToken
+              ? { Authorization: `Bearer ${this.authToken}` }
+              : {}),
+          },
+          body: JSON.stringify({ refreshToken: this.authToken }),
+        });
+        if (!res.ok) {
+          const msg = await this._parseError(
+            res,
+            'Failed to refresh auth token'
+          );
+          this._log.error('authToken:refresh:error', { msg });
+          this._emit('formio:error', { error: msg });
+          return;
+        }
+        const data = await res.json();
+        if (data?.token) {
+          const oldToken = this.authToken;
+          this.authToken = data.token;
+          this._log.info('authToken:refresh:ok');
+          this._emit('formio:authTokenRefreshed', {
+            authToken: data.token,
+            oldToken,
+          });
+          // Schedule next refresh - NO plugin re-registration needed
+          this._scheduleNextTokenRefresh();
+        } else {
+          this._log.warn('authToken:refresh:noToken', { data });
+          this._emit('formio:error', { error: 'No token in refresh response' });
+        }
+      } catch (error) {
+        this._log.error('authToken:refresh:exception', {
+          error: error.message,
+        });
+        this._emit('formio:error', { error: error.message });
+      }
     }
 
     /**
@@ -821,27 +954,6 @@
       } finally {
         this._releaseBusyLock();
       }
-    }
-    /**
-     * Attempts to acquire the busy lock for an action.
-     * Logs and returns false if already busy, otherwise sets busy and returns true.
-     * @param {string} actionName - Name of the action (for logging)
-     * @returns {boolean} True if lock acquired, false if busy
-     */
-    _acquireBusyLock(actionName) {
-      if (this._isBusy) {
-        this._log.info(`${actionName}:skip:busy`);
-        return false;
-      }
-      this._isBusy = true;
-      return true;
-    }
-
-    /**
-     * Releases the busy lock.
-     */
-    _releaseBusyLock() {
-      this._isBusy = false;
     }
 
     /**
@@ -908,6 +1020,28 @@
       return FormViewerUtils.parseBaseUrl(window.location);
     }
 
+    /**
+     * Attempts to acquire the busy lock for an action.
+     * Logs and returns false if already busy, otherwise sets busy and returns true.
+     * @param {string} actionName - Name of the action (for logging)
+     * @returns {boolean} True if lock acquired, false if busy
+     */
+    _acquireBusyLock(actionName) {
+      if (this._isBusy) {
+        this._log.info(`${actionName}:skip:busy`);
+        return false;
+      }
+      this._isBusy = true;
+      return true;
+    }
+
+    /**
+     * Releases the busy lock.
+     */
+    _releaseBusyLock() {
+      this._isBusy = false;
+    }
+
     /** Default backend endpoints; embedders can override via .endpoints */
     _defaultEndpoints() {
       const base = this.getBaseUrl();
@@ -933,7 +1067,7 @@
 
         schema: `${base}/webcomponents/v1/form-viewer/${fid}/schema`,
         submit: `${base}/webcomponents/v1/form-viewer/${fid}/submit`,
-        readSubmission: `${base}/api/v1/submissions/${sid}`,
+        readSubmission: `${base}/webcomponents/v1/form-viewer/${fid}/submission/${sid}`,
       };
     }
 
@@ -943,25 +1077,34 @@
       return u;
     }
 
-    _authHeader(url) {
+    _buildAuthHeader(url) {
       if (typeof this.onBuildAuthHeader === 'function') {
-        const h = this.onBuildAuthHeader(url);
-        if (h && typeof h === 'object') return h;
-      }
-      // Default Basic: formId:apiKey
-      if (url.startsWith(this.getBaseUrl())) {
-        try {
-          return FormViewerUtils.createBasicAuthHeader(
-            this.formId,
-            this.apiKey
-          );
-        } catch (e) {
-          this._log.warn('Failed to create Basic Auth header', {
-            error: e.message,
-          });
-          return {};
+        const customHeader = this.onBuildAuthHeader(url);
+        if (customHeader && typeof customHeader === 'object') {
+          return customHeader;
         }
       }
+
+      // Prefer Bearer token over Basic auth
+      if (url.startsWith(this.getBaseUrl())) {
+        if (this.authToken) {
+          return { Authorization: `Bearer ${this.authToken}` };
+        }
+
+        if (this.formId && this.apiKey) {
+          try {
+            return FormViewerUtils.createBasicAuthHeader(
+              this.formId,
+              this.apiKey
+            );
+          } catch (e) {
+            this._log.warn('Failed to create Basic Auth header', {
+              error: e.message,
+            });
+          }
+        }
+      }
+
       return {};
     }
 
@@ -1230,7 +1373,7 @@
       if (!this._emit('formio:beforeLoadSchema', { url }, { cancelable: true }))
         return;
 
-      const res = await fetch(url, { headers: this._authHeader(url) });
+      const res = await fetch(url, { headers: this._buildAuthHeader(url) });
       if (!res.ok) {
         const msg = await this._parseError(res, 'Failed to load form schema');
         this._emit('formio:error', { error: msg });
@@ -1587,32 +1730,121 @@
       }
     }
 
-    /** Register a minimal auth plugin to attach auth headers to CHEFS requests */
+    /**
+     * Registers a Form.io auth plugin that dynamically attaches auth headers to CHEFS requests.
+     * The plugin resolves auth headers on every request, automatically picking up token changes
+     * without requiring re-registration. Only registers once per component instance.
+     *
+     * The plugin prefers Bearer token (authToken) over Basic auth (apiKey) and only applies
+     * headers to requests targeting the component's base URL.
+     *
+     * @private
+     */
     _registerAuthPlugin() {
       const formioAvailable = FormViewerUtils.validateGlobalMethods(
         window,
         'Formio',
         ['registerPlugin']
       );
-      if (!formioAvailable || window.__formioWcAuth) return;
+      if (!formioAvailable) return;
+
+      // Check if our plugin is already registered
+      if (this._authPluginRegistered) return;
+
       const base = this.getBaseUrl();
-      const authHeader = this._authHeader(base);
-      // debug: auth plugin register
       const plugin = {
         priority: 0,
         preRequest: (args) => {
           if (!args?.url?.startsWith(base)) return;
-          args.opts = args.opts || {};
-          args.opts.headers = { ...(args.opts.headers || {}), ...authHeader };
+
+          // DYNAMIC header resolution - gets fresh token every time
+          const authHeader = this._buildAuthHeader(args.url);
+          if (authHeader && Object.keys(authHeader).length > 0) {
+            args.opts = args.opts || {};
+            args.opts.headers = {
+              ...(args.opts.headers || {}),
+              ...authHeader,
+            };
+          }
         },
         preStaticRequest: (args) => {
           if (!args?.url?.startsWith(base)) return;
-          args.opts = args.opts || {};
-          args.opts.headers = { ...(args.opts.headers || {}), ...authHeader };
+
+          // DYNAMIC header resolution
+          const authHeader = this._buildAuthHeader(args.url);
+          if (authHeader && Object.keys(authHeader).length > 0) {
+            args.opts = args.opts || {};
+            args.opts.headers = {
+              ...(args.opts.headers || {}),
+              ...authHeader,
+            };
+          }
         },
       };
+
+      // Register once with a consistent name
       window.Formio.registerPlugin(plugin, 'chefs-viewer-auth');
-      window.__chefsViewerAuth = true;
+      this._authPluginRegistered = true;
+      this._log.info('Auth plugin registered once');
+
+      // Set global auth type indicator for backward compatibility
+      if (this.authToken) {
+        window.__chefsViewerAuth = 'bearer';
+      } else if (this.apiKey) {
+        window.__chefsViewerAuth = 'basic';
+      }
+    }
+
+    /**
+     * Initializes automatic token refresh if an auth token is present.
+     * Called during component initialization to set up the refresh cycle.
+     *
+     * @private
+     */
+    async _initAuthTokenRefresh() {
+      if (this.authToken) {
+        this._scheduleNextTokenRefresh();
+      }
+    }
+
+    /**
+     * Schedules the next automatic token refresh based on the current JWT's expiry time.
+     * Clears any existing refresh timer and sets up a new one to refresh the token
+     * 60 seconds before expiry (minimum 10 seconds from now).
+     *
+     * This method is called automatically by refreshAuthToken() and _initAuthTokenRefresh().
+     * The timer will trigger refreshAuthToken() which will call this method again,
+     * creating a continuous refresh cycle.
+     *
+     * @private
+     */
+    _scheduleNextTokenRefresh() {
+      if (!this.authToken) return;
+
+      // Clear any existing timer
+      if (this._jwtRefreshTimer) {
+        clearTimeout(this._jwtRefreshTimer);
+        this._jwtRefreshTimer = null;
+      }
+
+      const expiry = FormViewerUtils.getJwtExpiry(this.authToken);
+      if (!expiry) return;
+
+      const now = Math.floor(Date.now() / 1000);
+      let secondsUntilRefresh = expiry - now - 60; // 60 seconds before expiry
+      if (secondsUntilRefresh < 10) secondsUntilRefresh = 10; // minimum 10 seconds
+
+      this._log.info('authToken:autoRefreshScheduled', {
+        refreshIn: secondsUntilRefresh,
+        expiry,
+        now,
+      });
+
+      this._jwtRefreshTimer = setTimeout(async () => {
+        this._log.info('authToken:autoRefreshTrigger');
+        await this.refreshAuthToken();
+        // refreshAuthToken() will call _scheduleNextTokenRefresh() again
+      }, secondsUntilRefresh * 1000);
     }
 
     _buildHooks() {
@@ -1667,7 +1899,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...this._authHeader(url),
+          ...this._buildAuthHeader(url),
         },
         body: JSON.stringify({ submission }),
       });
@@ -1738,7 +1970,7 @@
 
       try {
         const response = await fetch(readUrl, {
-          headers: this._authHeader(readUrl),
+          headers: this._buildAuthHeader(readUrl),
         });
         if (!response.ok) {
           this._log.warn('Prefill data fetch error', {
@@ -1870,7 +2102,12 @@
 
     async _initFormio() {
       await this._ensureAssets();
+
+      // Register auth plugin once - no retry logic needed
       this._registerAuthPlugin();
+
+      // Initialize auth token refresh if we have a token
+      await this._initAuthTokenRefresh();
 
       // Load prefill data early (parallel with other setup)
       const prefillPromise = this._loadPrefillData();

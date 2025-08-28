@@ -301,6 +301,73 @@ describe('FormViewerUtils', () => {
     expect(utils.validateGlobalMethods({}, 'Foo', [])).toBe(false);
     expect(utils.validateGlobalMethods({}, 'Bar', ['baz'])).toBe(false);
   });
+
+  it('getJwtExpiry extracts expiry from valid JWT', () => {
+    // Valid JWT with exp claim (expires at Unix timestamp 1234567890)
+    const validJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjEyMzQ1Njc4OTB9.signature';
+    expect(utils.getJwtExpiry(validJwt)).toBe(1234567890);
+  });
+
+  it('getJwtExpiry returns null for invalid tokens', () => {
+    expect(utils.getJwtExpiry('')).toBe(null);
+    expect(utils.getJwtExpiry(null)).toBe(null);
+    expect(utils.getJwtExpiry(undefined)).toBe(null);
+    expect(utils.getJwtExpiry('not-a-jwt')).toBe(null);
+    expect(utils.getJwtExpiry('only.two.parts')).toBe(null);
+    expect(utils.getJwtExpiry('too.many.parts.here.invalid')).toBe(null);
+    // Invalid base64
+    expect(utils.getJwtExpiry('header.invalid-base64.signature')).toBe(null);
+    // Valid base64 but invalid JSON
+    expect(utils.getJwtExpiry('header.aW52YWxpZC1qc29u.signature')).toBe(null);
+  });
+
+  it('getJwtExpiry returns null when no exp claim present', () => {
+    // JWT without exp claim
+    const noExpJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.signature';
+    expect(utils.getJwtExpiry(noExpJwt)).toBe(null);
+    // JWT with non-numeric exp
+    const invalidExpJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOiJub3QtYS1udW1iZXIifQ.signature';
+    expect(utils.getJwtExpiry(invalidExpJwt)).toBe(null);
+  });
+
+  it('secondsUntilExpiry calculates time until expiry', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 3600; // 1 hour from now
+
+    // Mock getJwtExpiry to return our future expiry
+    const originalGetJwtExpiry = utils.getJwtExpiry;
+    utils.getJwtExpiry = vi.fn().mockReturnValue(futureExp);
+
+    const result = utils.secondsUntilExpiry('mock-token');
+    expect(result).toBeGreaterThan(3590); // Should be close to 3600
+    expect(result).toBeLessThanOrEqual(3600);
+
+    // Restore original function
+    utils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('secondsUntilExpiry returns null for invalid tokens', () => {
+    expect(utils.secondsUntilExpiry('')).toBe(null);
+    expect(utils.secondsUntilExpiry('invalid-token')).toBe(null);
+  });
+
+  it('secondsUntilExpiry returns negative for expired tokens', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const pastExp = now - 3600; // 1 hour ago
+
+    // Mock getJwtExpiry to return past expiry
+    const originalGetJwtExpiry = utils.getJwtExpiry;
+    utils.getJwtExpiry = vi.fn().mockReturnValue(pastExp);
+
+    const result = utils.secondsUntilExpiry('mock-token');
+    expect(result).toBeLessThan(0);
+
+    // Restore original function
+    utils.getJwtExpiry = originalGetJwtExpiry;
+  });
 });
 
 // --- ChefsFormViewer Public API Tests ---
@@ -320,6 +387,14 @@ describe('ChefsFormViewer', () => {
     expect(el.formId).toBe('abc');
     el.setAttribute('read-only', '');
     expect(el.readOnly).toBe(true);
+  });
+
+  it('attributeChangedCallback handles authToken attribute', () => {
+    el.setAttribute('auth-token', 'jwt-token-123');
+    expect(el.authToken).toBe('jwt-token-123');
+
+    el.setAttribute('api-key', 'api-key-456');
+    expect(el.apiKey).toBe('api-key-456');
   });
 
   it('connectedCallback sets logger and renders', () => {
@@ -436,26 +511,425 @@ describe('ChefsFormViewer internals', () => {
     delete globalThis._origFetch;
   });
 
-  it('_authHeader uses custom hook', () => {
+  it('_buildAuthHeader uses custom hook when provided', () => {
     el.onBuildAuthHeader = (_url) => ({ Authorization: 'Custom' });
-    expect(el._authHeader('https://x')).toEqual({ Authorization: 'Custom' });
+    expect(el._buildAuthHeader('https://x')).toEqual({
+      Authorization: 'Custom',
+    });
   });
 
-  it('_authHeader returns Basic auth and logs error on encoder fail', () => {
+  it('_buildAuthHeader prefers Bearer over Basic auth', () => {
+    el.authToken = 'jwt-token-123';
+    el.formId = 'form-456';
+    el.apiKey = 'api-key-789';
+    el.getBaseUrl = () => 'https://example.com';
+
+    const result = el._buildAuthHeader('https://example.com/api');
+    expect(result).toEqual({ Authorization: 'Bearer jwt-token-123' });
+  });
+
+  it('_buildAuthHeader falls back to Basic auth when no authToken', () => {
+    el.authToken = null;
+    el.formId = 'form-456';
+    el.apiKey = 'api-key-789';
+    el.getBaseUrl = () => 'https://example.com';
+
+    // Mock btoa for test environment
+    globalThis.btoa = (str) => Buffer.from(str, 'binary').toString('base64');
+
+    const result = el._buildAuthHeader('https://example.com/api');
+    expect(result).toEqual({
+      Authorization: `Basic ${btoa('form-456:api-key-789')}`,
+    });
+  });
+
+  it('_buildAuthHeader returns empty object for different origin', () => {
+    el.authToken = 'jwt-token-123';
+    el.getBaseUrl = () => 'https://example.com';
+
+    const result = el._buildAuthHeader('https://other-site.com/api');
+    expect(result).toEqual({});
+  });
+
+  it('_buildAuthHeader returns empty object when no auth available', () => {
+    el.authToken = null;
+    el.formId = null;
+    el.apiKey = null;
+    el.getBaseUrl = () => 'https://example.com';
+
+    const result = el._buildAuthHeader('https://example.com/api');
+    expect(result).toEqual({});
+  });
+
+  it('_buildAuthHeader logs error when Basic auth creation fails', () => {
+    el.authToken = null;
     el.formId = 'abc';
     el.apiKey = 'def';
+    el.getBaseUrl = () => 'https://example.com';
+
     // Patch createBasicAuthHeader to throw
     const orig = window.FormViewerUtils.createBasicAuthHeader;
     window.FormViewerUtils.createBasicAuthHeader = () => {
       throw new Error('fail');
     };
     const spy = vi.spyOn(el._log, 'warn');
-    expect(el._authHeader(el.getBaseUrl())).toEqual({});
+
+    expect(el._buildAuthHeader('https://example.com/api')).toEqual({});
     expect(spy).toHaveBeenCalledWith(
       'Failed to create Basic Auth header',
       expect.any(Object)
     );
+
     window.FormViewerUtils.createBasicAuthHeader = orig;
+    spy.mockRestore();
+  });
+
+  it('refreshAuthToken makes POST request and updates token on success', async () => {
+    el.getBaseUrl = () => 'https://example.com';
+    el.authToken = 'old-token';
+    el._emit = vi.fn();
+    el._scheduleNextTokenRefresh = vi.fn();
+
+    // Mock successful response
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ token: 'new-token' }),
+    });
+
+    await el.refreshAuthToken();
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://example.com/gateway/v1/auth/refresh',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer old-token',
+        },
+        body: JSON.stringify({ refreshToken: 'old-token' }),
+      }
+    );
+
+    expect(el.authToken).toBe('new-token');
+    expect(el._emit).toHaveBeenCalledWith('formio:authTokenRefreshed', {
+      authToken: 'new-token',
+      oldToken: 'old-token',
+    });
+    expect(el._scheduleNextTokenRefresh).toHaveBeenCalled();
+  });
+
+  it('refreshAuthToken emits error on failed response', async () => {
+    el.getBaseUrl = () => 'https://example.com';
+    el.authToken = 'old-token';
+    el._emit = vi.fn();
+    el._parseError = vi.fn().mockResolvedValue('Token refresh failed');
+
+    // Mock failed response
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ error: 'Invalid token' }),
+    });
+
+    await el.refreshAuthToken();
+
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'Token refresh failed',
+    });
+    expect(el.authToken).toBe('old-token'); // Should not change
+  });
+
+  it('refreshAuthToken emits error when no token in response', async () => {
+    el.getBaseUrl = () => 'https://example.com';
+    el.authToken = 'old-token';
+    el._emit = vi.fn();
+
+    // Mock response without token
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ success: true }), // No token field
+    });
+
+    await el.refreshAuthToken();
+
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'No token in refresh response',
+    });
+  });
+
+  it('refreshAuthToken handles network errors', async () => {
+    el.getBaseUrl = () => 'https://example.com';
+    el.authToken = 'old-token';
+    el._emit = vi.fn();
+
+    // Mock network error
+    globalThis.fetch.mockRejectedValueOnce(new Error('Network error'));
+
+    await el.refreshAuthToken();
+
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'Network error',
+    });
+  });
+
+  it('_scheduleNextTokenRefresh sets timer based on JWT expiry', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 300; // 5 minutes from now
+
+    el.authToken = 'jwt-token';
+
+    // Mock JWT expiry extraction
+    const originalGetJwtExpiry = window.FormViewerUtils.getJwtExpiry;
+    window.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(futureExp);
+
+    // Mock setTimeout to capture the delay
+    const originalSetTimeout = globalThis.setTimeout;
+    let capturedDelay;
+    globalThis.setTimeout = vi.fn((callback, delay) => {
+      capturedDelay = delay;
+      return 123; // Mock timer ID
+    });
+
+    el._scheduleNextTokenRefresh();
+
+    // Should schedule refresh 60 seconds before expiry
+    const expectedDelay = (futureExp - now - 60) * 1000;
+    expect(capturedDelay).toBe(expectedDelay);
+    expect(el._jwtRefreshTimer).toBe(123);
+
+    // Restore mocks
+    window.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleNextTokenRefresh uses minimum 10 second delay', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const soonExp = now + 5; // 5 seconds from now (less than 60 second buffer)
+
+    el.authToken = 'jwt-token';
+
+    // Mock JWT expiry extraction
+    const originalGetJwtExpiry = window.FormViewerUtils.getJwtExpiry;
+    window.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(soonExp);
+
+    // Mock setTimeout to capture the delay
+    const originalSetTimeout = globalThis.setTimeout;
+    let capturedDelay;
+    globalThis.setTimeout = vi.fn((callback, delay) => {
+      capturedDelay = delay;
+      return 123;
+    });
+
+    el._scheduleNextTokenRefresh();
+
+    // Should use minimum 10 second delay
+    expect(capturedDelay).toBe(10000);
+
+    // Restore mocks
+    window.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleNextTokenRefresh clears existing timer', () => {
+    el.authToken = 'jwt-token';
+    el._jwtRefreshTimer = 456; // Existing timer
+
+    // Mock clearTimeout
+    const originalClearTimeout = globalThis.clearTimeout;
+    globalThis.clearTimeout = vi.fn();
+
+    // Mock getJwtExpiry to return null (invalid token)
+    const originalGetJwtExpiry = window.FormViewerUtils.getJwtExpiry;
+    window.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+
+    el._scheduleNextTokenRefresh();
+
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(456);
+    expect(el._jwtRefreshTimer).toBe(null);
+
+    // Restore mocks
+    window.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+    globalThis.clearTimeout = originalClearTimeout;
+  });
+
+  it('_scheduleNextTokenRefresh does nothing when no authToken', () => {
+    el.authToken = null;
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = vi.fn();
+
+    el._scheduleNextTokenRefresh();
+
+    expect(globalThis.setTimeout).not.toHaveBeenCalled();
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_initAuthTokenRefresh calls _scheduleNextTokenRefresh when authToken present', async () => {
+    el.authToken = 'jwt-token';
+    el._scheduleNextTokenRefresh = vi.fn();
+
+    await el._initAuthTokenRefresh();
+
+    expect(el._scheduleNextTokenRefresh).toHaveBeenCalled();
+  });
+
+  it('_initAuthTokenRefresh does nothing when no authToken', async () => {
+    el.authToken = null;
+    el._scheduleNextTokenRefresh = vi.fn();
+
+    await el._initAuthTokenRefresh();
+
+    expect(el._scheduleNextTokenRefresh).not.toHaveBeenCalled();
+  });
+
+  it('_registerAuthPlugin registers plugin with dynamic header resolution', () => {
+    // Mock Formio global
+    globalThis.window.Formio = {
+      registerPlugin: vi.fn(),
+    };
+
+    el.getBaseUrl = () => 'https://example.com';
+    el._authPluginRegistered = false;
+    el.authToken = 'bearer-token';
+
+    // Mock validateGlobalMethods
+    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
+    window.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(true);
+
+    el._registerAuthPlugin();
+
+    expect(globalThis.window.Formio.registerPlugin).toHaveBeenCalled();
+    expect(el._authPluginRegistered).toBe(true);
+    expect(globalThis.window.__chefsViewerAuth).toBe('bearer');
+
+    // Get the registered plugin
+    const [plugin, pluginName] =
+      globalThis.window.Formio.registerPlugin.mock.calls[0];
+    expect(pluginName).toBe('chefs-viewer-auth');
+    expect(plugin.priority).toBe(0);
+    expect(typeof plugin.preRequest).toBe('function');
+    expect(typeof plugin.preStaticRequest).toBe('function');
+
+    // Restore mocks
+    window.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.window.Formio;
+  });
+
+  it('_registerAuthPlugin skips registration when already registered', () => {
+    globalThis.window.Formio = {
+      registerPlugin: vi.fn(),
+    };
+
+    el._authPluginRegistered = true;
+
+    // Mock validateGlobalMethods
+    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
+    window.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(true);
+
+    el._registerAuthPlugin();
+
+    expect(globalThis.window.Formio.registerPlugin).not.toHaveBeenCalled();
+
+    // Restore mocks
+    window.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.window.Formio;
+  });
+
+  it('_registerAuthPlugin sets Basic auth indicator when using apiKey', () => {
+    globalThis.window.Formio = {
+      registerPlugin: vi.fn(),
+    };
+
+    el.getBaseUrl = () => 'https://example.com';
+    el._authPluginRegistered = false;
+    el.authToken = null;
+    el.apiKey = 'api-key';
+
+    // Mock validateGlobalMethods
+    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
+    window.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(true);
+
+    el._registerAuthPlugin();
+
+    expect(globalThis.window.__chefsViewerAuth).toBe('basic');
+
+    // Restore mocks
+    window.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.window.Formio;
+  });
+
+  it('_registerAuthPlugin does nothing when Formio not available', () => {
+    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
+    window.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(false);
+
+    el._registerAuthPlugin();
+
+    expect(el._authPluginRegistered).toBe(false);
+
+    // Restore mocks
+    window.FormViewerUtils.validateGlobalMethods = originalValidate;
+  });
+
+  it('registered auth plugin calls _buildAuthHeader dynamically', () => {
+    // Mock Formio global
+    globalThis.window.Formio = {
+      registerPlugin: vi.fn(),
+    };
+
+    el.getBaseUrl = () => 'https://example.com';
+    el._authPluginRegistered = false;
+    el._buildAuthHeader = vi
+      .fn()
+      .mockReturnValue({ Authorization: 'Bearer dynamic-token' });
+
+    // Mock validateGlobalMethods
+    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
+    window.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(true);
+
+    el._registerAuthPlugin();
+
+    // Get the registered plugin
+    const [plugin] = globalThis.window.Formio.registerPlugin.mock.calls[0];
+
+    // Test that the plugin calls _buildAuthHeader dynamically
+    const mockArgs = {
+      url: 'https://example.com/api/form',
+      opts: { headers: { 'Content-Type': 'application/json' } },
+    };
+
+    plugin.preRequest(mockArgs);
+
+    expect(el._buildAuthHeader).toHaveBeenCalledWith(
+      'https://example.com/api/form'
+    );
+    expect(mockArgs.opts.headers).toEqual({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer dynamic-token',
+    });
+
+    // Test that plugin ignores requests to other origins
+    const externalArgs = {
+      url: 'https://other-site.com/api',
+      opts: { headers: {} },
+    };
+
+    el._buildAuthHeader.mockClear();
+    plugin.preRequest(externalArgs);
+
+    expect(el._buildAuthHeader).not.toHaveBeenCalled();
+    expect(externalArgs.opts.headers).toEqual({});
+
+    // Restore mocks
+    window.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.window.Formio;
   });
 
   it('_getAssetLoadFunction returns correct loader for .js/.css', () => {

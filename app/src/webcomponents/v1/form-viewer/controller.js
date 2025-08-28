@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const service = require('../../../forms/form/service');
+const submissionService = require('../../../forms/submission/service');
 
 module.exports = {
   /**
@@ -61,6 +62,34 @@ module.exports = {
 
       // Placeholder for notifications/integrations
       res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Public endpoint to read a submission for web component
+   */
+  readSubmission: async (req, res, next) => {
+    try {
+      const formId = req.params.formId;
+      const submissionId = req.params.formSubmissionId;
+      if (!validate(formId)) {
+        res.status(400).json({ detail: `Bad formId "${formId}".` });
+        return;
+      }
+      if (!validate(submissionId)) {
+        res.status(400).json({ detail: `Bad submissionId "${submissionId}".` });
+        return;
+      }
+      // Read the submission using the service
+      // Replicate /api/v1/submission/<id> call.
+      const submission = await submissionService.read(submissionId);
+      if (!submission) {
+        res.status(404).json({ detail: 'Submission not found' });
+        return;
+      }
+      res.status(200).json(submission);
     } catch (error) {
       next(error);
     }

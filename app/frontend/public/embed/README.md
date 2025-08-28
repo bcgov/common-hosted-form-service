@@ -233,6 +233,8 @@ The `token` and `user` objects you provide are made available in Form.io's evalC
 
 > **IMPORTANT SECURITY NOTE**: The `token` parameter is intended for **parsed token data only** (like Keycloak's `tokenParsed` object), not raw authorization tokens. In CHEFS, we pass the parsed JWT payload containing user metadata, roles, and claims - never the base64-encoded JWT string that could be used for API authorization. Follow this same approach: provide only the decoded token payload for Form.io logic, never actual authorization credentials.
 
+> **ANOTHER IMPORTANT SECURITY NOTE**: The `token` parameter is **NOT** the `auth-token`. The `auth-token` is not a user-based token, it is to verify the web component can load this form.
+
 **Examples:**
 
 ```javascript
@@ -293,51 +295,56 @@ Use the interactive code generator at [`/app/embed/chefs-form-viewer-generator.h
 - Generate embed code for all three methods (embed script, component HTML, programmatic)
 - Copy-paste ready code snippets
 - Launch live demos with your configuration
+- Allows client-side fetching of `auth-token` to launch the embedded demo.
 
 #### **Demo Pages**
 
 - **Interactive Embed Demo**: [`/app/embed/chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) - One-line embedding with URL parameters
-- **Traditional Component Demo**: [`/app/embed/chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html) - Direct component usage with attribute toggles and event logging
+- **Component Demo with auth-token**: [`/app/embed/chefs-form-viewer-auth-demo.html`](./chefs-form-viewer-auth-demo.html) - Demonstrates fetching an auth-token to load the component. Trivialized example as token fetching is done client-side not server-side.
+- **Traditional Component Demo**: [`/app/embed/chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html) - Direct component usage with attribute toggles and event logging. Uses `form-id` and `api-key` not `auth-token`.
 
-### Build Process
+## Required Parameters
 
-The CHEFS Form Viewer web component requires a build process to generate production assets and extract theme CSS. This happens automatically during the main CHEFS application build.
+- `form-id`: CHEFS form UUID (required)
+- `auth-token`: JWT authentication token (preferred; see below)
+- `api-key`: API access key (fallback, only if `auth-token` is not available)
 
-#### **Build Steps**
+## Optional Parameters
 
-1. **Frontend Build** (`npm run build`)
+- `submission-id`: Load specific submission (for editing/viewing)
+- `read-only`: Render form as read-only (true/false)
+- `language`: Form language (en, fr, etc.)
+- `base-url`: Override API base URL
+- `debug`: Enable debug logging (true/false)
+- `isolate-styles`: Use Shadow DOM isolation (true/false)
+- `no-icons`: Disable Font Awesome icons (true/false)
+- `theme-css`: Custom theme CSS URL
+- `token`: URL-encoded JSON JWT token object
+- `user`: URL-encoded JSON user object
 
-   - Compiles the main CHEFS application (Vue.js, Vuetify, Bootstrap, etc.)
-   - Generates bundled CSS files in `app/frontend/dist/assets/`
-   - **Copies all files** from `app/frontend/public/embed/` to `app/frontend/dist/embed/` (standard Vite behavior)
+## Authentication
 
-2. **Theme Extraction** (`npm run postbuild` → `extract-theme.js`)
+The embed script requires authentication to access protected forms. You must provide either an `auth-token` (preferred) or an `api-key`.
 
-   - Reads the main CSS bundle from `dist/assets/index-*.css`
-   - **Generates `chefs-index.css` directly in `dist/embed/`** (complete CHEFS CSS bundle)
-   - **Generates `chefs-theme.css` directly in `dist/embed/`** (extracted CSS variables with Shadow DOM compatibility)
-   - Processes only `:root` and `[data-bs-theme="light"]` selectors for light theme support
+**auth-token (JWT, Preferred):**
 
-3. **Component Minification** (`npm run postbuild` → `npm run build:embed`)
-   - **Minifies `public/embed/chefs-form-viewer.js` → `dist/embed/chefs-form-viewer.min.js`**
-   - **Minifies `public/embed/chefs-form-viewer-embed.js` → `dist/embed/chefs-form-viewer-embed.min.js`**
-   - Generates source maps for debugging directly in `dist/embed/`
+- Pass a JWT as the `auth-token` parameter. This is the recommended method for secure embedding.
+- The `auth-token` should be fetched by your backend server using the protected `api-key` and `form-id` via:
+  `POST /app/gateway/v1/auth/token/forms/<form-id>`; this endpoint is proteced with CHEFS API Access (Basic Authentication where `username`=`form-id`, `password`=`api-key`)
+- The backend should return the short-lived, refreshable token to the frontend for embedding and authenticating form access.
 
-#### **Generated Files**
+**api-key (Basic Auth, Fallback):**
 
-The build process creates these production assets in `app/frontend/dist/embed/`:
+- Pass your CHEFS API key as the `api-key` parameter only if `auth-token` is not available. This is used for same-origin Basic authentication.
 
-- **`chefs-index.css`**: Complete CHEFS CSS bundle (Bootstrap, Vuetify, Form.io, custom styles)
-- **`chefs-theme.css`**: Extracted CSS variables and Shadow DOM compatibility fixes
-- **`chefs-form-viewer.min.js`**: Minified web component
-- **`chefs-form-viewer-embed.min.js`**: Minified embed script
-- **Source maps**: `.min.js.map` files for debugging
+If both `auth-token` and `api-key` are provided, the embed script will use `auth-token`.
 
-**Important**: These files are **generated during build** and are **not stored in source control**. They only exist in `dist/embed/` after running the build process.
+## Security Best Practices
 
-#### **Docker Build Integration**
-
-The build process is integrated into the Docker build pipeline:
+- Never expose your `api-key` in client-side code or public repositories.
+- Always use your backend to fetch a short-lived `auth-token` and pass it to the frontend for embedding.
+- Use HTTPS for all requests and embedding.
+  The build process is integrated into the Docker build pipeline:
 
 ```dockerfile
 # Frontend build (includes theme extraction)
@@ -354,14 +361,15 @@ All generated assets are automatically copied to the correct locations for servi
 
 These files are stored in source control and copied to `dist/embed/` during build:
 
-| File                                                                       | Purpose                               | HTTP Path                                      |
-| -------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------- |
-| [`chefs-form-viewer.js`](./chefs-form-viewer.js)                           | Main web component (development)      | `/app/embed/chefs-form-viewer.js`              |
-| [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development) | `/app/embed/chefs-form-viewer-embed.js`        |
-| [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                   | `/app/embed/chefs-form-viewer-generator.html`  |
-| [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                | `/app/embed/chefs-form-viewer-embed-demo.html` |
-| [`chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html)             | Traditional component demo            | `/app/embed/chefs-form-viewer-demo.html`       |
-| [`README.md`](./README.md)                                                 | This documentation                    | `/app/embed/README.md`                         |
+| File                                                                       | Purpose                                    | HTTP Path                                      |
+| -------------------------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------- |
+| [`chefs-form-viewer.js`](./chefs-form-viewer.js)                           | Main web component (development)           | `/app/embed/chefs-form-viewer.js`              |
+| [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development)      | `/app/embed/chefs-form-viewer-embed.js`        |
+| [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                        | `/app/embed/chefs-form-viewer-generator.html`  |
+| [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                     | `/app/embed/chefs-form-viewer-embed-demo.html` |
+| [`chefs-form-viewer-auth-demo.html`](./chefs-form-viewer-auth-demo.html)   | Demos fetching auth-token and loading form | `/app/embed/chefs-form-viewer-auth-demo.html`  |
+| [`chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html)             | Traditional component demo                 | `/app/embed/chefs-form-viewer-demo.html`       |
+| [`README.md`](./README.md)                                                 | This documentation                         | `/app/embed/README.md`                         |
 
 #### **Generated Files** (created in `dist/embed/` during build)
 
