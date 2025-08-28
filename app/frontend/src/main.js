@@ -41,6 +41,7 @@ app.config.globalProperties.$filters = {
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
 import BcGovFormioComponents from '~/formio/lib';
+import '~/formio/css/bcgov-formio-components.css';
 import { Formio } from '@formio/vue';
 Formio.use(BcGovFormioComponents);
 
