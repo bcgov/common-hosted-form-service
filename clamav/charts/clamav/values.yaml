@@ -40,9 +40,10 @@ clamav:
 
   resources:
     # clamav.resources -- The resource requests and limits for the clamav service
+    # clamav loads virus definitions into memory, so our memory request should be our max memory request
     requests:
       cpu: 100m
-      memory: 512Mi
+      memory: 2048Mi
     limits:
       cpu: 500m
       memory: 2048Mi

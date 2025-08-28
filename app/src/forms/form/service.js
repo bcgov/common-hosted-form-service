@@ -167,9 +167,8 @@ const service = {
   validateScheduleObject,
   isLateSubmissionConfigValid,
   isClosingMessageValid,
-
   _setAssigneeInSubmissionsTable: (formData) => {
-    return formData.showAssigneeInSubmissionsTable === true && formData.enableStatusUpdates;
+    return formData.showAssigneeInSubmissionsTable === true && (formData.enableStatusUpdates || formData.enableSubmitterRevision);
   },
   _setAllowSubmitterToUploadFile: (formData) => {
     // do not allow submitter to upload files if the form is public, or if allowSubmitterToUploadFile is false.
@@ -231,6 +230,7 @@ const service = {
       obj.sendSubmissionReceivedEmail = data.sendSubmissionReceivedEmail;
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
+      obj.enableSubmitterRevision = data.enableSubmitterRevision;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
@@ -315,6 +315,7 @@ const service = {
         sendSubmissionReceivedEmail: data.sendSubmissionReceivedEmail,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
+        enableSubmitterRevision: data.enableSubmitterRevision,
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
@@ -532,7 +533,7 @@ const service = {
   },
 
   _shouldIncludeAssignee: (form) => {
-    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates;
+    return form.showAssigneeInSubmissionsTable && (form.enableStatusUpdates || form.enableSubmitterRevision);
   },
 
   _buildSelectionAndFields: (params, shouldIncludeAssignee) => {
@@ -620,15 +621,18 @@ const service = {
           return false;
         });
       });
-      let start = page * itemsPerPage;
-      let end = page * itemsPerPage + itemsPerPage;
-      result.results = searchedData.slice(start, end);
+      if (itemsPerPage !== -1) {
+        let start = page * itemsPerPage;
+        let end = page * itemsPerPage + itemsPerPage;
+        result.results = searchedData.slice(start, end);
+      } else {
+        result.results = searchedData;
+      }
       return result;
-    } else if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
+    } else if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
       return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
+    return await query;
   },
 
   publishVersion: async (formId, formVersionId, currentUser, params = {}) => {

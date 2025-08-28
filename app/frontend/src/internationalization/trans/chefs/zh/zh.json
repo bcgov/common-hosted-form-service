@@ -116,6 +116,7 @@
     "loginRequired": "要求登录",
     "canSaveAndEditDraftLabel": "提交者可以<strong>保存和编辑草稿</strong>",
     "canUpdateStatusAsReviewer": "审阅者可以<strong>更新此表单的状态</strong>（即已提交、已分配、已完成）",
+    "enableSubmitterRevision": "提交者可以<strong>修改自己的提交</strong>并重新提交",
     "submitterCanCopyExistingSubmissn": "提交者可以<strong>复制现有提交</strong>",
     "submissionConfirmationToolTip": "选择此选项可控制此表单的提交用户在成功提交后将看到的内容。<br />如果勾选的话会显示",
     "emailNotificatnToTeam": "向我的团队发送通知电子邮件",

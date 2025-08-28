@@ -791,6 +791,171 @@ describe('_submissionsColumns', () => {
     const submissions = exportService._submissionsColumns(form, params);
     expect(submissions.length).toEqual(10);
   });
+
+  it('should include status columns when enableSubmitterRevision is true and enableStatusUpdates is false', async () => {
+    const formWithSubmitterRevision = {
+      ...form,
+      enableStatusUpdates: false,
+      enableSubmitterRevision: true,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+    };
+
+    const submissions = exportService._submissionsColumns(formWithSubmitterRevision, params);
+    expect(submissions.length).toEqual(13); // 10 base + 3 status columns
+    expect(submissions).toEqual(expect.arrayContaining(['status', 'assignee', 'assigneeEmail']));
+  });
+
+  it('should include status columns when enableStatusUpdates is true and enableSubmitterRevision is false', async () => {
+    const formWithStatusUpdates = {
+      ...form,
+      enableStatusUpdates: true,
+      enableSubmitterRevision: false,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+    };
+
+    const submissions = exportService._submissionsColumns(formWithStatusUpdates, params);
+    expect(submissions.length).toEqual(13); // 10 base + 3 status columns
+    expect(submissions).toEqual(expect.arrayContaining(['status', 'assignee', 'assigneeEmail']));
+  });
+
+  it('should include status columns when both enableStatusUpdates and enableSubmitterRevision are true', async () => {
+    const formWithBoth = {
+      ...form,
+      enableStatusUpdates: true,
+      enableSubmitterRevision: true,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+    };
+
+    const submissions = exportService._submissionsColumns(formWithBoth, params);
+    expect(submissions.length).toEqual(13); // 10 base + 3 status columns
+    expect(submissions).toEqual(expect.arrayContaining(['status', 'assignee', 'assigneeEmail']));
+  });
+
+  it('should NOT include status columns when both enableStatusUpdates and enableSubmitterRevision are false', async () => {
+    const formWithNeither = {
+      ...form,
+      enableStatusUpdates: false,
+      enableSubmitterRevision: false,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+    };
+
+    const submissions = exportService._submissionsColumns(formWithNeither, params);
+    expect(submissions.length).toEqual(10); // 10 base columns only
+    expect(submissions).toEqual(expect.not.arrayContaining(['status', 'assignee', 'assigneeEmail']));
+  });
+
+  it('should include status columns and optional columns when enableSubmitterRevision is true', async () => {
+    const formWithSubmitterRevision = {
+      ...form,
+      enableStatusUpdates: false,
+      enableSubmitterRevision: true,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft', 'deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(formWithSubmitterRevision, params);
+    expect(submissions.length).toEqual(15); // 10 base + 3 status + 2 optional columns
+    expect(submissions).toEqual(expect.arrayContaining(['status', 'assignee', 'assigneeEmail', 'draft', 'deleted']));
+  });
+
+  it('should include status columns and optional columns when enableStatusUpdates is true', async () => {
+    const formWithStatusUpdates = {
+      ...form,
+      enableStatusUpdates: true,
+      enableSubmitterRevision: false,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft', 'deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(formWithStatusUpdates, params);
+    expect(submissions.length).toEqual(15); // 10 base + 3 status + 2 optional columns
+    expect(submissions).toEqual(expect.arrayContaining(['status', 'assignee', 'assigneeEmail', 'draft', 'deleted']));
+  });
+
+  it('should include status columns and optional columns when both enableStatusUpdates and enableSubmitterRevision are true', async () => {
+    const formWithBoth = {
+      ...form,
+      enableStatusUpdates: true,
+      enableSubmitterRevision: true,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft', 'deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(formWithBoth, params);
+    expect(submissions.length).toEqual(15); // 10 base + 3 status + 2 optional columns
+    expect(submissions).toEqual(expect.arrayContaining(['status', 'assignee', 'assigneeEmail', 'draft', 'deleted']));
+  });
+
+  it('should NOT include status columns but include optional columns when both enableStatusUpdates and enableSubmitterRevision are false', async () => {
+    const formWithNeither = {
+      ...form,
+      enableStatusUpdates: false,
+      enableSubmitterRevision: false,
+    };
+
+    const params = {
+      type: 'submissions',
+      format: 'json',
+      drafts: true,
+      deleted: false,
+      version: 1,
+      columns: ['draft', 'deleted'],
+    };
+
+    const submissions = exportService._submissionsColumns(formWithNeither, params);
+    expect(submissions.length).toEqual(12); // 10 base + 2 optional columns only
+    expect(submissions).toEqual(expect.not.arrayContaining(['status', 'assignee', 'assigneeEmail']));
+    expect(submissions).toEqual(expect.arrayContaining(['draft', 'deleted']));
+  });
 });
 
 describe('_getSubmissions', () => {
