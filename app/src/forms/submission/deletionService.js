@@ -6,6 +6,69 @@ const { FormSubmission, FormVersion, Form } = require('../common/models');
  */
 const deletionService = {
   /**
+   * Get submissions marked for deletion
+   * @param {string[]} submissionIds - Optional specific IDs to filter by
+   * @returns {Promise<Array>} List of deleted submission IDs
+   */
+  getDeletedSubmissions: async (submissionIds = null) => {
+    let query = FormSubmission.query().where('deleted', true);
+
+    // If specific submission IDs are provided, only process those
+    if (submissionIds && Array.isArray(submissionIds) && submissionIds.length > 0) {
+      query = query.whereIn('id', submissionIds);
+    }
+
+    return await query.select('id');
+  },
+
+  /**
+   * Get submission details with associated form information
+   * @param {string} submissionId - The submission ID
+   * @returns {Promise<Object|null>} Submission and form details or null if invalid
+   */
+  getSubmissionWithFormDetails: async (submissionId) => {
+    try {
+      // Get full submission data
+      const submission = await FormSubmission.query().findById(submissionId);
+      if (!submission?.formVersionId) return null;
+
+      // Get the form version
+      const version = await FormVersion.query().findById(submission.formVersionId).select('id', 'formId');
+      if (!version?.formId) return null;
+
+      // Get the form with retention settings
+      const form = await Form.query().findById(version.formId).select('id', 'name', 'retentionDays', 'classificationType');
+      if (!form?.retentionDays) return null;
+
+      return { submission, form };
+    } catch (error) {
+      log.error(`Error retrieving submission ${submissionId}: ${error.message}`);
+      return null;
+    }
+  },
+
+  /**
+   * Check if a submission should be deleted based on retention policy
+   * @param {Object} submission - The submission object
+   * @param {Object} form - The form object with retention settings
+   * @param {string} mode - Deletion mode ('deletion' or 'creation')
+   * @param {boolean} forceProcess - Whether to force deletion regardless of time
+   * @returns {boolean} Whether the submission should be deleted
+   */
+  shouldDeleteSubmission: (submission, form, mode = 'deletion', forceProcess = false) => {
+    if (forceProcess) return true;
+
+    const now = new Date();
+
+    // Calculate when the retention period expires based on selected mode
+    const referenceDate = new Date(mode === 'creation' ? submission.createdAt : submission.updatedAt);
+    const retentionMs = form.retentionDays * 24 * 60 * 60 * 1000;
+    const deletionDueDate = new Date(referenceDate.getTime() + retentionMs);
+
+    return now >= deletionDueDate;
+  },
+
+  /**
    * Process submissions for hard deletion based on form retention policies
    * @param {Object} options - Configuration options
    * @param {string} options.mode - Determines what date to use for retention calculation
@@ -20,84 +83,33 @@ const deletionService = {
     let deleted = 0;
 
     try {
-      // Step 1: Get deleted submissions
-      let query = FormSubmission.query().where('deleted', true);
+      // Step 1: Get submissions marked for deletion
+      const deletedSubmissions = await deletionService.getDeletedSubmissions(submissionIds);
 
-      // If specific submission IDs are provided, only process those
-      if (submissionIds && Array.isArray(submissionIds) && submissionIds.length > 0) {
-        query = query.whereIn('id', submissionIds);
-      }
-
-      const deletedSubmissions = await query.select('id');
-
-      // Step 2: Process each submission to find candidates with retention policies
-      const candidates = [];
-
+      // Step 2: Process each submission
       for (const submission of deletedSubmissions) {
-        try {
-          // Get full submission data
-          const fullSubmission = await FormSubmission.query().findById(submission.id);
-          if (!fullSubmission.formVersionId) continue;
+        // Get submission details with form information
+        const details = await deletionService.getSubmissionWithFormDetails(submission.id);
+        if (!details) continue;
 
-          // Get the form version
-          const version = await FormVersion.query().findById(fullSubmission.formVersionId).select('id', 'formId');
-          if (!version || !version.formId) continue;
+        // Check if the submission should be deleted based on retention policy
+        const { submission: submissionData, form } = details;
 
-          // Get the form with retention settings
-          const form = await Form.query().findById(version.formId).select('id', 'name', 'retentionDays', 'classificationType');
-          if (!form || !form.retentionDays) continue;
+        if (deletionService.shouldDeleteSubmission(submissionData, form, mode, forceProcess)) {
+          // Retention period has passed (or force process) - permanently delete the submission
+          const result = await deletionService.deleteSubmissionAndRelatedData(submissionData.id);
 
-          candidates.push({
-            submission: fullSubmission,
-            form: form,
-          });
-        } catch (error) {
-          log.error(`Error analyzing submission ${submission.id}: ${error.message}`);
+          if (result.success) {
+            deleted++;
+          } else {
+            log.error(`Failed to delete submission ${submissionData.id}: ${result.error}`);
+          }
+        } else {
+          processed++;
         }
       }
 
-      // For each candidate, check if the retention period has passed
-      const now = new Date();
-
-      for (const candidate of candidates) {
-        try {
-          const { submission, form } = candidate;
-
-          // Calculate when the retention period expires based on selected mode
-          let referenceDate;
-          if (mode === 'creation') {
-            referenceDate = new Date(submission.createdAt);
-          } else {
-            // default to 'deletion'
-            referenceDate = new Date(submission.updatedAt);
-          }
-
-          const retentionMs = form.retentionDays * 24 * 60 * 60 * 1000;
-          const deletionDueDate = new Date(referenceDate.getTime() + retentionMs);
-          const shouldDelete = forceProcess || now >= deletionDueDate;
-
-          if (shouldDelete) {
-            // Retention period has passed (or force process) - permanently delete the submission
-            try {
-              // Delete the submission and all related records
-              const result = await deletionService.deleteSubmissionAndRelatedData(submission.id);
-
-              if (result.success) {
-                deleted++;
-              } else {
-                log.error(`Failed to delete submission ${submission.id}: ${result.error}`);
-              }
-            } catch (deleteError) {
-              log.error(`Error in deletion process for submission ${submission.id}: ${deleteError.message}`);
-            }
-          } else {
-            processed++;
-          }
-        } catch (error) {
-          log.error(`Error processing submission ${candidate.submission.id}: ${error.message}`);
-        }
-      }
-
+      // Add deleted count to processed total
       processed += deleted;
 
       return { processed, deleted };
