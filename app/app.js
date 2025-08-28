@@ -11,6 +11,7 @@ const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
 const webcomponentRouter = require('./src/webcomponents');
+const gatewayRouter = require('./src/gateway');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
@@ -103,6 +104,9 @@ app.use(config.get('server.basePath'), apiRouter);
 
 // Host web component endpoints (separate from API) and apply rate limiting
 app.use(`${config.get('server.basePath')}/webcomponents`, rateLimiter, webcomponentRouter);
+
+// Host gateway endpoints (separate from API) and apply rate limiting
+app.use(`${config.get('server.basePath')}/gateway`, rateLimiter, gatewayRouter);
 
 app.use(middleware.errorHandler);
 

@@ -16,29 +16,20 @@ beforeAll(async () => {
 
 describe('chefs-form-viewer-embed.js', () => {
   it('should parse URL parameters using actual parseQueryParams', () => {
-    // Test the ACTUAL parseQueryParams function from the embed script
     const { parseQueryParams } = embedUtils;
-
     const testUrl =
       'https://example.com/app/embed/chefs-form-viewer-embed.js?form-id=123&api-key=abc&debug=true';
-
     const params = parseQueryParams(testUrl);
-
     expect(params['form-id']).toBe('123');
     expect(params['api-key']).toBe('abc');
     expect(params.debug).toBe('true');
   });
 
   it('should handle boolean parameter conversion using actual parseBooleanParam', () => {
-    // Test the ACTUAL parseBooleanParam function from the embed script
     const { parseBooleanParam } = embedUtils;
-
-    // Test truthy values (following HTML attribute conventions)
     expect(parseBooleanParam('true')).toBe(true);
     expect(parseBooleanParam('1')).toBe(true);
-    expect(parseBooleanParam('')).toBe(true); // empty string means attribute present
-
-    // Test falsy values
+    expect(parseBooleanParam('')).toBe(true);
     expect(parseBooleanParam('false')).toBe(false);
     expect(parseBooleanParam('0')).toBe(false);
     expect(parseBooleanParam(undefined)).toBe(false);
@@ -49,29 +40,21 @@ describe('chefs-form-viewer-embed.js', () => {
   });
 
   it('should convert parameter names to attribute names using actual paramToAttribute', () => {
-    // Test the ACTUAL paramToAttribute function from the embed script
     const { paramToAttribute } = embedUtils;
-
     expect(paramToAttribute('formId')).toBe('form-id');
     expect(paramToAttribute('apiKey')).toBe('api-key');
     expect(paramToAttribute('readOnly')).toBe('read-only');
     expect(paramToAttribute('isolateStyles')).toBe('isolate-styles');
-    expect(paramToAttribute('form-id')).toBe('form-id'); // already kebab-case
-    expect(paramToAttribute('language')).toBe('language'); // no change needed
+    expect(paramToAttribute('form-id')).toBe('form-id');
+    expect(paramToAttribute('language')).toBe('language');
   });
 
   it('should parse JSON parameters using actual parseJsonParam', () => {
-    // Test the ACTUAL parseJsonParam function from the embed script
     const { parseJsonParam } = embedUtils;
-
     const mockLogger = { warn: vi.fn() };
-
-    // Valid JSON
     const validJson = '{"sub":"user123","roles":["admin"]}';
     const parsed = parseJsonParam(validJson, 'token', mockLogger);
     expect(parsed).toEqual({ sub: 'user123', roles: ['admin'] });
-
-    // Invalid JSON
     const invalidJson = '{"invalid": json}';
     const failed = parseJsonParam(invalidJson, 'token', mockLogger);
     expect(failed).toBe(null);
@@ -79,9 +62,7 @@ describe('chefs-form-viewer-embed.js', () => {
   });
 
   it('should create a logger using actual createLogger function', () => {
-    // Test the ACTUAL createLogger function from the embed script
     const { createLogger } = embedUtils;
-
     const originalConsole = global.console;
     const mockConsole = {
       log: vi.fn(),
@@ -91,25 +72,18 @@ describe('chefs-form-viewer-embed.js', () => {
       debug: vi.fn(),
     };
     global.console = mockConsole;
-
     try {
-      // Test enabled logger
       const enabledLogger = createLogger(true);
       enabledLogger.info('test message', { data: 'test' });
-
       expect(mockConsole.info).toHaveBeenCalledWith(
         '[chefs-form-viewer-embed]',
         'test message',
         { data: 'test' }
       );
-
-      // Test disabled logger
       mockConsole.info.mockClear();
       const disabledLogger = createLogger(false);
       disabledLogger.info('should not log');
       expect(mockConsole.info).not.toHaveBeenCalled();
-
-      // Test logger methods exist
       expect(typeof enabledLogger.debug).toBe('function');
       expect(typeof enabledLogger.info).toBe('function');
       expect(typeof enabledLogger.warn).toBe('function');
@@ -117,5 +91,42 @@ describe('chefs-form-viewer-embed.js', () => {
     } finally {
       global.console = originalConsole;
     }
+  });
+
+  it('should prefer auth-token over api-key in applyQueryParams', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = {};
+    const params = {
+      'form-id': 'abc',
+      'auth-token': 'jwt-token',
+      'api-key': 'api-key',
+      'read-only': 'true',
+      token: encodeURIComponent('{"sub":"user123"}'),
+      user: encodeURIComponent('{"name":"John"}'),
+    };
+    // Use a mock for setAttribute
+    element.setAttribute = vi.fn();
+    applyQueryParams(element, params, logger);
+    // Should set form-id and auth-token, but skip api-key
+    expect(element.setAttribute).toHaveBeenCalledWith('form-id', 'abc');
+    expect(element.setAttribute).toHaveBeenCalledWith(
+      'auth-token',
+      'jwt-token'
+    );
+    expect(element.setAttribute).not.toHaveBeenCalledWith(
+      'api-key',
+      expect.anything()
+    );
+    // Should set read-only as boolean attribute
+    expect(element.setAttribute).toHaveBeenCalledWith('read-only', '');
+    // Should set token and user as properties
+    expect(element.token).toEqual({ sub: 'user123' });
+    expect(element.user).toEqual({ name: 'John' });
   });
 });

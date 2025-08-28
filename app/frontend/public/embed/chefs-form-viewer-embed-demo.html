@@ -142,7 +142,9 @@
     <div class="info">
       <strong>How to use:</strong><br />
       Add URL parameters:
-      <code class="code"> ?form-id=YOUR_FORM_ID&api-key=YOUR_API_KEY </code>
+      <code class="code">
+        ?form-id=YOUR_FORM_ID&auth-token=YOUR_AUTH_TOKEN
+      </code>
       <br /><br />
       Optional parameters: <code>language</code>, <code>debug</code>,
       <code>submission-id</code>, <code>base-url</code>, <code>theme-css</code>,
@@ -345,11 +347,13 @@
       // Initialize the demo
       function initDemo() {
         formParams = parseUrlParams();
+        const formId = formParams['form-id'];
+        const authToken = formParams['auth-token'];
+        const apiKey = formParams['api-key'];
 
-        // Validate required parameters
-        if (!formParams['form-id'] || !formParams['api-key']) {
+        if (!formId || (!authToken && !apiKey)) {
           updateStatus(
-            'Missing required parameters: form-id and api-key are required in URL',
+            'Missing required parameters: form-id and either an auth-token (preferred) or an api-key are required in URL',
             'error'
           );
           return;

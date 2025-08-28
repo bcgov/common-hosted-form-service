@@ -1,4 +1,4 @@
-const originAccess = require('../../../../src/webcomponents/common/middleware/originAccess');
+const originAccess = require('../../../../../src/webcomponents/common/middleware/originAccess');
 describe('webcomponents/common/middleware/originAccess', () => {
   it('calls next() (stub allows all)', () => {
     const req = { headers: {} };

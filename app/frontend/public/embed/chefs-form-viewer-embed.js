@@ -6,7 +6,7 @@
  * URL parameters without requiring manual component setup.
  *
  * @example Basic Usage
- * <script src="/app/embed/chefs-form-viewer-embed.js?form-id=123&api-key=abc"></script>
+ * <script src="/app/embed/chefs-form-viewer-embed.js?form-id=123&auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></script>
  *
  * @example Advanced Usage with Global Config
  * <script>
@@ -33,7 +33,7 @@
  *     }
  *   };
  * </script>
- * <script src="/app/embed/chefs-form-viewer-embed.js?form-id=123&api-key=abc"></script>
+ * <script src="/app/embed/chefs-form-viewer-embed.js?form-id=123&auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></script>
  *
  * @author CHEFS Team
  * @since 1.5.0
@@ -86,11 +86,14 @@
  * ## Supported Parameters
  *
  * All chefs-form-viewer attributes can be passed as URL query parameters:
- *
+
  * **Required:**
  * - `form-id`: CHEFS form UUID
- * - `api-key`: API access key
- *
+ * - `auth-token`: JWT authentication token (preferred)
+ *   - The auth-token should be fetched by your backend server using the protected api-key and form-id via POST /app/gateway/v1/auth/token/forms/<form-id>.
+ *   - The backend should return the short-lived, refreshable token to the frontend for embedding and authenticating form access.
+ * - `api-key`: API access key (fallback, only if auth-token is not available)
+
  * **Optional:**
  * - `submission-id`: Load specific submission (for editing/viewing)
  * - `read-only`: Render form as read-only (true/false)
@@ -271,31 +274,41 @@
    * @param {Object} logger - Logger instance for debug output
    */
   function applyQueryParams(element, params, logger) {
-    // Boolean parameters that should be parsed as booleans
     const booleanParams = ['read-only', 'isolate-styles', 'no-icons'];
+    const paramEntries = Object.entries(params);
+    const hasAuthToken = paramEntries.some(
+      ([param, value]) => param === 'auth-token' && value
+    );
 
-    for (const [param, value] of Object.entries(params)) {
-      if (param === 'debug') continue; // Skip debug param
+    function handleJsonParam(param, value) {
+      const parsed = parseJsonParam(value, param, logger);
+      if (parsed !== null) {
+        element[param] = parsed;
+      }
+    }
+
+    function handleBooleanParam(attrName, value) {
+      if (parseBooleanParam(value)) {
+        element.setAttribute(attrName, '');
+      }
+    }
+
+    function shouldSkipParam(param, hasAuthToken) {
+      if (param === 'debug') return true;
+      if (param === 'api-key' && hasAuthToken) return true;
+      return false;
+    }
+
+    for (const [param, value] of paramEntries) {
+      if (shouldSkipParam(param, hasAuthToken)) continue;
 
       const attrName = paramToAttribute(param);
 
-      // Handle special JSON parameters
       if (param === 'token' || param === 'user') {
-        const parsed = parseJsonParam(value, param, logger);
-        if (parsed !== null) {
-          element[param] = parsed;
-        }
-      }
-      // Handle boolean parameters
-      else if (booleanParams.includes(param)) {
-        const boolValue = parseBooleanParam(value);
-        if (boolValue) {
-          element.setAttribute(attrName, '');
-        }
-        // Don't set attribute if false (HTML boolean attribute behavior)
-      }
-      // Handle string parameters
-      else {
+        handleJsonParam(param, value);
+      } else if (booleanParams.includes(param)) {
+        handleBooleanParam(attrName, value);
+      } else {
         element.setAttribute(attrName, value);
       }
     }
@@ -500,6 +513,7 @@
       parseJsonParam,
       paramToAttribute,
       createLogger,
+      applyQueryParams,
     };
   } else if (
     typeof window !== 'undefined' &&
@@ -512,6 +526,7 @@
       parseJsonParam,
       paramToAttribute,
       createLogger,
+      applyQueryParams,
     };
   }
 
