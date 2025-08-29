@@ -80,6 +80,8 @@ function userTypeChanged() {
       enableCopyExistingSubmission: false,
       allowSubmitterToUploadFile: false,
       enableSubmitterRevision: false,
+      enableTeamMemberDraftShare: false,
+
     };
   }
   if (form.value.userType !== 'team') {
