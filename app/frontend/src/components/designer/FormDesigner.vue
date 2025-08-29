@@ -131,10 +131,6 @@ const designerOptions = computed(() => {
   };
 });
 
-const DISPLAY_VERSION = computed(() =>
-  form.value?.versions?.length ? form.value.versions.length + 1 : 1
-);
-
 // ---------------------------------------------------------------------------------------------------
 // FormIO event handlers
 // ---------------------------------------------------------------------------------------------------
@@ -560,21 +556,6 @@ defineExpose({ designerOptions, reRenderFormIo });
       @export="exportFormSchema"
       @import="loadFile"
     />
-    <div class="d-flex flex-wrap">
-      <!-- page title -->
-      <div :lang="locale" class="flex-1-0">
-        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
-        <h3 v-if="form.name">{{ form.name }}</h3>
-      </div>
-    </div>
-    <div>
-      <!-- page version -->
-      <div :lang="locale">
-        <em :lang="locale"
-          >{{ $t('trans.formDesigner.version') }} : {{ DISPLAY_VERSION }}</em
-        >
-      </div>
-    </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
       <h4 class="text-primary" :lang="locale">
         <v-icon
