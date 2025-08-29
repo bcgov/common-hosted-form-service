@@ -199,7 +199,6 @@ defineExpose({
       <!-- page title -->
       <div v-if="!isAtTopOfPage" :lang="locale" class="title-container">
         <h4 v-if="form.name" :title="form.name" class="page-title">
-          <!-- {{ FORM_TITLE || 'Loading...' }} -->
           {{ form.name }}
         </h4>
         <em :lang="locale" class="version-label">

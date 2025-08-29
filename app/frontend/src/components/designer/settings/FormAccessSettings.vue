@@ -81,7 +81,6 @@ function userTypeChanged() {
       allowSubmitterToUploadFile: false,
       enableSubmitterRevision: false,
       enableTeamMemberDraftShare: false,
-
     };
   }
   if (form.value.userType !== 'team') {
