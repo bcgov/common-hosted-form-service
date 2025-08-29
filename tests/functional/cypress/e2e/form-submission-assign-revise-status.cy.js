@@ -39,6 +39,16 @@ it('Verify draft submission', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
+    //Multiline Text
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Multi-line Text')
+        
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('button').contains('Save').click();
+    });
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
