@@ -131,6 +131,10 @@ const designerOptions = computed(() => {
   };
 });
 
+const DISPLAY_VERSION = computed(() =>
+  form.value?.versions?.length ? form.value.versions.length + 1 : 1
+);
+
 // ---------------------------------------------------------------------------------------------------
 // FormIO event handlers
 // ---------------------------------------------------------------------------------------------------
@@ -536,6 +540,12 @@ async function loadFile(event) {
 defineExpose({ designerOptions, reRenderFormIo });
 </script>
 <template>
+  <div class="text-center mx-4">
+    <h4 v-if="form.name">
+      {{ form.name }}
+    </h4>
+    <em> Version: {{ DISPLAY_VERSION }} </em>
+  </div>
   <div :class="{ 'dir-rtl': isRTL }">
     <FloatButton
       v-model:form-schema="formSchema"
