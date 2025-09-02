@@ -128,10 +128,6 @@ function onClickScroll() {
   });
 }
 
-const DISPLAY_VERSION = computed(() =>
-  form.value?.versions?.length ? form.value.versions.length + 1 : 1
-);
-
 const canPreview = computed(() => {
   return !!(properties.formId && properties.draftId);
 });
@@ -163,7 +159,7 @@ defineExpose({
 
 <template>
   <v-toolbar class="sticky-toolbar pt-2 mb-1" density="comfortable" flat>
-    <div class="d-flex w-50">
+    <div class="d-flex w-50 w-md-40">
       <!-- Scroll Button -->
       <div class="icon-button">
         <v-btn
@@ -182,9 +178,6 @@ defineExpose({
         <h4 v-if="form.name" :title="form.name" class="page-title">
           {{ form.name }}
         </h4>
-        <em :lang="locale" class="version-label">
-          {{ $t('trans.formDesigner.version') }} : {{ DISPLAY_VERSION }}
-        </em>
       </div>
     </div>
 
@@ -558,7 +551,6 @@ defineExpose({
 
 .title-container {
   display: flex;
-  // flex: 1 1 0;
   min-width: 0;
   align-items: center;
   overflow: hidden;
