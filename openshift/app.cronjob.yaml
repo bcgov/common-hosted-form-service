@@ -64,7 +64,7 @@ objects:
                   command:
                     - /bin/sh
                     - -ec
-                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "http://${APP_NAME}-app-${JOB_NAME}:8080${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
+                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "https://${APP_NAME}-${NAMESPACE_ENVIRONMENT}.apps.silver.devops.gov.bc.ca${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
               restartPolicy: OnFailure
   - apiVersion: batch/v1
     kind: CronJob
@@ -99,7 +99,7 @@ objects:
                   command:
                     - /bin/sh
                     - -ec
-                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "http://${APP_NAME}-app-${JOB_NAME}:8080${ROUTE_PATH}/api/v1/public/submission_deletion"||exit 0'
+                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "https://${APP_NAME}-${NAMESPACE_ENVIRONMENT}.apps.silver.devops.gov.bc.ca${ROUTE_PATH}/api/v1/public/submission_deletion"||exit 0'
               restartPolicy: OnFailure
 parameters:
   - name: APP_NAME
@@ -117,4 +117,8 @@ parameters:
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
+    required: true
+  - name: NAMESPACE_ENVIRONMENT
+    description: Target namespace environment (i.e. 'dev' or 'test' or 'prod')
+    displayName: Namespace Environment
     required: true
