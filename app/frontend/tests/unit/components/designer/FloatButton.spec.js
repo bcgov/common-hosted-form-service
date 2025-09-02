@@ -20,6 +20,14 @@ vi.mock('vue-router', () => ({
   })),
 }));
 
+vi.mock('vuetify', () => ({
+  useDisplay: vi.fn(() => ({
+    mdAndDown: false,
+    width: 1920,
+    height: 1080,
+  })),
+}));
+
 describe('FloatButton.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
@@ -49,12 +57,13 @@ describe('FloatButton.vue', () => {
       },
     });
 
-    expect(wrapper.html()).toContain('publish');
-    expect(wrapper.html()).toContain('manage');
     expect(wrapper.html()).toContain('redo');
     expect(wrapper.html()).toContain('undo');
-    expect(wrapper.html()).toContain('preview');
     expect(wrapper.html()).toContain('bottom');
+    expect(wrapper.html()).toContain('publish');
+    expect(wrapper.html()).toContain('manage');
+
+    expect(wrapper.html()).toContain('preview');
   });
 
   it('unmounted should remove the scroll event listener', async () => {

@@ -71,7 +71,6 @@ const isAtTopOfPage = ref(true);
 
 const { mdAndDown } = useDisplay();
 
-// const FORM_TITLE = ref('');
 // // We need to handle scroll through an event listener because computed values do not update on a scroll event
 window.addEventListener('scroll', onEventScroll);
 
@@ -128,24 +127,6 @@ function onClickScroll() {
     behavior: 'smooth',
   });
 }
-
-// watch(
-//   () => [form.value.name, mdAndDown],
-//   ([name, isMdAndDown]) => {
-//     const MAX_TITLE_LENGTH = 50;
-//     if (!name) {
-//       FORM_TITLE.value = '';
-//       return;
-//     }
-
-//     if (isMdAndDown && name.length > MAX_TITLE_LENGTH) {
-//       FORM_TITLE.value = name.slice(0, MAX_TITLE_LENGTH - 3) + '...';
-//     } else {
-//       FORM_TITLE.value = name;
-//     }
-//   },
-//   { immediate: true } // run on mount too
-// );
 
 const DISPLAY_VERSION = computed(() =>
   form.value?.versions?.length ? form.value.versions.length + 1 : 1
@@ -246,7 +227,23 @@ defineExpose({
           </div>
 
           <v-divider vertical inset :thickness="2" />
-
+          <!-- Save Button -->
+          <div
+            class="d-flex flex-column align-center icon-button"
+            data-cy="saveButton"
+          >
+            <v-btn
+              :disabled="!properties.canSave && properties.isFormSaved"
+              density="compact"
+              icon
+              stacked
+              @click="emit('save')"
+            >
+              <v-icon v-if="!properties.isSaving" icon="mdi:mdi-content-save" />
+              <v-progress-circular v-else indeterminate size="20" />
+              {{ SAVE_TEXT }}
+            </v-btn>
+          </div>
           <!-- Preview Button -->
           <div
             class="d-flex flex-column align-center icon-button"
@@ -389,16 +386,14 @@ defineExpose({
         <v-divider vertical inset :thickness="2" />
 
         <!-- Save Button -->
-        <div
-          class="d-flex flex-column align-center icon-button"
-          data-cy="saveButton"
-        >
+        <div class="d-flex flex-column align-center icon-button">
           <v-btn
             :disabled="!properties.canSave && properties.isFormSaved"
             density="compact"
+            data-cy="saveButton"
             icon
             stacked
-            @click="onClickSave"
+            @click="emit('save')"
           >
             <v-icon v-if="!properties.isSaving" icon="mdi:mdi-content-save" />
             <v-progress-circular v-else indeterminate size="20" />
@@ -410,32 +405,13 @@ defineExpose({
         <div class="toolbar-dropdown">
           <v-menu location="bottom end">
             <template #activator="{ props }">
-              <v-btn icon stacked v-bind="props">
+              <v-btn icon stacked v-bind="props" data-cy="menuButton">
                 <v-icon icon="mdi:mdi-dots-vertical" />
                 Menu
               </v-btn>
             </template>
 
             <v-list>
-              <!-- Save Button -->
-              <v-list-item>
-                <div class="d-flex flex-column" data-cy="saveButton">
-                  <v-btn
-                    :disabled="!properties.canSave && properties.isFormSaved"
-                    density="compact"
-                    prepend-icon
-                    @click="onClickSave"
-                  >
-                    <v-icon
-                      v-if="!properties.isSaving"
-                      class="mr-1"
-                      icon="mdi:mdi-content-save"
-                    />
-                    <v-progress-circular v-else indeterminate size="20" />
-                    {{ SAVE_TEXT }}
-                  </v-btn>
-                </div>
-              </v-list-item>
               <!-- Preview Button -->
               <v-list-item>
                 <div
