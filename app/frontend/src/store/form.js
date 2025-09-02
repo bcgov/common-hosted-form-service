@@ -97,6 +97,9 @@ const genInitialForm = () => ({
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
+  classificationType: null,
+  retentionDays: null,
+  classificationDescription: null,
 });
 
 export const useFormStore = defineStore('form', {
@@ -376,6 +379,20 @@ export const useFormStore = defineStore('form', {
         // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
         data.showAssigneeInSubmissionsTable =
           data.showAssigneeInSubmissionsTable ?? false;
+
+        // Initialize data retention settings
+        data.enableHardDeletion = !!data.classificationType;
+
+        // If we have a custom retention days value that doesn't match standard options
+        if (
+          data.retentionDays &&
+          ![30, 90, 180, 365, 730, 1825].includes(data.retentionDays)
+        ) {
+          data.selectedRetentionOption = 'custom';
+        } else if (data.retentionDays) {
+          data.selectedRetentionOption = data.retentionDays;
+        }
+
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -500,6 +517,10 @@ export const useFormStore = defineStore('form', {
             : false,
           formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
+          classificationType: this.form.classificationType || null,
+          retentionDays: this.form.retentionDays || null,
+          classificationDescription:
+            this.form.classificationDescription || null,
         });
 
         // update user labels with any new added labels
