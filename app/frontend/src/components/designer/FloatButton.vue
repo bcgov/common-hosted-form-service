@@ -558,7 +558,7 @@ defineExpose({
 
 .title-container {
   display: flex;
-  flex: 1 1 0;
+  // flex: 1 1 0;
   min-width: 0;
   align-items: center;
   overflow: hidden;
