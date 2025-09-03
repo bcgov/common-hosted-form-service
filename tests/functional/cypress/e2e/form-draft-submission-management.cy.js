@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
@@ -67,7 +66,6 @@ it('Verify draft submission', () => {
     const formId_new = `${arrayValues[0]}`;
     cy.log(formId_new);
     let formId;
-    //Cypress.env('formId', formId_new); // store it for later in same run
     cy.writeFile('cypress/fixtures/formId.json', { formId: formId_new });
     //Publish the form
     cy.get('.v-label > span').click();
