@@ -1,4 +1,5 @@
 import 'cypress-keycloak-commands';
+import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
