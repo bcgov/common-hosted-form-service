@@ -8,6 +8,10 @@ import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { IdentityMode } from '~/utils/constants';
 
+const props = defineProps({
+  disabled: { type: Boolean, default: false },
+});
+
 const { locale } = useI18n({ useScope: 'global' });
 
 const githubLinkBulkUpload = ref(
@@ -33,24 +37,34 @@ const idpStore = useIdpStore();
 const { identityProvider } = storeToRefs(authStore);
 const { form, isRTL } = storeToRefs(formStore);
 
-const ID_MODE = computed(() => IdentityMode);
 const primaryIdpUser = computed(() =>
   idpStore.isPrimary(identityProvider?.value?.code)
 );
 
+//Centralized disabled states
+const disabledStates = computed(() => {
+  const base = props.disabled;
+  return {
+    public: base || form.value.userType === IdentityMode.PUBLIC,
+    general: base,
+    draftShare: base || !form.value.enableSubmitterDraft,
+    schedule: base || !formStore.isFormPublished,
+    eventSubscription:
+      base || primaryIdpUser.value === false || !formStore.isFormPublished,
+  };
+});
+
+// Dependency handlers
 function enableSubmitterDraftChanged() {
   if (!form.value.enableSubmitterDraft) {
     form.value.allowSubmitterToUploadFile = false;
+    form.value.enableTeamMemberDraftShare = false;
   }
 }
 
 function allowSubmitterToUploadFileChanged() {
-  if (
-    form.value.allowSubmitterToUploadFile &&
-    !form.value.enableSubmitterDraft
-  ) {
+  if (form.value.allowSubmitterToUploadFile && !form.value.enableSubmitterDraft)
     form.value.enableSubmitterDraft = true;
-  }
 }
 
 defineExpose({
@@ -61,18 +75,19 @@ defineExpose({
 
 <template>
   <BasePanel class="fill-height">
-    <template #title
-      ><span :lang="locale">{{
+    <template #title>
+      <span :lang="locale">{{
         $t('trans.formSettings.formFunctionality')
-      }}</span></template
-    >
+      }}</span>
+    </template>
 
+    <!-- Save Drafts -->
     <v-checkbox
       v-model="form.enableSubmitterDraft"
-      data-test="canSaveAndEditDraftsCheckbox"
+      :disabled="disabledStates.public"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      data-test="canSaveAndEditDraftsCheckbox"
       @update:model-value="enableSubmitterDraftChanged"
     >
       <template #label>
@@ -80,61 +95,69 @@ defineExpose({
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
           v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
-        ></span>
+        />
       </template>
     </v-checkbox>
 
+    <!-- Status Updates -->
     <v-checkbox
       v-model="form.enableStatusUpdates"
-      data-test="canUpdateStatusOfFormCheckbox"
+      :disabled="disabledStates.general"
       hide-details="auto"
       class="my-0"
+      data-test="canUpdateStatusOfFormCheckbox"
     >
       <template #label>
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
-        ></span>
+        />
       </template>
     </v-checkbox>
+
+    <!-- Submitter Revision -->
     <v-checkbox
       v-model="form.enableSubmitterRevision"
-      data-test="canSubmitterRevisionFormCheckbox"
+      :disabled="disabledStates.public"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      data-test="canSubmitterRevisionFormCheckbox"
     >
       <template #label>
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
           v-html="$t('trans.formSettings.enableSubmitterRevision')"
-        ></span>
+        />
       </template>
     </v-checkbox>
+
+    <!-- Show Assignee -->
     <v-checkbox
       v-if="form.enableStatusUpdates || form.enableSubmitterRevision"
       v-model="form.showAssigneeInSubmissionsTable"
-      data-test="showAssigneeInSubmissionsTableCheckbox"
+      :disabled="disabledStates.general"
       hide-details="auto"
       class="my-0 ml-6"
+      data-test="showAssigneeInSubmissionsTableCheckbox"
     >
       <template #label>
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
           v-html="$t('trans.formSettings.displayAssigneeColumn')"
-        ></span>
+        />
       </template>
     </v-checkbox>
 
+    <!-- Upload Draft Files -->
     <v-checkbox
       v-model="form.allowSubmitterToUploadFile"
-      data-test="canUploadDraftCheckbox"
+      :disabled="disabledStates.public"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      data-test="canUploadDraftCheckbox"
       @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>
@@ -144,223 +167,221 @@ defineExpose({
             v-html="$t('trans.formSettings.allowMultiDraft')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props }">
+            <template #activator="slotProps">
               <v-icon
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="props"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
               />
             </template>
-            <span :lang="locale"
-              >{{ $t('trans.formSettings.experimental') }}
+            <span :lang="locale">
+              {{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkBulkUpload"
                 class="preview_info_link_field_white"
-                :target="'_blank'"
+                target="_blank"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
-                <v-icon
-                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
-                ></v-icon></a
-            ></span>
+                <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline" />
+              </a>
+            </span>
           </v-tooltip>
         </div>
       </template>
     </v-checkbox>
 
+    <!-- Schedule -->
     <v-checkbox
-      v-if="!formStore.isFormPublished"
       v-model="form.schedule.enabled"
-      disabled
+      :disabled="disabledStates.schedule"
       hide-details="auto"
-      data-test="canScheduleFormSubmissionCheckbox"
       class="my-0"
-    >
-      <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="locale"
-          >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
-        </span>
-      </template>
-    </v-checkbox>
-
-    <v-checkbox
-      v-if="formStore.isFormPublished"
-      v-model="form.schedule.enabled"
-      hide-details="auto"
       data-test="canScheduleFormSubmissionCheckbox"
-      class="my-0"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
-          <span :lang="locale">{{
-            $t('trans.formSettings.formSubmissionsSchedule')
-          }}</span>
-          <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props }">
+          <span :lang="locale">
+            {{
+              formStore.isFormPublished
+                ? $t('trans.formSettings.formSubmissionsSchedule')
+                : $t('trans.formSettings.formSubmissinScheduleMsg')
+            }}
+          </span>
+          <v-tooltip
+            v-if="formStore.isFormPublished"
+            location="bottom"
+            close-delay="2500"
+          >
+            <template #activator="slotProps">
               <v-icon
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="props"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
-              ></v-icon>
+              />
             </template>
-            <span :lang="locale"
-              >{{ $t('trans.formSettings.experimental') }}
+            <span :lang="locale">
+              {{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkScheduleAndReminderFeature"
                 class="preview_info_link_field_white"
-                :target="'_blank'"
+                target="_blank"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
-                <v-icon
-                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
-                ></v-icon></a
-            ></span>
+                <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline" />
+              </a>
+            </span>
           </v-tooltip>
         </div>
       </template>
     </v-checkbox>
 
+    <!-- Copy Existing Submission -->
     <v-checkbox
       v-model="form.enableCopyExistingSubmission"
+      :disabled="disabledStates.public"
       hide-details="auto"
-      data-test="canCopyExistingSubmissionCheckbox"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
+      data-test="canCopyExistingSubmissionCheckbox"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
-            style="max-width: 80%"
             :lang="locale"
+            style="max-width: 80%"
             v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props }">
+            <template #activator="slotProps">
               <v-icon
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="props"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
-              ></v-icon>
+              />
             </template>
-            <span :lang="locale"
-              >{{ $t('trans.formSettings.experimental') }}
+            <span :lang="locale">
+              {{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkCopyFromExistingFeature"
                 class="preview_info_link_field_white"
-                :target="'_blank'"
+                target="_blank"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
-                <v-icon
-                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
-                ></v-icon></a
-            ></span>
+                <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline" />
+              </a>
+            </span>
           </v-tooltip>
         </div>
       </template>
     </v-checkbox>
+
+    <!-- Event Subscription -->
     <v-checkbox
       v-model="form.subscribe.enabled"
+      :disabled="disabledStates.eventSubscription"
       hide-details="auto"
-      data-test="canAllowEventSubscriptionCheckbox"
       class="my-0"
-      :disabled="primaryIdpUser === false || !formStore.isFormPublished"
+      data-test="canAllowEventSubscriptionCheckbox"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
-            style="max-width: 80%"
             :lang="locale"
+            style="max-width: 80%"
             v-html="$t('trans.formSettings.allowEventSubscription')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props }">
+            <template #activator="slotProps">
               <v-icon
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="props"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
-              ></v-icon>
+              />
             </template>
-            <span :lang="locale"
-              >{{ $t('trans.formSettings.experimental') }}
+            <span :lang="locale">
+              {{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkEventSubscriptionFeature"
                 class="preview_info_link_field_white"
-                :target="'_blank'"
+                target="_blank"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
-                <v-icon
-                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
-                ></v-icon></a
-            ></span>
+                <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline" />
+              </a>
+            </span>
           </v-tooltip>
         </div>
       </template>
     </v-checkbox>
+
+    <!-- Wide Form Layout -->
     <v-checkbox
       v-model="form.wideFormLayout"
+      :disabled="disabledStates.public"
       hide-details="auto"
-      data-test="canAllowWideFormLayoutCheckbox"
       class="my-0"
+      data-test="canAllowWideFormLayoutCheckbox"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
-            style="max-width: 80%"
             :lang="locale"
+            style="max-width: 80%"
             v-html="$t('trans.formSettings.wideFormLayout')"
           />
           <v-tooltip location="bottom" close-delay="2500">
-            <template #activator="{ props }">
+            <template #activator="slotProps">
               <v-icon
                 color="primary"
                 class="ml-3"
                 :class="{ 'mr-2': isRTL }"
-                v-bind="props"
+                v-bind="slotProps.props"
                 icon="mdi:mdi-flask"
-              ></v-icon>
+              />
             </template>
-            <span :lang="locale"
-              >{{ $t('trans.formSettings.experimental') }}
+            <span :lang="locale">
+              {{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkWideFormLayout"
                 class="preview_info_link_field_white"
-                :target="'_blank'"
+                target="_blank"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
-                <v-icon
-                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
-                ></v-icon></a
-            ></span>
+                <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline" />
+              </a>
+            </span>
           </v-tooltip>
         </div>
       </template>
     </v-checkbox>
+
+    <!-- Share Draft -->
     <v-checkbox
       v-model="form.enableTeamMemberDraftShare"
-      :disabled="!form.enableSubmitterDraft"
-      data-test="enableTeamMemberDraftShare"
+      :disabled="disabledStates.draftShare"
       hide-details="auto"
       class="my-0"
+      data-test="enableTeamMemberDraftShare"
+      @update:model-value="enableSubmitterDraftChanged"
     >
       <template #label>
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
           v-html="$t('trans.canShareDraft.shareDraftMessage')"
-        ></span>
+        />
       </template>
     </v-checkbox>
   </BasePanel>
