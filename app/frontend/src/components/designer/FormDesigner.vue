@@ -564,7 +564,7 @@ defineExpose({ designerOptions, reRenderFormIo });
       @redo="onRedoClick"
       @save="submitFormSchema"
       @export="exportFormSchema"
-      @import="loadFile"
+      @import-file="loadFile"
     />
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
       <h4 class="text-primary" :lang="locale">

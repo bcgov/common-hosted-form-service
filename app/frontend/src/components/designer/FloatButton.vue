@@ -65,7 +65,7 @@ const properties = defineProps({
 
 const { form } = storeToRefs(formStore);
 
-const emit = defineEmits(['redo', 'save', 'undo', 'export', 'import']);
+const emit = defineEmits(['redo', 'save', 'undo', 'export', 'import-file']);
 
 const isAtTopOfPage = ref(true);
 
@@ -126,6 +126,10 @@ function onClickScroll() {
     top: isAtTopOfPage.value ? document.body.scrollHeight : 0,
     behavior: 'smooth',
   });
+}
+
+function onFileChange(event) {
+  emit('import-file', event);
 }
 
 const canPreview = computed(() => {
@@ -213,7 +217,7 @@ defineExpose({
                 class="d-none"
                 type="file"
                 accept=".json"
-                @change="$emit('import')"
+                @change="onFileChange"
               />
               {{ $t('trans.formDesigner.uploadJson') }}
             </v-btn>
@@ -497,7 +501,7 @@ defineExpose({
                       class="d-none"
                       type="file"
                       accept=".json"
-                      @change="$emit('import')"
+                      @change="onFileChange"
                     />
                     {{ $t('trans.formDesigner.uploadJson') }}
                   </v-btn>
