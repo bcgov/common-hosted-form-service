@@ -173,7 +173,7 @@ describe('Form Designer', () => {
         });
       });
       cy.waitForLoad();   
-      cy.get('button').contains('Save').click();  
+      cy.get('.btn-success').click();  
   });
   it('Checks form submission for a Map component', () => {
         cy.viewport(1000, 1100);

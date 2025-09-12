@@ -37,59 +37,55 @@ describe('Form Designer', () => {
       .trigger('mousemove', coords.x, -550, { force: true })
       .trigger('mouseup', { force: true });
       cy.wait(2000);
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
       cy.wait(2000);
     });
-    cy.get('.mdi-publish').click();
+    //Upload Json file
+    cy.get('.mdi-dots-vertical').click();
+    cy.get(':nth-child(5) > .v-list-item__content > .d-flex > .v-btn > .v-btn__content').click();
     let fileUploadInputField = cy.get('input[type=file]');
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('test_schema.json');
     cy.wait(2000);
     cy.get('input[name="data[simplebcaddress]"]').should('not.exist'); 
-    cy.get('.mdi-download').click();
+    cy.get('.mdi-dots-vertical').click();
+    cy.get(':nth-child(6) > .v-list-item__content > .d-flex > .v-btn').click();
     cy.wait(2000);
     //Verifies design downloads into download folder
-    cy.get("h3").then(($elem) => {
+    cy.get('.text-center > h4').then(($elem) => {
         const rem = $elem.text();
-        let arr = rem.split(':');
-        cy.log(arr);
-        let remname = arr[1] + "_schema.json";
+        //let arr = rem.split(':');
+        //cy.log(arr);
+        let remname = rem + "_schema.json";
         cy.wait(2000);
         const path = require("path");
         const downloadsFolder=Cypress.config("downloadsFolder");
         cy.readFile(path.join(downloadsFolder,remname)).should('exist');
 
     });
+    cy.wait(2000);
     //Verify visibility of right side buttons on design page
-    cy.get('[data-cy="saveButton"] > .v-btn').should('be.enabled');
+    cy.get('.mdi-content-save').should('not.have.attr', 'disabled');
+    cy.get('.mdi-dots-vertical').click();
     //Preview button disabled before form saving
-    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.visible');
-    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('not.be.enabled');
-    cy.get('[data-cy="undoButton"] > .v-btn').should('be.enabled');
-    cy.get('[data-cy="redoButton"] > .v-btn').should('not.be.enabled');
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('have.attr', 'disabled');
+    cy.get('[data-cy="undoButton"] > .v-btn').should('not.have.attr', 'disabled');
+    cy.get('[data-cy="redoButton"] > .v-btn').should('have.attr', 'disabled');
     cy.get('.mdi-undo').click();
-    cy.get('[data-cy="redoButton"] > .v-btn').should('be.enabled');
+    cy.get('[data-cy="redoButton"] > .v-btn').should('not.have.attr', 'disabled');
     cy.get('[data-cy="redoButton"] > .v-btn').click();
     //Verify  existence of page top/bottom move button
-    cy.get('.float-button > :nth-child(3) > .v-btn').should('be.enabled');
-    cy.get('.float-button > :nth-child(3) > .v-btn').click();
-    cy.get('.mdi-arrow-down').should('not.exist');
-    cy.get('.mdi-arrow-up').should('exist');
-    cy.get('.mdi-close').click();
-    cy.get('[data-cy="saveButton"] > .v-btn').should('not.exist');
-    cy.get('.mdi-undo').should('not.exist');
-    cy.get('.mdi-redo').should('not.exist');
-    cy.get('.mdi-menu').should('be.visible');
-    cy.get('.mdi-arrow-up').should('be.visible');
-    cy.get('.mdi-menu').click();
+    cy.get('.mdi-arrow-up').should('not.exist');
+    cy.get('.mdi-arrow-down').should('exist');
+    cy.wait(1000);  
     // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
+     cy.get('.mdi-dots-vertical').click();
     //Preview button enabled
-    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.visible');
-    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('not.have.attr', 'disabled');
     // Filter the newly created form
     cy.location('search').then(search => {
     let arr = search.split('=');

@@ -38,7 +38,7 @@ describe('Form Designer', () => {
         //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       cy.wait(2000); 
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
     });
     // Form saving
     cy.wait(2000); 
@@ -48,7 +48,8 @@ describe('Form Designer', () => {
     cy.wait(3000);
 
     // Verify Api key functionality
-    cy.get('.mdi-cog').click();
+    cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
     cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     
     cy.get('[data-test="canGenerateAPIKey"]').click();

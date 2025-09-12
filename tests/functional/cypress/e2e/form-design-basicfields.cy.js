@@ -14,21 +14,13 @@ Cypress.Commands.add('waitForLoad', () => {
 
 describe('Form Designer', () => {
   
-
- /* beforeEach(()=>{
-    
-    
-    */let str;
-    
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
       console.log(err);
       return false;
     });
-
-  /*});
-  */it('Visits the form settings page', () => {
+  it('Visits the form settings page', () => {
     
     cy.viewport(1000, 1100);
     cy.waitForLoad();
@@ -55,7 +47,7 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').clear();
         cy.get('input[name="data[label]"]').clear();
         cy.get('input[name="data[label]"]').type(textFields[i]);
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
       });
     }
     //Multiline Text
@@ -69,7 +61,7 @@ describe('Form Designer', () => {
         //cy.get('p').contains('Multi-line Text Component');
         cy.get('input[name="data[label]"]').clear();
         cy.get('input[name="data[label]"]').clear().type('Question');
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
     //Select List
     cy.get('div.formio-builder-form').then($el => {
@@ -88,8 +80,7 @@ describe('Form Designer', () => {
         cy.get('tbody > tr > :nth-child(2)').type('Male');
         cy.get('tfoot > tr > td > .btn').click();
         cy.get('tbody > :nth-child(2) > :nth-child(2)').type('Female');
-
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
 
     });
     //Checkbox
@@ -104,7 +95,7 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').clear();
         cy.get('input[name="data[label]"]').clear();
         cy.get('input[name="data[label]"]').type('Applying for self');
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
     //Checkbox Group
     cy.get('div.formio-builder-form').then($el => {
@@ -126,7 +117,7 @@ describe('Form Designer', () => {
         cy.get('tbody > tr > :nth-child(2)').type('Javascript');
         cy.get('tfoot > tr > td > .btn').click();
         cy.get('tbody > :nth-child(2) > :nth-child(2)').type('python');
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
     //Number
     cy.get('div.formio-builder-form').then($el => {
@@ -136,9 +127,7 @@ describe('Form Designer', () => {
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
-        //cy.get('p').contains('Multi-line Text Component');
-        
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
     //Phone Number
     cy.get('div.formio-builder-form').then($el => {
@@ -152,7 +141,7 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').clear();
         cy.get('input[name="data[label]"]').clear();
         cy.get('input[name="data[label]"]').type('Phone Number');
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
     //Email
     cy.get('div.formio-builder-form').then($el => {
@@ -161,7 +150,7 @@ describe('Form Designer', () => {
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -40, { force: true })
         .trigger('mouseup', { force: true });
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
     //Date/Time
     cy.get('div.formio-builder-form').then($el => {
@@ -169,13 +158,12 @@ describe('Form Designer', () => {
         cy.get('span.btn').contains('Date / Time')
         
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -50, { force: true })
+        .trigger('mousemove', coords.x, -80, { force: true })
         .trigger('mouseup', { force: true });
         //cy.get('p').contains('Multi-line Text Component');
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
         cy.waitForLoad();
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;
       savedButton.trigger('click');
@@ -185,18 +173,11 @@ describe('Form Designer', () => {
     // Form Editing 
   it('Form Edit', () => {
       cy.viewport(1000, 1100);
-      cy.waitForLoad();
-      cy.on('uncaught:exception', (err, runnable) => {
-        // Form.io throws an uncaught exception for missing projectid
-        // Cypress catches it as undefined: undefined so we can't get the text
-        console.log(err);
-        return false;
-      });
-      
-      cy.waitForLoad();
-      cy.get('.mdi-cog').click();
+      cy.wait(2000);
+      cy.get('.mdi-dots-vertical').click();
+      cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
       cy.get('a > .v-btn > .v-btn__content > .mdi-pencil').click();
-      cy.wait(4000);
+      cy.wait(2000);
       
       //Adding another component
       cy.get('label').contains('First Name').should('be.visible');
@@ -207,11 +188,9 @@ describe('Form Designer', () => {
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, +10, { force: true })
         .trigger('mouseup', { force: true });
-        //cy.get('p').contains('Multi-line Text Component');
-        
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
       });
-      cy.wait(4000);
+      cy.wait(2000);
       cy.get('[data-cy=saveButton]').click();
       cy.waitForLoad();
 
@@ -236,8 +215,9 @@ describe('Form Designer', () => {
 
      //Delete form after test run
       cy.visit(`/${depEnv}/form/design?d=${arrayValues[0]}&f=${dval[0]}`);
-      cy.wait(4000);
-      cy.get('[data-cy="settingsRouterLink"] > .v-btn').click();
+      cy.wait(2000);
+      cy.get('.mdi-dots-vertical').click();
+      cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
       cy.waitForLoad();
       cy.get('[data-test="canRemoveForm"]').click();
       cy.get('[data-test="continue-btn-continue"]').click();

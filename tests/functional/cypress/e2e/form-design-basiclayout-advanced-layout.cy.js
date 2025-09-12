@@ -40,7 +40,7 @@ it('Checks the Field set', () => {
     cy.waitForLoad();
     cy.get('input[name="data[legend]"]').clear().type('Application');
     cy.get('input[name="data[customClass]"]').type('bg-primary');
-    cy.get('button').contains('Save').click();
+    cy.get('.btn-success').click();
 });
 
 });
@@ -58,7 +58,7 @@ it('Checks the Text/images', () => {
       .trigger('mouseup', { force: true });
       cy.waitForLoad();
   
-    cy.get('button').contains('Save').click();
+    cy.get('.btn-success').click();
     
   });
 });
@@ -70,7 +70,7 @@ it('Checks the Coulmns-3', () => {
     .trigger('mousedown', { which: 1}, { force: true })
     .trigger('mousemove', coords.x, -140, { force: true })
     .trigger('mouseup', { force: true });
-    cy.get('button').contains('Save').click();
+    cy.get('.btn-success').click();
   });
 
 });
@@ -86,7 +86,7 @@ cy.get('div.formio-builder-form').then($el => {
   cy.get('[name="data[components][0][label]"]').clear().type('work');
   cy.get('tfoot > tr > td > .btn').click();    
   cy.get('[name="data[components][1][label]"]').clear().type('Home');
-  cy.get('button').contains('Save').click();
+  cy.get('.btn-success').click();
 });
 
 });
@@ -107,7 +107,7 @@ cy.get('div.formio-builder-form').then($el => {
       cy.get('tbody > tr > :nth-child(2)').click();
       cy.get('[name="data[attrs][0][attr]"]').type('type');
       cy.get('[name="data[attrs][0][value]"]').type('text');
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
 });
 
 });
@@ -132,7 +132,7 @@ cy.get('div.formio-builder-form').then($el => {
       cy.waitForLoad();
       cy.get('input[name="data[columns][0][width]"]').type('3');
       cy.get('input[name="data[columns][1][width]"]').type('9');
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
 });
 
 });
@@ -148,21 +148,13 @@ it('Checks the Table', () => {
       //.trigger('mousemove', coords.x, -50, { force: true })
       .trigger('mousemove', coords.y, +50, { force: true })
       .trigger('mouseup', { force: true });
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
      // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
-    cy.waitForLoad();
-     // Go to My forms  
-    cy.wait('@getForm').then(()=>{
-     let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-     expect(userFormsLinks).to.not.be.null;
-     userFormsLinks.trigger('click');
-     cy.waitForLoad();
-    });
+    cy.wait(2000);
    // Filter the newly created form
     cy.location('search').then(search => {
      let arr = search.split('=');
