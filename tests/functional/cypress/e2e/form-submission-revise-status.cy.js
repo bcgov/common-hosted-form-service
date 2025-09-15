@@ -37,7 +37,7 @@ it('Verify draft submission', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
     });
     //Multiline Text
     cy.get('div.formio-builder-form').then($el => {
@@ -47,7 +47,7 @@ it('Verify draft submission', () => {
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -110, { force: true })
         .trigger('mouseup', { force: true });
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');

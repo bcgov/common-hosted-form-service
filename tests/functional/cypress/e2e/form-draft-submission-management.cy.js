@@ -38,7 +38,7 @@ it('Verify draft submission', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
     });
     //Multiline Text
     cy.get('div.formio-builder-form').then($el => {
@@ -48,7 +48,7 @@ it('Verify draft submission', () => {
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -110, { force: true })
         .trigger('mouseup', { force: true });
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
     
   // Form saving
@@ -115,7 +115,7 @@ it('Verify draft submission', () => {
     cy.waitForLoad();
     cy.get('.v-alert__content > div').contains('Draft Saved');
     // Edit draft submission
-    cy.wait(4000);
+    cy.wait(2000);
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('.mdi-pencil').click();
     cy.waitForLoad();

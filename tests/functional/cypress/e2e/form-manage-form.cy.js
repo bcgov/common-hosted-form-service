@@ -1,5 +1,3 @@
-import { formsettings } from '../support/login.js';
-
 const depEnv = Cypress.env('depEnv');
 const username=Cypress.env('keycloakUsername');
 const password=Cypress.env('keycloakPassword');
