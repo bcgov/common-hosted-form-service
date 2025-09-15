@@ -28,31 +28,30 @@ describe("Form Designer", () => {
     cy.wait(2000);
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get("span.btn")
-        .contains("Hidden")
-
-        .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -400, { force: true })
-        .trigger("mouseup", { force: true });
-      cy.get('input[name="data[label]"]').clear().type("Application");
-      cy.get("button").contains("Save").click();
+      cy.get('span.btn').contains('Hidden')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -400, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('input[name="data[label]"]').clear().type('Application');
+      cy.get('.btn-success').click();
       cy.wait(2000);
-    });
   });
-  it("Checks Content", () => {
-    cy.viewport(1000, 1800);
-    cy.get("button").contains("Advanced Layout").click();
-    cy.get("div.formio-builder-form").then(($el) => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.get("span.btn")
-        .contains("Content")
+});
+it('Checks Content', () => {
 
-        .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -300, { force: true })
-        //.trigger('mousemove', coords.y, -50, { force: true })
-        .trigger("mouseup", { force: true });
-      cy.waitForLoad();
-      cy.get("button").contains("Save").click();
+  cy.viewport(1000, 1800);
+  cy.get('button').contains('Advanced Layout').click();
+  cy.get('div.formio-builder-form').then($el => {
+    const coords = $el[0].getBoundingClientRect();
+    cy.get('span.btn').contains('Content')
+    
+    .trigger('mousedown', { which: 1}, { force: true })
+    .trigger('mousemove', coords.x, -300, { force: true })
+    //.trigger('mousemove', coords.y, -50, { force: true })
+    .trigger('mouseup', { force: true });
+    cy.waitForLoad();
+    cy.get('.btn-success').click();
     });
   });
   it("Checks the well", () => {
@@ -72,27 +71,27 @@ describe("Form Designer", () => {
         //.trigger('mousemove', coords.y, -50, { force: true })
         .trigger("mouseup", { force: true });
       cy.wait(2000);
-      cy.get('input[name="data[label]"]').clear().type("Application");
-      cy.get("button").contains("Save").click();
-    });
-  });
-  it("Checks the Button", () => {
+      cy.get('input[name="data[label]"]').clear().type('Application');
+      cy.get('.btn-success').click();
+});
+
+});
+it('Checks the Button', () => {
     cy.viewport(1000, 1800);
     cy.wait(2000);
     cy.get("button").contains("Advanced Fields").click();
     cy.get("button").contains("Advanced Fields").click();
     cy.waitForLoad();
-    cy.get("div.formio-builder-form").then(($el) => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.waitForLoad();
-      cy.get("span.btn")
-        .contains("Button")
-        .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -700, { force: true })
-        .trigger("mouseup", { force: true });
-      cy.wait(2000);
-      cy.get('input[name="data[label]"]').clear().type("Submit");
-      cy.get("button").contains("Save").click();
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.waitForLoad();
+        cy.get('span.btn').contains('Button')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -700, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.wait(2000);
+        cy.get('input[name="data[label]"]').clear().type('Submit');
+        cy.get('.btn-success').click();
     });
   });
   it("Checks the Survey", () => {
@@ -101,22 +100,21 @@ describe("Form Designer", () => {
     cy.get("button").contains("Advanced Fields").click();
     cy.get("button").contains("Advanced Fields").click();
     cy.waitForLoad();
-    cy.get("div.formio-builder-form").then(($el) => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.waitForLoad();
-      cy.get("span.btn")
-        .contains("Survey")
-        .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -700, { force: true })
-        .trigger("mouseup", { force: true });
-      cy.wait(2000);
-      cy.get(":nth-child(2) > .nav-link").click();
-      cy.get('input[name="data[questions][0][label]"]').click();
-      cy.get('input[name="data[questions][0][label]"]').type("Male");
-      cy.get('button[ref="datagrid-questions-addRow"]').click();
-      cy.get('input[name="data[questions][1][label]"]').click();
-      cy.get('input[name="data[questions][1][label]"]').type("Female");
-      cy.get("button").contains("Save").click();
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.waitForLoad();
+        cy.get('span.btn').contains('Survey')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -700, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.wait(2000);
+        cy.get(':nth-child(2) > .nav-link').click();
+        cy.get('input[name="data[questions][0][label]"]').click();
+        cy.get('input[name="data[questions][0][label]"]').type('Male');
+        cy.get('button[ref="datagrid-questions-addRow"]').click();
+        cy.get('input[name="data[questions][1][label]"]').click();
+        cy.get('input[name="data[questions][1][label]"]').type('Female');
+        cy.get('.btn-success').click();
     });
   });
   it("Checks the Signature", () => {
@@ -125,16 +123,15 @@ describe("Form Designer", () => {
     cy.get("button").contains("Advanced Fields").click();
     cy.get("button").contains("Advanced Fields").click();
     cy.waitForLoad();
-    cy.get("div.formio-builder-form").then(($el) => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.waitForLoad();
-      cy.get("span.btn")
-        .contains("Signature")
-        .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -700, { force: true })
-        .trigger("mouseup", { force: true });
-      cy.wait(2000);
-      cy.get("button").contains("Save").click();
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.waitForLoad();
+        cy.get('span.btn').contains('Signature')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -700, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.wait(2000);
+        cy.get('.btn-success').click();
     });
     // Form saving
     let savedButton = cy.get("[data-cy=saveButton]");
