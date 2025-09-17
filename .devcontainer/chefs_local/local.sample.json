@@ -98,6 +98,11 @@
       }
     }
   },
+  "cstar": {
+    "endpoint": "https://tenant-management-system-test-frontend.apps.silver.devops.gov.bc.ca/api/v1/",
+    "listUserTenantsPath": "users/{userId}/tenants",
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups"
+  },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",
     "bcAddressURL": "https://geocoder.api.gov.bc.ca/addresses.json",

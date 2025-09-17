@@ -12,6 +12,10 @@ routes.get('/current', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
 });
 
+routes.get('/current/tenants', jwtService.protect(), async (req, res, next) => {
+  await controller.getCurrentUserTenants(req, res, next);
+});
+
 routes.get('/current/forms', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUserForms(req, res, next);
 });

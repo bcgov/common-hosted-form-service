@@ -451,3 +451,44 @@ describe(`${basePath}/users`, () => {
     });
   });
 });
+
+describe(`${basePath}/current/tenants`, () => {
+  const path = `${basePath}/current/tenants`;
+
+  describe('GET', () => {
+    it('should return 200', async () => {
+      // mock a success return value...
+      service.getCurrentUserTenants = jest.fn().mockReturnValue([{ id: 'tenant1', name: 'Tenant 1' }]);
+
+      const response = await appRequest.get(path);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toBeTruthy();
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    it('should handle 401', async () => {
+      // mock an authentication/permission issue...
+      service.getCurrentUserTenants = jest.fn(() => {
+        throw new Problem(401);
+      });
+
+      const response = await appRequest.get(path);
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toBeTruthy();
+    });
+
+    it('should handle 500', async () => {
+      // mock an unexpected error...
+      service.getCurrentUserTenants = jest.fn(() => {
+        throw new Error();
+      });
+
+      const response = await appRequest.get(path);
+
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toBeTruthy();
+    });
+  });
+});
