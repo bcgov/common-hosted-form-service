@@ -1,6 +1,6 @@
-import { formsettings } from '../support/login.js';
-
 const depEnv = Cypress.env('depEnv');
+const username=Cypress.env('keycloakUsername');
+const password=Cypress.env('keycloakPassword');
 
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
@@ -10,74 +10,36 @@ Cypress.Commands.add('waitForLoad', () => {
 
 describe('Form Designer', () => {
 
-  beforeEach(()=>{
-    
+    beforeEach(()=>{
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
       console.log(err);
       return false;
     });
-  });
-  it('Visits the form settings page', () => {
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    
-    formsettings();
-  });  
+    }); 
 // Update manage form settings
- it('Checks manage form settings', () => {
+    it('Login and call the existing form', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    cy.get('button').contains('Basic Fields').click();
-    cy.get('div.formio-builder-form').then($el => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
-      .trigger('mouseup', { force: true });
-      cy.get('button').contains('Save').click();
-    });
-  // Form saving
-    let savedButton = cy.get('[data-cy=saveButton]');
-    expect(savedButton).to.not.be.null;
-    savedButton.should('be.visible').trigger('click');
+    cy.visit(`/${depEnv}`); 
+    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+    cy.get('[data-test="idir"]').click();
+    cy.get('#user').type(username);
+    cy.get('#password').type(password);
+    cy.get('.btn').click();
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.wait(2000);
-  // Filter the newly created form
-    cy.location('search').then(search => {
-      //let pathName = fullUrl.pathname
-      let arr = search.split('=');
-      let arrayValues = arr[1].split('&');
-      cy.log(arrayValues[0]);
-      //cy.log(arrayValues[1]);
-      //cy.log(arrayValues[2]);
-      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-      })
+    })
 
     });  
     // Manage form settings
     it('Checks form scheduler settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
-      cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
-      cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
-      cy.get('[data-test="text-description"]').clear();
-      cy.get('[data-test="text-description"]').type('test description edit');
-      cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
-      //Verify form schedule settings is not present
-      cy.get('span').contains('Form Schedule Settings').should('not.exist');
-      //cy.get('span').contains('UPDATE').click();
-      cy.get('.mb-5 > .v-btn--elevated').click();
-      //Publish the form
-      cy.get('[data-cy="formPublishedSwitch"] > .v-input__control > .v-selection-control > .v-label > span').click();
-      cy.get('span').contains('Publish Version 1');
-
-      cy.contains('Continue').should('be.visible');
-      cy.contains('Continue').trigger('click');
-      // Update Form settings after publish
-
+      // Update Form settings
       cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
       //Enable submission schedule and event subscription
       cy.contains('Form Submissions Schedule').click();
@@ -164,7 +126,7 @@ describe('Form Designer', () => {
     cy.get(':nth-child(1) > .v-card > .v-card-text > .mb-6.font-weight-bold > .mdi-help-circle-outline').should('be.visible');
     //Validate help link
     cy.get('a.preview_info_link_field_white').then($el => {
-      const ESS=$el[5];
+      const ESS=$el[6];
       cy.get(ESS).should("have.attr","href","https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Event-Stream-Service/");
     });
     //Add ESS name
@@ -232,17 +194,8 @@ describe('Form Designer', () => {
       cy.get('.v-data-table__tbody > .v-data-table__tr > .v-data-table-column--align-end > :nth-child(2) > [targetref="[object Object]"] > .v-btn').click(); 
       cy.wait(2000);
       cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(1)').should('not.exist'); 
-       //Delete form after test run
-      cy.get('[data-test="canRemoveForm"]').then($el => {
-      const delform=$el[0];
-      cy.get(delform).click();
-      })
-      cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').then($el => {
-      const delcontinue=$el[1];
-      cy.get(delcontinue).click();
-      cy.get('#logoutButton > .v-btn__content > span').click();
-              
-      });  
-  
+       //Logout
+      cy.get('#logoutButton > .v-btn__content > span').click();        
+     
     });
 });
