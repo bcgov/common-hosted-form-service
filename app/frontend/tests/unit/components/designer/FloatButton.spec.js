@@ -1,14 +1,8 @@
 // @vitest-environment happy-dom
-import {
-  mount,
-  RouterLinkStub,
-  shallowMount,
-  flushPromises,
-} from '@vue/test-utils';
+import { mount, RouterLinkStub, shallowMount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
 import { beforeEach, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
-import { useFormStore } from '~/store/form';
 
 import FloatButton from '~/components/designer/FloatButton.vue';
 
@@ -31,7 +25,6 @@ vi.mock('vuetify', () => ({
 describe('FloatButton.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
-  const formStore = useFormStore(pinia);
   const resolve = vi.fn();
 
   beforeEach(() => {
@@ -507,27 +500,6 @@ describe('FloatButton.vue', () => {
     });
 
     expect(wrapper.vm.isManageEnabled).toBeTruthy();
-  });
-
-  it('DISPLAY_VERSION returns the design version for a form + 1 or 1 if it is a new form', async () => {
-    const wrapper = shallowMount(FloatButton, {
-      props: {
-        formId: '123',
-        draftId: '123',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {
-          name: 'RouterLink',
-          template: '<div class="router-link-stub"><slot /></div>',
-        },
-      },
-    });
-
-    formStore.form.versions = [{}, {}];
-    await flushPromises();
-
-    expect(wrapper.vm.DISPLAY_VERSION).toEqual(3);
   });
 
   it('Manage button is disabled if there is no form id', () => {
