@@ -1,6 +1,6 @@
 // This script attempts to gracefully rebuild and update @bcgov/formio if necessary
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const COMPONENTS_DIR = '../../components';
 const FORMIO_DIR = 'src/formio';
@@ -81,10 +81,35 @@ function cleanComponents() {
  * @description Redeploy `@bcgov/formio` library
  */
 function deployComponents() {
-  console.log(`Redeploying ${TITLE}...`); // eslint-disable-line no-console
+  console.log(`Redeploying ${TITLE}...`);
   if (fs.existsSync(FORMIO_DIR)) fs.rmSync(FORMIO_DIR, { recursive: true });
-  copyDirRecursiveSync(`${COMPONENTS_DIR}/lib`, FORMIO_DIR);
-  console.log(`${TITLE} has been redeployed`); // eslint-disable-line no-console
+
+  // Copy lib directory (JavaScript components)
+  if (fs.existsSync(`${COMPONENTS_DIR}/lib`)) {
+    copyDirRecursiveSync(`${COMPONENTS_DIR}/lib`, FORMIO_DIR);
+  }
+
+  // Copy only CSS files from dist directory
+  if (fs.existsSync(`${COMPONENTS_DIR}/dist`)) {
+    const cssFiles = fs
+      .readdirSync(`${COMPONENTS_DIR}/dist`)
+      .filter((file) => file.endsWith('.css') || file.endsWith('.css.map'));
+
+    if (cssFiles.length > 0) {
+      const cssDir = path.join(FORMIO_DIR, 'css');
+      if (!fs.existsSync(cssDir)) {
+        fs.mkdirSync(cssDir, { recursive: true });
+      }
+
+      cssFiles.forEach((file) => {
+        const sourcePath = path.join(`${COMPONENTS_DIR}/dist`, file);
+        const targetPath = path.join(cssDir, file);
+        copyFileSync(sourcePath, targetPath);
+      });
+    }
+  }
+
+  console.log(`${TITLE} has been redeployed`);
 }
 
 //
@@ -98,7 +123,7 @@ function deployComponents() {
  * @param {string} [cwd] Working directory of the command to run
  */
 function runSync(cmd, cwd = undefined) {
-  const { spawnSync } = require('child_process');
+  const { spawnSync } = require('node:child_process');
   const parts = cmd.split(/\s+/g);
   const opts = { stdio: 'inherit', shell: true };
   if (cwd) opts.cwd = cwd;
