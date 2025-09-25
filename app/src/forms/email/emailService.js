@@ -109,7 +109,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
     // The data that is allowed to be used in the templates. This is currently
     // very restrictive due to PII concerns and keeping within the PIA allowable
     // uses of data.
-    const handlebarsData = { form: { description: form.description, name: form.name } };
+    const handlebarsData = { form: { description: form.description, name: form.name }, data: submission };
 
     configData = {
       bodyTemplate: bodyTemplate,
