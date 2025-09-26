@@ -408,6 +408,9 @@ async function schemaCreateNew() {
     labels: form.value.labels,
     formMetadata: form.value.formMetadata,
     eventStreamConfig: form.value.eventStreamConfig,
+    classificationType: form.value.classificationType || null,
+    retentionDays: form.value.retentionDays || null,
+    classificationDescription: form.value.classificationDescription || null,
   });
   // update user labels with any new added labels
   if (
