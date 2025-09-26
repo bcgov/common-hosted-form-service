@@ -45,7 +45,7 @@ it('Checks the Container component', () => {
         cy.get('input[name="data[label]"]').clear().type('Application');
         cy.get('input[name="data[customClass]"]').type('bg-primary');
         cy.waitForLoad(); 
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
 
   });
@@ -62,7 +62,7 @@ it('Checks the Container component', () => {
             .trigger('mousedown', { which: 1}, { force: true })
             .trigger('mousemove', coords.x, -400, { force: true })
             .trigger('mouseup', { force: true });
-            cy.get('button').contains('Save').click();
+           cy.get('.btn-success').click();
     });
 
   });
@@ -78,7 +78,7 @@ it('Checks the Container component', () => {
             .trigger('mousedown', { which: 1}, { force: true })
             .trigger('mousemove', coords.x, -300, { force: true })
             .trigger('mouseup', { force: true });
-            cy.get('button').contains('Save').click();
+            cy.get('.btn-success').click();
     });
     
   });
@@ -96,7 +96,7 @@ it('Checks the Container component', () => {
           cy.get('input[name="data[label]"]').clear().type('Application');
           cy.get('input[name="data[customClass]"]').type('bg-primary');
           cy.waitForLoad();
-          cy.get('button').contains('Save').click();
+          cy.get('.btn-success').click();
       
       });
       /*
@@ -166,7 +166,7 @@ it('Checks the Container component', () => {
       cy.get('input[name="data[label]"]').clear().type('Add more days');
       cy.get('input[name="data[customClass]"]').type('bg-primary');
       cy.waitForLoad();
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
     });
     
 // Form saving
@@ -192,9 +192,6 @@ it('Checks the Container component', () => {
      cy.get('.list-group-item').should('exist');
      //cy.get('[ref="datagrid-dataGrid"]').should('be.visible');
      cy.get('.col-md-1').should('be.visible');
-
-     cy.visit(`/${depEnv}`);
-     cy.get('[data-cy="userFormsLinks"]').click();
      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
      cy.waitForLoad();
     //Delete form after test run
