@@ -540,56 +540,32 @@ async function loadFile(event) {
 defineExpose({ designerOptions, reRenderFormIo });
 </script>
 <template>
+  <div class="text-center mx-4">
+    <h4 v-if="form.name">
+      {{ form.name }}
+    </h4>
+    <em> Version: {{ DISPLAY_VERSION }} </em>
+  </div>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div class="d-flex flex-wrap">
-      <!-- page title -->
-      <div :lang="locale" class="flex-1-0">
-        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
-        <h3 v-if="form.name">{{ form.name }}</h3>
-      </div>
-      <!-- buttons -->
-      <div class="d-flex flex-row">
-        <div class="d-flex flex-column ma-2" style="align-items: center">
-          <v-btn
-            class="mx-1"
-            color="primary"
-            :title="$t('trans.formDesigner.downloadJson')"
-            :lang="locale"
-            prepend-icon="mdi:mdi-download"
-            @click="exportFormSchema(form.name, formSchema, form.snake)"
-          >
-            {{ $t('trans.formDesigner.downloadJson') }}
-          </v-btn>
-        </div>
-        <div class="d-flex flex-column ma-2" style="align-items: center">
-          <v-btn
-            class="mx-1"
-            color="primary"
-            :lang="locale"
-            prepend-icon="mdi:mdi-publish"
-            :title="$t('trans.formDesigner.uploadJson')"
-            @click="$refs.uploader.click()"
-          >
-            {{ $t('trans.formDesigner.uploadJson') }}
-            <input
-              ref="uploader"
-              class="d-none"
-              type="file"
-              accept=".json"
-              @change="loadFile"
-            />
-          </v-btn>
-        </div>
-      </div>
-    </div>
-    <div>
-      <!-- page version -->
-      <div :lang="locale">
-        <em :lang="locale"
-          >{{ $t('trans.formDesigner.version') }} : {{ DISPLAY_VERSION }}</em
-        >
-      </div>
-    </div>
+    <FloatButton
+      v-model:form-schema="formSchema"
+      style="right: 0"
+      :saved-status="savedStatus"
+      :is-form-saved="isFormSaved"
+      :new-version="newVersion"
+      :is-saving="saving"
+      :saved="saved"
+      :can-save="canSave"
+      :form-id="formId"
+      :draft-id="draftId"
+      :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"
+      :redo-enabled="redoEnabled() === 0 ? false : redoEnabled()"
+      @undo="onUndoClick"
+      @redo="onRedoClick"
+      @save="submitFormSchema"
+      @export="exportFormSchema"
+      @import-file="loadFile"
+    />
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
       <h4 class="text-primary" :lang="locale">
         <v-icon
@@ -621,23 +597,6 @@ defineExpose({ designerOptions, reRenderFormIo });
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
-    />
-    <FloatButton
-      class="position-fixed bottom-0"
-      style="right: 0"
-      :saved-status="savedStatus"
-      :is-form-saved="isFormSaved"
-      :new-version="newVersion"
-      :is-saving="saving"
-      :saved="saved"
-      :can-save="canSave"
-      :form-id="formId"
-      :draft-id="draftId"
-      :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"
-      :redo-enabled="redoEnabled() === 0 ? false : redoEnabled()"
-      @undo="onUndoClick"
-      @redo="onRedoClick"
-      @save="submitFormSchema"
     />
   </div>
 </template>
