@@ -53,8 +53,8 @@ export default class Component extends (ParentComponent as any) {
       const decimalPlaces = this.component.decimalLimit || 2;
       const multiplier = Math.pow(10, decimalPlaces);
       let numValue = Number.parseFloat(value);
-      if (!Number.isNaN(numValue)) {
-        switch (this.component.rounding.method) {
+      if (!Number.isNaN(numValue) && this.component.rounding) {
+        switch (this.component?.rounding?.method) {
           case 'floor':
             numValue = Math.floor(numValue * multiplier) / multiplier;
             break;
