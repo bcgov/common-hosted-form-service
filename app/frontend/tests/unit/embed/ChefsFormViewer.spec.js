@@ -16,7 +16,7 @@ describe('FormViewerUtils', () => {
     const { validateAssetUrl } = window.FormViewerUtils;
     // Valid JS and CSS URLs
     expect(() => validateAssetUrl('https://x/foo.js', 'js')).not.toThrow();
-    expect(() => validateAssetUrl('http://x/bar.css', 'css')).not.toThrow();
+    expect(() => validateAssetUrl('https://x/bar.css', 'css')).not.toThrow();
     // Invalid: missing, not string, wrong protocol
     expect(() => validateAssetUrl('', 'js')).toThrow(
       /Malformed or missing JS URL/
@@ -38,7 +38,7 @@ describe('FormViewerUtils', () => {
     );
     // Valid: http/https only
     expect(() => validateAssetUrl('https://x/foo', 'js')).not.toThrow();
-    expect(() => validateAssetUrl('http://x/bar', 'css')).not.toThrow();
+    expect(() => validateAssetUrl('https://x/bar', 'css')).not.toThrow();
   });
   it('parseBaseUrl returns correct base', () => {
     expect(
@@ -1096,7 +1096,7 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_getSimpleFileComponentOptions returns file operation configuration', () => {
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/files');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/files');
     el._emitCancelable = vi.fn().mockReturnValue(true);
     el._waitUntil = vi.fn().mockResolvedValue(true);
     el._handleFileUpload = vi.fn().mockResolvedValue({ data: 'uploaded' });
@@ -1112,11 +1112,11 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_getBCAddressComponentOptions returns address component configuration', () => {
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/geo');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/geo');
     el._root = el.shadowRoot;
 
     const options = el._getBCAddressComponentOptions();
-    expect(options.providerOptions.url).toBe('http://test/geo');
+    expect(options.providerOptions.url).toBe('https://test/geo');
     expect(options.shadowRoot).toBe(el.shadowRoot);
   });
 
@@ -1205,7 +1205,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_loadPrefillData fetches submission data when submissionId present', async () => {
     el.submissionId = 'test-submission';
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/submission');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submission');
     el._buildAuthHeader = vi
       .fn()
       .mockReturnValue({ Authorization: 'Bearer test' });
@@ -1224,7 +1224,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_loadPrefillData handles fetch errors gracefully', async () => {
     el.submissionId = 'test-submission';
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/submission');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submission');
     el._buildAuthHeader = vi.fn().mockReturnValue({});
 
     globalThis.fetch.mockRejectedValueOnce(new Error('Network error'));
@@ -1260,7 +1260,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_manualSubmit posts submission data to backend', async () => {
     const submission = { data: { test: 'value' } };
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/submit');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submit');
     el._buildAuthHeader = vi
       .fn()
       .mockReturnValue({ Authorization: 'Bearer test' });
@@ -1282,7 +1282,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_manualSubmit handles submission errors', async () => {
     const submission = { data: { test: 'value' } };
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/submit');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submit');
     el._buildAuthHeader = vi.fn().mockReturnValue({});
     el._emitCancelable = vi.fn().mockReturnValue(true);
     el._waitUntil = vi.fn().mockResolvedValue(true);
@@ -1303,7 +1303,7 @@ describe('ChefsFormViewer internals', () => {
   it('_handleFileUpload processes file upload with progress tracking', async () => {
     const formData = new FormData();
     const config = { onUploadProgress: vi.fn() };
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/upload');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/upload');
     el._buildAuthHeader = vi
       .fn()
       .mockReturnValue({ Authorization: 'Bearer test' });
@@ -1336,7 +1336,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_handleFileDownload fetches and stores file data', async () => {
     const fileId = 'test-file-id';
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/file/test-file-id');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/file/test-file-id');
     el._buildAuthHeader = vi.fn().mockReturnValue({});
     el._triggerFileDownload = vi.fn();
 
@@ -1361,7 +1361,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_handleFileDelete sends DELETE request for file removal', async () => {
     const fileInfo = { data: { id: 'test-file-id' } };
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/file/test-file-id');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/file/test-file-id');
     el._buildAuthHeader = vi.fn().mockReturnValue({});
 
     globalThis.fetch.mockResolvedValueOnce({
@@ -1370,7 +1370,7 @@ describe('ChefsFormViewer internals', () => {
 
     await el._handleFileDelete(fileInfo);
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'http://test/file/test-file-id',
+      'https://test/file/test-file-id',
       { method: 'DELETE', headers: {} }
     );
   });
@@ -1442,7 +1442,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_loadAssetHints adds resource hints for critical assets', async () => {
     el._addResourceHint = vi.fn();
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/asset');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/asset');
 
     await el._loadAssetHints();
 
@@ -1453,20 +1453,20 @@ describe('ChefsFormViewer internals', () => {
     );
     expect(el._addResourceHint).toHaveBeenCalledWith(
       'preload',
-      'http://test/asset',
+      'https://test/asset',
       { as: 'style' }
     );
   });
 
   it('_loadCssAssets loads critical and optional CSS assets', async () => {
     el._loadAssetWithFallback = vi.fn().mockResolvedValue(true);
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/css');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/css');
     el._resolveUrlWithFallback = vi.fn().mockReturnValue({
-      primary: 'http://test/icons',
-      fallback: 'http://cdn/icons',
+      primary: 'https://test/icons',
+      fallback: 'https://cdn/icons',
     });
     el.noIcons = false;
-    el.themeCss = 'http://test/theme.css';
+    el.themeCss = 'https://test/theme.css';
 
     await el._loadCssAssets();
 
@@ -1478,10 +1478,10 @@ describe('ChefsFormViewer internals', () => {
       .fn()
       .mockReturnValue({ available: false });
     el._loadAssetWithFallback = vi.fn().mockResolvedValue(true);
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/js');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/js');
     el._resolveUrlWithFallback = vi.fn().mockReturnValue({
-      primary: 'http://test/formio',
-      fallback: 'http://cdn/formio',
+      primary: 'https://test/formio',
+      fallback: 'https://cdn/formio',
     });
 
     await el._loadJsAssets();
@@ -1493,7 +1493,7 @@ describe('ChefsFormViewer internals', () => {
     el._injectShadowStyle = vi.fn();
     el._injectGlobalStyle = vi.fn();
     el._addResourceHint = vi.fn();
-    el.getBaseUrl = vi.fn().mockReturnValue('http://test');
+    el.getBaseUrl = vi.fn().mockReturnValue('https://test');
     el._getFontFaceCSS = vi.fn().mockReturnValue('@font-face{}');
     el._getIconColorCSS = vi.fn().mockReturnValue('.icon{}');
     el._getNeutralizeCSS = vi.fn().mockReturnValue('.neutralize{}');
@@ -1537,11 +1537,11 @@ describe('ChefsFormViewer internals', () => {
     const appendElementSpy = vi.spyOn(window.FormViewerUtils, 'appendElement');
     document.querySelector = vi.fn().mockReturnValue(null);
 
-    el._addResourceHint('preload', 'http://test/asset', { as: 'style' });
+    el._addResourceHint('preload', 'https://test/asset', { as: 'style' });
 
     expect(createElementSpy).toHaveBeenCalledWith('link', {
       rel: 'preload',
-      href: 'http://test/asset',
+      href: 'https://test/asset',
       as: 'style',
     });
     expect(appendElementSpy).toHaveBeenCalled();
@@ -1556,7 +1556,7 @@ describe('ChefsFormViewer internals', () => {
       .mockReturnValue(document.createElement('link'));
     const createElementSpy = vi.spyOn(window.FormViewerUtils, 'createElement');
 
-    el._addResourceHint('preload', 'http://test/asset');
+    el._addResourceHint('preload', 'https://test/asset');
 
     expect(createElementSpy).not.toHaveBeenCalled();
     createElementSpy.mockRestore();
@@ -1607,11 +1607,11 @@ describe('ChefsFormViewer internals', () => {
 
   it('_configureInstanceEndpoints sets submission URL', () => {
     el.formioInstance = {};
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/submit');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submit');
 
     el._configureInstanceEndpoints();
 
-    expect(el.formioInstance.url).toBe('http://test/submit');
+    expect(el.formioInstance.url).toBe('https://test/submit');
   });
 
   it('_wireInstanceEvents sets up FormIO event handlers', () => {
@@ -1662,7 +1662,7 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_loadSchema fetches and parses form schema', async () => {
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/schema');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/schema');
     el._buildAuthHeader = vi.fn().mockReturnValue({});
     el._emit = vi.fn().mockReturnValue(true);
     el._parseError = vi.fn();
@@ -1690,7 +1690,7 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_loadSchema handles fetch errors', async () => {
-    el._resolveUrl = vi.fn().mockReturnValue('http://test/schema');
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/schema');
     el._buildAuthHeader = vi.fn().mockReturnValue({});
     el._emit = vi.fn().mockReturnValue(true);
     el._parseError = vi.fn().mockResolvedValue('Schema load failed');
