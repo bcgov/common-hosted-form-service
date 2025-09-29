@@ -67,9 +67,13 @@ export default class Component extends ParentComponent {
         this.component.fileMinSize = uploads.fileMinSize;
         this.component.fileMaxSize = uploads.fileMaxSize;
         // set the default url to be for uploads.
-        this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
-          cfg.apiPath
-        )}/${remSlash(uploads.path)}`;
+        if (uploads.webcomponents && uploads.url) {
+          this.component.url = uploads.url;
+        } else {
+          this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
+            cfg.apiPath
+          )}/${remSlash(uploads.path)}`;
+        }
         // no idea what to do with this yet...
         this._enabled = uploads.enabled;
       }
@@ -256,14 +260,17 @@ export default class Component extends ParentComponent {
               // we do not get API Problem objects, only http error
               // not much information to provide our users.
               let message = 'An unexpected error occured during file upload.';
-              if (response.status === 409 || response.detail.includes('409')) {
+
+              // Add defensive checks for response.detail
+              const detail = response?.detail || '';
+              const status = response?.status || 0;
+
+              if (status === 409 || detail.includes('409')) {
                 message = 'File did not pass the virus scanner.';
-              } else if (
-                response.status === 400 ||
-                response.detail.includes('400')
-              ) {
+              } else if (status === 400 || detail.includes('400')) {
                 message = 'File could not be uploaded.';
               }
+
               fileUpload.message = this.t(message);
               // @ts-ignore
               delete fileUpload.progress;

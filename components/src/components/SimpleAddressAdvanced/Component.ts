@@ -1,33 +1,46 @@
 /* tslint:disable */
-import { Components } from 'formiojs';
-const ParentComponent = (Components as any).components.address;
+import { Constants } from '../Common/Constants';
+import {
+  ShadowDOMAddressComponent,
+  ShadowDOMAddressConfig,
+} from '../Common/ShadowDOMAddressComponent';
 import editForm from './Component.form';
 
-import { Constants } from '../Common/Constants';
-
 const ID = 'simpleaddressadvanced';
-
 const DISPLAY = 'Address';
 
-export default class Component extends (ParentComponent as any) {
-    static schema(...extend) {
-        return ParentComponent.schema({
-            type: ID,
-            label: DISPLAY,
-            key: ID
-        }, ...extend);
-    }
+export default class Component extends ShadowDOMAddressComponent {
+  protected getConfig(): ShadowDOMAddressConfig {
+    return {
+      componentId: ID,
+      displayName: DISPLAY,
+      // No providerOptions or queryParameters - this is a generic address component
+    };
+  }
 
-    public static editForm = editForm;
+  static schema(...extend: any[]) {
+    return ShadowDOMAddressComponent.createSchema(
+      {
+        componentId: ID,
+        displayName: DISPLAY,
+        // No provider configuration - user configures this themselves
+      },
+      ...extend
+    );
+  }
 
-    static get builderInfo() {
-        return {
-            title: DISPLAY,
-            group: 'advanced',
-            icon: 'home',
-            weight: 770,
-            documentation: Constants.DEFAULT_HELP_LINK,
-            schema: Component.schema()
-        };
-    }
+  static get builderInfo() {
+    return {
+      title: DISPLAY,
+      group: 'advanced',
+      icon: 'home',
+      weight: 770,
+      documentation: Constants.DEFAULT_HELP_LINK,
+      schema: Component.schema(),
+    };
+  }
+
+  public static editForm = editForm;
 }
+
+export {};

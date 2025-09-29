@@ -33,6 +33,8 @@ module.exports = async function gatewayTokenVerify(req, res, next) {
     // Always set req.params.formId to token's formId for downstream use
     req.params.formId = payload.formId;
     req.gatewayTokenPayload = payload;
+    // to get a valid token, we used the api, so set the apiUser to true
+    req.apiUser = true;
     next();
   } catch (err) {
     res.status(401).json({ detail: 'Invalid or expired token', error: err.message });

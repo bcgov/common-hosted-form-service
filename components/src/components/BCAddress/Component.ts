@@ -1,44 +1,27 @@
 /* tslint:disable */
-import { Components } from 'formiojs';
 import { Constants } from '../Common/Constants';
+import {
+  ShadowDOMAddressComponent,
+  ShadowDOMAddressConfig,
+} from '../Common/ShadowDOMAddressComponent';
 import editForm from './Component.form';
-import _ from 'lodash';
-
-export const AddressComponentMode = {
-  Autocomplete: 'autocomplete',
-  Manual: 'manual',
-};
-
-const ParentComponent = (Components as any).components.address;
 
 const ID = 'bcaddress';
 const DISPLAY = 'BC Address';
 
-export default class Component extends (ParentComponent as any) {
-  static schema(...extend) {
-    return ParentComponent.schema(
-      {
-        label: DISPLAY,
-        type: ID,
-        key: ID,
-        provider: 'custom',
-        providerOptions: {
-          queryProperty: 'addressString',
-          url: import.meta.env.VITE_CHEFS_GEO_ADDRESS_APIURL,
-        },
+export default class Component extends ShadowDOMAddressComponent {
+  protected getConfig(): ShadowDOMAddressConfig {
+    return {
+      componentId: ID,
+      displayName: DISPLAY,
+    };
+  }
 
-        queryParameters: {
-          echo: false,
-          brief: true,
-          minScore: 55,
-          onlyCivic: true,
-          maxResults: 15,
-          autocomplete: true,
-          matchAccuracy: 100,
-          matchPrecision:
-            'occupant, unit, site, civic_number, intersection, block, street, locality, province',
-          precisionPoints: 100,
-        },
+  static schema(...extend: any[]) {
+    return ShadowDOMAddressComponent.createSchema(
+      {
+        componentId: ID,
+        displayName: DISPLAY,
       },
       ...extend
     );
@@ -55,42 +38,7 @@ export default class Component extends (ParentComponent as any) {
     };
   }
 
-  mergeSchema(component = {}) {
-    let components = component['components'];
-
-    if (components) {
-      return _.omit(component, 'components');
-    }
-
-    return component;
-  }
-
   public static editForm = editForm;
-
-  async init() {
-    super.init();
-  }
-
-  async attach(element) {
-    super.attach(element);
-    try {
-      let { providerOptions, queryParameters } = this.component;
-      if (providerOptions) {
-        if (!providerOptions.params) {
-          providerOptions['params'] = {};
-        }
-        if (queryParameters) {
-          providerOptions.params = {
-            ...providerOptions.params,
-            ...queryParameters,
-          };
-        }
-      }
-    } catch (err) {
-      console.log(
-        `This error is from Custom BC Address component in form.io: Failed to acquire configuration: ${err.message}`
-      );
-    }
-  }
 }
+
 export {};

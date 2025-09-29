@@ -631,6 +631,12 @@
       // Track auth plugin registration to avoid re-registration
       this._authPluginRegistered = false;
 
+      // simplefile component download file holder
+      this.downloadFile = {
+        data: null,
+        headers: null,
+      };
+
       /**
        * Overrideable parsers for backend payloads (CHEFS-compatible defaults)
        * ...existing code...
@@ -1068,6 +1074,17 @@
         schema: `${base}/webcomponents/v1/form-viewer/${fid}/schema`,
         submit: `${base}/webcomponents/v1/form-viewer/${fid}/submit`,
         readSubmission: `${base}/webcomponents/v1/form-viewer/${fid}/submission/${sid}`,
+
+        // simplefile component routes
+        files: `${base}/webcomponents/v1/files`,
+        deleteFile: `${base}/webcomponents/v1/files/:fileId`,
+        deleteFiles: `${base}/webcomponents/v1/files/`,
+        getFile: `${base}/webcomponents/v1/files/:fileId`,
+        uploadFile: `${base}/webcomponents/v1/files?formId=${fid}`,
+        cloneFile: `${base}/webcomponents/v1/files/:fileId/clone`,
+
+        // bcgeoaddress component routes
+        bcgeoaddress: `${base}/webcomponents/v1/bcgeoaddress/advance/address`,
       };
     }
 
@@ -1941,16 +1958,448 @@
       return !results.some((r) => r === false);
     }
 
+    /**
+     * Private method to handle file upload
+     * @param {FormData} formData - Form data containing the file
+     * @param {Object} config - Upload configuration options
+     * @returns {Promise<Object>} Upload response
+     * @private
+     */
+    async _handleFileUpload(formData, config = {}) {
+      const uploadUrl = this._resolveUrl('uploadFile');
+      this._log.info('File upload starting', { url: uploadUrl });
+
+      try {
+        // Create XMLHttpRequest for progress tracking
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          // Track upload progress
+          if (config.onUploadProgress) {
+            xhr.upload.addEventListener('progress', (event) => {
+              if (event.lengthComputable) {
+                config.onUploadProgress({
+                  loaded: event.loaded,
+                  total: event.total,
+                });
+              }
+            });
+          }
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                const response = JSON.parse(xhr.responseText);
+                this._log.info('File upload successful', { response });
+                resolve({ data: response });
+              } catch (parseError) {
+                this._log.error('Failed to parse upload response', {
+                  error: parseError.message,
+                });
+                const error = new Error('Invalid response format');
+                error.status = xhr.status;
+                error.detail = `${xhr.status} - Failed to parse response`;
+                reject(error);
+              }
+            } else {
+              this._log.error('File upload failed', {
+                status: xhr.status,
+                statusText: xhr.statusText,
+              });
+              const statusText = `Upload failed: ${xhr.status} ${xhr.statusText}`;
+              const error = new Error(statusText);
+              error.status = xhr.status;
+              error.detail = `${xhr.status} - ${xhr.statusText}`;
+              reject(error);
+            }
+          });
+
+          xhr.addEventListener('error', () => {
+            this._log.error('File upload network error');
+            const error = new Error('Network error during upload');
+            error.status = 0;
+            error.detail = '0 - Network error';
+            reject(error);
+          });
+
+          xhr.addEventListener('timeout', () => {
+            this._log.error('File upload timeout');
+            const error = new Error('Upload timeout');
+            error.status = 0;
+            error.detail = '0 - Timeout';
+            reject(error);
+          });
+
+          // Set timeout (30 seconds)
+          xhr.timeout = 30000;
+
+          // Open the request first
+          xhr.open('POST', uploadUrl);
+
+          // Set auth headers and other headers, but exclude Content-Type for multipart/form-data
+          const authHeaders = this._buildAuthHeader(uploadUrl);
+          const configHeaders = config.headers || {};
+
+          // Filter out Content-Type if it's multipart/form-data to let browser set it automatically
+          const headers = { ...authHeaders };
+          Object.entries(configHeaders).forEach(([key, value]) => {
+            if (
+              key.toLowerCase() === 'content-type' &&
+              value.includes('multipart/form-data')
+            ) {
+              // Skip this header - let browser set it automatically with boundary
+              return;
+            }
+            headers[key] = value;
+          });
+
+          Object.entries(headers).forEach(([key, value]) => {
+            xhr.setRequestHeader(key, value);
+          });
+
+          xhr.send(formData);
+        });
+      } catch (error) {
+        this._log.error('File upload error', { error: error.message });
+        // Ensure error has the expected properties for SimpleFile component
+        if (!error.detail) {
+          error.detail = error.message || 'Unknown error';
+        }
+        if (!error.status) {
+          error.status = 0;
+        }
+        throw error;
+      }
+    }
+
+    /**
+     * Private method to handle file download
+     * @param {string} fileId - File identifier
+     * @param {Object} config - Download configuration options
+     * @returns {Promise<void>} Resolves when download completes
+     * @private
+     */
+    async _handleFileDownload(fileId, config = {}) {
+      const getFileUrl = this._resolveUrl('getFile', { fileId });
+      this._log.info('File download starting', { fileId, url: getFileUrl });
+
+      try {
+        const response = await fetch(getFileUrl, {
+          headers: this._buildAuthHeader(getFileUrl),
+          ...config,
+        });
+
+        if (!response.ok) {
+          const errorMsg = `Download failed: ${response.status} ${response.statusText}`;
+          this._log.error(errorMsg, { fileId, status: response.status });
+          throw new Error(errorMsg);
+        }
+
+        // Store the download data for download trigger
+        this.downloadFile.data = await response.blob();
+        this.downloadFile.headers = {
+          'content-type':
+            response.headers.get('content-type') || 'application/octet-stream',
+          'content-disposition':
+            response.headers.get('content-disposition') ||
+            `attachment; filename="file-${fileId}"`,
+        };
+
+        // Trigger download if responseType is 'blob' (default behavior)
+        if (config.responseType === 'blob' || !config.responseType) {
+          this._triggerFileDownload();
+        }
+
+        this._log.info('File download successful', { fileId });
+        return Promise.resolve();
+      } catch (error) {
+        this._log.error('File download error', {
+          fileId,
+          error: error.message,
+        });
+        throw error;
+      }
+    }
+
+    /**
+     * Private method to handle file deletion
+     * @param {Object} fileInfo - File information object
+     * @returns {Promise<void>} Resolves when delete completes
+     * @private
+     */
+    async _handleFileDelete(fileInfo) {
+      // Extract file ID from various possible formats
+      let fileId;
+      if (fileInfo?.data?.id) {
+        fileId = fileInfo.data.id;
+      } else if (fileInfo?.id) {
+        fileId = fileInfo.id;
+      } else {
+        this._log.error('File delete failed: no file ID found', { fileInfo });
+        throw new Error('No file ID provided for deletion');
+      }
+
+      const deleteUrl = this._resolveUrl('deleteFile', { fileId });
+      this._log.info('File delete starting', { fileId, url: deleteUrl });
+
+      try {
+        const response = await fetch(deleteUrl, {
+          method: 'DELETE',
+          headers: this._buildAuthHeader(deleteUrl),
+        });
+
+        if (!response.ok) {
+          const errorMsg = `Delete failed: ${response.status} ${response.statusText}`;
+          this._log.error(errorMsg, { fileId, status: response.status });
+          throw new Error(errorMsg);
+        }
+
+        this._log.info('File delete successful', { fileId });
+        return Promise.resolve();
+      } catch (error) {
+        this._log.error('File delete error', { fileId, error: error.message });
+        throw error;
+      }
+    }
+
+    /**
+     * Triggers file download using the stored download data
+     * @private
+     */
+    _triggerFileDownload() {
+      if (!this.downloadFile.data || !this.downloadFile.headers) {
+        this._log.warn('No download data available');
+        return;
+      }
+
+      let data = this.downloadFile.data;
+      const contentType = this.downloadFile.headers['content-type'];
+
+      // Handle JSON data conversion
+      if (contentType.includes('application/json')) {
+        if (data instanceof Blob) {
+          // If it's already a blob, read it as text and re-stringify
+          data
+            .text()
+            .then((text) => {
+              const parsedData = JSON.parse(text);
+              const jsonString = JSON.stringify(parsedData);
+              data = new Blob([jsonString], { type: contentType });
+              this._performDownload(data);
+            })
+            .catch(() => {
+              // Fallback to original data
+              this._performDownload(data);
+            });
+          return;
+        } else if (typeof data === 'object') {
+          data = new Blob([JSON.stringify(data)], { type: contentType });
+        } else if (typeof data === 'string') {
+          data = new Blob([data], { type: contentType });
+        }
+      }
+
+      this._performDownload(data);
+    }
+
+    /**
+     * Performs the actual file download
+     * @param {Blob} data - The data to download
+     * @private
+     */
+    _performDownload(data) {
+      const url = window.URL.createObjectURL(data);
+      const a = FormViewerUtils.createElement('a', {
+        href: url,
+        download: this._getFilenameFromDisposition(
+          this.downloadFile.headers['content-disposition']
+        ),
+        style: 'display: none',
+      });
+
+      a.classList.add('hiddenDownloadTextElement');
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up after a short delay
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    }
+
+    /**
+     * Extracts filename from content-disposition header
+     * @param {string} disposition - Content-disposition header value
+     * @returns {string} Filename
+     * @private
+     */
+    _getFilenameFromDisposition(disposition) {
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          return matches[1].replace(/['"]/g, '');
+        }
+      }
+      return 'download';
+    }
+
+    /**
+     * Creates the SimpleFile component options configuration
+     * @returns {Object} SimpleFile component configuration
+     * @private
+     * @example
+     *  const viewer = document.querySelector('chefs-form-viewer');
+     *  // Example 1: Security check before upload
+     *  viewer.addEventListener('formio:beforeFileUpload', (event) => {
+     *    const { formData, config } = event.detail;
+     *
+     *    // Security check: file size limit
+     *    const file = formData.get('files');
+     *    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+     *      event.preventDefault(); // Cancel the upload
+     *      alert('File too large');
+     *      return;
+     *    }
+     *
+     *    // Async security check
+     *    event.detail.waitUntil(
+     *      fetch('/api/security/check-upload-permission')
+     *        .then(res => res.ok)
+     *        .catch(() => false)
+     *    );
+     *  });
+     *
+     *  // Example 2: Authorization check before download
+     *  viewer.addEventListener('formio:beforeFileDownload', (event) => {
+     *    const { fileId } = event.detail;
+     *
+     *    // Check user permissions
+     *    if (!currentUser.canDownloadFiles) {
+     *      event.preventDefault();
+     *      return;
+     *    }
+     *
+     *    // Async permission check
+     *    event.detail.waitUntil(
+     *      checkFilePermissions(fileId)
+     *    );
+     *  });
+     *
+     *  // Example 3: Confirmation before delete
+     *  viewer.addEventListener('formio:beforeFileDelete', (event) => {
+     *    const { fileId } = event.detail;
+     *
+     *    // Show confirmation dialog
+     *    const confirmed = confirm('Are you sure you want to delete this file?');
+     *    if (!confirmed) {
+     *      event.preventDefault();
+     *    }
+     *  });
+     */
+    _getSimpleFileComponentOptions() {
+      const filesUrl = this._resolveUrl('files');
+      return {
+        config: {
+          uploads: {
+            enabled: true,
+            fileMinSize: '0KB',
+            fileMaxSize: '25MB',
+            webcomponents: true,
+            url: filesUrl,
+          },
+        },
+
+        // File operation functions with cancelable events
+        uploadFile: async (formData, config = {}) => {
+          const proceed = this._emitCancelable('formio:beforeFileUpload', {
+            formData,
+            config,
+            action: 'upload',
+          });
+          if (!proceed)
+            return Promise.reject(new Error('File upload cancelled'));
+
+          const allowed = await this._waitUntil();
+          if (!allowed)
+            return Promise.reject(new Error('File upload not allowed'));
+
+          return this._handleFileUpload(formData, config);
+        },
+
+        getFile: async (fileId, config = {}) => {
+          const proceed = this._emitCancelable('formio:beforeFileDownload', {
+            fileId,
+            config,
+            action: 'download',
+          });
+          if (!proceed)
+            return Promise.reject(new Error('File download cancelled'));
+
+          const allowed = await this._waitUntil();
+          if (!allowed)
+            return Promise.reject(new Error('File download not allowed'));
+
+          return this._handleFileDownload(fileId, config);
+        },
+
+        deleteFile: async (fileInfo) => {
+          const fileId = fileInfo?.data?.id || fileInfo?.id;
+          const proceed = this._emitCancelable('formio:beforeFileDelete', {
+            fileInfo,
+            fileId,
+            action: 'delete',
+          });
+          if (!proceed)
+            return Promise.reject(new Error('File delete cancelled'));
+
+          const allowed = await this._waitUntil();
+          if (!allowed)
+            return Promise.reject(new Error('File delete not allowed'));
+
+          return this._handleFileDelete(fileInfo);
+        },
+
+        // Auth token for file operations (used by simplefile component)
+        chefsToken: () => this._buildAuthHeader('')?.Authorization || '',
+      };
+    }
+
+    /**
+     * Creates the BCAddress component options configuration
+     * @returns {Object} BCAddress component configuration
+     * @private
+     */
+    _getBCAddressComponentOptions() {
+      const geoApiUrl = this._resolveUrl('bcgeoaddress');
+      return {
+        providerOptions: {
+          queryProperty: 'addressString',
+          url: geoApiUrl,
+        },
+        // Pass shadow root for proper DOM attachment
+        shadowRoot: this._root === this.shadowRoot ? this.shadowRoot : null,
+      };
+    }
+
     /** Build Form.io options object with all configuration */
     _buildFormioOptions() {
       return {
         readOnly: this.readOnly,
         language: this.language,
-        sanitizeConfig: {},
+        sanitizeConfig: {
+          addTags: ['iframe'],
+          ALLOWED_TAGS: ['iframe'],
+        },
         hooks: this._buildHooks(),
         evalContext: {
           ...(this.token && { token: this.token }),
           ...(this.user && { user: this.user }),
+        },
+        componentOptions: {
+          simplefile: this._getSimpleFileComponentOptions(),
+          bcaddress: this._getBCAddressComponentOptions(),
+          simplebcaddress: this._getBCAddressComponentOptions(),
         },
         shadowRoot: this._root === this.shadowRoot ? this.shadowRoot : null,
       };
@@ -2100,6 +2549,43 @@
       }
     }
 
+    _overrideGlobalAutocompleter() {
+      // Save original autocompleter if it exists
+      if (window.autocompleter && !window._originalAutocompleter) {
+        window._originalAutocompleter = window.autocompleter;
+      }
+
+      // Override global autocompleter to prevent Form.io from creating body autocompleters
+      window.autocompleter = (settings) => {
+        this._log.debug(
+          'Global autocompleter called, blocking for Shadow DOM components',
+          {
+            input: settings?.input?.tagName,
+            inputId: settings?.input?.id,
+            container: settings?.container?.tagName,
+          }
+        );
+
+        // Check if this is being called for a BCAddress component in Shadow DOM
+        const input = settings?.input;
+        if (input && this.shadowRoot && this.shadowRoot.contains(input)) {
+          this._log.debug('Blocking autocompleter for Shadow DOM input');
+          return null; // Block autocompleter creation for Shadow DOM inputs
+        }
+
+        // For non-Shadow DOM inputs, allow original autocompleter (shouldn't happen in web component)
+        if (window._originalAutocompleter) {
+          this._log.debug('Allowing autocompleter for non-Shadow DOM input');
+          return window._originalAutocompleter(settings);
+        }
+
+        this._log.debug('No original autocompleter found, blocking all');
+        return null;
+      };
+
+      this._log.debug('Global autocompleter override installed');
+    }
+
     async _initFormio() {
       await this._ensureAssets();
 
@@ -2123,6 +2609,9 @@
       // beforeInit interception
       const proceed = this._emitCancelable('formio:beforeInit', { options });
       if (!proceed || !(await this._waitUntil())) return;
+
+      // CRITICAL: Override global autocompleter to prevent Form.io from creating body autocompleters
+      this._overrideGlobalAutocompleter();
 
       // Create Form.io instance
       this.formioInstance = await this._createFormioInstance(
@@ -2193,6 +2682,7 @@
               </main>
             </div>
           </div>
+          <div id="bcaddress-autocomplete-container"></div>
         `;
     }
   }

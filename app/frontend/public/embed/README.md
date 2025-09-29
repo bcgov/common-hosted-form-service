@@ -177,6 +177,36 @@ Mounted under `/webcomponents` for complete isolation from `/api`:
 - `GET /webcomponents/v1/assets/formio.js` → serves Form.io JavaScript from local node_modules.
 - `GET /webcomponents/v1/assets/font-awesome/css/font-awesome.min.css` and `/v1/assets/font-awesome/fonts/:file` → serves Font Awesome CSS/fonts locally.
 
+API for BC Address components:
+
+- `GET /webcomponents/v1/bcgeoaddress/advance/address` → Searches for addresses using BC Geocoder Address search provider.
+
+API for SimpleFile component (File Uploads):
+
+- `GET /webcomponents/v1/files/:fileId` → downloads a file by ID. Requires SUBMISSION_READ permissions and valid authentication (Bearer token or Basic auth with form-id:api-key).
+- `GET /webcomponents/v1/files/:fileId/clone` → clones a file by ID.
+- `DELETE /webcomponents/v1/files/:fileId` → deletes a file by ID.
+- `DELETE /webcomponents/v1/files/` → batch deletes multiple files. Accepts { fileIds: [...] } in request body.
+- `POST /webcomponents/v1/files?formId=:formId` → uploads a new file with multipart/form-data. Includes virus scanning and file validation middleware.
+
+_IMPORTANT_ Embedded forms are `Public` and file uploads will act accordingly, so API permissions only. No user specific permissions can be enforced. See [Authentication](README.md#authentication). And see [SimpleFile](README.md#simplefile) for an example leveraging events to secure file interactions.
+
+Security Features:
+
+- All routes require CORS preflight, API access validation, gateway token verification, and origin access control
+- File operations validate permissions against the associated form submission
+- Upload endpoint includes automatic virus scanning via virusScan.scanFile middleware
+- File size and type restrictions are enforced via fileUpload.upload middleware
+
+Error Responses:
+
+- `401` - Authentication required or invalid
+- `403` - Insufficient permissions
+- `404` - File or form not found
+- `409` - File failed virus scan
+- `413` - File too large
+- `415` - Unsupported file type
+
 Security notes
 
 - `originAccess` middleware is currently permissive, but placed for future per-form origin allowlists (coming soon).
@@ -261,7 +291,7 @@ if (token.roles.includes('manager') && user.department === 'HR') {
 // token: { sub: "user123", roles: ["admin"], email: "user@gov.bc.ca", ... }
 ```
 
-### Authentication
+### Authorization
 
 - Default: if requests are same-origin with the detected/overridden `base-url`, the component sends `Authorization: Basic base64(formId:apiKey)`.
 - Hook: set `el.onBuildAuthHeader = (url) => ({ Authorization: '...' })` to supply custom headers.
@@ -283,6 +313,59 @@ el.endpoints = {
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
   themeCss: 'https://example.com/theme.css',
 };
+```
+
+### SimpleFile
+
+The following shows how an embedding application can leverage events to secure user interaction with the SimpleFile (File Upload) component. Remember, the `webcomponent` uses API access permission not User assigned permissions. Using events allows the embedding application to perform their own security checks before upload, download and delete of files.
+
+```js
+const viewer = document.querySelector('chefs-form-viewer');
+// Example 1: Security check before upload
+viewer.addEventListener('formio:beforeFileUpload', (event) => {
+  const { formData, config } = event.detail;
+
+  // Security check: file size limit
+  const file = formData.get('files');
+  if (file.size > 10 * 1024 * 1024) {
+    // 10MB limit
+    event.preventDefault(); // Cancel the upload
+    alert('File too large');
+    return;
+  }
+
+  // Async security check
+  event.detail.waitUntil(
+    fetch('/api/security/check-upload-permission')
+      .then((res) => res.ok)
+      .catch(() => false)
+  );
+});
+
+// Example 2: Authorization check before download
+viewer.addEventListener('formio:beforeFileDownload', (event) => {
+  const { fileId } = event.detail;
+
+  // Check user permissions
+  if (!currentUser.canDownloadFiles) {
+    event.preventDefault();
+    return;
+  }
+
+  // Async permission check
+  event.detail.waitUntil(checkFilePermissions(fileId));
+});
+
+// Example 3: Confirmation before delete
+viewer.addEventListener('formio:beforeFileDelete', (event) => {
+  const { fileId } = event.detail;
+
+  // Show confirmation dialog
+  const confirmed = confirm('Are you sure you want to delete this file?');
+  if (!confirmed) {
+    event.preventDefault();
+  }
+});
 ```
 
 ### Code Generator and Demos

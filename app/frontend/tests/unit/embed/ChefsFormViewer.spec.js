@@ -1046,4 +1046,692 @@ describe('ChefsFormViewer internals', () => {
       el._loadAssetWithFallback('primary', null, true, 'test-asset', validateFn)
     ).rejects.toThrow('Failed to load required asset: test-asset');
   });
+
+  it('_parseJsonAttribute parses valid JSON and handles invalid input', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    expect(el._parseJsonAttribute('{"test":123}', 'token')).toEqual({
+      test: 123,
+    });
+    expect(el._parseJsonAttribute('invalid', 'token')).toBeNull();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it('_verifyAndParseSubmissionData handles valid and invalid payloads', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    expect(el._verifyAndParseSubmissionData({ data: { test: 1 } })).toEqual({
+      data: { test: 1 },
+    });
+    expect(el._verifyAndParseSubmissionData([])).toEqual({ data: null });
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it('_verifyAndParseSchema handles valid and invalid payloads', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    const validPayload = { form: { name: 'test' }, schema: { components: [] } };
+    expect(el._verifyAndParseSchema(validPayload)).toEqual({
+      form: { name: 'test' },
+      schema: { components: [] },
+    });
+    expect(el._verifyAndParseSchema([])).toEqual({ form: null, schema: null });
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it('_buildFormioOptions returns correct configuration', () => {
+    el.readOnly = true;
+    el.language = 'fr';
+    el.token = { user: 'test' };
+    el.user = { name: 'John' };
+    el._buildHooks = vi.fn().mockReturnValue({});
+    el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
+    el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
+
+    const options = el._buildFormioOptions();
+    expect(options.readOnly).toBe(true);
+    expect(options.language).toBe('fr');
+    expect(options.evalContext.token).toEqual({ user: 'test' });
+    expect(options.evalContext.user).toEqual({ name: 'John' });
+  });
+
+  it('_getSimpleFileComponentOptions returns file operation configuration', () => {
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/files');
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(true);
+    el._handleFileUpload = vi.fn().mockResolvedValue({ data: 'uploaded' });
+    el._buildAuthHeader = vi
+      .fn()
+      .mockReturnValue({ Authorization: 'Bearer test' });
+
+    const options = el._getSimpleFileComponentOptions();
+    expect(options.config.uploads.enabled).toBe(true);
+    expect(typeof options.uploadFile).toBe('function');
+    expect(typeof options.getFile).toBe('function');
+    expect(typeof options.deleteFile).toBe('function');
+  });
+
+  it('_getBCAddressComponentOptions returns address component configuration', () => {
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/geo');
+    el._root = el.shadowRoot;
+
+    const options = el._getBCAddressComponentOptions();
+    expect(options.providerOptions.url).toBe('http://test/geo');
+    expect(options.shadowRoot).toBe(el.shadowRoot);
+  });
+
+  it('_buildHooks returns form hooks with navigation handlers', () => {
+    el._manualSubmit = vi.fn();
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(true);
+
+    const hooks = el._buildHooks();
+    expect(typeof hooks.beforeSubmit).toBe('function');
+    expect(typeof hooks.beforeNext).toBe('function');
+    expect(typeof hooks.beforePrev).toBe('function');
+  });
+
+  it('_emitCancelable creates cancelable event with waitUntil support', () => {
+    const spy = vi.fn();
+    el.addEventListener('test:event', spy);
+
+    const result = el._emitCancelable('test:event', { data: 'test' });
+    expect(result).toBe(true);
+    expect(spy).toHaveBeenCalled();
+    expect(spy.mock.calls[0][0].detail.waitUntil).toBeDefined();
+  });
+
+  it('_waitUntil resolves pending waits and returns boolean result', async () => {
+    el._pendingWaits = [Promise.resolve(true), Promise.resolve(false)];
+    const result = await el._waitUntil();
+    expect(result).toBe(false);
+    expect(el._pendingWaits).toEqual([]);
+  });
+
+  it('_isAssetPreLoaded checks validation function and updates loaded assets', () => {
+    const validateFn = vi.fn().mockReturnValue(true);
+    expect(el._isAssetPreLoaded('test-asset', validateFn)).toBe(true);
+    expect(el._loadedAssets.get('test-asset')).toBe('pre-loaded');
+
+    expect(el._isAssetPreLoaded('other-asset')).toBe(false);
+  });
+
+  it('_validateLoadedAsset throws when validation fails', () => {
+    const validateFn = vi.fn().mockReturnValue(false);
+    expect(() => el._validateLoadedAsset(true, 'test', validateFn)).toThrow(
+      'Asset validation failed: test'
+    );
+    expect(() =>
+      el._validateLoadedAsset(false, 'test', validateFn)
+    ).not.toThrow();
+  });
+
+  it('_handleLoadResult throws for required failed assets, logs optional failures', () => {
+    expect(() =>
+      el._handleLoadResult(false, 'url', null, true, 'required')
+    ).toThrow('Failed to load required asset: required');
+
+    el._assetErrors = [];
+    el._handleLoadResult(false, 'url', 'fallback', false, 'optional');
+    expect(el._assetErrors).toHaveLength(1);
+    expect(el._assetErrors[0].type).toBe('optional');
+  });
+
+  it('_getFilenameFromDisposition extracts filename from header', () => {
+    expect(
+      el._getFilenameFromDisposition('attachment; filename="test.pdf"')
+    ).toBe('test.pdf');
+    expect(
+      el._getFilenameFromDisposition('attachment; filename=document.txt')
+    ).toBe('document.txt');
+    expect(el._getFilenameFromDisposition('inline')).toBe('download');
+  });
+
+  it('_overrideGlobalAutocompleter saves original and blocks shadow DOM calls', () => {
+    const originalAutocompleter = vi.fn();
+    window.autocompleter = originalAutocompleter;
+
+    el._overrideGlobalAutocompleter();
+
+    expect(window._originalAutocompleter).toBe(originalAutocompleter);
+
+    // Test shadow DOM blocking
+    const shadowInput = document.createElement('input');
+    el.shadowRoot.appendChild(shadowInput);
+
+    const result = window.autocompleter({ input: shadowInput });
+    expect(result).toBeNull();
+  });
+
+  it('_loadPrefillData fetches submission data when submissionId present', async () => {
+    el.submissionId = 'test-submission';
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/submission');
+    el._buildAuthHeader = vi
+      .fn()
+      .mockReturnValue({ Authorization: 'Bearer test' });
+    el._verifyAndParseSubmissionData = vi
+      .fn()
+      .mockReturnValue({ data: { name: 'test' } });
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ data: { name: 'test' } }),
+    });
+
+    await el._loadPrefillData();
+    expect(el._prefillData).toEqual({ name: 'test' });
+  });
+
+  it('_loadPrefillData handles fetch errors gracefully', async () => {
+    el.submissionId = 'test-submission';
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/submission');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+
+    globalThis.fetch.mockRejectedValueOnce(new Error('Network error'));
+
+    await el._loadPrefillData();
+    expect(el._prefillData).toBeNull();
+  });
+
+  it('_applyPrefill uses setSubmission when available', async () => {
+    el._prefillData = { name: 'test' };
+    el.formioInstance = {
+      setSubmission: vi.fn().mockResolvedValue(undefined),
+    };
+
+    await el._applyPrefill();
+    expect(el.formioInstance.setSubmission).toHaveBeenCalledWith(
+      { data: { name: 'test' } },
+      { fromSubmission: true, noValidate: true }
+    );
+  });
+
+  it('_applyPrefill falls back to direct assignment', async () => {
+    el._prefillData = { name: 'test' };
+    el.formioInstance = {
+      data: {},
+      redraw: vi.fn().mockResolvedValue(undefined),
+    };
+
+    await el._applyPrefill();
+    expect(el.formioInstance.submission).toEqual({ data: { name: 'test' } });
+    expect(el.formioInstance.redraw).toHaveBeenCalled();
+  });
+
+  it('_manualSubmit posts submission data to backend', async () => {
+    const submission = { data: { test: 'value' } };
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/submit');
+    el._buildAuthHeader = vi
+      .fn()
+      .mockReturnValue({ Authorization: 'Bearer test' });
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(true);
+    el._emit = vi.fn();
+    el._parseError = vi.fn();
+    el.parsers = { submitResult: vi.fn().mockReturnValue({ submission }) };
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
+    await el._manualSubmit(submission);
+    expect(el._emit).toHaveBeenCalledWith('formio:submit', { submission });
+    expect(el._emit).toHaveBeenCalledWith('formio:submitDone', { submission });
+  });
+
+  it('_manualSubmit handles submission errors', async () => {
+    const submission = { data: { test: 'value' } };
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/submit');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(true);
+    el._emit = vi.fn();
+    el._parseError = vi.fn().mockResolvedValue('Submit failed');
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+    });
+
+    await el._manualSubmit(submission);
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'Submit failed',
+    });
+  });
+
+  it('_handleFileUpload processes file upload with progress tracking', async () => {
+    const formData = new FormData();
+    const config = { onUploadProgress: vi.fn() };
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/upload');
+    el._buildAuthHeader = vi
+      .fn()
+      .mockReturnValue({ Authorization: 'Bearer test' });
+
+    // Mock XMLHttpRequest
+    const mockXhr = {
+      upload: { addEventListener: vi.fn() },
+      addEventListener: vi.fn(),
+      open: vi.fn(),
+      setRequestHeader: vi.fn(),
+      send: vi.fn(),
+      timeout: 0,
+      status: 200,
+      responseText: '{"success": true}',
+    };
+
+    global.XMLHttpRequest = vi.fn(() => mockXhr);
+
+    const uploadPromise = el._handleFileUpload(formData, config);
+
+    // Simulate successful upload
+    const loadHandler = mockXhr.addEventListener.mock.calls.find(
+      (call) => call[0] === 'load'
+    )[1];
+    loadHandler();
+
+    const result = await uploadPromise;
+    expect(result.data).toEqual({ success: true });
+  });
+
+  it('_handleFileDownload fetches and stores file data', async () => {
+    const fileId = 'test-file-id';
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/file/test-file-id');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._triggerFileDownload = vi.fn();
+
+    const mockBlob = new Blob(['test content']);
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      blob: () => Promise.resolve(mockBlob),
+      headers: {
+        get: vi.fn().mockImplementation((header) => {
+          if (header === 'content-type') return 'application/pdf';
+          if (header === 'content-disposition')
+            return 'attachment; filename="test.pdf"';
+          return null;
+        }),
+      },
+    });
+
+    await el._handleFileDownload(fileId);
+    expect(el.downloadFile.data).toBe(mockBlob);
+    expect(el._triggerFileDownload).toHaveBeenCalled();
+  });
+
+  it('_handleFileDelete sends DELETE request for file removal', async () => {
+    const fileInfo = { data: { id: 'test-file-id' } };
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/file/test-file-id');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+    });
+
+    await el._handleFileDelete(fileInfo);
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'http://test/file/test-file-id',
+      { method: 'DELETE', headers: {} }
+    );
+  });
+
+  it('_triggerFileDownload creates and clicks download link', () => {
+    el.downloadFile = {
+      data: new Blob(['test content'], { type: 'text/plain' }),
+      headers: {
+        'content-type': 'text/plain',
+        'content-disposition': 'attachment; filename="test.txt"',
+      },
+    };
+
+    const mockLink = {
+      click: vi.fn(),
+      classList: { add: vi.fn() },
+    };
+    const createElementSpy = vi
+      .spyOn(window.FormViewerUtils, 'createElement')
+      .mockReturnValue(mockLink);
+    // Mock URL APIs that don't exist in test environment
+    window.URL = window.URL || {};
+    window.URL.createObjectURL = vi.fn().mockReturnValue('blob:url');
+    window.URL.revokeObjectURL = vi.fn();
+
+    document.body.appendChild = vi.fn();
+    document.body.removeChild = vi.fn();
+
+    el._triggerFileDownload();
+
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(window.URL.createObjectURL).toHaveBeenCalled();
+
+    createElementSpy.mockRestore();
+  });
+
+  it('_ensureAssets transitions through all asset states', async () => {
+    el._transitionAssetState = vi.fn().mockResolvedValue(undefined);
+
+    const result = await el._ensureAssets();
+
+    expect(el._transitionAssetState).toHaveBeenCalledWith('HINTS');
+    expect(el._transitionAssetState).toHaveBeenCalledWith('CSS');
+    expect(el._transitionAssetState).toHaveBeenCalledWith('JS');
+    expect(el._transitionAssetState).toHaveBeenCalledWith('FONTS');
+    expect(el._transitionAssetState).toHaveBeenCalledWith('READY');
+    expect(result.success).toBe(true);
+  });
+
+  it('_transitionAssetState calls appropriate load methods for each state', async () => {
+    el._loadAssetHints = vi.fn().mockResolvedValue(undefined);
+    el._loadCssAssets = vi.fn().mockResolvedValue(undefined);
+    el._loadJsAssets = vi.fn().mockResolvedValue(undefined);
+    el._loadFontsAndStyles = vi.fn().mockResolvedValue(undefined);
+    el._emit = vi.fn();
+
+    await el._transitionAssetState('HINTS');
+    expect(el._loadAssetHints).toHaveBeenCalled();
+
+    await el._transitionAssetState('CSS');
+    expect(el._loadCssAssets).toHaveBeenCalled();
+
+    await el._transitionAssetState('JS');
+    expect(el._loadJsAssets).toHaveBeenCalled();
+
+    await el._transitionAssetState('FONTS');
+    expect(el._loadFontsAndStyles).toHaveBeenCalled();
+  });
+
+  it('_loadAssetHints adds resource hints for critical assets', async () => {
+    el._addResourceHint = vi.fn();
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/asset');
+
+    await el._loadAssetHints();
+
+    expect(el._addResourceHint).toHaveBeenCalledWith(
+      'preconnect',
+      'https://cdn.jsdelivr.net',
+      { crossOrigin: 'anonymous' }
+    );
+    expect(el._addResourceHint).toHaveBeenCalledWith(
+      'preload',
+      'http://test/asset',
+      { as: 'style' }
+    );
+  });
+
+  it('_loadCssAssets loads critical and optional CSS assets', async () => {
+    el._loadAssetWithFallback = vi.fn().mockResolvedValue(true);
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/css');
+    el._resolveUrlWithFallback = vi.fn().mockReturnValue({
+      primary: 'http://test/icons',
+      fallback: 'http://cdn/icons',
+    });
+    el.noIcons = false;
+    el.themeCss = 'http://test/theme.css';
+
+    await el._loadCssAssets();
+
+    expect(el._loadAssetWithFallback).toHaveBeenCalledTimes(3); // main, icons, theme
+  });
+
+  it('_loadJsAssets loads FormIO and components JS', async () => {
+    window.FormViewerUtils.validateFormioGlobal = vi
+      .fn()
+      .mockReturnValue({ available: false });
+    el._loadAssetWithFallback = vi.fn().mockResolvedValue(true);
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/js');
+    el._resolveUrlWithFallback = vi.fn().mockReturnValue({
+      primary: 'http://test/formio',
+      fallback: 'http://cdn/formio',
+    });
+
+    await el._loadJsAssets();
+
+    expect(el._loadAssetWithFallback).toHaveBeenCalledTimes(2); // formio, components
+  });
+
+  it('_loadFontsAndStyles handles icon setup and neutralization', async () => {
+    el._injectShadowStyle = vi.fn();
+    el._injectGlobalStyle = vi.fn();
+    el._addResourceHint = vi.fn();
+    el.getBaseUrl = vi.fn().mockReturnValue('http://test');
+    el._getFontFaceCSS = vi.fn().mockReturnValue('@font-face{}');
+    el._getIconColorCSS = vi.fn().mockReturnValue('.icon{}');
+    el._getNeutralizeCSS = vi.fn().mockReturnValue('.neutralize{}');
+    el.noIcons = false;
+    el._root = el.shadowRoot;
+
+    await el._loadFontsAndStyles();
+
+    expect(el._injectGlobalStyle).toHaveBeenCalled();
+    expect(el._addResourceHint).toHaveBeenCalled();
+    expect(el._injectShadowStyle).toHaveBeenCalled();
+  });
+
+  it('_tryLoadWithFallback attempts primary then fallback URL', async () => {
+    const loadFn = vi
+      .fn()
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+    const fallbackLoadFn = vi.fn().mockResolvedValue(true);
+    el._getAssetLoadFunction = vi.fn().mockReturnValue(fallbackLoadFn);
+    el._loadedAssets = new Map();
+
+    const result = await el._tryLoadWithFallback(
+      'primary-url',
+      'fallback-url',
+      'test-asset',
+      loadFn
+    );
+
+    expect(loadFn).toHaveBeenCalledWith('primary-url');
+    expect(fallbackLoadFn).toHaveBeenCalledWith('fallback-url');
+    expect(result).toBe(true);
+    expect(el._loadedAssets.get('test-asset-fallback')).toBe('fallback-url');
+  });
+
+  it('_addResourceHint creates link element with resource hints', () => {
+    const mockLink = document.createElement('link');
+    const createElementSpy = vi
+      .spyOn(window.FormViewerUtils, 'createElement')
+      .mockReturnValue(mockLink);
+    const appendElementSpy = vi.spyOn(window.FormViewerUtils, 'appendElement');
+    document.querySelector = vi.fn().mockReturnValue(null);
+
+    el._addResourceHint('preload', 'http://test/asset', { as: 'style' });
+
+    expect(createElementSpy).toHaveBeenCalledWith('link', {
+      rel: 'preload',
+      href: 'http://test/asset',
+      as: 'style',
+    });
+    expect(appendElementSpy).toHaveBeenCalled();
+
+    createElementSpy.mockRestore();
+    appendElementSpy.mockRestore();
+  });
+
+  it('_addResourceHint skips duplicate hints', () => {
+    document.querySelector = vi
+      .fn()
+      .mockReturnValue(document.createElement('link'));
+    const createElementSpy = vi.spyOn(window.FormViewerUtils, 'createElement');
+
+    el._addResourceHint('preload', 'http://test/asset');
+
+    expect(createElementSpy).not.toHaveBeenCalled();
+    createElementSpy.mockRestore();
+  });
+
+  it('_createFormioInstance uses createForm when available', async () => {
+    const mockForm = { id: 'test-form' };
+    window.Formio = {
+      createForm: vi.fn().mockResolvedValue(mockForm),
+      Form: vi.fn(),
+    };
+    window.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(true);
+
+    const container = document.createElement('div');
+    const schema = { components: [] };
+    const options = { readOnly: true };
+
+    const result = await el._createFormioInstance(container, schema, options);
+
+    expect(window.Formio.createForm).toHaveBeenCalledWith(
+      container,
+      schema,
+      options
+    );
+    expect(result).toBe(mockForm);
+    delete window.Formio;
+  });
+
+  it('_createFormioInstance falls back to Form constructor', async () => {
+    const mockForm = { id: 'test-form' };
+    window.Formio = { Form: vi.fn().mockReturnValue(mockForm) };
+    window.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(false);
+
+    const container = document.createElement('div');
+    const schema = { components: [] };
+    const options = { readOnly: true };
+
+    const result = await el._createFormioInstance(container, schema, options);
+
+    expect(window.Formio.Form).toHaveBeenCalledWith(container, schema, options);
+    expect(result).toBe(mockForm);
+    delete window.Formio;
+  });
+
+  it('_configureInstanceEndpoints sets submission URL', () => {
+    el.formioInstance = {};
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/submit');
+
+    el._configureInstanceEndpoints();
+
+    expect(el.formioInstance.url).toBe('http://test/submit');
+  });
+
+  it('_wireInstanceEvents sets up FormIO event handlers', () => {
+    const mockFormio = {
+      on: vi.fn(),
+    };
+    el.formioInstance = mockFormio;
+    el._emit = vi.fn();
+    el.form = { id: 'test' };
+
+    el._wireInstanceEvents();
+
+    expect(mockFormio.on).toHaveBeenCalledWith('render', expect.any(Function));
+    expect(mockFormio.on).toHaveBeenCalledWith('change', expect.any(Function));
+    expect(mockFormio.on).toHaveBeenCalledWith('submit', expect.any(Function));
+    expect(mockFormio.on).toHaveBeenCalledWith(
+      'submitDone',
+      expect.any(Function)
+    );
+    expect(mockFormio.on).toHaveBeenCalledWith('error', expect.any(Function));
+  });
+
+  it('_setSubmissionOnInstance uses setSubmission when available', async () => {
+    el.formioInstance = {
+      setSubmission: vi.fn().mockResolvedValue(undefined),
+    };
+    const data = { name: 'test' };
+    const opts = { noValidate: true };
+
+    await el._setSubmissionOnInstance(data, opts);
+
+    expect(el.formioInstance.setSubmission).toHaveBeenCalledWith(
+      { data },
+      opts
+    );
+  });
+
+  it('_setSubmissionOnInstance falls back to direct assignment with redraw', async () => {
+    el.formioInstance = {
+      redraw: vi.fn().mockResolvedValue(undefined),
+    };
+    const data = { name: 'test' };
+
+    await el._setSubmissionOnInstance(data);
+
+    expect(el.formioInstance.submission).toEqual({ data });
+    expect(el.formioInstance.redraw).toHaveBeenCalled();
+  });
+
+  it('_loadSchema fetches and parses form schema', async () => {
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/schema');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._emit = vi.fn().mockReturnValue(true);
+    el._parseError = vi.fn();
+    el.parsers = {
+      schema: vi.fn().mockReturnValue({
+        form: { name: 'Test Form' },
+        schema: { components: [] },
+      }),
+    };
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          form: { name: 'Test Form' },
+          schema: { components: [] },
+        }),
+    });
+
+    await el._loadSchema();
+
+    expect(el.form).toEqual({ name: 'Test Form' });
+    expect(el.formSchema).toEqual({ components: [] });
+    expect(el.formName).toBe('Test Form');
+  });
+
+  it('_loadSchema handles fetch errors', async () => {
+    el._resolveUrl = vi.fn().mockReturnValue('http://test/schema');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._emit = vi.fn().mockReturnValue(true);
+    el._parseError = vi.fn().mockResolvedValue('Schema load failed');
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+    });
+
+    await expect(el._loadSchema()).rejects.toThrow('Schema load failed');
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'Schema load failed',
+    });
+  });
+
+  it('_performDownload creates and triggers download link', () => {
+    const data = new Blob(['test content']);
+    el.downloadFile = {
+      headers: { 'content-disposition': 'attachment; filename="test.txt"' },
+    };
+
+    const mockLink = {
+      click: vi.fn(),
+      classList: { add: vi.fn() },
+    };
+    const createElementSpy = vi
+      .spyOn(window.FormViewerUtils, 'createElement')
+      .mockReturnValue(mockLink);
+    // Mock URL APIs that don't exist in test environment
+    window.URL = window.URL || {};
+    window.URL.createObjectURL = vi.fn().mockReturnValue('blob:url');
+    window.URL.revokeObjectURL = vi.fn();
+
+    document.body.appendChild = vi.fn();
+    document.body.removeChild = vi.fn();
+
+    el._performDownload(data);
+
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(window.URL.createObjectURL).toHaveBeenCalledWith(data);
+
+    createElementSpy.mockRestore();
+  });
 });
