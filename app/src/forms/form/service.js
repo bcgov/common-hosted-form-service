@@ -22,6 +22,8 @@ const {
   SubmissionMetadata,
   FormComponentsProactiveHelp,
   FormSubscription,
+  FormTenant,
+  FormGroup,
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture } = require('../common/scheduleService');
@@ -29,6 +31,7 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
+const tenantService = require('../../components/tenantService');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -258,11 +261,12 @@ const service = {
         await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
-      const userRoles = Rolenames.map((r) => {
-        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
-      });
-      await FormRoleUser.query(trx).insert(userRoles);
-
+      if (!currentUser.tenantId) {
+        const userRoles = Rolenames.map((r) => {
+          return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
+        });
+        await FormRoleUser.query(trx).insert(userRoles);
+      }
       // create a unpublished draft
       const draft = {
         id: uuid.v4(),
@@ -284,6 +288,31 @@ const service = {
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
 
+      // tenant specific processing
+      if (currentUser.tenantId) {
+        const formTenant = {
+          id: uuid.v4(),
+          formId: obj.id,
+          tenantId: currentUser.tenantId,
+          createdBy: currentUser.usernameIdp,
+        };
+        await FormTenant.query(trx).insert(formTenant);
+
+        // Add form group entries for groups with form_admin role
+        const groups = await tenantService.getUserTenantGroupsAndRoles({ currentUser });
+        const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes('form_admin'));
+        if (adminGroups.length === 0) {
+          throw new Problem(403, 'User does not belong to any group with form_admin role');
+        }
+        const formGroups = adminGroups.map((group) => ({
+          id: uuid.v4(),
+          formId: obj.id,
+          groupId: group.id,
+          createdBy: currentUser.usernameIdp,
+        }));
+        await FormGroup.query(trx).insert(formGroups);
+      }
+      //end tenant specific processing
       await trx.commit();
       const result = await service.readForm(obj.id);
       result.draft = draft;

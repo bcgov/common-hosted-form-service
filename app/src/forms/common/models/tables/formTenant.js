@@ -3,9 +3,9 @@ const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-class FormTanantMapping extends Timestamps(Model) {
+class FormTanant extends Timestamps(Model) {
   static get tableName() {
-    return 'form_tenant_mapping';
+    return 'form_tenant';
   }
   static get relationMappings() {
     const Form = require('./form');
@@ -15,7 +15,7 @@ class FormTanantMapping extends Timestamps(Model) {
         relation: Model.HasOneRelation,
         modelClass: Form,
         join: {
-          from: 'form_tenant_mapping.formId',
+          from: 'form_tenant.formId',
           to: 'form.id',
         },
       },
@@ -50,4 +50,4 @@ class FormTanantMapping extends Timestamps(Model) {
   }
 }
 
-module.exports = FormTanantMapping;
+module.exports = FormTanant;

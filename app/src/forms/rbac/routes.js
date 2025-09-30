@@ -5,6 +5,7 @@ const { currentUser, hasFormPermissions, hasFormRoles, hasRoleDeletePermissions,
 const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
 const controller = require('./controller');
+const userAccess = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 
@@ -58,6 +59,19 @@ routes.delete('/users', hasFormPermissions([P.TEAM_UPDATE]), hasFormRoles([R.OWN
 
 routes.get('/form/user', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.isUserPartOfFormTeams(req, res, next);
+});
+
+routes.get('/current/is-form-admin', jwtService.protect(), async (req, res, next) => {
+  try {
+    // tenantId is already set in req.currentUser by userAccess middleware
+    if (!req.currentUser?.tenantId) {
+      return res.status(400).json({ error: 'Missing tenantId' });
+    }
+    const isAdmin = await userAccess.checkCreatePermission(req);
+    res.status(200).json({ isFormAdmin: isAdmin });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = routes;

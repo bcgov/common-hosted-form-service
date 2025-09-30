@@ -6,6 +6,7 @@ const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
+const tenantService = require('../../../components/tenantService');
 
 /**
  * Gets the form metadata for the given formId from the forms available to the
@@ -37,6 +38,10 @@ const _getForm = async (currentUser, formId, includeDeleted) => {
     });
     form = deletedForms.find((f) => f.formId === formId);
   }
+
+  // if (currentUser.tenantId) {
+  //   getUserRolesAndPermissions(currentUser, form);
+  // }
 
   return form;
 };
@@ -114,6 +119,7 @@ const currentUser = async (req, _res, next) => {
     // is ok if the access token isn't defined: then we'll have a public user.
     const accessToken = await jwtService.getTokenPayload(req);
     req.currentUser = await service.login(accessToken);
+    req.currentUser.tenantId = req.headers['x-tenant-id'];
 
     next();
   } catch (error) {
@@ -463,6 +469,50 @@ const hasSubmissionPermissions = (permissions) => {
   };
 };
 
+/**
+ * Checks if the current user has a group with the 'form_admin' role for their tenant.
+ * Calls tenantService.getUserTenantGroupsAndRoles to get group/role info.
+ * @param {*} req Express request object (must have currentUser)
+ * @returns {Promise<boolean>} True if user has form_admin role in any group, false otherwise.
+ */
+const checkCreatePermission = async (req, res, next) => {
+  try {
+    const groupData = await tenantService.getUserTenantGroupsAndRoles(req);
+    if (!groupData.groups || !Array.isArray(groupData.groups)) {
+      return res.status(403).json({ error: 'No groups found for user.' });
+    }
+    const isAdmin = groupData.groups.some((group) => Array.isArray(group.roles) && group.roles.includes('form_admin'));
+    if (!isAdmin) {
+      return res.status(403).json({ error: 'User does not have form_admin role.' });
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+// /**
+//  * Get the roles and permissions for a user and set them on the form object.
+//  *
+//  * @param {*} currentUser the user that is currently logged in; may be public.
+//  * @param {*} form the form object to set the roles and permissions on.
+//  */
+// const getUserRolesAndPermissions = async (currentUser, form) => {
+//   // Get all roles from the DB
+//   const roles = await rbacService.listRoles();
+//   // Get user's groups and roles for the current tenant
+//   const userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser });
+//   // Flatten all roles from all groups
+//   const userRoles = Array.isArray(userGroups) ? userGroups.flatMap((group) => group.roles) : [];
+//   // Set roles on form
+//   form.roles = userRoles;
+//   // Find permissions for these roles
+//   const userRolesSet = new Set(userRoles);
+//   const userPermissions = roles.filter((role) => userRolesSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+//   // Remove duplicates and set permissions on form
+//   form.permissions = [...new Set(userPermissions)];
+// };
+
 module.exports = {
   currentUser,
   filterMultipleSubmissions,
@@ -471,4 +521,5 @@ module.exports = {
   hasRoleDeletePermissions,
   hasRoleModifyPermissions,
   hasSubmissionPermissions,
+  checkCreatePermission,
 };

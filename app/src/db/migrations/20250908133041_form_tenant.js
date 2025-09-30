@@ -7,7 +7,7 @@ const stamps = require('../stamps');
 
 exports.up = function (knex) {
   return Promise.resolve().then(() =>
-    knex.schema.createTable('form_tenant_mapping', (table) => {
+    knex.schema.createTable('form_tenant', (table) => {
       table.uuid('id').primary();
       table.uuid('formId').references('id').inTable('form').notNullable().index();
       table.uuid('tenantId').notNullable();
@@ -22,5 +22,5 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  return Promise.resolve().then(() => knex.schema.dropTableIfExists('form_tenant_mapping'));
+  return Promise.resolve().then(() => knex.schema.dropTableIfExists('form_tenant'));
 };
