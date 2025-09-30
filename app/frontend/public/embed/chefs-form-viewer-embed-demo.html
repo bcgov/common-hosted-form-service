@@ -165,7 +165,7 @@
 
       // Parse URL parameters
       function parseUrlParams() {
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(globalThis.location.search);
         const params = {};
         for (const [key, value] of urlParams) {
           params[key] = value;
@@ -211,7 +211,7 @@
         if (debugMode) scriptParams.set('debug', 'true');
 
         // Dynamically determine the base path (handles /app, /pr-1755, etc.)
-        const currentPath = window.location.pathname;
+        const currentPath = globalThis.location.pathname;
         const basePath = currentPath.includes('/embed/')
           ? currentPath.substring(0, currentPath.indexOf('/embed/'))
           : '/app'; // fallback for direct file access
@@ -253,7 +253,7 @@
 
       // Setup global configuration for form events
       function setupFormConfig() {
-        window.ChefsViewerConfig = {
+        globalThis.ChefsViewerConfig = {
           after: function (element, formioInstance) {
             updateStatus('Form loaded successfully!', 'success');
 
@@ -288,7 +288,7 @@
         };
 
         // Listen for the metadata loaded event (only available in embed component)
-        window.addEventListener(
+        globalThis.addEventListener(
           'chefs-form-viewer:metadata-loaded',
           function (e) {
             console.log('Form metadata loaded:', e.detail);
@@ -339,7 +339,8 @@
           'loading'
         );
         setTimeout(() => {
-          const currentReadOnly = window.location.search.includes('read-only');
+          const currentReadOnly =
+            globalThis.location.search.includes('read-only');
           loadForm(formParams, currentReadOnly);
         }, 1000);
       }

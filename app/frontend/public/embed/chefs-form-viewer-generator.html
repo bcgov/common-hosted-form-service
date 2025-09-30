@@ -545,19 +545,19 @@
       document.addEventListener('DOMContentLoaded', function () {
         // Set up form change listeners
         const inputs = document.querySelectorAll('input, select, textarea');
-        inputs.forEach((input) => {
+        for (const input of inputs) {
           input.addEventListener('input', updateConfig);
           input.addEventListener('change', updateConfig);
-        });
+        }
 
         // Set up tab switching
         const tabs = document.querySelectorAll('.code-tab');
-        tabs.forEach((tab) => {
+        for (const tab of tabs) {
           tab.addEventListener('click', function () {
             const tabName = this.dataset.tab;
             switchTab(tabName);
           });
-        });
+        }
 
         // Initial update
         updateConfig();
@@ -598,7 +598,7 @@
 
       // Helper function to get the current base path (handles /app, /pr-1755, etc.)
       function getBasePath() {
-        const currentPath = window.location.pathname;
+        const currentPath = globalThis.location.pathname;
         return currentPath.includes('/embed/')
           ? currentPath.substring(0, currentPath.indexOf('/embed/'))
           : '/app'; // fallback
@@ -680,9 +680,9 @@
           'submit-button-key': config.submitButtonKey,
         };
 
-        Object.entries(stringParams).forEach(([key, value]) => {
+        for (const [key, value] of Object.entries(stringParams)) {
           if (value) params.set(key, value);
-        });
+        }
       }
 
       function setBooleanParams(params) {
@@ -694,16 +694,16 @@
           'no-icons': config.noIcons,
         };
 
-        Object.entries(boolParams).forEach(([key, value]) => {
+        for (const [key, value] of Object.entries(boolParams)) {
           if (value) params.set(key, 'true');
-        });
+        }
       }
 
       function setJsonParams(params) {
-        [
+        for (const { key, value } of [
           { key: 'token', value: config.tokenJson },
           { key: 'user', value: config.userJson },
-        ].forEach(({ key, value }) => {
+        ]) {
           if (value) {
             try {
               JSON.parse(value);
@@ -712,7 +712,7 @@
               // Invalid JSON, skip
             }
           }
-        });
+        }
       }
 
       function buildQueryParams() {
@@ -779,7 +779,7 @@
             if (value) {
               try {
                 JSON.parse(value);
-                return `\n  ${key}='${value.replace(/'/g, '&#39;')}'`;
+                return `\n  ${key}='${value.replaceAll(/'/g, '&#39;')}'`;
               } catch {
                 return '';
               }
@@ -856,10 +856,10 @@
       function updateDemoUrls() {
         const params = buildQueryParams();
         const baseUrl =
-          window.location.origin +
-          window.location.pathname.substring(
+          globalThis.location.origin +
+          globalThis.location.pathname.substring(
             0,
-            window.location.pathname.lastIndexOf('/')
+            globalThis.location.pathname.lastIndexOf('/')
           );
 
         const embedDemoUrl = `${baseUrl}/chefs-form-viewer-embed-demo.html?${params}`;
@@ -869,14 +869,14 @@
 
       function switchTab(tabName) {
         // Update tab buttons
-        document.querySelectorAll('.code-tab').forEach((tab) => {
+        for (const tab of document.querySelectorAll('.code-tab')) {
           tab.classList.toggle('active', tab.dataset.tab === tabName);
-        });
+        }
 
         // Update tab content
-        document.querySelectorAll('.code-tab-content').forEach((content) => {
+        for (const content of document.querySelectorAll('.code-tab-content')) {
           content.classList.toggle('active', content.id === tabName);
-        });
+        }
       }
 
       function copyCode(elementId) {
@@ -899,13 +899,13 @@
           return;
         }
         const baseUrl =
-          window.location.origin +
-          window.location.pathname.substring(
+          globalThis.location.origin +
+          globalThis.location.pathname.substring(
             0,
-            window.location.pathname.lastIndexOf('/')
+            globalThis.location.pathname.lastIndexOf('/')
           );
         const url = `${baseUrl}/chefs-form-viewer-embed-demo.html?${params}`;
-        window.open(url, '_blank');
+        globalThis.open(url, '_blank');
       }
 
       // Fetch auth-token from backend

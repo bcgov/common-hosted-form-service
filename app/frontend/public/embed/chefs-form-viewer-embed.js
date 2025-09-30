@@ -10,7 +10,7 @@
  *
  * @example Advanced Usage with Global Config
  * <script>
- *   window.ChefsViewerConfig = {
+ *   globalThis.ChefsViewerConfig = {
  *     token: { roles: ['admin'], sub: 'user123' },
  *     user: { name: 'John Doe', department: 'IT' },
  *     // Override endpoints for custom CDN or local assets
@@ -46,7 +46,7 @@
  * 4. **Component Loading**: Dynamically loads chefs-form-viewer.js if not already present
  * 5. **Element Creation**: Creates <chefs-form-viewer> element in memory
  * 6. **Parameter Application**: Converts URL parameters to element attributes/properties
- * 7. **Global Configuration**: Applies window.ChefsViewerConfig settings if available
+ * 7. **Global Configuration**: Applies globalThis.ChefsViewerConfig settings if available
  * 8. **Event Setup**: Attaches metadata extraction listeners before form loading
  * 9. **DOM Insertion**: Replaces script tag with form element in the same position
  * 10. **Form Loading**: Calls element.load() to fetch and render the form
@@ -64,9 +64,9 @@
  * console.log(element.formMetadata);    // { name: "Contact Form", ... }
  * ```
  *
- * ### Method 2: Global Event (Dispatched on window)
+ * ### Method 2: Global Event (Dispatched on globalThis)
  * ```javascript
- * window.addEventListener('chefs-form-viewer:metadata-loaded', function(e) {
+ * globalThis.addEventListener('chefs-form-viewer:metadata-loaded', function(e) {
  *   console.log(e.detail.formName);        // "Contact Form"
  *   console.log(e.detail.formDescription); // "Submit your inquiry"
  *   console.log(e.detail.form);            // Full form object
@@ -75,7 +75,7 @@
  *
  * ### Method 3: Global Callback (Set before script loads)
  * ```javascript
- * window.ChefsViewerConfig = {
+ * globalThis.ChefsViewerConfig = {
  *   onMetadataLoaded: function(metadata) {
  *     console.log(metadata.formName);        // "Contact Form"
  *     console.log(metadata.formDescription); // "Submit your inquiry"
@@ -214,8 +214,8 @@
   function paramToAttribute(param) {
     // Convert camelCase or snake_case to kebab-case
     return param
-      .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-      .replace(/_/g, '-');
+      .replaceAll(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
+      .replaceAll(/_/g, '-');
   }
 
   /**
@@ -265,6 +265,20 @@
   }
 
   /**
+   * Determines if a parameter should be skipped during query parameter processing.
+   * Skips debug parameter (handled separately) and api-key when auth-token is present.
+   *
+   * @param {string} param - Parameter name to check
+   * @param {boolean} hasAuthToken - Whether auth-token is present
+   * @returns {boolean} True if parameter should be skipped
+   */
+  function shouldSkipParam(param, hasAuthToken) {
+    if (param === 'debug') return true;
+    if (param === 'api-key' && hasAuthToken) return true;
+    return false;
+  }
+
+  /**
    * Applies URL query parameters to the chefs-form-viewer element.
    * Converts parameter names to proper attribute names and handles special
    * JSON parameters (token, user) by setting them as element properties.
@@ -274,7 +288,7 @@
    * @param {Object} logger - Logger instance for debug output
    */
   function applyQueryParams(element, params, logger) {
-    const booleanParams = ['read-only', 'isolate-styles', 'no-icons'];
+    const booleanParams = new Set(['read-only', 'isolate-styles', 'no-icons']);
     const paramEntries = Object.entries(params);
     const hasAuthToken = paramEntries.some(
       ([param, value]) => param === 'auth-token' && value
@@ -293,12 +307,6 @@
       }
     }
 
-    function shouldSkipParam(param, hasAuthToken) {
-      if (param === 'debug') return true;
-      if (param === 'api-key' && hasAuthToken) return true;
-      return false;
-    }
-
     for (const [param, value] of paramEntries) {
       if (shouldSkipParam(param, hasAuthToken)) continue;
 
@@ -306,7 +314,7 @@
 
       if (param === 'token' || param === 'user') {
         handleJsonParam(param, value);
-      } else if (booleanParams.includes(param)) {
+      } else if (booleanParams.has(param)) {
         handleBooleanParam(attrName, value);
       } else {
         element.setAttribute(attrName, value);
@@ -318,23 +326,23 @@
    * Apply global configuration if available
    */
   function applyGlobalConfig(element, params, logger) {
-    if (!window.ChefsViewerConfig) {
+    if (!globalThis.ChefsViewerConfig) {
       return;
     }
 
     logger.info('Applying global ChefsViewerConfig');
 
     // Apply direct properties
-    for (const [key, value] of Object.entries(window.ChefsViewerConfig)) {
+    for (const [key, value] of Object.entries(globalThis.ChefsViewerConfig)) {
       if (typeof value !== 'function') {
         element[key] = value;
       }
     }
 
     // Call before hook
-    if (typeof window.ChefsViewerConfig.before === 'function') {
+    if (typeof globalThis.ChefsViewerConfig.before === 'function') {
       try {
-        window.ChefsViewerConfig.before(element, params);
+        globalThis.ChefsViewerConfig.before(element, params);
       } catch (err) {
         logger.error('Error in ChefsViewerConfig.before:', err);
       }
@@ -345,12 +353,12 @@
    * Call after hook if available
    */
   function callAfterHook(element, logger) {
-    if (!window.ChefsViewerConfig?.after) {
+    if (!globalThis.ChefsViewerConfig?.after) {
       return;
     }
 
     try {
-      window.ChefsViewerConfig.after(element, element.formioInstance);
+      globalThis.ChefsViewerConfig.after(element, element.formioInstance);
     } catch (err) {
       logger.error('Error in ChefsViewerConfig.after:', err);
     }
@@ -373,7 +381,7 @@
     errorDiv.style.cssText = Object.entries(ERROR_STYLES)
       .map(
         ([key, value]) =>
-          `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`
+          `${key.replaceAll(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`
       )
       .join('; ');
     errorDiv.innerHTML = `
@@ -420,7 +428,7 @@
     const params = parseQueryParams(script.src);
     const debug =
       parseBooleanParam(params.debug) ||
-      window.CHEFS_VIEWER_EMBED_DEBUG === true;
+      globalThis.CHEFS_VIEWER_EMBED_DEBUG === true;
     const logger = createLogger(debug);
 
     logger.info('Initializing embed', { src: script.src });
@@ -450,9 +458,9 @@
         });
 
         // Call metadata callback if available
-        if (window.ChefsViewerConfig?.onMetadataLoaded) {
+        if (globalThis.ChefsViewerConfig?.onMetadataLoaded) {
           try {
-            window.ChefsViewerConfig.onMetadataLoaded({
+            globalThis.ChefsViewerConfig.onMetadataLoaded({
               form,
               schema,
               formName: form?.name,
@@ -464,7 +472,7 @@
         }
 
         // Emit enhanced event with metadata for easier access
-        window.dispatchEvent(
+        globalThis.dispatchEvent(
           new CustomEvent('chefs-form-viewer:metadata-loaded', {
             detail: {
               element,
@@ -493,7 +501,7 @@
       callAfterHook(element, logger);
 
       // Emit global event for external listeners
-      window.dispatchEvent(
+      globalThis.dispatchEvent(
         new CustomEvent('chefs-form-viewer:embedded', {
           detail: { element, params },
         })
@@ -516,11 +524,11 @@
       applyQueryParams,
     };
   } else if (
-    typeof window !== 'undefined' &&
-    window.__CHEFS_EMBED_TEST_MODE__
+    typeof globalThis !== 'undefined' &&
+    globalThis.__CHEFS_EMBED_TEST_MODE__
   ) {
     // Browser testing environment
-    window.__chefsEmbedUtils__ = {
+    globalThis.__chefsEmbedUtils__ = {
       parseBooleanParam,
       parseQueryParams,
       parseJsonParam,

@@ -9,11 +9,11 @@ describe('FormViewerUtils', () => {
   let utils;
   beforeAll(async () => {
     await import(COMPONENT_PATH);
-    utils = window.FormViewerUtils;
+    utils = globalThis.FormViewerUtils;
   });
 
   it('validateAssetUrl throws for invalid URLs and passes for valid ones', () => {
-    const { validateAssetUrl } = window.FormViewerUtils;
+    const { validateAssetUrl } = globalThis.FormViewerUtils;
     // Valid JS and CSS URLs
     expect(() => validateAssetUrl('https://x/foo.js', 'js')).not.toThrow();
     expect(() => validateAssetUrl('https://x/bar.css', 'css')).not.toThrow();
@@ -379,7 +379,7 @@ describe('ChefsFormViewer', () => {
     document.body.appendChild(el);
   });
   afterEach(() => {
-    document.body.removeChild(el);
+    el.remove();
   });
 
   it('attributeChangedCallback updates state', () => {
@@ -505,7 +505,7 @@ describe('ChefsFormViewer internals', () => {
     globalThis.fetch = vi.fn();
   });
   afterEach(() => {
-    document.body.removeChild(el);
+    el.remove();
     // Restore fetch after each test
     globalThis.fetch = globalThis._origFetch;
     delete globalThis._origFetch;
@@ -568,8 +568,8 @@ describe('ChefsFormViewer internals', () => {
     el.getBaseUrl = () => 'https://example.com';
 
     // Patch createBasicAuthHeader to throw
-    const orig = window.FormViewerUtils.createBasicAuthHeader;
-    window.FormViewerUtils.createBasicAuthHeader = () => {
+    const orig = globalThis.FormViewerUtils.createBasicAuthHeader;
+    globalThis.FormViewerUtils.createBasicAuthHeader = () => {
       throw new Error('fail');
     };
     const spy = vi.spyOn(el._log, 'warn');
@@ -580,7 +580,7 @@ describe('ChefsFormViewer internals', () => {
       expect.any(Object)
     );
 
-    window.FormViewerUtils.createBasicAuthHeader = orig;
+    globalThis.FormViewerUtils.createBasicAuthHeader = orig;
     spy.mockRestore();
   });
 
@@ -678,8 +678,10 @@ describe('ChefsFormViewer internals', () => {
     el.authToken = 'jwt-token';
 
     // Mock JWT expiry extraction
-    const originalGetJwtExpiry = window.FormViewerUtils.getJwtExpiry;
-    window.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(futureExp);
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi
+      .fn()
+      .mockReturnValue(futureExp);
 
     // Mock setTimeout to capture the delay
     const originalSetTimeout = globalThis.setTimeout;
@@ -697,7 +699,7 @@ describe('ChefsFormViewer internals', () => {
     expect(el._jwtRefreshTimer).toBe(123);
 
     // Restore mocks
-    window.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
     globalThis.setTimeout = originalSetTimeout;
   });
 
@@ -708,8 +710,8 @@ describe('ChefsFormViewer internals', () => {
     el.authToken = 'jwt-token';
 
     // Mock JWT expiry extraction
-    const originalGetJwtExpiry = window.FormViewerUtils.getJwtExpiry;
-    window.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(soonExp);
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(soonExp);
 
     // Mock setTimeout to capture the delay
     const originalSetTimeout = globalThis.setTimeout;
@@ -725,7 +727,7 @@ describe('ChefsFormViewer internals', () => {
     expect(capturedDelay).toBe(10000);
 
     // Restore mocks
-    window.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
     globalThis.setTimeout = originalSetTimeout;
   });
 
@@ -738,8 +740,8 @@ describe('ChefsFormViewer internals', () => {
     globalThis.clearTimeout = vi.fn();
 
     // Mock getJwtExpiry to return null (invalid token)
-    const originalGetJwtExpiry = window.FormViewerUtils.getJwtExpiry;
-    window.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
 
     el._scheduleNextTokenRefresh();
 
@@ -747,7 +749,7 @@ describe('ChefsFormViewer internals', () => {
     expect(el._jwtRefreshTimer).toBe(null);
 
     // Restore mocks
-    window.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
     globalThis.clearTimeout = originalClearTimeout;
   });
 
@@ -782,7 +784,7 @@ describe('ChefsFormViewer internals', () => {
 
   it('_registerAuthPlugin registers plugin with dynamic header resolution', () => {
     // Mock Formio global
-    globalThis.window.Formio = {
+    globalThis.globalThis.Formio = {
       registerPlugin: vi.fn(),
     };
 
@@ -791,54 +793,54 @@ describe('ChefsFormViewer internals', () => {
     el.authToken = 'bearer-token';
 
     // Mock validateGlobalMethods
-    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
-    window.FormViewerUtils.validateGlobalMethods = vi
+    const originalValidate = globalThis.FormViewerUtils.validateGlobalMethods;
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(true);
 
     el._registerAuthPlugin();
 
-    expect(globalThis.window.Formio.registerPlugin).toHaveBeenCalled();
+    expect(globalThis.globalThis.Formio.registerPlugin).toHaveBeenCalled();
     expect(el._authPluginRegistered).toBe(true);
-    expect(globalThis.window.__chefsViewerAuth).toBe('bearer');
+    expect(globalThis.__chefsViewerAuth).toBe('bearer');
 
     // Get the registered plugin
     const [plugin, pluginName] =
-      globalThis.window.Formio.registerPlugin.mock.calls[0];
+      globalThis.globalThis.Formio.registerPlugin.mock.calls[0];
     expect(pluginName).toBe('chefs-viewer-auth');
     expect(plugin.priority).toBe(0);
     expect(typeof plugin.preRequest).toBe('function');
     expect(typeof plugin.preStaticRequest).toBe('function');
 
     // Restore mocks
-    window.FormViewerUtils.validateGlobalMethods = originalValidate;
-    delete globalThis.window.Formio;
+    globalThis.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.globalThis.Formio;
   });
 
   it('_registerAuthPlugin skips registration when already registered', () => {
-    globalThis.window.Formio = {
+    globalThis.globalThis.Formio = {
       registerPlugin: vi.fn(),
     };
 
     el._authPluginRegistered = true;
 
     // Mock validateGlobalMethods
-    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
-    window.FormViewerUtils.validateGlobalMethods = vi
+    const originalValidate = globalThis.FormViewerUtils.validateGlobalMethods;
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(true);
 
     el._registerAuthPlugin();
 
-    expect(globalThis.window.Formio.registerPlugin).not.toHaveBeenCalled();
+    expect(globalThis.globalThis.Formio.registerPlugin).not.toHaveBeenCalled();
 
     // Restore mocks
-    window.FormViewerUtils.validateGlobalMethods = originalValidate;
-    delete globalThis.window.Formio;
+    globalThis.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.globalThis.Formio;
   });
 
   it('_registerAuthPlugin sets Basic auth indicator when using apiKey', () => {
-    globalThis.window.Formio = {
+    globalThis.globalThis.Formio = {
       registerPlugin: vi.fn(),
     };
 
@@ -848,23 +850,23 @@ describe('ChefsFormViewer internals', () => {
     el.apiKey = 'api-key';
 
     // Mock validateGlobalMethods
-    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
-    window.FormViewerUtils.validateGlobalMethods = vi
+    const originalValidate = globalThis.FormViewerUtils.validateGlobalMethods;
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(true);
 
     el._registerAuthPlugin();
 
-    expect(globalThis.window.__chefsViewerAuth).toBe('basic');
+    expect(globalThis.__chefsViewerAuth).toBe('basic');
 
     // Restore mocks
-    window.FormViewerUtils.validateGlobalMethods = originalValidate;
-    delete globalThis.window.Formio;
+    globalThis.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.globalThis.Formio;
   });
 
   it('_registerAuthPlugin does nothing when Formio not available', () => {
-    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
-    window.FormViewerUtils.validateGlobalMethods = vi
+    const originalValidate = globalThis.FormViewerUtils.validateGlobalMethods;
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(false);
 
@@ -873,12 +875,12 @@ describe('ChefsFormViewer internals', () => {
     expect(el._authPluginRegistered).toBe(false);
 
     // Restore mocks
-    window.FormViewerUtils.validateGlobalMethods = originalValidate;
+    globalThis.FormViewerUtils.validateGlobalMethods = originalValidate;
   });
 
   it('registered auth plugin calls _buildAuthHeader dynamically', () => {
     // Mock Formio global
-    globalThis.window.Formio = {
+    globalThis.globalThis.Formio = {
       registerPlugin: vi.fn(),
     };
 
@@ -889,15 +891,15 @@ describe('ChefsFormViewer internals', () => {
       .mockReturnValue({ Authorization: 'Bearer dynamic-token' });
 
     // Mock validateGlobalMethods
-    const originalValidate = window.FormViewerUtils.validateGlobalMethods;
-    window.FormViewerUtils.validateGlobalMethods = vi
+    const originalValidate = globalThis.FormViewerUtils.validateGlobalMethods;
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(true);
 
     el._registerAuthPlugin();
 
     // Get the registered plugin
-    const [plugin] = globalThis.window.Formio.registerPlugin.mock.calls[0];
+    const [plugin] = globalThis.globalThis.Formio.registerPlugin.mock.calls[0];
 
     // Test that the plugin calls _buildAuthHeader dynamically
     const mockArgs = {
@@ -928,8 +930,8 @@ describe('ChefsFormViewer internals', () => {
     expect(externalArgs.opts.headers).toEqual({});
 
     // Restore mocks
-    window.FormViewerUtils.validateGlobalMethods = originalValidate;
-    delete globalThis.window.Formio;
+    globalThis.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.globalThis.Formio;
   });
 
   it('_getAssetLoadFunction returns correct loader for .js/.css', () => {
@@ -942,19 +944,19 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_detectAssetTypeByContentType returns js/css/null based on Content-Type', async () => {
-    window.fetch.mockResolvedValueOnce({
+    globalThis.fetch.mockResolvedValueOnce({
       headers: { get: () => 'application/javascript' },
     });
     expect(await el._detectAssetTypeByContentType('https://x/foo')).toBe('js');
-    window.fetch.mockResolvedValueOnce({
+    globalThis.fetch.mockResolvedValueOnce({
       headers: { get: () => 'text/css' },
     });
     expect(await el._detectAssetTypeByContentType('https://x/bar')).toBe('css');
-    window.fetch.mockResolvedValueOnce({
+    globalThis.fetch.mockResolvedValueOnce({
       headers: { get: () => 'text/html' },
     });
     expect(await el._detectAssetTypeByContentType('https://x/baz')).toBe(null);
-    window.fetch.mockRejectedValueOnce(new Error('fail'));
+    globalThis.fetch.mockRejectedValueOnce(new Error('fail'));
     expect(await el._detectAssetTypeByContentType('https://x/fail')).toBe(null);
   });
 
@@ -994,23 +996,23 @@ describe('ChefsFormViewer internals', () => {
   it('_injectScript returns false for malformed URLs and validation error', async () => {
     expect(await el._injectScript('bad')).toBe(false);
     // Mock FormViewerUtils.validateAssetUrl to throw
-    const origValidate = window.FormViewerUtils.validateAssetUrl;
-    window.FormViewerUtils.validateAssetUrl = () => {
+    const origValidate = globalThis.FormViewerUtils.validateAssetUrl;
+    globalThis.FormViewerUtils.validateAssetUrl = () => {
       throw new Error('fail');
     };
     expect(await el._injectScript('https://x/foo.js')).toBe(false);
-    window.FormViewerUtils.validateAssetUrl = origValidate;
+    globalThis.FormViewerUtils.validateAssetUrl = origValidate;
   });
 
   it('_loadCssIntoRoot returns false for malformed URLs and validation error', async () => {
     expect(await el._loadCssIntoRoot('bad')).toBe(false);
     // Mock FormViewerUtils.validateAssetUrl to throw
-    const origValidate = window.FormViewerUtils.validateAssetUrl;
-    window.FormViewerUtils.validateAssetUrl = () => {
+    const origValidate = globalThis.FormViewerUtils.validateAssetUrl;
+    globalThis.FormViewerUtils.validateAssetUrl = () => {
       throw new Error('fail');
     };
     expect(await el._loadCssIntoRoot('https://x/bar.css')).toBe(false);
-    window.FormViewerUtils.validateAssetUrl = origValidate;
+    globalThis.FormViewerUtils.validateAssetUrl = origValidate;
   });
   it('_loadAssetWithFallback returns true for preloaded asset, returns false if _tryLoadWithFallback or _validateLoadedAsset throws', async () => {
     // Preloaded asset
@@ -1189,17 +1191,17 @@ describe('ChefsFormViewer internals', () => {
 
   it('_overrideGlobalAutocompleter saves original and blocks shadow DOM calls', () => {
     const originalAutocompleter = vi.fn();
-    window.autocompleter = originalAutocompleter;
+    globalThis.autocompleter = originalAutocompleter;
 
     el._overrideGlobalAutocompleter();
 
-    expect(window._originalAutocompleter).toBe(originalAutocompleter);
+    expect(globalThis._originalAutocompleter).toBe(originalAutocompleter);
 
     // Test shadow DOM blocking
     const shadowInput = document.createElement('input');
     el.shadowRoot.appendChild(shadowInput);
 
-    const result = window.autocompleter({ input: shadowInput });
+    const result = globalThis.autocompleter({ input: shadowInput });
     expect(result).toBeNull();
   });
 
@@ -1389,12 +1391,12 @@ describe('ChefsFormViewer internals', () => {
       classList: { add: vi.fn() },
     };
     const createElementSpy = vi
-      .spyOn(window.FormViewerUtils, 'createElement')
+      .spyOn(globalThis.FormViewerUtils, 'createElement')
       .mockReturnValue(mockLink);
     // Mock URL APIs that don't exist in test environment
-    window.URL = window.URL || {};
-    window.URL.createObjectURL = vi.fn().mockReturnValue('blob:url');
-    window.URL.revokeObjectURL = vi.fn();
+    globalThis.URL = globalThis.URL || {};
+    globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:url');
+    globalThis.URL.revokeObjectURL = vi.fn();
 
     document.body.appendChild = vi.fn();
     document.body.removeChild = vi.fn();
@@ -1402,7 +1404,7 @@ describe('ChefsFormViewer internals', () => {
     el._triggerFileDownload();
 
     expect(mockLink.click).toHaveBeenCalled();
-    expect(window.URL.createObjectURL).toHaveBeenCalled();
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
 
     createElementSpy.mockRestore();
   });
@@ -1474,7 +1476,7 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_loadJsAssets loads FormIO and components JS', async () => {
-    window.FormViewerUtils.validateFormioGlobal = vi
+    globalThis.FormViewerUtils.validateFormioGlobal = vi
       .fn()
       .mockReturnValue({ available: false });
     el._loadAssetWithFallback = vi.fn().mockResolvedValue(true);
@@ -1532,9 +1534,12 @@ describe('ChefsFormViewer internals', () => {
   it('_addResourceHint creates link element with resource hints', () => {
     const mockLink = document.createElement('link');
     const createElementSpy = vi
-      .spyOn(window.FormViewerUtils, 'createElement')
+      .spyOn(globalThis.FormViewerUtils, 'createElement')
       .mockReturnValue(mockLink);
-    const appendElementSpy = vi.spyOn(window.FormViewerUtils, 'appendElement');
+    const appendElementSpy = vi.spyOn(
+      globalThis.FormViewerUtils,
+      'appendElement'
+    );
     document.querySelector = vi.fn().mockReturnValue(null);
 
     el._addResourceHint('preload', 'https://test/asset', { as: 'style' });
@@ -1554,7 +1559,10 @@ describe('ChefsFormViewer internals', () => {
     document.querySelector = vi
       .fn()
       .mockReturnValue(document.createElement('link'));
-    const createElementSpy = vi.spyOn(window.FormViewerUtils, 'createElement');
+    const createElementSpy = vi.spyOn(
+      globalThis.FormViewerUtils,
+      'createElement'
+    );
 
     el._addResourceHint('preload', 'https://test/asset');
 
@@ -1564,11 +1572,11 @@ describe('ChefsFormViewer internals', () => {
 
   it('_createFormioInstance uses createForm when available', async () => {
     const mockForm = { id: 'test-form' };
-    window.Formio = {
+    globalThis.Formio = {
       createForm: vi.fn().mockResolvedValue(mockForm),
       Form: vi.fn(),
     };
-    window.FormViewerUtils.validateGlobalMethods = vi
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(true);
 
@@ -1578,19 +1586,19 @@ describe('ChefsFormViewer internals', () => {
 
     const result = await el._createFormioInstance(container, schema, options);
 
-    expect(window.Formio.createForm).toHaveBeenCalledWith(
+    expect(globalThis.Formio.createForm).toHaveBeenCalledWith(
       container,
       schema,
       options
     );
     expect(result).toBe(mockForm);
-    delete window.Formio;
+    delete globalThis.Formio;
   });
 
   it('_createFormioInstance falls back to Form constructor', async () => {
     const mockForm = { id: 'test-form' };
-    window.Formio = { Form: vi.fn().mockReturnValue(mockForm) };
-    window.FormViewerUtils.validateGlobalMethods = vi
+    globalThis.Formio = { Form: vi.fn().mockReturnValue(mockForm) };
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(false);
 
@@ -1600,9 +1608,13 @@ describe('ChefsFormViewer internals', () => {
 
     const result = await el._createFormioInstance(container, schema, options);
 
-    expect(window.Formio.Form).toHaveBeenCalledWith(container, schema, options);
+    expect(globalThis.Formio.Form).toHaveBeenCalledWith(
+      container,
+      schema,
+      options
+    );
     expect(result).toBe(mockForm);
-    delete window.Formio;
+    delete globalThis.Formio;
   });
 
   it('_configureInstanceEndpoints sets submission URL', () => {
@@ -1717,12 +1729,12 @@ describe('ChefsFormViewer internals', () => {
       classList: { add: vi.fn() },
     };
     const createElementSpy = vi
-      .spyOn(window.FormViewerUtils, 'createElement')
+      .spyOn(globalThis.FormViewerUtils, 'createElement')
       .mockReturnValue(mockLink);
     // Mock URL APIs that don't exist in test environment
-    window.URL = window.URL || {};
-    window.URL.createObjectURL = vi.fn().mockReturnValue('blob:url');
-    window.URL.revokeObjectURL = vi.fn();
+    globalThis.URL = globalThis.URL || {};
+    globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:url');
+    globalThis.URL.revokeObjectURL = vi.fn();
 
     document.body.appendChild = vi.fn();
     document.body.removeChild = vi.fn();
@@ -1730,7 +1742,7 @@ describe('ChefsFormViewer internals', () => {
     el._performDownload(data);
 
     expect(mockLink.click).toHaveBeenCalled();
-    expect(window.URL.createObjectURL).toHaveBeenCalledWith(data);
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalledWith(data);
 
     createElementSpy.mockRestore();
   });

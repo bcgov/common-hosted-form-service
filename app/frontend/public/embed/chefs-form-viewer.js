@@ -14,7 +14,7 @@
    *
    * **Enabling:**
    * - Set the custom element attribute `debug` (e.g., `<chefs-form-viewer debug ...>`) OR
-   * - Set `window.CHEFS_VIEWER_DEBUG = true` before the element is connected.
+   * - Set `globalThis.CHEFS_VIEWER_DEBUG = true` before the element is connected.
    *
    * **Behavior:**
    * - When not enabled, all log calls are effectively no-ops (guarded in the internal `log()` helper).
@@ -61,7 +61,7 @@
     },
     /**
      * Parses base URL from window location
-     * @param {Object} location - window.location-like object
+     * @param {Object} location - globalThis.location-like object
      * @returns {string} Base URL
      */
     parseBaseUrl(location) {
@@ -83,7 +83,7 @@
      * @param {string} apiKey - API key
      * @returns {Object} Auth header object
      */
-    createBasicAuthHeader(username, password, encoder = window.btoa) {
+    createBasicAuthHeader(username, password, encoder = globalThis.btoa) {
       if (
         typeof username !== 'string' ||
         typeof password !== 'string' ||
@@ -346,8 +346,8 @@
       for (const [key, value] of Object.entries(params)) {
         if (value != null) {
           result = result
-            .replace(new RegExp(`/:${key}\\b`, 'g'), `/${value}`)
-            .replace(new RegExp(`:${key}\\b`, 'g'), value);
+            .replaceAll(new RegExp(`/:${key}\\b`, 'g'), `/${value}`)
+            .replaceAll(new RegExp(`:${key}\\b`, 'g'), value);
         }
       }
 
@@ -366,9 +366,9 @@
         throw new DOMException('Invalid tagName');
       }
       const el = document.createElement(tagName);
-      Object.entries(attrs).forEach(([k, v]) => {
+      for (const [k, v] of Object.entries(attrs)) {
         el.setAttribute(k, v);
-      });
+      }
       if (text) el.textContent = text;
       return el;
     },
@@ -437,7 +437,7 @@
       if (parts.length !== 3) return null;
       try {
         // Decode base64url
-        let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        let base64 = parts[1].replaceAll('-', '+').replaceAll('_', '/');
         while (base64.length % 4) base64 += '=';
         const json = atob(base64);
         const payload = JSON.parse(json);
@@ -462,7 +462,7 @@
     },
   };
 
-  window.FormViewerUtils = FormViewerUtils;
+  globalThis.FormViewerUtils = FormViewerUtils;
 
   /**
    * CHEFS Form Viewer Web Component
@@ -662,7 +662,7 @@
      * - read-only: boolean; passes readOnly to Form.io to disable editing.
      * - language: string; i18n language code (default "en").
      * - base-url: string; overrides autodetected base (e.g., https://myhost.com/app or https://myhost.com  /pr-####).
-     * - debug: boolean; enables the internal logger (also via window.CHEFS_VIEWER_DEBUG).
+     * - debug: boolean; enables the internal logger (also via globalThis.CHEFS_VIEWER_DEBUG).
      * - no-shadow: boolean; when present, disables Shadow DOM rendering by switching the render root to the
      *   host element and re-rendering the shell. In this mode, styles are loaded into document.head and
      *   page/global CSS can affect the component (useful for integration and debugging).
@@ -753,7 +753,7 @@
     connectedCallback() {
       // Init logger if not set via attribute
       if (!this.hasAttribute('debug')) {
-        const globalDebug = window.CHEFS_VIEWER_DEBUG === true;
+        const globalDebug = globalThis.CHEFS_VIEWER_DEBUG === true;
         this._log = createLogger(globalDebug);
       }
       // Set render root by attribute
@@ -1023,7 +1023,7 @@
     /** Compute base URL when not explicitly provided */
     getBaseUrl() {
       if (this.baseUrl) return this.baseUrl;
-      return FormViewerUtils.parseBaseUrl(window.location);
+      return FormViewerUtils.parseBaseUrl(globalThis.location);
     }
 
     /**
@@ -1206,9 +1206,9 @@
       );
 
       if (hasCreateForm) {
-        return window.Formio.createForm(container, schema, options);
+        return globalThis.Formio.createForm(container, schema, options);
       }
-      return new window.Formio.Form(container, schema, options);
+      return new globalThis.Formio.Form(container, schema, options);
     }
 
     _configureInstanceEndpoints() {
@@ -1800,15 +1800,15 @@
       };
 
       // Register once with a consistent name
-      window.Formio.registerPlugin(plugin, 'chefs-viewer-auth');
+      globalThis.Formio.registerPlugin(plugin, 'chefs-viewer-auth');
       this._authPluginRegistered = true;
       this._log.info('Auth plugin registered once');
 
       // Set global auth type indicator for backward compatibility
       if (this.authToken) {
-        window.__chefsViewerAuth = 'bearer';
+        globalThis.__chefsViewerAuth = 'bearer';
       } else if (this.apiKey) {
-        window.__chefsViewerAuth = 'basic';
+        globalThis.__chefsViewerAuth = 'basic';
       }
     }
 
@@ -1955,7 +1955,7 @@
       if (!this._pendingWaits || !this._pendingWaits.length) return true;
       const results = await Promise.all(this._pendingWaits);
       this._pendingWaits = [];
-      return !results.some((r) => r === false);
+      return !results.includes(false);
     }
 
     /**
@@ -2041,20 +2041,20 @@
 
           // Filter out Content-Type if it's multipart/form-data to let browser set it automatically
           const headers = { ...authHeaders };
-          Object.entries(configHeaders).forEach(([key, value]) => {
+          for (const [key, value] of Object.entries(configHeaders)) {
             if (
               key.toLowerCase() === 'content-type' &&
               value.includes('multipart/form-data')
             ) {
               // Skip this header - let browser set it automatically with boundary
-              return;
+              continue;
             }
             headers[key] = value;
-          });
+          }
 
-          Object.entries(headers).forEach(([key, value]) => {
+          for (const [key, value] of Object.entries(headers)) {
             xhr.setRequestHeader(key, value);
-          });
+          }
 
           xhr.send(formData);
         });
@@ -2207,7 +2207,7 @@
      * @private
      */
     _performDownload(data) {
-      const url = window.URL.createObjectURL(data);
+      const url = globalThis.URL.createObjectURL(data);
       const a = FormViewerUtils.createElement('a', {
         href: url,
         download: this._getFilenameFromDisposition(
@@ -2223,7 +2223,7 @@
       // Clean up after a short delay
       setTimeout(() => {
         document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        globalThis.URL.revokeObjectURL(url);
       }, 100);
     }
 
@@ -2238,7 +2238,7 @@
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
         const matches = filenameRegex.exec(disposition);
         if (matches != null && matches[1]) {
-          return matches[1].replace(/['"]/g, '');
+          return matches[1].replaceAll(/['"]/g, '');
         }
       }
       return 'download';
@@ -2317,12 +2317,10 @@
             config,
             action: 'upload',
           });
-          if (!proceed)
-            return Promise.reject(new Error('File upload cancelled'));
+          if (!proceed) throw new Error('File upload cancelled');
 
           const allowed = await this._waitUntil();
-          if (!allowed)
-            return Promise.reject(new Error('File upload not allowed'));
+          if (!allowed) throw new Error('File upload not allowed');
 
           return this._handleFileUpload(formData, config);
         },
@@ -2333,12 +2331,10 @@
             config,
             action: 'download',
           });
-          if (!proceed)
-            return Promise.reject(new Error('File download cancelled'));
+          if (!proceed) throw new Error('File download cancelled');
 
           const allowed = await this._waitUntil();
-          if (!allowed)
-            return Promise.reject(new Error('File download not allowed'));
+          if (!allowed) throw new Error('File download not allowed');
 
           return this._handleFileDownload(fileId, config);
         },
@@ -2350,12 +2346,10 @@
             fileId,
             action: 'delete',
           });
-          if (!proceed)
-            return Promise.reject(new Error('File delete cancelled'));
+          if (!proceed) throw new Error('File delete cancelled');
 
           const allowed = await this._waitUntil();
-          if (!allowed)
-            return Promise.reject(new Error('File delete not allowed'));
+          if (!allowed) throw new Error('File delete not allowed');
 
           return this._handleFileDelete(fileInfo);
         },
@@ -2551,12 +2545,12 @@
 
     _overrideGlobalAutocompleter() {
       // Save original autocompleter if it exists
-      if (window.autocompleter && !window._originalAutocompleter) {
-        window._originalAutocompleter = window.autocompleter;
+      if (globalThis.autocompleter && !globalThis._originalAutocompleter) {
+        globalThis._originalAutocompleter = globalThis.autocompleter;
       }
 
       // Override global autocompleter to prevent Form.io from creating body autocompleters
-      window.autocompleter = (settings) => {
+      globalThis.autocompleter = (settings) => {
         this._log.debug(
           'Global autocompleter called, blocking for Shadow DOM components',
           {
@@ -2574,9 +2568,9 @@
         }
 
         // For non-Shadow DOM inputs, allow original autocompleter (shouldn't happen in web component)
-        if (window._originalAutocompleter) {
+        if (globalThis._originalAutocompleter) {
           this._log.debug('Allowing autocompleter for non-Shadow DOM input');
-          return window._originalAutocompleter(settings);
+          return globalThis._originalAutocompleter(settings);
         }
 
         this._log.debug('No original autocompleter found, blocking all');
