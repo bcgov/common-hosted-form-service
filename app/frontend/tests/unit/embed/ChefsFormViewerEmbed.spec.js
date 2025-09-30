@@ -63,7 +63,7 @@ describe('chefs-form-viewer-embed.js', () => {
 
   it('should create a logger using actual createLogger function', () => {
     const { createLogger } = embedUtils;
-    const originalConsole = global.console;
+    const originalConsole = globalThis.console;
     const mockConsole = {
       log: vi.fn(),
       info: vi.fn(),
@@ -71,7 +71,7 @@ describe('chefs-form-viewer-embed.js', () => {
       error: vi.fn(),
       debug: vi.fn(),
     };
-    global.console = mockConsole;
+    globalThis.console = mockConsole;
     try {
       const enabledLogger = createLogger(true);
       enabledLogger.info('test message', { data: 'test' });
@@ -89,7 +89,7 @@ describe('chefs-form-viewer-embed.js', () => {
       expect(typeof enabledLogger.warn).toBe('function');
       expect(typeof enabledLogger.error).toBe('function');
     } finally {
-      global.console = originalConsole;
+      globalThis.console = originalConsole;
     }
   });
 

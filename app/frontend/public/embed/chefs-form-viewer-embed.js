@@ -215,7 +215,7 @@
     // Convert camelCase or snake_case to kebab-case
     return param
       .replaceAll(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-      .replaceAll(/_/g, '-');
+      .replaceAll('_', '-');
   }
 
   /**

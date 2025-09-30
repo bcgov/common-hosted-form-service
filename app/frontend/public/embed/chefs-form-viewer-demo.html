@@ -325,8 +325,8 @@
         // Endpoint overrides (resolve :formId / :submissionId placeholders at click time)
         const r = (s) =>
           s
-            .replaceAll(/:formId/g, formId)
-            .replaceAll(/:submissionId/g, submissionId);
+            .replaceAll(':formId', formId)
+            .replaceAll(':submissionId', submissionId);
         el.endpoints = {
           mainCss: r($('mainCss').value.trim()),
           formioJs: r($('formioJs').value.trim()),

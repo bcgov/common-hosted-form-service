@@ -779,7 +779,7 @@
             if (value) {
               try {
                 JSON.parse(value);
-                return `\n  ${key}='${value.replaceAll(/'/g, '&#39;')}'`;
+                return `\n  ${key}='${value.replaceAll("'", '&#39;')}'`;
               } catch {
                 return '';
               }

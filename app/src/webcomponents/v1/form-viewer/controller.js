@@ -1,6 +1,6 @@
 const { validate } = require('uuid');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const service = require('../../../forms/form/service');
 const submissionService = require('../../../forms/submission/service');

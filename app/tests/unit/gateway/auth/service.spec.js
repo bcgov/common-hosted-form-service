@@ -168,7 +168,7 @@ test('production validation logic works correctly', async () => {
         }
         return secret;
       }
-      return require('crypto').randomBytes(32).toString('base64');
+      return require('node:crypto').randomBytes(32).toString('base64');
     };
 
     expect(() => {

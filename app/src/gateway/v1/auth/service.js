@@ -16,7 +16,7 @@ function getJwtSecret() {
   }
 
   // Non-production: always generate a random secret
-  return require('crypto').randomBytes(32).toString('base64');
+  return require('node:crypto').randomBytes(32).toString('base64');
 }
 
 const JWT_SECRET = getJwtSecret();

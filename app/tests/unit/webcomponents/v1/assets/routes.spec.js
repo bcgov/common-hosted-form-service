@@ -1,7 +1,7 @@
 const express = require('express');
 const request = require('supertest');
-const fs = require('fs');
-const { Readable } = require('stream');
+const fs = require('node:fs');
+const { Readable } = require('node:stream');
 
 // Mock config to provide test asset roots
 const mockConfig = {

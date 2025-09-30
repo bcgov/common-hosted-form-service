@@ -141,7 +141,7 @@
       $('debug').addEventListener('change', updateButtonStates);
       // Helper to determine base path (/app or /pr-xxxx)
       function getBasePath() {
-        const { pathname } = window.location;
+        const { pathname } = globalThis.location;
         const match = pathname.match(/^\/(app|pr-\d+)/);
         return match ? `/${match[1]}` : '/app';
       }

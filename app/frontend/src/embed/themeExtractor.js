@@ -50,7 +50,7 @@ function parseDeclarations(blockText) {
   const parts = blockText.split(';');
   for (const part of parts) {
     // Clean up the part by removing comments and excess whitespace
-    const cleanPart = part.replace(/\/\*.*?\*\//g, '').trim();
+    const cleanPart = part.replaceAll(/\/\*.*?\*\//g, '').trim();
     if (!cleanPart) continue;
 
     const idx = cleanPart.indexOf(':');
