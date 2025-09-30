@@ -1,9 +1,9 @@
 const compression = require('compression');
 const config = require('config');
 const express = require('express');
-const path = require('path');
+const path = require('node:path');
 const Problem = require('api-problem');
-const querystring = require('querystring');
+const querystring = require('node:querystring');
 
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
@@ -56,12 +56,12 @@ app.use((req, res, next) => {
     return next();
   }
   const status = statusService.getStatus();
-  if (status.stopped) {
-    new Problem(503, { details: { message: 'Server is shutting down', ...status } }).send(res);
-  } else if (!status.ready) {
-    new Problem(503, { details: { message: 'Server is not ready', ...status } }).send(res);
-  } else {
+  if (status.ready) {
     next();
+  } else if (status.stopped) {
+    new Problem(503, { details: { message: 'Server is shutting down', ...status } }).send(res);
+  } else {
+    new Problem(503, { details: { message: 'Server is not ready', ...status } }).send(res);
   }
 });
 

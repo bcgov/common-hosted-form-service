@@ -1,6 +1,6 @@
 // This script attempts to gracefully rebuild and update @bcgov/formio if necessary
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const COMPONENTS_DIR = '../../components';
 const FORMIO_DIR = 'src/formio';
@@ -98,7 +98,7 @@ function deployComponents() {
  * @param {string} [cwd] Working directory of the command to run
  */
 function runSync(cmd, cwd = undefined) {
-  const { spawnSync } = require('child_process');
+  const { spawnSync } = require('node:child_process');
   const parts = cmd.split(/\s+/g);
   const opts = { stdio: 'inherit', shell: true };
   if (cwd) opts.cwd = cwd;
@@ -149,14 +149,14 @@ function copyDirRecursiveSync(source, target) {
   // Copy
   if (fs.lstatSync(source).isDirectory()) {
     files = fs.readdirSync(source);
-    files.forEach((file) => {
+    for (const file of files) {
       const curSource = path.join(source, file);
       if (fs.lstatSync(curSource).isDirectory()) {
         copyDirRecursiveSync(curSource, targetFolder);
       } else {
         copyFileSync(curSource, targetFolder);
       }
-    });
+    }
   }
 }
 

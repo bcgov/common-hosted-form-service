@@ -1090,7 +1090,7 @@
 
     _urls() {
       const d = this._defaultEndpoints();
-      const u = { ...d, ...(this.endpoints || {}) };
+      const u = { ...d, ...this.endpoints };
       return u;
     }
 
@@ -1200,7 +1200,7 @@
 
     async _createFormioInstance(container, schema, options) {
       const hasCreateForm = FormViewerUtils.validateGlobalMethods(
-        window,
+        globalThis,
         'Formio',
         ['createForm']
       );
@@ -1493,7 +1493,7 @@
       });
 
       const formioAvailable = FormViewerUtils.validateGlobalMethods(
-        window,
+        globalThis,
         'Formio',
         []
       );
@@ -1540,7 +1540,7 @@
 
     async _loadJsAssets() {
       // Form.io JS (required, with fallback and validation)
-      const formioStatus = FormViewerUtils.validateFormioGlobal(window);
+      const formioStatus = FormViewerUtils.validateFormioGlobal(globalThis);
       if (!formioStatus.available) {
         const { primary, fallback } = this._resolveUrlWithFallback(
           'formioJs',
@@ -1551,7 +1551,7 @@
           fallback,
           true, // required
           'formio-js',
-          () => FormViewerUtils.validateFormioGlobal(window).hasCreateForm
+          () => FormViewerUtils.validateFormioGlobal(globalThis).hasCreateForm
         );
       }
 
@@ -1759,7 +1759,7 @@
      */
     _registerAuthPlugin() {
       const formioAvailable = FormViewerUtils.validateGlobalMethods(
-        window,
+        globalThis,
         'Formio',
         ['registerPlugin']
       );
@@ -1779,7 +1779,7 @@
           if (authHeader && Object.keys(authHeader).length > 0) {
             args.opts = args.opts || {};
             args.opts.headers = {
-              ...(args.opts.headers || {}),
+              ...args.opts.headers,
               ...authHeader,
             };
           }
@@ -1792,7 +1792,7 @@
           if (authHeader && Object.keys(authHeader).length > 0) {
             args.opts = args.opts || {};
             args.opts.headers = {
-              ...(args.opts.headers || {}),
+              ...args.opts.headers,
               ...authHeader,
             };
           }
@@ -2110,7 +2110,7 @@
         }
 
         this._log.info('File download successful', { fileId });
-        return Promise.resolve();
+        return;
       } catch (error) {
         this._log.error('File download error', {
           fileId,
@@ -2154,7 +2154,7 @@
         }
 
         this._log.info('File delete successful', { fileId });
-        return Promise.resolve();
+        return;
       } catch (error) {
         this._log.error('File delete error', { fileId, error: error.message });
         throw error;
@@ -2222,7 +2222,7 @@
 
       // Clean up after a short delay
       setTimeout(() => {
-        document.body.removeChild(a);
+        a.remove();
         globalThis.URL.revokeObjectURL(url);
       }, 100);
     }
@@ -2234,7 +2234,7 @@
      * @private
      */
     _getFilenameFromDisposition(disposition) {
-      if (disposition && disposition.indexOf('attachment') !== -1) {
+      if (disposition && disposition.includes('attachment')) {
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
         const matches = filenameRegex.exec(disposition);
         if (matches != null && matches[1]) {

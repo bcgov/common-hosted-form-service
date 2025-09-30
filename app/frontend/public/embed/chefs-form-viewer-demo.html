@@ -264,7 +264,7 @@
       }
 
       function getBaseUrl() {
-        const { origin, pathname } = window.location;
+        const { origin, pathname } = globalThis.location;
         const match = pathname.match(/^\/(app|pr-\d+)\b/);
         const baseSegment = match ? `/${match[1]}` : '/app';
         return `${origin}${baseSegment}`;
@@ -324,7 +324,9 @@
 
         // Endpoint overrides (resolve :formId / :submissionId placeholders at click time)
         const r = (s) =>
-          s.replace(/:formId/g, formId).replace(/:submissionId/g, submissionId);
+          s
+            .replaceAll(/:formId/g, formId)
+            .replaceAll(/:submissionId/g, submissionId);
         el.endpoints = {
           mainCss: r($('mainCss').value.trim()),
           formioJs: r($('formioJs').value.trim()),

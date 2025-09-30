@@ -2,8 +2,8 @@
 // Post-build helper: copy dist/assets/index-*.css to public/embed/chefs-index.css
 // and generate public/embed/chefs-theme.css by extracting CSS variables.
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const {
   extractThemeVariables,
   buildHostThemeCss,

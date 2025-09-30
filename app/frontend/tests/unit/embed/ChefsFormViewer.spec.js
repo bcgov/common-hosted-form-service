@@ -1378,6 +1378,8 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_triggerFileDownload creates and clicks download link', () => {
+    vi.useFakeTimers();
+
     el.downloadFile = {
       data: new Blob(['test content'], { type: 'text/plain' }),
       headers: {
@@ -1389,6 +1391,7 @@ describe('ChefsFormViewer internals', () => {
     const mockLink = {
       click: vi.fn(),
       classList: { add: vi.fn() },
+      remove: vi.fn(),
     };
     const createElementSpy = vi
       .spyOn(globalThis.FormViewerUtils, 'createElement')
@@ -1399,14 +1402,18 @@ describe('ChefsFormViewer internals', () => {
     globalThis.URL.revokeObjectURL = vi.fn();
 
     document.body.appendChild = vi.fn();
-    document.body.removeChild = vi.fn();
 
     el._triggerFileDownload();
 
     expect(mockLink.click).toHaveBeenCalled();
     expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
 
+    // Fast-forward time to trigger the cleanup
+    vi.advanceTimersByTime(100);
+    expect(mockLink.remove).toHaveBeenCalled();
+
     createElementSpy.mockRestore();
+    vi.useRealTimers();
   });
 
   it('_ensureAssets transitions through all asset states', async () => {
@@ -1719,6 +1726,8 @@ describe('ChefsFormViewer internals', () => {
   });
 
   it('_performDownload creates and triggers download link', () => {
+    vi.useFakeTimers();
+
     const data = new Blob(['test content']);
     el.downloadFile = {
       headers: { 'content-disposition': 'attachment; filename="test.txt"' },
@@ -1727,6 +1736,7 @@ describe('ChefsFormViewer internals', () => {
     const mockLink = {
       click: vi.fn(),
       classList: { add: vi.fn() },
+      remove: vi.fn(),
     };
     const createElementSpy = vi
       .spyOn(globalThis.FormViewerUtils, 'createElement')
@@ -1737,13 +1747,17 @@ describe('ChefsFormViewer internals', () => {
     globalThis.URL.revokeObjectURL = vi.fn();
 
     document.body.appendChild = vi.fn();
-    document.body.removeChild = vi.fn();
 
     el._performDownload(data);
 
     expect(mockLink.click).toHaveBeenCalled();
     expect(globalThis.URL.createObjectURL).toHaveBeenCalledWith(data);
 
+    // Fast-forward time to trigger the cleanup
+    vi.advanceTimersByTime(100);
+    expect(mockLink.remove).toHaveBeenCalled();
+
     createElementSpy.mockRestore();
+    vi.useRealTimers();
   });
 });

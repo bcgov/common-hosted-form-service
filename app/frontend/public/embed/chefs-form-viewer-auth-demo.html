@@ -134,9 +134,9 @@
         $('getTokenBtn').disabled = !(formId && apiKey);
         $('loadFormBtn').disabled = !token;
       }
-      ['formId', 'apiKey', 'token'].forEach((id) => {
+      for (const id of ['formId', 'apiKey', 'token']) {
         $(id).addEventListener('input', updateButtonStates);
-      });
+      }
       $('readOnly').addEventListener('change', updateButtonStates);
       $('debug').addEventListener('change', updateButtonStates);
       // Helper to determine base path (/app or /pr-xxxx)
@@ -200,7 +200,7 @@
           log(e.type, e.detail);
         });
         // Listen to all known events
-        [
+        for (const evt of [
           'formio:ready',
           'formio:error',
           'formio:loadSchema',
@@ -213,9 +213,9 @@
           'formio:beforeLoad',
           'formio:beforeLoadSchema',
           'formio:beforeInit',
-        ].forEach((evt) => {
+        ]) {
           el.addEventListener(evt, (e) => log(evt, e.detail));
-        });
+        }
         // On successful submit, update submissionId, set readOnly, reload
         el.addEventListener('formio:submitDone', (e) => {
           const sub = e.detail?.submission;
