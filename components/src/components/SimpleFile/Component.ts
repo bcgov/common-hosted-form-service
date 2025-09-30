@@ -9,6 +9,34 @@ import uniqueName = Utils.uniqueName;
 const ID = 'simplefile';
 const DISPLAY = 'File Upload';
 
+/**
+ * Removes leading and trailing slashes and whitespace from a string
+ * @param s - The string to clean
+ * @returns The cleaned string
+ */
+function remSlash(s: string) {
+  if (!s) return '';
+  let result = s.trim();
+  while (result.startsWith('/')) result = result.slice(1);
+  while (result.endsWith('/')) result = result.slice(0, -1);
+  return result;
+}
+
+/**
+ * Builds a URL path from multiple path segments
+ * @param segments - Array of path segments to join
+ * @returns The joined path with proper slashes
+ */
+function buildUrlPath(...segments: string[]) {
+  return (
+    '/' +
+    segments
+      .map((segment) => remSlash(segment))
+      .filter(Boolean)
+      .join('/')
+  );
+}
+
 export default class Component extends ParentComponent {
   static schema(...extend) {
     return ParentComponent.schema(
@@ -59,9 +87,6 @@ export default class Component extends ParentComponent {
       this.component.options = { ...this.component.options, ...opts };
       // the config.uploads object will say what size our server can handle and what path to use.
       if (opts?.config?.uploads) {
-        const remSlash = (s) =>
-          s.replaceAll(/^(\s*\/?\s*)$|^(\s*\/?\s*)$/gm, '');
-
         const cfg = opts.config;
         const uploads = cfg.uploads;
 
@@ -71,9 +96,11 @@ export default class Component extends ParentComponent {
         if (uploads.webcomponents && uploads.url) {
           this.component.url = uploads.url;
         } else {
-          this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
-            cfg.apiPath
-          )}/${remSlash(uploads.path)}`;
+          this.component.url = buildUrlPath(
+            cfg.basePath,
+            cfg.apiPath,
+            uploads.path
+          );
         }
         // no idea what to do with this yet...
         this._enabled = uploads.enabled;
