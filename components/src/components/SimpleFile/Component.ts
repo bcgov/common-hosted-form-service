@@ -59,7 +59,8 @@ export default class Component extends ParentComponent {
       this.component.options = { ...this.component.options, ...opts };
       // the config.uploads object will say what size our server can handle and what path to use.
       if (opts?.config?.uploads) {
-        const remSlash = (s) => s.replace(/^(\s*\/?\s*)$|^(\s*\/?\s*)$/gm, '');
+        const remSlash = (s) =>
+          s.replaceAll(/^(\s*\/?\s*)$|^(\s*\/?\s*)$/gm, '');
 
         const cfg = opts.config;
         const uploads = cfg.uploads;
@@ -222,7 +223,7 @@ export default class Component extends ParentComponent {
             .uploadFile(formData, {
               onUploadProgress: (evt) => {
                 fileUpload.status = 'progress';
-                const p = (100.0 * evt.loaded) / evt.total;
+                const p = (100 * evt.loaded) / evt.total;
                 // @ts-ignore
                 fileUpload.progress = p;
                 delete fileUpload.message;
@@ -255,15 +256,15 @@ export default class Component extends ParentComponent {
               this.redraw();
               this.triggerChange();
             })
-            .catch((response) => {
+            .catch((error_) => {
               fileUpload.status = 'error';
               // we do not get API Problem objects, only http error
               // not much information to provide our users.
               let message = 'An unexpected error occured during file upload.';
 
               // Add defensive checks for response.detail
-              const detail = response?.detail || '';
-              const status = response?.status || 0;
+              const detail = error_?.detail || '';
+              const status = error_?.status || 0;
 
               if (status === 409 || detail.includes('409')) {
                 message = 'File did not pass the virus scanner.';
@@ -284,10 +285,10 @@ export default class Component extends ParentComponent {
   getFile(fileInfo) {
     const fileId = fileInfo?.data?.id ?? fileInfo.id;
     const { options = {} } = this.component;
-    options.getFile(fileId, { responseType: 'blob' }).catch((response) => {
+    options.getFile(fileId, { responseType: 'blob' }).catch((error_) => {
       // Is alert the best way to do this?
       // User is expecting an immediate notification due to attempting to download a file.
-      alert(response);
+      alert(error_);
     });
   }
 }

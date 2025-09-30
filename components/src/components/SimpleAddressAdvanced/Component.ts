@@ -40,7 +40,5 @@ export default class Component extends ShadowDOMAddressComponent {
     };
   }
 
-  public static editForm = editForm;
+  public static readonly editForm = editForm;
 }
-
-export {};

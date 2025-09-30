@@ -143,7 +143,7 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
 
     const config = this.getConfig();
 
-    this.searchInput.forEach((element: any, index: number) => {
+    for (const [index, element] of this.searchInput.entries()) {
       if (element && this.provider && this.component.provider !== 'google') {
         const componentKey =
           this.component.key ||
@@ -237,7 +237,7 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
         if (!this._autocompleterInstances) this._autocompleterInstances = [];
         this._autocompleterInstances.push(autocompleterInstance);
       }
-    });
+    }
   }
 
   private _startBodyAutocompleterMonitoring(
@@ -265,7 +265,7 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
       'body > .autocomplete'
     );
 
-    currentBodyAutocompleters.forEach((el) => {
+    for (const el of Array.from(currentBodyAutocompleters)) {
       // If this autocompleter wasn't in our pre-creation snapshot, it's new
       if (
         !existingAutocompleters.has(el) &&
@@ -273,7 +273,7 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
       ) {
         el.remove();
       }
-    });
+    }
   }
 
   destroy() {
@@ -282,9 +282,9 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
 
     // Clean up autocompleter instances
     if (this._autocompleterInstances) {
-      this._autocompleterInstances.forEach((instance) => {
+      for (const instance of Array.from(this._autocompleterInstances)) {
         instance?.destroy?.();
-      });
+      }
       this._autocompleterInstances = [];
     }
 

@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 const config = require('./webpack.config.js');
 config.entry = path.join(path.resolve(__dirname, 'lib'), 'use.js');
 config.mode = 'production';

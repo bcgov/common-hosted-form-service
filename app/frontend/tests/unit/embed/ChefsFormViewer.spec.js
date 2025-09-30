@@ -1322,7 +1322,7 @@ describe('ChefsFormViewer internals', () => {
       responseText: '{"success": true}',
     };
 
-    global.XMLHttpRequest = vi.fn(() => mockXhr);
+    globalThis.XMLHttpRequest = vi.fn(() => mockXhr);
 
     const uploadPromise = el._handleFileUpload(formData, config);
 
