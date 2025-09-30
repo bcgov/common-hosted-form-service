@@ -3,9 +3,23 @@
 const config = require('config');
 const { SignJWT, jwtVerify } = require('jose');
 
-const JWT_SECRET = config.get('gateway.jwtSecret');
-
 const JWT_LIFETIME_RAW = config.get('gateway.jwtLifetime') || '15m'; // 15 min default
+
+function getJwtSecret() {
+  if (process.env.NODE_ENV === 'production') {
+    // Production must have explicit secret from config
+    const secret = config.get('gateway.jwtSecret');
+    if (!secret || secret.includes('REPLACE_') || secret.includes('generate')) {
+      throw new Error('Production requires explicit gateway.jwtSecret configuration');
+    }
+    return secret;
+  }
+
+  // Non-production: always generate a random secret
+  return require('crypto').randomBytes(32).toString('base64');
+}
+
+const JWT_SECRET = getJwtSecret();
 
 function normalizeJwtExp(exp) {
   // Accepts seconds (number) or strings ('15m', '1h', etc)
@@ -54,5 +68,23 @@ module.exports = {
   async validateToken(token) {
     await jwtVerify(token, getSecretKey());
     return true;
+  },
+
+  // NEW METHOD: Verify token and return payload
+  async verifyTokenAndGetPayload(token) {
+    try {
+      const { payload } = await jwtVerify(token, getSecretKey());
+      return { valid: true, payload };
+    } catch (err) {
+      return { valid: false, error: err.message };
+    }
+  },
+
+  // NEW METHOD: Get current secret for debugging (non-production only)
+  getCurrentSecret() {
+    if (process.env.NODE_ENV === 'production') {
+      return '[REDACTED]';
+    }
+    return JWT_SECRET;
   },
 };
