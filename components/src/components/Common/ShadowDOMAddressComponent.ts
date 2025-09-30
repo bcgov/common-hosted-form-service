@@ -172,7 +172,7 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
           container.className = 'autocomplete-suggestions';
           container.style.cssText =
             'position: absolute; z-index: 1000; top: 0; left: 0;';
-          container.setAttribute('data-shadow-dom-autocomplete', 'true');
+          container.dataset.shadowDomAutocomplete = 'true';
           permanentContainer.appendChild(container);
         }
 
@@ -269,7 +269,7 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
       // If this autocompleter wasn't in our pre-creation snapshot, it's new
       if (
         !existingAutocompleters.has(el) &&
-        !el.hasAttribute('data-shadow-dom-autocomplete')
+        !(el as HTMLElement).dataset.shadowDomAutocomplete
       ) {
         el.remove();
       }
