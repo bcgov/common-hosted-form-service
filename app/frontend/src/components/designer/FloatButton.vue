@@ -1,22 +1,13 @@
 <script setup>
-import { computed, ref, onUnmounted } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { useFormStore } from '~/store/form';
-import { useDisplay } from 'vuetify';
-
-const formStore = useFormStore();
 
 const { locale, t } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 
 const properties = defineProps({
-  formSchema: {
-    type: Object,
-    required: true,
-  },
   formId: {
     type: String,
     default: null,
@@ -57,21 +48,14 @@ const properties = defineProps({
     type: String,
     default: null,
   },
-  formVersion: {
-    type: String,
-    default: null,
-  },
 });
 
-const { form } = storeToRefs(formStore);
-
-const emit = defineEmits(['redo', 'save', 'undo', 'export', 'import-file']);
+const emit = defineEmits(['redo', 'save', 'undo']);
 
 const isAtTopOfPage = ref(true);
+const isCollapsed = ref(false);
 
-const { mdAndDown } = useDisplay();
-
-// // We need to handle scroll through an event listener because computed values do not update on a scroll event
+// We need to handle scroll through an event listener because computed values do not update on a scroll event
 window.addEventListener('scroll', onEventScroll);
 
 onUnmounted(() => {
@@ -92,6 +76,22 @@ const SCROLL_TEXT = computed(() => {
     return t('trans.floatButton.top');
   }
   return t('trans.floatButton.bottom');
+});
+
+// This is the icon for the button that lets you collapse the actions
+const COLLAPSE_ICON = computed(() => {
+  if (!isCollapsed.value) {
+    return 'mdi:mdi-close';
+  }
+  return 'mdi:mdi-menu';
+});
+
+// This is the text for the button that lets you collapse the actions
+const COLLAPSE_TEXT = computed(() => {
+  if (!isCollapsed.value) {
+    return t('trans.floatButton.collapse');
+  }
+  return t('trans.floatButton.actions');
 });
 
 // This is the text for the button that lets you save
@@ -116,6 +116,10 @@ function onEventScroll() {
   isAtTopOfPage.value = window.scrollY === 0 ? true : false;
 }
 
+function onClickCollapse() {
+  isCollapsed.value = !isCollapsed.value;
+}
+
 function onClickSave() {
   emit('save');
 }
@@ -126,10 +130,6 @@ function onClickScroll() {
     top: isAtTopOfPage.value ? document.body.scrollHeight : 0,
     behavior: 'smooth',
   });
-}
-
-function onFileChange(event) {
-  emit('import-file', event);
 }
 
 const canPreview = computed(() => {
@@ -151,7 +151,11 @@ function goToPreview() {
 }
 
 defineExpose({
+  COLLAPSE_ICON,
+  COLLAPSE_TEXT,
   isAtTopOfPage,
+  isCollapsed,
+  onClickCollapse,
   onClickSave,
   onClickScroll,
   onEventScroll,
@@ -162,435 +166,155 @@ defineExpose({
 </script>
 
 <template>
-  <v-toolbar class="sticky-toolbar pt-2 mb-1" density="comfortable" flat>
-    <div class="d-flex w-50 w-md-40">
-      <!-- Scroll Button -->
-      <div class="icon-button">
+  <div class="d-flex flex-column float-button">
+    <div v-if="!isCollapsed">
+      <div class="fab d-flex flex-column" data-cy="saveButton">
+        <span :lang="locale">{{ SAVE_TEXT }}</span>
         <v-btn
-          class="mt-1"
+          :disabled="!properties.canSave && properties.isFormSaved"
+          class="ma-2"
           density="compact"
           icon
-          stacked
-          @click="onClickScroll"
+          @click="onClickSave"
         >
-          <v-icon :icon="SCROLL_ICON"></v-icon>
-          {{ SCROLL_TEXT }}
+          <v-icon
+            v-if="!properties.isSaving"
+            icon="mdi:mdi-content-save"
+          ></v-icon>
+          <v-progress-circular v-else indeterminate></v-progress-circular>
         </v-btn>
       </div>
-      <!-- page title -->
-      <div v-if="!isAtTopOfPage" :lang="locale" class="title-container">
-        <h4 v-if="form.name" :title="form.name" class="page-title">
-          {{ form.name }}
-        </h4>
+      <div
+        class="fab d-flex flex-column"
+        :class="{ 'disabled-router': !canPreview }"
+        data-cy="previewRouterLink"
+        @click="handlePreviewClick"
+      >
+        <span :lang="locale">{{ $t('trans.floatButton.preview') }}</span>
+        <v-btn :disabled="!canPreview" class="ma-2" density="compact" icon>
+          <v-icon icon="mdi:mdi-eye"></v-icon>
+        </v-btn>
       </div>
-    </div>
-
-    <v-spacer />
-    <!-- Right Justify Buttons -->
-    <div class="d-flex flex-wrap flex-shrink-0">
-      <div v-if="!mdAndDown">
-        <div class="d-flex align-center icon-button">
-          <!-- Download Buttons -->
-          <div class="d-flex flex-column align-center icon-button">
-            <v-btn
-              density="compact"
-              stacked
-              :lang="locale"
-              @click="$emit('export', form.name, formSchema, form.snake)"
-            >
-              <v-icon class="mt-4" icon="mdi:mdi-download" />
-              {{ $t('trans.formDesigner.downloadJson') }}
-            </v-btn>
-          </div>
-          <!-- Upload Button -->
-          <div class="d-flex flex-column align-center icon-button">
-            <v-btn
-              density="compact"
-              icon
-              stacked
-              :lang="locale"
-              @click="$refs.uploader.click()"
-            >
-              <v-icon class="mt-4" icon="mdi:mdi-upload" />
-              <input
-                ref="uploader"
-                class="d-none"
-                type="file"
-                accept=".json"
-                @change="onFileChange"
-              />
-              {{ $t('trans.formDesigner.uploadJson') }}
-            </v-btn>
-          </div>
-
-          <v-divider vertical inset :thickness="2" />
-          <!-- Save Button -->
-          <div
-            class="d-flex flex-column align-center icon-button"
-            data-cy="saveButton"
-          >
-            <v-btn
-              :disabled="!properties.canSave && properties.isFormSaved"
-              density="compact"
-              icon
-              stacked
-              @click="emit('save')"
-            >
-              <v-icon v-if="!properties.isSaving" icon="mdi:mdi-content-save" />
-              <v-progress-circular v-else indeterminate size="20" />
-              {{ SAVE_TEXT }}
-            </v-btn>
-          </div>
-          <!-- Preview Button -->
-          <div
-            class="d-flex flex-column align-center icon-button"
-            :class="{ 'disabled-router': !canPreview }"
-            data-cy="previewRouterLink"
-            @click="handlePreviewClick"
-          >
-            <v-btn :disabled="!canPreview" density="compact" icon stacked>
-              <v-icon icon="mdi:mdi-eye" />
-              {{ $t('trans.floatButton.preview') }}
-            </v-btn>
-          </div>
-
-          <!-- Manage Button (Router-link) -->
-          <router-link
-            v-slot="{ navigate }"
-            :to="{
-              name: 'FormManage',
-              query: { f: properties.formId, fd: false, d: properties.draftId },
-            }"
-            custom
-          >
-            <div
-              class="d-flex flex-column align-center icon-button"
-              :class="{ 'disabled-router': !isManageEnabled }"
-              data-cy="settingsRouterLink"
-            >
-              <v-btn
-                :disabled="!isManageEnabled"
-                density="compact"
-                icon
-                stacked
-                @click="navigate"
-              >
-                <v-icon icon="mdi:mdi-file-cog" />
-                {{ $t('trans.floatButton.manage') }}
-              </v-btn>
-            </div>
-          </router-link>
-
-          <!-- Publish Button (Router-link) -->
-          <router-link
-            v-slot="{ navigate }"
-            :to="{
-              name: 'PublishForm',
-              query: { f: properties.formId, fd: true, d: properties.draftId },
-            }"
-            custom
-          >
-            <div
-              class="d-flex flex-column align-center icon-button"
-              :class="{ 'disabled-router': !isPublishEnabled }"
-              data-cy="publishRouterLink"
-            >
-              <v-btn
-                :disabled="!isPublishEnabled"
-                density="compact"
-                stacked
-                icon
-                @click="navigate"
-              >
-                <v-icon icon="mdi:mdi-file-upload" />
-                {{ $t('trans.floatButton.publish') }}
-              </v-btn>
-            </div>
-          </router-link>
-
-          <v-divider vertical inset :thickness="2" />
-          <!-- Undo Button -->
-          <div
-            class="d-flex flex-column align-center icon-button"
-            data-cy="undoButton"
-          >
-            <v-btn
-              class="d-flex flex-column align-center py-2"
-              :disabled="!properties.undoEnabled"
-              density="compact"
-              icon
-              stacked
-              @click="$emit('undo')"
-            >
-              <v-icon icon="mdi:mdi-undo" size="20" />
-              {{ $t('trans.floatButton.undo') }}
-            </v-btn>
-          </div>
-
-          <!-- Redo Button -->
-          <div
-            class="d-flex flex-column align-center icon-button"
-            data-cy="redoButton"
-          >
-            <v-btn
-              :disabled="!properties.redoEnabled"
-              density="compact"
-              icon
-              stacked
-              @click="$emit('redo')"
-            >
-              <v-icon icon="mdi:mdi-redo" />
-              {{ $t('trans.floatButton.redo') }}
-            </v-btn>
-          </div>
-        </div>
-      </div>
-      <div v-else class="d-flex align-center icon-button">
-        <!-- Undo Button -->
-        <div
-          class="d-flex flex-column align-center icon-button"
-          data-cy="undoButton"
+      <div class="fab d-flex flex-column" data-cy="undoButton">
+        <span :lang="locale">{{ $t('trans.floatButton.undo') }}</span>
+        <v-btn
+          :disabled="!properties.undoEnabled"
+          class="ma-2"
+          density="compact"
+          icon
+          @click="$emit('undo')"
         >
-          <v-btn
-            class="d-flex flex-column align-center py-2"
-            :disabled="!properties.undoEnabled"
-            density="compact"
-            icon
-            stacked
-            @click="$emit('undo')"
-          >
-            <v-icon icon="mdi:mdi-undo" size="20" />
-            {{ $t('trans.floatButton.undo') }}
-          </v-btn>
-        </div>
-
-        <!-- Redo Button -->
-        <div
-          class="d-flex flex-column align-center icon-button"
-          data-cy="redoButton"
-        >
-          <v-btn
-            :disabled="!properties.redoEnabled"
-            density="compact"
-            icon
-            stacked
-            @click="$emit('redo')"
-          >
-            <v-icon icon="mdi:mdi-redo" />
-            {{ $t('trans.floatButton.redo') }}
-          </v-btn>
-        </div>
-        <v-divider vertical inset :thickness="2" />
-
-        <!-- Save Button -->
-        <div class="d-flex flex-column align-center icon-button">
-          <v-btn
-            :disabled="!properties.canSave && properties.isFormSaved"
-            density="compact"
-            data-cy="saveButton"
-            icon
-            stacked
-            @click="emit('save')"
-          >
-            <v-icon v-if="!properties.isSaving" icon="mdi:mdi-content-save" />
-            <v-progress-circular v-else indeterminate size="20" />
-            {{ SAVE_TEXT }}
-          </v-btn>
-        </div>
-        <!-- Menu Dropdown for Small screens -->
-
-        <div class="toolbar-dropdown">
-          <v-menu location="bottom end">
-            <template #activator="{ props }">
-              <v-btn icon stacked v-bind="props" data-cy="menuButton">
-                <v-icon icon="mdi:mdi-dots-vertical" />
-                Menu
-              </v-btn>
-            </template>
-
-            <v-list>
-              <!-- Preview Button -->
-              <v-list-item>
-                <div
-                  class="d-flex flex-column"
-                  :class="{ 'disabled-router': !canPreview }"
-                  data-cy="previewRouterLink"
-                  @click="handlePreviewClick"
-                >
-                  <v-btn :disabled="!canPreview" density="compact" prepend-icon>
-                    <v-icon class="mr-1" icon="mdi:mdi-eye" />
-                    {{ $t('trans.floatButton.preview') }}
-                  </v-btn>
-                </div>
-              </v-list-item>
-              <!-- Manage Button (Router-link) -->
-              <v-list-item>
-                <router-link
-                  v-slot="{ navigate }"
-                  :to="{
-                    name: 'FormManage',
-                    query: {
-                      f: properties.formId,
-                      fd: false,
-                      d: properties.draftId,
-                    },
-                  }"
-                  custom
-                >
-                  <div
-                    class="d-flex flex-column"
-                    :class="{ 'disabled-router': !isManageEnabled }"
-                    data-cy="settingsRouterLink"
-                  >
-                    <v-btn
-                      :disabled="!isManageEnabled"
-                      density="compact"
-                      prepend-icon
-                      @click="navigate"
-                    >
-                      <v-icon class="mr-1" icon="mdi:mdi-file-cog" />
-                      {{ $t('trans.floatButton.manage') }}
-                    </v-btn>
-                  </div>
-                </router-link>
-              </v-list-item>
-              <!-- Publish Button (Router-link) -->
-              <v-list-item>
-                <router-link
-                  v-slot="{ navigate }"
-                  :to="{
-                    name: 'PublishForm',
-                    query: {
-                      f: properties.formId,
-                      fd: true,
-                      d: properties.draftId,
-                    },
-                  }"
-                  custom
-                >
-                  <div
-                    class="d-flex flex-column"
-                    :class="{ 'disabled-router': !isPublishEnabled }"
-                    data-cy="publishRouterLink"
-                  >
-                    <v-btn
-                      :disabled="!isPublishEnabled"
-                      density="compact"
-                      prepend-icon
-                      @click="navigate"
-                    >
-                      <v-icon class="mr-1" icon="mdi:mdi-file-upload" />
-                      {{ $t('trans.floatButton.publish') }}
-                    </v-btn>
-                  </div>
-                </router-link>
-              </v-list-item>
-              <v-divider :thickness="2" />
-              <!-- Upload Button -->
-              <v-list-item>
-                <div class="d-flex flex-column">
-                  <v-btn
-                    density="compact"
-                    icon-prepend
-                    :lang="locale"
-                    @click="$refs.uploader.click()"
-                  >
-                    <v-icon class="mr-1" icon="mdi:mdi-upload" />
-                    <input
-                      ref="uploader"
-                      class="d-none"
-                      type="file"
-                      accept=".json"
-                      @change="onFileChange"
-                    />
-                    {{ $t('trans.formDesigner.uploadJson') }}
-                  </v-btn>
-                </div>
-              </v-list-item>
-              <!-- Download Buttons -->
-              <v-list-item>
-                <div class="d-flex flex-column">
-                  <v-btn
-                    density="compact"
-                    icon-prepend
-                    :lang="locale"
-                    @click="$emit('export', form.name, formSchema, form.snake)"
-                  >
-                    <v-icon class="mr-1" icon="mdi:mdi-download" />
-                    {{ $t('trans.formDesigner.downloadJson') }}
-                  </v-btn>
-                </div>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
+          <v-icon icon="mdi:mdi-undo"></v-icon>
+        </v-btn>
       </div>
+      <div class="fab d-flex flex-column" data-cy="redoButton">
+        <span :lang="locale">{{ $t('trans.floatButton.redo') }}</span>
+        <v-btn
+          :disabled="!properties.redoEnabled"
+          class="ma-2"
+          density="compact"
+          icon
+          @click="$emit('redo')"
+        >
+          <v-icon icon="mdi:mdi-redo"></v-icon>
+        </v-btn>
+      </div>
+      <router-link
+        v-slot="{ navigate }"
+        :to="{
+          name: 'FormManage',
+          query: { f: properties.formId, fd: false, d: properties.draftId },
+        }"
+        custom
+      >
+        <div
+          class="fab d-flex flex-column"
+          :class="{ 'disabled-router': !isManageEnabled }"
+          data-cy="settingsRouterLink"
+        >
+          <span :lang="locale">{{ $t('trans.floatButton.manage') }}</span>
+          <v-btn
+            :disabled="!isManageEnabled"
+            class="ma-2 inverted-colour"
+            density="compact"
+            icon
+            @click="navigate"
+          >
+            <v-icon icon="mdi:mdi-cog"></v-icon>
+          </v-btn>
+        </div>
+      </router-link>
+      <router-link
+        v-slot="{ navigate }"
+        :to="{
+          name: 'PublishForm',
+          query: { f: properties.formId, fd: true, d: properties.draftId },
+        }"
+        custom
+      >
+        <div
+          class="fab d-flex flex-column"
+          :class="{ 'disabled-router': !isPublishEnabled }"
+          data-cy="publishRouterLink"
+          role="link"
+        >
+          <span :lang="locale">{{ $t('trans.floatButton.publish') }}</span>
+          <v-btn
+            :disabled="!isPublishEnabled"
+            class="ma-2 inverted-colour"
+            density="compact"
+            icon
+            @click="navigate"
+          >
+            <v-icon icon="mdi:mdi-file-upload"></v-icon>
+          </v-btn>
+        </div>
+      </router-link>
     </div>
-  </v-toolbar>
+    <div class="fab d-flex flex-column">
+      <span :lang="locale">{{ COLLAPSE_TEXT }}</span>
+      <v-btn
+        class="ma-2 inverted-colour"
+        density="compact"
+        icon
+        @click="onClickCollapse"
+      >
+        <v-icon :icon="COLLAPSE_ICON"></v-icon>
+      </v-btn>
+    </div>
+    <div class="fab d-flex flex-column">
+      <span :lang="locale">{{ SCROLL_TEXT }}</span>
+      <v-btn class="ma-2" density="compact" icon @click="onClickScroll">
+        <v-icon :icon="SCROLL_ICON"></v-icon>
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
-.icon-button {
-  .v-btn {
-    width: 80px;
-    height: 80px;
-  }
-  .v-icon {
-    font-size: 24px;
-    color: #1e5189;
-    margin-bottom: 1rem;
-  }
-  span {
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-align: center;
-    text-transform: none;
-    color: #1e5189;
-  }
+.float-button {
+  min-width: 80px;
+  padding-right: 20px;
+  padding-bottom: 40px;
 }
 
-.v-divider {
-  height: 80px;
-}
-
-.title-container {
-  display: flex;
-  min-width: 0;
+.fab {
+  justify-content: center;
   align-items: center;
-  overflow: hidden;
-}
-
-.page-title {
-  flex: 1 1 auto;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.version-label {
-  flex-shrink: 0;
-  margin-left: 8px;
-}
-
-.sticky-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #faf9f8;
-  .v-toolbar__content {
-    min-height: 100px !important;
-  }
-
-  .disabled-router {
-    opacity: 0.5;
-    pointer-events: none;
-  }
+  align-content: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  font-family: BCSans !important;
 
   .v-btn {
     margin-top: 2px !important;
     margin-bottom: 12px !important;
+  }
+
+  .v-icon {
+    font-size: 18px;
+    color: #1a5a96;
   }
 
   .v-btn.v-btn--disabled {

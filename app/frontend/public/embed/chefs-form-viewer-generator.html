@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHEFS Form Viewer - Embed Code Generator</title>
+    <style>
+      :root {
+        --primary: #3498db;
+        --primary-dark: #2980b9;
+        --success: #27ae60;
+        --warning: #f39c12;
+        --danger: #e74c3c;
+        --light: #ecf0f1;
+        --dark: #2c3e50;
+        --border: #bdc3c7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        background: #f8f9fa;
+        color: var(--dark);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        margin: 0 0 1rem 0;
+        color: var(--primary);
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #666;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .card-header {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-family: inherit;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      }
+
+      .form-group small {
+        display: block;
+        margin-top: 0.25rem;
+        color: #666;
+        font-size: 0.8rem;
+      }
+
+      .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .checkbox-item input[type='checkbox'] {
+        width: auto;
+      }
+
+      .btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+
+      .btn:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-success {
+        background: var(--success);
+      }
+
+      .btn-success:hover {
+        background: #219a52;
+      }
+
+      .btn-warning {
+        background: var(--warning);
+      }
+
+      .btn-warning:hover {
+        background: #e67e22;
+      }
+
+      .btn-block {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      .code-section {
+        grid-column: 1 / -1;
+      }
+
+      .code-tabs {
+        display: flex;
+        background: var(--light);
+        border-radius: 4px 4px 0 0;
+        overflow: hidden;
+      }
+
+      .code-tab {
+        background: var(--light);
+        border: none;
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--dark);
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+      }
+
+      .code-tab.active {
+        background: white;
+        border-bottom-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .code-content {
+        background: white;
+        border: 1px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+      }
+
+      .code-tab-content {
+        display: none;
+      }
+
+      .code-tab-content.active {
+        display: block;
+      }
+
+      .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 1rem;
+        margin: 0;
+        overflow-x: auto;
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        border-radius: 4px;
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: background-color 0.2s;
+      }
+
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .code-wrapper {
+        position: relative;
+      }
+
+      .demo-actions {
+        padding: 1rem;
+        background: var(--light);
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .required {
+        color: var(--danger);
+      }
+
+      .url-display {
+        background: var(--light);
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+        font-family: monospace;
+        font-size: 0.9rem;
+        word-break: break-all;
+        border: 1px solid var(--border);
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+        border: 1px solid;
+      }
+
+      .alert-warning {
+        background: #fff3cd;
+        border-color: #ffeaa7;
+        color: #856404;
+      }
+
+      .alert-info {
+        background: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>CHEFS Form Viewer Generator</h1>
+        <p>Generate embed code and demo links for CHEFS forms</p>
+      </div>
+
+      <div class="grid">
+        <!-- Configuration Panel -->
+        <div class="card">
+          <div class="card-header">⚙️ Configuration</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="formId"
+                >Form ID <span class="required">*</span></label
+              >
+              <input
+                id="formId"
+                type="text"
+                placeholder="11111111-1111-1111-1111-111111111111"
+              />
+            </div>
+            <div class="form-group">
+              <label for="apiKey"
+                >API Key <span class="required">*</span></label
+              >
+              <input id="apiKey" type="text" placeholder="secret" />
+            </div>
+            <div class="form-group">
+              <button
+                id="getTokenBtn"
+                class="btn btn-success btn-block"
+                type="button"
+              >
+                Fetch auth-token
+              </button>
+            </div>
+            <div class="form-group">
+              <label for="authToken">auth-token (JWT)</label>
+              <textarea
+                id="authToken"
+                rows="2"
+                readonly
+                placeholder="Fetched JWT will appear here"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="useAuthToken">
+                <input type="checkbox" id="useAuthToken" /> Use auth-token
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="submissionId">Submission ID</label>
+              <input
+                id="submissionId"
+                type="text"
+                placeholder="11111111-1111-1111-1111-111111111111"
+              />
+            </div>
+            <div class="form-group">
+              <label for="language">Language</label>
+              <select id="language">
+                <option value="">Default (en)</option>
+                <option value="en">English (en)</option>
+                <option value="fr">French (fr)</option>
+              </select>
+              <small>Form display language</small>
+            </div>
+
+            <div class="form-group">
+              <label for="baseUrl">Base URL</label>
+              <input
+                type="text"
+                id="baseUrl"
+                placeholder="https://yourhost.com/app"
+              />
+              <small>Override auto-detected base URL</small>
+            </div>
+
+            <div class="form-group">
+              <label for="themeCss">Theme CSS URL</label>
+              <input
+                type="text"
+                id="themeCss"
+                placeholder="https://example.com/custom-theme.css"
+              />
+              <small>Custom theme stylesheet</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Options -->
+        <div class="card">
+          <div class="card-header">Advanced Options</div>
+          <div class="card-body">
+            <div class="form-group">
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="readOnly" />
+                  <label for="readOnly">Read Only</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="debug" />
+                  <label for="debug">Debug Mode</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="isolateStyles" />
+                  <label for="isolateStyles">Isolate Styles</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="noShadow" />
+                  <label for="noShadow">No Shadow DOM</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="noIcons" />
+                  <label for="noIcons">No Icons</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="submitButtonKey">Submit Button Key</label>
+              <input type="text" id="submitButtonKey" placeholder="submit" />
+              <small>Form.io submit button identifier</small>
+            </div>
+
+            <div class="form-group">
+              <label for="tokenJson">Token (JSON)</label>
+              <textarea
+                id="tokenJson"
+                rows="3"
+                placeholder='{"sub":"user123","roles":["admin"],"email":"user@example.com"}'
+              ></textarea>
+              <small>JWT token object for Form.io evalContext</small>
+            </div>
+
+            <div class="form-group">
+              <label for="userJson">User (JSON)</label>
+              <textarea
+                id="userJson"
+                rows="3"
+                placeholder='{"name":"John Doe","department":"IT","id":"12345"}'
+              ></textarea>
+              <small>User object for Form.io evalContext</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generated Code -->
+        <div class="card code-section">
+          <div class="card-header">Generated Code & Links</div>
+          <div class="code-tabs">
+            <button class="code-tab active" data-tab="embed">
+              Embed Script
+            </button>
+            <button class="code-tab" data-tab="component">
+              Component HTML
+            </button>
+            <button class="code-tab" data-tab="programmatic">
+              Programmatic
+            </button>
+          </div>
+          <div class="code-content">
+            <!-- Embed Script Tab -->
+            <div class="code-tab-content active" id="embed">
+              <div class="code-wrapper">
+                <pre class="code-block" id="embedCode"></pre>
+                <button class="copy-btn" onclick="copyCode('embedCode')">
+                  Copy
+                </button>
+              </div>
+              <div class="demo-actions">
+                <button class="btn btn-success" onclick="openEmbedDemo()">
+                  Open Demo
+                </button>
+              </div>
+              <div class="alert alert-info">
+                <strong>Usage:</strong> Copy this script tag into your HTML
+                page. The form will automatically load where the script is
+                placed.
+              </div>
+            </div>
+
+            <!-- Component HTML Tab -->
+            <div class="code-tab-content" id="component">
+              <div class="code-wrapper">
+                <pre class="code-block" id="componentCode"></pre>
+                <button class="copy-btn" onclick="copyCode('componentCode')">
+                  Copy
+                </button>
+              </div>
+              <div class="alert alert-info">
+                <strong>Usage:</strong> Include the component script, add this
+                HTML, then call <code>element.load()</code> in JavaScript.
+              </div>
+            </div>
+
+            <!-- Programmatic Tab -->
+            <div class="code-tab-content" id="programmatic">
+              <div class="code-wrapper">
+                <pre class="code-block" id="programmaticCode"></pre>
+                <button class="copy-btn" onclick="copyCode('programmaticCode')">
+                  Copy
+                </button>
+              </div>
+              <div class="alert alert-info">
+                <strong>Usage:</strong> For advanced scenarios with dynamic
+                configuration and event handling.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo URL -->
+        <div class="card code-section">
+          <div class="card-header">🔗 Demo URL</div>
+          <div class="card-body">
+            <div class="form-group">
+              <div style="font-weight: 600; margin-bottom: 0.5rem">
+                Demo URL
+              </div>
+              <div class="url-display" id="embedDemoUrl"></div>
+              <small>Direct link to demo with your configuration</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <strong>Note:</strong> Make sure to replace the form-id and api-key with
+        your actual CHEFS form credentials before using in production.
+      </div>
+    </div>
+
+    <script>
+      // Configuration state
+      let config = {};
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', function () {
+        // Set up form change listeners
+        const inputs = document.querySelectorAll('input, select, textarea');
+        for (const input of inputs) {
+          input.addEventListener('input', updateConfig);
+          input.addEventListener('change', updateConfig);
+        }
+
+        // Set up tab switching
+        const tabs = document.querySelectorAll('.code-tab');
+        for (const tab of tabs) {
+          tab.addEventListener('click', function () {
+            const tabName = this.dataset.tab;
+            switchTab(tabName);
+          });
+        }
+
+        // Initial update
+        updateConfig();
+      });
+
+      function updateConfig() {
+        // Gather all form values
+        config = {
+          formId: document.getElementById('formId').value.trim(),
+          apiKey: document.getElementById('apiKey').value.trim(),
+          authToken: document.getElementById('authToken').value.trim(),
+          useAuthToken: document.getElementById('useAuthToken').checked,
+          submissionId: document.getElementById('submissionId').value.trim(),
+          language: document.getElementById('language').value,
+          baseUrl: document.getElementById('baseUrl').value.trim(),
+          themeCss: document.getElementById('themeCss').value.trim(),
+          submitButtonKey: document
+            .getElementById('submitButtonKey')
+            .value.trim(),
+          tokenJson: document.getElementById('tokenJson').value.trim(),
+          userJson: document.getElementById('userJson').value.trim(),
+          readOnly: document.getElementById('readOnly').checked,
+          debug: document.getElementById('debug').checked,
+          isolateStyles: document.getElementById('isolateStyles').checked,
+          noShadow: document.getElementById('noShadow').checked,
+          noIcons: document.getElementById('noIcons').checked,
+        };
+
+        updateGeneratedCode();
+        updateDemoUrls();
+      }
+
+      function updateGeneratedCode() {
+        updateEmbedCode();
+        updateComponentCode();
+        updateProgrammaticCode();
+      }
+
+      // Helper function to get the current base path (handles /app, /pr-1755, etc.)
+      function getBasePath() {
+        const currentPath = globalThis.location.pathname;
+        return currentPath.includes('/embed/')
+          ? currentPath.substring(0, currentPath.indexOf('/embed/'))
+          : '/app'; // fallback
+      }
+
+      function updateEmbedCode() {
+        const params = buildQueryParams();
+        const basePath = getBasePath();
+        const embedScript =
+          '<script src="' +
+          basePath +
+          '/embed/chefs-form-viewer-embed.js?' +
+          params +
+          '"></' +
+          'script>';
+        document.getElementById('embedCode').textContent = embedScript;
+      }
+
+      function updateComponentCode() {
+        const attrs = buildAttributes();
+        const basePath = getBasePath();
+        const componentHtml =
+          '<!-- Include the component script -->\n' +
+          '<script src="' +
+          basePath +
+          '/embed/chefs-form-viewer.js"></' +
+          'script>\n\n' +
+          '<!-- Add the component to your page -->\n' +
+          '<chefs-form-viewer' +
+          attrs +
+          '></chefs-form-viewer>\n\n' +
+          '<!-- Load the form -->\n' +
+          '<script>\n' +
+          '  document.querySelector("chefs-form-viewer").load();\n' +
+          '</' +
+          'script>';
+        document.getElementById('componentCode').textContent = componentHtml;
+      }
+
+      function updateProgrammaticCode() {
+        const jsConfig = buildJavaScriptConfig();
+        const basePath = getBasePath();
+        const programmaticCode =
+          '// Include the component script\n' +
+          '// <script src="' +
+          basePath +
+          '/embed/chefs-form-viewer.js"></' +
+          'script>\n\n' +
+          '// Create and configure the element programmatically\n' +
+          'const viewer = document.createElement("chefs-form-viewer");\n' +
+          jsConfig +
+          '\n' +
+          '// Add event listeners\n' +
+          'viewer.addEventListener("formio:ready", function(e) {\n' +
+          '  console.log("Form is ready:", e.detail);\n' +
+          '});\n\n' +
+          'viewer.addEventListener("formio:submitDone", function(e) {\n' +
+          '  console.log("Form submitted:", e.detail);\n' +
+          '  // Handle successful submission\n' +
+          '});\n\n' +
+          'viewer.addEventListener("formio:error", function(e) {\n' +
+          '  console.error("Form error:", e.detail);\n' +
+          '});\n\n' +
+          '// Add to page and load\n' +
+          'document.body.appendChild(viewer);\n' +
+          'viewer.load();';
+        document.getElementById('programmaticCode').textContent =
+          programmaticCode;
+      }
+
+      function setStringParams(params) {
+        const stringParams = {
+          'form-id': config.formId,
+          'api-key': config.apiKey,
+          'submission-id': config.submissionId,
+          language: config.language,
+          'base-url': config.baseUrl,
+          'theme-css': config.themeCss,
+          'submit-button-key': config.submitButtonKey,
+        };
+
+        for (const [key, value] of Object.entries(stringParams)) {
+          if (value) params.set(key, value);
+        }
+      }
+
+      function setBooleanParams(params) {
+        const boolParams = {
+          'read-only': config.readOnly,
+          debug: config.debug,
+          'isolate-styles': config.isolateStyles,
+          'no-shadow': config.noShadow,
+          'no-icons': config.noIcons,
+        };
+
+        for (const [key, value] of Object.entries(boolParams)) {
+          if (value) params.set(key, 'true');
+        }
+      }
+
+      function setJsonParams(params) {
+        for (const { key, value } of [
+          { key: 'token', value: config.tokenJson },
+          { key: 'user', value: config.userJson },
+        ]) {
+          if (value) {
+            try {
+              JSON.parse(value);
+              params.set(key, encodeURIComponent(value));
+            } catch {
+              // Invalid JSON, skip
+            }
+          }
+        }
+      }
+
+      function buildQueryParams() {
+        const params = new URLSearchParams();
+        // Prefer auth-token if available and selected
+        if (config.useAuthToken && config.authToken) {
+          params.set('form-id', config.formId);
+          params.set('auth-token', config.authToken);
+        } else {
+          params.set('form-id', config.formId);
+          params.set('api-key', config.apiKey);
+        }
+        setStringParams(params);
+        setBooleanParams(params);
+        setJsonParams(params);
+
+        return params.toString();
+      }
+
+      function buildStringAttrs() {
+        const stringAttrs = {
+          'form-id': config.formId,
+          'api-key': config.apiKey,
+          'submission-id': config.submissionId,
+          language: config.language,
+          'base-url': config.baseUrl,
+          'theme-css': config.themeCss,
+          'submit-button-key': config.submitButtonKey,
+        };
+
+        return Object.entries(stringAttrs)
+          .filter(([, value]) => value)
+          .map(([key, value]) => `\n  ${key}="${value}"`)
+          .join('');
+      }
+
+      function buildBooleanAttrs() {
+        const boolAttrs = [
+          'readOnly',
+          'debug',
+          'isolateStyles',
+          'noShadow',
+          'noIcons',
+        ];
+        const attrNames = [
+          'read-only',
+          'debug',
+          'isolate-styles',
+          'no-shadow',
+          'no-icons',
+        ];
+
+        return boolAttrs
+          .map((prop, i) => (config[prop] ? `\n  ${attrNames[i]}` : ''))
+          .join('');
+      }
+
+      function buildJsonAttrs() {
+        return [
+          { key: 'token', value: config.tokenJson },
+          { key: 'user', value: config.userJson },
+        ]
+          .map(({ key, value }) => {
+            if (value) {
+              try {
+                JSON.parse(value);
+                return `\n  ${key}='${value.replaceAll("'", '&#39;')}'`;
+              } catch {
+                return '';
+              }
+            }
+            return '';
+          })
+          .join('');
+      }
+
+      function buildAttributes() {
+        return buildStringAttrs() + buildBooleanAttrs() + buildJsonAttrs();
+      }
+
+      function buildStringJsConfig() {
+        const stringProps = {
+          formId: config.formId,
+          apiKey: config.apiKey,
+          submissionId: config.submissionId,
+          language: config.language,
+          baseUrl: config.baseUrl,
+          themeCss: config.themeCss,
+          submitButtonKey: config.submitButtonKey,
+        };
+
+        return Object.entries(stringProps)
+          .filter(([, value]) => value)
+          .map(([key, value]) => `viewer.${key} = '${value}';\n`)
+          .join('');
+      }
+
+      function buildBooleanJsConfig() {
+        const configs = [
+          { prop: 'readOnly', code: 'viewer.readOnly = true;\n' },
+          { prop: 'debug', code: 'viewer.setAttribute("debug", "true");\n' },
+          { prop: 'isolateStyles', code: 'viewer.isolateStyles = true;\n' },
+          {
+            prop: 'noShadow',
+            code: 'viewer.setAttribute("no-shadow", "true");\n',
+          },
+          { prop: 'noIcons', code: 'viewer.noIcons = true;\n' },
+        ];
+
+        return configs
+          .filter(({ prop }) => config[prop])
+          .map(({ code }) => code)
+          .join('');
+      }
+
+      function buildJsonJsConfig() {
+        return [
+          { key: 'token', value: config.tokenJson },
+          { key: 'user', value: config.userJson },
+        ]
+          .map(({ key, value }) => {
+            if (value) {
+              try {
+                JSON.parse(value);
+                return `viewer.${key} = ${value};\n`;
+              } catch {
+                return '';
+              }
+            }
+            return '';
+          })
+          .join('');
+      }
+
+      function buildJavaScriptConfig() {
+        return (
+          buildStringJsConfig() + buildBooleanJsConfig() + buildJsonJsConfig()
+        );
+      }
+
+      function updateDemoUrls() {
+        const params = buildQueryParams();
+        const baseUrl =
+          globalThis.location.origin +
+          globalThis.location.pathname.substring(
+            0,
+            globalThis.location.pathname.lastIndexOf('/')
+          );
+
+        const embedDemoUrl = `${baseUrl}/chefs-form-viewer-embed-demo.html?${params}`;
+
+        document.getElementById('embedDemoUrl').textContent = embedDemoUrl;
+      }
+
+      function switchTab(tabName) {
+        // Update tab buttons
+        for (const tab of document.querySelectorAll('.code-tab')) {
+          tab.classList.toggle('active', tab.dataset.tab === tabName);
+        }
+
+        // Update tab content
+        for (const content of document.querySelectorAll('.code-tab-content')) {
+          content.classList.toggle('active', content.id === tabName);
+        }
+      }
+
+      function copyCode(elementId) {
+        const code = document.getElementById(elementId).textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          // Visual feedback
+          const btn = event.target;
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 2000);
+        });
+      }
+
+      function openEmbedDemo() {
+        const params = buildQueryParams();
+        if (!config.formId || !config.apiKey) {
+          alert('Form ID and API Key are required to open the demo!');
+          return;
+        }
+        const baseUrl =
+          globalThis.location.origin +
+          globalThis.location.pathname.substring(
+            0,
+            globalThis.location.pathname.lastIndexOf('/')
+          );
+        const url = `${baseUrl}/chefs-form-viewer-embed-demo.html?${params}`;
+        globalThis.open(url, '_blank');
+      }
+
+      // Fetch auth-token from backend
+      async function fetchAuthToken(formId, apiKey) {
+        const url = `${getBasePath()}/gateway/v1/auth/token/forms/${formId}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Basic ' + btoa(`${formId}:${apiKey}`),
+          },
+          body: JSON.stringify({ formId }),
+        });
+        if (!res.ok) {
+          throw new Error('Failed to fetch token: ' + res.status);
+        }
+        const data = await res.json();
+        return data.token || '';
+      }
+
+      // Add event listeners after DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', function () {
+        document
+          .getElementById('getTokenBtn')
+          .addEventListener('click', async () => {
+            const formId = document.getElementById('formId').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const btn = document.getElementById('getTokenBtn');
+            btn.disabled = true;
+            document.getElementById('authToken').value = '';
+            try {
+              const token = await fetchAuthToken(formId, apiKey);
+              document.getElementById('authToken').value = token;
+            } catch (e) {
+              document.getElementById('authToken').value =
+                'ERROR: ' + e.message;
+            } finally {
+              btn.disabled = false;
+              updateConfig();
+            }
+          });
+        document
+          .getElementById('useAuthToken')
+          .addEventListener('change', updateConfig);
+        // ...existing code...
+      });
+    </script>
+  </body>
+</html>

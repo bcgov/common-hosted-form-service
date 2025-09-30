@@ -13,7 +13,7 @@
       "path": "files"
     },
     "permanent": "localStorage",
-    "localStorage" : {
+    "localStorage": {
       "path": ""
     },
     "objectStorage": {
@@ -36,5 +36,14 @@
       "username": "username",
       "password": "password"
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": ""
+    }
+  },
+  "gateway": {
+    "jwtSecret": "3YOKYR6W7sDSBd1f8jZrolODr5UKeuJ7s20y2mfKRbw=",
+    "jwtLifetime": "1m"
   }
 }
