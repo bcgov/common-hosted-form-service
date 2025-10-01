@@ -1,0 +1,48 @@
+{
+  "db": {
+    "username": "username",
+    "password": "password"
+  },
+  "files": {
+    "uploads": {
+      "enabled": "true",
+      "fileCount": "1",
+      "fileKey": "files",
+      "fileMaxSize": "1MB",
+      "fileMinSize": "0KB",
+      "path": "files"
+    },
+    "permanent": "localStorage",
+    "localStorage": {
+      "path": ""
+    },
+    "objectStorage": {
+      "accessKeyId": "nr-iit-showcase",
+      "bucket": "egejyy",
+      "endpoint": "https://nrs.objectstore.gov.bc.ca",
+      "key": "chefs/dev/",
+      "secretAccessKey": "THIS_IS_NOT_A_KEY"
+    }
+  },
+  "server": {
+    "emailRecipients": "foo@bar.com,baz@boo.com",
+    "oidc": {
+      "clientSecret": "password"
+    },
+    "logLevel": "silent"
+  },
+  "serviceClient": {
+    "commonServices": {
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": ""
+    }
+  },
+  "gateway": {
+    "jwtLifetime": "30m"
+  }
+}
