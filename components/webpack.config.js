@@ -1,25 +1,25 @@
-const path = require('path');
+const path = require('node:path');
 
 module.exports = {
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: ["css-loader"],
+        use: ['css-loader'],
       },
     ],
   },
   entry: path.join(path.resolve(__dirname, 'lib'), 'index.js'),
   output: {
-    library: 'BcGovFormioComponents',
+    library: 'ChefsFormViewerComponents',
     libraryTarget: 'umd',
     libraryExport: 'default',
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bcgov-formio-components.js',
+    filename: 'chefs-form-viewer-components.js',
   },
   mode: 'development',
   performance: { hints: false },
   externals: {
-    formiojs: 'Formio'
-  }
+    formiojs: 'Formio',
+  },
 };

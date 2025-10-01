@@ -27,7 +27,7 @@
     "webpack:prod": "webpack --config webpack.prod.js",
     "webpack:use": "webpack --config webpack.use.js",
     "webpack": "npm run webpack:dev && npm run webpack:prod && npm run webpack:use",
-    "build": "tsc && gulp templates && npm run webpack && sass ./src/sass/contrib.scss ./dist/bcgov-formio-components.css",
+    "build": "tsc && gulp templates && npm run webpack && sass --no-source-map ./src/sass/contrib.scss ./dist/chefs-form-viewer-components.css && sass --no-source-map ./src/sass/chefs-form-viewer.scss ./dist/chefs-form-viewer.css && sass --no-source-map ./src/sass/bcgov-theme.scss ./dist/chefs-form-viewer-bcgov.css",
     "clean": "rm -rf coverage dist lib",
     "purge": "rm -rf node_modules",
     "lint": "tslint -p ."
@@ -43,6 +43,7 @@
   "dependencies": {
     "@types/leaflet": "^1.9.12",
     "@types/leaflet-draw": "^1.0.11",
+    "autocompleter": "^8.0.2",
     "formiojs": "4.17.4",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",

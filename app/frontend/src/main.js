@@ -41,7 +41,6 @@ app.config.globalProperties.$filters = {
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
 import BcGovFormioComponents from '~/formio/lib';
-import '~/formio/css/bcgov-formio-components.css';
 import { Formio } from '@formio/vue';
 Formio.use(BcGovFormioComponents);
 
@@ -85,20 +84,18 @@ app.component('BasePanel', BasePanel);
 app.component('BasePrintButton', BasePrintButton);
 app.component('BaseSecure', BaseSecure);
 
-(async () => {
-  // IE11 Detection (https://stackoverflow.com/a/21825207)
-  if (!!window.MSInputMethodContext && !!document.documentMode) {
-    document.write(`<div style="padding-top: 5em; text-align: center;">
+// IE11 Detection (https://stackoverflow.com/a/21825207)
+if (!!window.MSInputMethodContext && !!document.documentMode) {
+  document.write(`<div style="padding-top: 5em; text-align: center;">
       <h1>We're sorry but ${
         import.meta.env.VITE_TITLE
       } is not supported in Internet Explorer.</h1>
       <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
     </div>`);
-    NProgress.done();
-  } else {
-    await loadConfig();
-  }
-})();
+  NProgress.done();
+} else {
+  loadConfig();
+}
 
 /**
  * @function initializeApp
