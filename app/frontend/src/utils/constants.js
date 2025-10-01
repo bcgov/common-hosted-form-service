@@ -339,6 +339,7 @@ export const FormDesignerBuilderOptions = Object.freeze({
       bcaddress: true,
       simplebcaddress: true,
       map: true,
+      idirusers: true,
     },
   },
 });
