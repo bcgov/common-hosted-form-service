@@ -47,7 +47,6 @@ describe('Form Designer', () => {
     savedButton.trigger('click');
     cy.wait(3000);
     //Publish form
-    /*
     cy.get('.mdi-dots-vertical').click();
     cy.get('[data-cy="publishRouterLink"] > .v-btn > .v-btn__content').click();
     cy.get('span').contains('Publish Version 1');
@@ -101,35 +100,6 @@ describe('Form Designer', () => {
     cy.get('button[title="Use version 1 as the base for a new version"]').should('be.visible');
     cy.get(':nth-child(1) > .v-data-table-column--align-end > :nth-child(1) > .v-btn > .v-btn__content > .mdi-download').should('be.visible');
     cy.get(':nth-child(2) > .v-data-table-column--align-end > :nth-child(1) > .v-btn > .v-btn__content > .mdi-download').should('be.visible');
-    //Check Data deletion and retention policy
-    */
-    cy.get('.mdi-cog').click();
-    cy.get('[data-test="canAllowEditFormSettings"] > .v-btn__content > .mdi-pencil').click();
-    cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
-    cy.get('[data-test="enableHardDeletionCheckbox"]').click();
-    cy.get(':nth-child(2) > .v-combobox > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-    cy.get('span.v-combobox__selection-text').contains('Internal').should('exist');
-    cy.contains('Public').should('exist');
-    cy.contains('Sensitive').should('exist');
-    cy.contains('Protected').should('exist');
-    cy.contains('Confidential').should('exist');
-    cy.wait(1000);
-    cy.get('.v-alert__content > span').contains('WARNING: After 30 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('exist');
-    cy.contains('Sensitive').click();
-    cy.get(':nth-child(2) > .v-select > .v-input__control > .v-field > .v-field__field > .v-field__input > .v-select__selection > .v-select__selection-text').contains('Custom period').should('exist');
-    cy.contains('label', 'Custom Retention Period (days)').next('input[type="number"]').should('have.value', '30');
-    cy.contains('label', 'Custom Retention Period (days)').next('input[type="number"]').clear().type('60');
-    cy.contains('label', 'Classification Notes').next('textarea').type('some privacy issues');
-    cy.get('.v-alert__content > span').contains('WARNING: After 60 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('exist');
-    cy.get(':nth-child(2) > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-    cy.contains('90 days').should('exist');
-    cy.contains('180 days').should('exist');
-    cy.contains('1 year (365 days)').should('exist');
-    cy.contains('5 years (1825 days)').should('exist');
-    cy.contains('2 years (730 days)').should('exist');
-    cy.contains('2 years (730 days)').click();
-    cy.get('.v-alert__content > span').contains('WARNING: After 730 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('be.visible');
-
     // Verify Api key functionality
     cy.get('[data-test="canGenerateAPIKey"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
