@@ -67,7 +67,6 @@ describe('Form Designer', () => {
     cy.wait(1000); 
     cy.get('[data-cy=saveButton]').click();
     cy.wait(1000);
-    
     cy.get('.mdi-dots-vertical').click();
     cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
     cy.get('span').contains('Please publish or delete your latest draft version before starting a new version.').should('exist');
@@ -101,6 +100,10 @@ describe('Form Designer', () => {
     cy.get(':nth-child(1) > .v-data-table-column--align-end > :nth-child(1) > .v-btn > .v-btn__content > .mdi-download').should('be.visible');
     cy.get(':nth-child(2) > .v-data-table-column--align-end > :nth-child(1) > .v-btn > .v-btn__content > .mdi-download').should('be.visible');
     // Verify Api key functionality
+    cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
+    cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    //Generate Apikey 
     cy.get('[data-test="canGenerateAPIKey"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
