@@ -2394,6 +2394,9 @@
           simplefile: this._getSimpleFileComponentOptions(),
           bcaddress: this._getBCAddressComponentOptions(),
           simplebcaddress: this._getBCAddressComponentOptions(),
+          simpleaddressadvanced: {
+            shadowRoot: this._root === this.shadowRoot ? this.shadowRoot : null,
+          },
         },
         shadowRoot: this._root === this.shadowRoot ? this.shadowRoot : null,
       };

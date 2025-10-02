@@ -12,6 +12,8 @@ const DISPLAY = 'Simple BC Address';
 export default class Component extends ShadowDOMAddressComponent {
   protected getConfig(): ShadowDOMAddressConfig {
     return {
+      type: 'bcgov',
+      provider: 'custom',
       componentId: ID,
       displayName: DISPLAY,
     };

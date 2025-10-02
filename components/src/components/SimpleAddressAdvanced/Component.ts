@@ -12,6 +12,7 @@ const DISPLAY = 'Address';
 export default class Component extends ShadowDOMAddressComponent {
   protected getConfig(): ShadowDOMAddressConfig {
     return {
+      type: 'advanced',
       componentId: ID,
       displayName: DISPLAY,
       // No providerOptions or queryParameters - this is a generic address component

@@ -6,8 +6,10 @@ import _ from 'lodash';
 const ParentComponent = (Components as any).components.address;
 
 export interface ShadowDOMAddressConfig {
+  type?: string;
   componentId: string;
   displayName: string;
+  provider?: string;
   providerOptions?: {
     queryProperty?: string;
     url?: string;
@@ -66,8 +68,10 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
 
   constructor(...args: any[]) {
     super(...args);
-
     const config = this.getConfig();
+    this.component.provider =
+      'bcgov' === config.type ? 'custom' : config.provider;
+
     if (this.options?.componentOptions) {
       // componentOptions are passed in from the viewer, basically runtime configuration
       const opts = this.options.componentOptions[config.componentId];
@@ -78,6 +82,24 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
           ...opts.providerOptions,
         };
       }
+    }
+    // this will be a bcaddress component that is not embedded, set the default system url
+    if ('bcgov' === config.type && !this.component.providerOptions.url) {
+      // we need to set the url to the bcgov address api url
+      this.component.providerOptions = {
+        ...this.component.providerOptions,
+        url: import.meta.env.VITE_CHEFS_GEO_ADDRESS_APIURL,
+        queryProperty: 'addressString',
+      };
+    }
+    // simpleaddressadvanced component sometimes does not save the provider.
+    if (
+      'advanced' === config.type &&
+      this.component.providerOptions.url &&
+      !this.component.provider &&
+      !this.provider
+    ) {
+      this.component.provider = 'custom';
     }
   }
 
@@ -102,7 +124,6 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
     const result = shadowRoot
       ? this._shadowRootAttach(shadowRoot, element)
       : super.attach(element);
-
     try {
       let { providerOptions, queryParameters } = this.component;
       if (providerOptions) {
@@ -129,6 +150,7 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
   private _shadowRootAttach(shadowRoot: any, element: any) {
     let result: any;
     result = super.attach(element);
+
     // Now create your custom Shadow DOM autocompleter
     this._configureShadowDOMAutocompleters(shadowRoot);
 
@@ -137,7 +159,6 @@ export abstract class ShadowDOMAddressComponent extends ParentComponent {
 
   private _configureShadowDOMAutocompleters(shadowRoot: any) {
     if (!shadowRoot || this.builderMode || !this.searchInput) {
-      // early return if not in shadow root or builder mode or no search inputs
       return;
     }
 
