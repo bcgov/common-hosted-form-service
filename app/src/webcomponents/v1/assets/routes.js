@@ -1,29 +1,28 @@
 const routes = require('express').Router();
 const fs = require('node:fs');
 const path = require('node:path');
-const cors = require('cors');
 
 const originAccess = require('../../common/middleware/originAccess');
 const { assetRoots, createAssetRoute } = require('./assetRouteUtils');
 
 // CHEFS CSS assets for embed components
-routes.get('/chefs-index.css', cors(), originAccess, createAssetRoute('vendor/chefs/chefs-index.css', 'text/css', 'CHEFS index CSS not found'));
-routes.get('/chefs-theme.css', cors(), originAccess, createAssetRoute('vendor/chefs/chefs-theme.css', 'text/css', 'CHEFS theme CSS not found'));
+routes.get('/chefs-index.css', originAccess, createAssetRoute('vendor/chefs/chefs-index.css', 'text/css', 'CHEFS index CSS not found'));
+routes.get('/chefs-theme.css', originAccess, createAssetRoute('vendor/chefs/chefs-theme.css', 'text/css', 'CHEFS theme CSS not found'));
 
 // Form.io assets
-routes.get('/formio.js', cors(), originAccess, createAssetRoute('vendor/formiojs/dist/formio.full.min.js', 'application/javascript', 'Form.io asset not found'));
-routes.get('/formio.css', cors(), originAccess, createAssetRoute('vendor/formiojs/dist/formio.full.min.css', 'text/css', 'Form.io CSS not found'));
+routes.get('/formio.js', originAccess, createAssetRoute('vendor/formiojs/dist/formio.full.min.js', 'application/javascript', 'Form.io asset not found'));
+routes.get('/formio.css', originAccess, createAssetRoute('vendor/formiojs/dist/formio.full.min.css', 'text/css', 'Form.io CSS not found'));
 
 // Font Awesome 4.7 assets for Shadow DOM compatibility
 routes.get(
   '/font-awesome/css/font-awesome.min.css',
-  cors(),
+
   originAccess,
   createAssetRoute('vendor/font-awesome/css/font-awesome.min.css', 'text/css', 'Font Awesome CSS not found')
 );
 
 // GET /webcomponents/v1/assets/font-awesome/fonts/:file
-routes.get('/font-awesome/fonts/:file', cors(), originAccess, async (req, res, next) => {
+routes.get('/font-awesome/fonts/:file', originAccess, async (req, res, next) => {
   try {
     const file = req.params.file || '';
     // Reject any filename that contains path navigation or disallowed characters

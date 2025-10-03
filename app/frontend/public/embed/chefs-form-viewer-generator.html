@@ -374,12 +374,11 @@
 
             <div class="form-group">
               <label for="baseUrl">Base URL</label>
-              <input
-                type="text"
-                id="baseUrl"
-                placeholder="https://yourhost.com/app"
-              />
-              <small>Override auto-detected base URL</small>
+              <input type="text" id="baseUrl" placeholder="" />
+              <small
+                >Override auto-detected base URL (must end with /app or
+                /pr-NNNN)</small
+              >
             </div>
 
             <div class="form-group">
@@ -559,6 +558,9 @@
           });
         }
 
+        // Set Base URL placeholder
+        setBaseUrlPlaceholder();
+
         // Initial update
         updateConfig();
       });
@@ -596,12 +598,39 @@
         updateProgrammaticCode();
       }
 
-      // Helper function to get the current base path (handles /app, /pr-1755, etc.)
+      // Helper function to get the current base URL (handles /app, /pr-1755, etc.)
       function getBasePath() {
+        // Check if user has provided a custom base URL
+        const userBaseUrl = config.baseUrl?.trim();
+        if (userBaseUrl) {
+          // User provided base URL should end with /app or /pr-NNNN
+          return userBaseUrl.endsWith('/')
+            ? userBaseUrl.slice(0, -1)
+            : userBaseUrl;
+        }
+
+        // Fallback to auto-detection from current location
         const currentPath = globalThis.location.pathname;
-        return currentPath.includes('/embed/')
-          ? currentPath.substring(0, currentPath.indexOf('/embed/'))
-          : '/app'; // fallback
+
+        // Extract the base path by removing /embed and everything after it
+        let basePath = '/app'; // default fallback
+        if (currentPath.includes('/embed')) {
+          basePath = currentPath.substring(0, currentPath.indexOf('/embed'));
+        }
+
+        // Return full URL with origin
+        return globalThis.location.origin + basePath;
+      }
+
+      // Set the Base URL placeholder to show the auto-detected URL
+      function setBaseUrlPlaceholder() {
+        const currentPath = globalThis.location.pathname;
+        let basePath = '/app'; // default fallback
+        if (currentPath.includes('/embed')) {
+          basePath = currentPath.substring(0, currentPath.indexOf('/embed'));
+        }
+        const autoDetectedUrl = globalThis.location.origin + basePath;
+        document.getElementById('baseUrl').placeholder = autoDetectedUrl;
       }
 
       function updateEmbedCode() {
@@ -855,14 +884,8 @@
 
       function updateDemoUrls() {
         const params = buildQueryParams();
-        const baseUrl =
-          globalThis.location.origin +
-          globalThis.location.pathname.substring(
-            0,
-            globalThis.location.pathname.lastIndexOf('/')
-          );
-
-        const embedDemoUrl = `${baseUrl}/chefs-form-viewer-embed-demo.html?${params}`;
+        const baseUrl = getBasePath(); // Now returns full URL
+        const embedDemoUrl = `${baseUrl}/embed/chefs-form-viewer-embed-demo.html?${params}`;
 
         document.getElementById('embedDemoUrl').textContent = embedDemoUrl;
       }
@@ -898,13 +921,7 @@
           alert('Form ID and API Key are required to open the demo!');
           return;
         }
-        const baseUrl =
-          globalThis.location.origin +
-          globalThis.location.pathname.substring(
-            0,
-            globalThis.location.pathname.lastIndexOf('/')
-          );
-        const url = `${baseUrl}/chefs-form-viewer-embed-demo.html?${params}`;
+        const url = `${getBasePath()}/embed/chefs-form-viewer-embed-demo.html?${params}`;
         globalThis.open(url, '_blank');
       }
 
