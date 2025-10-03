@@ -64,6 +64,11 @@ MockModel.where = jest.fn().mockReturnThis();
 MockModel.whereIn = jest.fn().mockReturnThis();
 MockModel.withGraphFetched = jest.fn().mockReturnThis();
 MockModel.select = jest.fn().mockReturnThis();
+MockModel.knex = jest.fn().mockReturnValue({
+  transaction: jest.fn(async (callback) => {
+    return await callback(MockTransaction);
+  }),
+});
 
 // Utility Functions
 MockModel.mockClear = () => {
