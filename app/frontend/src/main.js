@@ -94,7 +94,9 @@ if (!!window.MSInputMethodContext && !!document.documentMode) {
     </div>`);
   NProgress.done();
 } else {
-  loadConfig();
+  (async () => {
+    await loadConfig();
+  })();
 }
 
 /**
@@ -133,6 +135,8 @@ async function loadIdentityProviders() {
     }
     return true;
   } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(`loadIdentityProviders:error ${err}`);
     idpStore.providers = undefined;
     return false;
   }
@@ -195,21 +199,28 @@ function loadKeycloak(config) {
     init: { onLoad: 'login-required' },
   };
 
-  const options = Object.assign({}, defaultParams, {
-    init: { pkceMethod: 'S256', checkLoginIframe: false, onLoad: 'check-sso' },
-    config: {
-      clientId: config.oidc.clientId,
-      realm: config.oidc.realm,
-      url: config.oidc.serverUrl,
+  const options = {
+    ...defaultParams,
+    ...{
+      init: {
+        pkceMethod: 'S256',
+        checkLoginIframe: false,
+        onLoad: 'check-sso',
+      },
+      config: {
+        clientId: config.oidc.clientId,
+        realm: config.oidc.realm,
+        url: config.oidc.serverUrl,
+      },
+      onReady: () => {
+        initializeApp(true, config.basePath);
+      },
+      onInitError: (error) => {
+        console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
+        console.error(error); // eslint-disable-line no-console
+      },
     },
-    onReady: () => {
-      initializeApp(true, config.basePath);
-    },
-    onInitError: (error) => {
-      console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
-      console.error(error); // eslint-disable-line no-console
-    },
-  });
+  };
 
   if (assertOptions(options).hasError)
     throw new Error(`Invalid options given: ${assertOptions(options).error}`);

@@ -113,7 +113,7 @@ const isPublishEnabled = computed(() =>
 );
 
 function onEventScroll() {
-  isAtTopOfPage.value = window.scrollY === 0 ? true : false;
+  isAtTopOfPage.value = window.scrollY === 0;
 }
 
 function onClickCollapse() {
@@ -256,7 +256,6 @@ defineExpose({
           class="fab d-flex flex-column"
           :class="{ 'disabled-router': !isPublishEnabled }"
           data-cy="publishRouterLink"
-          role="link"
         >
           <span :lang="locale">{{ $t('trans.floatButton.publish') }}</span>
           <v-btn
@@ -305,7 +304,7 @@ defineExpose({
   font-size: 12px;
   font-style: normal;
   font-weight: normal;
-  font-family: BCSans !important;
+  font-family: BCSans, sans-serif !important;
 
   .v-btn {
     margin-top: 2px !important;
