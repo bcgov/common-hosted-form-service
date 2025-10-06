@@ -7,7 +7,7 @@ const originAccess = require('../../common/middleware/originAccess');
 
 const P = require('../../../forms/common/constants').Permissions;
 const controller = require('../../../forms/file/controller');
-const { currentFileRecord, hasFileCreate, hasFileDelete, hasFilePermissions } = require('../../../forms/file/middleware/filePermissions');
+const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('../../../forms/file/middleware/filePermissions');
 const fileUpload = require('../../../forms/file/middleware/upload').fileUpload;
 const virusScan = require('../../../forms/file/middleware/virusScan');
 

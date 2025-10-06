@@ -17,7 +17,6 @@ jest.mock('../../../../../src/webcomponents/common/middleware/originAccess', () 
 jest.mock('../../../../../src/forms/file/middleware/filePermissions', () => ({
   currentFileRecord: (req, res, next) => next(),
   hasFileCreate: (req, res, next) => next(),
-  hasFileDelete: (req, res, next) => next(),
   hasFilePermissions: () => (req, res, next) => next(),
 }));
 jest.mock('../../../../../src/forms/file/middleware/upload', () => ({
