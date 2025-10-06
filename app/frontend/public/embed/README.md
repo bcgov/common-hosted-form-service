@@ -26,6 +26,44 @@ Key features
 - The form must be designed and published in CHEFS.
 - You must have a valid API key for the form. The component builds a Basic auth header from `form-id:api-key` for same-origin requests, or you can supply a custom `onBuildAuthHeader` hook.
 
+#### Authentication Options
+
+**Option 1: Auth Token (Recommended)**
+
+- Use your `form-id` and `api-key` to obtain a short-lived JWT token
+- Token automatically refreshes before expiry
+- More secure as tokens expire and are refreshed
+
+**Getting an Auth Token:**
+
+```javascript
+// POST to the token endpoint with Basic auth
+const response = await fetch(
+  'CHEFS_SERVER_URL/gateway/v1/auth/token/forms/YOUR_FORM_ID',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Basic ' + btoa('YOUR_FORM_ID:YOUR_API_KEY'),
+    },
+    body: JSON.stringify({ formId: 'YOUR_FORM_ID' }),
+  }
+);
+
+const data = await response.json();
+const authToken = data.token; // Use this as the auth-token attribute
+```
+
+**Option 2: API Key (Fallback)**
+
+- Use `form-id` and `api-key` directly for Basic authentication
+- Less secure as credentials are long-lived
+- Component builds Basic auth header from `form-id:api-key` for same-origin requests
+
+**Custom Authentication:**
+
+- Supply a custom `onBuildAuthHeader` hook for advanced scenarios
+
 ### Quick start (embed and render)
 
 **Simplified One-Line Embedding**
@@ -33,7 +71,7 @@ Key features
 The easiest way to embed a CHEFS form, inspired by Form.io's approach:
 
 ```html
-<script src="/app/embed/chefs-form-viewer-embed.min.js?form-id=11111111-1111-1111-1111-111111111111&api-key=YOUR_API_KEY"></script>
+<script src="/app/embed/chefs-form-viewer-embed.min.js?form-id=11111111-1111-1111-1111-111111111111&auth-token=YOUR_JWT_TOKEN"></script>
 ```
 
 That's it! The embed script automatically loads the component, creates the element, applies your parameters, and calls `.load()`.
@@ -53,7 +91,7 @@ For a complete interactive demo with all available parameters, see: [`/app/embed
 ```html
 <chefs-form-viewer
   form-id="11111111-1111-1111-1111-111111111111"
-  api-key="YOUR_API_KEY"
+  auth-token="YOUR_JWT_TOKEN"
   language="en"
   token='{"sub":"user123","roles":["admin"],"email":"user@example.com"}'
   user='{"name":"John Doe","department":"IT"}'
@@ -76,7 +114,7 @@ For a complete interactive demo with all available parameters, see: [`/app/embed
 <script>
   const el = document.getElementById('my-form');
   el.formId = '11111111-1111-1111-1111-111111111111';
-  el.apiKey = 'YOUR_API_KEY';
+  el.authToken = 'YOUR_JWT_TOKEN';
   el.token = {
     sub: '123456789',
     roles: [],
@@ -100,6 +138,8 @@ For a complete interactive demo with all available parameters, see: [`/app/embed
 </script>
 ```
 
+**Note:** To get an `auth-token`, use your `form-id` and `api-key` to call the token endpoint as shown in the [Requirements](#requirements-must-have) section.
+
 Notes
 
 - For production, use the minified script: `/app/embed/chefs-form-viewer.min.js` (generated during build, not in source repo).
@@ -109,7 +149,8 @@ Notes
 ### Attributes (configuration)
 
 - `form-id` (string, required): CHEFS/Form.io form identifier.
-- `api-key` (string, required): pairs with `form-id` for same-origin Basic auth.
+- `auth-token` (string, preferred): JWT authentication token from CHEFS backend. Automatically refreshes before expiry.
+- `api-key` (string, fallback): API access key for Basic authentication. Only required if `auth-token` is not provided.
 - `submission-id` (string): prefill the form using an existing submission.
 - `read-only` (boolean): render as read-only.
 - `language` (string): i18n code (default `en`).
@@ -127,26 +168,59 @@ Boolean attribute semantics: presence, `"true"`, empty string, or `"1"` are trea
 
 ### Programmatic API
 
-- `load()` → Fetch schema and initialize.
-- `reload()` → Destroy then load again.
+- `load()` → Fetch schema and initialize Form.io instance.
+- `reload()` → Destroy current instance then load again.
 - `submit()` → Programmatic submit (sets submit key true, posts to backend).
 - `draft()` → Programmatic draft (sets submit key false, posts to backend).
-- `setSubmission(data)` → Apply data to instance.
-- `getSubmission()` → Read current submission from the instance.
+- `setSubmission(data)` → Apply data to Form.io instance.
+- `getSubmission()` → Read current submission from the Form.io instance.
+- `refreshAuthToken()` → Manually refresh the authentication token.
+- `destroy()` → Destroy the Form.io instance and clean up resources.
 
 ### Events
 
-- `formio:beforeLoad` (cancelable)
-- `formio:beforeSubmit` (cancelable, supports `waitUntil(promise)`, detail: `{ submission }`)
-- `formio:loadSchema` (detail: `{ form, schema }`)
-- `formio:beforeInit` (cancelable, supports `waitUntil(promise)`)
-- `formio:ready` (detail: `{ form }`)
-- `formio:render`, `formio:change`
-- `formio:submit` (detail: `{ submission }`)
-- `formio:submitDone` (detail: `{ submission }`)
-- `formio:error` (detail: `{ error }`)
+**Core Lifecycle Events:**
 
-Cancelable events support `waitUntil(promise)` to gate the action asynchronously. If any pushed promise resolves to `false` or rejects, the action is blocked.
+- `formio:beforeLoad` (cancelable) - Before loading begins
+- `formio:beforeLoadSchema` (cancelable) - Before schema fetch
+- `formio:loadSchema` (detail: `{ form, schema }`) - After schema is loaded
+- `formio:beforeInit` (cancelable, supports `waitUntil(promise)`) - Before Form.io initialization
+- `formio:ready` (detail: `{ form }`) - When form is ready for interaction
+- `formio:render` (detail: `{ form }`) - When form renders
+- `formio:change` (detail: `{ changed, submission }`) - When form data changes
+
+**Submission Events:**
+
+- `formio:beforeSubmit` (cancelable, supports `waitUntil(promise)`, detail: `{ submission }`) - Before submission begins
+- `formio:submit` (detail: `{ submission }`) - When submission starts
+- `formio:submitDone` (detail: `{ submission }`) - When submission succeeds
+- `formio:error` (detail: `{ error }`) - When any error occurs
+
+**Navigation Events:**
+
+- `formio:beforeNext` (cancelable, supports `waitUntil(promise)`, detail: `{ currentPage, submission }`) - Before moving to next page
+- `formio:beforePrev` (cancelable, supports `waitUntil(promise)`, detail: `{ currentPage, submission }`) - Before moving to previous page
+
+**Authentication Events:**
+
+- `formio:authTokenRefreshed` (detail: `{ authToken, oldToken }`) - When auth token is refreshed
+
+**Asset Loading Events:**
+
+- `formio:assetStateChange` (detail: `{ from, to, assets, errors }`) - When asset loading state changes
+
+**SimpleFile Events:**
+
+- `formio:beforeFileUpload` (cancelable, supports `waitUntil(promise)`, detail: `{ formData, config, action }`) - Before file upload
+- `formio:beforeFileDownload` (cancelable, supports `waitUntil(promise)`, detail: `{ fileId, config, action }`) - Before file download
+- `formio:beforeFileDelete` (cancelable, supports `waitUntil(promise)`, detail: `{ fileInfo, fileId, action }`) - Before file deletion
+
+**Event Details:**
+
+- Cancelable events can be prevented by calling `event.preventDefault()`
+- Events supporting `waitUntil(promise)` allow async operations via `event.detail.waitUntil(promise)`
+- If any promise passed to `waitUntil()` resolves to `false` or rejects, the action is blocked
+- All events bubble and are composed for cross-boundary communication
 
 ### Asset loading and why we self-host
 
@@ -165,47 +239,128 @@ We serve Form.io CSS/JS and Font Awesome from same-origin Express routes to:
 
 If `no-icons` is set, the icons CSS/fonts are not loaded and a tiny neutralizing rule ensures glyphs don’t appear in Shadow DOM.
 
-### Backend overview (Express routes)
+### Backend Endpoints
 
-Mounted under `/webcomponents` for complete isolation from `/api`:
+The component uses a comprehensive set of backend endpoints that are automatically configured based on the `base-url` (or auto-detected from the current location). All endpoints can be overridden via the `endpoints` property.
 
-- `GET /webcomponents/v1/form-viewer/:formId/schema` → returns `{ form, schema }` for a published form (uses the CHEFS Forms service). Rejects invalid UUIDs.
-- `POST /webcomponents/v1/form-viewer/:formId/submit` → posts `{ submission }` to create a submission against the published version. Uses a mock "external" user.
-- `GET /webcomponents/v1/form-viewer/components` → serves the built `chefs-form-viewer-components.use.min.js` if present.
-- `GET /embed/chefs-index.css` → serves the complete CHEFS CSS bundle (Bootstrap, Vuetify, Form.io, custom styles).
-- `GET /embed/chefs-theme.css` → serves CHEFS theme CSS with CSS variables and theming.
-- `GET /webcomponents/v1/assets/formio.js` → serves Form.io JavaScript from local node_modules.
-- `GET /webcomponents/v1/assets/font-awesome/css/font-awesome.min.css` and `/v1/assets/font-awesome/fonts/:file` → serves Font Awesome CSS/fonts locally.
+#### Default Endpoint Configuration
 
-API for BC Address components:
+The component automatically generates endpoint URLs using this pattern:
 
-- `GET /webcomponents/v1/bcgeoaddress/advance/address` → Searches for addresses using BC Geocoder Address search provider.
+- **Base URL**: Auto-detected from `window.location` (e.g., `/app` or `/pr-1234`) or set via `base-url` attribute
+- **Form ID**: From `form-id` attribute (replaces `:formId` in URLs)
+- **Submission ID**: From `submission-id` attribute (replaces `:submissionId` in URLs)
 
-API for SimpleFile component (File Uploads):
+#### Overrideable Endpoints
 
-- `GET /webcomponents/v1/files/:fileId` → downloads a file by ID. Requires SUBMISSION_READ permissions and valid authentication (Bearer token or Basic auth with form-id:api-key).
-- `GET /webcomponents/v1/files/:fileId/clone` → clones a file by ID.
-- `DELETE /webcomponents/v1/files/:fileId` → deletes a file by ID.
-- `DELETE /webcomponents/v1/files/` → batch deletes multiple files. Accepts { fileIds: [...] } in request body.
-- `POST /webcomponents/v1/files?formId=:formId` → uploads a new file with multipart/form-data. Includes virus scanning and file validation middleware.
+You can override any endpoint by setting the `endpoints` property:
 
-_IMPORTANT_ Embedded forms are `Public` and file uploads will act accordingly, so API permissions only. No user specific permissions can be enforced. See [Authentication](README.md#authentication). And see [SimpleFile](README.md#simplefile) for an example leveraging events to secure file interactions.
+```javascript
+const viewer = document.querySelector('chefs-form-viewer');
+viewer.endpoints = {
+  // Asset endpoints
+  mainCss: 'https://mycdn.com/custom-chefs-styles.css',
+  formioJs: 'https://mycdn.com/formio.js',
+  componentsJs: 'https://mycdn.com/components.js',
+  themeCss: 'https://mycdn.com/theme.css',
+  iconsCss: 'https://mycdn.com/font-awesome.css',
 
-Security Features:
+  // API endpoints
+  schema: 'https://api.example.com/forms/:formId/schema',
+  submit: 'https://api.example.com/forms/:formId/submit',
+  readSubmission:
+    'https://api.example.com/forms/:formId/submissions/:submissionId',
 
-- All routes require CORS preflight, API access validation, gateway token verification, and origin access control
-- File operations validate permissions against the associated form submission
-- Upload endpoint includes automatic virus scanning via virusScan.scanFile middleware
-- File size and type restrictions are enforced via fileUpload.upload middleware
+  // File operation endpoints
+  files: 'https://api.example.com/files',
+  uploadFile: 'https://api.example.com/files/upload',
+  getFile: 'https://api.example.com/files/:fileId',
+  deleteFile: 'https://api.example.com/files/:fileId',
 
-Error Responses:
+  // Component-specific endpoints
+  bcgeoaddress: 'https://api.example.com/geocoder/address',
+};
+```
+
+Although this allows complete customization, the most likely overrides will be for `themeCss` and `iconsCss` allowing overrides to the look and feel to better match your hosting application.
+
+#### Endpoint Categories
+
+**Asset Endpoints** (for loading CSS/JS resources):
+
+- `mainCss` - Complete CHEFS CSS bundle (Bootstrap, Vuetify, Form.io, custom styles)
+- `formioJs` - Form.io JavaScript library
+- `componentsJs` - CHEFS custom components bundle
+- `themeCss` - CHEFS theme CSS with CSS variables
+- `iconsCss` - Font Awesome CSS for Form.io icons
+- `formioJsFallback` - CDN fallback for Form.io JS
+- `iconsCssFallback` - CDN fallback for Font Awesome CSS
+
+**API Endpoints** (for form operations):
+
+- `schema` - Fetch form schema and metadata
+- `submit` - Submit form data
+- `readSubmission` - Load existing submission data
+
+**File Operation Endpoints** (for SimpleFile component):
+
+- `files` - Base URL for file operations
+- `uploadFile` - Upload new files
+- `getFile` - Download files by ID
+- `deleteFile` - Delete files by ID
+
+**Component-Specific Endpoints**:
+
+- `bcgeoaddress` - BC Geocoder address search API
+
+#### Backend Route Details
+
+**Form Operations:**
+
+- `GET /webcomponents/v1/form-viewer/:formId/schema` → Returns `{ form, schema }` for published forms
+- `POST /webcomponents/v1/form-viewer/:formId/submit` → Creates new submission
+- `GET /webcomponents/v1/form-viewer/:formId/submission/:submissionId` → Loads existing submission
+
+**Asset Serving:**
+
+- `GET /webcomponents/v1/assets/chefs-index.css` → Complete CHEFS CSS bundle
+- `GET /webcomponents/v1/assets/chefs-theme.css` → CHEFS theme CSS
+- `GET /webcomponents/v1/assets/formio.js` → Form.io JavaScript
+- `GET /webcomponents/v1/assets/font-awesome/css/font-awesome.min.css` → Font Awesome CSS
+- `GET /webcomponents/v1/assets/font-awesome/fonts/:file` → Font Awesome font files
+
+**File Operations:**
+
+- `POST /webcomponents/v1/files?formId=:formId` → Upload files (with virus scanning)
+- `GET /webcomponents/v1/files/:fileId` → Download files
+- `DELETE /webcomponents/v1/files/:fileId` → Delete files
+
+**Component APIs:**
+
+- `GET /webcomponents/v1/bcgeoaddress/advance/address` → BC Geocoder address search
+
+#### Security & Authentication
+
+All endpoints require proper authentication:
+
+- **Bearer Token**: Preferred method using `auth-token` attribute
+- **Basic Auth**: Fallback using `form-id:api-key` combination
+- **CORS**: All routes support cross-origin requests with proper headers
+- **File Security**: Upload endpoints include virus scanning and validation
+- **Permissions**: File operations validate against form submission permissions
+
+#### Error Handling
+
+Standard HTTP status codes:
 
 - `401` - Authentication required or invalid
 - `403` - Insufficient permissions
-- `404` - File or form not found
+- `404` - Resource not found
 - `409` - File failed virus scan
 - `413` - File too large
 - `415` - Unsupported file type
+
+_IMPORTANT_ Embedded forms are `Public` and file uploads will act accordingly, so API permissions only. No user specific permissions can be enforced. See [Authentication](README.md#authentication). And see [SimpleFile](README.md#simplefile) for an example leveraging events to secure file interactions.
 
 Security notes
 
@@ -252,6 +407,40 @@ When using the simplified embed script, you can provide advanced configuration v
 <script src="/app/embed/chefs-form-viewer-embed.min.js?form-id=YOUR_FORM_ID&api-key=YOUR_API_KEY"></script>
 ```
 
+### Form Metadata Access
+
+The component provides three ways to access form metadata (name, description, etc.):
+
+#### Method 1: Element Properties (Available after formio:loadSchema)
+
+```javascript
+const element = document.querySelector('chefs-form-viewer');
+console.log(element.formName); // "Contact Form"
+console.log(element.formDescription); // "Submit your inquiry"
+console.log(element.formMetadata); // { name: "Contact Form", ... }
+```
+
+#### Method 2: Global Event (Dispatched on globalThis)
+
+```javascript
+globalThis.addEventListener('chefs-form-viewer:metadata-loaded', function (e) {
+  console.log(e.detail.formName); // "Contact Form"
+  console.log(e.detail.formDescription); // "Submit your inquiry"
+  console.log(e.detail.form); // Full form object
+});
+```
+
+#### Method 3: Global Callback (Set before script loads)
+
+```javascript
+globalThis.ChefsViewerConfig = {
+  onMetadataLoaded: function (metadata) {
+    console.log(metadata.formName); // "Contact Form"
+    console.log(metadata.formDescription); // "Submit your inquiry"
+  },
+};
+```
+
 ### Using Token and User in Form.io JavaScript
 
 The `token` and `user` objects you provide are made available in Form.io's evalContext, allowing you to use them in:
@@ -293,34 +482,91 @@ if (token.roles.includes('manager') && user.department === 'HR') {
 
 ### Authorization
 
-- Default: if requests are same-origin with the detected/overridden `base-url`, the component sends `Authorization: Basic base64(formId:apiKey)`.
-- Hook: set `el.onBuildAuthHeader = (url) => ({ Authorization: '...' })` to supply custom headers.
+The component supports two authentication methods with automatic token refresh capabilities:
 
-### Endpoints (override if needed)
+#### Authentication Methods
 
-The component computes defaults from `base-url` (or autodetected base). You can override via `el.endpoints = { ... }` for any of:
+**1. Bearer Token (Preferred)**
 
-- `mainCss`, `formioJs`, `componentsJs`, `themeCss`, `iconsCss`
-- `schema`, `submit`, `readSubmission`
+- Set via `auth-token` attribute or `authToken` property
+- Short-lived JWT token obtained from CHEFS backend
+- Automatically refreshes 60 seconds before expiry
+- More secure as tokens expire and are refreshed
 
-Example:
+**Note:** To get an `auth-token`, use your `form-id` and `api-key` to call the token endpoint as shown in the [Requirements](#requirements-must-have) section.
 
-```js
-el.endpoints = {
-  mainCss: 'https://mycdn.com/custom-chefs-styles.css',
-  formioJs: 'https://mycdn.com/formio.js',
-  iconsCss:
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
-  themeCss: 'https://example.com/theme.css',
+**2. Basic Authentication (Fallback)**
+
+- Set via `api-key` attribute or `apiKey` property
+- Uses `form-id:api-key` for Basic auth header
+- Static credentials that don't expire
+- Less secure as credentials are long-lived
+
+#### Authentication Priority
+
+The component automatically chooses the best available method:
+
+1. **Bearer Token** - If `auth-token` is provided, uses `Authorization: Bearer <token>`
+2. **Basic Auth** - If only `api-key` is provided, uses `Authorization: Basic <base64(formId:apiKey)>`
+3. **Custom Hook** - If `onBuildAuthHeader` is set, uses custom header function
+4. **No Auth** - If neither is provided, requests are sent without authentication
+
+#### Automatic Token Refresh
+
+When using Bearer tokens, the component automatically:
+
+- **Parses JWT expiry** from the token payload
+- **Schedules refresh** 60 seconds before expiry (minimum 10 seconds)
+- **Refreshes token** by calling `/gateway/v1/auth/refresh` endpoint
+- **Updates all requests** with the new token without re-registering plugins
+- **Emits events** when tokens are refreshed (`formio:authTokenRefreshed`)
+
+#### Custom Authentication
+
+For advanced scenarios, you can provide a custom authentication function:
+
+```javascript
+const viewer = document.querySelector('chefs-form-viewer');
+viewer.onBuildAuthHeader = (url) => {
+  // Custom logic to determine auth headers
+  if (url.includes('/api/')) {
+    return { Authorization: 'Bearer custom-token' };
+  }
+  return {};
 };
 ```
 
+#### Authentication Events
+
+- `formio:authTokenRefreshed` - Fired when token is successfully refreshed
+  - Detail: `{ authToken: 'new-token', oldToken: 'previous-token' }`
+- `formio:error` - Fired when token refresh fails
+
+#### Security Notes
+
+- **Token Storage**: Tokens are stored in memory only, not persisted
+- **Automatic Cleanup**: Refresh timers are cleared when component is destroyed
+- **Same-Origin Only**: Authentication only applies to requests to the component's base URL
+- **Dynamic Headers**: Auth headers are resolved fresh for each request, ensuring current tokens are used
+
 ### SimpleFile
 
-The following shows how an embedding application can leverage events to secure user interaction with the SimpleFile (File Upload) component. Remember, the `webcomponent` uses API access permission not User assigned permissions. Using events allows the embedding application to perform their own security checks before upload, download and delete of files.
+The SimpleFile component provides secure file upload, download, and delete operations with event-based security controls.
+
+**Available Events:**
+
+- `formio:beforeFileUpload` - Fired before file upload with `{ formData, config, action }`
+- `formio:beforeFileDownload` - Fired before file download with `{ fileId, config, action }`
+- `formio:beforeFileDelete` - Fired before file deletion with `{ fileInfo, fileId, action }`
+
+**Authentication:**
+The SimpleFile component automatically uses the component's authentication via the `chefsToken()` function, which returns the current auth header.
+
+**Security Example:**
 
 ```js
 const viewer = document.querySelector('chefs-form-viewer');
+
 // Example 1: Security check before upload
 viewer.addEventListener('formio:beforeFileUpload', (event) => {
   const { formData, config } = event.detail;
@@ -383,8 +629,6 @@ Use the interactive code generator at [`/app/embed/chefs-form-viewer-generator.h
 #### **Demo Pages**
 
 - **Interactive Embed Demo**: [`/app/embed/chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) - One-line embedding with URL parameters
-- **Component Demo with auth-token**: [`/app/embed/chefs-form-viewer-auth-demo.html`](./chefs-form-viewer-auth-demo.html) - Demonstrates fetching an auth-token to load the component. Trivialized example as token fetching is done client-side not server-side.
-- **Traditional Component Demo**: [`/app/embed/chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html) - Direct component usage with attribute toggles and event logging. Uses `form-id` and `api-key` not `auth-token`.
 
 ## Required Parameters
 
@@ -444,15 +688,13 @@ All generated assets are automatically copied to the correct locations for servi
 
 These files are stored in source control and copied to `dist/embed/` during build:
 
-| File                                                                       | Purpose                                    | HTTP Path                                      |
-| -------------------------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------- |
-| [`chefs-form-viewer.js`](./chefs-form-viewer.js)                           | Main web component (development)           | `/app/embed/chefs-form-viewer.js`              |
-| [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development)      | `/app/embed/chefs-form-viewer-embed.js`        |
-| [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                        | `/app/embed/chefs-form-viewer-generator.html`  |
-| [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                     | `/app/embed/chefs-form-viewer-embed-demo.html` |
-| [`chefs-form-viewer-auth-demo.html`](./chefs-form-viewer-auth-demo.html)   | Demos fetching auth-token and loading form | `/app/embed/chefs-form-viewer-auth-demo.html`  |
-| [`chefs-form-viewer-demo.html`](./chefs-form-viewer-demo.html)             | Traditional component demo                 | `/app/embed/chefs-form-viewer-demo.html`       |
-| [`README.md`](./README.md)                                                 | This documentation                         | `/app/embed/README.md`                         |
+| File                                                                       | Purpose                               | HTTP Path                                      |
+| -------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------- |
+| [`chefs-form-viewer.js`](./chefs-form-viewer.js)                           | Main web component (development)      | `/app/embed/chefs-form-viewer.js`              |
+| [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development) | `/app/embed/chefs-form-viewer-embed.js`        |
+| [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                   | `/app/embed/chefs-form-viewer-generator.html`  |
+| [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                | `/app/embed/chefs-form-viewer-embed-demo.html` |
+| [`README.md`](./README.md)                                                 | This documentation                    | `/app/embed/README.md`                         |
 
 #### **Generated Files** (created in `dist/embed/` during build)
 

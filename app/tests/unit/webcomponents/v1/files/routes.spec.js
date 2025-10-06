@@ -71,31 +71,6 @@ describe('webcomponents/v1/files routes', () => {
     });
   });
 
-  describe('GET /:fileId/clone', () => {
-    it('routes to controller.clone', async () => {
-      const spy = jest.spyOn(controller, 'clone').mockImplementation((req, res) => {
-        res.status(200).json({ id: 'cloned-file-id', originalId: 'test-file-id' });
-      });
-
-      const res = await request(app).get('/webcomponents/v1/files/test-file-id/clone');
-
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({ id: 'cloned-file-id', originalId: 'test-file-id' });
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('handles clone errors', async () => {
-      jest.spyOn(controller, 'clone').mockImplementation((req, res) => {
-        res.status(400).json({ detail: 'Clone failed' });
-      });
-
-      const res = await request(app).get('/webcomponents/v1/files/invalid-file/clone');
-
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toEqual({ detail: 'Clone failed' });
-    });
-  });
-
   describe('DELETE /:fileId', () => {
     it('routes to controller.delete', async () => {
       const spy = jest.spyOn(controller, 'delete').mockImplementation((req, res) => {
@@ -117,33 +92,6 @@ describe('webcomponents/v1/files routes', () => {
 
       expect(res.statusCode).toBe(403);
       expect(res.body).toEqual({ detail: 'Delete not allowed' });
-    });
-  });
-
-  describe('DELETE /', () => {
-    it('routes to controller.deleteFiles for bulk delete', async () => {
-      const spy = jest.spyOn(controller, 'deleteFiles').mockImplementation((req, res) => {
-        res.status(200).json({ deleted: 3 });
-      });
-
-      const res = await request(app)
-        .delete('/webcomponents/v1/files')
-        .send({ fileIds: ['file1', 'file2', 'file3'] });
-
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({ deleted: 3 });
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('handles bulk delete errors', async () => {
-      jest.spyOn(controller, 'deleteFiles').mockImplementation((req, res) => {
-        res.status(400).json({ detail: 'Invalid file list' });
-      });
-
-      const res = await request(app).delete('/webcomponents/v1/files').send({ fileIds: [] });
-
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toEqual({ detail: 'Invalid file list' });
     });
   });
 

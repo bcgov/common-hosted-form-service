@@ -1,5 +1,5 @@
-const controller = require('../../../../src/webcomponents/v1/form-viewer/controller');
-const service = require('../../../../src/forms/form/service');
+const controller = require('../../../../../src/webcomponents/v1/form-viewer/controller');
+const service = require('../../../../../src/forms/form/service');
 const fs = require('node:fs');
 const { v4: uuidv4 } = require('uuid');
 

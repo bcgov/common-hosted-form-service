@@ -1078,10 +1078,8 @@
         // simplefile component routes
         files: `${base}/webcomponents/v1/files`,
         deleteFile: `${base}/webcomponents/v1/files/:fileId`,
-        deleteFiles: `${base}/webcomponents/v1/files/`,
         getFile: `${base}/webcomponents/v1/files/:fileId`,
         uploadFile: `${base}/webcomponents/v1/files?formId=${fid}`,
-        cloneFile: `${base}/webcomponents/v1/files/:fileId/clone`,
 
         // bcgeoaddress component routes
         bcgeoaddress: `${base}/webcomponents/v1/bcgeoaddress/advance/address`,

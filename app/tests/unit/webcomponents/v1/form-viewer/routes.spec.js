@@ -1,7 +1,7 @@
 const express = require('express');
 const request = require('supertest');
-const routes = require('../../../../src/webcomponents/v1/form-viewer/routes');
-const controller = require('../../../../src/webcomponents/v1/form-viewer/controller');
+const routes = require('../../../../../src/webcomponents/v1/form-viewer/routes');
+const controller = require('../../../../../src/webcomponents/v1/form-viewer/controller');
 
 describe('webcomponents/v1/form-viewer routes', () => {
   let app;

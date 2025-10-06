@@ -19,16 +19,8 @@ routes.get('/:fileId', apiAccess, gatewayTokenVerify, originAccess, currentFileR
   await controller.read(req, res, next);
 });
 
-routes.get('/:fileId/clone', apiAccess, gatewayTokenVerify, originAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
-  await controller.clone(req, res, next);
-});
-
 routes.delete('/:fileId', apiAccess, gatewayTokenVerify, originAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
   await controller.delete(req, res, next);
-});
-
-routes.delete('/', apiAccess, gatewayTokenVerify, originAccess, hasFileDelete, async (req, res, next) => {
-  await controller.deleteFiles(req, res, next);
 });
 
 routes.post('/', apiAccess, gatewayTokenVerify, originAccess, hasFileCreate, fileUpload.upload, virusScan.scanFile, async (req, res, next) => {
