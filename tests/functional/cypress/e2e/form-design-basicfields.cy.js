@@ -129,6 +129,7 @@ describe('Form Designer', () => {
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
+    cy.wait(1000);
     //Phone Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
