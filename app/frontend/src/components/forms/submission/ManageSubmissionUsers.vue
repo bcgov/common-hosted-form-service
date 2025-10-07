@@ -67,7 +67,8 @@ watch(
     if (newValue) {
       getSubmissionUsers();
     }
-  }
+  },
+  { immediate: true }
 );
 
 function onChangeSelectedIdp(newIdp, oldIdp) {
