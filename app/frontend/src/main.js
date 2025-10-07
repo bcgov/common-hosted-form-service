@@ -201,24 +201,22 @@ function loadKeycloak(config) {
 
   const options = {
     ...defaultParams,
-    ...{
-      init: {
-        pkceMethod: 'S256',
-        checkLoginIframe: false,
-        onLoad: 'check-sso',
-      },
-      config: {
-        clientId: config.oidc.clientId,
-        realm: config.oidc.realm,
-        url: config.oidc.serverUrl,
-      },
-      onReady: () => {
-        initializeApp(true, config.basePath);
-      },
-      onInitError: (error) => {
-        console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
-        console.error(error); // eslint-disable-line no-console
-      },
+    init: {
+      pkceMethod: 'S256',
+      checkLoginIframe: false,
+      onLoad: 'check-sso',
+    },
+    config: {
+      clientId: config.oidc.clientId,
+      realm: config.oidc.realm,
+      url: config.oidc.serverUrl,
+    },
+    onReady: () => {
+      initializeApp(true, config.basePath);
+    },
+    onInitError: (error) => {
+      console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
     },
   };
 
