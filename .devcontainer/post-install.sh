@@ -104,6 +104,7 @@ echo "⏳ Waiting for PostgreSQL to be ready..."
 max_attempts=30
 attempt=1
 while [ $attempt -le $max_attempts ]; do
+  # Check if PostgreSQL is accepting connections by testing the port
   if docker compose -f ${CHEFS_LOCAL_DIR}/docker-compose.yml exec -T postgres pg_isready -U app -d chefs > /dev/null 2>&1; then
     echo "✅ PostgreSQL is ready!"
     break
@@ -115,6 +116,10 @@ done
 
 if [ $attempt -gt $max_attempts ]; then
   echo "❌ PostgreSQL failed to start within expected time"
+  echo "📋 PostgreSQL container status:"
+  docker compose -f ${CHEFS_LOCAL_DIR}/docker-compose.yml ps postgres
+  echo "📋 PostgreSQL logs:"
+  docker compose -f ${CHEFS_LOCAL_DIR}/docker-compose.yml logs postgres
   exit 1
 fi
 
