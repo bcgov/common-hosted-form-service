@@ -220,17 +220,21 @@ function shouldAddPatchForRemovalOrMove() {
 }
 
 function validateFormComponents(modified) {
-  modified?.components?.forEach((comp) => {
-    if (comp.key === 'form') {
-      const notificationStore = useNotificationStore();
-      const msg = t('trans.formDesigner.fieldnameError', { label: comp.label });
-      notificationStore.addNotification({
-        text: msg,
-        consoleError: msg,
-      });
-      canSave.value = false;
+  if (modified?.components) {
+    for (const comp of modified.components) {
+      if (comp.key === 'form') {
+        const notificationStore = useNotificationStore();
+        const msg = t('trans.formDesigner.fieldnameError', {
+          label: comp.label,
+        });
+        notificationStore.addNotification({
+          text: msg,
+          consoleError: msg,
+        });
+        canSave.value = false;
+      }
     }
-  });
+  }
 }
 
 function addPatchToHistory() {

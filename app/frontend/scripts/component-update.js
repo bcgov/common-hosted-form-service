@@ -101,11 +101,11 @@ function deployComponents() {
         fs.mkdirSync(cssDir, { recursive: true });
       }
 
-      cssFiles.forEach((file) => {
+      for (const file of cssFiles) {
         const sourcePath = path.join(`${COMPONENTS_DIR}/dist`, file);
         const targetPath = path.join(cssDir, file);
         copyFileSync(sourcePath, targetPath);
-      });
+      }
     }
   }
   console.log(`${TITLE} has been redeployed`); // eslint-disable-line no-console
