@@ -3,7 +3,8 @@
     "database": "chefs",
     "host": "localhost",
     "port": "5432",
-    "username": "app"
+    "username": "app",
+    "password": "admin"
   },
   "files": {
     "uploads": {

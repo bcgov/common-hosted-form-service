@@ -477,6 +477,19 @@ const hasSubmissionPermissions = (permissions) => {
  */
 const checkCreatePermission = async (req, res, next) => {
   try {
+    const idpCode = req.currentUser?.idp?.toLowerCase();
+
+    // If idp is IDIR, allow without group check
+    if (idpCode === 'idir') {
+      return next();
+    }
+
+    // If tenantId does not exist, block
+    if (!req.currentUser?.tenantId) {
+      return res.status(400).json({ error: 'Missing tenantId for user.' });
+    }
+
+    // If tenantId exists, check for form_admin role in groups
     const groupData = await tenantService.getUserTenantGroupsAndRoles(req);
     if (!groupData.groups || !Array.isArray(groupData.groups)) {
       return res.status(403).json({ error: 'No groups found for user.' });
@@ -485,6 +498,7 @@ const checkCreatePermission = async (req, res, next) => {
     if (!isAdmin) {
       return res.status(403).json({ error: 'User does not have form_admin role.' });
     }
+
     next();
   } catch (error) {
     next(error);

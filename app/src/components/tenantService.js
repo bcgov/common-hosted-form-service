@@ -6,6 +6,7 @@ const errorToProblem = require('./errorToProblem');
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
+const { Role } = require('../forms/common/models'); // Import Role model directly
 
 class TenantService {
   async getCurrentUserTenants(req) {
@@ -67,4 +68,24 @@ class TenantService {
   }
 }
 
-module.exports = new TenantService();
+/**
+ * Get user roles and permissions for a tenant-aware user.
+ * @param {object} userInfo
+ * @returns {Promise<{roles: string[], permissions: string[]}>}
+ */
+async function getUserRolesAndPermissions(userInfo) {
+  // Fetch all roles with permissions directly from the DB
+  const allRoles = await Role.query().withGraphFetched('permissions');
+  const groups = await module.exports.getUserTenantGroupsAndRoles({ currentUser: userInfo });
+  const userRoles = Array.isArray(groups) ? groups.flatMap((group) => group.roles) : [];
+  const userRolesSet = new Set(userRoles);
+  const userPermissions = allRoles.filter((role) => userRolesSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+  return {
+    roles: userRoles,
+    permissions: [...new Set(userPermissions)],
+  };
+}
+
+module.exports = Object.assign(new TenantService(), {
+  getUserRolesAndPermissions,
+});

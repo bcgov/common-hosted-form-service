@@ -3,7 +3,6 @@ const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadat
 const { queryUtils } = require('../common/utils');
 
 const idpService = require('../../components/idpService');
-const rbacService = require('../rbac/service');
 const tenantService = require('../../components/tenantService');
 
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
@@ -101,30 +100,23 @@ const service = {
       // ignore any passed in accessLevel params, only return public
       return service.filterForms(userInfo, items, ['public']);
     } else if (userInfo && userInfo.tenantId) {
-      // If tenantId is present, fetch forms and update roles/permissions from tenantService
       items = await UserFormAccess.query()
         .modify('filterUserId', userInfo.id)
         .modify('filterFormId', params.formId)
         .modify('filterActive', params.active)
         .modify('filterTenantId', userInfo.tenantId);
 
-      // Fetch all RBAC roles with permissions
-      const allRoles = await rbacService.listRoles();
-
       // For each form, fetch roles from tenantService and map permissions
       for (const item of items) {
-        const groups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo });
-        const userRoles = Array.isArray(groups) ? groups.flatMap((group) => group.roles) : [];
-        item.roles = userRoles;
-        const userRolesSet = new Set(userRoles);
-        const userPermissions = allRoles.filter((role) => userRolesSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
-        item.permissions = [...new Set(userPermissions)];
+        const { roles, permissions } = await tenantService.getUserRolesAndPermissions(userInfo);
+        item.roles = roles;
+        item.permissions = permissions;
       }
 
       return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
+      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active).whereNull('tenantId');
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },
