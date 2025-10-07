@@ -223,7 +223,7 @@ watch(
       </span>
 
       <!-- Manage submission users -->
-      <span v-if="submissionId && draftEnabled && !publicForm" class="ml-2">
+      <span v-if="draftEnabled && !publicForm" class="ml-2">
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"
