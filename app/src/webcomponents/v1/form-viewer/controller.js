@@ -101,7 +101,7 @@ module.exports = {
   getCustomComponents: async (req, res, next) => {
     try {
       // Serve the built custom components bundle (chefs-form-viewer only)
-      const componentsPath = path.join(__dirname, '../../../../../components/dist/chefs-form-viewer-components.use.min.js');
+      const componentsPath = path.join(__dirname, '../../../../../components/dist/bcgov-formio-components.use.min.js');
       if (fs.existsSync(componentsPath)) {
         res.setHeader('Content-Type', 'application/javascript');
         res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
@@ -138,7 +138,7 @@ module.exports = {
   getBcGovTheme: async (_req, res, next) => {
     try {
       // Serve the BCGov theme CSS for chefs-form-viewer
-      const themePath = path.join(__dirname, '../../../../../components/dist/chefs-form-viewer-bcgov.css');
+      const themePath = path.join(__dirname, '../../../../../components/dist/bcgov-theme.css');
       if (fs.existsSync(themePath)) {
         res.setHeader('Content-Type', 'text/css');
         res.setHeader('Cache-Control', 'public, max-age=3600');

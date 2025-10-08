@@ -11,11 +11,11 @@ module.exports = {
   },
   entry: path.join(path.resolve(__dirname, 'lib'), 'index.js'),
   output: {
-    library: 'ChefsFormViewerComponents',
+    library: 'BcGovFormioComponents',
     libraryTarget: 'umd',
     libraryExport: 'default',
     path: path.resolve(__dirname, 'dist'),
-    filename: 'chefs-form-viewer-components.js',
+    filename: 'bcgov-formio-components.js',
   },
   mode: 'development',
   performance: { hints: false },
