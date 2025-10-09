@@ -45,6 +45,14 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
+        path: '/home',
+        name: 'LandingPage',
+        component: () => import('~/views/LandingPage.vue'),
+        meta: {
+          hasLogin: true,
+        },
+      },
+      {
         path: '/admin',
         component: () => import('~/views/Admin.vue'),
         children: [
