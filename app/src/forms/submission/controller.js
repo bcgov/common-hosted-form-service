@@ -156,7 +156,7 @@ module.exports = {
       const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
       const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
       const convertTo = req.query.convertTo || 'pdf';
-
+      console.log(submission);
       const templateBody = {
         data: {
           ...submission.submission.submission.data,
@@ -204,14 +204,14 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
+      console.log(JSON.stringify(submission));
       const templateBody = {
         ...req.body,
         data: {
           ...submission.submission.submission.data,
           chefs: {
-            confirmationId: submission.submission.confirmationId,
             formVersion: submission.version.version,
-            submissionId: submission.submission.id,
+            ...submission.submission,
           },
         },
       };
