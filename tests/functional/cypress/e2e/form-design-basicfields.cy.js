@@ -129,6 +129,7 @@ describe('Form Designer', () => {
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
+    cy.wait(1000);
     //Phone Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
@@ -137,10 +138,6 @@ describe('Form Designer', () => {
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
-        //cy.get('p').contains('Multi-line Text Component');
-        cy.get('input[name="data[label]"]').clear();
-        cy.get('input[name="data[label]"]').clear();
-        cy.get('input[name="data[label]"]').type('Phone Number');
         cy.get('.btn-success').click();
     });
     //Email
