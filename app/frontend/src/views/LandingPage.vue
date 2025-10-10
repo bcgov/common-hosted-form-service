@@ -139,44 +139,71 @@ const testimonials = [
     </v-container>
 
     <!-- Examples Section -->
-    <v-container class="examples-section py-16">
-      <v-row>
-        <v-col cols="12" md="6" class="text-section">
-          <h2 class="examples-title mb-8" :lang="locale">
-            Not sure where to start? Below are examples of forms created by our
-            users.
-          </h2>
-        </v-col>
-        <v-col cols="12" md="6" class="illustration-section">
-          <div class="person-laptop-wrapper">
-            <div class="organic-shape-beige"></div>
-            <img
-              src="/images/person-laptop.png"
-              alt="Person with laptop"
-              class="person-laptop-img"
-            />
-          </div>
-        </v-col>
-      </v-row>
+    <div class="examples-section-wrapper">
+      <v-container class="examples-section py-16">
+        <v-row>
+          <v-col cols="12" md="6" class="text-section">
+            <h2 class="examples-title mb-8" :lang="locale">
+              Not sure where to start? Below are examples of forms created by
+              our users.
+            </h2>
+          </v-col>
+          <v-col cols="12" md="6" class="illustration-section">
+            <div class="person-laptop-wrapper">
+              <div class="organic-shape-beige"></div>
+              <img
+                src="/images/person-laptop.png"
+                alt="Person with laptop"
+                class="person-laptop-img"
+              />
+            </div>
+          </v-col>
+        </v-row>
 
-      <v-row class="mt-8">
-        <v-col
-          v-for="(example, index) in formExamples"
-          :key="index"
-          cols="12"
-          md="4"
-        >
-          <v-card class="example-card" elevation="2">
-            <v-img
-              :src="example.image"
-              :alt="example.title"
-              height="300"
-              cover
-            ></v-img>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+        <v-row class="mt-8">
+          <v-col
+            v-for="(example, index) in formExamples"
+            :key="index"
+            cols="12"
+            md="4"
+          >
+            <v-card class="example-card" elevation="2">
+              <v-img
+                v-if="example.image"
+                :src="example.image"
+                :alt="example.title"
+                height="300"
+                cover
+              >
+                <template #error>
+                  <div
+                    class="d-flex align-center justify-center fill-height bg-grey-lighten-3"
+                  >
+                    <v-icon size="64" color="grey-darken-1"
+                      >mdi-file-document-outline</v-icon
+                    >
+                  </div>
+                </template>
+              </v-img>
+              <div
+                v-else
+                class="d-flex align-center justify-center bg-grey-lighten-3"
+                style="height: 300px"
+              >
+                <v-icon size="64" color="grey-darken-1"
+                  >mdi-file-document-outline</v-icon
+                >
+              </div>
+              <v-card-text class="text-center">
+                <p class="text-subtitle-2 font-weight-medium">
+                  {{ example.title }}
+                </p>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
 
     <!-- Testimonials Section -->
     <v-container class="testimonials-section py-16">
@@ -226,7 +253,7 @@ const testimonials = [
               <h3 class="text-body-1 font-weight-bold mb-2">
                 {{ testimonial.title }}
               </h3>
-              <p class="text-caption text-medium-emphasis">
+              <p class="text-caption text-medium-emphasis mb-3">
                 {{ testimonial.date }}
               </p>
               <v-img
@@ -235,7 +262,15 @@ const testimonials = [
                 class="my-3"
                 height="120"
                 cover
-              ></v-img>
+              >
+                <template #error>
+                  <div
+                    class="d-flex align-center justify-center fill-height bg-grey-lighten-4"
+                  >
+                    <v-icon size="32" color="grey">mdi-image-outline</v-icon>
+                  </div>
+                </template>
+              </v-img>
               <p class="text-body-2 mt-3">
                 {{ testimonial.content }}
               </p>
@@ -244,6 +279,94 @@ const testimonials = [
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- Final CTA Section -->
+    <div class="final-cta-wrapper">
+      <v-container class="final-cta-section py-16">
+        <v-row justify="center">
+          <v-col cols="12" md="8" class="text-center">
+            <h2 class="final-cta-title mb-4" :lang="locale">
+              Get Started Using CHEFS
+            </h2>
+            <p class="final-cta-description mb-6" :lang="locale">
+              Create online forms to collect information from your clients and
+              improve your workflows.
+            </p>
+            <v-btn
+              color="primary"
+              size="large"
+              :to="{ name: 'Login' }"
+              class="login-btn"
+            >
+              Login to Get Started
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
+
+    <!-- Footer Section -->
+    <v-footer class="footer-section">
+      <v-container>
+        <v-row class="mb-8">
+          <v-col cols="12">
+            <p class="footer-acknowledgment" :lang="locale">
+              The B.C. Public Service acknowledges the territories of First
+              Nations around B.C. and is grateful to carry out our work on these
+              lands. We acknowledge the rights, interests, priorities, and
+              concerns of all Indigenous Peoples - First Nations, Métis, and
+              Inuit - respecting and acknowledging their distinct cultures,
+              histories, rights, laws, and governments.
+            </p>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12" md="6">
+            <div class="footer-logo-section">
+              <img
+                src="/images/bc-logo.png"
+                alt="British Columbia"
+                class="footer-logo mb-4"
+              />
+              <p class="footer-text" :lang="locale">
+                We can help in over 220 languages and through other accessible
+                options.
+                <a href="tel:" class="footer-link">Call</a>,
+                <a href="mailto:" class="footer-link">email</a> or
+                <a href="#" class="footer-link">text us</a>, or
+                <a href="#" class="footer-link">find a service centre</a>.
+              </p>
+            </div>
+          </v-col>
+
+          <v-col cols="12" md="3">
+            <ul class="footer-links">
+              <li><a href="#" class="footer-link">Home</a></li>
+              <li><a href="#" class="footer-link">About gov.bc.ca</a></li>
+              <li><a href="#" class="footer-link">Disclaimer</a></li>
+              <li><a href="#" class="footer-link">Privacy</a></li>
+            </ul>
+          </v-col>
+
+          <v-col cols="12" md="3">
+            <ul class="footer-links">
+              <li><a href="#" class="footer-link">Accessibility</a></li>
+              <li><a href="#" class="footer-link">Copyright</a></li>
+              <li><a href="#" class="footer-link">Contact Us</a></li>
+            </ul>
+          </v-col>
+        </v-row>
+
+        <v-row class="mt-8">
+          <v-col cols="12">
+            <p class="footer-copyright" :lang="locale">
+              © 2024 Government of British Columbia.
+            </p>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-footer>
   </div>
 </template>
 
@@ -348,6 +471,11 @@ const testimonials = [
     }
   }
 
+  .examples-section-wrapper {
+    background-color: #f1f8fe;
+    width: 100%;
+  }
+
   .examples-section {
     max-width: 1200px;
     padding-top: 64px !important;
@@ -392,6 +520,16 @@ const testimonials = [
           z-index: 2;
           margin: 0 auto;
           display: block;
+        }
+
+        .placeholder-illustration {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
         }
       }
     }
@@ -438,6 +576,16 @@ const testimonials = [
         max-width: 300px;
         height: auto;
         z-index: 2;
+      }
+
+      .placeholder-illustration {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
       }
     }
 
