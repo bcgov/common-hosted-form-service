@@ -2,141 +2,91 @@
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 
-import { useAuthStore } from '~/store/auth';
+// import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
 const { locale } = useI18n({ useScope: 'global' });
 
-const authStore = useAuthStore();
+// const authStore = useAuthStore();
 const formStore = useFormStore();
 
-const { authenticated } = storeToRefs(authStore);
+// const { authenticated } = storeToRefs(authStore);
 const { isRTL } = storeToRefs(formStore);
 </script>
 
 <template>
   <div class="landing-layout" :class="{ 'dir-rtl': isRTL }">
     <!-- Hero Section -->
-    <v-container fluid class="hero-section">
-      <v-row justify="center" align="center" class="fill-height">
-        <v-col cols="12" md="8" lg="6" class="text-center">
-          <h1 class="text-h3 font-weight-bold mb-4" :lang="locale">
-            Welcome to CHEFS
-          </h1>
-          <p class="text-h5 mb-6" :lang="locale">
-            Create beautiful, accessible forms with ease
-          </p>
-          <v-btn
-            :to="{ name: 'FormCreate' }"
-            size="x-large"
-            color="primary"
-            class="mr-4"
-            data-test="create-form-btn"
-          >
-            <v-icon start>mdi-plus</v-icon>
-            {{ authenticated ? 'Create New Form' : 'Get Started' }}
-          </v-btn>
-          <v-btn
-            v-if="!authenticated"
-            :to="{ name: 'Login' }"
-            size="x-large"
-            variant="outlined"
-            color="primary"
-          >
-            <v-icon start>mdi-login</v-icon>
-            Sign In
-          </v-btn>
+    <v-container class="hero-section py-16">
+      <v-row>
+        <v-col cols="12" md="6">
+          <div class="hero-content">
+            <span class="online-builder-tag" :lang="locale">
+              ONLINE FORM BUILDER
+            </span>
+
+            <h1 class="hero-title mt-4 mb-6" :lang="locale">
+              Discover how CHEFS can help you
+            </h1>
+
+            <p class="hero-description mb-8" :lang="locale">
+              With multi-tenancy, you can manage roles, share forms across
+              projects, and collaborate securely in one place. Click Get Started
+              to experience the new Enterprise CHEFS.
+            </p>
+
+            <v-btn
+              color="primary"
+              size="large"
+              :to="{ name: 'FormCreate' }"
+              class="get-started-btn"
+              data-test="get-started-btn"
+            >
+              Get Started
+              <v-icon end>mdi-arrow-right</v-icon>
+            </v-btn>
+          </div>
         </v-col>
       </v-row>
     </v-container>
 
-    <!-- Features Section -->
-    <v-container class="py-16">
-      <v-row>
-        <v-col cols="12" class="text-center mb-12">
-          <h2 class="text-h4 font-weight-bold mb-4" :lang="locale">
-            Why Choose CHEFS?
-          </h2>
-          <p class="text-subtitle-1 text--secondary" :lang="locale">
-            Powerful form building tools designed for government and enterprise
-          </p>
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="12" md="4" class="text-center mb-8">
-          <v-card flat class="feature-card">
-            <v-card-text>
-              <v-icon size="64" color="primary" class="mb-4">mdi-drag</v-icon>
-              <h3 class="text-h5 mb-3" :lang="locale">Drag & Drop Builder</h3>
-              <p class="text-body-1" :lang="locale">
-                Build forms visually with our intuitive drag-and-drop interface.
-                No coding required.
-              </p>
-            </v-card-text>
-          </v-card>
+    <!-- Multi-tenancy Section -->
+    <v-container class="multi-tenancy-section py-16">
+      <v-row align="center">
+        <v-col cols="12" md="5">
+          <div class="illustration-wrapper">
+            <img
+              src="/images/person-at-computer.png"
+              alt="Person working at computer"
+              class="hero-illustration"
+            />
+          </div>
         </v-col>
 
-        <v-col cols="12" md="4" class="text-center mb-8">
-          <v-card flat class="feature-card">
-            <v-card-text>
-              <v-icon size="64" color="primary" class="mb-4"
-                >mdi-shield-check</v-icon
-              >
-              <h3 class="text-h5 mb-3" :lang="locale">Secure & Compliant</h3>
-              <p class="text-body-1" :lang="locale">
-                Built with security and accessibility in mind. Meets government
-                standards.
-              </p>
-            </v-card-text>
-          </v-card>
-        </v-col>
+        <v-col cols="12" md="7">
+          <div class="content-wrapper">
+            <h2 class="section-title mb-4" :lang="locale">
+              Transforming CHEFS from a single-player experience into a true
+              team sport with Multi-tenancy
+            </h2>
 
-        <v-col cols="12" md="4" class="text-center mb-8">
-          <v-card flat class="feature-card">
-            <v-card-text>
-              <v-icon size="64" color="primary" class="mb-4"
-                >mdi-chart-line</v-icon
-              >
-              <h3 class="text-h5 mb-3" :lang="locale">Analytics & Reports</h3>
-              <p class="text-body-1" :lang="locale">
-                Track submissions, generate reports, and gain insights from your
-                form data.
-              </p>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+            <p class="section-description mb-6" :lang="locale">
+              Need to create a tenant for your team or project? At CSTAR
+              <em>(Connected Services, Team Access, and Roles)</em> you can
+              check your existing Tenant memberships — or request a new Tenant
+              if you're starting from scratch.
+            </p>
 
-    <!-- CTA Section -->
-    <v-container fluid class="cta-section">
-      <v-row justify="center">
-        <v-col cols="12" md="8" class="text-center">
-          <h2 class="text-h4 font-weight-bold mb-4" :lang="locale">
-            Ready to Get Started?
-          </h2>
-          <p class="text-h5 mb-6" :lang="locale">
-            Join thousands of users who trust CHEFS for their form needs
-          </p>
-          <v-btn
-            :to="{ name: 'FormCreate' }"
-            size="x-large"
-            color="primary"
-            class="mr-4"
-          >
-            <v-icon start>mdi-rocket-launch</v-icon>
-            Start Building
-          </v-btn>
-          <v-btn
-            :to="{ name: 'About' }"
-            size="x-large"
-            variant="outlined"
-            color="primary"
-          >
-            <v-icon start>mdi-information</v-icon>
-            Learn More
-          </v-btn>
+            <v-btn
+              variant="outlined"
+              color="primary"
+              size="large"
+              class="cstar-btn"
+            >
+              Go To CSTAR
+              <v-icon end>mdi-arrow-right</v-icon>
+            </v-btn>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -145,24 +95,106 @@ const { isRTL } = storeToRefs(formStore);
 
 <style lang="scss" scoped>
 .landing-layout {
+  background-color: #ffffff;
+
   .hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    min-height: 70vh;
-  }
+    max-width: 1200px;
 
-  .feature-card {
-    height: 100%;
-    transition: transform 0.3s ease;
+    .hero-content {
+      .online-builder-tag {
+        display: inline-block;
+        color: #f8bb47;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
 
-    &:hover {
-      transform: translateY(-8px);
+      .hero-title {
+        font-size: 48px;
+        font-weight: 700;
+        color: #2d2d2d;
+        line-height: 1.2;
+      }
+
+      .hero-description {
+        font-size: 20px;
+        font-weight: 400;
+        color: #2d2d2d;
+        line-height: 1.7;
+        max-width: 800px;
+      }
+
+      .get-started-btn {
+        background-color: #003366;
+        color: white;
+        padding: 12px 32px;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+    }
+
+    .dotted-separator {
+      width: 100%;
+      height: 2px;
+      background-image: repeating-linear-gradient(
+        to right,
+        #f8bb47 0,
+        #f8bb47 10px,
+        transparent 10px,
+        transparent 20px
+      );
+      margin-top: 40px;
     }
   }
 
-  .cta-section {
-    background-color: #f5f5f5;
-    padding: 80px 0;
+  .multi-tenancy-section {
+    max-width: 1200px;
+
+    .illustration-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .hero-illustration {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+    .content-wrapper {
+      .section-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #2d2d2d;
+        line-height: 1.4;
+      }
+
+      .section-description {
+        font-size: 16px;
+        font-weight: 400;
+        color: #2d2d2d;
+        line-height: 1.6;
+
+        em {
+          font-style: italic;
+        }
+      }
+
+      .cstar-btn {
+        border: 2px solid #003366;
+        color: #003366;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+    }
   }
+}
+
+// RTL Support
+.dir-rtl {
+  direction: rtl;
 }
 </style>
