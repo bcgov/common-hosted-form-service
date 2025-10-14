@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 
@@ -12,6 +13,24 @@ const formStore = useFormStore();
 
 // const { authenticated } = storeToRefs(authStore);
 const { isRTL } = storeToRefs(formStore);
+
+// Determine CSTAR URL based on environment
+const cstarUrl = computed(() => {
+  const hostname = window.location.hostname;
+
+  // Check if localhost, dev, or pr environment
+  if (
+    hostname === 'localhost' ||
+    hostname.includes('dev') ||
+    hostname.includes('-pr-')
+  ) {
+    return 'https://tenant-management-system-pr-202-frontend.apps.silver.devops.gov.bc.ca/tenants';
+  }
+
+  // For test and prod environments
+  // TODO: Update prod URL when available
+  return 'https://tenant-management-system-test-frontend.apps.silver.devops.gov.bc.ca/tenants';
+});
 
 // Form examples data
 const formExamples = [
@@ -162,6 +181,9 @@ const testimonials = [
               color="primary"
               size="large"
               class="cstar-btn"
+              :href="cstarUrl"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Go To CSTAR
               <v-icon end>mdi-arrow-right</v-icon>
@@ -446,28 +468,30 @@ const testimonials = [
 
   .hero-section {
     max-width: 1200px;
-    padding-top: 40px !important;
-    padding-bottom: 20px !important;
+    padding-top: 60px !important;
+    padding-bottom: 40px !important;
 
     .hero-content {
+      max-width: 600px;
+
       .online-builder-tag {
         display: inline-block;
         color: #f8bb47;
-        font-size: 24px;
+        font-size: 20px;
         font-weight: 400;
         letter-spacing: 0.5px;
         text-transform: uppercase;
       }
 
       .hero-title {
-        font-size: 48px;
+        font-size: 44px;
         font-weight: 700;
         color: #2d2d2d;
-        line-height: 1.15;
+        line-height: 1.2;
       }
 
       .hero-description {
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 400;
         color: #2d2d2d;
         line-height: 1.5;
@@ -502,12 +526,12 @@ const testimonials = [
 
     .content-wrapper {
       padding-left: 24px;
+      max-width: 650px;
       .section-title {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: 600;
         color: #5a5a5a;
         line-height: 1.4;
-        max-width: 500px;
       }
 
       .section-description {
@@ -515,7 +539,6 @@ const testimonials = [
         font-weight: 400;
         color: #2d2d2d;
         line-height: 1.6;
-        max-width: 550px;
 
         em {
           font-style: italic;
@@ -540,15 +563,16 @@ const testimonials = [
 
   .examples-section {
     max-width: 1200px;
-    padding-top: 64px !important;
-    padding-bottom: 64px !important;
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
 
     .text-section {
       .examples-title {
-        font-size: 32px;
+        font-size: 36px;
         font-weight: 700;
         color: #1e5189;
         line-height: 1.3;
+        max-width: 480px;
       }
     }
 
@@ -561,13 +585,16 @@ const testimonials = [
       .person-laptop-wrapper {
         position: relative;
         width: 100%;
-        height: 400px;
+        height: 350px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         .organic-shape-beige {
           position: absolute;
-          width: 450px;
-          height: 450px;
-          background-color: #fef5e7;
+          width: 400px;
+          height: 400px;
+          background-color: #fef1d8;
           border-radius: 50% 40% 60% 40%;
           top: 50%;
           left: 50%;
@@ -577,7 +604,7 @@ const testimonials = [
 
         .person-laptop-img {
           position: relative;
-          max-width: 350px;
+          max-width: 300px;
           height: auto;
           z-index: 2;
           margin: 0 auto;
