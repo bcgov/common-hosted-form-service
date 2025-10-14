@@ -17,15 +17,39 @@ const { isRTL } = storeToRefs(formStore);
 const formExamples = [
   {
     title: 'Demographic Data Collection Survey',
-    image: '/images/examples/demographic-survey.png',
+    image: '/app/src/assets/images/examples/demographic-survey.png',
   },
   {
     title: 'Example | Calculations in Data Grid',
-    image: '/images/examples/calculations-grid.png',
+    image: '/app/src/assets/images/examples/calculations-grid.png',
   },
   {
     title: 'POST-COURSE SURVEY',
-    image: '/images/examples/post-course-survey.png',
+    image: '/app/src/assets/images/examples/post-course-survey.png',
+  },
+  {
+    title: 'CHEFS Architecture Forum Survey',
+    image: '/app/src/assets/images/examples/architecture-forum.png',
+  },
+  {
+    title: 'Example | Conditional Logic',
+    image: '/app/src/assets/images/examples/conditional-logic.png',
+  },
+  {
+    title: 'Example | Calculated Values',
+    image: '/app/src/assets/images/examples/calculated-values.png',
+  },
+  {
+    title: 'Team Lunch Order',
+    image: '/app/src/assets/images/examples/team-lunch-order.png',
+  },
+  {
+    title: 'Example | Navigation Buttons',
+    image: '/app/src/assets/images/examples/navigation-buttons.png',
+  },
+  {
+    title: 'CHEFS Success Stories',
+    image: '/app/src/assets/images/examples/success-stories.png',
   },
 ];
 
@@ -36,27 +60,36 @@ const testimonials = [
     label: 'Verified User',
     title: 'Great communication and collaboration',
     date: 'Reviewed in Victoria, BC, Canada on May 19, 2024',
-    screenshot: '/images/testimonials/screenshot-1.png',
+    screenshot: '/app/src/assets/images/testimonials/screenshot-1.png',
     content:
-      'The responsiveness and willingness to help with any issue I had was very much appreciated. The team was available to answer my questions.',
+      '"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!"',
+    reviewer: 'Leah Macdonald',
+    role: 'External User, CGI',
+    initials: 'LM',
   },
   {
     rating: 5,
     label: 'Verified User',
     title: 'Accessible yet powerful',
-    date: 'Reviewed in Victoria, BC, Canada on Jul 12, 2023',
-    screenshot: '/images/testimonials/screenshot-2.png',
+    date: 'Reviewed in Victoria, BC, Canada on Jun 24, 2023',
+    screenshot: '/app/src/assets/images/testimonials/screenshot-2.png',
     content:
-      'CHEFS makes it easy to create forms without technical knowledge, while still providing advanced features for power users.',
+      '"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people."',
+    reviewer: 'Karl Martinson',
+    role: 'Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food',
+    initials: 'KM',
   },
   {
     rating: 4.5,
     label: 'Verified User',
     title: 'Clear documentation and helpful support',
-    date: 'Reviewed in Victoria, BC, Canada on May 5, 2023',
-    screenshot: '/images/testimonials/screenshot-3.png',
+    date: 'Reviewed in Victoria, BC, Canada on May 6, 2025',
+    screenshot: '/app/src/assets/images/testimonials/screenshot-3.png',
     content:
-      'The documentation is comprehensive and the support team is always ready to help. Makes form building straightforward.',
+      '"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions."',
+    reviewer: 'Emma Armitage',
+    role: 'GIS Geospatial Analyst, Natural Resource Information and Digital Services',
+    initials: 'EA',
   },
 ];
 </script>
@@ -234,46 +267,78 @@ const testimonials = [
           md="4"
         >
           <v-card class="testimonial-card" elevation="2">
-            <v-card-title class="text-subtitle-2 font-weight-bold">
-              CHEFS User
-            </v-card-title>
-            <v-card-subtitle class="mb-2">
-              <v-rating
-                :model-value="testimonial.rating"
-                color="orange"
-                density="compact"
-                size="small"
-                readonly
-              ></v-rating>
-              <span class="text-caption text-orange">{{
-                testimonial.label
-              }}</span>
-            </v-card-subtitle>
-            <v-card-text>
-              <h3 class="text-body-1 font-weight-bold mb-2">
-                {{ testimonial.title }}
-              </h3>
-              <p class="text-caption text-medium-emphasis mb-3">
-                {{ testimonial.date }}
-              </p>
+            <v-card-text class="pa-6">
+              <h3 class="testimonial-card-title mb-3">CHEFS User</h3>
+              <div class="d-flex align-center mb-4">
+                <v-rating
+                  :model-value="testimonial.rating"
+                  color="orange"
+                  density="compact"
+                  size="small"
+                  readonly
+                  class="mr-2"
+                ></v-rating>
+                <span class="verified-label">{{ testimonial.label }}</span>
+              </div>
+
+              <h4 class="review-title mb-2">{{ testimonial.title }}</h4>
+              <p class="review-date mb-4">{{ testimonial.date }}</p>
+
               <v-img
                 v-if="testimonial.screenshot"
                 :src="testimonial.screenshot"
-                class="my-3"
-                height="120"
+                class="review-screenshot mb-4"
+                height="180"
                 cover
               >
                 <template #error>
-                  <div
-                    class="d-flex align-center justify-center fill-height bg-grey-lighten-4"
-                  >
-                    <v-icon size="32" color="grey">mdi-image-outline</v-icon>
-                  </div>
+                  <div class="review-screenshot-placeholder"></div>
                 </template>
               </v-img>
-              <p class="text-body-2 mt-3">
-                {{ testimonial.content }}
-              </p>
+              <div v-else class="review-screenshot-placeholder mb-4"></div>
+
+              <p class="review-content mb-4">{{ testimonial.content }}</p>
+
+              <div class="d-flex align-center mb-4">
+                <v-avatar size="48" color="grey-lighten-2" class="mr-3">
+                  <span class="text-body-2 font-weight-bold">{{
+                    testimonial.initials
+                  }}</span>
+                </v-avatar>
+                <div>
+                  <p class="reviewer-name mb-0">{{ testimonial.reviewer }}</p>
+                  <p class="reviewer-role text-caption mb-0">
+                    {{ testimonial.role }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex align-center">
+                <v-btn
+                  variant="outlined"
+                  size="small"
+                  class="helpful-btn mr-2"
+                  color="grey-darken-2"
+                >
+                  Helpful
+                </v-btn>
+                <v-btn
+                  variant="outlined"
+                  size="small"
+                  class="support-btn mr-2"
+                  color="grey-darken-2"
+                >
+                  Great Support
+                </v-btn>
+                <v-btn
+                  icon=""
+                  size="small"
+                  variant="text"
+                  color="grey-darken-2"
+                >
+                  <v-icon size="20">mdi-share-variant</v-icon>
+                </v-btn>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -305,10 +370,10 @@ const testimonials = [
       </v-container>
     </div>
 
-    <!-- Footer Section -->
-    <v-footer class="footer-section">
+    <!-- Footer Acknowledgment Section -->
+    <div class="footer-acknowledgment-wrapper">
       <v-container>
-        <v-row class="mb-8">
+        <v-row>
           <v-col cols="12">
             <p class="footer-acknowledgment" :lang="locale">
               The B.C. Public Service acknowledges the territories of First
@@ -320,7 +385,12 @@ const testimonials = [
             </p>
           </v-col>
         </v-row>
+      </v-container>
+    </div>
 
+    <!-- Footer Section -->
+    <v-footer class="footer-section">
+      <v-container class="footer-content">
         <v-row>
           <v-col cols="12" md="6">
             <div class="footer-logo-section">
@@ -376,8 +446,8 @@ const testimonials = [
 
   .hero-section {
     max-width: 1200px;
-    padding-top: 48px !important;
-    padding-bottom: 48px !important;
+    padding-top: 40px !important;
+    padding-bottom: 20px !important;
 
     .hero-content {
       .online-builder-tag {
@@ -393,15 +463,14 @@ const testimonials = [
         font-size: 48px;
         font-weight: 700;
         color: #2d2d2d;
-        line-height: 1.2;
+        line-height: 1.15;
       }
 
       .hero-description {
         font-size: 20px;
         font-weight: 400;
         color: #2d2d2d;
-        line-height: 1.7;
-        max-width: 800px;
+        line-height: 1.5;
       }
 
       .get-started-btn {
@@ -413,23 +482,12 @@ const testimonials = [
         letter-spacing: 0;
       }
     }
-
-    .dotted-separator {
-      width: 100%;
-      height: 2px;
-      background-image: repeating-linear-gradient(
-        to right,
-        #f8bb47 0,
-        #f8bb47 10px,
-        transparent 10px,
-        transparent 20px
-      );
-      margin-top: 40px;
-    }
   }
 
   .multi-tenancy-section {
     max-width: 1200px;
+    padding-top: 24px !important;
+    padding-bottom: 48px !important;
 
     .illustration-wrapper {
       display: flex;
@@ -443,11 +501,13 @@ const testimonials = [
     }
 
     .content-wrapper {
+      padding-left: 24px;
       .section-title {
         font-size: 28px;
         font-weight: 600;
-        color: #2d2d2d;
+        color: #5a5a5a;
         line-height: 1.4;
+        max-width: 500px;
       }
 
       .section-description {
@@ -455,6 +515,7 @@ const testimonials = [
         font-weight: 400;
         color: #2d2d2d;
         line-height: 1.6;
+        max-width: 550px;
 
         em {
           font-style: italic;
@@ -462,11 +523,12 @@ const testimonials = [
       }
 
       .cstar-btn {
-        border: 2px solid #003366;
-        color: #003366;
-        font-weight: 600;
+        border: 1px solid #5a5a5a;
+        color: #2d2d2d;
+        font-weight: 500;
         text-transform: none;
         letter-spacing: 0;
+        font-size: 14px;
       }
     }
   }
@@ -598,12 +660,175 @@ const testimonials = [
 
     .testimonial-card {
       height: 100%;
-      padding: 8px;
+      border-radius: 8px;
 
-      .text-orange {
-        color: #ff9800;
-        margin-left: 8px;
+      .testimonial-card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #003366;
       }
+
+      .verified-label {
+        font-size: 12px;
+        color: #ff9800;
+        font-weight: 500;
+      }
+
+      .review-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #2d2d2d;
+        line-height: 1.3;
+      }
+
+      .review-date {
+        font-size: 12px;
+        color: #666666;
+      }
+
+      .review-screenshot {
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+      }
+
+      .review-screenshot-placeholder {
+        height: 180px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+      }
+
+      .review-content {
+        font-size: 14px;
+        color: #2d2d2d;
+        line-height: 1.6;
+      }
+
+      .reviewer-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2d2d2d;
+      }
+
+      .reviewer-role {
+        font-size: 12px;
+        color: #666666;
+      }
+
+      .helpful-btn,
+      .support-btn {
+        text-transform: none;
+        font-size: 12px;
+        border-color: #d0d0d0;
+      }
+    }
+  }
+
+  .final-cta-wrapper {
+    background-color: #f1f8fe;
+    width: 100%;
+  }
+
+  .final-cta-section {
+    max-width: 1200px;
+
+    .final-cta-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #2d2d2d;
+      line-height: 1.3;
+    }
+
+    .final-cta-description {
+      font-size: 16px;
+      font-weight: 400;
+      color: #2d2d2d;
+      line-height: 1.6;
+    }
+
+    .login-btn {
+      background-color: #003366;
+      color: white;
+      padding: 12px 32px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+  }
+
+  .footer-acknowledgment-wrapper {
+    background-color: #252423;
+    border-bottom: 4px solid #fbd389;
+    border-top: 4px solid #fbd389;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    .footer-acknowledgment {
+      font-size: 14px;
+      line-height: 21px;
+      color: #ffffff;
+      padding: 32px 0;
+      margin: 0;
+    }
+  }
+
+  .footer-section {
+    background-color: #ffffff !important;
+    color: #2d2d2d;
+    padding: 0 !important;
+    border: none !important;
+
+    .footer-content {
+      padding-top: 32px;
+      padding-bottom: 16px;
+    }
+
+    .footer-logo-section {
+      .footer-logo {
+        max-width: 200px;
+        height: auto;
+
+        .footer-logo-text {
+          font-size: 18px;
+          font-weight: 700;
+          color: #2d2d2d;
+        }
+      }
+
+      .footer-text {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #2d2d2d;
+      }
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: 12px;
+      }
+    }
+
+    .footer-link {
+      color: #2d2d2d;
+      text-decoration: underline;
+      font-size: 14px;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    .footer-copyright {
+      font-size: 14px;
+      color: #2d2d2d;
+      margin: 32px 0 0 0;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
     }
   }
 }
