@@ -163,4 +163,37 @@ module.exports = {
       next(error);
     }
   },
+  getGroupsForCurrentTenant: async (req, res, next) => {
+    try {
+      const groups = await tenantService.getGroupsForCurrentTenant(req);
+      res.status(200).json(groups);
+    } catch (error) {
+      next(error);
+    }
+  },
+  assignGroupsToForm: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const { groupIds } = req.body;
+
+      if (!groupIds || !Array.isArray(groupIds)) {
+        return res.status(400).json({ error: 'groupIds must be an array' });
+      }
+
+      const result = await tenantService.assignGroupsToForm(req, formId, groupIds);
+      res.status(200).json({ success: result });
+    } catch (error) {
+      console.error('Error in assignGroupsToForm:', error);
+      next(error);
+    }
+  },
+  getFormGroups: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const groups = await tenantService.getFormGroups(req, formId);
+      res.status(200).json(groups);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
