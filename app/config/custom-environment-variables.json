@@ -93,5 +93,14 @@
         "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
       }
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": "WC_ASSETS_ROOTS"
+    }
+  },
+  "gateway": {
+    "jwtSecret": "GATEWAY_JWTSECRET",
+    "jwtLifetime": "GATEWAY_JWTLIFETIME"
   }
 }

@@ -85,20 +85,20 @@ app.component('BasePanel', BasePanel);
 app.component('BasePrintButton', BasePrintButton);
 app.component('BaseSecure', BaseSecure);
 
-(async () => {
-  // IE11 Detection (https://stackoverflow.com/a/21825207)
-  if (!!window.MSInputMethodContext && !!document.documentMode) {
-    document.write(`<div style="padding-top: 5em; text-align: center;">
+// IE11 Detection (https://stackoverflow.com/a/21825207)
+if (!!window.MSInputMethodContext && !!document.documentMode) {
+  document.write(`<div style="padding-top: 5em; text-align: center;">
       <h1>We're sorry but ${
         import.meta.env.VITE_TITLE
       } is not supported in Internet Explorer.</h1>
       <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
     </div>`);
-    NProgress.done();
-  } else {
+  NProgress.done();
+} else {
+  (async () => {
     await loadConfig();
-  }
-})();
+  })();
+}
 
 /**
  * @function initializeApp
@@ -136,6 +136,8 @@ async function loadIdentityProviders() {
     }
     return true;
   } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(`loadIdentityProviders:error ${err}`);
     idpStore.providers = undefined;
     return false;
   }
@@ -198,8 +200,13 @@ function loadKeycloak(config) {
     init: { onLoad: 'login-required' },
   };
 
-  const options = Object.assign({}, defaultParams, {
-    init: { pkceMethod: 'S256', checkLoginIframe: false, onLoad: 'check-sso' },
+  const options = {
+    ...defaultParams,
+    init: {
+      pkceMethod: 'S256',
+      checkLoginIframe: false,
+      onLoad: 'check-sso',
+    },
     config: {
       clientId: config.oidc.clientId,
       realm: config.oidc.realm,
@@ -212,7 +219,7 @@ function loadKeycloak(config) {
       console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
       console.error(error); // eslint-disable-line no-console
     },
-  });
+  };
 
   if (assertOptions(options).hasError)
     throw new Error(`Invalid options given: ${assertOptions(options).error}`);
