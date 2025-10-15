@@ -25,6 +25,34 @@ describe('chefs-form-viewer-embed.js', () => {
     expect(params.debug).toBe('true');
   });
 
+  it('should parse auto-reload-on-submit parameter correctly', () => {
+    const { parseQueryParams, parseBooleanParam } = embedUtils;
+
+    // Test with auto-reload enabled
+    const enabledUrl =
+      'https://example.com/app/embed/chefs-form-viewer-embed.js?form-id=123&auto-reload-on-submit=true';
+    const enabledParams = parseQueryParams(enabledUrl);
+    expect(enabledParams['auto-reload-on-submit']).toBe('true');
+    expect(parseBooleanParam(enabledParams['auto-reload-on-submit'])).toBe(
+      true
+    );
+
+    // Test with auto-reload disabled
+    const disabledUrl =
+      'https://example.com/app/embed/chefs-form-viewer-embed.js?form-id=123&auto-reload-on-submit=false';
+    const disabledParams = parseQueryParams(disabledUrl);
+    expect(disabledParams['auto-reload-on-submit']).toBe('false');
+    expect(parseBooleanParam(disabledParams['auto-reload-on-submit'])).toBe(
+      false
+    );
+
+    // Test without parameter (should use default)
+    const defaultUrl =
+      'https://example.com/app/embed/chefs-form-viewer-embed.js?form-id=123';
+    const defaultParams = parseQueryParams(defaultUrl);
+    expect(defaultParams['auto-reload-on-submit']).toBeUndefined();
+  });
+
   it('should handle boolean parameter conversion using actual parseBooleanParam', () => {
     const { parseBooleanParam } = embedUtils;
     expect(parseBooleanParam('true')).toBe(true);
@@ -47,6 +75,9 @@ describe('chefs-form-viewer-embed.js', () => {
     expect(paramToAttribute('isolateStyles')).toBe('isolate-styles');
     expect(paramToAttribute('form-id')).toBe('form-id');
     expect(paramToAttribute('language')).toBe('language');
+    expect(paramToAttribute('autoReloadOnSubmit')).toBe(
+      'auto-reload-on-submit'
+    );
   });
 
   it('should parse JSON parameters using actual parseJsonParam', () => {

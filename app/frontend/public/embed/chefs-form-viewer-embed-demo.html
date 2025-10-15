@@ -150,12 +150,45 @@
       <code>submission-id</code>, <code>base-url</code>, <code>theme-css</code>,
       <code>isolate-styles</code>, <code>no-icons</code>, <code>token</code>,
       <code>user</code>, etc. <br /><br />
+      <strong>Auto-Reload Behavior:</strong><br />
+      After successful submission, the form automatically reloads as read-only
+      showing the submitted data. This is the default behavior and can be
+      disabled with <code>auto-reload-on-submit="false"</code>.<br />
+      <strong>Note:</strong> Auto-reload only happens for final submissions, not
+      draft saves.<br />
+      <strong>Events:</strong>
+      <code>formio:beforeAutoReload</code> (cancelable),
+      <code>formio:autoReload</code>, <code>formio:autoReloadComplete</code
+      ><br /><br />
+      <strong>Event Logging:</strong><br />
+      This demo logs all form events to the browser console with emojis for easy
+      identification:
+      <ul style="margin: 0.5rem 0; padding-left: 1.5rem">
+        <li>
+          <strong>Lifecycle:</strong> <code>formio:beforeLoad</code>,
+          <code>formio:beforeLoadSchema</code>, <code>formio:loadSchema</code>,
+          <code>formio:beforeInit</code>, <code>formio:ready</code>
+        </li>
+        <li>
+          <strong>Submission:</strong> <code>formio:beforeSubmit</code>,
+          <code>formio:submit</code>, <code>formio:submitDone</code>
+        </li>
+        <li>
+          <strong>Auto-reload:</strong> <code>formio:beforeAutoReload</code>,
+          <code>formio:autoReload</code>, <code>formio:autoReloadComplete</code>
+        </li>
+        <li>
+          <strong>Navigation:</strong> <code>formio:beforeNext</code>,
+          <code>formio:beforePrev</code>
+        </li>
+        <li><strong>Errors:</strong> <code>formio:error</code></li>
+      </ul>
       <strong>Form Metadata Access:</strong><br />
       This demo shows how to access form metadata (name, description, etc.)
       using the global event:
       <code>chefs-form-viewer:metadata-loaded</code>
       <br />
-      Check browser console for metadata examples!
+      Check browser console for all event examples!
     </div>
 
     <script>
@@ -257,31 +290,99 @@
           after: function (element, formioInstance) {
             updateStatus('Form loaded successfully!', 'success');
 
-            // Listen for successful submission
+            // Comprehensive event logging for all form events
+            console.log(
+              'Setting up comprehensive event listeners for chefs-form-viewer'
+            );
+
+            // Form lifecycle events
+            element.addEventListener('formio:beforeLoad', function (e) {
+              console.log('🔄 formio:beforeLoad', e.detail);
+              updateStatus('Preparing to load form...', 'loading');
+            });
+
+            element.addEventListener('formio:beforeLoadSchema', function (e) {
+              console.log('📋 formio:beforeLoadSchema', e.detail);
+              updateStatus('Loading form schema...', 'loading');
+            });
+
+            element.addEventListener('formio:loadSchema', function (e) {
+              console.log('✅ formio:loadSchema', e.detail);
+              updateStatus('Schema loaded, initializing form...', 'loading');
+            });
+
+            element.addEventListener('formio:beforeInit', function (e) {
+              console.log('⚙️ formio:beforeInit', e.detail);
+              updateStatus('Initializing Form.io instance...', 'loading');
+            });
+
+            element.addEventListener('formio:ready', function (e) {
+              console.log('🎉 formio:ready', e.detail);
+              updateStatus('Form loaded successfully!', 'success');
+            });
+
+            // Submission events
+            element.addEventListener('formio:beforeSubmit', function (e) {
+              console.log('📤 formio:beforeSubmit', e.detail);
+              updateStatus('Preparing to submit form...', 'loading');
+            });
+
+            element.addEventListener('formio:submit', function (e) {
+              console.log('🚀 formio:submit', e.detail);
+              updateStatus('Submitting form...', 'loading');
+            });
+
             element.addEventListener('formio:submitDone', function (e) {
-              console.log('Form submitted:', e.detail);
+              console.log('✅ formio:submitDone', e.detail);
 
               // Extract submission ID from response
               const submission = e.detail.submission;
               if (submission && submission.id) {
                 currentSubmissionId = submission.id;
                 updateStatus(
-                  `Form submitted successfully! Submission ID: ${submission.id}`,
+                  `Form submitted successfully! Submission ID: ${submission.id}. Auto-reloading as read-only...`,
                   'success'
                 );
-
-                // Wait a moment then show read-only version
-                setTimeout(() => {
-                  showReadOnlySubmission();
-                }, 2000);
+                // Component will automatically reload as read-only (auto-reload-on-submit is enabled by default)
               } else {
                 updateStatus('Form submitted successfully!', 'success');
               }
             });
 
-            // Listen for form errors
+            // Auto-reload events (only for submissions, not drafts)
+            element.addEventListener('formio:beforeAutoReload', function (e) {
+              console.log('🔄 formio:beforeAutoReload', e.detail);
+              updateStatus(
+                'Preparing to reload form as read-only...',
+                'loading'
+              );
+            });
+
+            element.addEventListener('formio:autoReload', function (e) {
+              console.log('🔄 formio:autoReload', e.detail);
+              updateStatus('Reloading form as read-only...', 'loading');
+            });
+
+            element.addEventListener('formio:autoReloadComplete', function (e) {
+              console.log('✅ formio:autoReloadComplete', e.detail);
+              updateStatus(
+                'Form reloaded as read-only with submission data!',
+                'success'
+              );
+            });
+
+            // Navigation events
+            element.addEventListener('formio:beforeNext', function (e) {
+              console.log('➡️ formio:beforeNext', e.detail);
+            });
+
+            element.addEventListener('formio:beforePrev', function (e) {
+              console.log('⬅️ formio:beforePrev', e.detail);
+            });
+
+            // Error events
             element.addEventListener('formio:error', function (e) {
-              console.error('Form error:', e.detail);
+              console.error('❌ formio:error', e.detail);
               updateStatus(`Form error: ${e.detail.error}`, 'error');
             });
           },
@@ -302,23 +403,6 @@
             }
           }
         );
-      }
-
-      // Show the submitted form as read-only
-      function showReadOnlySubmission() {
-        if (!currentSubmissionId) {
-          updateStatus('No submission ID available', 'error');
-          return;
-        }
-
-        // Create new params with submission ID for read-only viewing
-        const readOnlyParams = {
-          ...formParams,
-          'submission-id': currentSubmissionId,
-        };
-
-        updateStatus('Loading submitted form as read-only...', 'loading');
-        loadForm(readOnlyParams, true);
       }
 
       // Reset the demo to initial state

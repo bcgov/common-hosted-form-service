@@ -103,6 +103,7 @@
  * - `isolate-styles`: Use Shadow DOM isolation (true/false)
  * - `no-icons`: Disable Font Awesome icons (true/false)
  * - `theme-css`: Custom theme CSS URL
+ * - `auto-reload-on-submit`: Auto-reload form as read-only after submission (true/false, default: true)
  * - `token`: URL-encoded JSON JWT token object
  * - `user`: URL-encoded JSON user object
  *
@@ -288,7 +289,12 @@
    * @param {Object} logger - Logger instance for debug output
    */
   function applyQueryParams(element, params, logger) {
-    const booleanParams = new Set(['read-only', 'isolate-styles', 'no-icons']);
+    const booleanParams = new Set([
+      'read-only',
+      'isolate-styles',
+      'no-icons',
+      'auto-reload-on-submit',
+    ]);
     const paramEntries = Object.entries(params);
     const hasAuthToken = paramEntries.some(
       ([param, value]) => param === 'auth-token' && value

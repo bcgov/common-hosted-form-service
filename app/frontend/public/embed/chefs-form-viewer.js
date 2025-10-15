@@ -585,6 +585,7 @@
         'no-icons',
         'token',
         'user',
+        'auto-reload-on-submit',
       ];
     }
 
@@ -612,6 +613,7 @@
       this.token = null; // optional token object for Form.io evalContext
       this.user = null; // optional user object for Form.io evalContext
       this._prefillData = null; // cached prefill data for submission
+      this.autoReloadOnSubmit = true; // auto-reload form as read-only after successful submission
 
       // Asset loading state machine
       this._assetState = 'IDLE';
@@ -677,6 +679,9 @@
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
      * - user: string; JSON string containing a user object that will be available in Form.io's evalContext
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
+     * - auto-reload-on-submit: boolean; when true (default), automatically reloads the form as read-only
+     *   after successful submission, showing the submitted data. This provides a CHEFS-like experience
+     *   out-of-the-box. Set to "false" to disable this behavior.
      */
     attributeChangedCallback(name, _ov, nv) {
       switch (name) {
@@ -726,6 +731,9 @@
           break;
         case 'user':
           this.user = this._parseJsonAttribute(nv, 'user');
+          break;
+        case 'auto-reload-on-submit':
+          this.autoReloadOnSubmit = bool(nv);
           break;
       }
     }
@@ -921,7 +929,10 @@
      * @fires ChefsFormViewer#formio:beforeSubmit - Before submission begins (cancelable)
      * @fires ChefsFormViewer#formio:submit - When submission starts
      * @fires ChefsFormViewer#formio:submitDone - When submission succeeds
-     * @fires ChefsFormViewer#formio:error - If submission fails
+     * @fires ChefsFormViewer#formio:beforeAutoReload - Before auto-reload starts (cancelable, if auto-reload enabled)
+     * @fires ChefsFormViewer#formio:autoReload - When auto-reload begins (if auto-reload enabled)
+     * @fires ChefsFormViewer#formio:autoReloadComplete - When auto-reload completes (if auto-reload enabled)
+     * @fires ChefsFormViewer#formio:error - If submission or auto-reload fails
      *
      * @example
      * // Submit form programmatically
@@ -1182,7 +1193,7 @@
         {};
       const submitKey = this._getSubmitButtonKey();
       currentData[submitKey] = isSubmit;
-      await this._manualSubmit({ data: currentData });
+      await this._manualSubmit({ data: currentData }, isSubmit);
     }
 
     _emit(name, detail, opts = {}) {
@@ -1896,7 +1907,7 @@
     }
 
     /** Post submission payload to CHEFS backend and emit completion/error */
-    async _manualSubmit(submission) {
+    async _manualSubmit(submission, isSubmit = true) {
       this._log.info('beforeSubmit', { submission });
       const proceed = this._emitCancelable('formio:beforeSubmit', {
         submission,
@@ -1928,6 +1939,78 @@
       const submitParsed = this.parsers.submitResult(result);
       this._log.info('submit:ok');
       this._emit('formio:submitDone', { submission: submitParsed.submission });
+
+      // Auto-reload as read-only after successful submission (if enabled and not a draft)
+      if (this.autoReloadOnSubmit && isSubmit && submitParsed.submission?.id) {
+        await this._handleAutoReload(submitParsed.submission);
+      }
+    }
+
+    /**
+     * Handles auto-reload behavior after successful submission (not draft).
+     *
+     * Emits cancelable events to allow customization of the auto-reload behavior.
+     * By default, reloads the form as read-only with the submission data.
+     * Only runs for actual submissions, not draft saves.
+     *
+     * @param {Object} submission - The submission object from the successful submission
+     * @returns {Promise<void>} Resolves when auto-reload completes or is cancelled
+     *
+     * @fires ChefsFormViewer#formio:beforeAutoReload - Before auto-reload starts (cancelable)
+     * @fires ChefsFormViewer#formio:autoReload - When auto-reload begins
+     * @fires ChefsFormViewer#formio:autoReloadComplete - When auto-reload completes
+     * @fires ChefsFormViewer#formio:error - If auto-reload fails
+     */
+    async _handleAutoReload(submission) {
+      this._log.info('autoReload:starting', {
+        submissionId: submission.id,
+      });
+
+      // Emit cancelable event to allow customization or cancellation
+      const proceed = this._emitCancelable('formio:beforeAutoReload', {
+        submission,
+        submissionId: submission.id,
+      });
+      if (!proceed) {
+        this._log.info('autoReload:cancelled');
+        return;
+      }
+
+      // Wait for any async operations to complete
+      const allow = await this._waitUntil('formio:beforeAutoReload', {
+        submission,
+        submissionId: submission.id,
+      });
+      if (!allow) {
+        this._log.info('autoReload:notAllowed');
+        return;
+      }
+
+      // Emit event that auto-reload is starting
+      this._emit('formio:autoReload', {
+        submission,
+        submissionId: submission.id,
+      });
+
+      try {
+        // Wait a moment then reload as read-only (like the demo pattern)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        this.submissionId = submission.id;
+        this.readOnly = true;
+        await this.reload();
+
+        this._log.info('autoReload:completed');
+        this._emit('formio:autoReloadComplete', {
+          submission,
+          submissionId: submission.id,
+        });
+      } catch (error) {
+        this._log.error('autoReload:failed', { error: error.message });
+        this._emit('formio:error', {
+          error: `Auto-reload failed: ${error.message}`,
+        });
+      }
     }
 
     /** Emit a cancellable event and collect async waits via detail.waitUntil */

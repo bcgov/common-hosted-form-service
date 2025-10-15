@@ -397,6 +397,23 @@ describe('ChefsFormViewer', () => {
     expect(el.apiKey).toBe('api-key-456');
   });
 
+  it('attributeChangedCallback handles auto-reload-on-submit attribute', () => {
+    // Default should be true
+    expect(el.autoReloadOnSubmit).toBe(true);
+
+    // Set to false
+    el.setAttribute('auto-reload-on-submit', 'false');
+    expect(el.autoReloadOnSubmit).toBe(false);
+
+    // Set to true
+    el.setAttribute('auto-reload-on-submit', 'true');
+    expect(el.autoReloadOnSubmit).toBe(true);
+
+    // Empty string should be true
+    el.setAttribute('auto-reload-on-submit', '');
+    expect(el.autoReloadOnSubmit).toBe(true);
+  });
+
   it('connectedCallback sets logger and renders', () => {
     el.connectedCallback();
     expect(typeof el._log.info).toBe('function');
@@ -485,6 +502,27 @@ describe('ChefsFormViewer internals', () => {
     releaseSpy.mockRestore();
   });
 
+  it('submit triggers auto-reload events when enabled', async () => {
+    const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
+    const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
+    el._programmaticSubmit = vi.fn().mockImplementation(async (isSubmit) => {
+      // Simulate successful submission with auto-reload
+      if (isSubmit && el.autoReloadOnSubmit) {
+        await el._handleAutoReload({ id: 'test-submission' });
+      }
+    });
+    el._handleAutoReload = vi.fn().mockResolvedValue(undefined);
+
+    await el.submit();
+    expect(el._programmaticSubmit).toHaveBeenCalledWith(true);
+    expect(el._handleAutoReload).toHaveBeenCalledWith({
+      id: 'test-submission',
+    });
+
+    acquireSpy.mockRestore();
+    releaseSpy.mockRestore();
+  });
+
   it('draft calls _acquireBusyLock and _releaseBusyLock correctly', async () => {
     const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
     const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
@@ -492,6 +530,25 @@ describe('ChefsFormViewer internals', () => {
     await el.draft();
     expect(acquireSpy).toHaveBeenCalledWith('draft');
     expect(releaseSpy).toHaveBeenCalled();
+    acquireSpy.mockRestore();
+    releaseSpy.mockRestore();
+  });
+
+  it('draft does not trigger auto-reload even when enabled', async () => {
+    const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
+    const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
+    el._programmaticSubmit = vi.fn().mockImplementation(async (isSubmit) => {
+      // Simulate draft save - should not trigger auto-reload
+      if (isSubmit && el.autoReloadOnSubmit) {
+        await el._handleAutoReload({ id: 'test-submission' });
+      }
+    });
+    el._handleAutoReload = vi.fn().mockResolvedValue(undefined);
+
+    await el.draft();
+    expect(el._programmaticSubmit).toHaveBeenCalledWith(false);
+    expect(el._handleAutoReload).not.toHaveBeenCalled();
+
     acquireSpy.mockRestore();
     releaseSpy.mockRestore();
   });
@@ -1300,6 +1357,147 @@ describe('ChefsFormViewer internals', () => {
     expect(el._emit).toHaveBeenCalledWith('formio:error', {
       error: 'Submit failed',
     });
+  });
+
+  it('_manualSubmit triggers auto-reload for submissions but not drafts', async () => {
+    const submission = { data: { test: 'value' } };
+    const submitResult = { submission: { id: 'submission-123' } };
+
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submit');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(true);
+    el._emit = vi.fn();
+    el._parseError = vi.fn();
+    el.parsers = { submitResult: vi.fn().mockReturnValue(submitResult) };
+    el._handleAutoReload = vi.fn().mockResolvedValue(undefined);
+
+    // Mock fetch for successful response
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
+    // Test submission (should trigger auto-reload)
+    el.autoReloadOnSubmit = true;
+    await el._manualSubmit(submission, true);
+    expect(el._handleAutoReload).toHaveBeenCalledWith(submitResult.submission);
+
+    // Test draft (should not trigger auto-reload)
+    el._handleAutoReload.mockClear();
+    await el._manualSubmit(submission, false);
+    expect(el._handleAutoReload).not.toHaveBeenCalled();
+
+    // Test with auto-reload disabled
+    el.autoReloadOnSubmit = false;
+    el._handleAutoReload.mockClear();
+    await el._manualSubmit(submission, true);
+    expect(el._handleAutoReload).not.toHaveBeenCalled();
+  });
+
+  it('_handleAutoReload emits events and reloads form when not cancelled', async () => {
+    const submission = { id: 'submission-123' };
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(true);
+    el._emit = vi.fn();
+    el.submissionId = null;
+    el.readOnly = false;
+    el.reload = vi.fn().mockResolvedValue(undefined);
+
+    // Mock setTimeout to run immediately
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = vi.fn((callback) => {
+      callback();
+      return 123;
+    });
+
+    await el._handleAutoReload(submission);
+
+    expect(el._emitCancelable).toHaveBeenCalledWith('formio:beforeAutoReload', {
+      submission,
+      submissionId: 'submission-123',
+    });
+    expect(el._emit).toHaveBeenCalledWith('formio:autoReload', {
+      submission,
+      submissionId: 'submission-123',
+    });
+    expect(el.submissionId).toBe('submission-123');
+    expect(el.readOnly).toBe(true);
+    expect(el.reload).toHaveBeenCalled();
+    expect(el._emit).toHaveBeenCalledWith('formio:autoReloadComplete', {
+      submission,
+      submissionId: 'submission-123',
+    });
+
+    // Restore setTimeout
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_handleAutoReload is cancelled when beforeAutoReload event is cancelled', async () => {
+    const submission = { id: 'submission-123' };
+    el._emitCancelable = vi.fn().mockReturnValue(false);
+    el._emit = vi.fn();
+    el.reload = vi.fn();
+
+    await el._handleAutoReload(submission);
+
+    expect(el._emitCancelable).toHaveBeenCalledWith('formio:beforeAutoReload', {
+      submission,
+      submissionId: 'submission-123',
+    });
+    // When cancelled, formio:autoReload should NOT be emitted
+    expect(el._emit).not.toHaveBeenCalledWith('formio:autoReload', {
+      submission,
+      submissionId: 'submission-123',
+    });
+    expect(el.reload).not.toHaveBeenCalled();
+  });
+
+  it('_handleAutoReload is cancelled when waitUntil returns false', async () => {
+    const submission = { id: 'submission-123' };
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(false);
+    el._emit = vi.fn();
+    el.reload = vi.fn();
+
+    await el._handleAutoReload(submission);
+
+    expect(el._emitCancelable).toHaveBeenCalledWith('formio:beforeAutoReload', {
+      submission,
+      submissionId: 'submission-123',
+    });
+    // When waitUntil returns false, formio:autoReload should NOT be emitted
+    expect(el._emit).not.toHaveBeenCalledWith('formio:autoReload', {
+      submission,
+      submissionId: 'submission-123',
+    });
+    expect(el.reload).not.toHaveBeenCalled();
+  });
+
+  it('_handleAutoReload handles reload errors gracefully', async () => {
+    const submission = { id: 'submission-123' };
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._waitUntil = vi.fn().mockResolvedValue(true);
+    el._emit = vi.fn();
+    el.submissionId = null;
+    el.readOnly = false;
+    el.reload = vi.fn().mockRejectedValue(new Error('Reload failed'));
+
+    // Mock setTimeout to run immediately
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = vi.fn((callback) => {
+      callback();
+      return 123;
+    });
+
+    await el._handleAutoReload(submission);
+
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'Auto-reload failed: Reload failed',
+    });
+
+    // Restore setTimeout
+    globalThis.setTimeout = originalSetTimeout;
   });
 
   it('_handleFileUpload processes file upload with progress tracking', async () => {
