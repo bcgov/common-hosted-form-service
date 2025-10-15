@@ -36,39 +36,39 @@ const cstarUrl = computed(() => {
 const formExamples = [
   {
     title: 'Demographic Data Collection Survey',
-    image: '/app/src/assets/images/examples/demographic-survey.png',
+    image: '/app/src/assets/images/demographic-survey.png',
   },
   {
     title: 'Example | Calculations in Data Grid',
-    image: '/app/src/assets/images/examples/calculations-grid.png',
+    image: '/app/src/assets/images/calculations-grid.png',
   },
   {
     title: 'POST-COURSE SURVEY',
-    image: '/app/src/assets/images/examples/post-course-survey.png',
+    image: '/app/src/assets/images/post-course-survey.png',
   },
   {
     title: 'CHEFS Architecture Forum Survey',
-    image: '/app/src/assets/images/examples/architecture-forum.png',
+    image: '/app/src/assets/images/architecture-forum.png',
   },
   {
     title: 'Example | Conditional Logic',
-    image: '/app/src/assets/images/examples/conditional-logic.png',
+    image: '/app/src/assets/images/conditional-logic.png',
   },
   {
     title: 'Example | Calculated Values',
-    image: '/app/src/assets/images/examples/calculated-values.png',
+    image: '/app/src/assets/images/calculated-values.png',
   },
   {
     title: 'Team Lunch Order',
-    image: '/app/src/assets/images/examples/team-lunch-order.png',
+    image: '/app/src/assets/images/team-lunch-order.png',
   },
   {
     title: 'Example | Navigation Buttons',
-    image: '/app/src/assets/images/examples/navigation-buttons.png',
+    image: '/app/src/assets/images/navigation-buttons.png',
   },
   {
     title: 'CHEFS Success Stories',
-    image: '/app/src/assets/images/examples/success-stories.png',
+    image: '/app/src/assets/images/success-stories.png',
   },
 ];
 
@@ -79,7 +79,7 @@ const testimonials = [
     label: 'Verified User',
     title: 'Great communication and collaboration',
     date: 'Reviewed in Victoria, BC, Canada on May 19, 2024',
-    screenshot: '/app/src/assets/images/testimonials/screenshot-1.png',
+    screenshot: '/app/src/assets/images/screenshot-1.png',
     content:
       '"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!"',
     reviewer: 'Leah Macdonald',
@@ -91,7 +91,7 @@ const testimonials = [
     label: 'Verified User',
     title: 'Accessible yet powerful',
     date: 'Reviewed in Victoria, BC, Canada on Jun 24, 2023',
-    screenshot: '/app/src/assets/images/testimonials/screenshot-2.png',
+    screenshot: '/app/src/assets/images/screenshot-2.png',
     content:
       '"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people."',
     reviewer: 'Karl Martinson',
@@ -103,7 +103,7 @@ const testimonials = [
     label: 'Verified User',
     title: 'Clear documentation and helpful support',
     date: 'Reviewed in Victoria, BC, Canada on May 6, 2025',
-    screenshot: '/app/src/assets/images/testimonials/screenshot-3.png',
+    screenshot: '/app/src/assets/images/screenshot-3.png',
     content:
       '"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions."',
     reviewer: 'Emma Armitage',
