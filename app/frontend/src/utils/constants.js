@@ -342,3 +342,11 @@ export const FormDesignerBuilderOptions = Object.freeze({
     },
   },
 });
+
+export const DataClassificationTypes = Object.freeze({
+  PUBLIC: 'Public',
+  INTERNAL: 'Internal',
+  SENSITIVE: 'Sensitive',
+  CONFIDENTIAL: 'Confidential',
+  PROTECTED: 'Protected',
+});

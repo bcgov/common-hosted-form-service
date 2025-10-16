@@ -139,4 +139,4 @@ runs:
     - name: Create Cron Jobs
       shell: bash
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.cronjob.yaml -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.cronjob.yaml -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p NAMESPACE_ENVIRONMENT=${{ inputs.namespace_environment }} -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
