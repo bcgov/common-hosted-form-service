@@ -88,7 +88,14 @@ describe('template rendering', () => {
   const validSubmission = {
     submission: {
       confirmationId: '0763A618',
+      formVersion: 1,
       id: '0763a618-de57-454b-99cc-3a7c5e992b77',
+      createdAt: '2025-08-12T20:02:53.467Z',
+      createdBy: 'TEST@idir',
+      updatedAt: '2025-10-07T21:57:01.858Z',
+      updatedBy: 'TEST2@idir',
+      deleted: false,
+      draft: false,
       submission: {
         data: {
           simpletextfield: 'firstName lastName',
@@ -107,6 +114,12 @@ describe('template rendering', () => {
         confirmationId: '0763A618',
         formVersion: 1,
         submissionId: '0763a618-de57-454b-99cc-3a7c5e992b77',
+        createdAt: '2025-08-12T20:02:53.467Z',
+        createdBy: 'TEST@idir',
+        updatedAt: '2025-10-07T21:57:01.858Z',
+        updatedBy: 'TEST2@idir',
+        isDeleted: false,
+        isDraft: false,
       },
       simpletextfield: 'firstName lastName',
       submit: true,
@@ -221,6 +234,8 @@ describe('template rendering', () => {
         formSubmissionId: validSubmission.submission.id,
       },
     };
+    console.log('Valid Request for Template Render');
+    console.log(validRequest);
 
     describe('error response when', () => {
       test('unsuccessful service call', async () => {
@@ -242,6 +257,7 @@ describe('template rendering', () => {
 
     describe('200 response when', () => {
       test('request is valid', async () => {
+        console.log('request is valid');
         service.read = jest.fn().mockReturnValue(validSubmission);
         formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
         cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
@@ -291,7 +307,7 @@ describe('template rendering', () => {
         ...validCdogsTemplate,
       },
       params: {
-        formSubmissionId: validSubmission.submission.id,
+        formSubmissionId: validSubmission.submission.submissionId,
       },
     };
 

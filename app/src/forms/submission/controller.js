@@ -156,14 +156,20 @@ module.exports = {
       const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
       const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
       const convertTo = req.query.convertTo || 'pdf';
-      console.log(submission);
       const templateBody = {
+        ...req.body,
         data: {
           ...submission.submission.submission.data,
           chefs: {
-            confirmationId: submission.submission.confirmationId,
             formVersion: submission.version.version,
             submissionId: submission.submission.id,
+            confirmationId: submission.submission.confirmationId,
+            createdBy: submission.submission.createdBy,
+            createdAt: submission.submission.createdAt,
+            updatedBy: submission.submission.updatedBy,
+            updatedAt: submission.submission.updatedAt,
+            isDraft: submission.submission.draft,
+            isDeleted: submission.submission.deleted,
           },
         },
         options: {
@@ -204,24 +210,30 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
-      console.log(JSON.stringify(submission));
       const templateBody = {
         ...req.body,
         data: {
           ...submission.submission.submission.data,
           chefs: {
             formVersion: submission.version.version,
-            ...submission.submission,
+            submissionId: submission.submission.id,
+            confirmationId: submission.submission.confirmationId,
+            createdBy: submission.submission.createdBy,
+            createdAt: submission.submission.createdAt,
+            updatedBy: submission.submission.updatedBy,
+            updatedAt: submission.submission.updatedAt,
+            isDraft: submission.submission.draft,
+            isDeleted: submission.submission.deleted,
           },
         },
       };
+
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
-
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
         })
         .send(data);
@@ -242,12 +254,13 @@ module.exports = {
     try {
       const templateBody = { ...req.body.template, data: req.body.submission.data };
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+
       const contentDisposition = headers['content-disposition'];
 
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
         })
         .send(data);
