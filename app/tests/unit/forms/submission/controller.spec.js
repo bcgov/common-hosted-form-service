@@ -234,8 +234,6 @@ describe('template rendering', () => {
         formSubmissionId: validSubmission.submission.id,
       },
     };
-    console.log('Valid Request for Template Render');
-    console.log(validRequest);
 
     describe('error response when', () => {
       test('unsuccessful service call', async () => {
@@ -257,7 +255,6 @@ describe('template rendering', () => {
 
     describe('200 response when', () => {
       test('request is valid', async () => {
-        console.log('request is valid');
         service.read = jest.fn().mockReturnValue(validSubmission);
         formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
         cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
