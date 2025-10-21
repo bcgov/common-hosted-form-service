@@ -1,6 +1,7 @@
 const emailService = require('../email/emailService');
 const formService = require('../submission/service');
 const service = require('./service');
+const tenantService = require('../../components/tenantService');
 module.exports = {
   list: async (req, res, next) => {
     try {
@@ -148,6 +149,49 @@ module.exports = {
         result = false;
       }
       res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getCurrentUserTenants: async (req, res, next) => {
+    try {
+      if (!req.currentUser || !req.currentUser.idpUserId) return res.status(200).json([]);
+      const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+      const tenants = await tenantService.getCurrentUserTenants(req, authHeader);
+      res.status(200).json(tenants);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getGroupsForCurrentTenant: async (req, res, next) => {
+    try {
+      const groups = await tenantService.getGroupsForCurrentTenant(req);
+      res.status(200).json(groups);
+    } catch (error) {
+      next(error);
+    }
+  },
+  assignGroupsToForm: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const { groupIds } = req.body;
+
+      if (!groupIds || !Array.isArray(groupIds)) {
+        return res.status(400).json({ error: 'groupIds must be an array' });
+      }
+
+      const result = await tenantService.assignGroupsToForm(req, formId, groupIds);
+      res.status(200).json({ success: result });
+    } catch (error) {
+      console.error('Error in assignGroupsToForm:', error);
+      next(error);
+    }
+  },
+  getFormGroups: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const groups = await tenantService.getFormGroups(req, formId);
+      res.status(200).json(groups);
     } catch (error) {
       next(error);
     }

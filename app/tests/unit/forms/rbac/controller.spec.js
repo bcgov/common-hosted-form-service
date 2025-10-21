@@ -2,8 +2,10 @@ const controller = require('../../../../src/forms/rbac/controller');
 const service = require('../../../../src/forms/rbac/service');
 const emailService = require('../../../../src/forms/email/emailService');
 const formService = require('../../../../../app/src/forms/submission/service');
+const tenantService = require('../../../../src/components/tenantService');
 
 jest.mock('../../../../src/forms/rbac/service');
+jest.mock('../../../../src/components/tenantService');
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -117,5 +119,54 @@ describe('controller.isUserPartOfFormTeams', () => {
     expect(next).toHaveBeenCalledWith(error);
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
+  });
+});
+
+describe('getCurrentUserTenants', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      currentUser: { idpUserId: 'user-123' },
+      headers: { authorization: 'Bearer testtoken' },
+    };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    next = jest.fn();
+  });
+
+  it('should call tenantService.getCurrentUserTenants and return tenants', async () => {
+    const tenants = [{ id: 't1', name: 'Tenant 1' }];
+    tenantService.getCurrentUserTenants.mockResolvedValue(tenants);
+
+    await controller.getCurrentUserTenants(req, res, next);
+
+    expect(tenantService.getCurrentUserTenants).toHaveBeenCalledWith(req, 'Bearer testtoken');
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(tenants);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return empty array if no currentUser or idpUserId', async () => {
+    req.currentUser = null;
+
+    await controller.getCurrentUserTenants(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([]);
+    expect(tenantService.getCurrentUserTenants).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should call next with error on failure', async () => {
+    const error = new Error('fail');
+    tenantService.getCurrentUserTenants.mockRejectedValue(error);
+
+    await controller.getCurrentUserTenants(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    expect(res.status).not.toHaveBeenCalledWith(200);
   });
 });

@@ -294,3 +294,24 @@ describe(`${basePath}/form/user`, () => {
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
   });
 });
+
+describe('/rbac/current/tenants', () => {
+  const path = '/rbac/current/tenants';
+
+  it('should have correct middleware for GET', async () => {
+    controller.getCurrentUserTenants = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(controller.getCurrentUserTenants).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(0);
+    expect(hasFormRolesMock).toBeCalledTimes(0);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
+    expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
+  });
+});
