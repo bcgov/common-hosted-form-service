@@ -260,7 +260,6 @@ describe('template rendering', () => {
         cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
-
         await controller.templateRender(req, res, next);
 
         expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);

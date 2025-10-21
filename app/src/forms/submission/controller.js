@@ -6,7 +6,44 @@ const formService = require('../form/service');
 
 const service = require('./service');
 
+const chefsTemplate = (submission) => {
+  return {
+    ...submission.submission.submission.data,
+    chefs: {
+      formVersion: submission.version.version,
+      submissionId: submission.submission.id,
+      confirmationId: submission.submission.confirmationId,
+      createdBy: submission.submission.createdBy,
+      createdAt: submission.submission.createdAt,
+      updatedBy: submission.submission.updatedBy,
+      updatedAt: submission.submission.updatedAt,
+      isDraft: submission.submission.draft,
+      isDeleted: submission.submission.deleted,
+    },
+  };
+};
+
 module.exports = {
+  /**
+   * Helper: builds the chefs data template
+   */
+  buildChefsTemplate(submission) {
+    const s = submission.submission;
+    return {
+      ...s.submission.data,
+      chefs: {
+        formVersion: submission.version.version,
+        submissionId: s.id,
+        confirmationId: s.confirmationId,
+        createdBy: s.createdBy,
+        createdAt: s.createdAt,
+        updatedBy: s.updatedBy,
+        updatedAt: s.updatedAt,
+        isDraft: s.draft,
+        isDeleted: s.deleted,
+      },
+    };
+  },
   read: async (req, res, next) => {
     try {
       const response = await service.read(req.params.formSubmissionId);
@@ -158,20 +195,21 @@ module.exports = {
       const convertTo = req.query.convertTo || 'pdf';
       const templateBody = {
         ...req.body,
-        data: {
-          ...submission.submission.submission.data,
-          chefs: {
-            formVersion: submission.version.version,
-            submissionId: submission.submission.id,
-            confirmationId: submission.submission.confirmationId,
-            createdBy: submission.submission.createdBy,
-            createdAt: submission.submission.createdAt,
-            updatedBy: submission.submission.updatedBy,
-            updatedAt: submission.submission.updatedAt,
-            isDraft: submission.submission.draft,
-            isDeleted: submission.submission.deleted,
-          },
-        },
+        data: chefsTemplate(submission),
+        // data: {
+        //   ...submission.submission.submission.data,
+        //   chefs: {
+        //     formVersion: submission.version.version,
+        //     submissionId: submission.submission.id,
+        //     confirmationId: submission.submission.confirmationId,
+        //     createdBy: submission.submission.createdBy,
+        //     createdAt: submission.submission.createdAt,
+        //     updatedBy: submission.submission.updatedBy,
+        //     updatedAt: submission.submission.updatedAt,
+        //     isDraft: submission.submission.draft,
+        //     isDeleted: submission.submission.deleted,
+        //   },
+        // },
         options: {
           convertTo: convertTo,
           overwrite: true,
@@ -210,22 +248,24 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
+
       const templateBody = {
         ...req.body,
-        data: {
-          ...submission.submission.submission.data,
-          chefs: {
-            formVersion: submission.version.version,
-            submissionId: submission.submission.id,
-            confirmationId: submission.submission.confirmationId,
-            createdBy: submission.submission.createdBy,
-            createdAt: submission.submission.createdAt,
-            updatedBy: submission.submission.updatedBy,
-            updatedAt: submission.submission.updatedAt,
-            isDraft: submission.submission.draft,
-            isDeleted: submission.submission.deleted,
-          },
-        },
+        data: chefsTemplate(submission),
+        // data: {
+        //   ...submission.submission.submission.data,
+        //   chefs: {
+        //     formVersion: submission.version.version,
+        //     submissionId: submission.submission.id,
+        //     confirmationId: submission.submission.confirmationId,
+        //     createdBy: submission.submission.createdBy,
+        //     createdAt: submission.submission.createdAt,
+        //     updatedBy: submission.submission.updatedBy,
+        //     updatedAt: submission.submission.updatedAt,
+        //     isDraft: submission.submission.draft,
+        //     isDeleted: submission.submission.deleted,
+        //   },
+        // },
       };
 
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
