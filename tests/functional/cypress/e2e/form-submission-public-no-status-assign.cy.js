@@ -62,6 +62,14 @@ describe('Form Designer', () => {
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').should("not.be.checked");
     cy.contains('span','Display assignee column for reviewers').should("not.exist");
     cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').click();
+    cy.get('[data-test="enableTeamMemberDraftShare"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
+    cy.get('[data-test="canUploadDraftCheckbox"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
+    cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
+    cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
     cy.get('[data-test="canEditForm"]').click();
     
     //Logout to submit the public form
