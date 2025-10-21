@@ -7,6 +7,9 @@ const formService = require('../form/service');
 const service = require('./service');
 
 const chefsTemplate = (submission) => {
+  /*
+    A helper method to build the data object for CDOGS export
+   */
   return {
     ...submission.submission.submission.data,
     chefs: {
@@ -24,26 +27,6 @@ const chefsTemplate = (submission) => {
 };
 
 module.exports = {
-  /**
-   * Helper: builds the chefs data template
-   */
-  buildChefsTemplate(submission) {
-    const s = submission.submission;
-    return {
-      ...s.submission.data,
-      chefs: {
-        formVersion: submission.version.version,
-        submissionId: s.id,
-        confirmationId: s.confirmationId,
-        createdBy: s.createdBy,
-        createdAt: s.createdAt,
-        updatedBy: s.updatedBy,
-        updatedAt: s.updatedAt,
-        isDraft: s.draft,
-        isDeleted: s.deleted,
-      },
-    };
-  },
   read: async (req, res, next) => {
     try {
       const response = await service.read(req.params.formSubmissionId);
