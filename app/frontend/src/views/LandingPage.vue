@@ -409,56 +409,6 @@ const testimonials = [
         </v-row>
       </v-container>
     </div>
-
-    <!-- Footer Section -->
-    <v-footer class="footer-section">
-      <v-container class="footer-content">
-        <v-row>
-          <v-col cols="12" md="6">
-            <div class="footer-logo-section">
-              <img
-                src="/images/bc-logo.png"
-                alt="British Columbia"
-                class="footer-logo mb-4"
-              />
-              <p class="footer-text" :lang="locale">
-                We can help in over 220 languages and through other accessible
-                options.
-                <a href="tel:" class="footer-link">Call</a>,
-                <a href="mailto:" class="footer-link">email</a> or
-                <a href="#" class="footer-link">text us</a>, or
-                <a href="#" class="footer-link">find a service centre</a>.
-              </p>
-            </div>
-          </v-col>
-
-          <v-col cols="12" md="3">
-            <ul class="footer-links">
-              <li><a href="#" class="footer-link">Home</a></li>
-              <li><a href="#" class="footer-link">About gov.bc.ca</a></li>
-              <li><a href="#" class="footer-link">Disclaimer</a></li>
-              <li><a href="#" class="footer-link">Privacy</a></li>
-            </ul>
-          </v-col>
-
-          <v-col cols="12" md="3">
-            <ul class="footer-links">
-              <li><a href="#" class="footer-link">Accessibility</a></li>
-              <li><a href="#" class="footer-link">Copyright</a></li>
-              <li><a href="#" class="footer-link">Contact Us</a></li>
-            </ul>
-          </v-col>
-        </v-row>
-
-        <v-row class="mt-8">
-          <v-col cols="12">
-            <p class="footer-copyright" :lang="locale">
-              © 2024 Government of British Columbia.
-            </p>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-footer>
   </div>
 </template>
 
