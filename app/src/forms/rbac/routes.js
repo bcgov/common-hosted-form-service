@@ -56,4 +56,20 @@ routes.get('/form/user', hasFormPermissions([P.FORM_READ]), async (req, res, nex
   await controller.isUserPartOfFormTeams(req, res, next);
 });
 
+routes.get('/current/tenants', jwtService.protect(), async (req, res, next) => {
+  await controller.getCurrentUserTenants(req, res, next);
+});
+
+routes.get('/current/groups', jwtService.protect(), async (req, res, next) => {
+  await controller.getGroupsForCurrentTenant(req, res, next);
+});
+
+routes.put('/forms/:formId/groups', jwtService.protect(), async (req, res, next) => {
+  await controller.assignGroupsToForm(req, res, next);
+});
+
+routes.get('/forms/:formId/groups', jwtService.protect(), async (req, res, next) => {
+  await controller.getFormGroups(req, res, next);
+});
+
 module.exports = routes;

@@ -114,6 +114,7 @@ const currentUser = async (req, _res, next) => {
     // is ok if the access token isn't defined: then we'll have a public user.
     const accessToken = await jwtService.getTokenPayload(req);
     req.currentUser = await service.login(accessToken);
+    req.currentUser.tenantId = req.headers['x-tenant-id'];
 
     next();
   } catch (error) {
