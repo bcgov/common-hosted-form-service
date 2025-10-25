@@ -31,19 +31,20 @@ it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.get('button').contains('Basic Fields').click();
+    //Phone Number
     cy.get('div.formio-builder-form').then($el => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
-      .trigger('mouseup', { force: true });
-      cy.get('.btn-success').click();
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Phone Number')
+        
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -410, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('.btn-success').click();
     });
     //Multiline Text
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
-        
+        cy.get('span.btn').contains('Text Field')
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -110, { force: true })
         .trigger('mouseup', { force: true });
@@ -116,6 +117,7 @@ it('Submission revise status Assignment', () => {
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('{selectall}{backspace}');
     cy.contains('Text Field').type('Nancy');
+    cy.get('label').contains('Phone Number').should('be.visible');
     cy.get('button').contains('Submit').click();
     cy.waitForLoad();
     cy.get('[data-test="continue-btn-continue"]').click({force: true});
