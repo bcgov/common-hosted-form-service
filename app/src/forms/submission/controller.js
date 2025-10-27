@@ -179,20 +179,6 @@ module.exports = {
       const templateBody = {
         ...req.body,
         data: chefsTemplate(submission),
-        // data: {
-        //   ...submission.submission.submission.data,
-        //   chefs: {
-        //     formVersion: submission.version.version,
-        //     submissionId: submission.submission.id,
-        //     confirmationId: submission.submission.confirmationId,
-        //     createdBy: submission.submission.createdBy,
-        //     createdAt: submission.submission.createdAt,
-        //     updatedBy: submission.submission.updatedBy,
-        //     updatedAt: submission.submission.updatedAt,
-        //     isDraft: submission.submission.draft,
-        //     isDeleted: submission.submission.deleted,
-        //   },
-        // },
         options: {
           convertTo: convertTo,
           overwrite: true,
@@ -235,20 +221,6 @@ module.exports = {
       const templateBody = {
         ...req.body,
         data: chefsTemplate(submission),
-        // data: {
-        //   ...submission.submission.submission.data,
-        //   chefs: {
-        //     formVersion: submission.version.version,
-        //     submissionId: submission.submission.id,
-        //     confirmationId: submission.submission.confirmationId,
-        //     createdBy: submission.submission.createdBy,
-        //     createdAt: submission.submission.createdAt,
-        //     updatedBy: submission.submission.updatedBy,
-        //     updatedAt: submission.submission.updatedAt,
-        //     isDraft: submission.submission.draft,
-        //     isDeleted: submission.submission.deleted,
-        //   },
-        // },
       };
 
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
