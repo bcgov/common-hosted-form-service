@@ -99,7 +99,7 @@
     }
   },
   "cstar": {
-    "endpoint": "https://tenant-management-system-test-frontend.apps.silver.devops.gov.bc.ca/api/v1/",
+    "endpoint": "https://tenant-management-system-pr-202-frontend.apps.silver.devops.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
     "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups",
     "listGroupsForTenant": "/tenants/{tenantId}/groups"

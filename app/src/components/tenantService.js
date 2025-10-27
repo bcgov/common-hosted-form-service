@@ -1,35 +1,34 @@
 const config = require('config');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
+const jwtService = require('./jwtService');
 const errorToProblem = require('./errorToProblem');
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
-const { Role } = require('../forms/common/models'); // Import Role model directly
+const { Role } = require('../forms/common/models');
 const Form = require('../forms/common/models/tables/form');
 const FormGroup = require('../forms/common/models/tables/formGroup');
 const FormTenant = require('../forms/common/models/tables/formTenant');
 const uuid = require('uuid');
 
 class TenantService {
+  /**
+   * Get authorization headers with Bearer token from request
+   * @param {object} req - Express request object
+   * @returns {object} Headers object with Authorization if token exists
+   */
+  _getAuthHeaders(req) {
+    const token = jwtService.getBearerToken(req);
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
   async getCurrentUserTenants(req) {
     if (!req.currentUser || !req.currentUser.idpUserId) {
       return [];
     }
     try {
       const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
-      let token = '';
-      try {
-        const tokenPath = path.join(__dirname, 'token.txt');
-        token = fs.readFileSync(tokenPath, 'utf8').trim();
-      } catch (err) {
-        throw new Error('Authorization token file not found or unreadable');
-      }
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      const headers = this._getAuthHeaders(req);
       const { data } = await axios.get(url, { headers });
       return data?.data?.tenants || [];
     } catch (e) {
@@ -47,19 +46,8 @@ class TenantService {
       const tenantId = req.currentUser.tenantId;
       const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
       const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
-      let token = '';
-      try {
-        const tokenPath = path.join(__dirname, 'token.txt');
-        token = fs.readFileSync(tokenPath, 'utf8').trim();
-      } catch (err) {
-        throw new Error('Authorization token file not found or unreadable');
-      }
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      const headers = this._getAuthHeaders(req);
       const { data } = await axios.get(url, { headers });
-      // Transform API response to array of groups with roles
       return (data?.data?.groups || []).map((group) => ({
         id: group.id,
         name: group.name,
@@ -71,11 +59,6 @@ class TenantService {
     }
   }
 
-  /**
-   * Get list of groups for the current user's tenant from the API.
-   * @param {object} req - Express request object with currentUser
-   * @returns {Promise<Array>} Array of group objects
-   */
   async getGroupsForCurrentTenant(req) {
     if (!req.currentUser || !req.currentUser.tenantId) {
       return [];
@@ -84,17 +67,7 @@ class TenantService {
       const tenantId = req.currentUser.tenantId;
       const groupPath = config.get('cstar.listGroupsForTenant');
       const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId)}`;
-      let token = '';
-      try {
-        const tokenPath = path.join(__dirname, 'token.txt');
-        token = fs.readFileSync(tokenPath, 'utf8').trim();
-      } catch (err) {
-        throw new Error('Authorization token file not found or unreadable');
-      }
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      const headers = this._getAuthHeaders(req);
       const { data } = await axios.get(url, { headers });
       return data?.data?.groups || [];
     } catch (e) {

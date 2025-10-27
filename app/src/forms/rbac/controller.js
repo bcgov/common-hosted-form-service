@@ -156,8 +156,7 @@ module.exports = {
   getCurrentUserTenants: async (req, res, next) => {
     try {
       if (!req.currentUser || !req.currentUser.idpUserId) return res.status(200).json([]);
-      const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-      const tenants = await tenantService.getCurrentUserTenants(req, authHeader);
+      const tenants = await tenantService.getCurrentUserTenants(req);
       res.status(200).json(tenants);
     } catch (error) {
       next(error);
