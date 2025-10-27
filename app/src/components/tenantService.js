@@ -219,6 +219,46 @@ async function getUserRolesAndPermissions(userInfo) {
   };
 }
 
+/**
+ * Returns true if the current user can create a form.
+ * - Only IDIR users
+ * - If tenantId exists, must have form_admin in that tenant
+ * - If no tenantId, allowed (non-tenant form)
+ * @param {object} req Express request with currentUser
+ * @returns {Promise<boolean>}
+ */
+async function canCreateForm(req) {
+  const idpCode = req.currentUser?.idp?.toLowerCase();
+  const tenantId = req.currentUser?.tenantId;
+
+  if (idpCode !== 'idir') return false;
+  if (!tenantId) return true;
+
+  const groups = await module.exports.getUserTenantGroupsAndRoles(req);
+  const hasFormAdmin = Array.isArray(groups) && groups.some((g) => Array.isArray(g.roles) && g.roles.includes('form_admin'));
+  return hasFormAdmin;
+}
+
+/**
+ * Returns true if the given formId is associated to the current user's tenant.
+ * If the user has no tenantId, the caller should decide access (middleware allows).
+ */
+async function isFormInUsersTenant(req, formId) {
+  try {
+    const tenantId = req.currentUser?.tenantId;
+    if (!tenantId) return true; // non-tenant users handled by caller/middleware
+    if (!uuid.validate(formId)) return false;
+
+    const ft = await FormTenant.query().where({ formId, tenantId }).first();
+    return !!ft;
+  } catch (e) {
+    errorToProblem(SERVICE, e);
+    return false;
+  }
+}
+
 module.exports = Object.assign(new TenantService(), {
   getUserRolesAndPermissions,
+  canCreateForm,
+  isFormInUsersTenant,
 });
