@@ -464,6 +464,7 @@ a,
 
 .formcomponents {
   .builder-sidebar {
+    top: 125px;
     .form-builder-panel {
       .formcomponent.btn-block {
         width: 100%;
@@ -611,6 +612,13 @@ a,
     text-decoration: none !important;
     cursor: not-allowed !important;
   }
+}
+
+.v-window {
+  overflow: visible !important;
+}
+.v-stepper.v-sheet {
+  overflow: visible !important;
 }
 
 @import 'global-status-overlay.scss';

@@ -40,7 +40,17 @@ describe('Form Designer', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
+    });
+    //Multiline Text
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Multi-line Text')
+        
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('.btn-success').click();
     });
     cy.wait(2000);
         // Form saving

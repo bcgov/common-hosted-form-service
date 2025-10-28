@@ -170,7 +170,7 @@ describe('Form Designer', () => {
     cy.wait(2000);
     //verify point is marked on the searched address region
     //cy.get('p').contains('(48.43406,-123.49410)').should('exist');
-    cy.get('button').contains('Save').click();
+    cy.get('.btn-success').click();
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;

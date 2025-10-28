@@ -14,6 +14,14 @@ vi.mock('vue-router', () => ({
   })),
 }));
 
+vi.mock('vuetify', () => ({
+  useDisplay: vi.fn(() => ({
+    mdAndDown: false,
+    width: 1920,
+    height: 1080,
+  })),
+}));
+
 describe('FloatButton.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
@@ -42,13 +50,13 @@ describe('FloatButton.vue', () => {
       },
     });
 
-    expect(wrapper.html()).toContain('collapse');
-    expect(wrapper.html()).toContain('publish');
-    expect(wrapper.html()).toContain('manage');
     expect(wrapper.html()).toContain('redo');
     expect(wrapper.html()).toContain('undo');
-    expect(wrapper.html()).toContain('preview');
     expect(wrapper.html()).toContain('bottom');
+    expect(wrapper.html()).toContain('publish');
+    expect(wrapper.html()).toContain('manage');
+
+    expect(wrapper.html()).toContain('preview');
   });
 
   it('unmounted should remove the scroll event listener', async () => {
@@ -106,40 +114,6 @@ describe('FloatButton.vue', () => {
     expect(wrapper.vm.SCROLL_TEXT).toEqual('trans.floatButton.bottom');
     wrapper.vm.isAtTopOfPage = false;
     expect(wrapper.vm.SCROLL_TEXT).toEqual('trans.floatButton.top');
-  });
-
-  it('COLLAPSE_ICON will be close if we are not at collapsed and menu otherwise', async () => {
-    const wrapper = shallowMount(FloatButton, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          RouterLink: {
-            name: 'RouterLink',
-            template: '<div class="router-link-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-    expect(wrapper.vm.COLLAPSE_ICON).toEqual('mdi:mdi-close');
-    wrapper.vm.isCollapsed = true;
-    expect(wrapper.vm.COLLAPSE_ICON).toEqual('mdi:mdi-menu');
-  });
-
-  it('COLLAPSE_TEXT will be the collapse translation if we are not collapsed and actions otherwise', async () => {
-    const wrapper = shallowMount(FloatButton, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          RouterLink: {
-            name: 'RouterLink',
-            template: '<div class="router-link-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-    expect(wrapper.vm.COLLAPSE_TEXT).toEqual('trans.floatButton.collapse');
-    wrapper.vm.isCollapsed = true;
-    expect(wrapper.vm.COLLAPSE_TEXT).toEqual('trans.floatButton.actions');
   });
 
   it('SAVE_TEXT will match the savedStatus property otherwise it is just save', async () => {
@@ -219,23 +193,6 @@ describe('FloatButton.vue', () => {
     window.scrollY = 1;
     wrapper.vm.onEventScroll();
     expect(wrapper.vm.isAtTopOfPage).toBe(false);
-  });
-
-  it('onClickCollapse will toggle the value of isCollapsed', async () => {
-    const wrapper = shallowMount(FloatButton, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          RouterLink: {
-            name: 'RouterLink',
-            template: '<div class="router-link-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-    expect(wrapper.vm.isCollapsed).toBeFalsy();
-    wrapper.vm.onClickCollapse();
-    expect(wrapper.vm.isCollapsed).toBeTruthy();
   });
 
   it('onClickSave will emit save', async () => {
