@@ -1,35 +1,34 @@
 const config = require('config');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
+const jwtService = require('./jwtService');
 const errorToProblem = require('./errorToProblem');
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
-const { Role } = require('../forms/common/models'); // Import Role model directly
+const { Role } = require('../forms/common/models');
 const Form = require('../forms/common/models/tables/form');
 const FormGroup = require('../forms/common/models/tables/formGroup');
 const FormTenant = require('../forms/common/models/tables/formTenant');
 const uuid = require('uuid');
 
 class TenantService {
+  /**
+   * Get authorization headers with Bearer token from request
+   * @param {object} req - Express request object
+   * @returns {object} Headers object with Authorization if token exists
+   */
+  _getAuthHeaders(req) {
+    const token = jwtService.getBearerToken(req);
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
   async getCurrentUserTenants(req) {
     if (!req.currentUser || !req.currentUser.idpUserId) {
       return [];
     }
     try {
       const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
-      let token = '';
-      try {
-        const tokenPath = path.join(__dirname, 'token.txt');
-        token = fs.readFileSync(tokenPath, 'utf8').trim();
-      } catch (err) {
-        throw new Error('Authorization token file not found or unreadable');
-      }
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      const headers = this._getAuthHeaders(req);
       const { data } = await axios.get(url, { headers });
       return data?.data?.tenants || [];
     } catch (e) {
@@ -47,19 +46,8 @@ class TenantService {
       const tenantId = req.currentUser.tenantId;
       const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
       const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
-      let token = '';
-      try {
-        const tokenPath = path.join(__dirname, 'token.txt');
-        token = fs.readFileSync(tokenPath, 'utf8').trim();
-      } catch (err) {
-        throw new Error('Authorization token file not found or unreadable');
-      }
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      const headers = this._getAuthHeaders(req);
       const { data } = await axios.get(url, { headers });
-      // Transform API response to array of groups with roles
       return (data?.data?.groups || []).map((group) => ({
         id: group.id,
         name: group.name,
@@ -71,11 +59,6 @@ class TenantService {
     }
   }
 
-  /**
-   * Get list of groups for the current user's tenant from the API.
-   * @param {object} req - Express request object with currentUser
-   * @returns {Promise<Array>} Array of group objects
-   */
   async getGroupsForCurrentTenant(req) {
     if (!req.currentUser || !req.currentUser.tenantId) {
       return [];
@@ -84,17 +67,7 @@ class TenantService {
       const tenantId = req.currentUser.tenantId;
       const groupPath = config.get('cstar.listGroupsForTenant');
       const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId)}`;
-      let token = '';
-      try {
-        const tokenPath = path.join(__dirname, 'token.txt');
-        token = fs.readFileSync(tokenPath, 'utf8').trim();
-      } catch (err) {
-        throw new Error('Authorization token file not found or unreadable');
-      }
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      const headers = this._getAuthHeaders(req);
       const { data } = await axios.get(url, { headers });
       return data?.data?.groups || [];
     } catch (e) {
@@ -219,6 +192,46 @@ async function getUserRolesAndPermissions(userInfo) {
   };
 }
 
+/**
+ * Returns true if the current user can create a form.
+ * - Only IDIR users
+ * - If tenantId exists, must have form_admin in that tenant
+ * - If no tenantId, allowed (non-tenant form)
+ * @param {object} req Express request with currentUser
+ * @returns {Promise<boolean>}
+ */
+async function canCreateForm(req) {
+  const idpCode = req.currentUser?.idp?.toLowerCase();
+  const tenantId = req.currentUser?.tenantId;
+
+  if (idpCode !== 'idir') return false;
+  if (!tenantId) return true;
+
+  const groups = await module.exports.getUserTenantGroupsAndRoles(req);
+  const hasFormAdmin = Array.isArray(groups) && groups.some((g) => Array.isArray(g.roles) && g.roles.includes('form_admin'));
+  return hasFormAdmin;
+}
+
+/**
+ * Returns true if the given formId is associated to the current user's tenant.
+ * If the user has no tenantId, the caller should decide access (middleware allows).
+ */
+async function isFormInUsersTenant(req, formId) {
+  try {
+    const tenantId = req.currentUser?.tenantId;
+    if (!tenantId) return true; // non-tenant users handled by caller/middleware
+    if (!uuid.validate(formId)) return false;
+
+    const ft = await FormTenant.query().where({ formId, tenantId }).first();
+    return !!ft;
+  } catch (e) {
+    errorToProblem(SERVICE, e);
+    return false;
+  }
+}
+
 module.exports = Object.assign(new TenantService(), {
   getUserRolesAndPermissions,
+  canCreateForm,
+  isFormInUsersTenant,
 });

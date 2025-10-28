@@ -1,12 +1,21 @@
 const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
-const { currentUser, hasFormPermissions, hasFormRoles, hasRoleDeletePermissions, hasRoleModifyPermissions, hasSubmissionPermissions } = require('../auth/middleware/userAccess');
+const {
+  currentUser,
+  hasFormPermissions,
+  hasFormRoles,
+  hasRoleDeletePermissions,
+  hasRoleModifyPermissions,
+  hasSubmissionPermissions,
+  requireFormTenantAssociation,
+} = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
 const controller = require('./controller');
 
 routes.use(currentUser);
+routes.use(requireFormTenantAssociation);
 
 routes.get('/current', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);

@@ -11,7 +11,7 @@ const tenantService = require('../../../src/components/tenantService');
 
 describe('getCurrentUserTenants', () => {
   const req = { currentUser: { idpUserId: 'user-123' } };
-  const apiUrl = 'https://tenant-management-system-test-frontend.apps.silver.devops.gov.bc.ca/api/v1/users/user-123/tenants';
+  const apiUrl = 'https://tenant-management-system-pr-202-frontend.apps.silver.devops.gov.bc.ca/api/v1/users/user-123/tenants';
   let mockAxios;
 
   beforeEach(() => {
