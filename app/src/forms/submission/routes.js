@@ -1,12 +1,13 @@
 const routes = require('express').Router();
 
 const apiAccess = require('../auth/middleware/apiAccess');
-const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions, requireFormTenantAssociation } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 
 routes.use(currentUser);
+routes.use(requireFormTenantAssociation);
 
 routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);

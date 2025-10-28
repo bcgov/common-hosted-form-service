@@ -6,6 +6,7 @@ const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
+const tenantService = require('../../../components/tenantService');
 
 /**
  * Gets the form metadata for the given formId from the forms available to the
@@ -464,6 +465,47 @@ const hasSubmissionPermissions = (permissions) => {
   };
 };
 
+/**
+ * Middleware to enforce create-form rules using tenantService.canCreateForm
+ */
+const requireCreateFormPermission = async (req, _res, next) => {
+  try {
+    const allowed = await tenantService.canCreateForm(req);
+    if (!allowed) {
+      throw new Problem(403, { detail: 'You do not have permission to create a form.' });
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
+/**
+ * If user has a tenantId, ensure the form belongs to the user's tenant.
+ * Otherwise, allow access (non-tenant/public).
+ */
+const requireFormTenantAssociation = async (req, _res, next) => {
+  try {
+    const formId = req.params.formId || req.query.formId;
+
+    // If no tenantId, allow (other guards handle non-tenant access)
+    if (!req.currentUser?.tenantId) return next();
+
+    if (!uuid.validate(formId)) {
+      throw new Problem(400, { detail: 'Bad formId' });
+    }
+
+    const ok = await tenantService.isFormInUsersTenant(req, formId);
+    if (!ok) {
+      throw new Problem(403, { detail: 'Form not accessible for your tenant.' });
+    }
+
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   currentUser,
   filterMultipleSubmissions,
@@ -472,4 +514,6 @@ module.exports = {
   hasRoleDeletePermissions,
   hasRoleModifyPermissions,
   hasSubmissionPermissions,
+  requireCreateFormPermission,
+  requireFormTenantAssociation,
 };
