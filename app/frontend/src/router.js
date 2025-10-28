@@ -37,9 +37,9 @@ export default function getRouter(basePath = '/') {
         redirect: { name: 'About' },
       },
       {
-        path: '/',
+        path: '/about',
         name: 'About',
-        component: () => import('~/views/About.vue'),
+        component: () => import('~/views/LandingPage.vue'),
         meta: {
           hasLogin: true,
         },

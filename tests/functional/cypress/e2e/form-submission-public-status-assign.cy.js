@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 const username=Cypress.env('keycloakUsername');
@@ -15,79 +14,45 @@ Cypress.Commands.add('waitForLoad', () => {
 describe('Form Designer', () => {
 
   beforeEach(()=>{
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Form.io throws an uncaught exception for missing projectid
+      // Cypress catches it as undefined: undefined so we can't get the text
+      console.log(err);
+      return false;
+    });
     cy.clearCookies();
     cy.clearLocalStorage();
     cy.window().then((win) => {
       win.sessionStorage.clear();
     });
-  });
-  it('Visits the form settings page', () => {
-    
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    formsettings();
-    
   });  
 // Publish a simple form with Simplebc Address component
  it('Verify public form submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
-    cy.get('button').contains('Basic Fields').click();
-    cy.get('div.formio-builder-form').then($el => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
-      .trigger('mouseup', { force: true });
-      cy.get('button').contains('Save').click();
-      cy.waitForLoad();
-    });
-  // Form saving
-    let savedButton = cy.get('[data-cy=saveButton]');
-    expect(savedButton).to.not.be.null;
-    cy.get('.mdi-content-save').should('be.visible').trigger('click');
+    cy.visit(`/${depEnv}`); 
+    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+    cy.get('[data-test="idir"]').click();
+    cy.get('#user').type(username);
+    cy.get('#password').type(password);
+    cy.get('.btn').click();
+        //Submit the form
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.wait(2000);
-  // Filter the newly created form
-    cy.location('search').then(search => {
-      //let pathName = fullUrl.pathname
-      let arr = search.split('=');
-      let arrayValues = arr[1].split('&');
-      cy.log(arrayValues[0]);
-      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-    //Publish the form
-    cy.get('.v-label > span').click();
-
-    cy.get('span').contains('Publish Version 1');
-
-    cy.contains('Continue').should('be.visible');
-    cy.contains('Continue').trigger('click');
-    //Share link verification
-    let shareFormButton = cy.get('[data-cy=shareFormButton]');
-    expect(shareFormButton).to.not.be.null;
-    shareFormButton.trigger('click').then(()=>{
-      
-    let shareFormLinkButton=cy.get('.mx-2');
-    expect(shareFormLinkButton).to.not.be.null;
-    shareFormLinkButton.trigger('click');
-    cy.get('.mx-2 > .v-btn').click();
-    })
-    cy.visit(`/${depEnv}`);
-    cy.get('[data-cy="userFormsLinks"]').click();
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.waitForLoad();
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
-    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-    cy.contains('Public (anonymous)').click();
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//Check to update the status of the form
+    cy.wait(1000);
+    cy.contains('span','Display assignee column for reviewers').should('exist');
+    cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').find('input[type="checkbox"]').click();
     cy.waitForLoad();
     //Validate checkbox settings on form settings page
     cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').should("not.be.enabled");
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').find('input[type="checkbox"]').should('be.checked');
     cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').find('input[type="checkbox"]').should('be.checked');
-    cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').should('be.enabled');
+    cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').should("be.enabled");
     cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
     cy.get('[data-test="canAllowEventSubscriptionCheckbox"]').find('input[type="checkbox"]').should("be.enabled"); 
     cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
@@ -102,14 +67,12 @@ describe('Form Designer', () => {
     cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.waitForLoad();
       //Logout to submit the public form
     cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
     cy.log('Page visited, checking for logout button');
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     //Form submission and verification for public forms
-    cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
@@ -140,20 +103,13 @@ describe('Form Designer', () => {
     cy.get('button[title="Email a receipt of this submission"]').click();
     cy.get('span').contains('SEND').click();
     cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
-    cy.visit(`/${depEnv}`);   
-    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
-    cy.get('[data-test="idir"]').click();     
-    cy.get('#user').type(username);
-    cy.get('#password').type(password);
-    cy.get('.btn').click();
-    cy.wait(2000);
     //view submission   
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
     cy.contains('Assigned to me').should('exist');//Assigned to me checkbox
     //View the submission
-    cy.get(':nth-child(7) > a > .v-btn').click();
+    cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
     });
     //Assign status submission
     cy.get('.status-heading > .mdi-chevron-right').click();
@@ -197,13 +153,7 @@ describe('Form Designer', () => {
     cy.get('.mdi-history').click();
     cy.get('.v-data-table__tr> :nth-child(1)').contains('CHEFSTST@idir').should('be.visible');
     cy.get('span').contains('Close').click();
-    cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
-    cy.get('.mdi-cog').click();
-    //Delete form after test run
-    cy.waitForLoad();
-    cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
-    cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
   });
     

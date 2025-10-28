@@ -60,7 +60,16 @@ watch(userSearchInput, async (input) => {
 });
 
 initializeSelectedIdp();
-getSubmissionUsers();
+
+watch(
+  () => properties.isDraft,
+  (newValue) => {
+    if (newValue) {
+      getSubmissionUsers();
+    }
+  },
+  { immediate: true }
+);
 
 function onChangeSelectedIdp(newIdp, oldIdp) {
   if (newIdp !== oldIdp) {
@@ -244,22 +253,28 @@ defineExpose({
 
 <template>
   <span>
-    <v-tooltip location="bottom">
+    <v-tooltip
+      location="bottom"
+      :lang="locale"
+      :text="
+        isDraft
+          ? $t('trans.manageSubmissionUsers.manageTeamMembers')
+          : $t('trans.manageSubmissionUsers.draftFormInvite')
+      "
+    >
       <template #activator="{ props }">
-        <v-btn
-          color="primary"
-          icon
-          v-bind="props"
-          size="x-small"
-          :title="$t('trans.manageSubmissionUsers.manageTeamMembers')"
-          @click="dialog = true"
-        >
-          <v-icon icon="mdi:mdi-account-multiple"></v-icon>
-        </v-btn>
+        <div v-bind="props" class="d-inline-block">
+          <v-btn
+            color="primary"
+            icon
+            size="x-small"
+            :disabled="!isDraft"
+            @click="dialog = true"
+          >
+            <v-icon icon="mdi:mdi-account-multiple"></v-icon>
+          </v-btn>
+        </div>
       </template>
-      <span :lang="locale"
-        >{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
-      </span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card :class="{ 'dir-rtl': isRTL }">
