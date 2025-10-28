@@ -50,15 +50,11 @@ describe('Form Designer', () => {
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
         cy.get(':nth-child(2) > .nav-link').click();
-        cy.get(':nth-child(2) > .nav-link').click();
-        //cy.get('[href="#data"]').click();        
-        
+        cy.get(':nth-child(2) > .nav-link').click();        
         cy.get('input[name="data[values][0][label]"]').type('Canadian');
         cy.get('input[name="data[values][0][value]"]').type('1');
-        
         cy.waitForLoad();
-        
-        cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
     });
 
     }); 
@@ -75,10 +71,7 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('input[name="data[customClass]"]').type('bg-primary');
       cy.waitForLoad();
-        
-      cy.get('button').contains('Save').click();
-
-
+      cy.get('.btn-success').click();
     });
     }); 
     it('Checks the simpleurladvanced', () => {
@@ -92,13 +85,9 @@ describe('Form Designer', () => {
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.get('input[name="data[prefix]"]').type('https://');
-        
         cy.get('input[name="data[suffix]"]').type('.com');
-
-        cy.waitForLoad();
-          
-        cy.get('button').contains('Save').click();
-  
+        cy.waitForLoad();  
+        cy.get('.btn-success').click();
   
     });
     });
@@ -116,17 +105,10 @@ describe('Form Designer', () => {
         cy.get(':nth-child(2) > .nav-link').click();
         cy.get('input[name="data[values][0][label]"]').type('Eligible');
         cy.get('input[name="data[values][0][value]"]').type('1');
-        
-        
-
         cy.waitForLoad();
-          
-        cy.get('button').contains('Save').click();
-  
-  
-      });
+        cy.get('.btn-success').click();
     });
-
+    });
     it('Checks the simpletagsadvanced', () => {
 
       cy.viewport(1000, 1800);
@@ -139,10 +121,7 @@ describe('Form Designer', () => {
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
-          
-        cy.get('button').contains('Save').click();
-  
-  
+        cy.get('.btn-success').click();
       });
     });
 
@@ -158,10 +137,7 @@ describe('Form Designer', () => {
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
-          
-        cy.get('button').contains('Save').click();
-  
-  
+        cy.get('.btn-success').click();
       });
     });
     // Check registered business address
@@ -177,9 +153,7 @@ describe('Form Designer', () => {
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
-          
-        cy.get('button').contains('Save').click();
-  
+        cy.get('.btn-success').click();
   
       });
 
@@ -196,14 +170,10 @@ describe('Form Designer', () => {
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
-          
-        cy.get('button').contains('Save').click();
-  
+        cy.get('.btn-success').click();
   
       });
-
     });
-
     it('Verify submission', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
@@ -220,17 +190,13 @@ describe('Form Designer', () => {
           let arr = search.split('=');
           let arrayValues = arr[1].split('&');
           cy.log(arrayValues[0]);
-          //cy.log(arrayValues[1]);
-          //cy.log(arrayValues[2]);
           cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
           cy.waitForLoad();
           })
        
         //Publish the form
         cy.get('.v-label > span').click();
-    
         cy.get('span').contains('Publish Version 1');
-    
         cy.contains('Continue').should('be.visible');
         cy.contains('Continue').trigger('click');
 
@@ -242,7 +208,6 @@ describe('Form Designer', () => {
           let shareFormLinkButton=cy.get('.mx-2');
           expect(shareFormLinkButton).to.not.be.null;
           shareFormLinkButton.trigger('click');
-          
           //Close  form share window
           cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
         });
@@ -263,7 +228,6 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.get('input[type="radio"]').click();
         cy.get('input[type="checkbox"]').click();
-    
         cy.get('div').find('textarea').type('some text');
         cy.get('input[name="data[simpleurladvanced]"').type('www.google');
         cy.get('.choices__inner').click();
@@ -285,8 +249,6 @@ describe('Form Designer', () => {
         //verify file uploads to object storage
         cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
         cy.get('div.col-md-2').contains('61.48 kB');
-        cy.waitForLoad();
-        cy.wait(2000);
         cy.wait(2000);
         //form submission
         cy.get('button').contains('Submit').click();
