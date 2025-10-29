@@ -257,22 +257,71 @@ $tablet-breakpoint: 960px;
     overflow: visible !important;
   }
 
-  :deep(.v-field__outline__start) {
-    border-color: rgba(0, 0, 0, 0.12);
+  // FIX: Border outline issues - ensure proper border rendering
+  :deep(.v-field__outline) {
+    border-radius: 4px;
+    overflow: hidden; // Prevent border artifacts
   }
 
+  :deep(.v-field__outline__start) {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-right: none !important; // Prevent double borders
+    border-radius: 4px 0 0 4px;
+  }
+
+  :deep(.v-field__outline__notch) {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    border-left: none !important; // Prevent visible lines
+    border-right: none !important;
+  }
+
+  :deep(.v-field__outline__end) {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-left: none !important; // Prevent double borders
+    border-radius: 0 4px 4px 0;
+  }
+
+  // Hide any extra border segments that might appear
+  :deep(.v-field__outline:before),
+  :deep(.v-field__outline:after) {
+    display: none !important;
+  }
+
+  // Hover state
   &:hover:not(:disabled) {
-    :deep(.v-field__outline__start),
+    :deep(.v-field__outline__start) {
+      border-color: rgba(0, 0, 0, 0.2);
+      border-right: none !important;
+    }
+    :deep(.v-field__outline__notch) {
+      border-color: rgba(0, 0, 0, 0.2);
+      border-left: none !important;
+      border-right: none !important;
+    }
     :deep(.v-field__outline__end) {
       border-color: rgba(0, 0, 0, 0.2);
+      border-left: none !important;
     }
   }
 
+  // Focus state
   &:focus-within {
-    :deep(.v-field__outline__start),
+    :deep(.v-field__outline__start) {
+      border-color: var(--v-primary);
+      border-width: 2px;
+      border-right: none !important;
+    }
+    :deep(.v-field__outline__notch) {
+      border-color: var(--v-primary);
+      border-width: 2px;
+      border-left: none !important;
+      border-right: none !important;
+    }
     :deep(.v-field__outline__end) {
       border-color: var(--v-primary);
       border-width: 2px;
+      border-left: none !important;
     }
   }
 
@@ -448,9 +497,19 @@ $tablet-breakpoint: 960px;
   }
 
   .tenant-select {
-    :deep(.v-field__outline__start),
+    // Dark mode border fixes
+    :deep(.v-field__outline__start) {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      border-right: none !important;
+    }
+    :deep(.v-field__outline__notch) {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
     :deep(.v-field__outline__end) {
       border-color: rgba(255, 255, 255, 0.2) !important;
+      border-left: none !important;
     }
 
     :deep(.cstar-link-item) {
