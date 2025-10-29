@@ -8,6 +8,9 @@ const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 
 routes.use(currentUser);
+// Apply tenant association check to all routes in this router.
+// It will check req.params.formId or req.query.formId if present, otherwise no-op.
+routes.use(requireFormTenantAssociation);
 
 routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);

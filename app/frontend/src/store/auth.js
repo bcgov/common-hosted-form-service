@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import getRouter from '~/router';
 import { useIdpStore } from '~/store/identityProviders';
 import { useAppStore } from '~/store/app';
+import { useTenantStore } from '~/store/tenant';
 import { rbacService } from '../services';
 
 /**
@@ -120,6 +121,9 @@ export const useAuthStore = defineStore('auth', {
           });
       } else {
         this.currentUser = defaultUser;
+        // Reset tenant store on logout
+        const tenantStore = useTenantStore();
+        tenantStore.resetTenant();
       }
     },
     async login(idpHint) {
