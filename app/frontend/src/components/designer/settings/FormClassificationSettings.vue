@@ -172,16 +172,7 @@ initializeRetentionUI();
 
 // Reset classification fields when hard deletion is disabled
 const handleEnableChange = (enabled) => {
-  if (!enabled) {
-    form.value.classificationType = null;
-    form.value.retentionDays = null;
-    actualRetentionDays.value = null;
-    form.value.classificationDescription = null;
-    showCustomDays.value = false;
-    customDays.value = null;
-    isCustomRetention.value = false;
-    selectedRetentionOption.value = null;
-  } else {
+  if (enabled) {
     // When enabling, default to a classification type if none exists
     if (!form.value.classificationType) {
       form.value.classificationType = DataClassificationTypes.INTERNAL;
@@ -196,6 +187,15 @@ const handleEnableChange = (enabled) => {
       actualRetentionDays.value = 30;
       form.value.retentionDays = 30; // Store actual days in the form
     }
+  } else {
+    form.value.classificationType = null;
+    form.value.retentionDays = null;
+    actualRetentionDays.value = null;
+    form.value.classificationDescription = null;
+    showCustomDays.value = false;
+    customDays.value = null;
+    isCustomRetention.value = false;
+    selectedRetentionOption.value = null;
   }
 };
 

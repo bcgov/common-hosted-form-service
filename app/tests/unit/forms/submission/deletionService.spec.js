@@ -73,10 +73,10 @@ describe('deletionService', () => {
   describe('processHardDeletions', () => {
     it('should process eligible submissions for deletion', async () => {
       // Mock Date for consistent testing
-      const realDate = global.Date;
+      const realDate = globalThis.Date;
       const mockDate = new Date('2023-05-15');
-      global.Date = jest.fn(() => mockDate);
-      global.Date.now = realDate.now;
+      globalThis.Date = jest.fn(() => mockDate);
+      globalThis.Date.now = realDate.now;
 
       // Directly return the expected result
       deletionService.processHardDeletions.mockResolvedValueOnce({ processed: 2, deleted: 2 });
@@ -89,15 +89,15 @@ describe('deletionService', () => {
       expect(deletionService.processHardDeletions).toHaveBeenCalled();
 
       // Restore Date
-      global.Date = realDate;
+      globalThis.Date = realDate;
     });
 
     it('should not delete submissions that have not reached retention period', async () => {
       // Mock Date for consistent testing
-      const realDate = global.Date;
+      const realDate = globalThis.Date;
       const mockDate = new Date('2023-05-15');
-      global.Date = jest.fn(() => mockDate);
-      global.Date.now = realDate.now;
+      globalThis.Date = jest.fn(() => mockDate);
+      globalThis.Date.now = realDate.now;
 
       // Set up our mock to return specific value for this test
       deletionService.processHardDeletions.mockResolvedValueOnce({ processed: 1, deleted: 0 });
@@ -109,7 +109,7 @@ describe('deletionService', () => {
       expect(result).toEqual({ processed: 1, deleted: 0 });
 
       // Restore Date
-      global.Date = realDate;
+      globalThis.Date = realDate;
     });
 
     it('should force delete submissions when forceProcess=true', async () => {
@@ -228,10 +228,10 @@ describe('deletionService', () => {
       const submissionId = uuid.v4();
 
       // Mock Date for consistent testing
-      const realDate = global.Date;
+      const realDate = globalThis.Date;
       const mockDate = new Date('2023-05-15');
-      global.Date = jest.fn(() => mockDate);
-      global.Date.now = realDate.now;
+      globalThis.Date = jest.fn(() => mockDate);
+      globalThis.Date.now = realDate.now;
 
       // Clear previous mocks
       MockModel.findById.mockReset();
@@ -280,7 +280,7 @@ describe('deletionService', () => {
       });
 
       // Restore Date
-      global.Date = realDate;
+      globalThis.Date = realDate;
     });
 
     it('should handle missing submission', async () => {
