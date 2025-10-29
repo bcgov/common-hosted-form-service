@@ -53,7 +53,8 @@ module.exports = {
   },
   getCurrentUserForms: async (req, res, next) => {
     try {
-      const response = await service.getCurrentUserForms(req.currentUser, req.query);
+      // Pass headers for tenant API authentication
+      const response = await service.getCurrentUserForms(req.currentUser, req.query, req.headers);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -155,7 +156,9 @@ module.exports = {
   },
   getCurrentUserTenants: async (req, res, next) => {
     try {
-      if (!req.currentUser || !req.currentUser.idpUserId) return res.status(200).json([]);
+      if (!req.currentUser || !req.currentUser.idpUserId) {
+        return res.status(200).json([]);
+      }
       const tenants = await tenantService.getCurrentUserTenants(req);
       res.status(200).json(tenants);
     } catch (error) {
@@ -182,7 +185,6 @@ module.exports = {
       const result = await tenantService.assignGroupsToForm(req, formId, groupIds);
       res.status(200).json({ success: result });
     } catch (error) {
-      console.error('Error in assignGroupsToForm:', error);
       next(error);
     }
   },

@@ -104,7 +104,12 @@ module.exports = {
   },
   createForm: async (req, res, next) => {
     try {
-      const response = await service.createForm(req.body, req.currentUser);
+      // Extract only what the service needs - following existing pattern
+      const response = await service.createForm(
+        req.body,
+        req.currentUser,
+        req.headers // Pass headers for tenant API authentication
+      );
       res.status(201).json(response);
     } catch (error) {
       next(error);

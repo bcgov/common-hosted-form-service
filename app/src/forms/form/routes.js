@@ -2,15 +2,12 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const apiAccess = require('../auth/middleware/apiAccess');
-const { currentUser, hasFormPermissions, requireCreateFormPermission, requireFormTenantAssociation } = require('../auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, requireCreateFormPermission } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 
 routes.use(currentUser);
-// Apply tenant association check to all routes in this router.
-// It will check req.params.formId or req.query.formId if present, otherwise no-op.
-routes.use(requireFormTenantAssociation);
 
 routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);
