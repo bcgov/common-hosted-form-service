@@ -171,6 +171,10 @@ export default class Component extends FieldComponent {
             </div>
           </div>
         </div>
+
+        <!-- Validation message area -->
+        <div class="validation-message">
+        </div>
       </div>
     `;
 
@@ -190,6 +194,7 @@ export default class Component extends FieldComponent {
     this.searchButton = container.querySelector('.search-button');
     this.searchResults = container.querySelector('.search-results');
     this.userResults = container.querySelector('.idir-user-results');
+    this.userResultsTable = container.querySelector('.idir-user-results .table-responsive');
     this.userSelection = container.querySelector('.idir-user-selection');
     this.selectedUserInfo = container.querySelector('.selected-user-info');
     this.clearSelection = container.querySelector('.clear-selection');
@@ -246,6 +251,7 @@ export default class Component extends FieldComponent {
 
     this.lastQuery = queryString;
     this.pendingRequest = true;
+    this.setCustomValidity('');
 
     const url = `${this.component.apiEndpoint}?${queryString}`;
 
@@ -256,13 +262,17 @@ export default class Component extends FieldComponent {
     .then(response => response.json())
     .then(data => {
       this.pendingRequest = false;
-      this.searchResultsData = _.get(data, 'data') || [];
+      if (data) this.searchResultsData = _.get(data, 'data') || [];
+      if (this.searchResultsData.length == 0) {
+        this.setCustomValidity('Your search returns 0 results.');
+      }
       this.renderSearchResults();
     })
     .catch(err => {
       console.error('Error in search:', err);
       this.pendingRequest = false;
       this.searchResultsData = [];
+      this.setCustomValidity(err);
       this.renderSearchResults();
     });
   }
@@ -274,6 +284,8 @@ export default class Component extends FieldComponent {
     // Clear existing results
     this.searchResults.innerHTML = '';
 
+    this.userResults.style.display = 'block';
+  
     // Show/hide the results container
     if (this.searchResultsData.length > 0) {
       this.userResults.style.display = 'block';
@@ -329,6 +341,11 @@ export default class Component extends FieldComponent {
     
     // Hide the results after selection
     this.userResults.style.display = 'none';
+  
+    // Clear search fields
+    if (this.emailInput) this.emailInput.value = '';
+    if (this.firstNameInput) this.firstNameInput.value = '';
+    if (this.lastNameInput) this.lastNameInput.value = '';
   }
 
   // Display the selected user information
@@ -368,7 +385,7 @@ export default class Component extends FieldComponent {
       if (!validationEl) {
         validationEl = document.createElement('div');
         validationEl.className = 'idir-user-validation text-danger mt-2';
-        this.element.querySelector('.idir-user-selector-container').appendChild(validationEl);
+        this.element.querySelector('.validation-message').appendChild(validationEl);
       }
       validationEl.textContent = message;
     } else {
