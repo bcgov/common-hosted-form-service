@@ -275,6 +275,28 @@ const { authenticated, ready } = storeToRefs(useAuthStore());
         word-break: break-word !important;
       }
 
+      :deep(.classic-chefs-link-item) {
+        color: var(--v-primary) !important;
+        border-bottom: none !important;
+        border-top: none !important;
+        min-height: auto !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+
+        :deep(.v-icon) {
+          margin-right: 1rem !important;
+        }
+
+        span {
+          white-space: normal !important;
+          word-break: break-word !important;
+          line-height: 1.4;
+          display: block;
+        }
+      }
+
       :deep(.cstar-link-item) {
         color: var(--v-primary) !important;
         border-bottom: none !important;

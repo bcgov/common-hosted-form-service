@@ -14,6 +14,7 @@ import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 import { useNotificationStore } from '~/store/notification';
 import { FormDesignerBuilderOptions } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
@@ -72,6 +73,7 @@ const saving = ref(false);
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const tenantStore = useTenantStore();
 const notificationStore = useNotificationStore();
 
 const { tokenParsed, user } = storeToRefs(authStore);
@@ -382,33 +384,36 @@ async function onRedoClick() {
 }
 
 async function schemaCreateNew() {
-  const response = await formService.createForm({
-    name: form.value.name,
-    description: form.value.description,
-    schema: formSchema.value,
-    identityProviders: generateIdps({
-      idps: form.value.idps,
-      userType: form.value.userType,
-    }),
-    sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
-    enableSubmitterDraft: form.value.enableSubmitterDraft,
-    allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
-    enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
-    wideFormLayout: form.value.wideFormLayout,
-    enableStatusUpdates: form.value.enableStatusUpdates,
-    enableSubmitterRevision: form.value.enableSubmitterRevision,
-    showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
-    showSubmissionConfirmation: form.value.showSubmissionConfirmation,
-    submissionReceivedEmails: form.value.submissionReceivedEmails,
-    reminder_enabled: false,
-    deploymentLevel: form.value.deploymentLevel,
-    ministry: form.value.ministry,
-    apiIntegration: form.value.apiIntegration,
-    useCase: form.value.useCase,
-    labels: form.value.labels,
-    formMetadata: form.value.formMetadata,
-    eventStreamConfig: form.value.eventStreamConfig,
-  });
+  const response = await formService.createForm(
+    {
+      name: form.value.name,
+      description: form.value.description,
+      schema: formSchema.value,
+      identityProviders: generateIdps({
+        idps: form.value.idps,
+        userType: form.value.userType,
+      }),
+      sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
+      enableSubmitterDraft: form.value.enableSubmitterDraft,
+      allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
+      enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
+      wideFormLayout: form.value.wideFormLayout,
+      enableStatusUpdates: form.value.enableStatusUpdates,
+      enableSubmitterRevision: form.value.enableSubmitterRevision,
+      showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
+      showSubmissionConfirmation: form.value.showSubmissionConfirmation,
+      submissionReceivedEmails: form.value.submissionReceivedEmails,
+      reminder_enabled: false,
+      deploymentLevel: form.value.deploymentLevel,
+      ministry: form.value.ministry,
+      apiIntegration: form.value.apiIntegration,
+      useCase: form.value.useCase,
+      labels: form.value.labels,
+      formMetadata: form.value.formMetadata,
+      eventStreamConfig: form.value.eventStreamConfig,
+    },
+    tenantStore.selectedTenant?.id
+  );
   // update user labels with any new added labels
   if (
     form.value.labels.some((label) => userLabels.value.indexOf(label) === -1)

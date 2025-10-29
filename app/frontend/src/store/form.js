@@ -160,6 +160,8 @@ export const useFormStore = defineStore('form', {
         }));
         this.formList = forms;
       } catch (error) {
+        // Clear form list on error to show empty state
+        this.formList = [];
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.getCurrUserFormsErrMsg'),

@@ -20,10 +20,12 @@ export default {
    * @function createForm
    * Create a new Form
    * @param {Object} formData An object containing the form details
+   * @param {string} [tenantId] Optional tenant ID for multi-tenant form creation
    * @returns {Promise} An axios response
    */
-  createForm(formData) {
-    return appAxios().post(`${ApiRoutes.FORMS}`, formData);
+  createForm(formData, tenantId = null) {
+    const params = tenantId ? { tenantId } : {};
+    return appAxios().post(`${ApiRoutes.FORMS}`, formData, { params });
   },
 
   /**
@@ -31,10 +33,12 @@ export default {
    * Update a Form
    * @param {string} formId The form uuid
    * @param {Object} formData An object containing the form details
+   * @param {string} [tenantId] Optional tenant ID for multi-tenant form updates
    * @returns {Promise} An axios response
    */
-  updateForm(formId, formData) {
-    return appAxios().put(`${ApiRoutes.FORMS}/${formId}`, formData);
+  updateForm(formId, formData, tenantId = null) {
+    const params = tenantId ? { tenantId } : {};
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}`, formData, { params });
   },
 
   /**

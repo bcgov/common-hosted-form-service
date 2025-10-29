@@ -6,9 +6,14 @@
   >
     <!-- Label with info icon -->
     <div class="tenant-label-wrapper">
-      <v-icon size="small" class="info-icon">mdi-information-outline</v-icon>
-      <label for="tenant-select" class="tenant-label">
-        Select tenant (opens in Enterprise CHEFS)
+      <v-icon
+        size="small"
+        class="info-icon"
+        title="Enterprise CHEFS is the new version of CHEFS that supports multi-tenant access. Selecting your tenant will take you there automatically."
+        >mdi-information-outline</v-icon
+      >
+      <label for="tenant-select" class="tenant-label"
+        >Select tenant (opens in Enterprise CHEFS)
       </label>
     </div>
 
@@ -20,7 +25,7 @@
         :items="allTenantOptions"
         :loading="tenantStore.loading"
         :disabled="tenantStore.loading"
-        placeholder="Select a tenant"
+        placeholder="Select from available tenants"
         item-title="name"
         item-value="id"
         no-data-text="No tenants found"
@@ -29,8 +34,21 @@
         class="tenant-select"
         @update:model-value="handleTenantChange"
       >
-        <!-- CSTAR Link at bottom of dropdown -->
+        <!-- CSTAR Link and Classic CHEFS at bottom of dropdown -->
         <template #append-item>
+          <v-divider />
+          <!-- Classic CHEFS link - only show when tenant is selected -->
+          <v-list-item
+            v-if="tenantStore.selectedTenant"
+            class="classic-chefs-link-item"
+            @click="switchToClassicChefs"
+          >
+            <template #prepend>
+              <v-icon size="small">mdi-swap-horizontal</v-icon>
+            </template>
+            <span>Switch to Classic CHEFS</span>
+          </v-list-item>
+          <v-divider v-if="tenantStore.selectedTenant" />
           <v-list-item class="cstar-link-item" @click="goToCSTAR">
             <template #prepend>
               <v-icon size="small">mdi-open-in-new</v-icon>
@@ -64,40 +82,67 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useTenantStore } from '~/store/tenant';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 
+const router = useRouter();
 const tenantStore = useTenantStore();
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
 const selectedValue = ref(null);
 
-// Classic CHEFS option - allows switching to non-tenanted version
-const CLASSIC_CHEFS_OPTION = {
-  id: 'classic-chefs',
-  name: 'Classic CHEFS',
-  displayName: 'Classic CHEFS',
-  isClassic: true,
-};
-
-// Build dropdown items with Classic CHEFS at the top
+// Build dropdown items with only actual tenants (no Classic CHEFS option)
 const allTenantOptions = computed(() => {
-  const options = [CLASSIC_CHEFS_OPTION];
-  return options.concat(tenantStore.tenantsList);
+  return tenantStore.tenantsList;
 });
 
 // Handle tenant selection change
 const handleTenantChange = async (value) => {
-  if (value === 'classic-chefs') {
-    // User selected Classic CHEFS
-    tenantStore.clearSelectedTenant();
-    selectedValue.value = 'classic-chefs';
-  } else if (value) {
-    const tenant = tenantStore.getTenantById(value);
-    if (tenant) {
-      tenantStore.selectTenant(tenant);
-      selectedValue.value = value;
+  try {
+    if (value) {
+      const tenant = tenantStore.getTenantById(value);
+      if (tenant) {
+        tenantStore.selectTenant(tenant);
+        selectedValue.value = value;
+      }
+    } else {
+      tenantStore.clearSelectedTenant();
+      selectedValue.value = null;
     }
-  } else {
+
+    // Fetch forms for the selected tenant (or Classic CHEFS if no tenant)
+    // Form store will automatically clear formList on error
+    await formStore.getFormsForCurrentUser();
+
+    // Navigate to forms list page
+    await router.push({ name: 'FormList' });
+  } catch (error) {
+    notificationStore.addNotification({
+      text: 'Error switching tenant. Please try again.',
+      consoleError: error,
+    });
+  }
+};
+
+// Switch back to Classic CHEFS (non-tenanted mode)
+const switchToClassicChefs = async () => {
+  try {
     tenantStore.clearSelectedTenant();
     selectedValue.value = null;
+
+    // Fetch forms for Classic CHEFS mode (no tenant)
+    // Form store will automatically clear formList on error
+    await formStore.getFormsForCurrentUser();
+
+    // Navigate to forms list page
+    await router.push({ name: 'FormList' });
+  } catch (error) {
+    notificationStore.addNotification({
+      text: 'Error switching to Classic CHEFS. Please try again.',
+      consoleError: error,
+    });
   }
 };
 
@@ -117,10 +162,8 @@ onMounted(async () => {
     await tenantStore.fetchTenants();
   }
 
-  // Auto-select Classic CHEFS as default when tenants are available
-  if (tenantStore.hasTenants && !tenantStore.selectedTenant) {
-    selectedValue.value = 'classic-chefs';
-  } else if (tenantStore.selectedTenant) {
+  // Set selected value from store if tenant is selected
+  if (tenantStore.selectedTenant) {
     selectedValue.value = tenantStore.selectedTenant.id;
   }
 });
@@ -231,13 +274,17 @@ $tablet-breakpoint: 960px;
 
   :deep(.v-field__input) {
     font-size: 0.95rem;
-    min-height: 44px;
+    min-height: 32px !important;
+    height: 32px !important;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem !important;
+    padding: 8px 12px !important;
+    background-color: #f7f9fc !important;
+    color: #474543 !important;
+    box-shadow: 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.1) !important;
   }
 
   // Selected item text
@@ -264,20 +311,20 @@ $tablet-breakpoint: 960px;
   }
 
   :deep(.v-field__outline__start) {
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid #d8d8d8;
     border-right: none !important; // Prevent double borders
     border-radius: 4px 0 0 4px;
   }
 
   :deep(.v-field__outline__notch) {
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    border-top: 1px solid #d8d8d8;
+    border-bottom: 1px solid #d8d8d8;
     border-left: none !important; // Prevent visible lines
     border-right: none !important;
   }
 
   :deep(.v-field__outline__end) {
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid #d8d8d8;
     border-left: none !important; // Prevent double borders
     border-radius: 0 4px 4px 0;
   }
@@ -325,20 +372,24 @@ $tablet-breakpoint: 960px;
     }
   }
 
-  // Dropdown menu width - match input width
+  // Dropdown menu width - match input width (248px from Figma)
   :deep(.v-overlay__content) {
-    min-width: 280px !important;
-    max-width: 280px !important;
+    min-width: 248px !important;
+    max-width: 248px !important;
+    border-radius: 4px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 1.2px 3.6px 0 rgba(0, 0, 0, 0.18),
+      0 6.4px 14.4px 0 rgba(0, 0, 0, 0.1) !important;
 
     @media (max-width: $mobile-breakpoint) {
-      min-width: 280px !important;
+      min-width: 248px !important;
       max-width: 100vw !important;
     }
   }
 
   // Dropdown menu list styling
   :deep(.v-list) {
-    padding: 0 !important;
+    padding: 4px 0 !important;
   }
 
   // Style for all list items (tenant options)
@@ -347,8 +398,8 @@ $tablet-breakpoint: 960px;
     padding-right: 1rem !important;
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
-    min-height: 44px !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    min-height: auto !important;
+    border-bottom: none;
 
     &:last-of-type:not(.cstar-link-item) {
       border-bottom: none;
@@ -375,6 +426,43 @@ $tablet-breakpoint: 960px;
     color: rgba(0, 0, 0, 0.87);
     line-height: 1.4;
     margin: 0 !important;
+  }
+
+  // Classic CHEFS link item styling
+  :deep(.classic-chefs-link-item) {
+    cursor: pointer;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    min-height: auto !important;
+    font-size: 0.9rem !important;
+    color: var(--v-primary) !important;
+    font-weight: 500;
+    border-bottom: none;
+    border-top: none;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    :deep(.v-icon) {
+      color: var(--v-primary) !important;
+      margin-right: 1rem !important;
+      flex-shrink: 0;
+    }
+
+    :deep(.v-list-item__content) {
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+
+    span {
+      white-space: normal !important;
+      word-break: break-word !important;
+      line-height: 1.4;
+      display: block;
+    }
   }
 
   // CSTAR link item styling

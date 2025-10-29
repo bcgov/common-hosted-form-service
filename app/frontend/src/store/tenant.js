@@ -62,10 +62,7 @@ export const useTenantStore = defineStore('tenant', {
           this.selectedTenant = null;
         }
 
-        // If no selected tenant and tenants available, auto-select first
-        if (!this.selectedTenant && this.tenants.length > 0) {
-          this.selectTenant(this.tenants[0]);
-        }
+        // Don't auto-select first tenant - keep user in Classic CHEFS mode on login
       } catch (error) {
         this.error = error.message || 'Failed to fetch tenants';
         useNotificationStore().addNotification({
