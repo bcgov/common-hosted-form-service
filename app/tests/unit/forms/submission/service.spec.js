@@ -62,16 +62,16 @@ describe('deleteMultipleSubmissions', () => {
     const mockISOString = '2023-05-15T10:30:00.000Z';
 
     // Save the original Date constructor
-    const OriginalDate = global.Date;
+    const OriginalDate = globalThis.Date;
 
     // Replace the global Date constructor with a mock
-    global.Date = jest.fn(() => mockDate);
+    globalThis.Date = jest.fn(() => mockDate);
 
     // Add the toISOString method to the mock
-    global.Date.prototype.toISOString = jest.fn(() => mockISOString);
+    globalThis.Date.prototype.toISOString = jest.fn(() => mockISOString);
 
     // Copy any other methods you need from the original Date
-    global.Date.now = OriginalDate.now;
+    globalThis.Date.now = OriginalDate.now;
     let submissionId1 = uuid.v4();
     let submissionId2 = uuid.v4();
     const submissionIds = [submissionId1, submissionId2];
@@ -99,7 +99,7 @@ describe('deleteMultipleSubmissions', () => {
     expect(spy).toBeCalledWith(submissionIds);
     expect(res).toEqual(returnValue);
     // Then restore the original Date object when done
-    global.Date = OriginalDate;
+    globalThis.Date = OriginalDate;
   });
 });
 
