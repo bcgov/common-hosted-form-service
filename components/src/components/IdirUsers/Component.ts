@@ -283,7 +283,7 @@ export default class Component extends FieldComponent {
     }
 
     // Add rows for each result
-    this.searchResultsData.forEach(user => {
+    for (let user of this.searchResultsData) {
       const row = document.createElement('tr');
       
       // Name cell
@@ -314,7 +314,7 @@ export default class Component extends FieldComponent {
       row.appendChild(actionCell);
 
       this.searchResults.appendChild(row);
-    });
+    }
   }
 
   // Select a user from the results
