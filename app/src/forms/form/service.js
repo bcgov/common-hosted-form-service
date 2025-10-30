@@ -214,7 +214,7 @@ const service = {
       .modify('orderNameAscending');
   },
 
-  createForm: async (data, currentUser) => {
+  createForm: async (data, currentUser, headers = null) => {
     let trx;
     const scheduleData = service.validateScheduleObject(data.schedule);
     if (scheduleData.status !== 'success') {
@@ -249,6 +249,7 @@ const service = {
       obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
 
       await Form.query(trx).insert(obj);
+
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
         const fips = [];
         for (const p of data.identityProviders) {
@@ -260,6 +261,7 @@ const service = {
         }
         await FormIdentityProvider.query(trx).insert(fips);
       }
+
       // make this user have ALL the roles...
       if (!currentUser.tenantId) {
         const userRoles = Rolenames.map((r) => {
@@ -267,6 +269,7 @@ const service = {
         });
         await FormRoleUser.query(trx).insert(userRoles);
       }
+
       // create a unpublished draft
       const draft = {
         id: uuid.v4(),
@@ -290,6 +293,11 @@ const service = {
 
       // tenant specific processing
       if (currentUser.tenantId) {
+        // Validate that headers are provided for tenant operations
+        if (!headers) {
+          throw new Problem(500, 'Request headers required for tenant form creation');
+        }
+
         const formTenant = {
           id: uuid.v4(),
           formId: obj.id,
@@ -298,12 +306,17 @@ const service = {
         };
         await FormTenant.query(trx).insert(formTenant);
 
-        // Add form group entries for groups with form_admin role
-        const groups = await tenantService.getUserTenantGroupsAndRoles({ currentUser });
+        // Create minimal request-like object for tenantService
+        // Following the pattern that tenantService expects
+        const reqContext = { currentUser, headers };
+
+        const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext);
         const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes('form_admin'));
+
         if (adminGroups.length === 0) {
           throw new Problem(403, 'User does not belong to any group with form_admin role');
         }
+
         const formGroups = adminGroups.map((group) => ({
           id: uuid.v4(),
           formId: obj.id,
@@ -313,6 +326,7 @@ const service = {
         await FormGroup.query(trx).insert(formGroups);
       }
       //end tenant specific processing
+
       await trx.commit();
       const result = await service.readForm(obj.id);
       result.draft = draft;

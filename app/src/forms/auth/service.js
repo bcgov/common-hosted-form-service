@@ -91,7 +91,7 @@ const service = {
     };
   },
 
-  getUserForms: async (userInfo, params = {}) => {
+  getUserForms: async (userInfo, params = {}, headers = null) => {
     params = queryUtils.defaultActiveOnly(params);
     let items = [];
     if (userInfo && userInfo.public) {
@@ -100,15 +100,20 @@ const service = {
       // ignore any passed in accessLevel params, only return public
       return service.filterForms(userInfo, items, ['public']);
     } else if (userInfo && userInfo.tenantId) {
+      // Tenant users require headers for API authentication
+      if (!headers) {
+        throw new Error('Headers required for tenant user form access');
+      }
+
       items = await UserFormAccess.query()
         .modify('filterUserId', userInfo.id)
         .modify('filterFormId', params.formId)
         .modify('filterActive', params.active)
         .modify('filterTenantId', userInfo.tenantId);
 
-      // For each form, fetch roles from tenantService and map permissions
+      // For each form, fetch roles from tenantService with headers
       for (const item of items) {
-        const { roles, permissions } = await tenantService.getUserRolesAndPermissions(userInfo);
+        const { roles, permissions } = await tenantService.getUserRolesAndPermissions(userInfo, headers);
         item.roles = roles;
         item.permissions = permissions;
       }
