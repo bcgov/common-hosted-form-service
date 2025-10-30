@@ -3,6 +3,7 @@ const { ref } = require('objection');
 const uuid = require('uuid');
 const { EmailTypes, ScheduleType } = require('../common/constants');
 const eventService = require('../event/eventService');
+const authService = require('../auth/service');
 const moment = require('moment');
 const {
   DocumentTemplate,
@@ -380,16 +381,30 @@ const service = {
     }
   },
 
-  readForm: (formId, params = {}) => {
+  readForm: async (formId, params = {}, currentUser = null) => {
     params = queryUtils.defaultActiveOnly(params);
-    return Form.query()
+
+    let hasPermissionsForVersions = true;
+    // Making an assumption that user is turned away before this if it's protected and they're not logged in
+    if (currentUser !== null && currentUser !== undefined) {
+      const forms = await authService.getUserForms(currentUser, {
+        ...params,
+        active: true,
+        formId: formId,
+      });
+      hasPermissionsForVersions = forms.some((f) => f.permissions.includes(Permissions.DESIGN_CREATE));
+    }
+
+    const query = Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
       .allowGraph('[formMetadata,identityProviders,versions]')
       .withGraphFetched('formMetadata')
-      .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
-      .throwIfNotFound();
+      .withGraphFetched('identityProviders(orderDefault)');
+    if (hasPermissionsForVersions) {
+      query.withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)');
+    }
+    return query.throwIfNotFound();
   },
 
   readFormOptions: (formId, params = {}) => {

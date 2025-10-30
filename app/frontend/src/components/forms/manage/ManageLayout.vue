@@ -5,10 +5,11 @@ import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
+import { useNotificationStore } from '~/store/notification';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-const { locale } = useI18n({ useScope: 'global' });
+const { locale, t } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   f: {
@@ -19,6 +20,8 @@ const properties = defineProps({
 
 const loading = ref(true);
 
+const notificationStore = useNotificationStore();
+
 const { form, permissions, isRTL } = storeToRefs(useFormStore());
 
 onMounted(async () => {
@@ -26,10 +29,15 @@ onMounted(async () => {
 
   const formStore = useFormStore();
 
-  await Promise.all([
-    formStore.fetchForm(properties.f),
-    formStore.getFormPermissionsForUser(properties.f),
-  ]);
+  await formStore.fetchForm(properties.f);
+
+  if (formStore.form.versions) {
+    await formStore.getFormPermissionsForUser(properties.f);
+  } else {
+    notificationStore.addNotification({
+      text: t('trans.baseSecure.401UnAuthorizedErrMsg'),
+    });
+  }
 
   if (permissions.value.includes(FormPermissions.DESIGN_READ))
     await formStore.fetchDrafts(properties.f);
