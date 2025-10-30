@@ -84,6 +84,8 @@ describe('Form Designer', () => {
     cy.wait(2000);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
+    //Draft manage button existence
+    cy.get('.d-inline-block').should('not.exist');
     //form submission
     cy.get('button').contains('Submit').click();
     cy.waitForLoad();
