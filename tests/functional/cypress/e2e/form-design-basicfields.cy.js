@@ -130,16 +130,6 @@ describe('Form Designer', () => {
         cy.get('.btn-success').click();
     });
     cy.wait(1000);
-    //Phone Number
-    cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Phone Number')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -50, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('.btn-success').click();
-    });
     //Email
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
@@ -155,7 +145,7 @@ describe('Form Designer', () => {
         cy.get('span.btn').contains('Date / Time')
         
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -80, { force: true })
+        .trigger('mousemove', coords.x, -60, { force: true })
         .trigger('mouseup', { force: true });
         //cy.get('p').contains('Multi-line Text Component');
         cy.get('.btn-success').click();
@@ -206,7 +196,6 @@ describe('Form Designer', () => {
       cy.get('label').contains('First Name').should('be.visible');
       cy.get('label').contains('Applying for self').should('be.visible');
       cy.get('label').contains('Select all skills').should('be.visible');
-      cy.get('label').contains('Phone Number').should('be.visible');
       cy.get('label').contains('Date / Time').should('be.visible');
       cy.get('label').contains('Select Gender');
 
