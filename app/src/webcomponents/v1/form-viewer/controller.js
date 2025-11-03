@@ -50,15 +50,8 @@ module.exports = {
         return;
       }
 
-      // Create a mock user for external submissions
-      const externalUser = {
-        id: 'external-user',
-        usernameIdp: 'external',
-        username: 'external-user',
-      };
-
       // Create the submission
-      const response = await service.createSubmission(versionId, req.body, externalUser);
+      const response = await service.createSubmission(versionId, req.body, req.currentUser);
 
       // Placeholder for notifications/integrations
       res.status(201).json(response);

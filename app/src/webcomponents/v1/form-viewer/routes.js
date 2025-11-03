@@ -1,28 +1,57 @@
 const routes = require('express').Router();
 
 const validateParameter = require('../../../forms/common/middleware/validateParameter');
-const apiAccess = require('../../../forms/auth/middleware/apiAccess');
-const gatewayTokenVerify = require('../../common/middleware/gatewayTokenVerify');
+const { AuthCombinations } = require('../../../runtime-auth/security');
+const chefSecurity = require('../../common/security');
 const originAccess = require('../../common/middleware/originAccess');
 const controller = require('./controller');
+
+const P = require('../../../forms/common/constants').Permissions;
 
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formSubmissionId', validateParameter.validateFormSubmissionId);
 
 // Form viewer endpoints for web component
-// Order: cors -> apiAccess -> originAccess -> handler
-routes.get('/:formId/schema', apiAccess, gatewayTokenVerify, originAccess, async (req, res, next) => {
-  await controller.readFormSchema(req, res, next);
-});
+// Order: runtime-auth -> originAccess -> handler
 
-routes.post('/:formId/submit', apiAccess, gatewayTokenVerify, originAccess, async (req, res, next) => {
-  await controller.createSubmission(req, res, next);
-});
+// Schema endpoint - API auth (auto-infers formOnly from :formId)
+routes.get(
+  '/:formId/schema',
+  chefSecurity.inline({
+    allowedAuth: AuthCombinations.API_ONLY,
+    requiredPermissions: [P.FORM_READ],
+  }),
+  originAccess,
+  async (req, res, next) => {
+    await controller.readFormSchema(req, res, next);
+  }
+);
 
-// Read submission endpoint for webcomponent, protected by gatewayTokenVerify
-routes.get('/:formId/submission/:formSubmissionId', apiAccess, gatewayTokenVerify, originAccess, async (req, res, next) => {
-  await controller.readSubmission(req, res, next);
-});
+// Submit endpoint - API auth (auto-infers formOnly from :formId)
+routes.post(
+  '/:formId/submit',
+  chefSecurity.inline({
+    allowedAuth: AuthCombinations.API_ONLY,
+    requiredPermissions: [P.FORM_READ, P.SUBMISSION_CREATE],
+  }),
+  originAccess,
+  async (req, res, next) => {
+    await controller.createSubmission(req, res, next);
+  }
+);
+
+// Read submission endpoint - API auth (auto-infers submissionFromForm from both params)
+routes.get(
+  '/:formId/submission/:formSubmissionId',
+  chefSecurity.inline({
+    allowedAuth: AuthCombinations.API_ONLY,
+    requiredPermissions: [P.FORM_READ, P.SUBMISSION_READ],
+  }),
+  originAccess,
+  async (req, res, next) => {
+    await controller.readSubmission(req, res, next);
+  }
+);
 
 // Serve custom Form.io components (no authentication required)
 routes.get('/components', originAccess, async (req, res, next) => {

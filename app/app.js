@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('node:path');
 const Problem = require('api-problem');
 const querystring = require('node:querystring');
+const clsRtracer = require('cls-rtracer');
 
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
@@ -38,6 +39,11 @@ app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', 1);
 
 app.set('x-powered-by', false);
+
+// Add correlation ID middleware early in the chain
+// useHeader: true - Use existing X-Request-ID header if present, otherwise generate one
+// echoHeader: true - Add the request ID to response headers
+app.use(clsRtracer.expressMiddleware({ enableRequestId: true, useHeader: true, echoHeader: true }));
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {

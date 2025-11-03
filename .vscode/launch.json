@@ -25,7 +25,7 @@
       "name": "CHEFS API",
       "outputCapture": "std",
       "request": "launch",
-      "runtimeArgs": ["run", "serve"],
+      "runtimeArgs": ["run", "serve", "--trace-warnings"],
       "runtimeExecutable": "npm",
       "type": "node",
       "env": {
@@ -71,6 +71,23 @@
         "--config",
         "${workspaceFolder}/app/jest.config.js",
         "--coverage=true"
+      ],
+      "console": "integratedTerminal",
+      "windows": {
+        "program": "${workspaceFolder}/app/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest: current file (no coverage)",
+      "env": { "NODE_ENV": "test" },
+      "program": "${workspaceFolder}/app/node_modules/.bin/jest",
+      "args": [
+        "${file}",
+        "--config",
+        "${workspaceFolder}/app/jest.config.js",
+        "--coverage=false"
       ],
       "console": "integratedTerminal",
       "windows": {

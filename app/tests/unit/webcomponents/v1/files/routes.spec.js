@@ -11,14 +11,89 @@ jest.mock('../../../../../src/forms/common/middleware/validateParameter', () => 
     next();
   },
 }));
-jest.mock('../../../../../src/forms/auth/middleware/apiAccess', () => (req, res, next) => next());
-jest.mock('../../../../../src/webcomponents/common/middleware/gatewayTokenVerify', () => (req, res, next) => next());
-jest.mock('../../../../../src/webcomponents/common/middleware/originAccess', () => (req, res, next) => next());
-jest.mock('../../../../../src/forms/file/middleware/filePermissions', () => ({
-  currentFileRecord: (req, res, next) => next(),
+jest.mock('../../../../../src/runtime-auth/security', () => ({
+  AuthCombinations: {
+    API_ONLY: 'API_ONLY',
+  },
   hasFileCreate: (req, res, next) => next(),
-  hasFilePermissions: () => (req, res, next) => next(),
+  hasFilePermissions: () => (req, res, next) => {
+    // Mock security context for testing
+    req.securityContext = {
+      authenticated: true,
+      actor: {
+        type: 'webcomponent',
+        subtype: 'webcomponent',
+        id: 'test-form-id',
+      },
+      authorization: {
+        hasAccess: true,
+        permissions: ['submission_read', 'submission_create', 'submission_update'],
+      },
+      resource: {
+        type: 'file',
+        id: 'test-file-id',
+        metadata: {
+          submissionId: 'test-submission-id',
+          originalName: 'test-file.pdf',
+          size: 1024,
+          mimeType: 'application/pdf',
+          createdBy: 'test-user',
+          createdAt: '2023-01-01T00:00:00Z',
+          formActive: true,
+          formPublicAllowed: true,
+        },
+      },
+    };
+    req.apiUser = true;
+    req.currentUser = { id: 'test-user' };
+    req.currentFileRecord = {
+      id: req.params.fileId || 'test-file-id',
+      formSubmissionId: 'test-submission-id',
+      originalName: 'test-file.pdf',
+      size: 1024,
+      mimeType: 'application/pdf',
+      createdBy: 'test-user',
+      createdAt: '2023-01-01T00:00:00Z',
+    };
+    next();
+  },
 }));
+jest.mock('../../../../../src/webcomponents/common/security', () => ({
+  // eslint-disable-next-line no-unused-vars
+  inline: (spec) => (req, res, next) => {
+    // Mock security context for testing
+    req.securityContext = {
+      authenticated: true,
+      actor: {
+        type: 'webcomponent',
+        subtype: 'webcomponent',
+        id: 'test-form-id',
+      },
+      authorization: {
+        hasAccess: true,
+        permissions: ['submission_read', 'submission_create', 'submission_update'],
+      },
+      resource: {
+        type: 'file',
+        id: 'test-file-id',
+        metadata: {
+          submissionId: 'test-submission-id',
+          originalName: 'test-file.pdf',
+          size: 1024,
+          mimeType: 'application/pdf',
+          createdBy: 'test-user',
+          createdAt: '2023-01-01T00:00:00Z',
+          formActive: true,
+          formPublicAllowed: true,
+        },
+      },
+    };
+    req.apiUser = true;
+    req.currentUser = { id: 'test-user' };
+    next();
+  },
+}));
+jest.mock('../../../../../src/webcomponents/common/middleware/originAccess', () => (req, res, next) => next());
 jest.mock('../../../../../src/forms/file/middleware/upload', () => ({
   fileUpload: { upload: (req, res, next) => next() },
 }));

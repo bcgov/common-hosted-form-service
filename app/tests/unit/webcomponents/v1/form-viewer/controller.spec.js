@@ -78,7 +78,11 @@ describe('webcomponents/v1/form-viewer controller', () => {
     it('creates submission and returns 201', async () => {
       jest.spyOn(service, 'readPublishedForm').mockResolvedValue({ versions: [{ id: 'ver-1' }] });
       jest.spyOn(service, 'createSubmission').mockResolvedValue({ id: 'sub-1' });
-      const req = { params: { formId: uuidv4() }, body: { submission: { data: { a: 1 } } } };
+      const req = {
+        params: { formId: uuidv4() },
+        body: { submission: { data: { a: 1 } } },
+        currentUser: { id: 'external-user' },
+      };
       const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
       const next = jest.fn();
       await controller.createSubmission(req, res, next);
