@@ -1,5 +1,5 @@
 const { defineConfig } = require('cypress')
-const fs = require('fs');
+const fs = require('fs'); // Module for file system
 
 module.exports = defineConfig({
   env: {
