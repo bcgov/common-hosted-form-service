@@ -16,6 +16,10 @@ class AxiosService {
     this.serviceName = serviceName;
     this.version = version;
   }
+
+  getBaseUrl() {
+    return `${this.apiUrl}/${this.version}`;
+  }
 }
 
 module.exports = AxiosService;

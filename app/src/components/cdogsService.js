@@ -19,7 +19,7 @@ class CdogsService extends AxiosService {
 
   async templateUploadAndRender(body) {
     try {
-      const url = `${this.apiUrl}/${this.version}/template/render`;
+      const url = `${this.getBaseUrl()}/template/render`;
       log.debug(`POST to ${url}`, { function: 'templateUploadAndRender' });
 
       const { data, headers, status } = await this.axios.post(url, body, {

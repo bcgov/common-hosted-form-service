@@ -19,7 +19,7 @@ class ChesService extends AxiosService {
 
   async health() {
     try {
-      const response = await this.axios.get(`${this.apiUrl}/${this.version}/health`, {
+      const response = await this.axios.get(`${this.getBaseUrl()}/health`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -32,7 +32,7 @@ class ChesService extends AxiosService {
 
   async statusQuery(params) {
     try {
-      const response = await this.axios.get(`${this.apiUrl}/${this.version}/status`, {
+      const response = await this.axios.get(`${this.getBaseUrl()}/status`, {
         params: params,
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ class ChesService extends AxiosService {
 
   async cancelMsg(msgId) {
     try {
-      const response = await this.axios.delete(`${this.apiUrl}/${this.version}/cancel/${msgId}`, {
+      const response = await this.axios.delete(`${this.getBaseUrl()}/cancel/${msgId}`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -59,7 +59,7 @@ class ChesService extends AxiosService {
 
   async cancelQuery(params) {
     try {
-      const response = await this.axios.delete(`${this.apiUrl}/${this.version}/cancel`, {
+      const response = await this.axios.delete(`${this.getBaseUrl()}/cancel`, {
         params: params,
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ class ChesService extends AxiosService {
 
   async send(email) {
     try {
-      const response = await this.axios.post(`${this.apiUrl}/${this.version}/email`, email, {
+      const response = await this.axios.post(`${this.getBaseUrl()}/email`, email, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -89,7 +89,7 @@ class ChesService extends AxiosService {
   async merge(data) {
     // eslint-disable-next-line no-console
     try {
-      const response = await this.axios.post(`${this.apiUrl}/${this.version}/emailMerge`, data, {
+      const response = await this.axios.post(`${this.getBaseUrl()}/emailMerge`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -104,7 +104,7 @@ class ChesService extends AxiosService {
 
   async preview(data) {
     try {
-      const response = await this.axios.post(`${this.apiUrl}/${this.version}/emailMerge/preview`, data, {
+      const response = await this.axios.post(`${this.getBaseUrl()}/emailMerge/preview`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
