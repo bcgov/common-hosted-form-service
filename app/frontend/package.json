@@ -31,6 +31,7 @@
     "purge:formio": "node ./scripts/component-update.js purge",
     "rebuild": "npm run clean && npm run build",
     "reinstall": "npm run purge && npm install",
+    "rebuild:formio": "npm run build:formio && npm run deploy:formio && npm run dev",
     "dev": "vite --port 5173 --host"
   },
   "dependencies": {
