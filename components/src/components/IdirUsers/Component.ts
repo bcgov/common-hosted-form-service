@@ -39,7 +39,7 @@ export default class Component extends FieldComponent {
     };
   }
 
-  public static editForm = editForm;
+  public static readonly editForm = editForm;
 
   // Track component state
   componentID: string;

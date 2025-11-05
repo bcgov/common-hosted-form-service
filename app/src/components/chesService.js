@@ -1,27 +1,25 @@
 const Problem = require('api-problem');
 const config = require('config');
-
-const ClientConnection = require('./clientConnection');
+const AxiosService = require('./axiosService');
 const log = require('./log')(module.filename);
 
 const SERVICE = 'CHES';
 
-class ChesService {
-  constructor({ tokenUrl, clientId, clientSecret, apiUrl }) {
-    log.debug(`Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`, { function: 'constructor' });
-    if (!tokenUrl || !clientId || !clientSecret || !apiUrl) {
-      log.error('Invalid configuration.', { function: 'constructor' });
-      throw new Error('ChesService is not configured. Check configuration.');
-    }
-    this.connection = new ClientConnection({ tokenUrl, clientId, clientSecret });
-    this.axios = this.connection.axios;
-    this.apiUrl = apiUrl;
-    this.apiV1 = `${this.apiUrl}/v1`;
+class ChesService extends AxiosService {
+  constructor() {
+    super({
+      tokenUrl: config.get('serviceClient.commonServices.ches.tokenEndpoint'),
+      clientId: config.get('serviceClient.commonServices.ches.clientId'),
+      clientSecret: config.get('serviceClient.commonServices.ches.clientSecret'),
+      apiUrl: config.get('serviceClient.commonServices.ches.endpoint'),
+      serviceName: SERVICE,
+      version: 'v1',
+    });
   }
 
   async health() {
     try {
-      const response = await this.axios.get(`${this.apiV1}/health`, {
+      const response = await this.axios.get(`${this.apiUrl}/${this.version}/health`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -34,7 +32,7 @@ class ChesService {
 
   async statusQuery(params) {
     try {
-      const response = await this.axios.get(`${this.apiV1}/status`, {
+      const response = await this.axios.get(`${this.apiUrl}/${this.version}/status`, {
         params: params,
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +46,7 @@ class ChesService {
 
   async cancelMsg(msgId) {
     try {
-      const response = await this.axios.delete(`${this.apiV1}/cancel/${msgId}`, {
+      const response = await this.axios.delete(`${this.apiUrl}/${this.version}/cancel/${msgId}`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -61,7 +59,7 @@ class ChesService {
 
   async cancelQuery(params) {
     try {
-      const response = await this.axios.delete(`${this.apiV1}/cancel`, {
+      const response = await this.axios.delete(`${this.apiUrl}/${this.version}/cancel`, {
         params: params,
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +73,7 @@ class ChesService {
 
   async send(email) {
     try {
-      const response = await this.axios.post(`${this.apiV1}/email`, email, {
+      const response = await this.axios.post(`${this.apiUrl}/${this.version}/email`, email, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -91,7 +89,7 @@ class ChesService {
   async merge(data) {
     // eslint-disable-next-line no-console
     try {
-      const response = await this.axios.post(`${this.apiV1}/emailMerge`, data, {
+      const response = await this.axios.post(`${this.apiUrl}/${this.version}/emailMerge`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -106,7 +104,7 @@ class ChesService {
 
   async preview(data) {
     try {
-      const response = await this.axios.post(`${this.apiV1}/emailMerge/preview`, data, {
+      const response = await this.axios.post(`${this.apiUrl}/${this.version}/emailMerge/preview`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -133,10 +131,4 @@ class ChesService {
   }
 }
 
-const endpoint = config.get('serviceClient.commonServices.ches.endpoint');
-const tokenEndpoint = config.get('serviceClient.commonServices.ches.tokenEndpoint');
-const clientId = config.get('serviceClient.commonServices.ches.clientId');
-const clientSecret = config.get('serviceClient.commonServices.ches.clientSecret');
-
-let chesService = new ChesService({ tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint });
-module.exports = chesService;
+module.exports = new ChesService();

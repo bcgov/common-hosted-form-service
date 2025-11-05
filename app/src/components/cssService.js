@@ -1,43 +1,38 @@
 const config = require('config');
-
-const ClientConnection = require('./clientConnection');
+const AxiosService = require('./axiosService');
 const errorToProblem = require('./errorToProblem');
 const log = require('./log')(module.filename);
 
-const SERVICE = 'Css';
+const SERVICE = 'CSS';
 
-class CssService {
-  constructor({ tokenUrl, clientId, clientSecret, apiUrl }) {
-    log.debug(`Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`, { function: 'constructor' });
-    if (!tokenUrl || !clientId || !clientSecret || !apiUrl) {
-      log.error('Invalid configuration.', { function: 'constructor' });
-      throw new Error('CssService is not configured. Check configuration.');
-    }
-    this.connection = new ClientConnection({ tokenUrl, clientId, clientSecret });
-    this.axios = this.connection.axios;
-    this.apiUrl = apiUrl;
-    this.apiV1 = `${this.apiUrl}/v1`;
+const environment = config.get('serviceClient.commonServices.css.environment');
+
+class CssService extends AxiosService {
+  constructor() {
+    super({
+      tokenUrl: config.get('serviceClient.commonServices.css.tokenEndpoint'),
+      clientId: config.get('serviceClient.commonServices.css.clientId'),
+      clientSecret: config.get('serviceClient.commonServices.css.clientSecret'),
+      apiUrl: config.get('serviceClient.commonServices.css.endpoint'),
+      serviceName: SERVICE,
+      version: 'v1',
+    });
   }
 
   async queryIdirUsers({ email, firstName, lastName, guid }) {
     try {
-      const url = `${this.apiV1}/${environment}/idir/users`;
+      const url = `${this.apiUrl}/${this.version}/${environment}/idir/users`;
+      log.debug(`POST to ${url}`, { function: 'queryIdirUsers' });
 
       const response = await this.axios.get(url, {
         params: { email, firstName, lastName, guid },
       });
+
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      errorToProblem(this.serviceName, e);
     }
   }
 }
 
-const endpoint = config.get('serviceClient.commonServices.css.endpoint');
-const tokenEndpoint = config.get('serviceClient.commonServices.css.tokenEndpoint');
-const clientId = config.get('serviceClient.commonServices.css.clientId');
-const clientSecret = config.get('serviceClient.commonServices.css.clientSecret');
-const environment = config.get('serviceClient.commonServices.css.environment');
-
-let cssService = new CssService({ tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint });
-module.exports = cssService;
+module.exports = new CssService();

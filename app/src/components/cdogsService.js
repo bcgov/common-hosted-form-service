@@ -1,27 +1,25 @@
 const config = require('config');
-
-const ClientConnection = require('./clientConnection');
+const AxiosService = require('./axiosService');
 const errorToProblem = require('./errorToProblem');
 const log = require('./log')(module.filename);
 
 const SERVICE = 'CDOGS';
 
-class CdogsService {
-  constructor({ tokenUrl, clientId, clientSecret, apiUrl }) {
-    log.debug(`Constructed with ${tokenUrl}, ${clientId}, clientSecret, ${apiUrl}`, { function: 'constructor' });
-    if (!tokenUrl || !clientId || !clientSecret || !apiUrl) {
-      log.error('Invalid configuration.', { function: 'constructor' });
-      throw new Error('CdogsService is not configured. Check configuration.');
-    }
-    this.connection = new ClientConnection({ tokenUrl, clientId, clientSecret });
-    this.axios = this.connection.axios;
-    this.apiUrl = apiUrl;
-    this.apiV2 = `${this.apiUrl}/v2`;
+class CdogsService extends AxiosService {
+  constructor() {
+    super({
+      tokenUrl: config.get('serviceClient.commonServices.cdogs.tokenEndpoint'),
+      clientId: config.get('serviceClient.commonServices.cdogs.clientId'),
+      clientSecret: config.get('serviceClient.commonServices.cdogs.clientSecret'),
+      apiUrl: config.get('serviceClient.commonServices.cdogs.endpoint'),
+      serviceName: SERVICE,
+      version: 'v2',
+    });
   }
 
   async templateUploadAndRender(body) {
     try {
-      const url = `${this.apiV2}/template/render`;
+      const url = `${this.apiUrl}/${this.version}/template/render`;
       log.debug(`POST to ${url}`, { function: 'templateUploadAndRender' });
 
       const { data, headers, status } = await this.axios.post(url, body, {
@@ -30,15 +28,9 @@ class CdogsService {
 
       return { data, headers, status };
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      errorToProblem(this.serviceName, e);
     }
   }
 }
 
-const endpoint = config.get('serviceClient.commonServices.cdogs.endpoint');
-const tokenEndpoint = config.get('serviceClient.commonServices.cdogs.tokenEndpoint');
-const clientId = config.get('serviceClient.commonServices.cdogs.clientId');
-const clientSecret = config.get('serviceClient.commonServices.cdogs.clientSecret');
-
-let cdogsService = new CdogsService({ tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint });
-module.exports = cdogsService;
+module.exports = new CdogsService();
