@@ -1,5 +1,6 @@
 /* tslint:disable */
 import { Components } from 'formiojs';
+import editForm from './Component.form';
 import _ from 'lodash';
 
 const FieldComponent = (Components as any).components.field;
@@ -37,6 +38,8 @@ export default class Component extends FieldComponent {
       schema: Component.schema(),
     };
   }
+
+  public static editForm = editForm;
 
   // Track component state
   componentID: string;
@@ -319,7 +322,7 @@ export default class Component extends FieldComponent {
       const actionCell = document.createElement('td');
       const selectButton = document.createElement('button');
       selectButton.type = 'button';
-      selectButton.className = 'btn btn-sm btn-success';
+      selectButton.className = 'btn btn-sm btn-success text-white';
       selectButton.textContent = 'Select';
       selectButton.onclick = () => this.selectUser(user);
       actionCell.appendChild(selectButton);
