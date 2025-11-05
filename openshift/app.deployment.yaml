@@ -272,6 +272,16 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-event-stream-service"
+                - name: GATEWAY_JWTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: jwtSecret
+                      name: "${APP_NAME}-gateway"
+                - name: GATEWAY_JWTLIFETIME
+                  valueFrom:
+                    secretKeyRef:
+                      key: jwtLifetime
+                      name: "${APP_NAME}-gateway"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:

@@ -100,5 +100,14 @@
         "environment": "SC_CS_CSS_ENVIRONMENT"
       }
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": "WC_ASSETS_ROOTS"
+    }
+  },
+  "gateway": {
+    "jwtSecret": "GATEWAY_JWTSECRET",
+    "jwtLifetime": "GATEWAY_JWTLIFETIME"
   }
 }
