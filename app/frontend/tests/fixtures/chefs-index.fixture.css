@@ -1,0 +1,95 @@
+/* Comprehensive CSS fixture for themeExtractor testing */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Reset for testing global selectors */
+*,
+*::before,
+*::after {
+  background-repeat: no-repeat;
+  box-sizing: inherit;
+}
+
+/* Root and theme blocks that carry variables */
+:root {
+  --bs-border-radius: 0.375rem;
+  --bs-border-radius-lg: 0.5rem;
+  --bs-body-bg: #f8f9fa;
+  --bs-body-color: #111111; /* will be overridden in [data-bs-theme=light] */
+  --v-theme-on-background: #202020;
+  --v-theme-background: #000000; /* should be forced to #fff */
+  --bs-primary: #0d6efd;
+  --bs-secondary: #6c757d;
+  --bs-success: #198754;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --v-theme-surface: #ffffff;
+  --v-theme-primary: #1976d2;
+}
+
+[data-bs-theme='light'] {
+  --bs-body-color: #212529;
+  --bs-secondary: #6c757d;
+  --v-theme-text: #000000;
+  --bs-border-color: #dee2e6;
+  --bs-tertiary-bg: #f8f9fa;
+  --bs-tertiary-color: #6c757d;
+}
+
+/* Dark theme block should be skipped/filtered */
+[data-bs-theme='dark'] {
+  --bs-body-bg: #212529;
+  --v-theme-surface-variant: #1e1e1e;
+  --x-dark: #111111;
+  --v-theme-dark-surface: #121212;
+  --bg-dark-variant: #212529; /* should be filtered due to #212529 */
+  --bs-tertiary-bg: #2b3035; /* dark theme - should be skipped entirely */
+}
+
+/* Additional theme selector that should be processed */
+[data-bs-theme='custom'] {
+  --bs-custom-var: #123456;
+  --v-theme-custom: #abcdef;
+}
+
+/* Variables that should be skipped based on filters */
+.some-class {
+  --v-theme-dark-mode: #000000; /* should be skipped (contains 'dark') */
+  --surface-variant-color: #333333; /* should be skipped (contains 'surface-variant') */
+  --valid-custom: #ff0000; /* should be kept */
+}
+
+/* More :root blocks to test multiple extraction */
+:root {
+  --additional-var: 10px;
+  --another-bg: #212529; /* should be filtered due to #212529 */
+}
+
+/* Unrelated noise that should be ignored */
+.btn {
+  border-radius: var(--bs-border-radius);
+  color: red;
+}
+.form-control {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+/* Nested blocks that might confuse parsing */
+.complex {
+  background: url('data:image/svg+xml;charset=utf8,<svg>...</svg>');
+}
+.with-nested {
+  content: '{ not a block }';
+}
+
+@media (min-width: 768px) {
+  :root {
+    --media-query-var: 20px;
+  }
+}

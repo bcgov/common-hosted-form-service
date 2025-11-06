@@ -1,4 +1,5 @@
 module.exports = {
+  detectOpenHandles: true,
   clearMocks: true,
   collectCoverage: true,
   collectCoverageFrom: ['src/**/*.js', '!src/db/migrations/*.js', '!src/db/seeds/*.js', '!src/forms/common/models/(tables|views)/*.js', '!frontend/**/*.*'],

@@ -111,5 +111,13 @@
       "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
       "precisionPoints": 100
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": "/workspaces/common-hosted-form-service/app/webcomponents/v1/assets"
+    }
+  },
+  "gateway": {
+    "jwtLifetime": "30m"
   }
 }
