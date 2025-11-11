@@ -244,6 +244,9 @@ const service = {
       obj.apiIntegration = data.apiIntegration;
       obj.useCase = data.useCase;
       obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
+      obj.classificationType = data.classificationType;
+      obj.retentionDays = data.retentionDays;
+      obj.classificationDescription = data.classificationDescription;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -332,6 +335,9 @@ const service = {
           ...data,
           identityProviders: data.identityProviders,
         }),
+        classificationType: data.classificationType,
+        retentionDays: data.retentionDays,
+        classificationDescription: data.classificationDescription,
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);

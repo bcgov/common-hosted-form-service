@@ -57,6 +57,21 @@ describe('createStatus', () => {
 
 describe('deleteMultipleSubmissions', () => {
   it('should delete the selected submissions', async () => {
+    // Mock the Date object
+    const mockDate = new Date('2023-05-15T10:30:00.000Z');
+    const mockISOString = '2023-05-15T10:30:00.000Z';
+
+    // Save the original Date constructor
+    const OriginalDate = globalThis.Date;
+
+    // Replace the global Date constructor with a mock
+    globalThis.Date = jest.fn(() => mockDate);
+
+    // Add the toISOString method to the mock
+    globalThis.Date.prototype.toISOString = jest.fn(() => mockISOString);
+
+    // Copy any other methods you need from the original Date
+    globalThis.Date.now = OriginalDate.now;
     let submissionId1 = uuid.v4();
     let submissionId2 = uuid.v4();
     const submissionIds = [submissionId1, submissionId2];
@@ -78,11 +93,13 @@ describe('deleteMultipleSubmissions', () => {
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledWith(expect.anything());
     expect(MockModel.patch).toBeCalledTimes(1);
-    expect(MockModel.patch).toBeCalledWith({ deleted: true, updatedBy: currentUser.usernameIdp });
+    expect(MockModel.patch).toBeCalledWith({ deleted: true, updatedAt: mockISOString, updatedBy: currentUser.usernameIdp });
     expect(MockModel.whereIn).toBeCalledTimes(1);
     expect(MockModel.whereIn).toBeCalledWith('id', submissionIds);
     expect(spy).toBeCalledWith(submissionIds);
     expect(res).toEqual(returnValue);
+    // Then restore the original Date object when done
+    globalThis.Date = OriginalDate;
   });
 });
 
