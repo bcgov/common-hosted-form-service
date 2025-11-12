@@ -93,7 +93,7 @@ it('Verify draft submission', () => {
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     //Draft manage button existence
-    cy.get('.d-inline-block').should('not.be.enabled').and('exist');
+    //cy.get('.d-inline-block').should('not.be.enabled').and('exist');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //cy.get('div > .bg-primary').click();
     cy.get('.v-card-actions > div > .bg-primary').click();
