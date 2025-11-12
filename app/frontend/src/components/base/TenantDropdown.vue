@@ -152,7 +152,7 @@ const goToCSTAR = () => {
   // TODO change to env later
   const cstarUrl =
     import.meta.env.VITE_CSTAR_URL ||
-    'https://tenant-management-system-pr-202-frontend.apps.silver.devops.gov.bc.ca';
+    'https://tenant-management-system-dev-frontend.apps.silver.devops.gov.bc.ca';
   window.open(cstarUrl, '_blank');
 };
 
