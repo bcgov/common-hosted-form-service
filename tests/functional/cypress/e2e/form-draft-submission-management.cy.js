@@ -38,7 +38,17 @@ it('Verify draft submission', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
-      cy.get('button').contains('Save').click();
+      cy.get('.btn-success').click();
+    });
+    //Multiline Text
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Multi-line Text')
+        
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('.btn-success').click();
     });
     
   // Form saving
@@ -49,18 +59,18 @@ it('Verify draft submission', () => {
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
-      let arr = search.split('=');
-      let arrayValues = arr[1].split('&');
-      cy.log(arrayValues[0]);
-      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-      
-   
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
+    const formId_new = `${arrayValues[0]}`;
+    cy.log(formId_new);
+    let formId;
+    cy.writeFile('cypress/fixtures/formId.json', { formId: formId_new });
     //Publish the form
     cy.get('.v-label > span').click();
-
     cy.get('span').contains('Publish Version 1');
-
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
     //Share link verification
@@ -74,15 +84,19 @@ it('Verify draft submission', () => {
       cy.get('.mx-2 > .v-btn').click();
     })
       //Draft submission and verification
-    cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
+    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.waitForLoad();
     cy.waitForLoad();
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
+    //Draft manage button existence
+    cy.get('.d-inline-block').should('not.be.enabled').and('exist');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
-    cy.get('div > .bg-primary').click();
+    //cy.get('div > .bg-primary').click();
+    cy.get('.v-card-actions > div > .bg-primary').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT');
     //Verify draft delete button exist
     cy.get('[icon-size="x-small"] > .v-btn').should('be.exist');
@@ -104,7 +118,7 @@ it('Verify draft submission', () => {
     cy.waitForLoad();
     cy.get('.v-alert__content > div').contains('Draft Saved');
     // Edit draft submission
-    cy.wait(4000);
+    cy.wait(2000);
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('.mdi-pencil').click();
     cy.waitForLoad();
@@ -122,8 +136,9 @@ it('Verify draft submission', () => {
     //Verify status column removed
     cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED').should('not.exist');
     //Verify multiple draft upload functionality
-    cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     cy.waitForLoad();
+    });
     cy.get('button').contains('Submit').should('be.visible');
     cy.waitForLoad();
     cy.waitForLoad();
@@ -158,12 +173,6 @@ it('Verify draft submission', () => {
     cy.waitForLoad();
     cy.get('[data-test="continue-btn-continue"]').click({ force: true });
     cy.wait(2000);
-    //Delete form after test run
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.get('.mdi-delete').click();
-    cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
     });
 
   });

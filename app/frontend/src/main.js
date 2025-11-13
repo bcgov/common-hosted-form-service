@@ -41,6 +41,7 @@ app.config.globalProperties.$filters = {
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
 import BcGovFormioComponents from '~/formio/lib';
+import '~/formio/css/bcgov-formio-components.css';
 import { Formio } from '@formio/vue';
 Formio.use(BcGovFormioComponents);
 
@@ -94,7 +95,9 @@ if (!!window.MSInputMethodContext && !!document.documentMode) {
     </div>`);
   NProgress.done();
 } else {
-  loadConfig();
+  (async () => {
+    await loadConfig();
+  })();
 }
 
 /**
@@ -133,6 +136,8 @@ async function loadIdentityProviders() {
     }
     return true;
   } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(`loadIdentityProviders:error ${err}`);
     idpStore.providers = undefined;
     return false;
   }
@@ -195,8 +200,13 @@ function loadKeycloak(config) {
     init: { onLoad: 'login-required' },
   };
 
-  const options = Object.assign({}, defaultParams, {
-    init: { pkceMethod: 'S256', checkLoginIframe: false, onLoad: 'check-sso' },
+  const options = {
+    ...defaultParams,
+    init: {
+      pkceMethod: 'S256',
+      checkLoginIframe: false,
+      onLoad: 'check-sso',
+    },
     config: {
       clientId: config.oidc.clientId,
       realm: config.oidc.realm,
@@ -209,7 +219,7 @@ function loadKeycloak(config) {
       console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
       console.error(error); // eslint-disable-line no-console
     },
-  });
+  };
 
   if (assertOptions(options).hasError)
     throw new Error(`Invalid options given: ${assertOptions(options).error}`);
