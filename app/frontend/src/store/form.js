@@ -72,6 +72,7 @@ const genInitialForm = () => ({
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
   enableSubmitterRevision: false,
+  enableAutoSave: false,
   allowSubmitterToUploadFile: false,
   showAssigneeInSubmissionsTable: false,
   id: '',
