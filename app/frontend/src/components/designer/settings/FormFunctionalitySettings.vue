@@ -370,6 +370,7 @@ defineExpose({
     <!-- Share Draft -->
     <v-checkbox
       v-model="form.enableAutoSave"
+      :disabled="disabledStates.public"
       data-test="enableAutoSaveCheckbox"
       hide-details="auto"
       class="my-0"

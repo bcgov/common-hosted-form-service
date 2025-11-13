@@ -980,33 +980,17 @@
     "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access.",
     "fileUploadWarning": "To upload your attachments, you must either click on the 'Save as draft' button or submit your form. If you navigate away from this screen, you will lose your attachments."
   },
-  "formDataRecovery": {
-    "title": "Form Data Recovery",
-    "message": "We found previously entered data for this form. Would you like to restore it?",
-    "enhancedTitle": "Recover Your Progress",
-    "formName": "Form",
+  "localAutosave": {
+    "title": "Recover Your Progress",
+    "message": "We found form data saved on this device. Would you like to restore it?",
     "restore": "Restore Data",
-    "dismiss": "Start Fresh",
-    "disclaimer": "This data was automatically saved to your browser's local storage. It will be cleared after restoration or dismissal.",
-    "secureDisclaimer": "Your form data is stored securely in your browser with encryption. No personal information is transmitted until you submit the form.",
-    "restored": "Your previously entered data has been restored successfully.",
-    "justNow": "Just now",
+    "discard": "Start Fresh",
+    "disclaimer": "This data is stored locally on your device and will be cleared after restoration or when the form is submitted.",
+    "restored": "Your previously entered data has been restored.",
+    "justNow": "just now",
     "minutesAgo": "{count} minute ago | {count} minutes ago",
     "hoursAgo": "{count} hour ago | {count} hours ago",
-    "daysAgo": "{count} day ago | {count} days ago",
-    "quotaExceeded": "Storage space is full. Some auto-save data has been cleaned up to make room.",
-    "authMismatch": "This saved data was created under different authentication. Please verify it's your data before restoring.",
-    "restoreAndContinue": "Restore my progress and continue",
-    "previewFirst": "Let me preview what will be restored",
-    "startFresh": "Start fresh (discard saved data)",
-    "progressSummary": "You've completed {completed} of {total} form sections",
-    "lastSavedSecurely": "Last saved securely {time}",
-    "autoSaveStatus": {
-      "saving": "Saving...",
-      "saved": "Saved",
-      "error": "Save failed",
-      "disabled": "Auto-save disabled"
-    }
+    "daysAgo": "{count} day ago | {count} days ago"
   },
   "bCGovFooter": {
     "home": "Home",
