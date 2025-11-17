@@ -74,7 +74,6 @@ export function useLocalAutosave() {
         localStorage.setItem(storageKey, JSON.stringify(payload));
       } catch (error) {
         // Silent failure - localStorage might be full or disabled
-        console.debug('[LocalAutosave] Save failed:', error);
       }
     }, DEBOUNCE_DELAY);
   }
@@ -111,7 +110,6 @@ export function useLocalAutosave() {
 
       return null;
     } catch (error) {
-      console.debug('[LocalAutosave] Load failed:', error);
       return null;
     }
   }
@@ -128,7 +126,7 @@ export function useLocalAutosave() {
       const storageKey = getStorageKey();
       localStorage.removeItem(storageKey);
     } catch (error) {
-      console.debug('[LocalAutosave] Clear failed:', error);
+      // Silent fail
     }
   }
 
