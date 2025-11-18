@@ -585,7 +585,7 @@ const service = {
     );
 
     if (params.paginationEnabled) {
-      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.search, params.searchEnabled);
+      return await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
     }
 
     return query;
@@ -615,7 +615,6 @@ const service = {
 
     const term = search.value || search;
     const searchFields = search.fields || [];
-    console.log(term);
 
     const isDateLike = (x, s) =>
       !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
@@ -624,13 +623,13 @@ const service = {
 
     const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
 
-    const ignoredFields = ['submissionId', 'formVersionId', 'formId'];
+    const ignoredFields = new Set(['submissionId', 'formVersionId', 'formId']);
 
     const searchedData = submissionsData.filter((data) => {
       const fieldsToSearch = Array.isArray(searchFields) && searchFields.length ? searchFields : Object.keys(data);
 
       return fieldsToSearch.some((field) => {
-        if (ignoredFields.includes(field)) return false;
+        if (ignoredFields.has(field)) return false;
 
         const value = data[field];
 
