@@ -49,3 +49,9 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
     </v-row>
   </v-container>
 </template>
+
+<style>
+.v-label {
+  opacity: 0.85 !important;
+}
+</style>
