@@ -2,10 +2,11 @@
   <BaseDialog
     v-model="showDialog"
     type="CONTINUE"
-    :enable-custom-button="true"
+    :show-close-button="true"
     @close-dialog="handleDiscard"
     @continue-dialog="handleRestore"
   >
+    <!-- Title -->
     <template #title>
       <div class="d-flex align-center">
         <v-icon color="info" class="mr-2" size="20" aria-hidden="true">
@@ -15,17 +16,19 @@
       </div>
     </template>
 
+    <!-- Body -->
     <template #text>
       <p class="text-body-1">
         {{ $t('trans.localAutosave.message') }}
       </p>
     </template>
 
+    <!-- Buttons -->
     <template #button-text-continue>
       <span>{{ $t('trans.localAutosave.restore') }}</span>
     </template>
 
-    <template #button-text-close>
+    <template #button-text-cancel>
       <span>{{ $t('trans.localAutosave.discard') }}</span>
     </template>
   </BaseDialog>

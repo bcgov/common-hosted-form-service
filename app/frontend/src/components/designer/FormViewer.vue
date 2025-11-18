@@ -876,10 +876,11 @@ function beforeWindowUnload(e) {
   // If autosave is enabled on this form, it can *reduce* warnings
   if (form.value?.enableAutoSave) {
     // If a debounced save is still pending, assume it will complete soon
-    if (localAutosave._isPending && localAutosave._isPending()) {
-      shouldWarn = false;
-    } else if (localAutosave.exists()) {
-      // If we already have a saved autosave snapshot, also skip the warning
+    // Skip warning if save is pending OR data already exists in localStorage
+    if (
+      (localAutosave._isPending && localAutosave._isPending()) ||
+      localAutosave.exists()
+    ) {
       shouldWarn = false;
     }
   }

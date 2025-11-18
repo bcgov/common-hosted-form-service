@@ -982,9 +982,10 @@
   },
   "localAutosave": {
     "title": "Restore Your Work?",
-    "message": "Your progress from the last session was saved in your browser and can be restored now, or you can start over with a blank form. The saved data will be cleared once you restore or dismiss this message.",
+    "message": "Your progress from the last session was saved in your browser and can be restored now, or you can start over with a blank form.",
     "restore": "Restore Work",
-    "discard": "Start Over"
+    "discard": "Start Over",
+    "restoredToast": "Your progress from the last session has been successfully restored."
   },
   "bCGovFooter": {
     "home": "Home",

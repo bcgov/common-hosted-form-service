@@ -15,6 +15,24 @@ function handleStorageError(error) {
   String(error);
 }
 
+/**
+ * Detect if localStorage is allowed in this environment.
+ */
+function isStorageAvailable() {
+  if (typeof localStorage === 'undefined') {
+    return false;
+  }
+
+  try {
+    const testKey = `${STORAGE_PREFIX}__test__`;
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    return true;
+  } catch (error) {
+    handleStorageError(error);
+    return false;
+  }
+}
 //useLocalAutosave Composable
 export function useLocalAutosave() {
   let storageKey = null;
@@ -71,25 +89,6 @@ export function useLocalAutosave() {
   }
 
   /**
-   * Detect if localStorage is allowed in this environment.
-   */
-  function isStorageAvailable() {
-    if (typeof localStorage === 'undefined') {
-      return false;
-    }
-
-    try {
-      const testKey = `${STORAGE_PREFIX}__test__`;
-      localStorage.setItem(testKey, '1');
-      localStorage.removeItem(testKey);
-      return true;
-    } catch (error) {
-      handleStorageError(error);
-      return false;
-    }
-  }
-
-  /**
    * Save data to localStorage (debounced).
    */
   function save(formData) {
@@ -99,6 +98,7 @@ export function useLocalAutosave() {
 
     if (debounceTimeout) {
       clearTimeout(debounceTimeout);
+      debounceTimeout = null;
     }
 
     debounceTimeout = setTimeout(() => {
@@ -110,6 +110,9 @@ export function useLocalAutosave() {
         localStorage.setItem(getStorageKey(), JSON.stringify(payload));
       } catch (error) {
         handleStorageError(error);
+      } finally {
+        // Clear reference after execution
+        debounceTimeout = null;
       }
     }, DEBOUNCE_DELAY);
   }
