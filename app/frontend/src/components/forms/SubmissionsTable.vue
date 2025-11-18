@@ -681,7 +681,6 @@ async function handleSearch(value) {
   } else {
     search.value = value;
   }
-  console.log(search);
   if (value === '') {
     await refreshSubmissions();
   } else {
