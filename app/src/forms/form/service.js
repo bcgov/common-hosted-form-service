@@ -600,7 +600,7 @@ const service = {
       return this.searchSubmissions(submissionsData, search, page, itemsPerPage);
     }
 
-    if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
+    if (itemsPerPage && Number.parseInt(itemsPerPage) >= 0 && Number.parseInt(page) >= 0) {
       return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
 
