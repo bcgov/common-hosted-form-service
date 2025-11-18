@@ -6,6 +6,7 @@ import { computed, onMounted, ref, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
+import AdvancedSubmissionSearch from './submission/AdvancedSubmissionSearch.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -59,6 +60,8 @@ const singleSubmissionDelete = ref(false);
 const singleSubmissionRestore = ref(false);
 const sort = ref({});
 const firstDataLoad = ref(true);
+const drawerOpen = ref(false);
+
 // When filtering, this data will not be preselected when clicking reset
 const tableFilterIgnore = ref([
   { key: 'updatedAt' },
@@ -204,6 +207,50 @@ const BASE_HEADERS = computed(() => {
 
   return headers;
 });
+
+// All possible headers
+const ALL_HEADER_KEYS = computed(() => {
+  return BASE_HEADERS.value ? BASE_HEADERS.value.map((h) => h.key) : [];
+});
+
+const baseOrderIndex = computed(() => {
+  const map = new Map();
+  (BASE_HEADERS.value ?? []).forEach((h, i) => map.set(h.key, i));
+  return map;
+});
+
+const currentPrefKeys = computed(() => USER_PREFERENCES.value ?? []);
+
+function normaliseToBaseOrder(keys) {
+  const seen = new Set();
+  return (
+    keys
+      // keep only real headers
+      .filter((k) => ALL_HEADER_KEYS.value.includes(k))
+      // remove duplicates (keep first occurrence)
+      .filter((k) => (seen.has(k) ? false : (seen.add(k), true)))
+      // sort according to canonical BASE_HEADERS order
+      .sort(
+        (a, b) =>
+          (baseOrderIndex.value.get(a) ?? 9999) -
+          (baseOrderIndex.value.get(b) ?? 9999)
+      )
+  );
+}
+async function addColumns(keys, options) {
+  const { includeReset = false, toFront = false } = options;
+  const validNew = normaliseToBaseOrder(keys);
+  const base = includeReset
+    ? normaliseToBaseOrder([...currentPrefKeys.value, ...RESET_HEADERS.value])
+    : normaliseToBaseOrder(currentPrefKeys.value);
+
+  // Append or prepend new keys while preserving canonical order
+  const next = toFront
+    ? normaliseToBaseOrder([...validNew, ...base])
+    : normaliseToBaseOrder([...base, ...validNew]);
+
+  await updateColumns(next);
+}
 
 // The headers are based on the base headers but are modified
 // by the following order:
@@ -382,7 +429,7 @@ async function getSubmissionData() {
     paginationEnabled: true,
     sortBy: sort.value,
     search: search.value,
-    searchEnabled: search.value.length > 0,
+    searchEnabled: search.value.length > 0 || search.value?.value?.length > 0,
     createdAt: Object.values({
       minDate: moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
       maxDate: moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
@@ -628,7 +675,13 @@ async function updateFormPreferences(id, columns, filters, sort) {
 }
 
 async function handleSearch(value) {
-  search.value = value;
+  if (value?.fields?.length) {
+    await addColumns(value.fields, { includeReset: true });
+    search.value = value;
+  } else {
+    search.value = value;
+  }
+  console.log(search);
   if (value === '') {
     await refreshSubmissions();
   } else {
@@ -799,6 +852,13 @@ defineExpose({
             </template>
           </v-checkbox>
         </div>
+        <v-btn
+          prepend-icon="mdi:mdi-magnify"
+          variant="text"
+          @click="drawerOpen = true"
+        >
+          Advanced Search
+        </v-btn>
 
         <div>
           <!-- search input -->
@@ -818,6 +878,13 @@ defineExpose({
           </div>
         </div>
       </div>
+      <!-- Drawer -->
+      <AdvancedSubmissionSearch
+        v-model="drawerOpen"
+        :form-fields="formFields"
+        location="right"
+        @search="handleSearch"
+      />
 
       <!-- table header -->
       <v-data-table-server
