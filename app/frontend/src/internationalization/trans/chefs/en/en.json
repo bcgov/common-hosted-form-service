@@ -981,17 +981,12 @@
     "fileUploadWarning": "To upload your attachments, you must either click on the 'Save as draft' button or submit your form. If you navigate away from this screen, you will lose your attachments."
   },
   "localAutosave": {
-    "title": "Recover Your Progress",
-    "message": "We found form data saved on this device. Would you like to restore it?",
-    "restore": "Restore Data",
-    "discard": "Start Fresh",
-    "disclaimer": "This data is stored locally on your device and will be cleared after restoration or when the form is submitted.",
-    "restored": "Your previously entered data has been restored.",
-    "justNow": "just now",
-    "minutesAgo": "{count} minute ago | {count} minutes ago",
-    "hoursAgo": "{count} hour ago | {count} hours ago",
-    "daysAgo": "{count} day ago | {count} days ago"
-  },
+  "title": "Restore Your Work?",
+  "message": "Your progress from the last session was saved in your browser and can be restored now, or you can start over with a blank form. The saved data will be cleared once you restore or dismiss this message.",
+  "restore": "Restore Work",
+  "discard": "Start Over"
+  }
+
   "bCGovFooter": {
     "home": "Home",
     "about": "About gov.bc.ca",

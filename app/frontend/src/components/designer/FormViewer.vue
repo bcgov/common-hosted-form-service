@@ -250,8 +250,12 @@ function initializeLocalAutosave() {
     return;
   }
 
-  // Initialize the autosave system
-  localAutosave.init(properties.formId);
+  // Initialize autosave storage key
+  localAutosave.init({
+    formId: properties.formId,
+    submissionId: properties.submissionId,
+    userId: authStore.currentUser.idpUserId,
+  });
 
   // Check if we should show recovery dialog
   const shouldRecover = localAutosave.shouldShowRecoveryDialog(
@@ -527,7 +531,10 @@ function formChange(e) {
       !properties.preview &&
       chefForm.value?.formio?._data
     ) {
-      localAutosave.save(chefForm.value.formio._data);
+      localAutosave.save(
+        chefForm.value.formio._data,
+        authStore.currentUser.idpUserId
+      );
     }
   }
 
@@ -540,8 +547,8 @@ function jsonManager() {
   if (chefForm.value?.formio) {
     formElement.value = chefForm.value.formio;
     json_csv.value.data = [
-      structuredClone(formElement.value._data),
-      structuredClone(formElement.value._data),
+      JSON.parse(JSON.stringify(formElement.value._data)),
+      JSON.parse(JSON.stringify(formElement.value._data)),
     ];
   }
 }
@@ -711,17 +718,13 @@ async function onSubmit(sub) {
 
 // Not a formIO event, our saving routine to POST the submission to our API
 async function doSubmit(sub) {
-  // since we are not using formio api
-  // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
   try {
     const response = await sendSubmission(false, sub);
 
     if ([200, 201].includes(response.status)) {
-      // all is good, flag no errors and carry on...
-      // store our submission result...
       submissionRecord.value = {
-        ...(properties.submissionId && properties.isDuplicate //Check if this submission is creating with the existing one
+        ...(properties.submissionId && properties.isDuplicate
           ? response.data
           : (() => {
               let result;
@@ -743,12 +746,7 @@ async function doSubmit(sub) {
       );
     }
   } catch (error) {
-    // Notify user and record the error for debugging instead of silently swallowing it.
-    notificationStore.addNotification({
-      text: t('trans.formViewer.errMsg'),
-      consoleError: error && error.toString ? error.toString() : String(error),
-      type: 'error',
-    });
+    // return error only; NO add notifications here
     errMsg = t('trans.formViewer.errMsg');
   } finally {
     confirmSubmit.value = false;
@@ -869,26 +867,28 @@ function closeBulkYesOrNo() {
 }
 
 function beforeWindowUnload(e) {
-  // No warning in preview or read-only mode
+  // Do nothing for preview or read-only views
   if (properties.preview || properties.readOnly) return;
 
-  // Autosave must be enabled in form designer
-  if (!form.value?.enableAutoSave) return;
+  // Default behaviour: warn the user before leaving
+  let shouldWarn = true;
 
-  // No form interaction → no warning
-  if (!formDataEntered.value) return;
+  // If autosave is enabled on this form, it can *reduce* warnings
+  if (form.value?.enableAutoSave) {
+    // If a debounced save is still pending, assume it will complete soon
+    if (localAutosave._isPending && localAutosave._isPending()) {
+      shouldWarn = false;
+    } else if (localAutosave.exists()) {
+      // If we already have a saved autosave snapshot, also skip the warning
+      shouldWarn = false;
+    }
+  }
 
-  // If a save is pending (debounce not finished), do NOT warn
-  // This prevents the unwanted warning immediately after typing
-  if (localAutosave._isPending && localAutosave._isPending()) {
+  if (!shouldWarn) {
     return;
   }
 
-  // If a local autosave exists, do NOT warn
-  const local = localAutosave.load();
-  if (local) return;
-
-  // Otherwise warn user about losing unsaved work
+  // Show browser "Are you sure you want to leave?" dialog
   e.preventDefault();
   e.returnValue = '';
 }

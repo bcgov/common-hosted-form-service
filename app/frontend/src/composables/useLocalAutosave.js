@@ -1,139 +1,169 @@
 /**
- * Simple local crash-recovery autosave
- * Stores form data in localStorage for crash protection only
- * Does NOT interact with backend drafts or submissions
+ * Simple local crash-recovery autosave.
+ *
+ * - Stores form data in localStorage for crash protection only
+ * - Does NOT interact with backend drafts or submissions
+ * - Must NEVER block or break normal form behavior
+ * - 100% silent failure mode (quota, private mode, disabled storage, etc.)
  */
 
 const STORAGE_PREFIX = 'chefs_autosave_';
 const DEBOUNCE_DELAY = 3000; // 3 seconds
 
+//Top-level storage-error handler
+function handleStorageError(error) {
+  String(error);
+}
+
+//useLocalAutosave Composable
 export function useLocalAutosave() {
-  let currentFormId = null;
+  let storageKey = null;
   let debounceTimeout = null;
 
   /**
-   * Initialize autosave for a specific form
-   * @param {string} formId - The form ID
+   * Initialize autosave for a specific form and optional metadata.
+   *
+   * @param {string|object} formOrConfig
+   *        Either (old API): init(formId)
+   *        or (new API): init({ formId, userId, versionId, submissionId })
+   *
+   * @param {object} [options]
+   *        When using old API: second argument holds extra options
    */
-  function init(formId) {
-    if (!formId) {
-      throw new Error('formId is required');
+  function init(formOrConfig, options = {}) {
+    let formId = null;
+    let userId = null;
+    let versionId = null;
+    let submissionId = null;
+
+    // New API: init({ formId, userId, ... })
+    if (typeof formOrConfig === 'object' && formOrConfig !== null) {
+      formId = formOrConfig.formId;
+      userId = formOrConfig.userId;
+      versionId = formOrConfig.versionId;
+      submissionId = formOrConfig.submissionId;
+    } else {
+      // Old API: init(formId, { userId, ... })
+      formId = formOrConfig;
+      userId = options.userId;
+      versionId = options.versionId;
+      submissionId = options.submissionId;
     }
-    currentFormId = formId;
+
+    if (!formId) {
+      throw new Error('formId is required for local autosave');
+    }
+
+    const segments = [formId, userId, versionId, submissionId].filter(Boolean);
+    storageKey = `${STORAGE_PREFIX}${segments.join(':')}`;
   }
 
   /**
-   * Get the storage key for current form
-   * @returns {string}
+   * Returns the current localStorage key.
    */
   function getStorageKey() {
-    if (!currentFormId) {
-      throw new Error('Autosave not initialized. Call init() first.');
+    if (!storageKey) {
+      throw new Error(
+        'useLocalAutosave must be initialized by calling init().'
+      );
     }
-    return `${STORAGE_PREFIX}${currentFormId}`;
+    return storageKey;
   }
 
   /**
-   * Check if localStorage is available
-   * @returns {boolean}
+   * Detect if localStorage is allowed in this environment.
    */
   function isStorageAvailable() {
+    if (typeof localStorage === 'undefined') {
+      return false;
+    }
+
     try {
-      const testKey = '__storage_test__';
-      localStorage.setItem(testKey, 'test');
+      const testKey = `${STORAGE_PREFIX}__test__`;
+      localStorage.setItem(testKey, '1');
       localStorage.removeItem(testKey);
       return true;
-    } catch (e) {
+    } catch (error) {
+      handleStorageError(error);
       return false;
     }
   }
 
   /**
-   * Save form data to localStorage (debounced)
-   * @param {Object} formData - The form data to save
+   * Save data to localStorage (debounced).
    */
   function save(formData) {
-    if (!isStorageAvailable()) {
+    if (!storageKey || !isStorageAvailable()) {
       return;
     }
 
-    // Clear existing timeout
     if (debounceTimeout) {
       clearTimeout(debounceTimeout);
     }
 
-    // Debounce the save
     debounceTimeout = setTimeout(() => {
       try {
         const payload = {
           timestamp: new Date().toISOString(),
           data: formData,
         };
-
-        const storageKey = getStorageKey();
-        localStorage.setItem(storageKey, JSON.stringify(payload));
+        localStorage.setItem(getStorageKey(), JSON.stringify(payload));
       } catch (error) {
-        // Silent failure - localStorage might be full or disabled
+        handleStorageError(error);
       }
     }, DEBOUNCE_DELAY);
   }
 
   /**
-   * Load autosaved data from localStorage
-   * @returns {Object|null} - { timestamp: string, data: object } or null
+   * Load autosaved data.
    */
   function load() {
-    if (!isStorageAvailable()) {
+    if (!storageKey || !isStorageAvailable()) {
       return null;
     }
 
     try {
-      const storageKey = getStorageKey();
-      const saved = localStorage.getItem(storageKey);
-
-      if (!saved) {
+      const raw = localStorage.getItem(getStorageKey());
+      if (!raw) {
         return null;
       }
 
-      const parsed = JSON.parse(saved);
+      const parsed = JSON.parse(raw);
 
-      // Validate structure
       if (
         parsed &&
         typeof parsed === 'object' &&
-        parsed.timestamp &&
+        typeof parsed.timestamp === 'string' &&
         parsed.data &&
         typeof parsed.data === 'object'
       ) {
         return parsed;
       }
-
-      return null;
     } catch (error) {
+      handleStorageError(error);
       return null;
     }
+
+    return null;
   }
 
   /**
-   * Clear autosaved data
+   * Remove the autosave entry.
    */
   function clear() {
-    if (!isStorageAvailable()) {
+    if (!storageKey || !isStorageAvailable()) {
       return;
     }
 
     try {
-      const storageKey = getStorageKey();
-      localStorage.removeItem(storageKey);
+      localStorage.removeItem(getStorageKey());
     } catch (error) {
-      // Silent fail
+      handleStorageError(error);
     }
   }
 
   /**
-   * Determine if recovery dialog should be shown
-   * @param {Object|null} serverSubmission - Server submission with updatedAt timestamp
-   * @returns {boolean}
+   * Detect whether the recovery modal must be shown.
    */
   function shouldShowRecoveryDialog(serverSubmission) {
     const localData = load();
@@ -142,20 +172,22 @@ export function useLocalAutosave() {
       return false;
     }
 
-    // If no server submission exists, show recovery dialog
     if (!serverSubmission || !serverSubmission.updatedAt) {
       return true;
     }
 
-    // Compare timestamps - show recovery if local is newer
     const localTime = new Date(localData.timestamp).getTime();
     const serverTime = new Date(serverSubmission.updatedAt).getTime();
+
+    if (Number.isNaN(localTime) || Number.isNaN(serverTime)) {
+      return false;
+    }
 
     return localTime > serverTime;
   }
 
   /**
-   * Cleanup function - cancel pending saves
+   * Cancel pending debounced save.
    */
   function cleanup() {
     if (debounceTimeout) {
@@ -165,11 +197,14 @@ export function useLocalAutosave() {
   }
 
   /**
-   * Check if a save is currently pending (debounce not finished)
-   * @returns {boolean}
+   * Whether a debounced save is pending.
    */
   function isPending() {
     return !!debounceTimeout;
+  }
+
+  function exists() {
+    return !!load();
   }
 
   return {
@@ -177,6 +212,7 @@ export function useLocalAutosave() {
     save,
     load,
     clear,
+    exists,
     shouldShowRecoveryDialog,
     cleanup,
     _isPending: isPending,
