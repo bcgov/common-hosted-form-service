@@ -120,6 +120,8 @@ const notificationStore = useNotificationStore();
 // Local crash-recovery autosave
 const localAutosave = useLocalAutosave();
 const showLocalRecoveryDialog = ref(false);
+const autosaveReady = ref(false);
+const initialRenderComplete = ref(false); // Prevent autosave firing during Form.io internal events
 
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
@@ -294,8 +296,11 @@ function handleLocalDiscard() {
 }
 
 async function getFormData() {
+  localAutosave.clear();
+  autosaveReady.value = false;
+  initialRenderComplete.value = false;
   function iterate(obj, stack, fields, propNeeded) {
-    // Get property path from nested object
+    //Get property path from nested object
     for (let property in obj) {
       const innerObject = obj[property];
       if (propNeeded === property) {
@@ -355,7 +360,6 @@ async function getFormData() {
     const response = await formService.getSubmission(properties.submissionId);
     submissionRecord.value = Object.assign({}, response.data.submission);
     submission.value = submissionRecord.value.submission;
-
     showModal.value =
       submission.value.data.submit ||
       submission.value.data.state == 'submitted' ||
@@ -363,14 +367,12 @@ async function getFormData() {
       properties.readOnly
         ? false
         : true;
-
     form.value = response.data.form;
     versionIdToSubmitTo.value = versionIdToSubmitTo.value
       ? versionIdToSubmitTo.value
       : response.data?.version?.id;
-
     if (!properties.isDuplicate) {
-      // As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
+      //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
       formSchema.value = response.data.version.schema;
       version.value = response.data.version.version;
     } else {
@@ -384,7 +386,6 @@ async function getFormData() {
         });
       }
     }
-
     // Get permissions
     if (!properties.staffEditMode && !isFormPublic(form.value)) {
       const permRes = await rbacService.getUserSubmissions({
@@ -392,6 +393,11 @@ async function getFormData() {
       });
       permissions.value = permRes.data[0] ? permRes.data[0].permissions : [];
     }
+    initialRenderComplete.value = true;
+
+    setTimeout(() => {
+      autosaveReady.value = true;
+    }, 300);
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
@@ -426,7 +432,6 @@ async function setProxyHeaders() {
 async function getFormSchema() {
   try {
     let response = undefined;
-
     if (properties.versionId) {
       versionIdToSubmitTo.value = properties.versionId;
       // If getting for a specific older version of the form
@@ -482,7 +487,7 @@ async function getFormSchema() {
       versionIdToSubmitTo.value = response.data.versions[0].id;
       formSchema.value = response.data.versions[0].schema;
       if (response.data.schedule && response.data.schedule.expire) {
-        const formScheduleStatus = response.data.schedule;
+        let formScheduleStatus = response.data.schedule;
         isFormScheduleExpired.value = formScheduleStatus.expire;
         isLateSubmissionAllowed.value = formScheduleStatus.allowLateSubmissions;
       }
@@ -511,26 +516,34 @@ function isProcessingMultiUpload(e) {
 }
 
 function formChange(e) {
-  // if draft check validation on render
+  // Ignore early Form.io events during initial load
+  if (!initialRenderComplete.value) return;
+
+  // If draft, validate on render
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
 
-  if (e.changed != undefined && !e.changed.flags.fromSubmission) {
-    formDataEntered.value = true;
+  // Ignore events triggered by Form.io submission loading or recall patching
+  if (!e.changed || e.changed.flags?.fromSubmission) {
+    return;
+  }
 
-    // Trigger local autosave
-    if (
-      form.value?.enableAutoSave &&
-      !properties.readOnly &&
-      !properties.preview &&
-      chefForm.value?.formio?._data
-    ) {
-      localAutosave.save(
-        chefForm.value.formio._data,
-        authStore.currentUser.idpUserId
-      );
-    }
+  // User is actively typing
+  formDataEntered.value = true;
+
+  // Autosave only when ready & real user input
+  if (
+    autosaveReady.value && // form stable
+    form.value?.enableAutoSave && // feature enabled
+    !properties.readOnly && // not read-only
+    !properties.preview && // not preview mode
+    chefForm.value?.formio?._data // valid form data
+  ) {
+    localAutosave.save(
+      chefForm.value.formio._data,
+      authStore.currentUser.idpUserId
+    );
   }
 
   // Seems to be the only place the form changes on load
