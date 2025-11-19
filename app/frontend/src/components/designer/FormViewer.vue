@@ -120,7 +120,6 @@ const notificationStore = useNotificationStore();
 // Local crash-recovery autosave
 const localAutosave = useLocalAutosave();
 const showLocalRecoveryDialog = ref(false);
-const localRecoveryTimestamp = ref(null);
 
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
@@ -205,18 +204,16 @@ onMounted(async () => {
     await getFormSchema();
   }
 
-  // Initialize local autosave
+  // Initialize local autosave after first render
   await nextTick();
   initializeLocalAutosave();
 
-  // eslint-disable-next-line no-undef
   window.addEventListener('beforeunload', beforeWindowUnload);
 
   reRenderFormIo.value += 1;
 });
 
 onBeforeUnmount(() => {
-  // eslint-disable-next-line no-undef
   window.removeEventListener('beforeunload', beforeWindowUnload);
   clearTimeout(downloadTimeout.value);
 
@@ -265,7 +262,6 @@ function initializeLocalAutosave() {
   if (shouldRecover) {
     const localData = localAutosave.load();
     if (localData && localData.data) {
-      localRecoveryTimestamp.value = localData.timestamp;
       showLocalRecoveryDialog.value = true;
     }
   }
@@ -297,93 +293,98 @@ function handleLocalDiscard() {
   localAutosave.clear();
 }
 
-function iterate(obj, stack, fields, propNeeded) {
-  //Get property path from nested object
-  for (let property in obj) {
-    const innerObject = obj[property];
-
-    if (propNeeded === property) {
-      fields = fields + stack + '.' + property;
-      return fields.replace(/^\./, '');
-    } else if (Array.isArray(innerObject)) {
-      // When the form contains a Data Grid there will be an array that
-      // needs to be checked, and an array of properties to be unset.
-      const fieldsArray = [];
-      for (let i = 0; i < innerObject.length; i++) {
-        const next = iterate(
-          innerObject[i],
-          stack + '.' + property + '[' + i + ']',
-          fields,
-          propNeeded
-        );
-
-        if (next) {
-          fieldsArray.push(next);
-        }
-      }
-
-      if (fieldsArray.length > 0) {
-        return fieldsArray;
-      }
-    } else if (typeof innerObject === 'object') {
-      return iterate(innerObject, stack + '.' + property, fields, propNeeded);
-    }
-  }
-}
-
-function deleteFieldData(fieldcomponent, submission) {
-  if (Object.hasOwn(fieldcomponent, 'columns')) {
-    // It's a layout component that has columns.
-    fieldcomponent.columns.map((subComponent) => {
-      deleteFieldData(subComponent, submission);
-    });
-  } else if (Object.hasOwn(fieldcomponent, 'components')) {
-    // It's a layout component that has subcomponents, such as a panel.
-    fieldcomponent.components.map((subComponent) => {
-      deleteFieldData(subComponent, submission);
-    });
-  } else if (fieldcomponent?.validate?.isUseForCopy === false) {
-    const fieldPath = iterate(submission, '', '', fieldcomponent.key);
-    if (Array.isArray(fieldPath)) {
-      for (let path of fieldPath) {
-        _.unset(submission, path);
-      }
-    } else if (fieldPath) {
-      _.unset(submission, fieldPath);
-    }
-  }
-}
-
 async function getFormData() {
+  function iterate(obj, stack, fields, propNeeded) {
+    // Get property path from nested object
+    for (let property in obj) {
+      const innerObject = obj[property];
+      if (propNeeded === property) {
+        fields = fields + stack + '.' + property;
+        return fields.replace(/^\./, '');
+      } else if (Array.isArray(innerObject)) {
+        // When the form contains a Data Grid there will be an array that
+        // needs to be checked, and an array of properties to be unset.
+        const fieldsArray = [];
+        for (let i = 0; i < innerObject.length; i++) {
+          const next = iterate(
+            innerObject[i],
+            stack + '.' + property + '[' + i + ']',
+            fields,
+            propNeeded
+          );
+          if (next) {
+            fieldsArray.push(next);
+          }
+        }
+        if (fieldsArray.length > 0) {
+          return fieldsArray;
+        }
+      } else if (typeof innerObject === 'object') {
+        return iterate(innerObject, stack + '.' + property, fields, propNeeded);
+      }
+    }
+  }
+
+  function deleteFieldData(fieldcomponent, submission) {
+    if (Object.prototype.hasOwnProperty.call(fieldcomponent, 'columns')) {
+      // It's a layout component that has columns.
+      fieldcomponent.columns.map((subComponent) => {
+        deleteFieldData(subComponent, submission);
+      });
+    } else if (
+      Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
+    ) {
+      // It's a layout component that has subcomponents, such as a panel.
+      fieldcomponent.components.map((subComponent) => {
+        deleteFieldData(subComponent, submission);
+      });
+    } else if (fieldcomponent?.validate?.isUseForCopy === false) {
+      const fieldPath = iterate(submission, '', '', fieldcomponent.key);
+      if (Array.isArray(fieldPath)) {
+        for (let path of fieldPath) {
+          _.unset(submission, path);
+        }
+      } else if (fieldPath) {
+        _.unset(submission, fieldPath);
+      }
+    }
+  }
+
   try {
     loadingSubmission.value = true;
     const response = await formService.getSubmission(properties.submissionId);
-    submissionRecord.value = { ...response.data.submission };
+    submissionRecord.value = Object.assign({}, response.data.submission);
     submission.value = submissionRecord.value.submission;
-    showModal.value = !(
+
+    showModal.value =
       submission.value.data.submit ||
       submission.value.data.state == 'submitted' ||
       !submissionRecord.value.draft ||
       properties.readOnly
-    );
+        ? false
+        : true;
+
     form.value = response.data.form;
     versionIdToSubmitTo.value = versionIdToSubmitTo.value
       ? versionIdToSubmitTo.value
       : response.data?.version?.id;
-    if (properties.isDuplicate) {
+
+    if (!properties.isDuplicate) {
+      // As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
+      formSchema.value = response.data.version.schema;
+      version.value = response.data.version.version;
+    } else {
       if (
         response.data?.version?.schema?.components &&
         response.data?.version?.schema?.components.length
       ) {
         response.data.version.schema.components.map((component) => {
-          deleteFieldData(component, submission.value); //Delete all the fields data that are not enabled for duplication
+          deleteFieldData(component, submission.value);
+          // Delete all the fields data that are not enabled for duplication
         });
       }
-    } else {
-      //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
-      formSchema.value = response.data.version.schema;
-      version.value = response.data.version.version;
     }
+
     // Get permissions
     if (!properties.staffEditMode && !isFormPublic(form.value)) {
       const permRes = await rbacService.getUserSubmissions({
@@ -417,89 +418,82 @@ async function setProxyHeaders() {
       response.data['X-CHEFS-PROXY-DATA']
     );
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.warn('Failed to set proxy headers:', error);
+    // need error handling
   }
 }
 
-async function handleVersionSchema(response) {
-  versionIdToSubmitTo.value = properties.versionId;
-  if (!response.data || !response.data.schema) {
-    throw new Error(
-      t('trans.formViewer.readVersionErrMsg', {
-        versionId: properties.versionId,
-      })
-    );
-  }
-  form.value = response.data;
-  version.value = response.data.version;
-  formSchema.value = response.data.schema;
-}
-
-async function handleDraftSchema(response) {
-  if (!response.data || !response.data.schema) {
-    throw new Error(
-      t('trans.formViewer.readDraftErrMsg', {
-        draftId: properties.draftId,
-      })
-    );
-  }
-  form.value = response.data;
-  formSchema.value = response.data.schema;
-}
-
-async function handlePublishedSchema(response) {
-  if (
-    !response ||
-    !response.data ||
-    !response.data.versions ||
-    !response.data.versions[0]
-  ) {
-    router.push({
-      name: 'Alert',
-      query: {
-        text: t('trans.formViewer.alertRouteMsg'),
-        type: 'info',
-      },
-    });
-    return;
-  }
-  form.value = response.data;
-  version.value = response.data.versions[0].version;
-  versionIdToSubmitTo.value = response.data.versions[0].id;
-  formSchema.value = response.data.versions[0].schema;
-
-  if (response.data.schedule && response.data.schedule.expire) {
-    let formScheduleStatus = response.data.schedule;
-    isFormScheduleExpired.value = formScheduleStatus.expire;
-    isLateSubmissionAllowed.value = formScheduleStatus.allowLateSubmissions;
-  }
-}
-
+// Get the form definition/schema
 async function getFormSchema() {
   try {
-    let response;
+    let response = undefined;
+
     if (properties.versionId) {
+      versionIdToSubmitTo.value = properties.versionId;
+      // If getting for a specific older version of the form
       response = await formService.readVersion(
         properties.formId,
         properties.versionId
       );
-      await handleVersionSchema(response);
+      if (!response.data || !response.data.schema) {
+        throw new Error(
+          t('trans.formViewer.readVersionErrMsg', {
+            versionId: properties.versionId,
+          })
+        );
+      }
+      form.value = response.data;
+      version.value = response.data.version;
+      formSchema.value = response.data.schema;
     } else if (properties.draftId) {
+      // If getting for a specific draft version of the form for preview
       response = await formService.readDraft(
         properties.formId,
         properties.draftId
       );
-      await handleDraftSchema(response);
+      if (!response.data || !response.data.schema) {
+        throw new Error(
+          t('trans.formViewer.readDraftErrMsg', {
+            draftId: properties.draftId,
+          })
+        );
+      }
+      form.value = response.data;
+      formSchema.value = response.data.schema;
     } else {
+      // If getting the HEAD form version (IE making a new submission)
       response = await formService.readPublished(properties.formId);
-      await handlePublishedSchema(response);
+      if (
+        !response ||
+        !response.data ||
+        !response.data.versions ||
+        !response.data.versions[0]
+      ) {
+        router.push({
+          name: 'Alert',
+          query: {
+            text: t('trans.formViewer.alertRouteMsg'),
+            type: 'info',
+          },
+        });
+        return;
+      }
+      form.value = response.data;
+      version.value = response.data.versions[0].version;
+      versionIdToSubmitTo.value = response.data.versions[0].id;
+      formSchema.value = response.data.versions[0].schema;
+      if (response.data.schedule && response.data.schedule.expire) {
+        const formScheduleStatus = response.data.schedule;
+        isFormScheduleExpired.value = formScheduleStatus.expire;
+        isLateSubmissionAllowed.value = formScheduleStatus.allowLateSubmissions;
+      }
     }
   } catch (error) {
     if (authenticated.value) {
+      // if 401 error, the user is not authorized to view the form
       if (error.response && error.response.status === 401) {
         isAuthorized.value = false;
       } else {
+        // throw a generic error message
         notificationStore.addNotification({
           text: t('trans.formViewer.fecthingFormErrMsg'),
           consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
@@ -521,6 +515,7 @@ function formChange(e) {
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
+
   if (e.changed != undefined && !e.changed.flags.fromSubmission) {
     formDataEntered.value = true;
 
@@ -718,13 +713,18 @@ async function onSubmit(sub) {
 
 // Not a formIO event, our saving routine to POST the submission to our API
 async function doSubmit(sub) {
+  // since we are not using formio api
+  // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
   try {
     const response = await sendSubmission(false, sub);
 
     if ([200, 201].includes(response.status)) {
-      submissionRecord.value = {
-        ...(properties.submissionId && properties.isDuplicate
+      // all is good, flag no errors and carry on...
+      // store our submission result...
+      submissionRecord.value = Object.assign(
+        {},
+        properties.submissionId && properties.isDuplicate //Check if this submission is creating with the existing one
           ? response.data
           : (() => {
               let result;
@@ -736,8 +736,8 @@ async function doSubmit(sub) {
                 result = response.data;
               }
               return result;
-            })()),
-      };
+            })()
+      );
     } else {
       throw new Error(
         t('trans.formViewer.sendSubmissionErrMsg', {
@@ -746,7 +746,6 @@ async function doSubmit(sub) {
       );
     }
   } catch (error) {
-    // return error only; NO add notifications here
     errMsg = t('trans.formViewer.errMsg');
   } finally {
     confirmSubmit.value = false;
@@ -782,13 +781,12 @@ function onCustomEvent(event) {
 }
 
 function switchView() {
-  if (bulkFile.value) {
-    bulkFile.value = !bulkFile.value;
-  } else {
+  if (!bulkFile.value) {
     showdoYouWantToSaveTheDraftModalForSwitch();
+    return;
   }
+  bulkFile.value = !bulkFile.value;
 }
-
 function showdoYouWantToSaveTheDraftModalForSwitch() {
   saveDraftState.value = 1;
   if (formDataEntered.value && showModal.value) {
@@ -799,9 +797,7 @@ function showdoYouWantToSaveTheDraftModalForSwitch() {
 }
 
 function showdoYouWantToSaveTheDraftModal() {
-  if (bulkFile.value) {
-    leaveThisPage();
-  } else {
+  if (!bulkFile.value) {
     saveDraftState.value = 0;
     if (
       (properties.submissionId == undefined || formDataEntered.value) &&
@@ -810,6 +806,8 @@ function showdoYouWantToSaveTheDraftModal() {
     ) {
       doYouWantToSaveTheDraft.value = true;
     } else leaveThisPage();
+  } else {
+    leaveThisPage();
   }
 }
 
@@ -926,7 +924,7 @@ async function getFile(fileId, options = {}) {
     }
 
     // don't need to blob because it's already a blob
-    const url = URL.createObjectURL(data);
+    const url = window.URL.createObjectURL(data);
     const a = document.createElement('a');
     a.href = url;
     a.download = getDisposition(
@@ -937,7 +935,7 @@ async function getFile(fileId, options = {}) {
     document.body.appendChild(a);
     a.click();
     downloadTimeout.value = setTimeout(() => {
-      a.remove();
+      document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
     });
   }
@@ -1127,7 +1125,6 @@ async function uploadFile(file, config = {}) {
 
       <LocalAutosaveRecoveryDialog
         :show="showLocalRecoveryDialog"
-        :local-timestamp="localRecoveryTimestamp"
         @update:show="showLocalRecoveryDialog = $event"
         @restore="handleLocalRestore"
         @discard="handleLocalDiscard"

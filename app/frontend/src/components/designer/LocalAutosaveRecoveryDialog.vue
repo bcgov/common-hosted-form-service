@@ -8,19 +8,25 @@
   >
     <!-- Title -->
     <template #title>
-      <div class="d-flex align-center">
-        <v-icon color="info" class="mr-2" size="20" aria-hidden="true">
-          mdi-information
-        </v-icon>
-        {{ $t('trans.localAutosave.title') }}
+      <div>
+        <div class="d-flex align-center">
+          <v-icon color="info" class="mr-2" size="20" aria-hidden="true">
+            mdi-information
+          </v-icon>
+          {{ $t('trans.localAutosave.title') }}
+        </div>
+        <v-divider class="mt-3" />
       </div>
     </template>
 
     <!-- Body -->
     <template #text>
-      <p class="text-body-1">
-        {{ $t('trans.localAutosave.message') }}
-      </p>
+      <div>
+        <p class="text-body-1 mb-3">
+          {{ $t('trans.localAutosave.message') }}
+        </p>
+        <v-divider class="mt-3" />
+      </div>
     </template>
 
     <!-- Buttons -->

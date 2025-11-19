@@ -985,7 +985,7 @@
     "message": "Your progress from the last session was saved in your browser and can be restored now, or you can start over with a blank form.",
     "restore": "Restore Work",
     "discard": "Start Over",
-    "restoredToast": "Your progress from the last session has been successfully restored."
+    "restored": "Your progress from the last session has been successfully restored."
   },
   "bCGovFooter": {
     "home": "Home",
