@@ -204,10 +204,6 @@ onMounted(async () => {
   } else {
     showModal.value = true;
     await getFormSchema();
-    setTimeout(() => {
-      initialRenderComplete.value = true;
-      autosaveReady.value = true;
-    }, 300);
   }
 
   // Initialize local autosave after first render
@@ -300,6 +296,12 @@ function handleLocalDiscard() {
 }
 
 async function getFormData() {
+  // We are loading an existing submission:
+  // - stop autosave
+  // - clear any stale local autosave data
+  // - reset render flags so Form.io can re-init safely
+  localAutosave.clear();
+  autosaveReady.value = false;
   initialRenderComplete.value = false;
   function iterate(obj, stack, fields, propNeeded) {
     //Get property path from nested object
@@ -513,28 +515,29 @@ function isProcessingMultiUpload(e) {
 }
 
 function formChange(e) {
-  // During initial form load:
-  // - Allow Form.io's internal population events
-  // - But do NOT validate or autosave
+  //Do NOT react while Form.io is still doing its initial render
   if (!initialRenderComplete.value) {
-    jsonManager(); // needed for CSV preview initialization
     return;
   }
 
-  // Validate drafts
+  //If this is a draft, validate on change
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
 
-  // Real user input only → fromSubmission === false
-  if (e.changed != undefined && !e.changed.flags?.fromSubmission) {
-    formDataEntered.value = true;
-  } else {
-    // Ignore internal Form.io events
+  //Ignore internal Form.io changes (like loading submission/recall)
+  if (!e.changed || e.changed.flags?.fromSubmission) {
     return;
   }
 
-  // AUTOSAVE – enabled only after full render + user typing
+  //user typing
+  formDataEntered.value = true;
+
+  //AUTOSAVE – only when:
+  //autosave is ready
+  //form has enableAutoSave turned on
+  //not read-only or preview
+  //Form.io has valid _data
   if (
     autosaveReady.value &&
     form.value?.enableAutoSave &&

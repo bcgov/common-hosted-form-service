@@ -10,8 +10,18 @@
 const STORAGE_PREFIX = 'chefs_autosave_';
 const DEBOUNCE_DELAY = 3000; // 3 seconds
 
-//Top-level storage-error handler
+// Keep autosave data at most 6 hours
+const AUTOSAVE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+// Best-effort global cleanup every 24 hours per browser
+const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CLEANUP_META_KEY = 'chefs_last_cleanup';
+
+// Top-level storage-error handler (NEVER throw)
 function handleStorageError(error) {
+  // Intentionally swallow – autosave is best-effort only
+  // Optionally log to console in dev:
+  // console.warn('[localAutosave] storage error', error);
   String(error);
 }
 
@@ -33,7 +43,60 @@ function isStorageAvailable() {
     return false;
   }
 }
-//useLocalAutosave Composable
+
+/**
+ * Best-effort global cleanup for ALL CHEFS autosave keys.
+ * Runs at most once per CLEANUP_INTERVAL_MS per browser.
+ */
+function runGlobalCleanupIfDue() {
+  if (!isStorageAvailable()) return;
+
+  try {
+    const now = Date.now();
+    const lastRunRaw = localStorage.getItem(CLEANUP_META_KEY);
+
+    if (lastRunRaw) {
+      const lastRun = Number(lastRunRaw);
+      if (!Number.isNaN(lastRun) && now - lastRun < CLEANUP_INTERVAL_MS) {
+        return; // not time yet
+      }
+    }
+
+    // Mark as run *before* cleanup to avoid loops on failure
+    localStorage.setItem(CLEANUP_META_KEY, String(now));
+
+    // Walk all keys and delete expired/invalid autosave entries
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith(STORAGE_PREFIX)) continue;
+
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) {
+          localStorage.removeItem(key);
+          continue;
+        }
+
+        const parsed = JSON.parse(raw);
+        const ts =
+          parsed && parsed.timestamp
+            ? new Date(parsed.timestamp).getTime()
+            : NaN;
+
+        if (Number.isNaN(ts) || Date.now() - ts > AUTOSAVE_TTL_MS) {
+          localStorage.removeItem(key);
+        }
+      } catch (innerErr) {
+        // If anything is weird, delete the offending key
+        localStorage.removeItem(key);
+      }
+    }
+  } catch (error) {
+    handleStorageError(error);
+  }
+}
+
+// useLocalAutosave Composable
 export function useLocalAutosave() {
   let storageKey = null;
   let debounceTimeout = null;
@@ -74,6 +137,9 @@ export function useLocalAutosave() {
 
     const segments = [formId, userId, versionId, submissionId].filter(Boolean);
     storageKey = `${STORAGE_PREFIX}${segments.join(':')}`;
+
+    // Best-effort global cleanup across all forms
+    runGlobalCleanupIfDue();
   }
 
   /**
@@ -86,6 +152,29 @@ export function useLocalAutosave() {
       );
     }
     return storageKey;
+  }
+
+  /**
+   * Internal helper: load raw parsed payload (without expiry check).
+   */
+  function loadRaw() {
+    if (!storageKey || !isStorageAvailable()) {
+      return null;
+    }
+
+    try {
+      const raw = localStorage.getItem(getStorageKey());
+      if (!raw) return null;
+
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') {
+        return null;
+      }
+      return parsed;
+    } catch (error) {
+      handleStorageError(error);
+      return null;
+    }
   }
 
   /**
@@ -106,6 +195,9 @@ export function useLocalAutosave() {
         const payload = {
           timestamp: new Date().toISOString(),
           data: formData,
+          // Reserved fields for future use:
+          ttlMs: AUTOSAVE_TTL_MS,
+          version: 1,
         };
         localStorage.setItem(getStorageKey(), JSON.stringify(payload));
       } catch (error) {
@@ -118,36 +210,36 @@ export function useLocalAutosave() {
   }
 
   /**
-   * Load autosaved data.
+   * Load autosaved data (with expiry check).
    */
   function load() {
-    if (!storageKey || !isStorageAvailable()) {
-      return null;
-    }
+    const parsed = loadRaw();
+    if (!parsed) return null;
 
     try {
-      const raw = localStorage.getItem(getStorageKey());
-      if (!raw) {
+      const ts = new Date(parsed.timestamp).getTime();
+      if (Number.isNaN(ts)) {
+        // Invalid timestamp → delete
+        localStorage.removeItem(getStorageKey());
         return null;
       }
 
-      const parsed = JSON.parse(raw);
-
-      if (
-        parsed &&
-        typeof parsed === 'object' &&
-        typeof parsed.timestamp === 'string' &&
-        parsed.data &&
-        typeof parsed.data === 'object'
-      ) {
-        return parsed;
+      const ageMs = Date.now() - ts;
+      if (ageMs > AUTOSAVE_TTL_MS) {
+        // Expired → delete and ignore
+        localStorage.removeItem(getStorageKey());
+        return null;
       }
+
+      if (!parsed.data || typeof parsed.data !== 'object') {
+        return null;
+      }
+
+      return parsed;
     } catch (error) {
       handleStorageError(error);
       return null;
     }
-
-    return null;
   }
 
   /**
@@ -167,14 +259,19 @@ export function useLocalAutosave() {
 
   /**
    * Detect whether the recovery modal must be shown.
+   *
+   * Only shows when:
+   * - valid, non-expired local autosave exists
+   * - AND it is newer than the server submission (if any)
    */
   function shouldShowRecoveryDialog(serverSubmission) {
-    const localData = load();
+    const localData = load(); // already enforces expiry
 
     if (!localData) {
       return false;
     }
 
+    // No server timestamp → treat local as newer
     if (!serverSubmission || !serverSubmission.updatedAt) {
       return true;
     }
@@ -207,6 +304,7 @@ export function useLocalAutosave() {
   }
 
   function exists() {
+    // Uses load(), so expired data is also cleaned up
     return !!load();
   }
 
