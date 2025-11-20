@@ -525,20 +525,20 @@ function formChange(e) {
 
   if (e.changed != undefined && !e.changed.flags.fromSubmission) {
     formDataEntered.value = true;
-
-    // AUTOSAVE – only when form supports it
-    if (
-      autosaveReady.value &&
-      form.value?.enableAutoSave &&
-      !properties.readOnly &&
-      !properties.preview &&
-      chefForm.value?.formio?._data
-    ) {
-      localAutosave.save(chefForm.value.formio._data);
-    }
-
-    jsonManager();
   }
+
+  // AUTOSAVE – only when form supports it
+  if (
+    autosaveReady.value &&
+    form.value?.enableAutoSave &&
+    !properties.readOnly &&
+    !properties.preview &&
+    chefForm.value?.formio?._data
+  ) {
+    localAutosave.save(chefForm.value.formio._data);
+  }
+
+  jsonManager();
 }
 function jsonManager() {
   json_csv.value.file_name = 'template_' + form.value.name + '_' + Date.now();
