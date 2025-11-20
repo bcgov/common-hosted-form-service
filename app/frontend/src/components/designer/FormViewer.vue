@@ -391,9 +391,9 @@ async function getFormData() {
       });
       permissions.value = permRes.data[0] ? permRes.data[0].permissions : [];
     }
-    initialRenderComplete.value = true;
 
     setTimeout(() => {
+      formDataEntered.value = false;
       initialRenderComplete.value = true;
       autosaveReady.value = true;
     }, 300);
@@ -523,27 +523,23 @@ function formChange(e) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
 
-  // Ignore Form.io internal events
-  if (!e.changed || e.changed.flags?.fromSubmission) {
-    return;
+  if (e.changed != undefined && !e.changed.flags.fromSubmission) {
+    formDataEntered.value = true;
+
+    // AUTOSAVE – only when form supports it
+    if (
+      autosaveReady.value &&
+      form.value?.enableAutoSave &&
+      !properties.readOnly &&
+      !properties.preview &&
+      chefForm.value?.formio?._data
+    ) {
+      localAutosave.save(chefForm.value.formio._data);
+    }
+
+    jsonManager();
   }
-
-  formDataEntered.value = true; // real user typing
-
-  // AUTOSAVE – only when form supports it
-  if (
-    autosaveReady.value &&
-    form.value?.enableAutoSave &&
-    !properties.readOnly &&
-    !properties.preview &&
-    chefForm.value?.formio?._data
-  ) {
-    localAutosave.save(chefForm.value.formio._data);
-  }
-
-  jsonManager();
 }
-
 function jsonManager() {
   json_csv.value.file_name = 'template_' + form.value.name + '_' + Date.now();
   if (chefForm.value?.formio) {
