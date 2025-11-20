@@ -515,9 +515,6 @@ function isProcessingMultiUpload(e) {
 }
 
 function formChange(e) {
-  // Do not run during initial form load
-  if (!initialRenderComplete.value) return;
-
   // Validate drafts
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
