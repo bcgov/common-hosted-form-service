@@ -296,8 +296,6 @@ function handleLocalDiscard() {
 }
 
 async function getFormData() {
-  localAutosave.clear();
-  autosaveReady.value = false;
   initialRenderComplete.value = false;
   function iterate(obj, stack, fields, propNeeded) {
     //Get property path from nested object
@@ -396,6 +394,7 @@ async function getFormData() {
     initialRenderComplete.value = true;
 
     setTimeout(() => {
+      initialRenderComplete.value = true;
       autosaveReady.value = true;
     }, 300);
   } catch (error) {
@@ -516,37 +515,32 @@ function isProcessingMultiUpload(e) {
 }
 
 function formChange(e) {
-  // Ignore early Form.io events during initial load
+  // Do not run during initial form load
   if (!initialRenderComplete.value) return;
 
-  // If draft, validate on render
+  // Validate drafts
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
 
-  // Ignore events triggered by Form.io submission loading or recall patching
+  // Ignore Form.io internal events
   if (!e.changed || e.changed.flags?.fromSubmission) {
     return;
   }
 
-  // User is actively typing
-  formDataEntered.value = true;
+  formDataEntered.value = true; // real user typing
 
-  // Autosave only when ready & real user input
+  // AUTOSAVE – only when form supports it
   if (
-    autosaveReady.value && // form stable
-    form.value?.enableAutoSave && // feature enabled
-    !properties.readOnly && // not read-only
-    !properties.preview && // not preview mode
-    chefForm.value?.formio?._data // valid form data
+    autosaveReady.value &&
+    form.value?.enableAutoSave &&
+    !properties.readOnly &&
+    !properties.preview &&
+    chefForm.value?.formio?._data
   ) {
-    localAutosave.save(
-      chefForm.value.formio._data,
-      authStore.currentUser.idpUserId
-    );
+    localAutosave.save(chefForm.value.formio._data);
   }
 
-  // Seems to be the only place the form changes on load
   jsonManager();
 }
 
