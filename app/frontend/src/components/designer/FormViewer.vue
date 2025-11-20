@@ -204,6 +204,10 @@ onMounted(async () => {
   } else {
     showModal.value = true;
     await getFormSchema();
+    setTimeout(() => {
+      initialRenderComplete.value = true;
+      autosaveReady.value = true;
+    }, 300);
   }
 
   // Initialize local autosave after first render
@@ -391,11 +395,6 @@ async function getFormData() {
       });
       permissions.value = permRes.data[0] ? permRes.data[0].permissions : [];
     }
-
-    setTimeout(() => {
-      initialRenderComplete.value = true;
-      autosaveReady.value = true;
-    }, 300);
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
@@ -514,18 +513,28 @@ function isProcessingMultiUpload(e) {
 }
 
 function formChange(e) {
-  // Do not run during initial form load
-  if (!initialRenderComplete.value) return;
+  // During initial form load:
+  // - Allow Form.io's internal population events
+  // - But do NOT validate or autosave
+  if (!initialRenderComplete.value) {
+    jsonManager(); // needed for CSV preview initialization
+    return;
+  }
+
   // Validate drafts
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
 
-  if (e.changed != undefined && !e.changed.flags.fromSubmission) {
+  // Real user input only → fromSubmission === false
+  if (e.changed != undefined && !e.changed.flags?.fromSubmission) {
     formDataEntered.value = true;
+  } else {
+    // Ignore internal Form.io events
+    return;
   }
 
-  // AUTOSAVE – only when form supports it
+  // AUTOSAVE – enabled only after full render + user typing
   if (
     autosaveReady.value &&
     form.value?.enableAutoSave &&
@@ -533,10 +542,7 @@ function formChange(e) {
     !properties.preview &&
     chefForm.value?.formio?._data
   ) {
-    localAutosave.save(
-      chefForm.value.formio._data,
-      authStore.currentUser.idpUserId
-    );
+    localAutosave.save(chefForm.value.formio._data);
   }
 
   jsonManager();
@@ -623,6 +629,12 @@ async function sendSubmission(isDraft, sub) {
 }
 
 function onFormRender() {
+  // Mark initial render complete + allow autosave AFTER Form.io finish render
+  if (!initialRenderComplete.value) {
+    initialRenderComplete.value = true;
+    autosaveReady.value = true;
+  }
+
   if (isLoading.value) isLoading.value = false;
 }
 
