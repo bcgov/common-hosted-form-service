@@ -393,7 +393,6 @@ async function getFormData() {
     }
 
     setTimeout(() => {
-      formDataEntered.value = false;
       initialRenderComplete.value = true;
       autosaveReady.value = true;
     }, 300);
@@ -515,6 +514,8 @@ function isProcessingMultiUpload(e) {
 }
 
 function formChange(e) {
+  // Do not run during initial form load
+  if (!initialRenderComplete.value) return;
   // Validate drafts
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
@@ -532,7 +533,10 @@ function formChange(e) {
     !properties.preview &&
     chefForm.value?.formio?._data
   ) {
-    localAutosave.save(chefForm.value.formio._data);
+    localAutosave.save(
+      chefForm.value.formio._data,
+      authStore.currentUser.idpUserId
+    );
   }
 
   jsonManager();
