@@ -515,11 +515,6 @@ function isProcessingMultiUpload(e) {
 }
 
 function formChange(e) {
-  //Do NOT react while Form.io is still doing its initial render
-  if (!initialRenderComplete.value) {
-    return;
-  }
-
   //If this is a draft, validate on change
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
@@ -538,6 +533,7 @@ function formChange(e) {
   //form has enableAutoSave turned on
   //not read-only or preview
   //Form.io has valid _data
+
   if (
     autosaveReady.value &&
     form.value?.enableAutoSave &&
