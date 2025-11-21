@@ -57,7 +57,7 @@ describe('Form Designer', () => {
     cy.get('[data-test="canAllowEventSubscriptionCheckbox"]').find('input[type="checkbox"]').should("be.enabled"); 
     cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
     cy.get('[data-test="canUploadDraftCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
-    cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').find('input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').find('input[type="checkbox"]').should('be.checked').and('be.enabled');
     cy.get('[data-test="enableTeamMemberDraftShare"]').find('input[type="checkbox"]').should("not.be.enabled");    
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
