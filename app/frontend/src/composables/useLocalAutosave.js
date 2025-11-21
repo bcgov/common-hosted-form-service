@@ -17,7 +17,6 @@ const CLEANUP_META_KEY = `${STORAGE_PREFIX}__last_cleanup__`;
 // -----------------------------------------------------------------------------
 function handleStorageError(error) {
   // Intentionally no-op; ensures the parameter is "used" for linters/Sonar.
-  // Converting to string avoids "unused" warnings without logging.
   String(error);
 }
 
@@ -51,7 +50,7 @@ function safeParse(raw) {
   try {
     return JSON.parse(raw);
   } catch (error_) {
-    // Only treat JSON parse failures as "handled"; everything else rethrows
+    // Treat JSON parse failures as handled; we just ignore that entry
     handleStorageError(error_);
     return null;
   }
@@ -94,7 +93,7 @@ function cleanupKeyIfExpired(key, nowMs) {
 
   const parsed = safeParse(raw);
   if (!parsed || typeof parsed !== 'object') {
-    // Corrupt or unexpected payload → remove
+    // Corrupt/unexpected payload → remove
     localStorage.removeItem(key);
     return;
   }
@@ -126,7 +125,7 @@ function setLastCleanupTime(nowMs) {
   try {
     localStorage.setItem(CLEANUP_META_KEY, String(nowMs));
   } catch (error_) {
-    // Best-effort only, ignore failure
+    // Best-effort only
     handleStorageError(error_);
   }
 }
@@ -173,7 +172,6 @@ function runGlobalCleanupIfDue() {
   try {
     const keys = collectAutosaveKeys();
 
-    // Sonar: prefer for..of over forEach
     for (const key of keys) {
       try {
         cleanupKeyIfExpired(key, now);

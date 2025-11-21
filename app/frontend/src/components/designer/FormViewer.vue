@@ -117,11 +117,10 @@ const authStore = useAuthStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
-// Local crash-recovery autosave
+// Local crash-recovery autosave (storage layer)
 const localAutosave = useLocalAutosave();
 const showLocalRecoveryDialog = ref(false);
-const autosaveReady = ref(false);
-const initialRenderComplete = ref(false); // Prevent autosave firing during Form.io internal events
+const autosaveReady = ref(false); // becomes true after first Form.io render
 
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
@@ -219,7 +218,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', beforeWindowUnload);
   clearTimeout(downloadTimeout.value);
 
-  // Cleanup local autosave
+  // Cleanup local autosave debounce
   localAutosave.cleanup();
 });
 
@@ -233,6 +232,13 @@ function getCurrentAuthHeader() {
   return `Bearer ${keycloak.value.token}`;
 }
 
+/**
+ * Central autosave initialization:
+ * - Only for authenticated, non-preview, non-readonly forms
+ * - Only when form.enableAutoSave is true
+ * - Builds a per-user, per-form(+submission) storage key
+ * - Decides whether to show the recovery dialog
+ */
 function initializeLocalAutosave() {
   // Only enable for authenticated users on non-readonly, non-preview forms
   if (
@@ -256,7 +262,7 @@ function initializeLocalAutosave() {
     userId: authStore.currentUser.idpUserId,
   });
 
-  // Check if we should show recovery dialog
+  // Decide if we should show the recovery dialog
   const shouldRecover = localAutosave.shouldShowRecoveryDialog(
     submissionRecord.value
   );
@@ -296,13 +302,6 @@ function handleLocalDiscard() {
 }
 
 async function getFormData() {
-  // We are loading an existing submission:
-  // - stop autosave
-  // - clear any stale local autosave data
-  // - reset render flags so Form.io can re-init safely
-  localAutosave.clear();
-  autosaveReady.value = false;
-  initialRenderComplete.value = false;
   function iterate(obj, stack, fields, propNeeded) {
     //Get property path from nested object
     for (let property in obj) {
@@ -514,6 +513,13 @@ function isProcessingMultiUpload(e) {
   block.value = e;
 }
 
+/**
+ * Form change handler:
+ * - Validates drafts on change
+ * - Ignores Form.io's internal "fromSubmission" changes
+ * - Marks real user input
+ * - Triggers autosave only when ready and allowed
+ */
 function formChange(e) {
   //If this is a draft, validate on change
   if (submissionRecord.value.draft) {
@@ -528,12 +534,11 @@ function formChange(e) {
   //user typing
   formDataEntered.value = true;
 
-  //AUTOSAVE – only when:
-  //autosave is ready
-  //form has enableAutoSave turned on
-  //not read-only or preview
-  //Form.io has valid _data
-
+  // AUTOSAVE – only when:
+  // autosave flag ready (Form.io render happened)
+  // form has enableAutoSave turned on
+  // not read-only or preview
+  // Form.io has valid _data
   if (
     autosaveReady.value &&
     form.value?.enableAutoSave &&
@@ -628,11 +633,8 @@ async function sendSubmission(isDraft, sub) {
 }
 
 function onFormRender() {
-  // Mark initial render complete + allow autosave AFTER Form.io finish render
-  if (!initialRenderComplete.value) {
-    initialRenderComplete.value = true;
-    autosaveReady.value = true;
-  }
+  // Mark autosave as ready AFTER Form.io finishes first render
+  autosaveReady.value = true;
 
   if (isLoading.value) isLoading.value = false;
 }
@@ -653,7 +655,6 @@ function onSubmitButton(event) {
   }
   // this is our first event in the submission chain.
   // most important thing here is ensuring that the formio form does not have an action, or else it POSTs to that action.
-  // console.info('onSubmitButton()') ; // eslint-disable-line no-console
   currentForm.value = event.instance.parent.root;
   currentForm.value.form.action = undefined;
 
@@ -888,8 +889,8 @@ function beforeWindowUnload(e) {
 
   // If autosave is enabled on this form, it can *reduce* warnings
   if (form.value?.enableAutoSave) {
-    // If a debounced save is still pending, assume it will complete soon
-    // Skip warning if save is pending OR data already exists in localStorage
+    // If a debounced save is still pending, assume it will complete soon,
+    // or if there is an autosave snapshot available, do not warn.
     if (
       (localAutosave._isPending && localAutosave._isPending()) ||
       localAutosave.exists()
