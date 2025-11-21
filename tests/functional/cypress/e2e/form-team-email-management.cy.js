@@ -137,7 +137,6 @@ describe('Form Designer', () => {
         cy.log('Autosave key found:', formCacheKey);
         cy.reload();
         cy.contains('Restore Data', { timeout: 5000 }).should('exist');
-        cy.contains('Restore Data').click({ force: true});
       } 
       }
     });
