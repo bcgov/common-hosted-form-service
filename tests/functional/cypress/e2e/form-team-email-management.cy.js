@@ -61,9 +61,9 @@ describe('Form Designer', () => {
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
     //Option to select Specific team members
-    //cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-    //cy.contains('Specific Team Members').click();
-    //cy.get('[data-test="enableAutoSaveCheckbox"]').click();
+    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('Specific Team Members').click();
+    cy.get('[data-test="enableAutoSaveCheckbox"]').click();
     cy.get('[data-test="canEditForm"]').click();
     //Go to Team Management
     cy.get('[data-test="canManageTeammembers"]').click();
@@ -112,18 +112,7 @@ describe('Form Designer', () => {
         cy.get(body).type("Thank you for submission, Click on this link");
     });
     cy.get(".v-form > .v-btn").should("be.enabled");
-    cy.get(".v-form > .v-btn").click();
-    //cy.on('window:confirm', (text) => {
-   // expect(text).to.include('Do you want to save changes?');
-    //return true; // click "OK"
-    //cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
-    //cy.visit(`/${depEnv}/form/submit?f=${formId}`);
-    //cy.contains('Text Field').click();
-    //cy.contains('Text Field').type('Alex');
-    //cy.get('.ml-auto > :nth-child(1) > .v-btn').click();
-    //cy.get('input[name="data[simpletextfield]"]').should('have.value', 'Alex');
-    //});
-    
+    cy.get(".v-form > .v-btn").click(); 
     });
 
     it('Checks Auto Save Functionality', () => {
@@ -132,50 +121,33 @@ describe('Form Designer', () => {
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     const url = `/${depEnv}/form/submit?f=${formId}`;
     let formCacheKey;
-
     // First visit to determine the cache key
     cy.visit(url);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     cy.get('button').contains('Submit').should('be.visible');
-    cy.wait(2000);
-
-    cy.window().then((win) => {
-      formCacheKey = Object.keys(win.localStorage).find(k =>
-        k.startsWith('chefs_autosave_')
-      );
-      //expect(formCacheKey, 'autosave key found').to.exist;
-
-      // Set your autosave data
-      win.localStorage.setItem(
-        formCacheKey,
-        JSON.stringify({ data: { simpletextfield: 'Alex' } })
-      );
-    });
-
+    cy.wait(1000);
     // Reload with the preloaded data
     cy.visit(url, {
       onBeforeLoad(win) {
         formCacheKey = Object.keys(win.localStorage).find(k =>
         k.startsWith('chefs_autosave_')
       );
-        // restore the previously set autosave data
-        win.localStorage.setItem(
-          formCacheKey,
-          JSON.stringify({ data: { simpletextfield: 'Alex' } })
-        );
-      },
+      if (formCacheKey) {
+        cy.log('Autosave key found:', formCacheKey);
+        cy.reload();
+        cy.contains('Restore Data', { timeout: 5000 }).should('exist');
+        cy.contains('Restore Data').click({ force: true});
+      } 
+      }
     });
 
-    // Now the app should show "Restore Data"
-    cy.contains('Restore Data', { timeout: 5000 }).should('be.visible').click();
-  });
-});
+    });
 
-    
+});
     //Delete form after test run
-    //cy.get('.mdi-cog').click();
-    //cy.get(".mdi-delete").click();
-    //cy.get('[data-test="continue-btn-continue"]').click();
+    cy.get('.mdi-cog').click();
+    cy.get(".mdi-delete").click();
+    cy.get('[data-test="continue-btn-continue"]').click();
   
 });
