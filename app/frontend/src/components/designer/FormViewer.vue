@@ -121,6 +121,7 @@ const notificationStore = useNotificationStore();
 const localAutosave = useLocalAutosave();
 const showLocalRecoveryDialog = ref(false);
 const autosaveReady = ref(false); // becomes true after first Form.io render
+const autosaveInitialized = ref(false);
 
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
@@ -188,6 +189,20 @@ const canSaveDraft = computed(
 watch(locale, () => {
   reRenderFormIo.value += 1;
 });
+// Initialize autosave once auth + form (with enableAutoSave) are ready
+watch(
+  () => ({
+    isAuth: authenticated.value,
+    formId: properties.formId,
+    enableAutoSave: form.value?.enableAutoSave,
+  }),
+  ({ isAuth, formId, enableAutoSave }) => {
+    if (isAuth && formId && enableAutoSave) {
+      initializeLocalAutosave();
+    }
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   // load up headers for any External API calls
@@ -207,7 +222,6 @@ onMounted(async () => {
 
   // Initialize local autosave after first render
   await nextTick();
-  initializeLocalAutosave();
 
   window.addEventListener('beforeunload', beforeWindowUnload);
 
@@ -240,6 +254,11 @@ function getCurrentAuthHeader() {
  * - Decides whether to show the recovery dialog
  */
 function initializeLocalAutosave() {
+  // Only run once per mount
+  if (autosaveInitialized.value) {
+    return;
+  }
+
   // Only enable for authenticated users on non-readonly, non-preview forms
   if (
     !properties.formId ||
@@ -250,10 +269,13 @@ function initializeLocalAutosave() {
     return;
   }
 
-  // Only enable if form has enableAutoSave setting
-  if (!form.value?.enableAutoSave) {
+  // We need the form loaded and also enableAutoSave = true
+  if (!form.value || !form.value.enableAutoSave) {
     return;
   }
+
+  // Mark as initialized so we don't re-run if watchers fire again
+  autosaveInitialized.value = true;
 
   // Initialize autosave storage key
   localAutosave.init({
