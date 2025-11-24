@@ -108,7 +108,7 @@
   "cstar": {
     "endpoint": "https://tenant-management-system-dev-frontend.apps.silver.devops.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
-    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups",
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
     "listGroupsForTenant": "tenants/{tenantId}/groups"
   },
   "customBcAddressFormioComponent": {
