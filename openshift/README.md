@@ -52,8 +52,11 @@ oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
 oc create -n $NAMESPACE configmap $APP_NAME-sc-config \
   --from-literal=SC_CS_CHES_ENDPOINT=https://ches-dev.api.gov.bc.ca/api \
   --from-literal=SC_CS_CDOGS_ENDPOINT=https://cdogs-dev.api.gov.bc.ca/api \
+  --from-literal=SC_CS_CSS_ENDPOINT=https://api.loginproxy.gov.bc.ca/api \
   --from-literal=SC_CS_CHES_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
   --from-literal=SC_CS_CDOGS_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
+  --from-literal=SC_CS_CSS_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
+  --from-literal=SC_CS_CSS_ENVIRONMENT=dev
 ```
 
 ```sh
@@ -158,6 +161,18 @@ oc create -n $NAMESPACE secret generic $APP_NAME-event-stream-service \
   --type=Opaque \
   --from-literal=username=chefs \
   --from-literal=password=$ess_password
+```
+
+A secret for CHEFS Gateway to configure issued JWT tokens
+
+```sh
+
+export JWT_SECRET="$(openssl rand -base64 32)"
+
+oc create -n $NAMESPACE secret generic $APP_NAME-gateway \
+  --type=Opaque \
+  --from-literal=jwtSecret=$JWT_SECRET \
+  --from-literal=jwtLifetime=15m
 ```
 
 ## Deployment

@@ -81,7 +81,7 @@ function cleanComponents() {
  * @description Redeploy `@bcgov/formio` library
  */
 function deployComponents() {
-  console.log(`Redeploying ${TITLE}...`);
+  console.log(`Redeploying ${TITLE}...`); // eslint-disable-line no-console
   if (fs.existsSync(FORMIO_DIR)) fs.rmSync(FORMIO_DIR, { recursive: true });
 
   // Copy lib directory (JavaScript components)
@@ -101,15 +101,14 @@ function deployComponents() {
         fs.mkdirSync(cssDir, { recursive: true });
       }
 
-      cssFiles.forEach((file) => {
+      for (const file of cssFiles) {
         const sourcePath = path.join(`${COMPONENTS_DIR}/dist`, file);
         const targetPath = path.join(cssDir, file);
         copyFileSync(sourcePath, targetPath);
-      });
+      }
     }
   }
-
-  console.log(`${TITLE} has been redeployed`);
+  console.log(`${TITLE} has been redeployed`); // eslint-disable-line no-console
 }
 
 //
@@ -174,14 +173,14 @@ function copyDirRecursiveSync(source, target) {
   // Copy
   if (fs.lstatSync(source).isDirectory()) {
     files = fs.readdirSync(source);
-    files.forEach((file) => {
+    for (const file of files) {
       const curSource = path.join(source, file);
       if (fs.lstatSync(curSource).isDirectory()) {
         copyDirRecursiveSync(curSource, targetFolder);
       } else {
         copyFileSync(curSource, targetFolder);
       }
-    });
+    }
   }
 }
 

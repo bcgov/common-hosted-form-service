@@ -46,6 +46,7 @@ import simplebuttonadvanced from './SimpleButtonAdvanced/Component';
 import bcaddress from './BCAddress/Component';
 import simplebcaddress from './SimpleBCAddress/Component';
 import map from './Map/Component';
+import idirusers from './IdirUsers/Component';
 
 export default {
   orgbook,
@@ -96,4 +97,5 @@ export default {
   bcaddress,
   simplebcaddress,
   map,
+  idirusers,
 };

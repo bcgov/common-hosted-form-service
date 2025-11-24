@@ -24,7 +24,7 @@ const cstarUrl = computed(() => {
     hostname.includes('dev') ||
     hostname.includes('-pr-')
   ) {
-    return 'https://tenant-management-system-pr-202-frontend.apps.silver.devops.gov.bc.ca/tenants';
+    return 'https://tenant-management-system-dev-frontend.apps.silver.devops.gov.bc.ca/tenants';
   }
 
   // For test and prod environments

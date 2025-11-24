@@ -14,7 +14,6 @@ import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { useTenantStore } from '~/store/tenant';
 import { useNotificationStore } from '~/store/notification';
 import { FormDesignerBuilderOptions } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
@@ -73,7 +72,6 @@ const saving = ref(false);
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
-const tenantStore = useTenantStore();
 const notificationStore = useNotificationStore();
 
 const { tokenParsed, user } = storeToRefs(authStore);
@@ -177,55 +175,65 @@ function onRemoveSchemaComponent() {
 // Patch History
 // ---------------------------------------------------------------------------------------------------
 function onSchemaChange(_changed, flags, modified) {
-  // If the form changed but was not done so through the undo
-  // or redo button
-  if (!patch.value.undoClicked && !patch.value.redoClicked) {
-    // flags and modified are defined when a component is added
-    if (flags !== undefined && modified !== undefined) {
-      // Component was added into the form and save was clicked
-      if (patch.value.componentAddedStart) {
-        addPatchToHistory();
-      } else {
-        // Tab changed, Edit saved, paste occurred
-        if (typeof modified == 'boolean') {
-          // Tab changed
-          resetHistoryFlags();
-        } else {
-          // Edit saved or paste occurred
-          addPatchToHistory();
-        }
-      }
-      canSave.value = true;
-      modified?.components?.map((comp) => {
-        if (comp.key === 'form') {
-          const notificationStore = useNotificationStore();
-          const msg = t('trans.formDesigner.fieldnameError', {
-            label: comp.label,
-          });
-          notificationStore.addNotification({
-            text: msg,
-            consoleError: msg,
-          });
-          canSave.value = false;
-        }
-      });
-    } else {
-      // If we removed a component but not during an add action
-      if (
-        (!patch.value.componentAddedStart &&
-          patch.value.componentRemovedStart) ||
-        patch.value.componentMovedStart
-      ) {
-        // Component was removed or moved
-        addPatchToHistory();
+  if (patch.value.undoClicked || patch.value.redoClicked) {
+    handleUndoRedo();
+    return;
+  }
+
+  if (flags !== undefined && modified !== undefined) {
+    handleComponentModification(modified);
+  } else {
+    handleComponentRemovalOrMove();
+  }
+}
+
+function handleUndoRedo() {
+  patch.value.undoClicked = false;
+  patch.value.redoClicked = false;
+  resetHistoryFlags();
+}
+
+function handleComponentModification(modified) {
+  if (patch.value.componentAddedStart) {
+    addPatchToHistory();
+  } else if (typeof modified === 'boolean') {
+    resetHistoryFlags();
+  } else {
+    addPatchToHistory();
+  }
+
+  canSave.value = true;
+  validateFormComponents(modified);
+}
+
+function handleComponentRemovalOrMove() {
+  if (shouldAddPatchForRemovalOrMove()) {
+    addPatchToHistory();
+  }
+}
+
+function shouldAddPatchForRemovalOrMove() {
+  return (
+    (!patch.value.componentAddedStart && patch.value.componentRemovedStart) ||
+    patch.value.componentMovedStart
+  );
+}
+
+function validateFormComponents(modified) {
+  if (modified?.components) {
+    for (const comp of modified.components) {
+      if (comp.key === 'form') {
+        const notificationStore = useNotificationStore();
+        const msg = t('trans.formDesigner.fieldnameError', {
+          label: comp.label,
+        });
+        notificationStore.addNotification({
+          text: msg,
+          consoleError: msg,
+        });
+        canSave.value = false;
       }
     }
-  } else {
-    // We pressed undo or redo, so we just ignore
-    // adding the action to the history
-    patch.value.undoClicked = false;
-    patch.value.redoClicked = false;
-    resetHistoryFlags();
   }
 }
 
@@ -384,36 +392,33 @@ async function onRedoClick() {
 }
 
 async function schemaCreateNew() {
-  const response = await formService.createForm(
-    {
-      name: form.value.name,
-      description: form.value.description,
-      schema: formSchema.value,
-      identityProviders: generateIdps({
-        idps: form.value.idps,
-        userType: form.value.userType,
-      }),
-      sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
-      enableSubmitterDraft: form.value.enableSubmitterDraft,
-      allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
-      enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
-      wideFormLayout: form.value.wideFormLayout,
-      enableStatusUpdates: form.value.enableStatusUpdates,
-      enableSubmitterRevision: form.value.enableSubmitterRevision,
-      showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
-      showSubmissionConfirmation: form.value.showSubmissionConfirmation,
-      submissionReceivedEmails: form.value.submissionReceivedEmails,
-      reminder_enabled: false,
-      deploymentLevel: form.value.deploymentLevel,
-      ministry: form.value.ministry,
-      apiIntegration: form.value.apiIntegration,
-      useCase: form.value.useCase,
-      labels: form.value.labels,
-      formMetadata: form.value.formMetadata,
-      eventStreamConfig: form.value.eventStreamConfig,
-    },
-    tenantStore.selectedTenant?.id
-  );
+  const response = await formService.createForm({
+    name: form.value.name,
+    description: form.value.description,
+    schema: formSchema.value,
+    identityProviders: generateIdps({
+      idps: form.value.idps,
+      userType: form.value.userType,
+    }),
+    sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
+    enableSubmitterDraft: form.value.enableSubmitterDraft,
+    allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
+    enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
+    wideFormLayout: form.value.wideFormLayout,
+    enableStatusUpdates: form.value.enableStatusUpdates,
+    enableSubmitterRevision: form.value.enableSubmitterRevision,
+    showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
+    showSubmissionConfirmation: form.value.showSubmissionConfirmation,
+    submissionReceivedEmails: form.value.submissionReceivedEmails,
+    reminder_enabled: false,
+    deploymentLevel: form.value.deploymentLevel,
+    ministry: form.value.ministry,
+    apiIntegration: form.value.apiIntegration,
+    useCase: form.value.useCase,
+    labels: form.value.labels,
+    formMetadata: form.value.formMetadata,
+    eventStreamConfig: form.value.eventStreamConfig,
+  });
   // update user labels with any new added labels
   if (
     form.value.labels.some((label) => userLabels.value.indexOf(label) === -1)
