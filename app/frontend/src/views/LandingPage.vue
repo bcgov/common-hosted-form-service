@@ -6,6 +6,22 @@ import { useI18n } from 'vue-i18n';
 // import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
+// Import form example images
+import demographicSurvey from '~/assets/images/examples/demographic-survey.png';
+import calculationsGrid from '~/assets/images/examples/calculations-grid.png';
+import postCourseSurvey from '~/assets/images/examples/post-course-survey.png';
+import architectureForum from '~/assets/images/examples/architecture-forum.png';
+import conditionalLogic from '~/assets/images/examples/conditional-logic.png';
+import calculatedValues from '~/assets/images/examples/calculated-values.png';
+import teamLunchOrder from '~/assets/images/examples/team-lunch-order.png';
+import navigationButtons from '~/assets/images/examples/navigation-buttons.png';
+import successStories from '~/assets/images/examples/success-stories.png';
+
+// Import testimonial screenshots
+import screenshot1 from '~/assets/images/testimonials/screenshot-1.png';
+import screenshot2 from '~/assets/images/testimonials/screenshot-2.png';
+import screenshot3 from '~/assets/images/testimonials/screenshot-3.png';
+
 const { locale } = useI18n({ useScope: 'global' });
 
 // const authStore = useAuthStore();
@@ -36,39 +52,39 @@ const cstarUrl = computed(() => {
 const formExamples = [
   {
     title: 'Demographic Data Collection Survey',
-    image: '/app/src/assets/images/demographic-survey.png',
+    image: demographicSurvey,
   },
   {
     title: 'Example | Calculations in Data Grid',
-    image: '/app/src/assets/images/calculations-grid.png',
+    image: calculationsGrid,
   },
   {
     title: 'POST-COURSE SURVEY',
-    image: '/app/src/assets/images/post-course-survey.png',
+    image: postCourseSurvey,
   },
   {
     title: 'CHEFS Architecture Forum Survey',
-    image: '/app/src/assets/images/architecture-forum.png',
+    image: architectureForum,
   },
   {
     title: 'Example | Conditional Logic',
-    image: '/app/src/assets/images/conditional-logic.png',
+    image: conditionalLogic,
   },
   {
     title: 'Example | Calculated Values',
-    image: '/app/src/assets/images/calculated-values.png',
+    image: calculatedValues,
   },
   {
     title: 'Team Lunch Order',
-    image: '/app/src/assets/images/team-lunch-order.png',
+    image: teamLunchOrder,
   },
   {
     title: 'Example | Navigation Buttons',
-    image: '/app/src/assets/images/navigation-buttons.png',
+    image: navigationButtons,
   },
   {
     title: 'CHEFS Success Stories',
-    image: '/app/src/assets/images/success-stories.png',
+    image: successStories,
   },
 ];
 
@@ -79,7 +95,7 @@ const testimonials = [
     label: 'Verified User',
     title: 'Great communication and collaboration',
     date: 'Reviewed in Victoria, BC, Canada on May 19, 2024',
-    screenshot: '/app/src/assets/images/screenshot-1.png',
+    screenshot: screenshot1,
     content:
       '"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!"',
     reviewer: 'Leah Macdonald',
@@ -91,7 +107,7 @@ const testimonials = [
     label: 'Verified User',
     title: 'Accessible yet powerful',
     date: 'Reviewed in Victoria, BC, Canada on Jun 24, 2023',
-    screenshot: '/app/src/assets/images/screenshot-2.png',
+    screenshot: screenshot2,
     content:
       '"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people."',
     reviewer: 'Karl Martinson',
@@ -103,7 +119,7 @@ const testimonials = [
     label: 'Verified User',
     title: 'Clear documentation and helpful support',
     date: 'Reviewed in Victoria, BC, Canada on May 6, 2025',
-    screenshot: '/app/src/assets/images/screenshot-3.png',
+    screenshot: screenshot3,
     content:
       '"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions."',
     reviewer: 'Emma Armitage',
@@ -392,7 +408,7 @@ const testimonials = [
       </v-container>
     </div>
 
-    <!-- Footer Acknowledgment Section -->
+    <!--    &lt;!&ndash; Footer Acknowledgment Section &ndash;&gt;
     <div class="footer-acknowledgment-wrapper">
       <v-container>
         <v-row>
@@ -408,7 +424,7 @@ const testimonials = [
           </v-col>
         </v-row>
       </v-container>
-    </div>
+    </div>-->
   </div>
 </template>
 
