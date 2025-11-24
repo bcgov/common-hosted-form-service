@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 /**
  * Simple local crash-recovery autosave.
  *
@@ -421,3 +423,4 @@ export function useLocalAutosave() {
     _isPending: isPending,
   };
 }
+/* eslint-enable no-console */

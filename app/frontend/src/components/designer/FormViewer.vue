@@ -1,4 +1,6 @@
 <script setup>
+/* eslint-disable no-console */
+
 import { Form } from '@formio/vue';
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
@@ -1035,7 +1037,7 @@ async function uploadFile(file, config = {}) {
   return fileService.uploadFile(file, uploadConfig);
 }
 </script>
-
+<!-- eslint-enable no-console -->
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
