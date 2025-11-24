@@ -98,10 +98,10 @@
     }
   },
   "cstar": {
-    "endpoint": "https://tenant-management-system-pr-202-frontend.apps.silver.devops.gov.bc.ca/api/v1/",
+    "endpoint": "https://tenant-management-system-dev-frontend.apps.silver.devops.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
-    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups",
-    "listGroupsForTenant": "/tenants/{tenantId}/groups"
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
+    "listGroupsForTenant": "tenants/{tenantId}/groups"
   },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",
