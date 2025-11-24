@@ -189,21 +189,25 @@ const canSaveDraft = computed(
 watch(locale, () => {
   reRenderFormIo.value += 1;
 });
-// Initialize autosave once auth + form (with enableAutoSave) are ready
+// === Autosave initialization watcher ===
 watch(
   () => ({
-    isAuth: authenticated.value,
-    formId: properties.formId,
+    auth: authenticated.value,
+    formLoaded: !!form.value?.id,
     enableAutoSave: form.value?.enableAutoSave,
   }),
-  ({ isAuth, formId, enableAutoSave }) => {
-    if (isAuth && formId && enableAutoSave) {
+  ({ auth, formLoaded, enableAutoSave }) => {
+    console.log('WATCH AUTOSAVE TRIGGER:', {
+      auth,
+      formLoaded,
+      enableAutoSave,
+    });
+
+    if (!autosaveInitialized.value && auth && formLoaded && enableAutoSave) {
       initializeLocalAutosave();
     }
-  },
-  { immediate: true }
+  }
 );
-
 onMounted(async () => {
   // load up headers for any External API calls
   // from components.
@@ -254,6 +258,14 @@ function getCurrentAuthHeader() {
  * - Decides whether to show the recovery dialog
  */
 function initializeLocalAutosave() {
+  console.log('INIT AUTOSAVE ATTEMPT:', {
+    authenticated: authenticated.value,
+    userId: authStore.currentUser?.idpUserId,
+    formId: properties.formId,
+    enableAutoSave: form.value?.enableAutoSave,
+    alreadyInit: autosaveInitialized.value,
+    submissionId: properties.submissionId,
+  });
   // Only run once per mount
   if (autosaveInitialized.value) {
     return;
@@ -283,11 +295,20 @@ function initializeLocalAutosave() {
     submissionId: properties.submissionId,
     userId: authStore.currentUser.idpUserId,
   });
+  console.log('AUTOSAVE INIT COMPLETE:', {
+    storageKey: localAutosave.getStorageKey?.(),
+    submissionId: properties.submissionId,
+  });
 
   // Decide if we should show the recovery dialog
   const shouldRecover = localAutosave.shouldShowRecoveryDialog(
     submissionRecord.value
   );
+  console.log('RECOVERY CHECK:', {
+    shouldRecover,
+    hasLocalData: !!localAutosave.load(),
+    serverUpdatedAt: submissionRecord.value?.updatedAt,
+  });
 
   if (shouldRecover) {
     const localData = localAutosave.load();
@@ -385,6 +406,11 @@ async function getFormData() {
     const response = await formService.getSubmission(properties.submissionId);
     submissionRecord.value = Object.assign({}, response.data.submission);
     submission.value = submissionRecord.value.submission;
+    console.log('SUBMISSION LOADED:', {
+      submissionId: properties.submissionId,
+      draft: submissionRecord.value?.draft,
+      hasData: !!submission.value?.data,
+    });
     showModal.value =
       submission.value.data.submit ||
       submission.value.data.state == 'submitted' ||
@@ -467,6 +493,11 @@ async function getFormSchema() {
         );
       }
       form.value = response.data;
+      console.log('SCHEMA LOADED:', {
+        formId: form.value?.id,
+        name: form.value?.name,
+        enableAutoSave: form.value?.enableAutoSave,
+      });
       version.value = response.data.version;
       formSchema.value = response.data.schema;
     } else if (properties.draftId) {
@@ -483,6 +514,11 @@ async function getFormSchema() {
         );
       }
       form.value = response.data;
+      console.log('SCHEMA LOADED:', {
+        formId: form.value?.id,
+        name: form.value?.name,
+        enableAutoSave: form.value?.enableAutoSave,
+      });
       formSchema.value = response.data.schema;
     } else {
       // If getting the HEAD form version (IE making a new submission)
@@ -503,6 +539,11 @@ async function getFormSchema() {
         return;
       }
       form.value = response.data;
+      console.log('SCHEMA LOADED:', {
+        formId: form.value?.id,
+        name: form.value?.name,
+        enableAutoSave: form.value?.enableAutoSave,
+      });
       version.value = response.data.versions[0].version;
       versionIdToSubmitTo.value = response.data.versions[0].id;
       formSchema.value = response.data.versions[0].schema;
@@ -543,6 +584,12 @@ function isProcessingMultiUpload(e) {
  * - Triggers autosave only when ready and allowed
  */
 function formChange(e) {
+  console.log('FORM CHANGE EVENT:', {
+    fromSubmission: e.changed?.flags?.fromSubmission,
+    autosaveReady: autosaveReady.value,
+    enableAutoSave: form.value?.enableAutoSave,
+  });
+
   //If this is a draft, validate on change
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
@@ -657,6 +704,7 @@ async function sendSubmission(isDraft, sub) {
 function onFormRender() {
   // Mark autosave as ready AFTER Form.io finishes first render
   autosaveReady.value = true;
+  console.log('FORM RENDER COMPLETE – autosaveReady = TRUE');
 
   if (isLoading.value) isLoading.value = false;
 }

@@ -279,6 +279,11 @@ export function useLocalAutosave() {
           timestamp: new Date().toISOString(),
           data: formData,
         };
+        console.log('AUTOSAVE WRITE:', {
+          key: getStorageKey(),
+          dataSample: JSON.stringify(formData).slice(0, 50) + '...',
+        });
+
         localStorage.setItem(getStorageKey(), JSON.stringify(payload));
       } catch (error_) {
         handleStorageError(error_);
@@ -298,6 +303,7 @@ export function useLocalAutosave() {
 
     try {
       const raw = localStorage.getItem(getStorageKey());
+      console.log('AUTOSAVE LOAD:', { key: getStorageKey(), exists: !!raw });
       if (!raw) {
         return null;
       }
@@ -328,9 +334,15 @@ export function useLocalAutosave() {
    */
   function clear() {
     if (!storageKey || !isStorageAvailable()) {
+      console.log(
+        'AUTOSAVE CLEAR: skipped (storage unavailable or not initialized)',
+        {
+          storageKey,
+        }
+      );
       return;
     }
-
+    console.log('AUTOSAVE CLEAR:', { key: getStorageKey() });
     try {
       localStorage.removeItem(getStorageKey());
     } catch (error_) {
@@ -343,7 +355,11 @@ export function useLocalAutosave() {
    */
   function shouldShowRecoveryDialog(serverSubmission) {
     const localData = load();
-
+    console.log('AUTOSAVE RECOVERY CHECK:', {
+      hasLocalData: !!localData,
+      localTimestamp: localData?.timestamp,
+      serverUpdatedAt: serverSubmission?.updatedAt,
+    });
     if (!localData) {
       return false;
     }
@@ -357,10 +373,19 @@ export function useLocalAutosave() {
     const serverTime = new Date(serverSubmission.updatedAt).getTime();
 
     if (Number.isNaN(localTime) || Number.isNaN(serverTime)) {
+      console.log('AUTOSAVE RECOVERY: timestamp parse failed → HIDE');
       return false;
     }
 
-    return localTime > serverTime;
+    const shouldShow = localTime > serverTime;
+
+    console.log('AUTOSAVE RECOVERY RESULT:', {
+      localTime,
+      serverTime,
+      shouldShow,
+    });
+
+    return shouldShow;
   }
 
   /**
