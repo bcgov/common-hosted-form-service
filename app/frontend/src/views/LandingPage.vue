@@ -404,7 +404,14 @@ const testimonials = [
             cols="12"
             md="4"
           >
-            <v-card class="example-card" elevation="2">
+            <v-card
+              class="example-card"
+              elevation="2"
+              role="link"
+              tabindex="0"
+              @click="openFormViewer(example)"
+              @keyup.enter="openFormViewer(example)"
+            >
               <div class="example-image-wrapper">
                 <v-img
                   v-if="example.image"
@@ -436,24 +443,36 @@ const testimonials = [
                   >
                 </div>
                 <div class="example-overlay">
-                  <v-btn
-                    size="small"
-                    color="primary"
-                    class="mr-2"
-                    @click="openFormViewer(example)"
-                  >
-                    <v-icon start>mdi-eye</v-icon>
-                    View Form
-                  </v-btn>
-                  <v-btn
-                    size="small"
-                    variant="outlined"
-                    color="primary"
-                    @click="downloadFormJSON(example)"
-                  >
-                    <v-icon start>mdi-download</v-icon>
-                    Download
-                  </v-btn>
+                  <v-tooltip location="top">
+                    <template #activator="{ props }">
+                      <v-btn
+                        size="small"
+                        color="primary"
+                        class="mr-2"
+                        v-bind="props"
+                        @click="openFormViewer(example)"
+                      >
+                        <v-icon start>mdi-eye</v-icon>
+                        View Form
+                      </v-btn>
+                    </template>
+                    <span>View form in fullscreen</span>
+                  </v-tooltip>
+                  <v-tooltip location="top">
+                    <template #activator="{ props }">
+                      <v-btn
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        v-bind="props"
+                        @click="downloadFormJSON(example)"
+                      >
+                        <v-icon start>mdi-download</v-icon>
+                        Download
+                      </v-btn>
+                    </template>
+                    <span>Download form as JSON</span>
+                  </v-tooltip>
                 </div>
               </div>
               <v-card-text class="text-center">
@@ -887,16 +906,49 @@ const testimonials = [
 
     .example-card {
       height: 100%;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease,
+        border-color 0.3s ease;
+      position: relative;
+      cursor: pointer;
+      border: 2px solid transparent;
 
       &:hover {
         transform: translateY(-8px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-color: #003366;
 
         .example-overlay {
           opacity: 1;
           visibility: visible;
         }
+
+        &::after {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
+      &:focus {
+        outline: 2px solid #003366;
+        outline-offset: 2px;
+      }
+
+      &::after {
+        content: 'Explore Example Form →';
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background-color: #003366;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        white-space: nowrap;
+        z-index: 15;
       }
 
       .example-image-wrapper {
