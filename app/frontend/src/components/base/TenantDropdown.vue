@@ -117,7 +117,7 @@ const handleTenantChange = async (value) => {
     await formStore.getFormsForCurrentUser();
 
     // Navigate to forms list page
-    await router.push({ name: 'FormList' });
+    await router.push({ name: 'UserForms' });
   } catch (error) {
     notificationStore.addNotification({
       text: 'Error switching tenant. Please try again.',
@@ -137,7 +137,7 @@ const switchToClassicChefs = async () => {
     await formStore.getFormsForCurrentUser();
 
     // Navigate to forms list page
-    await router.push({ name: 'FormList' });
+    await router.push({ name: 'UserForms' });
   } catch (error) {
     notificationStore.addNotification({
       text: 'Error switching to Classic CHEFS. Please try again.',

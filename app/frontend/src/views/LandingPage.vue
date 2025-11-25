@@ -51,7 +51,7 @@ const cstarUrl = computed(() => {
 // Form examples data
 const formExamples = [
   {
-    title: 'Demographic Data Collection Survey',
+    title: 'Example | Demographic Data Collection Survey',
     image: demographicSurvey,
   },
   {
@@ -59,11 +59,11 @@ const formExamples = [
     image: calculationsGrid,
   },
   {
-    title: 'POST-COURSE SURVEY',
+    title: 'Example | POST-COURSE SURVEY',
     image: postCourseSurvey,
   },
   {
-    title: 'CHEFS Architecture Forum Survey',
+    title: 'Example | CHEFS Architecture Forum Survey',
     image: architectureForum,
   },
   {
@@ -75,7 +75,7 @@ const formExamples = [
     image: calculatedValues,
   },
   {
-    title: 'Team Lunch Order',
+    title: 'Example | Team Lunch Order',
     image: teamLunchOrder,
   },
   {
@@ -83,7 +83,7 @@ const formExamples = [
     image: navigationButtons,
   },
   {
-    title: 'CHEFS Success Stories',
+    title: 'Example | CHEFS Success Stories',
     image: successStories,
   },
 ];
@@ -186,7 +186,7 @@ const testimonials = [
             </h2>
 
             <p class="section-description mb-6" :lang="locale">
-              Need to create a tenant for your team or project? At CSTAR
+              Need to create a Tenant for your team or project? At CSTAR
               <em>(Connected Services, Team Access, and Roles)</em> you can
               check your existing Tenant memberships — or request a new Tenant
               if you're starting from scratch.
