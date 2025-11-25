@@ -1,6 +1,4 @@
 <script setup>
-/* eslint-disable no-console */
-
 import { Form } from '@formio/vue';
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
@@ -199,13 +197,6 @@ watch(
     userReady: !!authStore.currentUser?.idpUserId,
   }),
   ({ auth, formLoaded, enableAutoSave, userReady }) => {
-    console.log('WATCH AUTOSAVE TRIGGER:', {
-      auth,
-      formLoaded,
-      enableAutoSave,
-      userReady,
-    });
-
     if (
       !autosaveInitialized.value &&
       auth &&
@@ -268,14 +259,6 @@ function getCurrentAuthHeader() {
  * - Decides whether to show the recovery dialog
  */
 function initializeLocalAutosave() {
-  console.log('INIT AUTOSAVE ATTEMPT:', {
-    authenticated: authenticated.value,
-    userId: authStore.currentUser?.idpUserId,
-    formId: properties.formId,
-    enableAutoSave: form.value?.enableAutoSave,
-    alreadyInit: autosaveInitialized.value,
-    submissionId: properties.submissionId,
-  });
   // Only run once per mount
   if (autosaveInitialized.value) {
     return;
@@ -319,20 +302,11 @@ function initializeLocalAutosave() {
 
   // Initialize autosave
   localAutosave.init(keyConfig);
-  console.log('AUTOSAVE INIT COMPLETE:', {
-    storageKey: localAutosave.getStorageKey?.(),
-    submissionId: properties.submissionId,
-  });
 
   // Decide if we should show the recovery dialog
   const shouldRecover = localAutosave.shouldShowRecoveryDialog(
     submissionRecord.value
   );
-  console.log('RECOVERY CHECK:', {
-    shouldRecover,
-    hasLocalData: !!localAutosave.load(),
-    serverUpdatedAt: submissionRecord.value?.updatedAt,
-  });
 
   if (shouldRecover) {
     const localData = localAutosave.load();
@@ -430,11 +404,6 @@ async function getFormData() {
     const response = await formService.getSubmission(properties.submissionId);
     submissionRecord.value = Object.assign({}, response.data.submission);
     submission.value = submissionRecord.value.submission;
-    console.log('SUBMISSION LOADED:', {
-      submissionId: properties.submissionId,
-      draft: submissionRecord.value?.draft,
-      hasData: !!submission.value?.data,
-    });
     showModal.value =
       submission.value.data.submit ||
       submission.value.data.state == 'submitted' ||
@@ -517,11 +486,6 @@ async function getFormSchema() {
         );
       }
       form.value = response.data;
-      console.log('SCHEMA LOADED:', {
-        formId: form.value?.id,
-        name: form.value?.name,
-        enableAutoSave: form.value?.enableAutoSave,
-      });
       version.value = response.data.version;
       formSchema.value = response.data.schema;
     } else if (properties.draftId) {
@@ -538,11 +502,6 @@ async function getFormSchema() {
         );
       }
       form.value = response.data;
-      console.log('SCHEMA LOADED:', {
-        formId: form.value?.id,
-        name: form.value?.name,
-        enableAutoSave: form.value?.enableAutoSave,
-      });
       formSchema.value = response.data.schema;
     } else {
       // If getting the HEAD form version (IE making a new submission)
@@ -563,11 +522,6 @@ async function getFormSchema() {
         return;
       }
       form.value = response.data;
-      console.log('SCHEMA LOADED:', {
-        formId: form.value?.id,
-        name: form.value?.name,
-        enableAutoSave: form.value?.enableAutoSave,
-      });
       version.value = response.data.versions[0].version;
       versionIdToSubmitTo.value = response.data.versions[0].id;
       formSchema.value = response.data.versions[0].schema;
@@ -608,11 +562,6 @@ function isProcessingMultiUpload(e) {
  * - Triggers autosave only when ready and allowed
  */
 function formChange(e) {
-  console.log('FORM CHANGE EVENT:', {
-    fromSubmission: e.changed?.flags?.fromSubmission,
-    enableAutoSave: form.value?.enableAutoSave,
-  });
-
   //If this is a draft, validate on change
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
@@ -724,8 +673,6 @@ async function sendSubmission(isDraft, sub) {
 }
 
 function onFormRender() {
-  console.log('FORM RENDER COMPLETE – autosaveReady = TRUE');
-
   if (isLoading.value) isLoading.value = false;
 }
 
@@ -1055,7 +1002,6 @@ async function uploadFile(file, config = {}) {
   return fileService.uploadFile(file, uploadConfig);
 }
 </script>
-<!-- eslint-enable no-console -->
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
