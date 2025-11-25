@@ -346,8 +346,8 @@
       for (const [key, value] of Object.entries(params)) {
         if (value != null) {
           result = result
-            .replaceAll(new RegExp(`/:${key}\\b`, 'g'), `/${value}`)
-            .replaceAll(new RegExp(`:${key}\\b`, 'g'), value);
+            .replaceAll(new RegExp(String.raw`/:${key}\b`, 'g'), `/${value}`)
+            .replaceAll(new RegExp(String.raw`:${key}\b`, 'g'), value);
         }
       }
 
@@ -571,11 +571,11 @@
    * Headers that cannot be overridden by passthrough headers from host applications.
    * These headers are controlled by CHEFS and must not be modified.
    */
-  const BLOCKED_PASSTHROUGH_HEADERS = [
+  const BLOCKED_PASSTHROUGH_HEADERS = new Set([
     'x-chefs-gateway-token', // CHEFS authentication header
     'x-request-id', // Correlation ID (cls-rtracer)
     'x-powered-by', // Express header
-  ];
+  ]);
 
   class ChefsFormViewer extends HTMLElement {
     static get observedAttributes() {
@@ -1158,7 +1158,7 @@
       const lowerName = headerName.toLowerCase();
 
       // Block headers in the blocklist
-      if (BLOCKED_PASSTHROUGH_HEADERS.includes(lowerName)) {
+      if (BLOCKED_PASSTHROUGH_HEADERS.has(lowerName)) {
         return true;
       }
 

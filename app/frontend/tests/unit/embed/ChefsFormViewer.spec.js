@@ -250,6 +250,11 @@ describe('FormViewerUtils', () => {
     expect(utils.substituteUrlParams('/x/:id', { id: 'Y' })).toBe('/x/Y');
   });
 
+  it('substituteUrlParams replaces params without leading slash', () => {
+    expect(utils.substituteUrlParams(':id', { id: 'Y' })).toBe('Y');
+    expect(utils.substituteUrlParams('api/:id', { id: 'Y' })).toBe('api/Y');
+  });
+
   it('createElement creates element with attributes', () => {
     const el = utils.createElement('div', { id: 'foo' }, 'bar');
     expect(el.id).toBe('foo');
