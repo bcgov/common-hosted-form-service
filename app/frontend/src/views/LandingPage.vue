@@ -131,150 +131,213 @@ const testimonials = [
 
 <template>
   <div class="landing-layout" :class="{ 'dir-rtl': isRTL }">
-    <!-- Hero Section -->
-    <v-container class="hero-section py-16">
-      <v-row>
-        <v-col cols="12" md="6">
-          <div class="hero-content">
-            <span class="online-builder-tag" :lang="locale">
-              ONLINE FORM BUILDER
-            </span>
-
-            <h1 class="hero-title mt-4 mb-6" :lang="locale">
-              Discover how CHEFS can help you
+    <!-- Hero Section with Enterprise CHEFS and CSTAR -->
+    <div class="enterprise-hero-wrapper">
+      <v-container class="enterprise-hero-section py-8">
+        <!-- Main Heading -->
+        <v-row justify="center" class="mb-12">
+          <v-col cols="12" class="text-center">
+            <p class="hero-subtitle mb-2" :lang="locale">
+              Want to work securely with your team, deliver forms faster, and
+              collaborate across government?
+            </p>
+            <h1 class="enterprise-hero-title mb-8" :lang="locale">
+              Introducing Enterprise CHEFS and CSTAR!
             </h1>
-
-            <p class="hero-description mb-8" :lang="locale">
-              With multi-tenancy, you can manage roles, share forms across
-              projects, and collaborate securely in one place. Click Get Started
-              to experience the new Enterprise CHEFS.
-            </p>
-
-            <v-btn
-              color="primary"
-              size="large"
-              :to="{ name: 'FormCreate' }"
-              class="get-started-btn"
-              data-test="get-started-btn"
-            >
-              Get Started
-              <v-icon end>mdi-arrow-right</v-icon>
-            </v-btn>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <!-- Multi-tenancy Section -->
-    <v-container class="multi-tenancy-section py-16">
-      <v-row align="center">
-        <v-col cols="12" md="5">
-          <div class="illustration-wrapper">
-            <img
-              src="/images/person-at-computer.png"
-              alt="Person working at computer"
-              class="hero-illustration"
-            />
-          </div>
-        </v-col>
-
-        <v-col cols="12" md="7">
-          <div class="content-wrapper">
-            <h2 class="section-title mb-4" :lang="locale">
-              Transforming CHEFS from a single-player experience into a true
-              team sport with Multi-tenancy
-            </h2>
-
-            <p class="section-description mb-6" :lang="locale">
-              Need to create a Tenant for your team or project? At CSTAR
-              <em>(Connected Services, Team Access, and Roles)</em> you can
-              check your existing Tenant memberships — or request a new Tenant
-              if you're starting from scratch.
-            </p>
-
-            <v-btn
-              variant="outlined"
-              color="primary"
-              size="large"
-              class="cstar-btn"
-              :href="cstarUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Go To CSTAR
-              <v-icon end>mdi-arrow-right</v-icon>
-            </v-btn>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <!-- Examples Section -->
-    <div class="examples-section-wrapper">
-      <v-container class="examples-section py-16">
-        <v-row>
-          <v-col cols="12" md="6" class="text-section">
-            <h2 class="examples-title mb-8" :lang="locale">
-              Not sure where to start? Below are examples of forms created by
-              our users.
-            </h2>
           </v-col>
-          <v-col cols="12" md="6" class="illustration-section">
-            <div class="person-laptop-wrapper">
-              <div class="organic-shape-beige"></div>
-              <img
-                src="/images/person-laptop.png"
-                alt="Person with laptop"
-                class="person-laptop-img"
-              />
+        </v-row>
+
+        <!-- Two Column Content -->
+        <v-row class="mb-8">
+          <!-- Left Column: Enterprise CHEFS -->
+          <v-col cols="12" md="6" class="mb-8 mb-md-0">
+            <div class="enterprise-card-content">
+              <h2 class="enterprise-section-title mb-4" :lang="locale">
+                Experience the new Enterprise CHEFS
+              </h2>
+
+              <p class="enterprise-description mb-4" :lang="locale">
+                Enterprise CHEFS expands on the classic
+                <a href="#" class="text-link"
+                  >CHEFS (Common Hosted Forms Service)</a
+                >
+                by working together with
+                <a href="#" class="text-link"
+                  >CSTAR — Connected Services, Team Access, and Roles</a
+                >
+                — to create a shared, collaborative workspace.
+              </p>
+
+              <p class="enterprise-description mb-6" :lang="locale">
+                With Enterprise CHEFS, teams can securely share forms, assign
+                roles, and manage projects within their organization's
+                <strong>tenant</strong> — a dedicated workspace that keeps your
+                projects and permissions organized.
+              </p>
+
+              <p class="enterprise-description mb-8" :lang="locale">
+                Welcome to Enterprise CHEFS, where teams across government can
+                collaborate safely and efficiently.
+              </p>
+
+              <v-btn
+                color="primary"
+                size="large"
+                :to="{ name: 'FormCreate' }"
+                class="go-to-chefs-btn"
+                data-test="go-to-chefs-btn"
+              >
+                Go to CHEFS
+                <v-icon end>mdi-arrow-right</v-icon>
+              </v-btn>
+            </div>
+          </v-col>
+
+          <!-- Right Column: CSTAR and Access Management -->
+          <v-col cols="12" md="6">
+            <div class="enterprise-card-content">
+              <h2 class="enterprise-section-title mb-4" :lang="locale">
+                CSTAR and Access Management
+              </h2>
+
+              <p class="enterprise-description mb-4" :lang="locale">
+                Enterprise CHEFS works hand-in-hand with
+                <a href="#" class="text-link">CSTAR</a>. CSTAR helps you manage
+                who has access to your forms and guides users into
+                <strong>tenants</strong>, assigning <strong>roles</strong>, and
+                connecting <strong>services</strong>.
+              </p>
+
+              <p class="enterprise-description mb-6" :lang="locale">
+                Access to CSTAR is managed by
+                <strong
+                  >administrators within your ministry or organization</strong
+                >, ensuring permissions and memberships are securely controlled.
+              </p>
+
+              <p class="enterprise-description mb-8" :lang="locale">
+                You can use CSTAR to review your current tenant memberships or
+                request a new tenant if you're starting from scratch.
+              </p>
+
+              <v-btn
+                variant="outlined"
+                color="primary"
+                size="large"
+                class="go-to-cstar-btn"
+                :href="cstarUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Go To CSTAR
+                <v-icon end>mdi-arrow-right</v-icon>
+              </v-btn>
             </div>
           </v-col>
         </v-row>
 
-        <v-row class="mt-8">
-          <v-col
-            v-for="(example, index) in formExamples"
-            :key="index"
-            cols="12"
-            md="4"
-          >
-            <v-card class="example-card" elevation="2">
-              <v-img
-                v-if="example.image"
-                :src="example.image"
-                :alt="example.title"
-                height="300"
-                cover
+        <!-- Alert Box -->
+        <v-row justify="center" class="mb-8">
+          <v-col cols="12" md="10">
+            <v-alert
+              type="info"
+              variant="outlined"
+              class="attention-alert"
+              icon="mdi-information"
+              closable
+            >
+              <template #title>
+                <strong>ATTENTION BCeID USERS</strong>
+              </template>
+              To ensure your account can be found by your team, please log in to
+              CSTAR before using Enterprise CHEFS. This step allows your team
+              admin to locate and add you to a tenant or group, making your
+              account active and searchable in CSTAR.
+              <v-btn
+                size="small"
+                variant="text"
+                color="primary"
+                class="ml-2"
+                :href="cstarUrl"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <template #error>
-                  <div
-                    class="d-flex align-center justify-center fill-height bg-grey-lighten-3"
-                  >
-                    <v-icon size="64" color="grey-darken-1"
-                      >mdi-file-document-outline</v-icon
-                    >
-                  </div>
-                </template>
-              </v-img>
-              <div
-                v-else
-                class="d-flex align-center justify-center bg-grey-lighten-3"
-                style="height: 300px"
-              >
-                <v-icon size="64" color="grey-darken-1"
-                  >mdi-file-document-outline</v-icon
-                >
-              </div>
-              <v-card-text class="text-center">
-                <p class="text-subtitle-2 font-weight-medium">
-                  {{ example.title }}
-                </p>
-              </v-card-text>
-            </v-card>
+                Log in to CSTAR
+              </v-btn>
+            </v-alert>
           </v-col>
         </v-row>
       </v-container>
     </div>
+
+    <!-- Getting Started Section -->
+    <v-container class="getting-started-section py-16">
+      <v-row align="center" class="mb-12">
+        <v-col cols="12" md="6" class="text-section">
+          <h2 class="getting-started-title mb-6" :lang="locale">
+            New to CHEFS and not sure where to start?
+          </h2>
+          <p class="getting-started-description mb-0" :lang="locale">
+            Start by exploring our
+            <a href="#" class="doc-link">CHEFS Technical Documentation</a>
+            (Tech Docs) for setup guidance, or browse the example forms below —
+            each one was created by real CHEFS users.
+          </p>
+        </v-col>
+        <v-col cols="12" md="6" class="illustration-section">
+          <div class="person-computer-wrapper">
+            <img
+              src="/images/person-at-computer.png"
+              alt="Person working at computer"
+              class="person-computer-img"
+            />
+          </div>
+        </v-col>
+      </v-row>
+
+      <v-row class="mt-8">
+        <v-col
+          v-for="(example, index) in formExamples"
+          :key="index"
+          cols="12"
+          md="4"
+        >
+          <v-card class="example-card" elevation="2">
+            <v-img
+              v-if="example.image"
+              :src="example.image"
+              :alt="example.title"
+              height="300"
+              cover
+            >
+              <template #error>
+                <div
+                  class="d-flex align-center justify-center fill-height bg-grey-lighten-3"
+                >
+                  <v-icon size="64" color="grey-darken-1"
+                    >mdi-file-document-outline</v-icon
+                  >
+                </div>
+              </template>
+            </v-img>
+            <div
+              v-else
+              class="d-flex align-center justify-center bg-grey-lighten-3"
+              style="height: 300px"
+            >
+              <v-icon size="64" color="grey-darken-1"
+                >mdi-file-document-outline</v-icon
+              >
+            </div>
+            <v-card-text class="text-center">
+              <p class="text-subtitle-2 font-weight-medium">
+                {{ example.title }}
+              </p>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
     <!-- Testimonials Section -->
     <v-container class="testimonials-section py-16">
@@ -432,38 +495,63 @@ const testimonials = [
 .landing-layout {
   background-color: #ffffff;
 
-  .hero-section {
+  .enterprise-hero-wrapper {
+    background: linear-gradient(135deg, #f5f9fc 0%, #ffffff 100%);
+    border: 2px solid #003d82;
+    border-radius: 8px;
+    margin: 32px auto;
     max-width: 1200px;
-    padding-top: 60px !important;
-    padding-bottom: 40px !important;
+  }
 
-    .hero-content {
-      max-width: 600px;
+  .enterprise-hero-section {
+    max-width: 1200px;
 
-      .online-builder-tag {
-        display: inline-block;
-        color: #f8bb47;
+    .hero-subtitle {
+      font-size: 16px;
+      font-weight: 400;
+      color: #2d2d2d;
+      line-height: 1.5;
+    }
+
+    .enterprise-hero-title {
+      font-size: 36px;
+      font-weight: 700;
+      color: #003366;
+      line-height: 1.3;
+    }
+
+    .enterprise-card-content {
+      padding: 0 16px;
+
+      .enterprise-section-title {
         font-size: 20px;
-        font-weight: 400;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-      }
-
-      .hero-title {
-        font-size: 44px;
         font-weight: 700;
-        color: #2d2d2d;
-        line-height: 1.2;
+        color: #003366;
+        line-height: 1.3;
       }
 
-      .hero-description {
-        font-size: 18px;
+      .enterprise-description {
+        font-size: 15px;
         font-weight: 400;
         color: #2d2d2d;
-        line-height: 1.5;
+        line-height: 1.6;
+
+        strong {
+          font-weight: 600;
+        }
+
+        a.text-link {
+          color: #003366;
+          text-decoration: none;
+          border-bottom: 1px solid #003366;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
       }
 
-      .get-started-btn {
+      .go-to-chefs-btn {
         background-color: #003366;
         color: white;
         padding: 12px 32px;
@@ -471,74 +559,70 @@ const testimonials = [
         text-transform: none;
         letter-spacing: 0;
       }
-    }
-  }
 
-  .multi-tenancy-section {
-    max-width: 1200px;
-    padding-top: 24px !important;
-    padding-bottom: 48px !important;
-
-    .illustration-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      .hero-illustration {
-        max-width: 100%;
-        height: auto;
-      }
-    }
-
-    .content-wrapper {
-      padding-left: 24px;
-      max-width: 650px;
-      .section-title {
-        font-size: 26px;
+      .go-to-cstar-btn {
+        border: 2px solid #003366;
+        color: #003366;
+        padding: 12px 32px;
         font-weight: 600;
-        color: #5a5a5a;
-        line-height: 1.4;
-      }
-
-      .section-description {
-        font-size: 16px;
-        font-weight: 400;
-        color: #2d2d2d;
-        line-height: 1.6;
-
-        em {
-          font-style: italic;
-        }
-      }
-
-      .cstar-btn {
-        border: 1px solid #5a5a5a;
-        color: #2d2d2d;
-        font-weight: 500;
         text-transform: none;
         letter-spacing: 0;
-        font-size: 14px;
+      }
+    }
+
+    .attention-alert {
+      border: 2px solid #e3f2fd !important;
+      background-color: #f5f9fc !important;
+      border-radius: 8px;
+      padding: 16px;
+
+      ::v-deep(.v-alert__content) {
+        font-size: 15px;
+        color: #2d2d2d;
+        line-height: 1.6;
+      }
+
+      ::v-deep(.v-alert__title) {
+        color: #003366;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      ::v-deep(.v-alert__icon) {
+        color: #1976d2;
       }
     }
   }
 
-  .examples-section-wrapper {
-    background-color: #f1f8fe;
-    width: 100%;
-  }
-
-  .examples-section {
+  .getting-started-section {
     max-width: 1200px;
     padding-top: 48px !important;
     padding-bottom: 48px !important;
 
     .text-section {
-      .examples-title {
-        font-size: 36px;
+      .getting-started-title {
+        font-size: 24px;
         font-weight: 700;
         color: #1e5189;
         line-height: 1.3;
-        max-width: 480px;
+      }
+
+      .getting-started-description {
+        font-size: 15px;
+        font-weight: 400;
+        color: #2d2d2d;
+        line-height: 1.6;
+
+        a.doc-link {
+          color: #003366;
+          text-decoration: none;
+          border-bottom: 1px solid #003366;
+          font-weight: 500;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
       }
     }
 
@@ -548,29 +632,17 @@ const testimonials = [
       justify-content: center;
       align-items: center;
 
-      .person-laptop-wrapper {
+      .person-computer-wrapper {
         position: relative;
         width: 100%;
-        height: 350px;
+        height: 300px;
         display: flex;
         justify-content: center;
         align-items: center;
 
-        .organic-shape-beige {
-          position: absolute;
-          width: 400px;
-          height: 400px;
-          background-color: #fef1d8;
-          border-radius: 50% 40% 60% 40%;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 1;
-        }
-
-        .person-laptop-img {
+        .person-computer-img {
           position: relative;
-          max-width: 300px;
+          max-width: 100%;
           height: auto;
           z-index: 2;
           margin: 0 auto;

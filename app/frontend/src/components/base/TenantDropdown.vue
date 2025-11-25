@@ -121,7 +121,6 @@ const handleTenantChange = async (value) => {
   } catch (error) {
     // Note: formStore.getFormsForCurrentUser() doesn't throw errors,
     // but router.push might fail. Only show error if navigation fails.
-    console.error('Error during tenant switch:', error);
     notificationStore.addNotification({
       text: 'Error navigating to forms. Please try again.',
       consoleError: error,
@@ -144,7 +143,6 @@ const switchToClassicChefs = async () => {
   } catch (error) {
     // Note: formStore.getFormsForCurrentUser() doesn't throw errors,
     // but router.push might fail. Only show error if navigation fails.
-    console.error('Error switching to Classic CHEFS:', error);
     notificationStore.addNotification({
       text: 'Error navigating to forms. Please try again.',
       consoleError: error,
