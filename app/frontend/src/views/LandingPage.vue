@@ -30,6 +30,14 @@ const formStore = useFormStore();
 // const { authenticated } = storeToRefs(authStore);
 const { isRTL } = storeToRefs(formStore);
 
+// Tech Docs URL
+const techDocsUrl =
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/';
+
+// Kudos Page URL
+const kudosPageUrl =
+  'https://citz-do.atlassian.net/wiki/spaces/CCP/pages/338722826/CHEFS+Kudos+Page';
+
 // Determine CSTAR URL based on environment
 const cstarUrl = computed(() => {
   const hostname = window.location.hostname;
@@ -87,6 +95,11 @@ const formExamples = [
     image: successStories,
   },
 ];
+
+// Method to open kudos page
+const openKudosPage = () => {
+  window.open(kudosPageUrl, '_blank');
+};
 
 // Testimonials data
 const testimonials = [
@@ -158,11 +171,15 @@ const testimonials = [
 
               <p class="enterprise-description mb-4" :lang="locale">
                 Enterprise CHEFS expands on the classic
-                <a href="#" class="text-link"
-                  >CHEFS (Common Hosted Forms Service)</a
+                <router-link :to="{ name: 'FormCreate' }" class="text-link"
+                  >CHEFS (Common Hosted Forms Service)</router-link
                 >
                 by working together with
-                <a href="#" class="text-link"
+                <a
+                  :href="cstarUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-link"
                   >CSTAR — Connected Services, Team Access, and Roles</a
                 >
                 — to create a shared, collaborative workspace.
@@ -202,10 +219,16 @@ const testimonials = [
 
               <p class="enterprise-description mb-4" :lang="locale">
                 Enterprise CHEFS works hand-in-hand with
-                <a href="#" class="text-link">CSTAR</a>. CSTAR helps you manage
-                who has access to your forms and guides users into
-                <strong>tenants</strong>, assigning <strong>roles</strong>, and
-                connecting <strong>services</strong>.
+                <a
+                  :href="cstarUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-link"
+                  >CSTAR</a
+                >. CSTAR helps you manage who has access to your forms and
+                guides users into <strong>tenants</strong>, assigning
+                <strong>roles</strong>, and connecting
+                <strong>services</strong>.
               </p>
 
               <p class="enterprise-description mb-6" :lang="locale">
@@ -279,7 +302,13 @@ const testimonials = [
           </h2>
           <p class="getting-started-description mb-0" :lang="locale">
             Start by exploring our
-            <a href="#" class="doc-link">CHEFS Technical Documentation</a>
+            <a
+              :href="techDocsUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="doc-link"
+              >CHEFS Technical Documentation</a
+            >
             (Tech Docs) for setup guidance, or browse the example forms below —
             each one was created by real CHEFS users.
           </p>
@@ -367,7 +396,14 @@ const testimonials = [
           cols="12"
           md="4"
         >
-          <v-card class="testimonial-card" elevation="2">
+          <v-card
+            class="testimonial-card"
+            elevation="2"
+            role="link"
+            tabindex="0"
+            @click="openKudosPage"
+            @keyup.enter="openKudosPage"
+          >
             <v-card-text class="pa-6">
               <h3 class="testimonial-card-title mb-3">CHEFS User</h3>
               <div class="d-flex align-center mb-4">
@@ -452,7 +488,7 @@ const testimonials = [
         <v-row justify="center">
           <v-col cols="12" md="8" class="text-center">
             <h2 class="final-cta-title mb-4" :lang="locale">
-              Get Started Using CHEFS
+              Get Started Using Enterprise CHEFS
             </h2>
             <p class="final-cta-description mb-6" :lang="locale">
               Create online forms to collect information from your clients and
@@ -726,6 +762,18 @@ const testimonials = [
     .testimonial-card {
       height: 100%;
       border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      &:focus {
+        outline: 2px solid #003366;
+        outline-offset: 2px;
+      }
 
       .testimonial-card-title {
         font-size: 18px;
