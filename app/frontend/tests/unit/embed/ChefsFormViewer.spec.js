@@ -379,7 +379,15 @@ describe('ChefsFormViewer', () => {
     document.body.appendChild(el);
   });
   afterEach(() => {
-    el.remove();
+    if (el && typeof el.remove === 'function') {
+      try {
+        el.remove();
+      } catch (error) {
+        // Ignore errors during cleanup - element may already be removed
+        // eslint-disable-next-line no-console
+        if (process.env.DEBUG) console.warn('Cleanup error:', error);
+      }
+    }
   });
 
   it('attributeChangedCallback updates state', () => {
@@ -458,6 +466,44 @@ describe('ChefsFormViewer', () => {
 
 // --- ChefsFormViewer internals ---
 describe('ChefsFormViewer internals', () => {
+  let el;
+  beforeEach(async () => {
+    // Clean up any previous element
+    if (el && typeof el.remove === 'function') {
+      try {
+        el.remove();
+      } catch (error) {
+        // Ignore cleanup errors - element may already be removed
+        // eslint-disable-next-line no-console
+        if (process.env.DEBUG) console.warn('Cleanup error:', error);
+      }
+    }
+    el = null;
+
+    await import(COMPONENT_PATH);
+    el = document.createElement('chefs-form-viewer');
+    document.body.appendChild(el);
+    // Always mock fetch for asset loader tests
+    globalThis._origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn();
+  });
+  afterEach(() => {
+    if (el && typeof el.remove === 'function') {
+      try {
+        el.remove();
+      } catch (error) {
+        // Ignore errors during cleanup - element may already be removed
+        // eslint-disable-next-line no-console
+        if (process.env.DEBUG) console.warn('Cleanup error:', error);
+      }
+    }
+    // Restore fetch after each test
+    if (globalThis._origFetch) {
+      globalThis.fetch = globalThis._origFetch;
+      delete globalThis._origFetch;
+    }
+  });
+
   it('_acquireBusyLock sets and checks busy state, logs and returns false if busy', () => {
     el._isBusy = false;
     const logSpy = vi.spyOn(el._log, 'info');
@@ -552,21 +598,6 @@ describe('ChefsFormViewer internals', () => {
     acquireSpy.mockRestore();
     releaseSpy.mockRestore();
   });
-  let el;
-  beforeEach(async () => {
-    await import(COMPONENT_PATH);
-    el = document.createElement('chefs-form-viewer');
-    document.body.appendChild(el);
-    // Always mock fetch for asset loader tests
-    globalThis._origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn();
-  });
-  afterEach(() => {
-    el.remove();
-    // Restore fetch after each test
-    globalThis.fetch = globalThis._origFetch;
-    delete globalThis._origFetch;
-  });
 
   it('_buildAuthHeader uses custom hook when provided', () => {
     el.onBuildAuthHeader = (_url) => ({ Authorization: 'Custom' });
@@ -575,14 +606,14 @@ describe('ChefsFormViewer internals', () => {
     });
   });
 
-  it('_buildAuthHeader prefers Bearer over Basic auth', () => {
+  it('_buildAuthHeader prefers Bearer token over Basic auth', () => {
     el.authToken = 'jwt-token-123';
     el.formId = 'form-456';
     el.apiKey = 'api-key-789';
     el.getBaseUrl = () => 'https://example.com';
 
     const result = el._buildAuthHeader('https://example.com/api');
-    expect(result).toEqual({ Authorization: 'Bearer jwt-token-123' });
+    expect(result).toEqual({ 'X-Chefs-Gateway-Token': 'jwt-token-123' });
   });
 
   it('_buildAuthHeader falls back to Basic auth when no authToken', () => {
@@ -616,6 +647,210 @@ describe('ChefsFormViewer internals', () => {
 
     const result = el._buildAuthHeader('https://example.com/api');
     expect(result).toEqual({});
+  });
+
+  it('_mergeHeadersWithAuth preserves Authorization header from existing headers', () => {
+    const existingHeaders = {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer host-app-token',
+    };
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result).toEqual({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer host-app-token',
+      'X-Chefs-Gateway-Token': 'chefs-token',
+    });
+  });
+
+  it('_mergeHeadersWithAuth preserves Authorization header case-insensitively', () => {
+    const existingHeaders = {
+      'content-type': 'application/json',
+      authorization: 'Bearer host-app-token',
+    };
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization || result.authorization).toBe(
+      'Bearer host-app-token'
+    );
+    expect(result['X-Chefs-Gateway-Token']).toBe('chefs-token');
+  });
+
+  it('_mergeHeadersWithAuth uses onPassthroughHeaders callback when provided', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer callback-token',
+    });
+    const existingHeaders = { 'Content-Type': 'application/json' };
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization).toBe('Bearer callback-token');
+    expect(result['X-Chefs-Gateway-Token']).toBe('chefs-token');
+  });
+
+  it('_mergeHeadersWithAuth prefers existing Authorization over callback', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer callback-token',
+    });
+    const existingHeaders = {
+      Authorization: 'Bearer existing-token',
+    };
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    // Existing header should take precedence
+    expect(result.Authorization).toBe('Bearer existing-token');
+    expect(result['X-Chefs-Gateway-Token']).toBe('chefs-token');
+  });
+
+  it('_mergeHeadersWithAuth blocks X-Chefs-Gateway-Token from passthrough', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer callback-token',
+      'X-Chefs-Gateway-Token': 'should-be-blocked',
+    });
+    const existingHeaders = {};
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization).toBe('Bearer callback-token');
+    expect(result['X-Chefs-Gateway-Token']).toBe('chefs-token'); // Should use CHEFS auth, not passthrough
+  });
+
+  it('_mergeHeadersWithAuth blocks X-Request-ID from passthrough', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer callback-token',
+      'X-Request-ID': 'should-be-blocked',
+    });
+    const existingHeaders = {};
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization).toBe('Bearer callback-token');
+    expect(result['X-Request-ID']).toBeUndefined();
+  });
+
+  it('_mergeHeadersWithAuth blocks x-powered-by from passthrough', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer callback-token',
+      'x-powered-by': 'should-be-blocked',
+    });
+    const existingHeaders = {};
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization).toBe('Bearer callback-token');
+    expect(result['x-powered-by']).toBeUndefined();
+  });
+
+  it('_mergeHeadersWithAuth blocks Authorization Basic from passthrough', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Basic dXNlcjpwYXNz',
+    });
+    const existingHeaders = {};
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization).toBeUndefined(); // Basic auth should be blocked
+    expect(result['X-Chefs-Gateway-Token']).toBe('chefs-token');
+  });
+
+  it('_mergeHeadersWithAuth allows Authorization Bearer from passthrough', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer allowed-token',
+    });
+    const existingHeaders = {};
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization).toBe('Bearer allowed-token');
+    expect(result['X-Chefs-Gateway-Token']).toBe('chefs-token');
+  });
+
+  it('_mergeHeadersWithAuth allows custom headers from passthrough', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer callback-token',
+      'X-Custom-Header': 'custom-value',
+      'X-Request-ID': 'should-be-blocked',
+    });
+    const existingHeaders = {};
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    expect(result.Authorization).toBe('Bearer callback-token');
+    expect(result['X-Custom-Header']).toBe('custom-value');
+    expect(result['X-Request-ID']).toBeUndefined(); // Should be blocked
+  });
+
+  it('_mergeHeadersWithAuth blocks existing Authorization Basic auth', () => {
+    el.onPassthroughHeaders = () => ({
+      Authorization: 'Bearer callback-token',
+    });
+    const existingHeaders = {
+      Authorization: 'Basic dXNlcjpwYXNz', // Basic auth should be blocked
+    };
+    const authHeaders = { 'X-Chefs-Gateway-Token': 'chefs-token' };
+
+    const result = el._mergeHeadersWithAuth(
+      existingHeaders,
+      authHeaders,
+      'https://example.com/api'
+    );
+
+    // Basic auth from existing headers should be blocked, callback Bearer should be used
+    expect(result.Authorization).toBe('Bearer callback-token');
+    expect(result['X-Chefs-Gateway-Token']).toBe('chefs-token');
   });
 
   it('_buildAuthHeader logs error when Basic auth creation fails', () => {
@@ -935,6 +1170,53 @@ describe('ChefsFormViewer internals', () => {
     globalThis.FormViewerUtils.validateGlobalMethods = originalValidate;
   });
 
+  it('registered auth plugin preserves Authorization header from existing headers', () => {
+    // Mock Formio global
+    globalThis.globalThis.Formio = {
+      registerPlugin: vi.fn(),
+    };
+
+    el.getBaseUrl = () => 'https://example.com';
+    el._authPluginRegistered = false;
+    el._buildAuthHeader = vi
+      .fn()
+      .mockReturnValue({ 'X-Chefs-Gateway-Token': 'dynamic-token' });
+
+    // Mock validateGlobalMethods
+    const originalValidate = globalThis.FormViewerUtils.validateGlobalMethods;
+    globalThis.FormViewerUtils.validateGlobalMethods = vi
+      .fn()
+      .mockReturnValue(true);
+
+    el._registerAuthPlugin();
+
+    const registeredPlugin =
+      globalThis.globalThis.Formio.registerPlugin.mock.calls[0][0];
+
+    // Test that Authorization header is preserved
+    const mockArgs = {
+      url: 'https://example.com/api/form',
+      opts: {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer host-app-token',
+        },
+      },
+    };
+
+    registeredPlugin.preRequest(mockArgs);
+
+    expect(mockArgs.opts.headers).toEqual({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer host-app-token',
+      'X-Chefs-Gateway-Token': 'dynamic-token',
+    });
+
+    // Restore mocks
+    globalThis.FormViewerUtils.validateGlobalMethods = originalValidate;
+    delete globalThis.globalThis.Formio;
+  });
+
   it('registered auth plugin calls _buildAuthHeader dynamically', () => {
     // Mock Formio global
     globalThis.globalThis.Formio = {
@@ -945,7 +1227,7 @@ describe('ChefsFormViewer internals', () => {
     el._authPluginRegistered = false;
     el._buildAuthHeader = vi
       .fn()
-      .mockReturnValue({ Authorization: 'Bearer dynamic-token' });
+      .mockReturnValue({ 'X-Chefs-Gateway-Token': 'dynamic-token' });
 
     // Mock validateGlobalMethods
     const originalValidate = globalThis.FormViewerUtils.validateGlobalMethods;
@@ -971,7 +1253,7 @@ describe('ChefsFormViewer internals', () => {
     );
     expect(mockArgs.opts.headers).toEqual({
       'Content-Type': 'application/json',
-      Authorization: 'Bearer dynamic-token',
+      'X-Chefs-Gateway-Token': 'dynamic-token',
     });
 
     // Test that plugin ignores requests to other origins
@@ -1161,7 +1443,7 @@ describe('ChefsFormViewer internals', () => {
     el._handleFileUpload = vi.fn().mockResolvedValue({ data: 'uploaded' });
     el._buildAuthHeader = vi
       .fn()
-      .mockReturnValue({ Authorization: 'Bearer test' });
+      .mockReturnValue({ 'X-Chefs-Gateway-Token': 'test' });
 
     const options = el._getSimpleFileComponentOptions();
     expect(options.config.uploads.enabled).toBe(true);
@@ -1267,7 +1549,7 @@ describe('ChefsFormViewer internals', () => {
     el._resolveUrl = vi.fn().mockReturnValue('https://test/submission');
     el._buildAuthHeader = vi
       .fn()
-      .mockReturnValue({ Authorization: 'Bearer test' });
+      .mockReturnValue({ 'X-Chefs-Gateway-Token': 'test' });
     el._verifyAndParseSubmissionData = vi
       .fn()
       .mockReturnValue({ data: { name: 'test' } });
@@ -1322,7 +1604,7 @@ describe('ChefsFormViewer internals', () => {
     el._resolveUrl = vi.fn().mockReturnValue('https://test/submit');
     el._buildAuthHeader = vi
       .fn()
-      .mockReturnValue({ Authorization: 'Bearer test' });
+      .mockReturnValue({ 'X-Chefs-Gateway-Token': 'test' });
     el._emitCancelable = vi.fn().mockReturnValue(true);
     el._waitUntil = vi.fn().mockResolvedValue(true);
     el._emit = vi.fn();
@@ -1506,7 +1788,7 @@ describe('ChefsFormViewer internals', () => {
     el._resolveUrl = vi.fn().mockReturnValue('https://test/upload');
     el._buildAuthHeader = vi
       .fn()
-      .mockReturnValue({ Authorization: 'Bearer test' });
+      .mockReturnValue({ 'X-Chefs-Gateway-Token': 'test' });
 
     // Mock XMLHttpRequest
     const mockXhr = {

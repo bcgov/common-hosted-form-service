@@ -567,6 +567,16 @@
    * - `no-shadow`: switches render root and re-renders shell; styles load into document.head
    * - `isolate-styles`: when in Shadow DOM, applies minimal isolation CSS and re-renders shell
    */
+  /**
+   * Headers that cannot be overridden by passthrough headers from host applications.
+   * These headers are controlled by CHEFS and must not be modified.
+   */
+  const BLOCKED_PASSTHROUGH_HEADERS = [
+    'x-chefs-gateway-token', // CHEFS authentication header
+    'x-request-id', // Correlation ID (cls-rtracer)
+    'x-powered-by', // Express header
+  ];
+
   class ChefsFormViewer extends HTMLElement {
     static get observedAttributes() {
       return [
@@ -625,7 +635,8 @@
       this.endpoints = null;
 
       // Optional: custom auth header hook
-      this.onBuildAuthHeader = null; // (url) => ({ Authorization: '...' })
+      this.onBuildAuthHeader = null; // (url) => ({ 'X-Chefs-Gateway-Token': '...' })
+      this.onPassthroughHeaders = null; // (url) => ({ 'Authorization': 'Bearer ...', 'X-Custom': '...' })
 
       // if using authToken, then we can set an auto-refresh
       this._jwtRefreshTimer = null;
@@ -1111,10 +1122,10 @@
         }
       }
 
-      // Prefer Bearer token over Basic auth
+      // Prefer gateway token (X-Chefs-Gateway-Token) over Basic auth
       if (url.startsWith(this.getBaseUrl())) {
         if (this.authToken) {
-          return { Authorization: `Bearer ${this.authToken}` };
+          return { 'X-Chefs-Gateway-Token': this.authToken };
         }
 
         if (this.formId && this.apiKey) {
@@ -1132,6 +1143,103 @@
       }
 
       return {};
+    }
+
+    /**
+     * Checks if a header value should be blocked from passthrough.
+     * Specifically blocks Authorization Basic auth to prevent overriding CHEFS Basic auth.
+     *
+     * @param {string} headerName - Header name (case-insensitive)
+     * @param {string} headerValue - Header value
+     * @returns {boolean} True if header should be blocked
+     * @private
+     */
+    _isPassthroughHeaderBlocked(headerName, headerValue) {
+      const lowerName = headerName.toLowerCase();
+
+      // Block headers in the blocklist
+      if (BLOCKED_PASSTHROUGH_HEADERS.includes(lowerName)) {
+        return true;
+      }
+
+      // Block Authorization Basic auth (CHEFS may use Basic auth as fallback)
+      if (
+        lowerName === 'authorization' &&
+        headerValue &&
+        headerValue.trim().toLowerCase().startsWith('basic ')
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    /**
+     * Gets passthrough headers from host application if provided via callback.
+     * Allows host applications to inject headers that will be passed through
+     * to CHEFS backend requests for downstream services.
+     *
+     * @param {string} url - Request URL
+     * @returns {Object|undefined} Passthrough headers object or undefined
+     * @private
+     */
+    _getPassthroughHeaders(url) {
+      if (typeof this.onPassthroughHeaders === 'function') {
+        const result = this.onPassthroughHeaders(url);
+        if (result && typeof result === 'object') {
+          // Filter out blocked headers
+          const filtered = {};
+          for (const [key, value] of Object.entries(result)) {
+            if (!this._isPassthroughHeaderBlocked(key, value)) {
+              filtered[key] = value;
+            }
+          }
+          return Object.keys(filtered).length > 0 ? filtered : undefined;
+        }
+      }
+      return undefined;
+    }
+
+    /**
+     * Merges auth headers with existing headers, preserving passthrough headers
+     * from the host application so they can be passed downstream to CHEFS backend.
+     * CHEFS uses X-Chefs-Gateway-Token for authentication, but passthrough headers
+     * from the host application are preserved for downstream services.
+     *
+     * @param {Object} existingHeaders - Existing headers object (may contain passthrough headers)
+     * @param {Object} authHeaders - CHEFS auth headers (X-Chefs-Gateway-Token)
+     * @param {string} url - Request URL (for callback-based passthrough headers)
+     * @returns {Object} Merged headers with passthrough headers preserved
+     * @private
+     */
+    _mergeHeadersWithAuth(existingHeaders = {}, authHeaders = {}, url = '') {
+      const merged = { ...existingHeaders, ...authHeaders };
+
+      // Get passthrough headers from callback if provided
+      const passthroughHeaders = this._getPassthroughHeaders(url);
+      if (passthroughHeaders) {
+        // Merge passthrough headers, filtering out blocked headers
+        for (const [key, value] of Object.entries(passthroughHeaders)) {
+          if (!this._isPassthroughHeaderBlocked(key, value)) {
+            merged[key] = value;
+          }
+        }
+      }
+
+      // Preserve Authorization header from existing headers if present
+      // (in case Form.io or other code sets it, but don't override CHEFS Basic auth)
+      const authKey = Object.keys(existingHeaders).find(
+        (key) => key.toLowerCase() === 'authorization'
+      );
+      if (authKey && existingHeaders[authKey]) {
+        // Only preserve if it's not Basic auth (CHEFS Basic auth is already in authHeaders)
+        const authValue = existingHeaders[authKey];
+        if (!authValue.trim().toLowerCase().startsWith('basic ')) {
+          merged[authKey] = existingHeaders[authKey];
+        }
+      }
+
+      return merged;
     }
 
     _getSubmitButtonKey() {
@@ -1399,7 +1507,10 @@
       if (!this._emit('formio:beforeLoadSchema', { url }, { cancelable: true }))
         return;
 
-      const res = await fetch(url, { headers: this._buildAuthHeader(url) });
+      const authHeaders = this._buildAuthHeader(url);
+      const res = await fetch(url, {
+        headers: this._mergeHeadersWithAuth({}, authHeaders, url),
+      });
       if (!res.ok) {
         const msg = await this._parseError(res, 'Failed to load form schema');
         this._emit('formio:error', { error: msg });
@@ -1761,8 +1872,8 @@
      * The plugin resolves auth headers on every request, automatically picking up token changes
      * without requiring re-registration. Only registers once per component instance.
      *
-     * The plugin prefers Bearer token (authToken) over Basic auth (apiKey) and only applies
-     * headers to requests targeting the component's base URL.
+     * The plugin prefers gateway token (authToken) sent via X-Chefs-Gateway-Token header
+     * over Basic auth (apiKey) and only applies headers to requests targeting the component's base URL.
      *
      * @private
      */
@@ -1787,10 +1898,11 @@
           const authHeader = this._buildAuthHeader(args.url);
           if (authHeader && Object.keys(authHeader).length > 0) {
             args.opts = args.opts || {};
-            args.opts.headers = {
-              ...args.opts.headers,
-              ...authHeader,
-            };
+            args.opts.headers = this._mergeHeadersWithAuth(
+              args.opts.headers,
+              authHeader,
+              args.url
+            );
           }
         },
         preStaticRequest: (args) => {
@@ -1800,10 +1912,11 @@
           const authHeader = this._buildAuthHeader(args.url);
           if (authHeader && Object.keys(authHeader).length > 0) {
             args.opts = args.opts || {};
-            args.opts.headers = {
-              ...args.opts.headers,
-              ...authHeader,
-            };
+            args.opts.headers = this._mergeHeadersWithAuth(
+              args.opts.headers,
+              authHeader,
+              args.url
+            );
           }
         },
       };
@@ -1921,12 +2034,14 @@
       const url = this._resolveUrl('submit');
       // debug: submit post
       this._emit('formio:submit', { submission });
+      const authHeaders = this._buildAuthHeader(url);
       const res = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...this._buildAuthHeader(url),
-        },
+        headers: this._mergeHeadersWithAuth(
+          { 'Content-Type': 'application/json' },
+          authHeaders,
+          url
+        ),
         body: JSON.stringify({ submission }),
       });
       if (!res.ok) {
@@ -2120,9 +2235,16 @@
           const authHeaders = this._buildAuthHeader(uploadUrl);
           const configHeaders = config.headers || {};
 
+          // Merge headers, preserving Authorization from config if present
+          const mergedHeaders = this._mergeHeadersWithAuth(
+            configHeaders,
+            authHeaders,
+            uploadUrl
+          );
+
           // Filter out Content-Type if it's multipart/form-data to let browser set it automatically
-          const headers = { ...authHeaders };
-          for (const [key, value] of Object.entries(configHeaders)) {
+          const headers = {};
+          for (const [key, value] of Object.entries(mergedHeaders)) {
             if (
               key.toLowerCase() === 'content-type' &&
               value.includes('multipart/form-data')
@@ -2164,8 +2286,14 @@
       this._log.info('File download starting', { fileId, url: getFileUrl });
 
       try {
+        const authHeaders = this._buildAuthHeader(getFileUrl);
+        const mergedHeaders = this._mergeHeadersWithAuth(
+          config.headers,
+          authHeaders,
+          getFileUrl
+        );
         const response = await fetch(getFileUrl, {
-          headers: this._buildAuthHeader(getFileUrl),
+          headers: mergedHeaders,
           ...config,
         });
 
@@ -2223,9 +2351,10 @@
       this._log.info('File delete starting', { fileId, url: deleteUrl });
 
       try {
+        const authHeaders = this._buildAuthHeader(deleteUrl);
         const response = await fetch(deleteUrl, {
           method: 'DELETE',
-          headers: this._buildAuthHeader(deleteUrl),
+          headers: this._mergeHeadersWithAuth({}, authHeaders, deleteUrl),
         });
 
         if (!response.ok) {
@@ -2436,7 +2565,8 @@
         },
 
         // Auth token for file operations (used by simplefile component)
-        chefsToken: () => this._buildAuthHeader('')?.Authorization || '',
+        chefsToken: () =>
+          this._buildAuthHeader('')?.['X-Chefs-Gateway-Token'] || '',
       };
     }
 
@@ -2496,8 +2626,9 @@
       const readUrl = this._resolveUrl('readSubmission');
 
       try {
+        const authHeaders = this._buildAuthHeader(readUrl);
         const response = await fetch(readUrl, {
-          headers: this._buildAuthHeader(readUrl),
+          headers: this._mergeHeadersWithAuth({}, authHeaders, readUrl),
         });
         if (!response.ok) {
           this._log.warn('Prefill data fetch error', {
