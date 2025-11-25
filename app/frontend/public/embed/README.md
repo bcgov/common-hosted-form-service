@@ -61,3 +61,11 @@ These files are **not in source control** and are created by the build process:
 - **CSS files (`chefs-index.css`, `chefs-theme.css`) are automatically generated** and contain the complete CHEFS styling
 
 **Note**: Generated files (`.min.js`, `.css`) are created during the build process and are not stored in the source repository.
+
+### Authentication
+
+The webcomponent uses the `X-Chefs-Gateway-Token` header for authentication when making requests to CHEFS backend endpoints. This custom header allows host applications to use the `Authorization: Bearer` header for their own authentication needs.
+
+- **Header name**: `X-Chefs-Gateway-Token`
+- **Value**: JWT token obtained from the gateway token endpoint
+- **Usage**: Automatically added to all requests to CHEFS backend URLs (URLs matching the component's `baseUrl`)
