@@ -712,8 +712,7 @@ const testimonials = [
   background-color: #ffffff;
 
   .enterprise-hero-wrapper {
-    background: linear-gradient(135deg, #f5f9fc 0%, #ffffff 100%);
-    border-radius: 8px;
+    background-color: transparent;
     margin: 32px auto;
     max-width: 1200px;
   }
