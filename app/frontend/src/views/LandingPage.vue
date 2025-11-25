@@ -18,9 +18,9 @@ import navigationButtons from '~/assets/images/examples/navigation-buttons.png';
 import successStories from '~/assets/images/examples/success-stories.png';
 
 // Import testimonial screenshots
-import screenshot1 from '~/assets/images/testimonials/screenshot-1.png';
-import screenshot2 from '~/assets/images/testimonials/screenshot-2.png';
-import screenshot3 from '~/assets/images/testimonials/screenshot-3.png';
+import screenshot1 from '~/assets/images/testimonials/Leah-M-testimonial-image.png';
+import screenshot2 from '~/assets/images/testimonials/Karl-M-testimonial-image.png';
+import screenshot3 from '~/assets/images/testimonials/Emma-A-testimonial-image.png';
 
 const { locale } = useI18n({ useScope: 'global' });
 

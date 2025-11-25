@@ -113,14 +113,17 @@ const handleTenantChange = async (value) => {
     }
 
     // Fetch forms for the selected tenant (or Classic CHEFS if no tenant)
-    // Form store will automatically clear formList on error
+    // Form store will automatically handle errors and show notifications
     await formStore.getFormsForCurrentUser();
 
     // Navigate to forms list page
     await router.push({ name: 'UserForms' });
   } catch (error) {
+    // Note: formStore.getFormsForCurrentUser() doesn't throw errors,
+    // but router.push might fail. Only show error if navigation fails.
+    console.error('Error during tenant switch:', error);
     notificationStore.addNotification({
-      text: 'Error switching tenant. Please try again.',
+      text: 'Error navigating to forms. Please try again.',
       consoleError: error,
     });
   }
@@ -133,14 +136,17 @@ const switchToClassicChefs = async () => {
     selectedValue.value = null;
 
     // Fetch forms for Classic CHEFS mode (no tenant)
-    // Form store will automatically clear formList on error
+    // Form store will automatically handle errors and show notifications
     await formStore.getFormsForCurrentUser();
 
     // Navigate to forms list page
     await router.push({ name: 'UserForms' });
   } catch (error) {
+    // Note: formStore.getFormsForCurrentUser() doesn't throw errors,
+    // but router.push might fail. Only show error if navigation fails.
+    console.error('Error switching to Classic CHEFS:', error);
     notificationStore.addNotification({
-      text: 'Error switching to Classic CHEFS. Please try again.',
+      text: 'Error navigating to forms. Please try again.',
       consoleError: error,
     });
   }
