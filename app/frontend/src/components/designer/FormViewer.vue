@@ -122,7 +122,6 @@ const notificationStore = useNotificationStore();
 // Local crash-recovery autosave (storage layer)
 const localAutosave = useLocalAutosave();
 const showLocalRecoveryDialog = ref(false);
-const autosaveReady = ref(false); // becomes true after first Form.io render
 const autosaveInitialized = ref(false);
 
 const { config } = storeToRefs(appStore);
@@ -197,19 +196,28 @@ watch(
     auth: authenticated.value,
     formLoaded: !!form.value?.id,
     enableAutoSave: form.value?.enableAutoSave,
+    userReady: !!authStore.currentUser?.idpUserId,
   }),
-  ({ auth, formLoaded, enableAutoSave }) => {
+  ({ auth, formLoaded, enableAutoSave, userReady }) => {
     console.log('WATCH AUTOSAVE TRIGGER:', {
       auth,
       formLoaded,
       enableAutoSave,
+      userReady,
     });
 
-    if (!autosaveInitialized.value && auth && formLoaded && enableAutoSave) {
+    if (
+      !autosaveInitialized.value &&
+      auth &&
+      formLoaded &&
+      enableAutoSave &&
+      userReady
+    ) {
       initializeLocalAutosave();
     }
   }
 );
+
 onMounted(async () => {
   // load up headers for any External API calls
   // from components.
@@ -292,11 +300,25 @@ function initializeLocalAutosave() {
   autosaveInitialized.value = true;
 
   // Initialize autosave storage key
-  localAutosave.init({
+  // Build autosave key config
+  const keyConfig = {
     formId: properties.formId,
-    submissionId: properties.submissionId,
     userId: authStore.currentUser.idpUserId,
-  });
+  };
+
+  // Only include submissionId when it's a REAL submissionId
+  if (
+    properties.submissionId &&
+    properties.submissionId !== 'new' &&
+    properties.submissionId !== 'undefined' &&
+    properties.submissionId !== null &&
+    properties.submissionId !== undefined
+  ) {
+    keyConfig.submissionId = properties.submissionId;
+  }
+
+  // Initialize autosave
+  localAutosave.init(keyConfig);
   console.log('AUTOSAVE INIT COMPLETE:', {
     storageKey: localAutosave.getStorageKey?.(),
     submissionId: properties.submissionId,
@@ -588,7 +610,6 @@ function isProcessingMultiUpload(e) {
 function formChange(e) {
   console.log('FORM CHANGE EVENT:', {
     fromSubmission: e.changed?.flags?.fromSubmission,
-    autosaveReady: autosaveReady.value,
     enableAutoSave: form.value?.enableAutoSave,
   });
 
@@ -606,15 +627,14 @@ function formChange(e) {
   formDataEntered.value = true;
 
   // AUTOSAVE – only when:
-  // autosave flag ready (Form.io render happened)
   // form has enableAutoSave turned on
   // not read-only or preview
   // Form.io has valid _data
   if (
-    autosaveReady.value &&
     form.value?.enableAutoSave &&
     !properties.readOnly &&
     !properties.preview &&
+    !e.changed?.flags?.fromSubmission &&
     chefForm.value?.formio?._data
   ) {
     localAutosave.save(chefForm.value.formio._data);
@@ -704,8 +724,6 @@ async function sendSubmission(isDraft, sub) {
 }
 
 function onFormRender() {
-  // Mark autosave as ready AFTER Form.io finishes first render
-  autosaveReady.value = true;
   console.log('FORM RENDER COMPLETE – autosaveReady = TRUE');
 
   if (isLoading.value) isLoading.value = false;
