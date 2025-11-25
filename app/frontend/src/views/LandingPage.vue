@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { Form } from '@formio/vue';
 
 // import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -21,6 +22,17 @@ import successStories from '~/assets/images/examples/success-stories.png';
 import screenshot1 from '~/assets/images/testimonials/Leah-M-testimonial-image.png';
 import screenshot2 from '~/assets/images/testimonials/Karl-M-testimonial-image.png';
 import screenshot3 from '~/assets/images/testimonials/Emma-A-testimonial-image.png';
+
+// Import example form JSONs
+import demographicSurveyJson from '~/assets/example_form_json/1. toolkit_for_evaluation_and_design_post-course_online_survey__schema.json';
+import calculationsGridJson from '~/assets/example_form_json/example_calculations_in_datagrid_schema.json';
+import postCourseSurveyJson from '~/assets/example_form_json/1. toolkit_for_evaluation_and_design_post-course_online_survey__schema.json';
+import architectureForumJson from '~/assets/example_form_json/chefs_architecture_forum_survey_schema.json';
+import conditionalLogicJson from '~/assets/example_form_json/example_conditional_logic_schema.json';
+import calculatedValuesJson from '~/assets/example_form_json/example_calculated_values_schema (1).json';
+import teamLunchOrderJson from '~/assets/example_form_json/team_lunch_order_schema.json';
+import navigationButtonsJson from '~/assets/example_form_json/example_navigation_buttons_schema.json';
+import successStoriesJson from '~/assets/example_form_json/chefs_success_stories_schema.json';
 
 const { locale } = useI18n({ useScope: 'global' });
 
@@ -61,46 +73,103 @@ const formExamples = [
   {
     title: 'Example | Demographic Data Collection Survey',
     image: demographicSurvey,
+    schema: demographicSurveyJson,
+    fileName: 'demographic-survey.json',
   },
   {
     title: 'Example | Calculations in Data Grid',
     image: calculationsGrid,
+    schema: calculationsGridJson,
+    fileName: 'calculations-in-datagrid.json',
   },
   {
     title: 'Example | POST-COURSE SURVEY',
     image: postCourseSurvey,
+    schema: postCourseSurveyJson,
+    fileName: 'post-course-survey.json',
   },
   {
     title: 'Example | CHEFS Architecture Forum Survey',
     image: architectureForum,
+    schema: architectureForumJson,
+    fileName: 'architecture-forum-survey.json',
   },
   {
     title: 'Example | Conditional Logic',
     image: conditionalLogic,
+    schema: conditionalLogicJson,
+    fileName: 'conditional-logic.json',
   },
   {
     title: 'Example | Calculated Values',
     image: calculatedValues,
+    schema: calculatedValuesJson,
+    fileName: 'calculated-values.json',
   },
   {
     title: 'Example | Team Lunch Order',
     image: teamLunchOrder,
+    schema: teamLunchOrderJson,
+    fileName: 'team-lunch-order.json',
   },
   {
     title: 'Example | Navigation Buttons',
     image: navigationButtons,
+    schema: navigationButtonsJson,
+    fileName: 'navigation-buttons.json',
   },
   {
     title: 'Example | CHEFS Success Stories',
     image: successStories,
+    schema: successStoriesJson,
+    fileName: 'success-stories.json',
   },
 ];
+
+// Modal state for form viewer
+const showFormViewer = ref(false);
+const selectedFormExample = ref(null);
+
+// Method to open form viewer modal
+const openFormViewer = (example) => {
+  selectedFormExample.value = example;
+  showFormViewer.value = true;
+};
+
+// Method to close form viewer modal
+const closeFormViewer = () => {
+  showFormViewer.value = false;
+  selectedFormExample.value = null;
+};
+
+// Method to download form JSON
+const downloadFormJSON = (example) => {
+  const jsonString = JSON.stringify(example.schema, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = example.fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+};
 
 // Method to open kudos page
 const openKudosPage = () => {
   window.open(kudosPageUrl, '_blank');
 };
 
+// Formio form viewer options - readonly mode
+const formViewerOptions = {
+  readOnly: true,
+  disableAlerts: false,
+  noAlerts: false,
+  builder: false,
+};
+
+// Formio form preview options - compact readonly mode for cards
 // Testimonials data
 const testimonials = [
   {
@@ -272,21 +341,24 @@ const testimonials = [
               <template #title>
                 <strong>ATTENTION BCeID USERS</strong>
               </template>
-              To ensure your account can be found by your team, please log in to
-              CSTAR before using Enterprise CHEFS. This step allows your team
-              admin to locate and add you to a tenant or group, making your
-              account active and searchable in CSTAR.
-              <v-btn
-                size="small"
-                variant="text"
-                color="primary"
-                class="ml-2"
-                :href="cstarUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Log in to CSTAR
-              </v-btn>
+              <div class="alert-content-wrapper">
+                <div class="alert-text">
+                  To ensure your account can be found by your team, please log
+                  in to CSTAR before using Enterprise CHEFS. This step allows
+                  your team admin to locate and add you to a tenant or group,
+                  making your account active and searchable in CSTAR.
+                </div>
+                <v-btn
+                  size="small"
+                  color="primary"
+                  class="alert-btn"
+                  :href="cstarUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Log in to CSTAR
+                </v-btn>
+              </div>
             </v-alert>
           </v-col>
         </v-row>
@@ -294,79 +366,106 @@ const testimonials = [
     </div>
 
     <!-- Getting Started Section -->
-    <v-container class="getting-started-section py-16">
-      <v-row align="center" class="mb-12">
-        <v-col cols="12" md="6" class="text-section">
-          <h2 class="getting-started-title mb-6" :lang="locale">
-            New to CHEFS and not sure where to start?
-          </h2>
-          <p class="getting-started-description mb-0" :lang="locale">
-            Start by exploring our
-            <a
-              :href="techDocsUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="doc-link"
-              >CHEFS Technical Documentation</a
-            >
-            (Tech Docs) for setup guidance, or browse the example forms below —
-            each one was created by real CHEFS users.
-          </p>
-        </v-col>
-        <v-col cols="12" md="6" class="illustration-section">
-          <div class="person-computer-wrapper">
-            <img
-              src="/images/person-at-computer.png"
-              alt="Person working at computer"
-              class="person-computer-img"
-            />
-          </div>
-        </v-col>
-      </v-row>
+    <div class="getting-started-section-wrapper">
+      <v-container class="getting-started-section py-16">
+        <v-row align="center" class="mb-12">
+          <v-col cols="12" md="6" class="text-section">
+            <h2 class="getting-started-title mb-6" :lang="locale">
+              New to CHEFS and not sure where to start?
+            </h2>
+            <p class="getting-started-description mb-0" :lang="locale">
+              Start by exploring our
+              <a
+                :href="techDocsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="doc-link"
+                >CHEFS Technical Documentation</a
+              >
+              (Tech Docs) for setup guidance, or browse the example forms below
+              — each one was created by real CHEFS users.
+            </p>
+          </v-col>
+          <v-col cols="12" md="6" class="illustration-section">
+            <div class="person-computer-wrapper">
+              <img
+                src="/images/person-at-computer-nb.png"
+                alt="Person working at computer"
+                class="person-computer-img"
+              />
+            </div>
+          </v-col>
+        </v-row>
 
-      <v-row class="mt-8">
-        <v-col
-          v-for="(example, index) in formExamples"
-          :key="index"
-          cols="12"
-          md="4"
-        >
-          <v-card class="example-card" elevation="2">
-            <v-img
-              v-if="example.image"
-              :src="example.image"
-              :alt="example.title"
-              height="300"
-              cover
-            >
-              <template #error>
+        <v-row class="mt-8">
+          <v-col
+            v-for="(example, index) in formExamples"
+            :key="index"
+            cols="12"
+            md="4"
+          >
+            <v-card class="example-card" elevation="2">
+              <div class="example-image-wrapper">
+                <v-img
+                  v-if="example.image"
+                  :src="example.image"
+                  :alt="example.title"
+                  height="300"
+                  cover
+                  style="cursor: pointer"
+                  @click="openFormViewer(example)"
+                >
+                  <template #error>
+                    <div
+                      class="d-flex align-center justify-center fill-height bg-grey-lighten-3"
+                    >
+                      <v-icon size="64" color="grey-darken-1"
+                        >mdi-file-document-outline</v-icon
+                      >
+                    </div>
+                  </template>
+                </v-img>
                 <div
-                  class="d-flex align-center justify-center fill-height bg-grey-lighten-3"
+                  v-else
+                  class="d-flex align-center justify-center bg-grey-lighten-3"
+                  style="height: 300px; cursor: pointer"
+                  @click="openFormViewer(example)"
                 >
                   <v-icon size="64" color="grey-darken-1"
                     >mdi-file-document-outline</v-icon
                   >
                 </div>
-              </template>
-            </v-img>
-            <div
-              v-else
-              class="d-flex align-center justify-center bg-grey-lighten-3"
-              style="height: 300px"
-            >
-              <v-icon size="64" color="grey-darken-1"
-                >mdi-file-document-outline</v-icon
-              >
-            </div>
-            <v-card-text class="text-center">
-              <p class="text-subtitle-2 font-weight-medium">
-                {{ example.title }}
-              </p>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+                <div class="example-overlay">
+                  <v-btn
+                    size="small"
+                    color="primary"
+                    class="mr-2"
+                    @click="openFormViewer(example)"
+                  >
+                    <v-icon start>mdi-eye</v-icon>
+                    View Form
+                  </v-btn>
+                  <v-btn
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                    @click="downloadFormJSON(example)"
+                  >
+                    <v-icon start>mdi-download</v-icon>
+                    Download
+                  </v-btn>
+                </div>
+              </div>
+              <v-card-text class="text-center">
+                <p class="text-subtitle-2 font-weight-medium">
+                  {{ example.title }}
+                </p>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
 
     <!-- Testimonials Section -->
     <v-container class="testimonials-section py-16">
@@ -524,6 +623,68 @@ const testimonials = [
         </v-row>
       </v-container>
     </div>-->
+
+    <!-- Form Viewer Modal -->
+    <v-dialog
+      v-model="showFormViewer"
+      max-width="1200px"
+      class="form-viewer-dialog"
+    >
+      <v-card v-if="selectedFormExample" class="form-viewer-card">
+        <!-- Modal Header -->
+        <v-card-title
+          class="bg-primary text-white d-flex justify-space-between align-center"
+        >
+          <span>{{ selectedFormExample.title }}</span>
+          <div>
+            <v-btn
+              size="small"
+              variant="text"
+              color="white"
+              icon="mdi-download"
+              title="Download JSON"
+              class="mr-2"
+              @click="downloadFormJSON(selectedFormExample)"
+            />
+            <v-btn
+              size="small"
+              variant="text"
+              color="white"
+              icon="mdi-close"
+              title="Close"
+              @click="closeFormViewer"
+            />
+          </div>
+        </v-card-title>
+
+        <!-- Modal Content -->
+        <v-card-text class="form-viewer-content pa-0">
+          <!-- Form rendered using Formio Vue component -->
+          <div id="formContainer" class="form-container">
+            <Form
+              v-if="selectedFormExample"
+              :form="selectedFormExample.schema"
+              :options="formViewerOptions"
+              @submit="() => {}"
+            />
+          </div>
+        </v-card-text>
+
+        <!-- Modal Footer with Actions -->
+        <v-card-actions class="form-viewer-footer">
+          <v-spacer />
+          <v-btn
+            color="primary"
+            variant="outlined"
+            @click="downloadFormJSON(selectedFormExample)"
+          >
+            <v-icon start>mdi-download</v-icon>
+            Download JSON
+          </v-btn>
+          <v-btn color="primary" @click="closeFormViewer"> Close </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -533,7 +694,6 @@ const testimonials = [
 
   .enterprise-hero-wrapper {
     background: linear-gradient(135deg, #f5f9fc 0%, #ffffff 100%);
-    border: 2px solid #003d82;
     border-radius: 8px;
     margin: 32px auto;
     max-width: 1200px;
@@ -550,7 +710,7 @@ const testimonials = [
     }
 
     .enterprise-hero-title {
-      font-size: 36px;
+      font-size: 48px;
       font-weight: 700;
       color: #003366;
       line-height: 1.3;
@@ -621,13 +781,40 @@ const testimonials = [
       ::v-deep(.v-alert__title) {
         color: #003366;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
       }
 
       ::v-deep(.v-alert__icon) {
         color: #1976d2;
       }
+
+      .alert-content-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+
+        .alert-text {
+          flex: 1;
+          font-size: 15px;
+          color: #2d2d2d;
+          line-height: 1.6;
+        }
+
+        .alert-btn {
+          flex-shrink: 0;
+          white-space: nowrap;
+          background-color: #003366 !important;
+          color: white !important;
+          padding: 8px 16px !important;
+        }
+      }
     }
+  }
+
+  .getting-started-section-wrapper {
+    background-color: #f1f8fe;
+    width: 100%;
   }
 
   .getting-started-section {
@@ -648,6 +835,7 @@ const testimonials = [
         font-weight: 400;
         color: #2d2d2d;
         line-height: 1.6;
+        word-break: break-word;
 
         a.doc-link {
           color: #003366;
@@ -700,11 +888,49 @@ const testimonials = [
     .example-card {
       height: 100%;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
 
       &:hover {
         transform: translateY(-8px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+        .example-overlay {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
+      .example-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 300px;
+
+        .example-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.6);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 8px;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.3s ease, visibility 0.3s ease;
+          z-index: 10;
+
+          .v-btn {
+            background-color: white !important;
+            color: #003366 !important;
+          }
+        }
+      }
+
+      .form-title-section {
+        padding: 12px 8px !important;
+        background-color: white;
+        border-top: 1px solid #e0e0e0;
       }
     }
   }
@@ -763,16 +989,43 @@ const testimonials = [
       height: 100%;
       border-radius: 8px;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease,
+        border-color 0.3s ease;
+      position: relative;
+      border: 2px solid transparent;
 
       &:hover {
         transform: translateY(-8px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-color: #003366;
+
+        &::after {
+          opacity: 1;
+          visibility: visible;
+        }
       }
 
       &:focus {
         outline: 2px solid #003366;
         outline-offset: 2px;
+      }
+
+      &::after {
+        content: 'View on Kudos Page →';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background-color: #003366;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        white-space: nowrap;
+        z-index: 5;
       }
 
       .testimonial-card-title {
@@ -943,6 +1196,48 @@ const testimonials = [
       padding-top: 16px;
       border-top: 1px solid #e0e0e0;
     }
+  }
+}
+
+// Form Viewer Modal Styles
+.form-viewer-dialog {
+  :deep(.v-overlay__content) {
+    max-height: 90vh;
+    border-radius: 8px;
+  }
+}
+
+.form-viewer-card {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+
+  .form-viewer-content {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    min-height: 400px;
+
+    .form-container {
+      background-color: white;
+      padding: 24px;
+      margin: 16px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .form-viewer-footer {
+    border-top: 1px solid #e0e0e0;
+    padding: 16px;
+  }
+
+  .bg-primary {
+    background-color: #003366 !important;
+  }
+
+  .text-white {
+    color: white !important;
   }
 }
 
