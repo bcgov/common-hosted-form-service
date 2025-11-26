@@ -881,18 +881,8 @@
     "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver",
     "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder.",
-    "fileUploadWarning": "Para cargar sus archivos adjuntos, debe hacer clic en el botón \"Guardar como borrador\" o enviar su formulario. Si sale de esta pantalla, perderá sus archivos adjuntos.",
-
-    "enableAutoSave": "Activar protección del progreso del formulario: guarde automáticamente su progreso localmente en el navegador para recuperarlo si la página se cierra o se actualiza accidentalmente"
+    "fileUploadWarning": "Para cargar sus archivos adjuntos, debe hacer clic en el botón \"Guardar como borrador\" o enviar su formulario. Si sale de esta pantalla, perderá sus archivos adjuntos."
   },
-  "localAutosave": {
-    "title": "¿Restaurar su trabajo?",
-    "message": "Su progreso de la última sesión se guardó en su navegador y puede restaurarse ahora, o puede comenzar de nuevo con un formulario en blanco.",
-    "restore": "Restaurar trabajo",
-    "discard": "Comenzar de nuevo",
-    "restored": "Su progreso de la última sesión se ha restaurado correctamente."
-  },
-
   "bCGovFooter": {
     "home": "Hogar",
     "about": "Acerca de gov.bc.ca",
