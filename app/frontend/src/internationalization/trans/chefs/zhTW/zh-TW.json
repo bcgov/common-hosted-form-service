@@ -881,7 +881,15 @@
     "submittingDraftConsErrMsg": "保存草稿時出錯。提交 ID：{submissionId}。錯誤：{error}",
     "formDraftAccessErrMsg": "請求的提交已提交，正在重定向到查看頁面",
     "formUnauthorizedMessage": "您無權查看此表單，請聯繫表單所有者以獲取訪問權限。",
-    "fileUploadWarning": "若要上傳附件，您必須按一下「另存為草稿」按鈕或提交表單。如果您離開此螢幕，您將丟失附件"
+    "fileUploadWarning": "若要上傳附件，您必須按一下「另存為草稿」按鈕或提交表單。如果您離開此螢幕，您將丟失附件",
+    "enableAutoSave": "啟用表單進度保護－自動將您的進度儲存在瀏覽器中，以便在頁面意外關閉或重新整理時恢復"
+  },
+  "localAutosave": {
+    "title": "要恢復您的工作嗎？",
+    "message": "您上一個工作階段的進度已儲存在瀏覽器中，可以立即恢復，或從空白表單重新開始。",
+    "restore": "恢復工作",
+    "discard": "重新開始",
+    "restored": "您上一個工作階段的進度已成功恢復。"
   },
   "bCGovFooter": {
     "home": "家",

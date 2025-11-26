@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import {
   computed,
+  nextTick,
   onBeforeUpdate,
   onBeforeUnmount,
   onMounted,
@@ -14,6 +15,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
+import LocalAutosaveRecoveryDialog from '~/components/designer/LocalAutosaveRecoveryDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
 import templateExtensions from '~/plugins/templateExtensions';
@@ -22,6 +24,7 @@ import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useLocalAutosave } from '~/composables/useLocalAutosave';
 
 import { isFormPublic } from '~/utils/permissionUtils';
 import {
@@ -114,6 +117,11 @@ const authStore = useAuthStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
+// Local crash-recovery autosave (storage layer)
+const localAutosave = useLocalAutosave();
+const showLocalRecoveryDialog = ref(false);
+const autosaveInitialized = ref(false);
+
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
 const { downloadedFile, isRTL } = storeToRefs(formStore);
@@ -143,7 +151,6 @@ const shouldDisableFileDownloads = computed(() => {
 
 const viewerOptions = computed(() => {
   // Force recomputation of viewerOptions after rerendered formio to prevent duplicate submission update calls
-  reRenderFormIo.value;
 
   return {
     sanitizeConfig: {
@@ -181,6 +188,26 @@ const canSaveDraft = computed(
 watch(locale, () => {
   reRenderFormIo.value += 1;
 });
+// === Autosave initialization watcher ===
+watch(
+  () => ({
+    auth: authenticated.value,
+    formLoaded: !!form.value?.id,
+    enableAutoSave: form.value?.enableAutoSave,
+    userReady: !!authStore.currentUser?.idpUserId,
+  }),
+  ({ auth, formLoaded, enableAutoSave, userReady }) => {
+    if (
+      !autosaveInitialized.value &&
+      auth &&
+      formLoaded &&
+      enableAutoSave &&
+      userReady
+    ) {
+      initializeLocalAutosave();
+    }
+  }
+);
 
 onMounted(async () => {
   // load up headers for any External API calls
@@ -197,6 +224,10 @@ onMounted(async () => {
     showModal.value = true;
     await getFormSchema();
   }
+
+  // Initialize local autosave after first render
+  await nextTick();
+
   window.addEventListener('beforeunload', beforeWindowUnload);
 
   reRenderFormIo.value += 1;
@@ -205,6 +236,9 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', beforeWindowUnload);
   clearTimeout(downloadTimeout.value);
+
+  // Cleanup local autosave debounce
+  localAutosave.cleanup();
 });
 
 onBeforeUpdate(() => {
@@ -217,12 +251,102 @@ function getCurrentAuthHeader() {
   return `Bearer ${keycloak.value.token}`;
 }
 
+/**
+ * Central autosave initialization:
+ * - Only for authenticated, non-preview, non-readonly forms
+ * - Only when form.enableAutoSave is true
+ * - Builds a per-user, per-form(+submission) storage key
+ * - Decides whether to show the recovery dialog
+ */
+function initializeLocalAutosave() {
+  // Only run once per mount
+  if (autosaveInitialized.value) {
+    return;
+  }
+
+  // Only enable for authenticated users on non-readonly, non-preview forms
+  if (
+    !properties.formId ||
+    properties.readOnly ||
+    properties.preview ||
+    !authenticated.value
+  ) {
+    return;
+  }
+
+  // We need the form loaded and also enableAutoSave = true
+  if (!form.value || !form.value.enableAutoSave) {
+    return;
+  }
+
+  // Mark as initialized so we don't re-run if watchers fire again
+  autosaveInitialized.value = true;
+
+  // Initialize autosave storage key
+  // Build autosave key config
+  const keyConfig = {
+    formId: properties.formId,
+    userId: authStore.currentUser.idpUserId,
+  };
+
+  // Only include submissionId when it's a REAL submissionId
+  if (
+    properties.submissionId &&
+    properties.submissionId !== 'new' &&
+    properties.submissionId !== 'undefined' &&
+    properties.submissionId !== null &&
+    properties.submissionId !== undefined
+  ) {
+    keyConfig.submissionId = properties.submissionId;
+  }
+
+  // Initialize autosave
+  localAutosave.init(keyConfig);
+
+  // Decide if we should show the recovery dialog
+  const shouldRecover = localAutosave.shouldShowRecoveryDialog(
+    submissionRecord.value
+  );
+
+  if (shouldRecover) {
+    const localData = localAutosave.load();
+    if (localData && localData.data) {
+      showLocalRecoveryDialog.value = true;
+    }
+  }
+}
+
+function handleLocalRestore() {
+  const localData = localAutosave.load();
+
+  if (localData && localData.data) {
+    // Restore the form data
+    submission.value = { data: localData.data };
+    formDataEntered.value = true;
+
+    // Force form re-render to display restored data
+    reRenderFormIo.value += 1;
+
+    // Clear the local autosave since it's been restored
+    localAutosave.clear();
+
+    notificationStore.addNotification({
+      text: t('trans.localAutosave.restored'),
+      type: 'success',
+    });
+  }
+}
+
+function handleLocalDiscard() {
+  // User chose to discard local autosave
+  localAutosave.clear();
+}
+
 async function getFormData() {
   function iterate(obj, stack, fields, propNeeded) {
     //Get property path from nested object
     for (let property in obj) {
       const innerObject = obj[property];
-
       if (propNeeded === property) {
         fields = fields + stack + '.' + property;
         return fields.replace(/^\./, '');
@@ -237,12 +361,10 @@ async function getFormData() {
             fields,
             propNeeded
           );
-
           if (next) {
             fieldsArray.push(next);
           }
         }
-
         if (fieldsArray.length > 0) {
           return fieldsArray;
         }
@@ -303,7 +425,8 @@ async function getFormData() {
         response.data?.version?.schema?.components.length
       ) {
         response.data.version.schema.components.map((component) => {
-          deleteFieldData(component, submission.value); //Delete all the fields data that are not enabled for duplication
+          deleteFieldData(component, submission.value);
+          // Delete all the fields data that are not enabled for duplication
         });
       }
     }
@@ -402,7 +525,6 @@ async function getFormSchema() {
       version.value = response.data.versions[0].version;
       versionIdToSubmitTo.value = response.data.versions[0].id;
       formSchema.value = response.data.versions[0].schema;
-
       if (response.data.schedule && response.data.schedule.expire) {
         let formScheduleStatus = response.data.schedule;
         isFormScheduleExpired.value = formScheduleStatus.expire;
@@ -432,19 +554,43 @@ function isProcessingMultiUpload(e) {
   block.value = e;
 }
 
+/**
+ * Form change handler:
+ * - Validates drafts on change
+ * - Ignores Form.io's internal "fromSubmission" changes
+ * - Marks real user input
+ * - Triggers autosave only when ready and allowed
+ */
 function formChange(e) {
-  // if draft check validation on render
+  //If this is a draft, validate on change
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
-  if (e.changed != undefined && !e.changed.flags.fromSubmission) {
-    formDataEntered.value = true;
+
+  //Ignore internal Form.io changes (like loading submission/recall)
+  if (!e.changed || e.changed.flags?.fromSubmission) {
+    return;
   }
 
-  // Seems to be the only place the form changes on load
+  //user typing
+  formDataEntered.value = true;
+
+  // AUTOSAVE – only when:
+  // form has enableAutoSave turned on
+  // not read-only or preview
+  // Form.io has valid _data
+  if (
+    form.value?.enableAutoSave &&
+    !properties.readOnly &&
+    !properties.preview &&
+    !e.changed?.flags?.fromSubmission &&
+    chefForm.value?.formio?._data
+  ) {
+    localAutosave.save(chefForm.value.formio._data);
+  }
+
   jsonManager();
 }
-
 function jsonManager() {
   json_csv.value.file_name = 'template_' + form.value.name + '_' + Date.now();
   if (chefForm.value?.formio) {
@@ -546,7 +692,6 @@ function onSubmitButton(event) {
   }
   // this is our first event in the submission chain.
   // most important thing here is ensuring that the formio form does not have an action, or else it POSTs to that action.
-  // console.info('onSubmitButton()') ; // eslint-disable-line no-console
   currentForm.value = event.instance.parent.root;
   currentForm.value.form.action = undefined;
 
@@ -662,6 +807,9 @@ async function doSubmit(sub) {
 }
 
 async function onSubmitDone() {
+  // Clear local autosave on successful submission
+  localAutosave.clear();
+
   // huzzah!
   // really nothing to do, the formio button has consumed the event and updated its display
   // is there anything here for us to do?
@@ -692,7 +840,6 @@ function switchView() {
   }
   bulkFile.value = !bulkFile.value;
 }
-
 function showdoYouWantToSaveTheDraftModalForSwitch() {
   saveDraftState.value = 1;
   if (formDataEntered.value && showModal.value) {
@@ -771,10 +918,31 @@ function closeBulkYesOrNo() {
 }
 
 function beforeWindowUnload(e) {
-  if (!properties.preview && !properties.readOnly) {
-    e.preventDefault();
-    e.returnValue = '';
+  // Do nothing for preview or read-only views
+  if (properties.preview || properties.readOnly) return;
+
+  // Default behaviour: warn the user before leaving
+  let shouldWarn = true;
+
+  // If autosave is enabled on this form, it can *reduce* warnings
+  if (form.value?.enableAutoSave) {
+    // If a debounced save is still pending, assume it will complete soon,
+    // or if there is an autosave snapshot available, do not warn.
+    if (
+      (localAutosave._isPending && localAutosave._isPending()) ||
+      localAutosave.exists()
+    ) {
+      shouldWarn = false;
+    }
   }
+
+  if (!shouldWarn) {
+    return;
+  }
+
+  // Show browser "Are you sure you want to leave?" dialog
+  e.preventDefault();
+  e.returnValue = '';
 }
 
 async function deleteFile(file) {
@@ -834,7 +1002,6 @@ async function uploadFile(file, config = {}) {
   return fileService.uploadFile(file, uploadConfig);
 }
 </script>
-
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
@@ -1007,6 +1174,14 @@ async function uploadFile(file, config = {}) {
           </p>
         </div>
       </div>
+
+      <LocalAutosaveRecoveryDialog
+        :show="showLocalRecoveryDialog"
+        @update:show="showLocalRecoveryDialog = $event"
+        @autosave:restore="handleLocalRestore"
+        @autosave:discard="handleLocalDiscard"
+      />
+
       <BaseDialog
         v-model="doYouWantToSaveTheDraft"
         :class="{ 'dir-rtl': isRTL }"

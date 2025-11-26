@@ -167,6 +167,7 @@
     "specificTeamMembers": "Specific Team Members",
     "teamMemberTooltip": "After you create the form you will have access to the Team Management page where you can add users and assign roles. Look for the people icon on the Manage Form page ",
     "formFunctionality": "Form Functionality",
+    "enableAutoSave": "Enable Form Progress Protection - Automatically store your form progress locally in your browser to recover it if the page is accidentally closed or refreshed",
     "formSubmissinScheduleMsg": "The Form Submissions Schedule will be available in the Form Settings after the form is published.",
     "formSubmissionsSchedule": "Form Submissions Schedule",
     "experimental": "Experimental",
@@ -978,6 +979,13 @@
     "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page",
     "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access.",
     "fileUploadWarning": "To upload your attachments, you must either click on the 'Save as draft' button or submit your form. If you navigate away from this screen, you will lose your attachments."
+  },
+  "localAutosave": {
+    "title": "Restore Your Work?",
+    "message": "Your progress from the last session was saved in your browser and can be restored now, or you can start over with a blank form.",
+    "restore": "Restore Work",
+    "discard": "Start Over",
+    "restored": "Your progress from the last session has been successfully restored."
   },
   "bCGovFooter": {
     "home": "Home",
