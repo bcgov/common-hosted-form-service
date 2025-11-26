@@ -4,9 +4,10 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
+import { useTenantStore } from '~/store/tenant';
 import { useIdpStore } from '~/store/identityProviders';
 
-const { locale } = useI18n({ useScope: 'global' });
+const { locale, t } = useI18n({ useScope: 'global' });
 
 defineProps({
   formSubmitMode: {
@@ -16,13 +17,21 @@ defineProps({
 });
 
 const idpStore = useIdpStore();
+const tenantStore = useTenantStore();
 
 const { authenticated, isAdmin, identityProvider } = storeToRefs(
   useAuthStore()
 );
+const { selectedTenant } = storeToRefs(tenantStore);
 
 const hasPrivileges = computed(() => {
   return idpStore.isPrimary(identityProvider?.value?.code);
+});
+
+const formsMenuText = computed(() => {
+  // Show "My Forms" for Classic CHEFS (no tenant selected)
+  // Show "Forms" for Enterprise CHEFS (when tenant is selected)
+  return selectedTenant.value ? 'Forms' : t('trans.bCGovNavBar.myForms');
 });
 </script>
 
@@ -46,7 +55,7 @@ const hasPrivileges = computed(() => {
             data-cy="userFormsLinks"
             :to="{ name: 'UserForms' }"
             :lang="locale"
-            >{{ $t('trans.bCGovNavBar.myForms') }}</router-link
+            >{{ formsMenuText }}</router-link
           >
         </li>
         <li v-if="hasPrivileges">

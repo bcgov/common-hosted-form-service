@@ -18,8 +18,7 @@ exports.up = function (knex) {
           description: "Can review all form submissions but can't edit the submission.",
         },
       ];
-      // Add .onConflict('code').ignore() here
-      return knex('role').insert(items).onConflict('code').ignore();
+      return knex('role').insert(items);
     })
     .then(() => {
       const items = [
@@ -31,8 +30,8 @@ exports.up = function (knex) {
           active: true,
         },
       ];
-      // Add .onConflict('code').ignore() here
-      return knex('permission').insert(items).onConflict('code').ignore().returning('code');
+
+      return knex('permission').insert(items).returning('code');
     })
     .then(() => {
       const items = [];

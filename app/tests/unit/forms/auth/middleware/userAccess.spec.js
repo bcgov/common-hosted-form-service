@@ -9,10 +9,13 @@ const {
   hasRoleDeletePermissions,
   hasRoleModifyPermissions,
   hasSubmissionPermissions,
+  requireCreateFormPermission,
+  requireFormTenantAssociation,
 } = require('../../../../../src/forms/auth/middleware/userAccess');
 
 const jwtService = require('../../../../../src/components/jwtService');
 const rbacService = require('../../../../../src/forms/rbac/service');
+const tenantService = require('../../../../../src/components/tenantService');
 
 const service = require('../../../../../src/forms/auth/service');
 
@@ -137,6 +140,20 @@ describe('currentUser', () => {
     expect(service.login).toBeCalledTimes(1);
     expect(service.login).toBeCalledWith({ token: 'payload' });
     expect(req.currentUser).toEqual(mockUser);
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
+  });
+
+  it('sets tenantId from x-tenant-id header', async () => {
+    const req = getMockReq({
+      headers: { 'x-tenant-id': 'tenant-123' },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(req.currentUser).toBeDefined();
+    expect(req.currentUser.tenantId).toBe('tenant-123');
     expect(next).toBeCalledTimes(1);
     expect(next).toBeCalledWith();
   });
@@ -2247,5 +2264,152 @@ describe('hasRoleModifyPermissions', () => {
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
+  });
+});
+
+// External dependencies used by the implementation are:
+//  - service.getUserForms: gets the forms that the user can access.
+//  - rbacService.readUserRole: gets the roles that user has on a form.
+//
+describe('requireCreateFormPermission', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('allows when tenantService.canCreateForm returns true', async () => {
+    jest.spyOn(tenantService, 'canCreateForm').mockResolvedValue(true);
+
+    const req = getMockReq({ currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await requireCreateFormPermission(req, res, next);
+
+    expect(tenantService.canCreateForm).toHaveBeenCalledWith(req);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('denies with 403 when tenantService.canCreateForm returns false', async () => {
+    jest.spyOn(tenantService, 'canCreateForm').mockResolvedValue(false);
+
+    const req = getMockReq({ currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await requireCreateFormPermission(req, res, next);
+
+    expect(tenantService.canCreateForm).toHaveBeenCalledWith(req);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403, detail: 'You do not have permission to create a form.' }));
+  });
+
+  it('propagates error from tenantService.canCreateForm', async () => {
+    const err = new Error('boom');
+    jest.spyOn(tenantService, 'canCreateForm').mockRejectedValue(err);
+
+    const req = getMockReq({ currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await requireCreateFormPermission(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(err);
+  });
+});
+
+// Add tests for requireFormTenantAssociation
+describe('requireFormTenantAssociation', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('allows when no tenantId on currentUser', async () => {
+    const req = getMockReq({
+      currentUser: {}, // no tenantId
+      params: { formId: uuid.v4() },
+    });
+    const { res, next } = getMockRes();
+
+    const spy = jest.spyOn(tenantService, 'isFormInUsersTenant');
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('rejects with 400 when tenantId present and formId is invalid (params)', async () => {
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      params: { formId: 'not-a-uuid' },
+    });
+    const { res, next } = getMockRes();
+
+    const spy = jest.spyOn(tenantService, 'isFormInUsersTenant');
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400, detail: 'Bad formId' }));
+  });
+
+  it('rejects with 400 when tenantId present and formId is invalid (query)', async () => {
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      query: { formId: 'not-a-uuid' },
+    });
+    const { res, next } = getMockRes();
+
+    const spy = jest.spyOn(tenantService, 'isFormInUsersTenant');
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400, detail: 'Bad formId' }));
+  });
+
+  it('allows when form is in user tenant (params)', async () => {
+    const formId = uuid.v4();
+    jest.spyOn(tenantService, 'isFormInUsersTenant').mockResolvedValue(true);
+
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      params: { formId },
+    });
+    const { res, next } = getMockRes();
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(tenantService.isFormInUsersTenant).toHaveBeenCalledWith(req, formId);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('denies with 403 when form is not in user tenant (query)', async () => {
+    const formId = uuid.v4();
+    jest.spyOn(tenantService, 'isFormInUsersTenant').mockResolvedValue(false);
+
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      query: { formId },
+    });
+    const { res, next } = getMockRes();
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(tenantService.isFormInUsersTenant).toHaveBeenCalledWith(req, formId);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403, detail: 'Form not accessible for your tenant.' }));
+  });
+
+  it('propagates error from tenantService.isFormInUsersTenant', async () => {
+    const formId = uuid.v4();
+    const err = new Error('lookup failed');
+    jest.spyOn(tenantService, 'isFormInUsersTenant').mockRejectedValue(err);
+
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      params: { formId },
+    });
+    const { res, next } = getMockRes();
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(err);
   });
 });

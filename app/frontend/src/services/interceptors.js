@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '~/store/auth';
 import { useAppStore } from '~/store/app';
+import { useTenantStore } from '~/store/tenant';
 
 /**
  * @function appAxios
@@ -19,11 +20,16 @@ export function appAxios(timeout = 60000) {
   const instance = axios.create(axiosOptions);
 
   const authStore = useAuthStore();
+  const tenantStore = useTenantStore();
 
   instance.interceptors.request.use(
     (cfg) => {
       if (authStore?.ready && authStore?.authenticated) {
         cfg.headers.Authorization = `Bearer ${authStore.keycloak.token}`;
+      }
+      // Add tenant ID header if tenant is selected
+      if (tenantStore?.selectedTenant?.id) {
+        cfg.headers['x-tenant-id'] = tenantStore.selectedTenant.id;
       }
       return Promise.resolve(cfg);
     },
