@@ -881,15 +881,7 @@
     "submittingDraftConsErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {error}",
     "formDraftAccessErrMsg": "요청한 제출이 이미 제출되었으며 보기 페이지로 리디렉션됩니다.",
     "formUnauthorizedMessage": "이 양식을 볼 수 있는 권한이 없습니다. 접근하려면 양식 소유자에게 연락하세요.",
-    "fileUploadWarning": "첨부 파일을 업로드하려면 '임시 저장' 버튼을 클릭하거나 양식을 제출해야 합니다. 이 화면에서 벗어나면 첨부 파일이 손실됩니다.",
-    "enableAutoSave": "양식 진행 보호 활성화 - 페이지가 실수로 닫히거나 새로고침된 경우를 대비해 진행 상황을 브라우저에 자동 저장합니다"
-  },
-  "localAutosave": {
-    "title": "작업을 복원하시겠습니까?",
-    "message": "이전 세션의 진행 상황이 브라우저에 저장되어 있으며 지금 복원할 수 있습니다. 또는 빈 양식으로 새로 시작할 수 있습니다.",
-    "restore": "작업 복원",
-    "discard": "새로 시작",
-    "restored": "이전 세션의 진행 상황이 성공적으로 복원되었습니다."
+    "fileUploadWarning": "첨부 파일을 업로드하려면 '임시 저장' 버튼을 클릭하거나 양식을 제출해야 합니다. 이 화면에서 벗어나면 첨부 파일이 손실됩니다."
   },
   "bCGovFooter": {
     "home": "집",
