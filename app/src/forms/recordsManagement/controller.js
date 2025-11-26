@@ -12,17 +12,6 @@ module.exports = {
     }
   },
 
-  getPolicy: async (req, res, next) => {
-    try {
-      const { formId } = req.params;
-      const policy = await service.getRetentionPolicy(formId);
-      res.status(200).json(policy);
-    } catch (err) {
-      log.error('getPolicy error', err);
-      next(err);
-    }
-  },
-
   scheduleDeletion: async (req, res, next) => {
     try {
       const { submissionId } = req.params;
