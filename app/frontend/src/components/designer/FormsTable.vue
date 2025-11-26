@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 import { useIdpStore } from '~/store/identityProviders';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
@@ -19,9 +20,11 @@ const sortBy = ref([{ key: 'name', order: 'asc' }]);
 
 const formStore = useFormStore();
 const idpStore = useIdpStore();
+const tenantStore = useTenantStore();
 
 const { formList, isRTL } = storeToRefs(formStore);
 const { user } = storeToRefs(useAuthStore());
+const { selectedTenant } = storeToRefs(tenantStore);
 
 const headers = computed(() => [
   {
@@ -43,6 +46,12 @@ const headers = computed(() => [
 const canCreateForm = computed(() =>
   idpStore.isPrimary(user?.value?.idp?.code)
 );
+
+const pageTitle = computed(() => {
+  // Show "My Forms" for Classic CHEFS (no tenant selected)
+  // Show "Forms" for Enterprise CHEFS (when tenant is selected)
+  return selectedTenant.value ? 'Forms' : t('trans.formsTable.myForms');
+});
 
 const filteredFormList = computed(() =>
   formList.value.filter(
@@ -76,7 +85,7 @@ defineExpose({
     >
       <!-- page title -->
       <div>
-        <h1 :lang="locale">{{ $t('trans.formsTable.myForms') }}</h1>
+        <h1 :lang="locale">{{ pageTitle }}</h1>
       </div>
       <!-- buttons -->
       <div v-if="canCreateForm">

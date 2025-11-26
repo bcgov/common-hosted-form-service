@@ -183,6 +183,10 @@ const testimonials = [
     reviewer: 'Leah Macdonald',
     role: 'External User, CGI',
     initials: 'LM',
+    tags: [
+      { label: 'Helpful', color: 'amber' },
+      { label: 'Great Support', color: 'green' },
+    ],
   },
   {
     rating: 5,
@@ -195,6 +199,10 @@ const testimonials = [
     reviewer: 'Karl Martinson',
     role: 'Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food',
     initials: 'KM',
+    tags: [
+      { label: 'Helpful', color: 'amber' },
+      { label: 'Easy To Use', color: 'blue' },
+    ],
   },
   {
     rating: 4.5,
@@ -207,6 +215,10 @@ const testimonials = [
     reviewer: 'Emma Armitage',
     role: 'GIS Geospatial Analyst, Natural Resource Information and Digital Services',
     initials: 'EA',
+    tags: [
+      { label: 'Helpful', color: 'amber' },
+      { label: 'Shared With My Team', color: 'pink' },
+    ],
   },
 ];
 </script>
@@ -568,28 +580,22 @@ const testimonials = [
                 </div>
               </div>
 
-              <div class="d-flex align-center">
-                <v-btn
-                  variant="outlined"
+              <div class="d-flex align-center flex-wrap gap-2">
+                <v-chip
+                  v-for="(tag, tagIndex) in testimonial.tags"
+                  :key="tagIndex"
                   size="small"
-                  class="helpful-btn mr-2"
-                  color="grey-darken-2"
+                  :class="`tag-chip tag-${tag.color}`"
+                  label
                 >
-                  Helpful
-                </v-btn>
-                <v-btn
-                  variant="outlined"
-                  size="small"
-                  class="support-btn mr-2"
-                  color="grey-darken-2"
-                >
-                  Great Support
-                </v-btn>
+                  {{ tag.label }}
+                </v-chip>
                 <v-btn
                   icon=""
                   size="small"
                   variant="text"
                   color="grey-darken-2"
+                  class="ms-auto"
                 >
                   <v-icon size="20">mdi-share-variant</v-icon>
                 </v-btn>
@@ -1132,11 +1138,30 @@ const testimonials = [
         color: #666666;
       }
 
-      .helpful-btn,
-      .support-btn {
+      .tag-chip {
+        font-size: 12px !important;
+        font-weight: 500;
         text-transform: none;
-        font-size: 12px;
-        border-color: #d0d0d0;
+
+        &.tag-amber {
+          background-color: #ffc107 !important;
+          color: #333333 !important;
+        }
+
+        &.tag-green {
+          background-color: #4caf50 !important;
+          color: white !important;
+        }
+
+        &.tag-blue {
+          background-color: #2196f3 !important;
+          color: white !important;
+        }
+
+        &.tag-pink {
+          background-color: #e91e63 !important;
+          color: white !important;
+        }
       }
     }
   }
