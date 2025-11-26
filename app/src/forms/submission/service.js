@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 
 const { Statuses } = require('../common/constants');
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUser, FileStorage, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
@@ -151,6 +151,42 @@ const service = {
     if (result) {
       await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.DELETED, result.submission, false);
       return result;
+    }
+  },
+
+  /**
+   * Hard delete a submission and all its related data
+   *
+   * @param {string} submissionId - The ID of the submission to delete
+   * @returns {Object} Result indicating success or failure
+   */
+  deleteSubmissionAndRelatedData: async (submissionId) => {
+    let trx;
+    try {
+      trx = FormSubmission.startTransaction();
+
+      // Delete in the correct order based on foreign key dependencies
+
+      // 1. Delete notes
+      await Note.query(trx).where('submissionId', submissionId).delete();
+
+      // 2. Delete status records
+      await FormSubmissionStatus.query(trx).where('submissionId', submissionId).delete();
+
+      // 3. Delete user associations
+      await FormSubmissionUser.query(trx).where('formSubmissionId', submissionId).delete();
+
+      // 4. Delete file records
+      await FileStorage.query(trx).where('formSubmissionId', submissionId).delete();
+
+      // 5. Delete the submission record
+      const result = await FormSubmission.query(trx).where('id', submissionId).delete();
+
+      await trx.commit();
+      return { success: result > 0 };
+    } catch (error) {
+      if (trx) await trx.rollback();
+      throw error;
     }
   },
 

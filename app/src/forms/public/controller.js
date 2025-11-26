@@ -8,13 +8,4 @@ module.exports = {
       next(error);
     }
   },
-
-  processHardDeletions: async (req, res, next) => {
-    try {
-      const response = await service.processHardDeletions(req.query);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
 };
