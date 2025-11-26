@@ -9,7 +9,7 @@
 
 const STORAGE_PREFIX = 'chefs_autosave_';
 const DEBOUNCE_DELAY = 3000; // 3 seconds
-const EXPIRY_HOURS = 6; // autosave expiry
+const EXPIRY_HOURS = 24; // autosave expiry
 const CLEANUP_META_KEY = `${STORAGE_PREFIX}__last_cleanup__`;
 
 // -----------------------------------------------------------------------------

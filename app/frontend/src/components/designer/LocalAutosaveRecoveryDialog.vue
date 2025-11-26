@@ -48,7 +48,11 @@ const props = defineProps({
   show: Boolean,
 });
 
-const emit = defineEmits(['update:show', 'restore', 'discard']);
+const emit = defineEmits([
+  'update:show',
+  'autosave:restore',
+  'autosave:discard',
+]);
 
 const showDialog = computed({
   get: () => props.show,
@@ -56,12 +60,12 @@ const showDialog = computed({
 });
 
 function handleRestore() {
-  emit('restore');
+  emit('autosave:restore');
   showDialog.value = false;
 }
 
 function handleDiscard() {
-  emit('discard');
+  emit('autosave:discard');
   showDialog.value = false;
 }
 </script>

@@ -881,8 +881,17 @@
     "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}",
     "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher",
     "formUnauthorizedMessage": "Vous n'êtes pas autorisé à voir ce formulaire, veuillez contacter le propriétaire du formulaire pour accéder.",
-    "fileUploadWarning": "Pour télécharger vos pièces jointes, vous devez cliquer sur le bouton « Enregistrer comme brouillon » ou soumettre votre formulaire. Si vous quittez cet écran, vous perdrez vos pièces jointes."
+    "fileUploadWarning": "Pour télécharger vos pièces jointes, vous devez cliquer sur le bouton « Enregistrer comme brouillon » ou soumettre votre formulaire. Si vous quittez cet écran, vous perdrez vos pièces jointes.",
+    "enableAutoSave": "Activer la protection de progression du formulaire – Enregistrez automatiquement votre progression localement dans votre navigateur pour la récupérer si la page est fermée ou actualisée accidentellement"
   },
+  "localAutosave": {
+    "title": "Restaurer votre travail ?",
+    "message": "Votre progression de la dernière session a été enregistrée dans votre navigateur et peut être restaurée maintenant, ou vous pouvez recommencer avec un formulaire vierge.",
+    "restore": "Restaurer",
+    "discard": "Recommencer",
+    "restored": "Votre progression de la dernière session a été restaurée avec succès."
+  },
+
   "bCGovFooter": {
     "home": "Maison",
     "about": "À propos de gov.bc.ca",

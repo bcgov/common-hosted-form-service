@@ -1178,8 +1178,8 @@ async function uploadFile(file, config = {}) {
       <LocalAutosaveRecoveryDialog
         :show="showLocalRecoveryDialog"
         @update:show="showLocalRecoveryDialog = $event"
-        @restore="handleLocalRestore"
-        @discard="handleLocalDiscard"
+        @autosave:restore="handleLocalRestore"
+        @autosave:discard="handleLocalDiscard"
       />
 
       <BaseDialog
