@@ -99,7 +99,7 @@ objects:
                   command:
                     - /bin/sh
                     - -ec
-                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "https://${APP_NAME}-${NAMESPACE_ENVIRONMENT}.apps.silver.devops.gov.bc.ca${ROUTE_PATH}/api/v1/public/submission_deletion"||exit 0'
+                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "https://${APP_NAME}-${NAMESPACE_ENVIRONMENT}.apps.silver.devops.gov.bc.ca${ROUTE_PATH}/api/v1/recordsManagement/internal/deletions/process"||exit 0'
               restartPolicy: OnFailure
 parameters:
   - name: APP_NAME
