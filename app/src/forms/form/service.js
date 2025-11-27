@@ -616,6 +616,8 @@ const service = {
     const term = search.value || search;
     const searchFields = search.fields || [];
 
+    const ignoredFields = new Set(['submissionId', 'formVersionId', 'formId']);
+
     const isDateLike = (x, s) =>
       !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
 
@@ -623,25 +625,57 @@ const service = {
 
     const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
 
-    const ignoredFields = new Set(['submissionId', 'formVersionId', 'formId']);
+    function deepSearch(data, term) {
+      if (data === null || data === undefined) return false;
 
-    const searchedData = submissionsData.filter((data) => {
-      const fieldsToSearch = Array.isArray(searchFields) && searchFields.length ? searchFields : Object.keys(data);
+      const normalized = String(term).toLowerCase();
 
-      return fieldsToSearch.some((field) => {
+      // Primitive
+      if (typeof data !== 'object') {
+        return isDateLike(data, term) || isStringLike(data, term) || isNumberLike(data, term);
+      }
+
+      // Array
+      if (Array.isArray(data)) {
+        return data.some((item) => deepSearch(item, term));
+      }
+
+      // Object
+      for (const [key, value] of Object.entries(data)) {
+        // Key matches AND value is truthy → true
+        if (key.toLowerCase() === normalized && Boolean(value)) {
+          return true;
+        }
+
+        // Primitive value check
+        if (typeof value !== 'object' && value !== null && value !== undefined && (isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term))) {
+          return true;
+        }
+
+        // Nested object/array
+        if (typeof value === 'object') {
+          if (deepSearch(value, term)) return true;
+        }
+      }
+
+      return false;
+    }
+
+    const searchedData = submissionsData.filter((row) => {
+      const fieldsToSearch = Array.isArray(searchFields) && searchFields.length ? searchFields : Object.keys(row);
+
+      const matched = fieldsToSearch.some((field) => {
         if (ignoredFields.has(field)) return false;
-
-        const value = data[field];
-
-        if (value === null || value === undefined) return false;
-        if (Array.isArray(value) || typeUtils.isObject(value)) return false;
-
-        const match = isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term);
-
-        if (match) result.total += 1;
-        return match;
+        return deepSearch(row[field], term);
       });
+
+      if (matched) result.total += 1;
+      return matched;
     });
+
+    // ---------------------------------------------------------
+    // 🔍 Pagination
+    // ---------------------------------------------------------
     if (itemsPerPage !== -1) {
       const start = page * itemsPerPage;
       const end = start + itemsPerPage;
