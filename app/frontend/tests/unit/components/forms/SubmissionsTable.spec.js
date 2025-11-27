@@ -70,6 +70,14 @@ describe('SubmissionsTable.vue', () => {
       },
       global: {
         plugins: [router, pinia],
+        stubs: {
+          ...STUBS,
+          AdvancedSubmissionSearch: {
+            name: 'AdvancedSubmissionSearch',
+            template: '<div/>',
+            emits: ['search'],
+          },
+        },
       },
     });
 

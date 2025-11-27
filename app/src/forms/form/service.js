@@ -585,54 +585,106 @@ const service = {
     );
 
     if (params.paginationEnabled) {
-      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
+      return await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
     }
 
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
+  async processPaginationData(query, page, itemsPerPage, search, searchEnabled) {
     const isSearchEnabled = (x) => (x !== undefined ? JSON.parse(x) : false);
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
-    if (isSearchAble) {
-      let submissionsData = await query;
-      let result = {
-        results: [],
-        total: 0,
-      };
 
-      const isDateLike = (x, s) =>
-        !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
-      const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
-      const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+    if (isSearchAble && search) {
+      const submissionsData = await query;
+      return this.searchSubmissions(submissionsData, search, page, itemsPerPage);
+    }
 
-      let searchedData = submissionsData.filter((data) => {
-        return Object.keys(data).some((key) => {
-          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
-            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
-              if (isDateLike(data[key], search) || isStringLike(data[key], search) || isNumberLike(data[key], search)) {
-                result.total = result.total + 1;
-                return true;
-              }
-              return false;
-            }
-            return false;
-          }
-          return false;
-        });
-      });
-      if (itemsPerPage !== -1) {
-        let start = page * itemsPerPage;
-        let end = page * itemsPerPage + itemsPerPage;
-        result.results = searchedData.slice(start, end);
-      } else {
-        result.results = searchedData;
-      }
-      return result;
-    } else if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
+    if (itemsPerPage && Number.parseInt(itemsPerPage) >= 0 && Number.parseInt(page) >= 0) {
       return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
+
     return await query;
+  },
+
+  searchSubmissions(submissionsData, search, page, itemsPerPage) {
+    const result = {
+      results: [],
+      total: 0,
+    };
+
+    const term = search.value || search;
+    const searchFields = search.fields || [];
+
+    const ignoredFields = new Set(['submissionId', 'formVersionId', 'formId']);
+
+    const isDateLike = (x, s) =>
+      !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
+
+    const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
+
+    const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+
+    function deepSearch(data, term) {
+      if (data === null || data === undefined) return false;
+
+      const normalized = String(term).toLowerCase();
+
+      // Primitive
+      if (typeof data !== 'object') {
+        return isDateLike(data, term) || isStringLike(data, term) || isNumberLike(data, term);
+      }
+
+      // Array
+      if (Array.isArray(data)) {
+        return data.some((item) => deepSearch(item, term));
+      }
+
+      // Object
+      for (const [key, value] of Object.entries(data)) {
+        // Key matches AND value is truthy → true
+        if (key.toLowerCase() === normalized && Boolean(value)) {
+          return true;
+        }
+
+        // Primitive value check
+        if (typeof value !== 'object' && value !== null && value !== undefined && (isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term))) {
+          return true;
+        }
+
+        // Nested object/array
+        if (typeof value === 'object') {
+          if (deepSearch(value, term)) return true;
+        }
+      }
+
+      return false;
+    }
+
+    const searchedData = submissionsData.filter((row) => {
+      const fieldsToSearch = Array.isArray(searchFields) && searchFields.length ? searchFields : Object.keys(row);
+
+      const matched = fieldsToSearch.some((field) => {
+        if (ignoredFields.has(field)) return false;
+        return deepSearch(row[field], term);
+      });
+
+      if (matched) result.total += 1;
+      return matched;
+    });
+
+    // ---------------------------------------------------------
+    // 🔍 Pagination
+    // ---------------------------------------------------------
+    if (itemsPerPage !== -1) {
+      const start = page * itemsPerPage;
+      const end = start + itemsPerPage;
+      result.results = searchedData.slice(start, end);
+    } else {
+      result.results = searchedData;
+    }
+
+    return result;
   },
 
   publishVersion: async (formId, formVersionId, currentUser, params = {}) => {
