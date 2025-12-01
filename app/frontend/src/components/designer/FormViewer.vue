@@ -279,6 +279,16 @@ function initializeLocalAutosave() {
     return;
   }
 
+  // ONLY allow autosave for NEW submissions, not when editing existing ones
+  if (
+    properties.submissionId &&
+    properties.submissionId !== 'new' &&
+    properties.submissionId !== 'undefined'
+  ) {
+    // This is an existing submission being edited - don't use autosave
+    return;
+  }
+
   // Mark as initialized so we don't re-run if watchers fire again
   autosaveInitialized.value = true;
 
