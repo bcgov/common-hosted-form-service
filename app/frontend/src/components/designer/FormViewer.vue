@@ -573,19 +573,15 @@ function isProcessingMultiUpload(e) {
  * - Triggers autosave only when ready and allowed
  */
 function formChange(e) {
-  //If this is a draft, validate on change
+  // if draft check validation on render
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
-  jsonManager();
-
-  //Ignore internal Form.io changes (like loading submission/recall)
-  if (!e.changed || e.changed.flags?.fromSubmission) {
-    return;
+  if (e.changed != undefined && !e.changed.flags.fromSubmission) {
+    formDataEntered.value = true;
   }
-
-  //user typing
-  formDataEntered.value = true;
+  // Seems to be the only place the form changes on load
+  jsonManager();
 
   // AUTOSAVE – only when:
   // - form has enableAutoSave turned on
@@ -596,6 +592,8 @@ function formChange(e) {
     form.value?.enableAutoSave &&
     !properties.readOnly &&
     !properties.preview &&
+    e.changed &&
+    !e.changed.flags?.fromSubmission &&
     chefForm.value?.formio?._data
   ) {
     localAutosave.save(chefForm.value.formio._data);
