@@ -557,7 +557,8 @@ function isProcessingMultiUpload(e) {
 /**
  * Form change handler:
  * - Validates drafts on change
- * - Ignores Form.io's internal "fromSubmission" changes
+ * - Runs jsonManager() for ALL changes (required for recall/edit)
+ * - Ignores Form.io's internal "fromSubmission" changes for autosave
  * - Marks real user input
  * - Triggers autosave only when ready and allowed
  */
@@ -566,6 +567,7 @@ function formChange(e) {
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
+  jsonManager();
 
   //Ignore internal Form.io changes (like loading submission/recall)
   if (!e.changed || e.changed.flags?.fromSubmission) {
@@ -576,20 +578,18 @@ function formChange(e) {
   formDataEntered.value = true;
 
   // AUTOSAVE – only when:
-  // form has enableAutoSave turned on
-  // not read-only or preview
-  // Form.io has valid _data
+  // - form has enableAutoSave turned on
+  // - not read-only or preview
+  // - Form.io has valid _data
+  // - NOT a fromSubmission event (already checked above)
   if (
     form.value?.enableAutoSave &&
     !properties.readOnly &&
     !properties.preview &&
-    !e.changed?.flags?.fromSubmission &&
     chefForm.value?.formio?._data
   ) {
     localAutosave.save(chefForm.value.formio._data);
   }
-
-  jsonManager();
 }
 function jsonManager() {
   json_csv.value.file_name = 'template_' + form.value.name + '_' + Date.now();
