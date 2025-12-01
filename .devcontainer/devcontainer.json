@@ -30,7 +30,7 @@
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "chmod +x ./.devcontainer/*.sh && bash ./.devcontainer/post-install.sh",
+  "postCreateCommand": "chmod +x ./.devcontainer/*.sh && . /etc/profile.d/java.sh && export JAVA_HOME && bash ./.devcontainer/post-install.sh",
 
   // Configure tool-specific properties.
   "customizations": {
@@ -50,7 +50,6 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "sonarlint.autoDownload": true,
-        "sonarlint.ls.javaHome": "/usr/lib/jvm/java-17-openjdk-amd64",
         "sonarlint.analysisExcludesStandalone": "**/*.{c,cpp,h,hpp,cc,cxx}"
 
       }

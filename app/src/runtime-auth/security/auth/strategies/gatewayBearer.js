@@ -1,5 +1,5 @@
 /**
- * gatewayBearer: Bearer <local-jwt> (signed with local key).
+ * gatewayBearer: X-Chefs-Gateway-Token <local-jwt> (signed with local key).
  * Payload MUST provide { formId, apiKey } which is validated same as Basic.
  * Uses CHEFS gatewayService and formService
  */
@@ -7,11 +7,12 @@
 const ERRORS = require('../../errorMessages');
 const { validateApiKey } = require('../utils/apiKeyValidation');
 const { createApiKeyAuthResult } = require('../utils/authResult');
+const { GATEWAY_TOKEN_HEADER, getHeaderCaseInsensitive } = require('../utils/headers');
 
 function canHandle(req) {
-  const h = req.headers?.authorization || '';
-  // Same header shape as user; policy/order selects which runs first
-  return /^Bearer\s+/i.test(h);
+  // Check for X-Chefs-Gateway-Token header (used for webcomponent routes, case-insensitive)
+  const token = getHeaderCaseInsensitive(req.headers, GATEWAY_TOKEN_HEADER);
+  return !!token;
 }
 
 module.exports = function gatewayBearerFactory({ deps }) {
@@ -19,13 +20,13 @@ module.exports = function gatewayBearerFactory({ deps }) {
 
   async function authenticate(req) {
     try {
-      const authz = req.headers.authorization;
-      if (!authz) {
+      // Read token from X-Chefs-Gateway-Token header (case-insensitive)
+      const token = getHeaderCaseInsensitive(req.headers, GATEWAY_TOKEN_HEADER);
+      if (!token) {
         const err = new Error(ERRORS.MISSING_AUTHORIZATION);
         err.status = 401;
         throw err;
       }
-      const token = authz.replace(/^Bearer\s+/i, '').trim();
 
       // Use CHEFS gatewayService to verify token
       const result = await gatewayService?.verifyTokenAndGetPayload?.(token);
