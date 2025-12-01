@@ -296,7 +296,9 @@
     "classificationDescriptionHint": "Optional description of why this classification and retention period was chosen",
     "retentionDaysUpdated": "Retention period updated",
     "deletionDisclaimerWithDays": "WARNING: After {days} days, submissions marked for deletion will be permanently deleted and cannot be recovered.",
-    "setRetentionPrompt": "Please set a retention period to complete your data retention policy."
+    "setRetentionPrompt": "Please set a retention period to complete your data retention policy.",
+    "fetchRetentionClassificationListError": "Error fetching Retention Classification list.",
+    "fetchRetentionClassificationListConsErrMsg": "Error fetching retention classifications: {error}"
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
@@ -1211,6 +1213,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
       "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "An error occurred while fetching the retention policy for this form.",
+      "getFormRetentionPolicyConsErrMsg": "Error getting retention policy for form {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "An error occurred while configuring the retention policy for this form.",
+      "configureFormRetentionPolicyConsErrMsg": "Error configuring retention policy for form {formId}: {error}"
     }
   },
   "permissionUtils": {

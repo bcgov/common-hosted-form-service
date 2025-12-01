@@ -233,7 +233,9 @@
     "classificationDescriptionHint": "Descrizione opzionale del motivo per cui sono stati scelti questa classificazione e periodo di conservazione",
     "retentionDaysUpdated": "Periodo di conservazione aggiornato",
     "deletionDisclaimerWithDays": "AVVERTENZA: Dopo {days} giorni, le sottomissioni contrassegnate per l'eliminazione saranno eliminate permanentemente e non potranno essere recuperate.",
-    "setRetentionPrompt": "Si prega di impostare un periodo di conservazione per completare la politica di conservazione dei dati."
+    "setRetentionPrompt": "Si prega di impostare un periodo di conservazione per completare la politica di conservazione dei dati.",
+    "fetchRetentionClassificationListError": "Errore durante il recupero dell'elenco delle classificazioni di conservazione.",
+    "fetchRetentionClassificationListConsErrMsg": "Errore durante il recupero delle classificazioni di conservazione: {error}"
   },
   "formProfile": {
     "message": "Il team CHEFS sta raccogliendo e organizzando informazioni per servire come input cruciale per la creazione di casi aziendali completi. Questi casi avranno un ruolo cruciale nella guida dell'operazione strategica e nell'ulteriore miglioramento di CHEFS nei prossimi anni. Questa iniziativa di raccolta dati è essenziale per informare decisioni critiche e plasmare la traiettoria di CHEFS, garantendone adattabilità ed efficacia nel affrontare esigenze e sfide in evoluzione.",
@@ -1146,6 +1148,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Le impostazioni di iscrizione per questo modulo sono state salvate.",
       "saveSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di salvare le impostazioni dell'abbonamento.",
       "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Si è verificato un errore durante il recupero della politica di conservazione per questo modulo.",
+      "getFormRetentionPolicyConsErrMsg": "Errore durante il recupero della politica di conservazione per il modulo {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "Si è verificato un errore durante la configurazione della politica di conservazione per questo modulo.",
+      "configureFormRetentionPolicyConsErrMsg": "Errore durante la configurazione della politica di conservazione per il modulo {formId}: {error}"
     }
   },
   "admin": {

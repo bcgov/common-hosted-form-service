@@ -233,7 +233,9 @@
     "classificationDescriptionHint": "Mô tả tùy chọn về lý do tại sao phân loại và thời gian lưu giữ này được chọn",
     "retentionDaysUpdated": "Đã cập nhật thời gian lưu giữ",
     "deletionDisclaimerWithDays": "CẢNH BÁO: Sau {days} ngày, các bài nộp được đánh dấu để xóa sẽ bị xóa vĩnh viễn và không thể khôi phục.",
-    "setRetentionPrompt": "Vui lòng thiết lập thời gian lưu giữ để hoàn tất chính sách lưu giữ dữ liệu của bạn."
+    "setRetentionPrompt": "Vui lòng thiết lập thời gian lưu giữ để hoàn tất chính sách lưu giữ dữ liệu của bạn.",
+    "fetchRetentionClassificationListError": "Lỗi khi lấy danh sách phân loại lưu giữ.",
+    "fetchRetentionClassificationListConsErrMsg": "Lỗi khi lấy phân loại lưu giữ: {error}"
   },
   "formProfile": {
     "message": "Đội ngũ CHEFS đang thu thập và tổ chức thông tin để phục vụ như một đầu vào quan trọng cho việc xây dựng các trường hợp kinh doanh toàn diện. Những trường hợp này sẽ đóng một vai trò quan trọng trong hướng dẫn vận hành chiến lược và cải tiến liên tục của CHEFS trong những năm sắp tới. Sáng kiến này để thu thập dữ liệu là quan trọng để thông tin quyết định quan trọng và định hình quỹ đạo của CHEFS, đảm bảo tính linh hoạt và hiệu quả trong đối mặt với những nhu cầu và thách thức đang thay đổi.",
@@ -1144,6 +1146,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Cài đặt đăng ký cho biểu mẫu này đã được lưu.",
       "saveSubscriptionSettingsErrMsg": "Đã xảy ra lỗi khi cố lưu cài đặt đăng ký.",
       "saveSubscriptionSettingsConsErrMsg": "Lỗi khi lưu cài đặt đăng ký cho biểu mẫu {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Đã xảy ra lỗi khi tìm nạp chính sách lưu giữ cho biểu mẫu này.",
+      "getFormRetentionPolicyConsErrMsg": "Lỗi khi nhận chính sách lưu giữ cho biểu mẫu {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "Đã xảy ra lỗi khi cấu hình chính sách lưu giữ cho biểu mẫu này.",
+      "configureFormRetentionPolicyConsErrMsg": "Lỗi khi cấu hình chính sách lưu giữ cho biểu mẫu {formId}: {error}"
     }
   },
   "admin": {

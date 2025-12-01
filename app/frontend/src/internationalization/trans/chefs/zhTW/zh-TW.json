@@ -233,7 +233,9 @@
     "classificationDescriptionHint": "可選擇說明為什麼選擇此分類和保留期限",
     "retentionDaysUpdated": "保留期限已更新",
     "deletionDisclaimerWithDays": "警告：{days}天後，標記為刪除的提交將被永久刪除，無法恢復。",
-    "setRetentionPrompt": "請設置保留期限以完成您的資料保留政策。"
+    "setRetentionPrompt": "請設置保留期限以完成您的資料保留政策。",
+    "fetchRetentionClassificationListError": "取得保留分類清單時發生錯誤。",
+    "fetchRetentionClassificationListConsErrMsg": "取得保留分類時發生錯誤：{error}"
   },
   "formProfile": {
     "message": "CHEFS團隊正在收集和組織信息，作為制定全面業務案例的關鍵輸入。這些案例將在指導CHEFS未來幾年的戰略運作和持續改進中發揮關鍵作用。這一收集數據的倡議對於提供關鍵決策的信息和塑造CHEFS軌跡至關重要，確保其在應對不斷變化的需求和挑戰中的適應性和有效性。",
@@ -1146,6 +1148,12 @@
       "saveSubscriptionSettingsNotifyMsg": "此表单的订阅设置已保存。",
       "saveSubscriptionSettingsErrMsg": "尝试保存订阅设置时出错。",
       "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "獲取此表單的保留策略時發生錯誤。",
+      "getFormRetentionPolicyConsErrMsg": "獲取表單 {formId} 的保留策略時出錯：{error}",
+      "configureFormRetentionPolicyErrMsg": "配置此表單的保留策略時發生錯誤。",
+      "configureFormRetentionPolicyConsErrMsg": "配置表單 {formId} 的保留策略時出錯：{error}"
     }
   },
   "admin": {

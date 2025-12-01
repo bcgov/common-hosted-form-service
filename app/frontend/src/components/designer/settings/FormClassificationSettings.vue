@@ -57,7 +57,7 @@ async function fetchClassificationTypes() {
     notificationStore.addNotification({
       text: t('trans.formSettings.fetchRetentionClassificationListError'),
       consoleError: t(
-        'trans.formSettings.fetchRetentionClassificationListError',
+        'trans.formSettings.fetchRetentionClassificationListConsErrMsg',
         {
           error: e.message,
         }

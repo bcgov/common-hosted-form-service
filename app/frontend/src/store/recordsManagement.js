@@ -12,25 +12,9 @@ const getInitialRetentionPolicy = () => ({
 
 export const useRecordsManagementStore = defineStore('recordsManagement', {
   state: () => ({
-    retentionClassificationTypes: [],
     formRetentionPolicy: getInitialRetentionPolicy(),
   }),
   actions: {
-    async getRetentionClassificationTypes() {
-      try {
-        const response =
-          await recordsManagementService.listRetentionClassificationTypes();
-        this.retentionClassificationTypes = response.data;
-      } catch (error) {
-        const notificationStore = useNotificationStore();
-        notificationStore.addNotification({
-          text: i18n.t('trans.store.form.getUserFormPermErrMsg'),
-          consoleError: i18n.t('trans.store.form.getUserFormPermConsErrMsg', {
-            error: error,
-          }),
-        });
-      }
-    },
     async getFormRetentionPolicy(formId) {
       try {
         const response = await recordsManagementService.getFormRetentionPolicy(
@@ -49,7 +33,7 @@ export const useRecordsManagementStore = defineStore('recordsManagement', {
           ),
           consoleError: i18n.t(
             'trans.store.recordsManagement.getFormRetentionPolicyConsErrMsg',
-            { error: error }
+            { formId: formId, error: error }
           ),
         });
       }
@@ -66,11 +50,11 @@ export const useRecordsManagementStore = defineStore('recordsManagement', {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t(
-            'trans.store.recordsManagement.setFormRetentionPolicyErrMsg'
+            'trans.store.recordsManagement.configureFormRetentionPolicyErrMsg'
           ),
           consoleError: i18n.t(
-            'trans.store.recordsManagement.setFormRetentionPolicyConsErrMsg',
-            { error: error }
+            'trans.store.recordsManagement.configureFormRetentionPolicyConsErrMsg',
+            { formId: formId, error: error }
           ),
         });
       }

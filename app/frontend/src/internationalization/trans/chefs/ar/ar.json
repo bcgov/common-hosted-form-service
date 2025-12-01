@@ -233,7 +233,9 @@
     "classificationDescriptionHint": "وصف اختياري لسبب اختيار هذا التصنيف وفترة الاحتفاظ",
     "retentionDaysUpdated": "تم تحديث فترة الاحتفاظ",
     "deletionDisclaimerWithDays": "تحذير: بعد {days} يوم، سيتم حذف البيانات المعلمة للحذف بشكل دائم ولا يمكن استردادها.",
-    "setRetentionPrompt": "الرجاء تحديد فترة الاحتفاظ لإكمال سياسة الاحتفاظ بالبيانات."
+    "setRetentionPrompt": "الرجاء تحديد فترة الاحتفاظ لإكمال سياسة الاحتفاظ بالبيانات.",
+    "fetchRetentionClassificationListError": "حدث خطأ أثناء جلب تصنيفات الاحتفاظ.",
+    "fetchRetentionClassificationListConsErrMsg": "حدث خطأ أثناء جلب تصنيفات الاحتفاظ: {error}"
   },
   "formProfile": {
     "message": "تقوم فرق CHEFS بجمع وتنظيم المعلومات لتكون مدخلات حاسمة لصياغة حالات أعمال شاملة. ستلعب هذه الحالات دورًا حيويًا في توجيه العمليات الاستراتيجية وتحسين CHEFS المستمر في السنوات القادمة. هذه المبادرة لجمع البيانات ضرورية لإعلام القرارات الحاسمة وتشكيل مسار CHEFS ، مما يضمن قابليتها للتكيف وفعاليتها في التعامل مع الاحتياجات والتحديات المتطورة.",
@@ -1146,6 +1148,12 @@
       "saveSubscriptionSettingsNotifyMsg": "تم حفظ إعدادات الاشتراك لهذا النموذج.",
       "saveSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة حفظ إعدادات الاشتراك.",
       "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "حدث خطأ أثناء جلب سياسة الاحتفاظ لهذا النموذج.",
+      "getFormRetentionPolicyConsErrMsg": "خطأ في الحصول على سياسة الاحتفاظ للنموذج {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "حدث خطأ أثناء تكوين سياسة الاحتفاظ لهذا النموذج.",
+      "configureFormRetentionPolicyConsErrMsg": "خطأ في تكوين سياسة الاحتفاظ للنموذج {formId}: {error}"
     }
   },
   "admin": {

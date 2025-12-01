@@ -233,7 +233,9 @@
     "classificationDescriptionHint": "Descrição opcional de por que esta classificação e período de retenção foram escolhidos",
     "retentionDaysUpdated": "Período de retenção atualizado",
     "deletionDisclaimerWithDays": "AVISO: Após {days} dias, submissões marcadas para exclusão serão permanentemente excluídas e não poderão ser recuperadas.",
-    "setRetentionPrompt": "Por favor, defina um período de retenção para completar sua política de retenção de dados."
+    "setRetentionPrompt": "Por favor, defina um período de retenção para completar sua política de retenção de dados.",
+    "fetchRetentionClassificationListError": "Erro ao buscar a lista de classificações de retenção.",
+    "fetchRetentionClassificationListConsErrMsg": "Erro ao buscar classificações de retenção: {error}"
   },
   "formProfile": {
     "message": "A equipe CHEFS está coletando e organizando informações para servir como entrada crucial para a criação de casos de negócios abrangentes. Esses casos desempenharão um papel fundamental na orientação da operação estratégica e na melhoria contínua do CHEFS nos próximos anos. Essa iniciativa de coleta de dados é essencial para informar decisões críticas e moldar a trajetória do CHEFS, garantindo sua adaptabilidade e eficácia em lidar com necessidades e desafios em evolução.",
@@ -1146,6 +1148,12 @@
       "saveSubscriptionSettingsNotifyMsg": "As configurações de inscrição para este formulário foram salvas.",
       "saveSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar salvar as configurações de assinatura.",
       "saveSubscriptionSettingsConsErrMsg": "Erro ao salvar as configurações de assinatura para o formulário {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Ocorreu um erro ao buscar a política de retenção para este formulário.",
+      "getFormRetentionPolicyConsErrMsg": "Erro ao obter a política de retenção do formulário {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "Ocorreu um erro ao configurar a política de retenção para este formulário.",
+      "configureFormRetentionPolicyConsErrMsg": "Erro ao configurar a política de retenção do formulário {formId}: {error}"
     }
   },
   "admin": {

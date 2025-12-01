@@ -233,7 +233,9 @@
     "classificationDescriptionHint": "Description facultative expliquant pourquoi cette classification et cette période de conservation ont été choisies",
     "retentionDaysUpdated": "Période de conservation mise à jour",
     "deletionDisclaimerWithDays": "AVERTISSEMENT: Après {days} jours, les soumissions marquées pour suppression seront définitivement supprimées et ne pourront pas être récupérées.",
-    "setRetentionPrompt": "Veuillez définir une période de conservation pour compléter votre politique de conservation des données."
+    "setRetentionPrompt": "Veuillez définir une période de conservation pour compléter votre politique de conservation des données.",
+    "fetchRetentionClassificationListError": "Erreur lors de la récupération de la liste des classifications de conservation.",
+    "fetchRetentionClassificationListConsErrMsg": "Erreur lors de la récupération des classifications de conservation : {error}"
   },
   "formProfile": {
     "message": "L'équipe CHEFS collecte et organise des informations pour servir de contribution cruciale à l'élaboration de cas d'affaires complets. Ces cas joueront un rôle central dans la direction des opérations stratégiques et l'amélioration continue de CHEFS au cours des prochaines années. Cette initiative de collecte de données est essentielle pour éclairer les décisions critiques et façonner la trajectoire de CHEFS, assurant son adaptabilité et son efficacité face aux besoins et aux défis en constante évolution.",
@@ -1146,6 +1148,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Les paramètres d'abonnement pour ce formulaire ont été enregistrés.",
       "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Une erreur s'est produite lors de la récupération de la politique de conservation pour ce formulaire.",
+      "getFormRetentionPolicyConsErrMsg": "Erreur lors de l'obtention de la politique de conservation pour le formulaire {formId} : {error}",
+      "configureFormRetentionPolicyErrMsg": "Une erreur s'est produite lors de la configuration de la politique de conservation pour ce formulaire.",
+      "configureFormRetentionPolicyConsErrMsg": "Erreur lors de la configuration de la politique de conservation pour le formulaire {formId} : {error}"
     }
   },
   "admin": {

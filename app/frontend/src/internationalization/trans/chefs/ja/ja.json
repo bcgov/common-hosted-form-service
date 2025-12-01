@@ -233,7 +233,9 @@
     "classificationDescriptionHint": "この分類と保持期間が選択された理由の任意の説明",
     "retentionDaysUpdated": "保持期間が更新されました",
     "deletionDisclaimerWithDays": "警告：{days}日後、削除対象としてマークされた提出物は完全に削除され、復元できなくなります。",
-    "setRetentionPrompt": "データ保持ポリシーを完了するには、保持期間を設定してください。"
+    "setRetentionPrompt": "データ保持ポリシーを完了するには、保持期間を設定してください。",
+    "fetchRetentionClassificationListError": "保持分類リストの取得中にエラーが発生しました。",
+    "fetchRetentionClassificationListConsErrMsg": "保持分類の取得中にエラーが発生しました: {error}"
   },
   "formProfile": {
     "message": "CHEFSチームは包括的なビジネスケースの作成に重要な入力となる情報を収集し、整理しています。これらのケースは、CHEFSの戦略的な運用と今後の改善を指南するうえで重要な役割を果たします。データを収集するこの取り組みは、重要な意思決定の情報提供やCHEFSの軌道を形作るために不可欠です。これにより、CHEFSが変化するニーズと課題に対応するための適応性と効果を確保します.",
@@ -1146,6 +1148,12 @@
       "saveSubscriptionSettingsNotifyMsg": "このフォームの購読設定が保存されました。",
       "saveSubscriptionSettingsErrMsg": "サブスクリプション設定を保存しようとしたときにエラーが発生しました。",
       "saveSubscriptionSettingsConsErrMsg": "フォーム {formId} のサブスクリプション設定を保存中にエラーが発生しました: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "このフォームの保持ポリシーの取得中にエラーが発生しました。",
+      "getFormRetentionPolicyConsErrMsg": "フォーム {formId} の保持ポリシーの取得中にエラーが発生しました: {error}",
+      "configureFormRetentionPolicyErrMsg": "このフォームの保持ポリシーの構成中にエラーが発生しました。",
+      "configureFormRetentionPolicyConsErrMsg": "フォーム {formId} の保持ポリシーの構成中にエラーが発生しました: {error}"
     }
   },
   "admin": {
