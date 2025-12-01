@@ -584,17 +584,25 @@ function formChange(e) {
   jsonManager();
 
   // AUTOSAVE – only when:
+  // - autosave has been initialized
   // - form has enableAutoSave turned on
   // - not read-only or preview
   // - Form.io has valid _data
-  // - NOT a fromSubmission event (already checked above)
+  // - user input (not fromSubmission event)
+  // - NOT editing an existing submission
   if (
+    autosaveInitialized.value &&
     form.value?.enableAutoSave &&
     !properties.readOnly &&
     !properties.preview &&
     e.changed &&
     !e.changed.flags?.fromSubmission &&
-    chefForm.value?.formio?._data
+    chefForm.value?.formio?._data &&
+    !(
+      properties.submissionId &&
+      properties.submissionId !== 'new' &&
+      properties.submissionId !== 'undefined'
+    )
   ) {
     localAutosave.save(chefForm.value.formio._data);
   }
