@@ -8,25 +8,24 @@ const service = {
   },
 
   getRetentionPolicy: async (formId) => {
-    const policy = await RetentionPolicy.query().findOne({ formId }).withGraphFetched('classification');
-    if (!policy) {
-      throw new Error(`No retention policy found for form ${formId}`);
-    }
+    const policy = await RetentionPolicy.query().findOne({ formId }).withGraphFetched('classification').throwIfNotFound();
     return {
       formId: policy.formId,
       retentionDays: policy.retentionDays,
-      classification: policy.classification,
+      retentionClassificationId: policy.retentionClassificationId,
+      retentionClassificationDescription: policy.retentionClassificationDescription,
     };
   },
 
   configureRetentionPolicy: async (formId, policyData, user) => {
-    const { retentionDays, retentionClassificationId } = policyData;
+    const { retentionDays, retentionClassificationId, retentionClassificationDescription } = policyData;
     const existing = await RetentionPolicy.query().findOne({ formId });
 
     if (existing) {
       return await RetentionPolicy.query().patchAndFetchById(existing.id, {
         retentionDays,
         retentionClassificationId,
+        retentionClassificationDescription,
         updatedBy: user,
         updatedAt: new Date(),
       });
@@ -35,6 +34,7 @@ const service = {
         formId,
         retentionDays,
         retentionClassificationId,
+        retentionClassificationDescription,
         createdBy: user,
       });
     }

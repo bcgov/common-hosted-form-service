@@ -11,6 +11,7 @@ import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useRecordsManagementStore } from '~/store/recordsManagement';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import FormProfile from '~/components/designer/FormProfile.vue';
 
@@ -28,9 +29,12 @@ const versionsPanel = ref(0);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
+const recordsManagementStore = useRecordsManagementStore();
 
 const { apiKey, drafts, form, permissions, isRTL, subscriptionData } =
   storeToRefs(formStore);
+
+const { formRetentionPolicy } = storeToRefs(recordsManagementStore);
 
 const canEditForm = computed(() =>
   permissions.value.includes(FormPermissions.FORM_UPDATE)
@@ -102,6 +106,9 @@ async function updateSettings() {
     const { valid } = await settingsForm.value.validate();
     if (valid) {
       await formStore.updateForm();
+      if (formRetentionPolicy.value.retentionClassificationId) {
+        await recordsManagementStore.configureRetentionPolicy(form.value.id);
+      }
       formSettingsDisabled.value = true;
       notificationStore.addNotification({
         text: 'Your form settings have been updated successfully.',

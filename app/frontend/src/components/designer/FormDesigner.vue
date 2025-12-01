@@ -14,6 +14,7 @@ import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useRecordsManagementStore } from '~/store/recordsManagement';
 import { useNotificationStore } from '~/store/notification';
 import { FormDesignerBuilderOptions } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
@@ -73,9 +74,11 @@ const saving = ref(false);
 const authStore = useAuthStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
+const recordsManagementStore = useRecordsManagementStore();
 
 const { tokenParsed, user } = storeToRefs(authStore);
 const { form, isRTL, userLabels } = storeToRefs(formStore);
+const { formRetentionPolicy } = storeToRefs(recordsManagementStore);
 
 watch(form, (newFormValue, oldFormValue) => {
   if (newFormValue.userType != oldFormValue.userType) {
@@ -418,9 +421,6 @@ async function schemaCreateNew() {
     labels: form.value.labels,
     formMetadata: form.value.formMetadata,
     eventStreamConfig: form.value.eventStreamConfig,
-    classificationType: form.value.classificationType || null,
-    retentionDays: form.value.retentionDays || null,
-    classificationDescription: form.value.classificationDescription || null,
   });
   // update user labels with any new added labels
   if (
@@ -430,6 +430,13 @@ async function schemaCreateNew() {
       form.value.labels
     );
     userLabels.value = userLabelResponse.data;
+  }
+
+  console.log(formRetentionPolicy.value);
+
+  // Create the retention policy for the new form if applicable
+  if (formRetentionPolicy.value.retentionClassificationId) {
+    await recordsManagementStore.configureRetentionPolicy(response.data.id);
   }
 
   // Navigate back to this page with ID updated

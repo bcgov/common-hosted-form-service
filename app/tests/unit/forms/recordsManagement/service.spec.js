@@ -1,6 +1,3 @@
-jest.mock('config');
-jest.mock('../../../../src/forms/recordsManagement/localService');
-
 describe('recordsManagement service', () => {
   let service;
   let localService;
@@ -9,11 +6,16 @@ describe('recordsManagement service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
+    jest.mock('../../../../src/forms/submission/service');
+    jest.mock('../../../../src/forms/recordsManagement/localService');
+    jest.mock('config');
+
     config = require('config');
     config.has = jest.fn().mockReturnValue(true);
     config.get = jest.fn().mockReturnValue('local');
-    localService = require('../../../../src/forms/recordsManagement/localService');
+
     service = require('../../../../src/forms/recordsManagement/service');
+    localService = require('../../../../src/forms/recordsManagement/localService');
   });
 
   afterEach(() => {

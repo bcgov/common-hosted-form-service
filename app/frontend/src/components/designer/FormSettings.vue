@@ -42,7 +42,7 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
       <v-col cols="12" md="6">
         <FormMetadataSettings :disabled="disabled" />
       </v-col>
-      <v-col cols="12" md="6">
+      <v-col v-if="form.id" cols="12" md="6">
         <FormClassificationSettings :disabled="disabled" />
       </v-col>
     </v-row>

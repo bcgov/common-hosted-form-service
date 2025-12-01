@@ -23,7 +23,7 @@ routes.delete('/assets/:formSubmissionId/schedule', hasSubmissionPermissions([P.
 routes.get('/containers/:formId/policies', hasFormPermissions([P.FORM_READ]), controller.getPolicy);
 
 // Set/update retention policy for a form
-routes.post('/containers/:formId/policies', hasFormPermissions([P.FORM_READ, P.FORM_WRITE]), controller.setPolicy);
+routes.post('/containers/:formId/policies', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), controller.setPolicy);
 
 // Internal: process eligible deletions (called by cron)
 routes.post('/internal/deletions/process', controller.processDeletions);

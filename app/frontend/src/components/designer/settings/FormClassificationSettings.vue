@@ -1,40 +1,23 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
-import { DataClassificationTypes } from '~/utils/constants';
+import { useNotificationStore } from '~/store/notification';
+import { useRecordsManagementStore } from '~/store/recordsManagement';
+import { recordsManagementService } from '~/services';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
 const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+const recordsManagementStore = useRecordsManagementStore();
 
-const { form, isRTL } = storeToRefs(formStore);
-
-// Common classification types (just suggestions)
-const classificationTypes = ref([
-  {
-    value: DataClassificationTypes.PUBLIC,
-    label: t('trans.formSettings.classPublic'),
-  },
-  {
-    value: DataClassificationTypes.INTERNAL,
-    label: t('trans.formSettings.classInternal'),
-  },
-  {
-    value: DataClassificationTypes.SENSITIVE,
-    label: t('trans.formSettings.classSensitive'),
-  },
-  {
-    value: DataClassificationTypes.CONFIDENTIAL,
-    label: t('trans.formSettings.classConfidential'),
-  },
-  {
-    value: DataClassificationTypes.PROTECTED,
-    label: t('trans.formSettings.classProtected'),
-  },
-]);
+const { isRTL } = storeToRefs(formStore);
+const { formRetentionPolicy, retentionClassificationTypes } = storeToRefs(
+  recordsManagementStore
+);
 
 // Common retention periods
 const retentionOptions = ref([
@@ -47,6 +30,7 @@ const retentionOptions = ref([
   { value: null, label: t('trans.formSettings.daysCustom') },
 ]);
 
+const enableHardDeletion = ref(false);
 // For custom retention days
 const customDays = ref(null);
 const showCustomDays = ref(false);
@@ -55,53 +39,71 @@ const isCustomRetention = ref(false);
 // Actual retendion days value for the database
 const actualRetentionDays = ref(null);
 
+onMounted(async () => {
+  await fetchClassificationTypes();
+
+  if (formRetentionPolicy.value.retentionClassificationId) {
+    enableHardDeletion.value = true;
+  }
+});
+
+async function fetchClassificationTypes() {
+  try {
+    retentionClassificationTypes.value = [];
+    const result =
+      await recordsManagementService.listRetentionClassificationTypes();
+    retentionClassificationTypes.value = result.data;
+  } catch (e) {
+    notificationStore.addNotification({
+      text: t('trans.formSettings.fetchRetentionClassificationListError'),
+      consoleError: t(
+        'trans.formSettings.fetchRetentionClassificationListError',
+        {
+          error: e.message,
+        }
+      ),
+    });
+  }
+}
+
+const CLASSIFICATION_TYPES = computed(() =>
+  retentionClassificationTypes.value.map((type) => ({
+    value: type,
+    label: type.display,
+  }))
+);
+
 // Use computed properties to transform between object and string
 const selectedClassification = computed({
   get() {
-    if (!form.value.classificationType) return null;
-
     // If classificationType is already a string, find the matching object
-    if (typeof form.value.classificationType === 'string') {
-      const match = classificationTypes.value.find(
-        (type) => type.value === form.value.classificationType
+    if (
+      typeof formRetentionPolicy.value.retentionClassificationId === 'string'
+    ) {
+      const match = retentionClassificationTypes.value.find(
+        (type) =>
+          type.id === formRetentionPolicy.value.retentionClassificationId
       );
       return (
         match || {
-          value: form.value.classificationType,
-          label: form.value.classificationType,
+          value: formRetentionPolicy.value.retentionClassificationId,
+          label: formRetentionPolicy.value.retentionClassificationId,
         }
       );
     }
 
     // Otherwise return the existing object
-    return form.value.classificationType;
+    return formRetentionPolicy.value;
   },
   set(newValue) {
     // When setting, ensure we store just the string value
     if (newValue && typeof newValue === 'object' && 'value' in newValue) {
-      form.value.classificationType = newValue.value;
+      formRetentionPolicy.value.retentionClassificationId = newValue.value.id;
     } else {
-      form.value.classificationType = newValue;
+      formRetentionPolicy.value.retentionClassificationId = newValue;
     }
   },
 });
-
-// Initialize form fields if they don't exist
-if (form.value.enableHardDeletion === undefined) {
-  form.value.enableHardDeletion = false;
-}
-
-if (form.value.classificationType === undefined) {
-  form.value.classificationType = null;
-}
-
-if (form.value.retentionDays === undefined) {
-  form.value.retentionDays = null;
-}
-
-if (form.value.classificationDescription === undefined) {
-  form.value.classificationDescription = null;
-}
 
 // Handle retention period selection
 const handleRetentionChange = (value) => {
@@ -110,13 +112,13 @@ const handleRetentionChange = (value) => {
     isCustomRetention.value = true;
     showCustomDays.value = true;
     if (!customDays.value) {
-      customDays.value = form.value.retentionDays || 30;
+      customDays.value = formRetentionPolicy.value.retentionDays || 30;
     }
   } else {
     // Standard option selected
     showCustomDays.value = false;
     actualRetentionDays.value = value;
-    form.value.retentionDays = value;
+    formRetentionPolicy.value.retentionDays = value;
   }
 };
 
@@ -127,7 +129,7 @@ const applyCustomDays = () => {
     const days = Math.min(Math.max(1, customDays.value), 3650);
     customDays.value = days;
     actualRetentionDays.value = days;
-    form.value.retentionDays = days;
+    formRetentionPolicy.value.retentionDays = days;
   }
 };
 
@@ -140,18 +142,18 @@ const isStandardRetention = (days) => {
 
 // Initialize the UI based on form data
 const initializeRetentionUI = () => {
-  if (form.value.retentionDays) {
-    actualRetentionDays.value = form.value.retentionDays;
+  if (formRetentionPolicy.value.retentionDays) {
+    actualRetentionDays.value = formRetentionPolicy.value.retentionDays;
 
-    if (isStandardRetention(form.value.retentionDays)) {
+    if (isStandardRetention(formRetentionPolicy.value.retentionDays)) {
       showCustomDays.value = false;
       isCustomRetention.value = false;
-      selectedRetentionOption.value = form.value.retentionDays;
+      selectedRetentionOption.value = formRetentionPolicy.value.retentionDays;
     } else {
       // If it's a non-standard value, treat as custom
       showCustomDays.value = true;
       isCustomRetention.value = true;
-      customDays.value = form.value.retentionDays;
+      customDays.value = formRetentionPolicy.value.retentionDays;
       selectedRetentionOption.value = null;
     }
   }
@@ -163,7 +165,7 @@ const selectedRetentionOption = ref(null);
 // Watch for changes in the actual retention days to update UI if needed
 watch(actualRetentionDays, (newValue) => {
   if (newValue && isCustomRetention.value) {
-    form.value.retentionDays = newValue;
+    formRetentionPolicy.value.retentionDays = newValue;
   }
 });
 
@@ -174,24 +176,25 @@ initializeRetentionUI();
 const handleEnableChange = (enabled) => {
   if (enabled) {
     // When enabling, default to a classification type if none exists
-    if (!form.value.classificationType) {
-      form.value.classificationType = DataClassificationTypes.INTERNAL;
+    if (!formRetentionPolicy.value.retentionClassificationId) {
+      formRetentionPolicy.value.retentionClassificationId =
+        CLASSIFICATION_TYPES.value[0].value.id;
     }
 
     // Set default retention period to custom when enabling
-    if (!form.value.retentionDays) {
+    if (!formRetentionPolicy.value?.retentionDays) {
       selectedRetentionOption.value = null; // Use the custom option in dropdown
       isCustomRetention.value = true;
       showCustomDays.value = true;
       customDays.value = 30; // Default value
       actualRetentionDays.value = 30;
-      form.value.retentionDays = 30; // Store actual days in the form
+      formRetentionPolicy.value.retentionDays = 30; // Store actual days in the form
     }
   } else {
-    form.value.classificationType = null;
-    form.value.retentionDays = null;
+    formRetentionPolicy.value.retentionDays = null;
     actualRetentionDays.value = null;
-    form.value.classificationDescription = null;
+    formRetentionPolicy.value.retentionClassificationDescription = null;
+    formRetentionPolicy.value.retentionClassificationId = null;
     showCustomDays.value = false;
     customDays.value = null;
     isCustomRetention.value = false;
@@ -201,9 +204,9 @@ const handleEnableChange = (enabled) => {
 
 // Watch for changes in enableHardDeletion to properly initialize UI
 watch(
-  () => form.value.enableHardDeletion,
+  () => enableHardDeletion.value,
   (newValue) => {
-    if (newValue && !form.value.retentionDays) {
+    if (newValue && !formRetentionPolicy.value.retentionDays) {
       handleEnableChange(true);
     }
   }
@@ -219,7 +222,7 @@ watch(
     </template>
 
     <v-checkbox
-      v-model="form.enableHardDeletion"
+      v-model="enableHardDeletion"
       hide-details="auto"
       data-test="enableHardDeletionCheckbox"
       class="my-0"
@@ -260,10 +263,10 @@ watch(
       </template>
     </v-checkbox>
 
-    <div v-if="form.enableHardDeletion" class="mt-4">
+    <div v-if="enableHardDeletion" class="mt-4">
       <v-combobox
         v-model="selectedClassification"
-        :items="classificationTypes"
+        :items="CLASSIFICATION_TYPES"
         item-title="label"
         item-value="value"
         :label="$t('trans.formSettings.dataClassification')"
@@ -306,7 +309,7 @@ watch(
       ></v-text-field>
 
       <v-textarea
-        v-model="form.classificationDescription"
+        v-model="formRetentionPolicy.retentionClassificationDescription"
         :label="$t('trans.formSettings.classificationDescription')"
         :hint="$t('trans.formSettings.classificationDescriptionHint')"
         persistent-hint
@@ -318,7 +321,7 @@ watch(
       ></v-textarea>
 
       <v-alert
-        v-if="form.retentionDays"
+        v-if="formRetentionPolicy.retentionDays"
         type="warning"
         variant="tonal"
         class="mt-4"
@@ -326,7 +329,7 @@ watch(
         <span :lang="locale">
           {{
             $t('trans.formSettings.deletionDisclaimerWithDays', {
-              days: form.retentionDays,
+              days: formRetentionPolicy.retentionDays,
             })
           }}
         </span>

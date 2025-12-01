@@ -39,6 +39,7 @@ class RetentionPolicy extends Timestamps(Model) {
         formId: { type: 'string', pattern: Regex.UUID },
         retentionDays: { type: ['integer', 'null'] },
         retentionClassificationId: { type: ['string', 'null'], pattern: Regex.UUID },
+        retentionClassificationDescription: { type: ['string', 'null'] },
         createdBy: { type: 'string' },
         createdAt: { type: 'string' },
         updatedBy: { type: ['string', 'null'] },
