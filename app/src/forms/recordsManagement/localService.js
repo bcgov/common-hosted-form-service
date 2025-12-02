@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 const { RetentionClassification, RetentionPolicy, ScheduledSubmissionDeletion } = require('../common/models');
 const submissionService = require('../submission/service');
 const log = require('../../components/log')(module.filename);
