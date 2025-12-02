@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const { RetentionClassification, RetentionPolicy, ScheduledSubmissionDeletion } = require('../common/models');
 const submissionService = require('../submission/service');
 const log = require('../../components/log')(module.filename);
@@ -27,7 +29,7 @@ const service = {
         retentionClassificationId,
         retentionClassificationDescription,
         updatedBy: user,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       });
     } else {
       return await RetentionPolicy.query().insert({
@@ -46,9 +48,9 @@ const service = {
     let eligibleForDeletionAt;
     if (policy.retentionDays === null) {
       // Indefinite retention
-      eligibleForDeletionAt = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000);
+      eligibleForDeletionAt = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString();
     } else {
-      eligibleForDeletionAt = new Date(Date.now() + policy.retentionDays * 24 * 60 * 60 * 1000);
+      eligibleForDeletionAt = new Date(Date.now() + policy.retentionDays * 24 * 60 * 60 * 1000).toISOString();
     }
 
     return await ScheduledSubmissionDeletion.query().insert({

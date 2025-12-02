@@ -14,10 +14,10 @@ module.exports = {
 
   scheduleDeletion: async (req, res, next) => {
     try {
-      const { submissionId } = req.params;
+      const { formSubmissionId } = req.params;
       const { formId } = req.body;
       const user = req.user?.usernameIdp || 'system';
-      const result = await service.scheduleDeletion(submissionId, formId, user);
+      const result = await service.scheduleDeletion(formSubmissionId, formId, user);
       res.status(200).json(result);
     } catch (err) {
       log.error('scheduleDeletion error', err);
@@ -27,8 +27,8 @@ module.exports = {
 
   cancelDeletion: async (req, res, next) => {
     try {
-      const { submissionId } = req.params;
-      const result = await service.cancelDeletion(submissionId);
+      const { formSubmissionId } = req.params;
+      const result = await service.cancelDeletion(formSubmissionId);
       res.status(200).json(result);
     } catch (err) {
       log.error('cancelDeletion error', err);

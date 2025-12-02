@@ -487,7 +487,10 @@ async function restoreSub() {
 
 async function deleteSingleSubs() {
   showDeleteDialog.value = false;
-  await formStore.deleteSubmission(deleteItem.value.submissionId);
+  await formStore.deleteSubmission(
+    form.value.id,
+    deleteItem.value.submissionId
+  );
   refreshSubmissions();
 }
 

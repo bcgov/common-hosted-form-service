@@ -1,6 +1,7 @@
 const { Model } = require('objection');
 const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
+const stamps = require('../jsonSchema').stamps;
 
 class RetentionPolicy extends Timestamps(Model) {
   static get tableName() {
@@ -40,10 +41,7 @@ class RetentionPolicy extends Timestamps(Model) {
         retentionDays: { type: ['integer', 'null'] },
         retentionClassificationId: { type: ['string', 'null'], pattern: Regex.UUID },
         retentionClassificationDescription: { type: ['string', 'null'] },
-        createdBy: { type: 'string' },
-        createdAt: { type: 'string' },
-        updatedBy: { type: ['string', 'null'] },
-        updatedAt: { type: ['string', 'null'] },
+        ...stamps,
       },
       additionalProperties: false,
     };

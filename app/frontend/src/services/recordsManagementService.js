@@ -34,4 +34,29 @@ export default {
       policyData
     );
   },
+  /**
+   * @function scheduleSubmissionDeletion
+   * Schedules a submission for deletion based on the form's retention policy
+   * @param {string} formSubmissionId The form submission ID
+   * @returns {Promise} An axios response
+   */
+  scheduleSubmissionDeletion(formSubmissionId, formId) {
+    return appAxios().post(
+      `${ApiRoutes.RECORDS_MANAGEMENT}/assets/${formSubmissionId}/schedule`,
+      {
+        formId: formId,
+      }
+    );
+  },
+  /**
+   * @function cancelScheduledSubmissionDeletion
+   * Cancels a scheduled deletion for a submission
+   * @param {string} formSubmissionId The form submission ID
+   * @returns {Promise} An axios response
+   */
+  cancelScheduledSubmissionDeletion(formSubmissionId) {
+    return appAxios().delete(
+      `${ApiRoutes.RECORDS_MANAGEMENT}/assets/${formSubmissionId}/schedule`
+    );
+  },
 };

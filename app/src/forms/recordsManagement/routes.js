@@ -1,5 +1,6 @@
 const routes = require('express').Router();
 
+const apiAccess = require('../public/middleware/apiAccess');
 const { currentUser, hasSubmissionPermissions, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
@@ -26,7 +27,7 @@ routes.get('/containers/:formId/policies', hasFormPermissions([P.FORM_READ]), co
 routes.post('/containers/:formId/policies', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), controller.setPolicy);
 
 // Internal: process eligible deletions (called by cron)
-routes.post('/internal/deletions/process', controller.processDeletions);
+routes.post('/internal/deletions/process', apiAccess.checkApiKey, controller.processDeletions);
 
 // Webhook: external service calls to delete a batch (Stage 2)
 routes.post('/webhooks/process-deletions', controller.processDeletionsWebhook);
