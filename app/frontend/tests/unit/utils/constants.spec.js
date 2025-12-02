@@ -19,6 +19,7 @@ describe('Constants', () => {
       FORM_METADATA: '/formMetadata',
       ENCRYPTION_KEY: '/encryptionKey',
       EVENT_STREAM_CONFIG: '/eventStreamConfig',
+      RECORDS_MANAGEMENT: '/recordsManagement',
     });
   });
 
@@ -177,16 +178,6 @@ describe('Constants', () => {
     expect(constants.Regex).toEqual({
       EMAIL:
         "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$",
-    });
-  });
-
-  it('DataClassificationTypes has the right values defined', () => {
-    expect(constants.DataClassificationTypes).toEqual({
-      PUBLIC: 'Public',
-      INTERNAL: 'Internal',
-      SENSITIVE: 'Sensitive',
-      CONFIDENTIAL: 'Confidential',
-      PROTECTED: 'Protected',
     });
   });
 });

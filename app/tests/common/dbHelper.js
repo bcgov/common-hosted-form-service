@@ -85,5 +85,6 @@ MockModel.mockReset = () => {
 };
 MockModel.mockResolvedValue = retFn;
 MockModel.mockReturnValue = retFn;
+MockModel.throwIfNotFound = jest.fn(() => this);
 
 module.exports = { MockModel, MockTransaction };

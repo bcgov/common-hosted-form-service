@@ -432,8 +432,6 @@ async function schemaCreateNew() {
     userLabels.value = userLabelResponse.data;
   }
 
-  console.log(formRetentionPolicy.value);
-
   // Create the retention policy for the new form if applicable
   if (formRetentionPolicy.value.retentionClassificationId) {
     await recordsManagementStore.configureRetentionPolicy(response.data.id);

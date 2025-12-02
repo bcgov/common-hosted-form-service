@@ -15,8 +15,11 @@ const notificationStore = useNotificationStore();
 const recordsManagementStore = useRecordsManagementStore();
 
 const { isRTL } = storeToRefs(formStore);
-const { formRetentionPolicy, retentionClassificationTypes } = storeToRefs(
-  recordsManagementStore
+const { formRetentionPolicy } = storeToRefs(recordsManagementStore);
+
+// DON'T use storeToRefs for this - access directly from store
+const retentionClassificationTypes = computed(
+  () => recordsManagementStore.retentionClassificationTypes || []
 );
 
 // Common retention periods
@@ -31,28 +34,39 @@ const retentionOptions = ref([
 ]);
 
 const enableHardDeletion = ref(false);
-// For custom retention days
 const customDays = ref(null);
 const showCustomDays = ref(false);
-// Track if we're using a custom retention period
 const isCustomRetention = ref(false);
-// Actual retendion days value for the database
 const actualRetentionDays = ref(null);
+const selectedRetentionOption = ref(null);
+
+// Computed that handles undefined safely
+const CLASSIFICATION_TYPES = computed(() => {
+  if (
+    !retentionClassificationTypes.value ||
+    !Array.isArray(retentionClassificationTypes.value)
+  ) {
+    return [];
+  }
+  return retentionClassificationTypes.value.map((type) => ({
+    value: type,
+    label: type.display,
+  }));
+});
 
 onMounted(async () => {
   await fetchClassificationTypes();
 
-  if (formRetentionPolicy.value.retentionClassificationId) {
+  if (formRetentionPolicy.value?.retentionClassificationId) {
     enableHardDeletion.value = true;
   }
 });
 
 async function fetchClassificationTypes() {
   try {
-    retentionClassificationTypes.value = [];
     const result =
       await recordsManagementService.listRetentionClassificationTypes();
-    retentionClassificationTypes.value = result.data;
+    recordsManagementStore.retentionClassificationTypes = result.data;
   } catch (e) {
     notificationStore.addNotification({
       text: t('trans.formSettings.fetchRetentionClassificationListError'),
@@ -66,21 +80,12 @@ async function fetchClassificationTypes() {
   }
 }
 
-const CLASSIFICATION_TYPES = computed(() =>
-  retentionClassificationTypes.value.map((type) => ({
-    value: type,
-    label: type.display,
-  }))
-);
-
-// Use computed properties to transform between object and string
 const selectedClassification = computed({
   get() {
-    // If classificationType is already a string, find the matching object
     if (
-      typeof formRetentionPolicy.value.retentionClassificationId === 'string'
+      typeof formRetentionPolicy.value?.retentionClassificationId === 'string'
     ) {
-      const match = retentionClassificationTypes.value.find(
+      const match = retentionClassificationTypes.value?.find(
         (type) =>
           type.id === formRetentionPolicy.value.retentionClassificationId
       );
@@ -91,12 +96,9 @@ const selectedClassification = computed({
         }
       );
     }
-
-    // Otherwise return the existing object
     return formRetentionPolicy.value;
   },
   set(newValue) {
-    // When setting, ensure we store just the string value
     if (newValue && typeof newValue === 'object' && 'value' in newValue) {
       formRetentionPolicy.value.retentionClassificationId = newValue.value.id;
     } else {
@@ -105,27 +107,22 @@ const selectedClassification = computed({
   },
 });
 
-// Handle retention period selection
 const handleRetentionChange = (value) => {
   if (value === null) {
-    // Custom option selected
     isCustomRetention.value = true;
     showCustomDays.value = true;
     if (!customDays.value) {
-      customDays.value = formRetentionPolicy.value.retentionDays || 30;
+      customDays.value = formRetentionPolicy.value?.retentionDays || 30;
     }
   } else {
-    // Standard option selected
     showCustomDays.value = false;
     actualRetentionDays.value = value;
     formRetentionPolicy.value.retentionDays = value;
   }
 };
 
-// Apply custom days value to form
 const applyCustomDays = () => {
   if (customDays.value) {
-    // Ensure value is between 1 and 3650 (10 years)
     const days = Math.min(Math.max(1, customDays.value), 3650);
     customDays.value = days;
     actualRetentionDays.value = days;
@@ -133,16 +130,14 @@ const applyCustomDays = () => {
   }
 };
 
-// Check if the selected retention period is a standard option
 const isStandardRetention = (days) => {
   return retentionOptions.value.some(
     (option) => option.value === days && option.value !== null
   );
 };
 
-// Initialize the UI based on form data
 const initializeRetentionUI = () => {
-  if (formRetentionPolicy.value.retentionDays) {
+  if (formRetentionPolicy.value?.retentionDays) {
     actualRetentionDays.value = formRetentionPolicy.value.retentionDays;
 
     if (isStandardRetention(formRetentionPolicy.value.retentionDays)) {
@@ -150,7 +145,6 @@ const initializeRetentionUI = () => {
       isCustomRetention.value = false;
       selectedRetentionOption.value = formRetentionPolicy.value.retentionDays;
     } else {
-      // If it's a non-standard value, treat as custom
       showCustomDays.value = true;
       isCustomRetention.value = true;
       customDays.value = formRetentionPolicy.value.retentionDays;
@@ -159,36 +153,31 @@ const initializeRetentionUI = () => {
   }
 };
 
-// Add a ref to track the selected dropdown option separately
-const selectedRetentionOption = ref(null);
+initializeRetentionUI();
 
-// Watch for changes in the actual retention days to update UI if needed
 watch(actualRetentionDays, (newValue) => {
   if (newValue && isCustomRetention.value) {
     formRetentionPolicy.value.retentionDays = newValue;
   }
 });
 
-// Call initialization
-initializeRetentionUI();
-
-// Reset classification fields when hard deletion is disabled
 const handleEnableChange = (enabled) => {
   if (enabled) {
-    // When enabling, default to a classification type if none exists
-    if (!formRetentionPolicy.value.retentionClassificationId) {
-      formRetentionPolicy.value.retentionClassificationId =
-        CLASSIFICATION_TYPES.value[0].value.id;
+    if (!formRetentionPolicy.value?.retentionClassificationId) {
+      const firstClassification = CLASSIFICATION_TYPES.value[0];
+      if (firstClassification?.value?.id) {
+        formRetentionPolicy.value.retentionClassificationId =
+          firstClassification.value.id;
+      }
     }
 
-    // Set default retention period to custom when enabling
     if (!formRetentionPolicy.value?.retentionDays) {
-      selectedRetentionOption.value = null; // Use the custom option in dropdown
+      selectedRetentionOption.value = null;
       isCustomRetention.value = true;
       showCustomDays.value = true;
-      customDays.value = 30; // Default value
+      customDays.value = 30;
       actualRetentionDays.value = 30;
-      formRetentionPolicy.value.retentionDays = 30; // Store actual days in the form
+      formRetentionPolicy.value.retentionDays = 30;
     }
   } else {
     formRetentionPolicy.value.retentionDays = null;
@@ -202,11 +191,10 @@ const handleEnableChange = (enabled) => {
   }
 };
 
-// Watch for changes in enableHardDeletion to properly initialize UI
 watch(
   () => enableHardDeletion.value,
   (newValue) => {
-    if (newValue && !formRetentionPolicy.value.retentionDays) {
+    if (newValue && !formRetentionPolicy.value?.retentionDays) {
       handleEnableChange(true);
     }
   }

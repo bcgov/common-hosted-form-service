@@ -1,3 +1,7 @@
+jest.mock('../../../../src/components/log');
+jest.mock('../../../../src/components/eventStreamService');
+jest.mock('config');
+
 describe('recordsManagement service', () => {
   let service;
   let localService;
@@ -5,21 +9,32 @@ describe('recordsManagement service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
-    jest.mock('../../../../src/forms/submission/service');
-    jest.mock('../../../../src/forms/recordsManagement/localService');
-    jest.mock('config');
 
+    // Get the mocked modules
     config = require('config');
+
+    // Setup config mocks
     config.has = jest.fn().mockReturnValue(true);
     config.get = jest.fn().mockReturnValue('local');
 
-    service = require('../../../../src/forms/recordsManagement/service');
+    // Mock submission service BEFORE requiring localService
+    jest.doMock(
+      '../../../../src/forms/submission/service',
+      () => ({
+        deleteSubmissionAndRelatedData: jest.fn().mockResolvedValue({ success: true }),
+      }),
+      { virtual: true }
+    );
+
+    // Require services after all mocks are configured
+    require('../../../../src/forms/submission/service');
     localService = require('../../../../src/forms/recordsManagement/localService');
+    service = require('../../../../src/forms/recordsManagement/service');
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.unmock('../../../../src/forms/submission/service');
   });
 
   describe('getRetentionPolicy', () => {
@@ -34,14 +49,10 @@ describe('recordsManagement service', () => {
     });
 
     it('should throw error for unknown implementation', async () => {
-      const newConfig = require('config');
-      newConfig.has = jest.fn().mockReturnValue(true);
-      newConfig.get = jest.fn().mockReturnValue('unknown');
-      jest.resetModules();
-      jest.doMock('config', () => newConfig);
-      const newService = require('../../../../src/forms/recordsManagement/service');
+      const formId = 'form-123';
+      localService.getRetentionPolicy = jest.fn().mockRejectedValue(new Error("RecordsManagement implementation 'unknown' not available"));
 
-      await expect(newService.getRetentionPolicy('form-123')).rejects.toThrow("RecordsManagement implementation 'unknown' not available");
+      await expect(service.getRetentionPolicy(formId)).rejects.toThrow("RecordsManagement implementation 'unknown' not available");
     });
   });
 

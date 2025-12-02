@@ -16,12 +16,15 @@ describe('localService', () => {
       const mockPolicy = {
         formId,
         retentionDays: 365,
-        classification: { code: 'public', display: 'Public' },
+        retentionClassificationDescription: 'test',
+        retentionClassificationId: '123123',
       };
 
       RetentionPolicy.query = jest.fn().mockReturnValue({
         findOne: jest.fn().mockReturnValue({
-          withGraphFetched: jest.fn().mockResolvedValue(mockPolicy),
+          withGraphFetched: jest.fn().mockReturnValue({
+            throwIfNotFound: jest.fn().mockResolvedValue(mockPolicy),
+          }),
         }),
       });
 
@@ -35,7 +38,9 @@ describe('localService', () => {
       const formId = 'form-456';
       RetentionPolicy.query = jest.fn().mockReturnValue({
         findOne: jest.fn().mockReturnValue({
-          withGraphFetched: jest.fn().mockResolvedValue(null),
+          withGraphFetched: jest.fn().mockReturnValue({
+            throwIfNotFound: jest.fn().mockRejectedValue(new Error(`No retention policy found for form ${formId}`)),
+          }),
         }),
       });
 
