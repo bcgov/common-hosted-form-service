@@ -25,9 +25,9 @@ describe('recordsManagement controller', () => {
 
   describe('scheduleDeletion', () => {
     it('should schedule deletion and return result', async () => {
-      req.params = { submissionId: 'sub-123' };
+      req.params = { formSubmissionId: 'sub-123' };
       req.body = { formId: 'form-123' };
-      const mockResult = { submissionId: 'sub-123', status: 'pending' };
+      const mockResult = { formSubmissionId: 'sub-123', status: 'pending' };
 
       service.scheduleDeletion = jest.fn().mockResolvedValue(mockResult);
 
@@ -39,7 +39,7 @@ describe('recordsManagement controller', () => {
     });
 
     it('should handle errors', async () => {
-      req.params = { submissionId: 'sub-123' };
+      req.params = { formSubmissionId: 'sub-123' };
       const error = new Error('Service error');
 
       service.scheduleDeletion = jest.fn().mockRejectedValue(error);
@@ -52,8 +52,8 @@ describe('recordsManagement controller', () => {
 
   describe('cancelDeletion', () => {
     it('should cancel deletion and return result', async () => {
-      req.params = { submissionId: 'sub-123' };
-      const mockResult = { submissionId: 'sub-123', cancelled: true };
+      req.params = { formSubmissionId: 'sub-123' };
+      const mockResult = { formSubmissionId: 'sub-123', cancelled: true };
 
       service.cancelDeletion = jest.fn().mockResolvedValue(mockResult);
 
@@ -126,8 +126,8 @@ describe('recordsManagement controller', () => {
     it('should hard delete submissions from webhook', async () => {
       req.body = { submissionIds: ['sub-1', 'sub-2'] };
       const mockResults = [
-        { submissionId: 'sub-1', status: 'completed' },
-        { submissionId: 'sub-2', status: 'completed' },
+        { formSubmissionId: 'sub-1', status: 'completed' },
+        { formSubmissionId: 'sub-2', status: 'completed' },
       ];
 
       service.hardDeleteSubmissions = jest.fn().mockResolvedValue(mockResults);

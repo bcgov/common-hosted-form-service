@@ -112,7 +112,7 @@ describe('localService', () => {
         retentionDays: policyData.retentionDays,
         retentionClassificationId: policyData.retentionClassificationId,
         updatedBy: user,
-        updatedAt: expect.any(Date),
+        updatedAt: expect.any(String),
       });
     });
   });
@@ -171,7 +171,7 @@ describe('localService', () => {
       const mockInsert = jest.fn().mockResolvedValue({
         submissionId,
         formId,
-        eligibleForDeletionAt: expect.any(Date),
+        eligibleForDeletionAt: expect.any(String),
         status: 'pending',
       });
 
@@ -183,7 +183,7 @@ describe('localService', () => {
 
       expect(mockInsert).toHaveBeenCalledWith(
         expect.objectContaining({
-          eligibleForDeletionAt: expect.any(Date),
+          eligibleForDeletionAt: expect.any(String),
         })
       );
     });
