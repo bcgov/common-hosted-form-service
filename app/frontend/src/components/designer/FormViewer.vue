@@ -577,11 +577,16 @@ function formChange(e) {
   if (submissionRecord.value.draft) {
     chefForm.value.formio.checkValidity(null, true, null, false);
   }
-  if (e.changed != undefined && !e.changed.flags.fromSubmission) {
+  if (e?.changed && !e.changed.flags?.fromSubmission) {
     formDataEntered.value = true;
   }
   // Seems to be the only place the form changes on load
   jsonManager();
+
+  // If autosave is not enabled or initialized, keep original behaviour
+  if (!form.value?.enableAutoSave || !autosaveInitialized.value) {
+    return;
+  }
 
   // AUTOSAVE – only when:
   // - autosave has been initialized
@@ -591,11 +596,9 @@ function formChange(e) {
   // - user input (not fromSubmission event)
   // - NOT editing an existing submission
   if (
-    autosaveInitialized.value &&
-    form.value?.enableAutoSave &&
     !properties.readOnly &&
     !properties.preview &&
-    e.changed &&
+    e?.changed &&
     !e.changed.flags?.fromSubmission &&
     chefForm.value?.formio?._data &&
     !(
