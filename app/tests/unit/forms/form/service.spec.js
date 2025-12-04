@@ -8,11 +8,18 @@ const service = require('../../../../src/forms/form/service');
 jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formEmailTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
+jest.mock('../../../../src/forms/common/scheduleService', () => ({
+  checkIsFormExpired: jest.fn(),
+  isDateValid: jest.fn(() => true),
+  isDateInFuture: jest.fn(() => false),
+  validateSubmissionSchedule: jest.fn(),
+}));
 
 const { eventStreamService } = require('../../../../src/components/eventStreamService');
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
 const eventService = require('../../../../src/forms//event/eventService');
+const { validateSubmissionSchedule } = require('../../../../src/forms/common/scheduleService');
 
 const {
   Form,
@@ -1469,6 +1476,14 @@ describe('createSubmission', () => {
     MockModel.mockReset();
     MockTransaction.mockReset();
     resetModels();
+    validateSubmissionSchedule.mockClear();
+    // Reset to default implementation that handles null/undefined gracefully
+    validateSubmissionSchedule.mockImplementation((schedule) => {
+      // validateSubmissionSchedule should not throw for null/undefined/disabled schedules
+      if (!schedule || !schedule.enabled) {
+        return;
+      }
+    });
   });
 
   afterEach(() => {
@@ -1488,6 +1503,72 @@ describe('createSubmission', () => {
 
     expect(eventService.formSubmissionEventReceived).toBeCalledTimes(1);
     expect(eventStreamService.onSubmit).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('should validate schedule before allowing submission', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: formSchedule,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+    // Override default mock for this test to verify it's called
+    validateSubmissionSchedule.mockImplementation(() => {});
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('should throw error when schedule validation fails', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: formSchedule,
+    });
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    const scheduleError = new Error('Form submission period has expired');
+    scheduleError.status = 403;
+    validateSubmissionSchedule.mockImplementation(() => {
+      throw scheduleError;
+    });
+
+    const data = { draft: false, submission: { data: {} } };
+    await expect(service.createSubmission('123', data, currentUser)).rejects.toThrow('Form submission period has expired');
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).not.toHaveBeenCalled();
+  });
+
+  it('should not validate schedule when form has no schedule', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: null,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(null);
     expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 });
