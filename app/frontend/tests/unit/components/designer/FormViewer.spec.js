@@ -438,7 +438,7 @@ describe('FormViewer.vue', () => {
   describe('setProxyHeaders', () => {
     it('sets sessionStorage item X-CHEFS-PROXY-DATA on successful call', async () => {
       const sessionStorageSetItemSpy = vi.spyOn(
-        window.sessionStorage,
+        globalThis.sessionStorage,
         'setItem'
       );
       sessionStorageSetItemSpy.mockImplementation(() => {});
