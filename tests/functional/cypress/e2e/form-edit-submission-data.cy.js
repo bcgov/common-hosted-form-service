@@ -16,6 +16,8 @@ describe("Form Designer", () => {
       console.log(err);
       return false;
     });
+    // Clear any persisted localStorage (e.g., autosave) between runs
+    cy.clearLocalStorage();
   });
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
