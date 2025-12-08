@@ -98,9 +98,6 @@ const genInitialForm = () => ({
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
-  classificationType: null,
-  retentionDays: null,
-  classificationDescription: null,
 });
 
 export const useFormStore = defineStore('form', {
@@ -380,7 +377,6 @@ export const useFormStore = defineStore('form', {
         // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
         data.showAssigneeInSubmissionsTable =
           data.showAssigneeInSubmissionsTable ?? false;
-
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
