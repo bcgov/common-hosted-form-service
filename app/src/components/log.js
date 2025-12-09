@@ -4,6 +4,7 @@ const { parse } = require('path');
 const Transport = require('winston-transport');
 const { createLogger, format, transports } = require('winston');
 const { logger } = require('express-winston');
+const clsRtracer = require('cls-rtracer');
 
 /**
  * Class representing a winston transport writing to null
@@ -70,6 +71,7 @@ const httpLogger = logger({
     return {
       azp: (token && token.azp) || undefined,
       contentLength: res.get('content-length'),
+      correlationId: clsRtracer.id() || undefined,
       formId: (req.auth && req.auth.user) || undefined,
       httpVersion: req.httpVersion,
       ip: req.ip,

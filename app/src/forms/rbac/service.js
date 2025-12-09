@@ -71,7 +71,7 @@ const service = {
     return user;
   },
 
-  getCurrentUserForms: async (currentUser, params = {}) => {
+  getCurrentUserForms: async (currentUser, params = {}, headers = null) => {
     if (!currentUser) return [];
     try {
       const accessLevels = [];
@@ -83,10 +83,14 @@ const service = {
         if (params.team) accessLevels.push('team');
       }
 
-      const forms = await authService.getUserForms(currentUser, {
-        ...params,
-        active: true,
-      });
+      const forms = await authService.getUserForms(
+        currentUser,
+        {
+          ...params,
+          active: true,
+        },
+        headers // Pass headers to auth service
+      );
       const filteredForms = authService.filterForms(currentUser, forms, accessLevels);
       return filteredForms;
     } catch {

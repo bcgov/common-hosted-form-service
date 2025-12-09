@@ -328,7 +328,7 @@ defineExpose({
     <!-- Wide Form Layout -->
     <v-checkbox
       v-model="form.wideFormLayout"
-      :disabled="disabledStates.public"
+      :disabled="disabledStates.general"
       hide-details="auto"
       class="my-0"
       data-test="canAllowWideFormLayoutCheckbox"

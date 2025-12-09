@@ -1,4 +1,5 @@
 const { defineConfig } = require('cypress')
+const fs = require('fs'); // Module for file system
 
 module.exports = defineConfig({
   env: {
@@ -32,6 +33,15 @@ module.exports = defineConfig({
     supportFile: 'support/index.js',
     numTestsKeptInMemory: 5,
     experimentalMemoryManagement: true,
+    setupNodeEvents(on, config) {
+      on('task', {
+        fileExists(filePath) {
+          return fs.existsSync(filePath);
+        },
+      });
+
+      return config;
+    },
   }
   
   },

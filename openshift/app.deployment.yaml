@@ -232,6 +232,16 @@ objects:
                     secretKeyRef:
                       key: cdogs_client_secret
                       name: "${APP_NAME}-sc-cs-secret"
+                - name: SC_CS_CSS_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: css_client_id
+                      name: "${APP_NAME}-sc-cs-secret"
+                - name: SC_CS_CSS_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: css_client_secret
+                      name: "${APP_NAME}-sc-cs-secret"
                 - name: FILES_OBJECTSTORAGE_ACCESSKEYID
                   valueFrom:
                     secretKeyRef:
@@ -262,6 +272,16 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-event-stream-service"
+                - name: GATEWAY_JWTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: jwtSecret
+                      name: "${APP_NAME}-gateway"
+                - name: GATEWAY_JWTLIFETIME
+                  valueFrom:
+                    secretKeyRef:
+                      key: jwtLifetime
+                      name: "${APP_NAME}-gateway"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:

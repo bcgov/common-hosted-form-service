@@ -66,7 +66,7 @@ describe('Form Designer', () => {
       cy.get('input[placeholder="Close time"]').type('17:00');
       cy.waitForLoad();
       //Verify all time zones present
-      cy.get(':nth-child(1) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+      cy.contains('label', 'Timezone').parents('.v-field') .click({ force: true });
       cy.get('div.v-list-item-title').contains('America/Atikokan').should('exist');
       cy.get('div.v-list-item-title').contains('America/Blanc-Sablon').should('exist');
       cy.get('div.v-list-item-title').contains('America/Cambridge_Bay').should('exist');
@@ -92,8 +92,8 @@ describe('Form Designer', () => {
       cy.get('div.v-list-item-title').contains('America/Toronto').should('exist');
       cy.get('div.v-list-item-title').contains('America/Whitehorse').should('exist');
       cy.get('div.v-list-item-title').contains('America/Winnipeg').should('exist');
-      cy.get(':nth-child(1) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-      cy.waitForLoad();
+      cy.contains('label', 'Timezone').parents('.v-field') .click({ force: true });
+      cy.wait(1000);
     //Verify amount of late submission
       cy.get('.pl-3 > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
       cy.contains('weeks').click();
@@ -135,7 +135,7 @@ describe('Form Designer', () => {
       const ESS_name=$el[6];
       cy.get(ESS_name).click({ force: true });
       cy.get(ESS_name).type('ESS name');
-      cy.get('[data-test="canEditForm"]').click();
+      cy.get('[data-test="canEditForm"]').click({ force: true });
       });
         
     });
