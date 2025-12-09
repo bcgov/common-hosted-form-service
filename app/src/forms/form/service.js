@@ -625,6 +625,25 @@ const service = {
 
     const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
 
+    const isBoolLike = (x, s) => {
+      // Only bother if the data value itself is a boolean
+      if (!typeUtils.isBoolean(x)) return false;
+
+      // If the search term is already a boolean
+      if (typeUtils.isBoolean(s)) {
+        return x === s;
+      }
+
+      // If the search term is a string, normalize and match "true"/"false"
+      if (typeUtils.isString(s)) {
+        const normalized = s.trim().toLowerCase();
+        if (normalized === 'true') return x === true;
+        if (normalized === 'false') return x === false;
+      }
+
+      return false;
+    };
+
     function deepSearch(data, term) {
       if (data === null || data === undefined) return false;
 
@@ -632,7 +651,8 @@ const service = {
 
       // Primitive
       if (typeof data !== 'object') {
-        return isDateLike(data, term) || isStringLike(data, term) || isNumberLike(data, term);
+        const match = isDateLike(data, term) || isStringLike(data, term) || isNumberLike(data, term) || isBoolLike(data, term);
+        return match;
       }
 
       // Array
@@ -643,12 +663,19 @@ const service = {
       // Object
       for (const [key, value] of Object.entries(data)) {
         // Key matches AND value is truthy → true
+
         if (key.toLowerCase() === normalized && Boolean(value)) {
           return true;
         }
 
         // Primitive value check
-        if (typeof value !== 'object' && value !== null && value !== undefined && (isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term))) {
+
+        if (
+          typeof value !== 'object' &&
+          value !== null &&
+          value !== undefined &&
+          (isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term) || isBoolLike(value, term))
+        ) {
           return true;
         }
 
@@ -662,11 +689,26 @@ const service = {
     }
 
     const searchedData = submissionsData.filter((row) => {
-      const fieldsToSearch = Array.isArray(searchFields) && searchFields.length ? searchFields : Object.keys(row);
+      const hasSelectedFields = Array.isArray(searchFields) && searchFields.length > 0;
+      const fieldsToSearch = hasSelectedFields ? searchFields : Object.keys(row);
 
       const matched = fieldsToSearch.some((field) => {
         if (ignoredFields.has(field)) return false;
-        return deepSearch(row[field], term);
+
+        const value = row[field];
+
+        // If no fields are selected → simple / shallow search only on primitives
+        if (!hasSelectedFields) {
+          if (value === null || value === undefined) return false;
+          if (typeof value === 'object') return false; // skip objects/arrays in simple mode
+
+          const primitiveMatch = isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term) || isBoolLike(value, term);
+
+          return primitiveMatch;
+        }
+
+        // If fields ARE selected → deep search into that field
+        return deepSearch(value, term);
       });
 
       if (matched) result.total += 1;
@@ -674,7 +716,7 @@ const service = {
     });
 
     // ---------------------------------------------------------
-    // 🔍 Pagination
+    // Pagination
     // ---------------------------------------------------------
     if (itemsPerPage !== -1) {
       const start = page * itemsPerPage;

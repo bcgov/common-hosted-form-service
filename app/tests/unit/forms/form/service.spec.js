@@ -2596,14 +2596,96 @@ describe('processPaginationData', () => {
     expect(result.results[0].foo).toBe('zzz');
   });
 
-  it('should not match objects or arrays in advanced search', async () => {
-    const data = [{ foo: { nested: 'nope' }, bar: 'match', submissionId: 1, formVersionId: 1, formId: 1 }];
+  it('should match boolean field when searching "true" in a top-level boolean field', async () => {
+    const data = [
+      { trueorfalse: true, other: 'nope', submissionId: 1, formVersionId: 1, formId: 1 },
+      { trueorfalse: false, other: 'nope', submissionId: 2, formVersionId: 2, formId: 2 },
+    ];
     const query = Promise.resolve(data);
 
-    const result = await service.processPaginationData(query, 0, 10, 'match', true);
+    const search = {
+      value: 'true',
+      fields: ['trueorfalse'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
 
     expect(result.total).toBe(1);
-    expect(result.results[0].bar).toBe('match');
+    expect(result.results.length).toBe(1);
+    expect(result.results[0].trueorfalse).toBe(true);
+  });
+
+  it('should not match when searching "false" on a top-level boolean true field', async () => {
+    const data = [{ trueorfalse: true, submissionId: 1, formVersionId: 1, formId: 1 }];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'false',
+      fields: ['trueorfalse'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(0);
+    expect(result.results.length).toBe(0);
+  });
+
+  it('should match nested boolean when searching "true" in a specified object field', async () => {
+    const data = [
+      {
+        meta: { nestedBool: true, other: 'x' },
+        submissionId: 1,
+        formVersionId: 1,
+        formId: 1,
+      },
+      {
+        meta: { nestedBool: false },
+        submissionId: 2,
+        formVersionId: 2,
+        formId: 2,
+      },
+    ];
+    const query = Promise.resolve(data);
+
+    // deep search into `meta` should find nestedBool: true
+    const search = {
+      value: 'true',
+      fields: ['meta'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results.length).toBe(1);
+    expect(result.results[0].meta.nestedBool).toBe(true);
+  });
+
+  it('should NOT match nested boolean when searching across all fields in simple search mode', async () => {
+    const data = [
+      {
+        meta: { nestedBool: true },
+        submissionId: 1,
+        formVersionId: 1,
+        formId: 1,
+      },
+      {
+        meta: { nestedBool: false },
+        submissionId: 2,
+        formVersionId: 2,
+        formId: 2,
+      },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'true',
+      // fields not provided → but primitive search should ignore all nested fields
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(0);
+    expect(result.results.length).toBe(0);
   });
 });
 
