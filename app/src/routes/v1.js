@@ -65,28 +65,18 @@ router.get('/', (_req, res) => {
 });
 
 /** OpenAPI Docs */
-router.get('/docs', (req, res) => {
+router.get('/docs', (_req, res) => {
   const docs = require('../docs/docs');
-  // Set CORS headers to allow ReDoc to fetch the spec
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.redoc.ly; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
-  );
-  res.send(docs.getDocHTML('v1', req));
+  res.send(docs.getDocHTML('v1'));
 });
 
 /** OpenAPI YAML Spec */
 router.get('/api-spec.yaml', (_req, res) => {
-  // Set CORS headers to allow ReDoc to fetch the spec
-  res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).type('application/yaml').send(yaml.dump(getSpec()));
 });
 
 /** OpenAPI JSON Spec */
 router.get('/api-spec.json', (_req, res) => {
-  // Set CORS headers to allow ReDoc to fetch the spec
-  res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).json(getSpec());
 });
 
