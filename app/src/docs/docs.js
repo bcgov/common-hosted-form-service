@@ -1,7 +1,14 @@
 const config = require('config');
 
 const docs = {
-  getDocHTML: (version) => `<!DOCTYPE html>
+  getDocHTML: (version, req) => {
+    // Use relative URL so it works correctly when accessed through proxies/Vue dev server
+    // When accessed via Vue dev server (localhost:5173), relative URL resolves correctly
+    // When accessed directly (localhost:8080), relative URL also works
+    const basePath = config.get('server.basePath');
+    const specUrl = `${basePath}/api/${version}/api-spec.yaml`;
+
+    return `<!DOCTYPE html>
   <html>
     <head>
       <title>Common Hosted Form Service - Documentation ${version}</title>
@@ -16,10 +23,11 @@ const docs = {
       </style>
     </head>
     <body>
-      <redoc spec-url='${config.get('server.basePath')}/api/${version}/api-spec.yaml' />
-      <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+      <redoc spec-url='${specUrl}' />
+      <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
     </body>
-  </html>`,
+  </html>`;
+  },
 };
 
 module.exports = docs;

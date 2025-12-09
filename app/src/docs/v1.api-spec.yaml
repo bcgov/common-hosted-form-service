@@ -4218,7 +4218,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
+      example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
       required: true
     formSubmissionIdParam:
       in: path
