@@ -121,7 +121,7 @@ const service = {
       return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active).whereNull('tenantId');
+      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },
