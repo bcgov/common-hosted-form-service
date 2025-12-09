@@ -837,6 +837,11 @@ async function onSubmitDone() {
     // updating an existing submission on the staff side
     emit('submission-updated');
   } else {
+    // For existing submissions, refresh from server before navigation
+    if (properties.submissionId && !properties.isDuplicate) {
+      await getFormData();
+    }
+
     // User created new submission
     router.push({
       name: 'FormSuccess',
