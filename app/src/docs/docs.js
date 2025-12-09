@@ -1,6 +1,7 @@
 const config = require('config');
 
 const docs = {
+  // eslint-disable-next-line no-unused-vars
   getDocHTML: (version, req) => {
     // Use relative URL so it works correctly when accessed through proxies/Vue dev server
     // When accessed via Vue dev server (localhost:5173), relative URL resolves correctly
