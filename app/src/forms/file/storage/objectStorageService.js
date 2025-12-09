@@ -134,17 +134,35 @@ class ObjectStorageService {
   }
 
   async read(fileStorage) {
+    // try to get by primary key first, then fallback to constructed key
+    const primaryKey = fileStorage.path;
+    const fallbackKey = this._join(this._key, 'submissions', fileStorage.formSubmissionId, fileStorage.id);
     try {
       const params = {
         Bucket: this._bucket,
-        Key: fileStorage.path,
+        Key: primaryKey,
       };
 
       const response = await this._s3.send(new GetObjectCommand(params));
 
       return Readable.from(response.Body);
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      if (e.name === 'NoSuchKey') {
+        try {
+          const params = {
+            Bucket: this._bucket,
+            Key: fallbackKey,
+          };
+
+          const response = await this._s3.send(new GetObjectCommand(params));
+
+          return Readable.from(response.Body);
+        } catch (err) {
+          errorToProblem(SERVICE, err);
+        }
+      } else {
+        errorToProblem(SERVICE, e);
+      }
     }
   }
 
