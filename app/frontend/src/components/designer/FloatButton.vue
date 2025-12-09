@@ -113,7 +113,7 @@ const isPublishEnabled = computed(() =>
 );
 
 function onEventScroll() {
-  isAtTopOfPage.value = window.scrollY === 0 ? true : false;
+  isAtTopOfPage.value = window.scrollY === 0;
 }
 
 function onClickSave() {

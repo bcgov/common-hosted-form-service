@@ -493,681 +493,996 @@ describe('FormDesigner.vue', () => {
     });
   });
 
-  describe('patch history', () => {
-    it('canUndoPatch will return true if there is patch history, if the current action is not at the beginning and the current index is less than the number of actions in the history', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
-
-      await flushPromises();
-
-      expect(wrapper.vm.canUndoPatch()).toBeFalsy();
-      expect(wrapper.vm.undoEnabled()).toBeFalsy();
-      wrapper.vm.patch.history = [{ id: '123' }, { id: '124' }];
-      expect(wrapper.vm.canUndoPatch()).toBeFalsy();
-      expect(wrapper.vm.undoEnabled()).toBeFalsy();
-      wrapper.vm.patch.index = 1;
-      expect(wrapper.vm.canUndoPatch()).toBeTruthy();
-      expect(wrapper.vm.undoEnabled()).toBeTruthy();
+  it('canUndoPatch will return true if there is patch history, if the current action is not at the beginning and the current index is less than the number of actions in the history', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
     });
-    it('canRedoPatch will return true if there is patch history, if the current action is not at the end of the action history', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
 
-      await flushPromises();
+    await flushPromises();
 
-      expect(wrapper.vm.canRedoPatch()).toBeFalsy();
-      expect(wrapper.vm.redoEnabled()).toBeFalsy();
-      wrapper.vm.patch.history = [{ id: '123' }, { id: '124' }];
-      wrapper.vm.patch.index = 1;
-      expect(wrapper.vm.canRedoPatch()).toBeFalsy();
-      expect(wrapper.vm.redoEnabled()).toBeFalsy();
-      wrapper.vm.patch.index = 0;
-      expect(wrapper.vm.canRedoPatch()).toBeTruthy();
-      expect(wrapper.vm.redoEnabled()).toBeTruthy();
+    expect(wrapper.vm.canUndoPatch()).toBeFalsy();
+    expect(wrapper.vm.undoEnabled()).toBeFalsy();
+    wrapper.vm.patch.history = [{ id: '123' }, { id: '124' }];
+    expect(wrapper.vm.canUndoPatch()).toBeFalsy();
+    expect(wrapper.vm.undoEnabled()).toBeFalsy();
+    wrapper.vm.patch.index = 1;
+    expect(wrapper.vm.canUndoPatch()).toBeTruthy();
+    expect(wrapper.vm.undoEnabled()).toBeTruthy();
+  });
+
+  it('canRedoPatch will return true if there is patch history, if the current action is not at the end of the action history', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
     });
-    it('resetHistoryFlags should set componentAddedStart, componentMovedStart, componentRemovedStart to whatever flag is passed, false default', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
 
-      await flushPromises();
+    await flushPromises();
 
-      wrapper.vm.resetHistoryFlags();
-      expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
-      expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
-      expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
-      wrapper.vm.resetHistoryFlags(true);
-      expect(wrapper.vm.patch.componentAddedStart).toBeTruthy();
-      expect(wrapper.vm.patch.componentMovedStart).toBeTruthy();
-      expect(wrapper.vm.patch.componentRemovedStart).toBeTruthy();
+    expect(wrapper.vm.canRedoPatch()).toBeFalsy();
+    expect(wrapper.vm.redoEnabled()).toBeFalsy();
+    wrapper.vm.patch.history = [{ id: '123' }, { id: '124' }];
+    wrapper.vm.patch.index = 1;
+    expect(wrapper.vm.canRedoPatch()).toBeFalsy();
+    expect(wrapper.vm.redoEnabled()).toBeFalsy();
+    wrapper.vm.patch.index = 0;
+    expect(wrapper.vm.canRedoPatch()).toBeTruthy();
+    expect(wrapper.vm.redoEnabled()).toBeTruthy();
+  });
+
+  it('resetHistoryFlags should set componentAddedStart, componentMovedStart, componentRemovedStart to whatever flag is passed, false default', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
     });
-    it('getPatch will return the form at a specific point in history, not just the changes', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
 
-      await flushPromises();
+    await flushPromises();
 
-      wrapper.vm.patch.index = 1;
-      wrapper.vm.originalSchema = {
-        components: [],
-        display: 'form',
-        type: 'form',
-      };
-      wrapper.vm.patch.history = [
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-        [{ op: 'replace', path: '/components/0/id', value: '124' }],
-        [{ op: 'remove', path: '/components/0/id' }],
-      ];
-      expect(wrapper.vm.getPatch(0)).toEqual({
-        components: [
-          {
-            id: '123',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      expect(wrapper.vm.getPatch(1)).toEqual({
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      expect(wrapper.vm.getPatch(2)).toEqual({
-        components: [{}],
-        display: 'form',
-        type: 'form',
-      });
+    wrapper.vm.resetHistoryFlags();
+    expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
+    wrapper.vm.resetHistoryFlags(true);
+    expect(wrapper.vm.patch.componentAddedStart).toBeTruthy();
+    expect(wrapper.vm.patch.componentMovedStart).toBeTruthy();
+    expect(wrapper.vm.patch.componentRemovedStart).toBeTruthy();
+  });
+
+  it('getPatch will return the form at a specific point in history, not just the changes', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
     });
-    it('undoPatchFromHistory will revert a change', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
+
+    await flushPromises();
+
+    wrapper.vm.patch.index = 1;
+    wrapper.vm.originalSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'replace', path: '/components/0/id', value: '124' }],
+      [{ op: 'remove', path: '/components/0/id' }],
+    ];
+    expect(wrapper.vm.getPatch(0)).toEqual({
+      components: [
+        {
+          id: '123',
         },
-      });
-
-      await flushPromises();
-
-      wrapper.vm.patch.index = 1;
-      wrapper.vm.originalSchema = {
-        components: [],
-        display: 'form',
-        type: 'form',
-      };
-      wrapper.vm.patch.history = [
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-        [{ op: 'replace', path: '/components/0/id', value: '124' }],
-        [{ op: 'remove', path: '/components/0/id' }],
-      ];
-      // formSchema is the current form that the FormBuilder is modifying, this is at index 1
-      wrapper.vm.formSchema = {
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      };
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      wrapper.vm.undoPatchFromHistory();
-      expect(wrapper.vm.savedStatus).toEqual('Save');
-      expect(wrapper.vm.isFormSaved).toEqual(false);
-      expect(wrapper.vm.canSave).toEqual(true);
-      expect(wrapper.vm.patch.undoClicked).toEqual(true);
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '123',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      expect(wrapper.vm.reRenderFormIo).toEqual(1);
-      wrapper.vm.patch.index = 1;
-      wrapper.vm.originalSchema = {
-        components: [],
-        display: 'form',
-        type: 'form',
-      };
-      wrapper.vm.patch.history = [
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-        [{ op: 'replace', path: '/components/0/id', value: '124' }],
-        [{ op: 'remove', path: '/components/0/id' }],
-      ];
-      // formSchema is the current form that the FormBuilder is modifying, this is at index 1
-      wrapper.vm.formSchema = {
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      };
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      wrapper.vm.onUndoClick();
-      expect(wrapper.vm.savedStatus).toEqual('Save');
-      expect(wrapper.vm.isFormSaved).toEqual(false);
-      expect(wrapper.vm.canSave).toEqual(true);
-      expect(wrapper.vm.patch.undoClicked).toEqual(true);
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '123',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      expect(wrapper.vm.reRenderFormIo).toEqual(2);
+      ],
+      display: 'form',
+      type: 'form',
     });
-    it('undoPatchFromHistory will revert a change', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
+    expect(wrapper.vm.getPatch(1)).toEqual({
+      components: [
+        {
+          id: '124',
         },
-      });
-
-      await flushPromises();
-
-      wrapper.vm.patch.index = 1;
-      wrapper.vm.originalSchema = {
-        components: [],
-        display: 'form',
-        type: 'form',
-      };
-      wrapper.vm.patch.history = [
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-        [{ op: 'replace', path: '/components/0/id', value: '124' }],
-        [{ op: 'remove', path: '/components/0/id' }],
-      ];
-      // formSchema is the current form that the FormBuilder is modifying, this is at index 1
-      wrapper.vm.formSchema = {
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      };
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      wrapper.vm.undoPatchFromHistory();
-      expect(wrapper.vm.savedStatus).toEqual('Save');
-      expect(wrapper.vm.isFormSaved).toEqual(false);
-      expect(wrapper.vm.canSave).toEqual(true);
-      expect(wrapper.vm.patch.undoClicked).toEqual(true);
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '123',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      expect(wrapper.vm.reRenderFormIo).toEqual(1);
+      ],
+      display: 'form',
+      type: 'form',
     });
-    it('redoPatchFromHistory will move forward in history', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
+    expect(wrapper.vm.getPatch(2)).toEqual({
+      components: [{}],
+      display: 'form',
+      type: 'form',
+    });
+  });
+
+  it('undoPatchFromHistory will revert a change', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.patch.index = 1;
+    wrapper.vm.originalSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'replace', path: '/components/0/id', value: '124' }],
+      [{ op: 'remove', path: '/components/0/id' }],
+    ];
+    // formSchema is the current form that the FormBuilder is modifying, this is at index 1
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '124',
         },
-      });
-
-      await flushPromises();
-
-      wrapper.vm.patch.index = 1;
-      wrapper.vm.originalSchema = {
-        components: [],
-        display: 'form',
-        type: 'form',
-      };
-      wrapper.vm.patch.history = [
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-        [{ op: 'replace', path: '/components/0/id', value: '124' }],
-        [{ op: 'remove', path: '/components/0/id' }],
-      ];
-      // formSchema is the current form that the FormBuilder is modifying, this is at index 1
-      wrapper.vm.formSchema = {
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      };
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      wrapper.vm.redoPatchFromHistory();
-      expect(wrapper.vm.savedStatus).toEqual('Save');
-      expect(wrapper.vm.isFormSaved).toEqual(false);
-      expect(wrapper.vm.canSave).toEqual(true);
-      expect(wrapper.vm.patch.redoClicked).toEqual(true);
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [{}],
-        display: 'form',
-        type: 'form',
-      });
-      expect(wrapper.vm.reRenderFormIo).toEqual(1);
-
-      wrapper.vm.patch.index = 1;
-      wrapper.vm.originalSchema = {
-        components: [],
-        display: 'form',
-        type: 'form',
-      };
-      wrapper.vm.patch.history = [
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-        [{ op: 'replace', path: '/components/0/id', value: '124' }],
-        [{ op: 'remove', path: '/components/0/id' }],
-      ];
-      // formSchema is the current form that the FormBuilder is modifying, this is at index 1
-      wrapper.vm.formSchema = {
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      };
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [
-          {
-            id: '124',
-          },
-        ],
-        display: 'form',
-        type: 'form',
-      });
-      wrapper.vm.onRedoClick();
-      expect(wrapper.vm.savedStatus).toEqual('Save');
-      expect(wrapper.vm.isFormSaved).toEqual(false);
-      expect(wrapper.vm.canSave).toEqual(true);
-      expect(wrapper.vm.patch.redoClicked).toEqual(true);
-      expect(wrapper.vm.formSchema).toEqual({
-        components: [{}],
-        display: 'form',
-        type: 'form',
-      });
-      expect(wrapper.vm.reRenderFormIo).toEqual(2);
-    });
-    it('addPatchToHistory will add the changes to the history', async () => {
-      const wrapper = shallowMount(FormDesigner, {
-        props: {},
-        global: {
-          plugins: [pinia],
-          stubs: STUBS,
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '124',
         },
-      });
-
-      await flushPromises();
-
-      wrapper.vm.patch.index = 0;
-      wrapper.vm.patch.history = [
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-      ];
-      expect(wrapper.vm.patch.history).toEqual([
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-      ]);
-      wrapper.vm.addPatchToHistory();
-      expect(wrapper.vm.patch.history).toEqual([
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-        [{ op: 'remove', path: '/components/0' }],
-      ]);
-      wrapper.vm.formSchema = {
-        components: [{ id: '123' }],
-        display: 'form',
-        type: 'form',
-      };
-      // Removes the head of the patch history
-      wrapper.vm.patch.MAX_PATCHES = 1;
-      // Adding patch to history here should clear out actions in the history
-      // greater than the index, since we're at index -1
-      wrapper.vm.addPatchToHistory();
-      expect(wrapper.vm.patch.history).toEqual([
-        [{ op: 'remove', path: '/components/0' }],
-        [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-      ]);
-      expect(wrapper.vm.patch.originalSchema).toEqual({
-        components: [{ id: '123' }],
-        display: 'form',
-        type: 'form',
-      });
+      ],
+      display: 'form',
+      type: 'form',
     });
-    describe('onSchemaChange', () => {
-      it('undo was clicked or redo was clicked', async () => {
-        const wrapper = shallowMount(FormDesigner, {
-          props: {},
-          global: {
-            plugins: [pinia],
-            stubs: STUBS,
-          },
-        });
-        await flushPromises();
-        wrapper.vm.patch.undoClicked = true;
-        wrapper.vm.patch.redoClicked = true;
-        wrapper.vm.onSchemaChange(
-          [
-            {
-              components: [{ id: '123' }],
-              display: 'form',
-              type: 'form',
-            },
-          ],
-          undefined,
-          undefined
-        );
-        expect(wrapper.vm.patch.undoClicked).toBeFalsy();
-        expect(wrapper.vm.patch.redoClicked).toBeFalsy();
-        expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
-        expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
-        expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
-      });
-      describe('undo/redo was not clicked', () => {
-        describe('flags/modified are undefined', () => {
-          it('we removed or moved a component but not during an add action', async () => {
-            const wrapper = shallowMount(FormDesigner, {
-              props: {},
-              global: {
-                plugins: [pinia],
-                stubs: STUBS,
-              },
-            });
-            await flushPromises();
-            wrapper.vm.patch.index = 0;
-            wrapper.vm.formSchema = {
-              components: [
-                {
-                  id: '123',
-                },
-              ],
-              display: 'form',
-              type: 'form',
-            };
-            wrapper.vm.patch.history = [
-              [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-            ];
-            expect(wrapper.vm.patch.history).toEqual([
-              [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-            ]);
+    wrapper.vm.undoPatchFromHistory();
+    expect(wrapper.vm.savedStatus).toEqual('Save');
+    expect(wrapper.vm.isFormSaved).toEqual(false);
+    expect(wrapper.vm.canSave).toEqual(true);
+    expect(wrapper.vm.patch.undoClicked).toEqual(true);
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '123',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    });
+    expect(wrapper.vm.reRenderFormIo).toEqual(1);
+    wrapper.vm.patch.index = 1;
+    wrapper.vm.originalSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'replace', path: '/components/0/id', value: '124' }],
+      [{ op: 'remove', path: '/components/0/id' }],
+    ];
+    // formSchema is the current form that the FormBuilder is modifying, this is at index 1
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    });
+    wrapper.vm.onUndoClick();
+    expect(wrapper.vm.savedStatus).toEqual('Save');
+    expect(wrapper.vm.isFormSaved).toEqual(false);
+    expect(wrapper.vm.canSave).toEqual(true);
+    expect(wrapper.vm.patch.undoClicked).toEqual(true);
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '123',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    });
+    expect(wrapper.vm.reRenderFormIo).toEqual(2);
+  });
 
-            wrapper.vm.formSchema = {
-              components: [],
-              display: 'form',
-              type: 'form',
-            };
-            wrapper.vm.patch.componentAddedStart = false;
-            wrapper.vm.patch.componentRemovedStart = true;
-            // Simulate a remove action
-            wrapper.vm.onSchemaChange(
-              [
-                {
-                  components: [],
-                  display: 'form',
-                  type: 'form',
-                },
-              ],
-              undefined,
-              undefined
-            );
-            expect(wrapper.vm.patch.history).toEqual([
-              [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-              [{ op: 'remove', path: '/components/0' }],
-            ]);
+  it('undoPatchFromHistory will revert a change', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
 
-            wrapper.vm.patch.index = 0;
-            wrapper.vm.formSchema = {
-              components: [
-                {
-                  id: '123',
-                  components: [{ id: '124' }],
-                },
-              ],
-              display: 'form',
-              type: 'form',
-            };
-            wrapper.vm.patch.history = [
-              [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-            ];
-            expect(wrapper.vm.patch.history).toEqual([
-              [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-            ]);
+    await flushPromises();
 
-            wrapper.vm.formSchema = {
-              components: [
-                {
-                  id: '123',
-                  components: [],
-                },
-                {
-                  id: '124',
-                },
-              ],
-              display: 'form',
-              type: 'form',
-            };
-            wrapper.vm.patch.componentAddedStart = false;
-            wrapper.vm.patch.componentRemovedStart = false;
-            wrapper.vm.patch.componentMovedStart = true;
-            // Simulate a move action
-            wrapper.vm.onSchemaChange(
-              [
-                {
-                  components: [{ id: '123', components: [] }, { id: '124' }],
-                  display: 'form',
-                  type: 'form',
-                },
-              ],
-              undefined,
-              undefined
-            );
-            expect(wrapper.vm.patch.history).toEqual([
-              [
-                {
-                  op: 'add',
-                  path: '/components/0',
-                  value: { id: '123' },
-                },
-              ],
-              [
-                { op: 'add', path: '/components/0/components', value: [] },
-                { op: 'add', path: '/components/1', value: { id: '124' } },
-              ],
-            ]);
-          });
-        });
-        describe('flags/modified are defined', () => {
-          it('component was added and save was clicked', async () => {
-            const wrapper = shallowMount(FormDesigner, {
-              props: {},
-              global: {
-                plugins: [pinia],
-                stubs: STUBS,
-              },
-            });
-            await flushPromises();
-            wrapper.vm.patch.undoClicked = false;
-            wrapper.vm.patch.redoClicked = false;
-            wrapper.vm.patch.componentAddedStart = true;
-            wrapper.vm.patch.componentMovedStart = false;
-            wrapper.vm.patch.componentRemovedStart = false;
-            wrapper.vm.patch.index = -1;
-            wrapper.vm.formSchema = {
-              components: [{ id: '123' }],
-              display: 'form',
-              type: 'form',
-            };
-            wrapper.vm.onSchemaChange(
-              { id: '123' },
-              { id: '123' },
-              { components: [{ id: '123' }], display: 'form', type: 'form' }
-            );
-            // Add patch to history should be called
-            expect(wrapper.vm.patch.history).toEqual([
-              [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-            ]);
-            expect(addNotificationSpy).toBeCalledTimes(0);
-          });
-          it('component was added and save was clicked it should add a notification if one of the components uses a reserved property name', async () => {
-            const wrapper = shallowMount(FormDesigner, {
-              props: {},
-              global: {
-                plugins: [pinia],
-                stubs: STUBS,
-              },
-            });
-            await flushPromises();
-            wrapper.vm.patch.undoClicked = false;
-            wrapper.vm.patch.redoClicked = false;
-            wrapper.vm.patch.componentAddedStart = true;
-            wrapper.vm.patch.componentMovedStart = false;
-            wrapper.vm.patch.componentRemovedStart = false;
-            wrapper.vm.patch.index = -1;
-            wrapper.vm.formSchema = {
-              components: [{ id: '123' }],
-              display: 'form',
-              type: 'form',
-            };
-            wrapper.vm.onSchemaChange(
-              { id: '123' },
-              { id: '123' },
-              {
-                components: [{ id: '123', key: 'form' }],
-                display: 'form',
-                type: 'form',
-              }
-            );
-            // Add patch to history should be called
-            expect(wrapper.vm.patch.history).toEqual([
-              [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-            ]);
-            expect(addNotificationSpy).toBeCalledTimes(1);
-          });
-        });
-        it('component was edited and save was clicked or paste occurred', async () => {
-          const wrapper = shallowMount(FormDesigner, {
-            props: {},
-            global: {
-              plugins: [pinia],
-              stubs: STUBS,
-            },
-          });
-          await flushPromises();
-          wrapper.vm.patch.undoClicked = false;
-          wrapper.vm.patch.redoClicked = false;
-          wrapper.vm.patch.componentAddedStart = false;
-          wrapper.vm.patch.componentMovedStart = false;
-          wrapper.vm.patch.componentRemovedStart = false;
-          wrapper.vm.patch.index = -1;
-          wrapper.vm.formSchema = {
-            components: [{ id: '123' }],
-            display: 'form',
-            type: 'form',
-          };
-          wrapper.vm.onSchemaChange(
-            { id: '123' },
-            { id: '123' },
-            { components: [{ id: '123' }], display: 'form', type: 'form' }
-          );
-          // Add patch to history should be called
-          expect(wrapper.vm.patch.history).toEqual([
-            [{ op: 'add', path: '/components/0', value: { id: '123' } }],
-          ]);
-          expect(addNotificationSpy).toBeCalledTimes(0);
-        });
-      });
-      it('tab was changed, so form is not really changed, resetHistoryFlags', async () => {
-        const wrapper = shallowMount(FormDesigner, {
-          props: {},
-          global: {
-            plugins: [pinia],
-            stubs: STUBS,
-          },
-        });
-        await flushPromises();
-        wrapper.vm.patch.undoClicked = false;
-        wrapper.vm.patch.redoClicked = false;
-        wrapper.vm.patch.componentAddedStart = false;
-        wrapper.vm.patch.componentMovedStart = false;
-        wrapper.vm.patch.componentRemovedStart = false;
-        wrapper.vm.patch.index = -1;
-        wrapper.vm.formSchema = {
+    wrapper.vm.patch.index = 1;
+    wrapper.vm.originalSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'replace', path: '/components/0/id', value: '124' }],
+      [{ op: 'remove', path: '/components/0/id' }],
+    ];
+    // formSchema is the current form that the FormBuilder is modifying, this is at index 1
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    });
+    wrapper.vm.undoPatchFromHistory();
+    expect(wrapper.vm.savedStatus).toEqual('Save');
+    expect(wrapper.vm.isFormSaved).toEqual(false);
+    expect(wrapper.vm.canSave).toEqual(true);
+    expect(wrapper.vm.patch.undoClicked).toEqual(true);
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '123',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    });
+    expect(wrapper.vm.reRenderFormIo).toEqual(1);
+  });
+
+  it('redoPatchFromHistory will move forward in history', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.patch.index = 1;
+    wrapper.vm.originalSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'replace', path: '/components/0/id', value: '124' }],
+      [{ op: 'remove', path: '/components/0/id' }],
+    ];
+    // formSchema is the current form that the FormBuilder is modifying, this is at index 1
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    });
+    wrapper.vm.redoPatchFromHistory();
+    expect(wrapper.vm.savedStatus).toEqual('Save');
+    expect(wrapper.vm.isFormSaved).toEqual(false);
+    expect(wrapper.vm.canSave).toEqual(true);
+    expect(wrapper.vm.patch.redoClicked).toEqual(true);
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [{}],
+      display: 'form',
+      type: 'form',
+    });
+    expect(wrapper.vm.reRenderFormIo).toEqual(1);
+
+    wrapper.vm.patch.index = 1;
+    wrapper.vm.originalSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'replace', path: '/components/0/id', value: '124' }],
+      [{ op: 'remove', path: '/components/0/id' }],
+    ];
+    // formSchema is the current form that the FormBuilder is modifying, this is at index 1
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    });
+    wrapper.vm.onRedoClick();
+    expect(wrapper.vm.savedStatus).toEqual('Save');
+    expect(wrapper.vm.isFormSaved).toEqual(false);
+    expect(wrapper.vm.canSave).toEqual(true);
+    expect(wrapper.vm.patch.redoClicked).toEqual(true);
+    expect(wrapper.vm.formSchema).toEqual({
+      components: [{}],
+      display: 'form',
+      type: 'form',
+    });
+    expect(wrapper.vm.reRenderFormIo).toEqual(2);
+  });
+
+  it('addPatchToHistory will add the changes to the history', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.patch.index = 0;
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ];
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+    wrapper.vm.addPatchToHistory();
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'remove', path: '/components/0' }],
+    ]);
+    wrapper.vm.formSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+    // Removes the head of the patch history
+    wrapper.vm.patch.MAX_PATCHES = 1;
+    // Adding patch to history here should clear out actions in the history
+    // greater than the index, since we're at index -1
+    wrapper.vm.addPatchToHistory();
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'remove', path: '/components/0' }],
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+    expect(wrapper.vm.patch.originalSchema).toEqual({
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    });
+  });
+
+  it('onSchemaChange - undo was clicked or redo was clicked', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+    wrapper.vm.patch.undoClicked = true;
+    wrapper.vm.patch.redoClicked = true;
+    wrapper.vm.onSchemaChange(
+      [
+        {
           components: [{ id: '123' }],
           display: 'form',
           type: 'form',
-        };
-        wrapper.vm.onSchemaChange({ id: '123' }, { id: '123' }, false);
-        expect(wrapper.vm.patch.history).toEqual([]);
-        expect(addNotificationSpy).toBeCalledTimes(0);
-        expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
-        expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
-        expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
-      });
+        },
+      ],
+      undefined,
+      undefined
+    );
+    expect(wrapper.vm.patch.undoClicked).toBeFalsy();
+    expect(wrapper.vm.patch.redoClicked).toBeFalsy();
+    expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
+  });
+
+  it('handleUndoRedo should reset undo/redo flags and reset history flags', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
     });
+    await flushPromises();
+
+    wrapper.vm.patch.undoClicked = true;
+    wrapper.vm.patch.redoClicked = true;
+    wrapper.vm.patch.componentAddedStart = true;
+    wrapper.vm.patch.componentMovedStart = true;
+    wrapper.vm.patch.componentRemovedStart = true;
+
+    // Call the helper method directly
+    wrapper.vm.handleUndoRedo();
+
+    expect(wrapper.vm.patch.undoClicked).toBeFalsy();
+    expect(wrapper.vm.patch.redoClicked).toBeFalsy();
+    expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
+  });
+
+  it('handleComponentModification should add patch to history when componentAddedStart is true', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = true;
+    wrapper.vm.patch.index = -1;
+    wrapper.vm.formSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+
+    // Call the helper method directly
+    wrapper.vm.handleComponentModification({
+      components: [{ id: '123' }],
+    });
+
+    expect(wrapper.vm.patch.history.length).toBeGreaterThan(0);
+    expect(wrapper.vm.canSave).toBeTruthy();
+  });
+
+  it('handleComponentModification should reset history flags when modified is boolean', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentMovedStart = true;
+    wrapper.vm.patch.componentRemovedStart = true;
+
+    // Call the helper method directly
+    wrapper.vm.handleComponentModification(false);
+
+    expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
+  });
+
+  it('handleComponentModification should add patch to history for other modifications', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.index = -1;
+    wrapper.vm.formSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+
+    // Call the helper method directly
+    wrapper.vm.handleComponentModification({
+      components: [{ id: '123' }],
+    });
+
+    expect(wrapper.vm.patch.history.length).toBeGreaterThan(0);
+    expect(wrapper.vm.canSave).toBeTruthy();
+  });
+
+  it('handleComponentRemovalOrMove should add patch to history when shouldAddPatchForRemovalOrMove returns true', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    // Set up the original schema for patch comparison
+    wrapper.vm.patch.originalSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentRemovedStart = true;
+    wrapper.vm.patch.componentMovedStart = false;
+    wrapper.vm.patch.index = -1;
+    wrapper.vm.formSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+
+    // Call the helper method directly
+    wrapper.vm.handleComponentRemovalOrMove();
+
+    expect(wrapper.vm.patch.history.length).toBeGreaterThan(0);
+  });
+
+  it('handleComponentRemovalOrMove should not add patch when shouldAddPatchForRemovalOrMove returns false', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = true;
+    wrapper.vm.patch.componentRemovedStart = true;
+    wrapper.vm.patch.componentMovedStart = false;
+    const initialHistoryLength = wrapper.vm.patch.history.length;
+
+    // Call the helper method directly
+    wrapper.vm.handleComponentRemovalOrMove();
+
+    expect(wrapper.vm.patch.history.length).toBe(initialHistoryLength);
+  });
+
+  it('shouldAddPatchForRemovalOrMove should return true when componentRemovedStart is true and componentAddedStart is false', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentRemovedStart = true;
+    wrapper.vm.patch.componentMovedStart = false;
+
+    // Call the helper method directly
+    expect(wrapper.vm.shouldAddPatchForRemovalOrMove()).toBeTruthy();
+  });
+
+  it('shouldAddPatchForRemovalOrMove should return true when componentMovedStart is true', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentRemovedStart = false;
+    wrapper.vm.patch.componentMovedStart = true;
+
+    // Call the helper method directly
+    expect(wrapper.vm.shouldAddPatchForRemovalOrMove()).toBeTruthy();
+  });
+
+  it('shouldAddPatchForRemovalOrMove should return false when componentAddedStart is true and componentRemovedStart is true', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = true;
+    wrapper.vm.patch.componentRemovedStart = true;
+    wrapper.vm.patch.componentMovedStart = false;
+
+    // Call the helper method directly
+    expect(wrapper.vm.shouldAddPatchForRemovalOrMove()).toBeFalsy();
+  });
+
+  it('shouldAddPatchForRemovalOrMove should return false when neither condition is met', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentRemovedStart = false;
+    wrapper.vm.patch.componentMovedStart = false;
+
+    // Call the helper method directly
+    expect(wrapper.vm.shouldAddPatchForRemovalOrMove()).toBeFalsy();
+  });
+
+  it('validateFormComponents should not add notification when no components have key "form"', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    const modified = {
+      components: [
+        { id: '123', key: 'textfield' },
+        { id: '124', key: 'email' },
+      ],
+    };
+
+    // Call the helper method directly
+    wrapper.vm.validateFormComponents(modified);
+
+    expect(addNotificationSpy).not.toHaveBeenCalled();
+  });
+
+  it('validateFormComponents should add notification when component has key "form"', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    const modified = {
+      components: [
+        { id: '123', key: 'textfield' },
+        { id: '124', key: 'form', label: 'Test Form' },
+      ],
+    };
+
+    // Call the helper method directly
+    wrapper.vm.validateFormComponents(modified);
+
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+    expect(addNotificationSpy).toHaveBeenCalledWith({
+      text: expect.stringContaining('trans.formDesigner.fieldnameError'),
+      consoleError: expect.stringContaining(
+        'trans.formDesigner.fieldnameError'
+      ),
+    });
+    expect(wrapper.vm.canSave).toBeFalsy();
+  });
+
+  it('validateFormComponents should handle undefined modified parameter', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    // Call the helper method directly
+    wrapper.vm.validateFormComponents(undefined);
+
+    expect(addNotificationSpy).not.toHaveBeenCalled();
+  });
+
+  it('validateFormComponents should handle modified without components property', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    // Call the helper method directly
+    wrapper.vm.validateFormComponents({ display: 'form' });
+
+    expect(addNotificationSpy).not.toHaveBeenCalled();
+  });
+
+  it('onSchemaChange - we removed or moved a component but not during an add action', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+    wrapper.vm.patch.index = 0;
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '123',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ];
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+
+    wrapper.vm.formSchema = {
+      components: [],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentRemovedStart = true;
+    // Simulate a remove action
+    wrapper.vm.onSchemaChange(
+      [
+        {
+          components: [],
+          display: 'form',
+          type: 'form',
+        },
+      ],
+      undefined,
+      undefined
+    );
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+      [{ op: 'remove', path: '/components/0' }],
+    ]);
+
+    wrapper.vm.patch.index = 0;
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '123',
+          components: [{ id: '124' }],
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.history = [
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ];
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+
+    wrapper.vm.formSchema = {
+      components: [
+        {
+          id: '123',
+          components: [],
+        },
+        {
+          id: '124',
+        },
+      ],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentRemovedStart = false;
+    wrapper.vm.patch.componentMovedStart = true;
+    // Simulate a move action
+    wrapper.vm.onSchemaChange(
+      [
+        {
+          components: [{ id: '123', components: [] }, { id: '124' }],
+          display: 'form',
+          type: 'form',
+        },
+      ],
+      undefined,
+      undefined
+    );
+    expect(wrapper.vm.patch.history).toEqual([
+      [
+        {
+          op: 'add',
+          path: '/components/0',
+          value: { id: '123' },
+        },
+      ],
+      [
+        { op: 'add', path: '/components/0/components', value: [] },
+        { op: 'add', path: '/components/1', value: { id: '124' } },
+      ],
+    ]);
+  });
+
+  it('onSchemaChange - component was added and save was clicked', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+    wrapper.vm.patch.undoClicked = false;
+    wrapper.vm.patch.redoClicked = false;
+    wrapper.vm.patch.componentAddedStart = true;
+    wrapper.vm.patch.componentMovedStart = false;
+    wrapper.vm.patch.componentRemovedStart = false;
+    wrapper.vm.patch.index = -1;
+    wrapper.vm.formSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.onSchemaChange(
+      { id: '123' },
+      { id: '123' },
+      { components: [{ id: '123' }], display: 'form', type: 'form' }
+    );
+    // Add patch to history should be called
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+    expect(addNotificationSpy).toBeCalledTimes(0);
+  });
+
+  it('onSchemaChange - component was added and save was clicked it should add a notification if one of the components uses a reserved property name', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+    wrapper.vm.patch.undoClicked = false;
+    wrapper.vm.patch.redoClicked = false;
+    wrapper.vm.patch.componentAddedStart = true;
+    wrapper.vm.patch.componentMovedStart = false;
+    wrapper.vm.patch.componentRemovedStart = false;
+    wrapper.vm.patch.index = -1;
+    wrapper.vm.formSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.onSchemaChange(
+      { id: '123' },
+      { id: '123' },
+      {
+        components: [{ id: '123', key: 'form' }],
+        display: 'form',
+        type: 'form',
+      }
+    );
+    // Add patch to history should be called
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+    expect(addNotificationSpy).toBeCalledTimes(1);
+  });
+
+  it('onSchemaChange - component was edited and save was clicked or paste occurred', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+    wrapper.vm.patch.undoClicked = false;
+    wrapper.vm.patch.redoClicked = false;
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentMovedStart = false;
+    wrapper.vm.patch.componentRemovedStart = false;
+    wrapper.vm.patch.index = -1;
+    wrapper.vm.formSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.onSchemaChange(
+      { id: '123' },
+      { id: '123' },
+      { components: [{ id: '123' }], display: 'form', type: 'form' }
+    );
+    // Add patch to history should be called
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+    expect(addNotificationSpy).toBeCalledTimes(0);
+  });
+
+  it('onSchemaChange - tab was changed, so form is not really changed, resetHistoryFlags', async () => {
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+    wrapper.vm.patch.undoClicked = false;
+    wrapper.vm.patch.redoClicked = false;
+    wrapper.vm.patch.componentAddedStart = false;
+    wrapper.vm.patch.componentMovedStart = false;
+    wrapper.vm.patch.componentRemovedStart = false;
+    wrapper.vm.patch.index = -1;
+    wrapper.vm.formSchema = {
+      components: [{ id: '123' }],
+      display: 'form',
+      type: 'form',
+    };
+    wrapper.vm.onSchemaChange({ id: '123' }, { id: '123' }, false);
+    expect(wrapper.vm.patch.history).toEqual([]);
+    expect(addNotificationSpy).toBeCalledTimes(0);
+    expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
+    expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
   });
 
   describe('formio event handlers', () => {
