@@ -967,29 +967,29 @@ describe('processPaginationData', () => {
         modify: () => jest.fn().mockReturnThis(),
       };
     });
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 0, null, false);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, null, false);
     expect(result.results).toHaveLength(5);
     expect(result.total).toEqual(SubmissionData.length);
   });
   it('search submission data with pagination base on datetime', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, '2023-08-19T19:11', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, '2023-08-19T19:11', true);
     expect(result.results).toHaveLength(3);
     expect(result.total).toEqual(3);
   });
   it('search submission data with pagination base on any value (first page)', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, 'a', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (second page)', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 0, 'a', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (test for case)', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, 0, 'A', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, 'A', true);
     expect(result.results).toHaveLength(10);
   });
 });
@@ -2517,7 +2517,7 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'bar', true);
+    const result = await service.processPaginationData(query, 0, 10, 'bar', true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe('Bar');
   });
@@ -2528,7 +2528,7 @@ describe('processPaginationData', () => {
       { foo: 456, submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 123, true);
+    const result = await service.processPaginationData(query, 0, 10, 123, true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe(123);
   });
@@ -2539,7 +2539,7 @@ describe('processPaginationData', () => {
       { foo: '2022-01-01T00:00:00Z', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, '2023-08-19', true);
+    const result = await service.processPaginationData(query, 0, 10, '2023-08-19', true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toContain('2023-08-19');
   });
@@ -2550,14 +2550,14 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'baz', true);
+    const result = await service.processPaginationData(query, 0, 10, 'baz', true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe('baz');
   });
 
   it('should return all results when itemsPerPage is -1 (no search)', async () => {
     const query = Promise.resolve({ results: [1, 2, 3], total: 3 });
-    const result = await service.processPaginationData(query, 0, -1, 3, null, false);
+    const result = await service.processPaginationData(query, 0, -1, null, false);
     expect(result.results).toEqual([1, 2, 3]);
     expect(result.total).toBe(3);
   });
@@ -2576,7 +2576,7 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'notfound', true);
+    const result = await service.processPaginationData(query, 0, 10, 'notfound', true);
     expect(result.results.length).toBe(0);
     expect(result.total).toBe(0);
   });
@@ -2587,7 +2587,7 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'bar', 'true');
+    const result = await service.processPaginationData(query, 0, 10, 'bar', 'true');
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe('bar');
   });
@@ -2597,6 +2597,176 @@ describe('processPaginationData', () => {
     const result = await service.processPaginationData(mockQuery, 0, 2, null, null, undefined);
     expect(result.results).toEqual([1, 2]);
     expect(result.total).toBe(2);
+  });
+
+  it('should search only within specified fields when search.fields is provided', async () => {
+    const data = [
+      { a: 'match', b: 'nope', submissionId: 1, formVersionId: 1, formId: 1 },
+      { a: 'nope', b: 'match', submissionId: 2, formVersionId: 2, formId: 2 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'match',
+      fields: ['a'], // only search column "a"
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    // Only row 1 matches because we restricted to field "a"
+    expect(result.total).toBe(1);
+    expect(result.results[0].a).toBe('match');
+  });
+
+  it('should return all matches when search.fields is empty', async () => {
+    const data = [
+      { x: 'foo', y: 'bar', submissionId: 1, formVersionId: 1, formId: 1 },
+      { x: 'hello', y: 'foo', submissionId: 2, formVersionId: 2, formId: 2 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'foo',
+      fields: [], // search all fields
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(2);
+    expect(result.results.length).toBe(2);
+  });
+
+  it('should fall back to searching all fields when search.fields is undefined', async () => {
+    const data = [
+      { name: 'alpha', tag: '123', submissionId: 1, formVersionId: 1, formId: 1 },
+      { name: 'beta', tag: '456', submissionId: 2, formVersionId: 2, formId: 2 },
+      { name: 'gamma', tag: '999', submissionId: 3, formVersionId: 3, formId: 3 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: '999',
+      // no fields provided
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results[0].tag).toBe('999');
+  });
+
+  it('should extract term using search.value when search is object', async () => {
+    const data = [{ foo: 'hello world', submissionId: 1, formVersionId: 1, formId: 1 }];
+    const query = Promise.resolve(data);
+
+    const search = { value: 'hello' };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results[0].foo).toBe('hello world');
+  });
+
+  it('should extract term using search when search is string', async () => {
+    const data = [{ foo: 'zzz', submissionId: 1, formVersionId: 1, formId: 1 }];
+    const query = Promise.resolve(data);
+
+    const result = await service.processPaginationData(query, 0, 10, 'zzz', true);
+
+    expect(result.total).toBe(1);
+    expect(result.results[0].foo).toBe('zzz');
+  });
+
+  it('should match boolean field when searching "true" in a top-level boolean field', async () => {
+    const data = [
+      { trueorfalse: true, other: 'nope', submissionId: 1, formVersionId: 1, formId: 1 },
+      { trueorfalse: false, other: 'nope', submissionId: 2, formVersionId: 2, formId: 2 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'true',
+      fields: ['trueorfalse'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results.length).toBe(1);
+    expect(result.results[0].trueorfalse).toBe(true);
+  });
+
+  it('should not match when searching "false" on a top-level boolean true field', async () => {
+    const data = [{ trueorfalse: true, submissionId: 1, formVersionId: 1, formId: 1 }];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'false',
+      fields: ['trueorfalse'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(0);
+    expect(result.results.length).toBe(0);
+  });
+
+  it('should match nested boolean when searching "true" in a specified object field', async () => {
+    const data = [
+      {
+        meta: { nestedBool: true, other: 'x' },
+        submissionId: 1,
+        formVersionId: 1,
+        formId: 1,
+      },
+      {
+        meta: { nestedBool: false },
+        submissionId: 2,
+        formVersionId: 2,
+        formId: 2,
+      },
+    ];
+    const query = Promise.resolve(data);
+
+    // deep search into `meta` should find nestedBool: true
+    const search = {
+      value: 'true',
+      fields: ['meta'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results.length).toBe(1);
+    expect(result.results[0].meta.nestedBool).toBe(true);
+  });
+
+  it('should NOT match nested boolean when searching across all fields in simple search mode', async () => {
+    const data = [
+      {
+        meta: { nestedBool: true },
+        submissionId: 1,
+        formVersionId: 1,
+        formId: 1,
+      },
+      {
+        meta: { nestedBool: false },
+        submissionId: 2,
+        formVersionId: 2,
+        formId: 2,
+      },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'true',
+      // fields not provided → but primitive search should ignore all nested fields
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(0);
+    expect(result.results.length).toBe(0);
   });
 });
 
