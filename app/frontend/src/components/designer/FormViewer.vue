@@ -422,6 +422,17 @@ async function getFormData() {
         ? false
         : true;
     form.value = response.data.form;
+    // Schedule status is already processed by backend (checkIsFormExpired)
+    // Set flags directly from the form schedule data
+    if (form.value.schedule && form.value.schedule.expire !== undefined) {
+      isFormScheduleExpired.value = form.value.schedule.expire === true;
+      isLateSubmissionAllowed.value =
+        form.value.schedule.allowLateSubmissions === true;
+    } else {
+      // Explicitly reset flags if no schedule
+      isFormScheduleExpired.value = false;
+      isLateSubmissionAllowed.value = false;
+    }
     versionIdToSubmitTo.value = versionIdToSubmitTo.value
       ? versionIdToSubmitTo.value
       : response.data?.version?.id;
@@ -793,9 +804,43 @@ async function onSubmit(sub) {
         errors: errors,
       }),
     });
-  } else {
+    // On error: reset button state without triggering navigation
+    // Force re-render form.io to reset submit button state
+    reRenderFormIo.value += 1;
+  } else if (currentForm.value?.events) {
+    // On success: emit submitDone to reset button AND trigger navigation via onSubmitDone handler
     currentForm.value.events.emit('formio.submitDone');
   }
+}
+
+// Helper function to extract submission data from response
+function extractSubmissionData(response) {
+  if (properties.submissionId && properties.isDuplicate) {
+    return response.data;
+  }
+  if (properties.submissionId && !properties.isDuplicate) {
+    return response.data.submission;
+  }
+  return response.data;
+}
+
+// Helper function to extract error message from error object
+function extractErrorMessage(error) {
+  if (error.response?.status === 403) {
+    // Backend returns schedule expiration message
+    return (
+      error.response.data?.detail ||
+      error.response.data?.message ||
+      formScheduleExpireMessage.value
+    );
+  }
+  if (error.response?.data?.detail) {
+    return error.response.data.detail;
+  }
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+  return t('trans.formViewer.errMsg');
 }
 
 // Not a formIO event, our saving routine to POST the submission to our API
@@ -804,27 +849,21 @@ async function doSubmit(sub) {
   // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
   try {
+    // Validate schedule before submission
+    if (isFormScheduleExpired.value && !isLateSubmissionAllowed.value) {
+      const errorMsg = formScheduleExpireMessage.value;
+      notificationStore.addNotification({
+        text: errorMsg,
+        consoleError: `Submission blocked: ${errorMsg}`,
+      });
+      return errorMsg; // This will be caught and handled by onSubmit
+    }
     const response = await sendSubmission(false, sub);
 
     if ([200, 201].includes(response.status)) {
       // all is good, flag no errors and carry on...
       // store our submission result...
-      submissionRecord.value = Object.assign(
-        {},
-        properties.submissionId && properties.isDuplicate //Check if this submission is creating with the existing one
-          ? response.data
-          : (() => {
-              let result;
-              if (properties.submissionId && properties.isDuplicate) {
-                result = response.data;
-              } else if (properties.submissionId && !properties.isDuplicate) {
-                result = response.data.submission;
-              } else {
-                result = response.data;
-              }
-              return result;
-            })()
-      );
+      submissionRecord.value = { ...extractSubmissionData(response) };
     } else {
       throw new Error(
         t('trans.formViewer.sendSubmissionErrMsg', {
@@ -833,7 +872,7 @@ async function doSubmit(sub) {
       );
     }
   } catch (error) {
-    errMsg = t('trans.formViewer.errMsg');
+    errMsg = extractErrorMessage(error);
   } finally {
     confirmSubmit.value = false;
   }
@@ -848,6 +887,8 @@ async function onSubmitDone() {
   // really nothing to do, the formio button has consumed the event and updated its display
   // is there anything here for us to do?
   // console.info('onSubmitDone()') ; // eslint-disable-line no-console
+  // Note: This handler is only called on successful submission (when formio.submitDone is emitted)
+  // On errors, we use reRenderFormIo to reset button without triggering this handler
   if (properties.staffEditMode) {
     // updating an existing submission on the staff side
     emit('submission-updated');

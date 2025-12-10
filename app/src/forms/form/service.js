@@ -24,7 +24,7 @@ const {
   FormSubscription,
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
-const { checkIsFormExpired, isDateValid, isDateInFuture } = require('../common/scheduleService');
+const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
@@ -712,7 +712,11 @@ const service = {
     let result;
     try {
       const formVersion = await service.readVersion(formVersionId);
-      const { identityProviders } = await service.readForm(formVersion.formId);
+      const form = await service.readForm(formVersion.formId);
+      const { identityProviders } = form;
+
+      // Validate schedule before allowing submission
+      validateSubmissionSchedule(form.schedule);
 
       trx = await FormSubmission.startTransaction();
 
