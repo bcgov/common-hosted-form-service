@@ -405,6 +405,7 @@ async function schemaCreateNew() {
     allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
     wideFormLayout: form.value.wideFormLayout,
+    enableAutoSave: form.value.enableAutoSave,
     enableStatusUpdates: form.value.enableStatusUpdates,
     enableSubmitterRevision: form.value.enableSubmitterRevision,
     showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,

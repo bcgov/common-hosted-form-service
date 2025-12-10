@@ -1228,7 +1228,9 @@ describe('FormViewer.vue', () => {
         },
       },
     };
-
+    // Required for formChange to run because of the guard
+    wrapper.vm.initialRenderComplete = true;
+    wrapper.vm.autosaveReady = true; //autosave block
     wrapper.vm.formChange({
       changed: {
         flags: {

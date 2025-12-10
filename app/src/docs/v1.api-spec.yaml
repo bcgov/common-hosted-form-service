@@ -4627,6 +4627,10 @@ components:
             enableSubmitterDraft:
               type: boolean
               example: true
+            enableAutoSave:
+              type: boolean
+              example: false
+              description: Enable automatic saving of form progress to protect against browser crashes and refreshes
             reminder_enabled:
               type: boolean
               example: true
@@ -5708,6 +5712,9 @@ components:
         enableSubmitterDraft:
           type: boolean
           example: true
+        enableAutoSave:
+          type: boolean
+          example: false
         formId:
           type: string
           example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
@@ -5854,6 +5861,10 @@ components:
           type: boolean
           description: If the form's submissions can be saved as draft
           example: true
+        enableAutoSave:
+          type: boolean
+          description: If form progress is automatically saved to protect against browser crashes and refreshes
+          example: false
         formId:
           type: string
           format: uuid

@@ -881,7 +881,16 @@
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
     "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet",
     "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang.",
-    "fileUploadWarning": "Um Ihre Anhänge hochzuladen, müssen Sie entweder auf die Schaltfläche „Als Entwurf speichern“ klicken oder Ihr Formular absenden. Wenn Sie diesen Bildschirm verlassen, gehen Ihre Anhänge verloren."
+    "fileUploadWarning": "Um Ihre Anhänge hochzuladen, müssen Sie entweder auf die Schaltfläche „Als Entwurf speichern“ klicken oder Ihr Formular absenden. Wenn Sie diesen Bildschirm verlassen, gehen Ihre Anhänge verloren.",
+
+    "enableAutoSave": "Formularfortschrittsschutz aktivieren – Speichern Sie Ihren Fortschritt lokal im Browser, um ihn wiederherzustellen, falls die Seite versehentlich geschlossen oder aktualisiert wird"
+  },
+  "localAutosave": {
+    "title": "Ihre Arbeit wiederherstellen?",
+    "message": "Ihr Fortschritt aus der letzten Sitzung wurde in Ihrem Browser gespeichert und kann jetzt wiederhergestellt werden. Alternativ können Sie mit einem leeren Formular neu beginnen.",
+    "restore": "Arbeit wiederherstellen",
+    "discard": "Neu beginnen",
+    "restored": "Ihr Fortschritt aus der letzten Sitzung wurde erfolgreich wiederhergestellt."
   },
   "bCGovFooter": {
     "home": "Heim",
