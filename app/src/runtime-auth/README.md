@@ -8,14 +8,18 @@ Most of the time, you'll use the pre-configured CHEFS security instance:
 
 ```javascript
 const chefSecurity = require('../../runtime-auth/security').createCHEFSSecurity({
-  baseUrl: config.get('server.basePath')
+  baseUrl: config.get('server.basePath'),
 });
 
 // Then in your routes:
-routes.get('/:formId', chefSecurity.inline({
-  allowedAuth: ['userOidc', 'apiKeyBasic'],
-  requiredPermissions: [Permissions.FORM_READ]
-}), controller.read);
+routes.get(
+  '/:formId',
+  chefSecurity.inline({
+    allowedAuth: ['userOidc', 'apiKeyBasic'],
+    requiredPermissions: [Permissions.FORM_READ],
+  }),
+  controller.read
+);
 ```
 
 That's it. The middleware handles the rest—authenticating the request, resolving the form resource, checking permissions, and attaching everything to `req.securityContext` before your controller runs.
@@ -26,7 +30,7 @@ By default, `chefsSecurity` comes pre-wired with all the CHEFS services you need
 
 - `authService` - User and API key authentication
 - `formService` - Form lookups
-- `submissionService` - Submission lookups  
+- `submissionService` - Submission lookups
 - `fileService` - File lookups
 - `rbacService` - Permission checks
 - `jwtService` - Token validation
@@ -55,16 +59,18 @@ const { AuthCombinations } = require('../../../runtime-auth/security');
 const chefSecurity = require('../../common/security');
 const P = require('../../../forms/common/constants').Permissions;
 
-routes.get('/:formId/schema', 
+routes.get(
+  '/:formId/schema',
   chefSecurity.inline({
     allowedAuth: AuthCombinations.API_ONLY,
-    requiredPermissions: [P.FORM_READ]
+    requiredPermissions: [P.FORM_READ],
   }),
   controller.readFormSchema
 );
 ```
 
 The policy object accepts:
+
 - `allowedAuth` - Array of auth types or use `AuthCombinations.*`
 - `requiredPermissions` - Array of permission strings (e.g., `[P.FORM_READ]`)
 - `resourceSpec` - Explicit resource definition (optional, auto-inferred if missing)
@@ -74,10 +80,11 @@ The policy object accepts:
 You can also pass a function that receives the request:
 
 ```javascript
-routes.post('/:formId/submit',
+routes.post(
+  '/:formId/submit',
   chefSecurity.inline((req) => ({
     allowedAuth: req.query.draft ? AuthCombinations.ANY : AuthCombinations.API_ONLY,
-    requiredPermissions: req.query.draft ? [] : [P.SUBMISSION_CREATE]
+    requiredPermissions: req.query.draft ? [] : [P.SUBMISSION_CREATE],
   })),
   controller.createSubmission
 );
@@ -94,17 +101,17 @@ const policies = [
     pattern: '/forms/:formId',
     allowedAuth: AuthCombinations.API_OR_USER,
     requiredPermissions: [P.FORM_READ],
-    classification: 'restricted'
+    classification: 'restricted',
   },
   {
     method: 'DELETE',
     pattern: '/forms/:formId/submissions/:submissionId',
     allowedAuth: AuthCombinations.AUTHENTICATED,
     requiredPermissions: [P.SUBMISSION_DELETE],
-    resource: (req, params) => ({ 
-      kind: 'submissionFromForm', 
-      params 
-    })
+    resource: (req, params) => ({
+      kind: 'submissionFromForm',
+      params,
+    }),
   },
   {
     method: 'GET',
@@ -112,8 +119,8 @@ const policies = [
     allowedAuth: ['public'],
     classification: 'public',
     resource: () => ({ kind: 'none' }),
-    requiredPermissions: []
-  }
+    requiredPermissions: [],
+  },
 ];
 
 routes.use(chefSecurity.withPolicies(policies));
@@ -131,19 +138,28 @@ Use `AuthTypes` for individual auth types or `AuthCombinations` for common combi
 const { AuthTypes, AuthCombinations } = require('../../../runtime-auth/security');
 
 // Individual types
-allowedAuth: [AuthTypes.USER_OIDC]
-allowedAuth: [AuthTypes.API_KEY_BASIC]
-allowedAuth: [AuthTypes.GATEWAY_BEARER]
-allowedAuth: [AuthTypes.PUBLIC]
+allowedAuth: [AuthTypes.USER_OIDC];
+allowedAuth: [AuthTypes.API_KEY_BASIC];
+allowedAuth: [AuthTypes.GATEWAY_BEARER];
+allowedAuth: [AuthTypes.PUBLIC];
 
 // Common combinations
-allowedAuth: AuthCombinations.AUTHENTICATED      // userOidc only
-allowedAuth: AuthCombinations.API_ONLY          // apiKeyBasic + gatewayBearer
-allowedAuth: AuthCombinations.API_OR_USER       // userOidc + apiKeyBasic
-allowedAuth: AuthCombinations.PUBLIC_ONLY       // public only
-allowedAuth: AuthCombinations.PUBLIC_OR_USER    // public + userOidc
-allowedAuth: AuthCombinations.ANY               // all auth types
+allowedAuth: AuthCombinations.AUTHENTICATED; // userOidc only
+allowedAuth: AuthCombinations.API_ONLY; // apiKeyBasic + gatewayBearer
+allowedAuth: AuthCombinations.API_OR_USER; // userOidc + apiKeyBasic
+allowedAuth: AuthCombinations.PUBLIC_ONLY; // public only
+allowedAuth: AuthCombinations.PUBLIC_OR_USER; // public + userOidc
+allowedAuth: AuthCombinations.ANY; // all auth types
 ```
+
+### Authentication Headers
+
+Different authentication strategies use different HTTP headers:
+
+- **userOidc**: Uses `Authorization: Bearer <token>` (Keycloak token)
+- **apiKeyBasic**: Uses `Authorization: Basic <base64(formId:apiKey)>`
+- **gatewayBearer**: Uses `X-Chefs-Gateway-Token: <token>` (for webcomponent routes only)
+  - This custom header allows host applications to use `Authorization: Bearer` for their own authentication
 
 ## Resource Specs
 
@@ -154,36 +170,36 @@ Most of the time you can let it auto-infer, but you can be explicit:
 ```javascript
 // Auto-inferred (from :formId param)
 chefSecurity.inline({
-  requiredPermissions: [P.FORM_READ]
-})
+  requiredPermissions: [P.FORM_READ],
+});
 
 // Explicit form resource
 chefSecurity.inline({
   resourceSpec: { kind: 'formOnly', params: { formId: 'abc123' } },
-  requiredPermissions: [P.FORM_READ]
-})
+  requiredPermissions: [P.FORM_READ],
+});
 
 // Submission resource (needs formId + submissionId)
 chefSecurity.inline({
-  resourceSpec: { 
-    kind: 'submissionFromForm', 
-    params: { formId: 'abc123', submissionId: 'xyz789' } 
+  resourceSpec: {
+    kind: 'submissionFromForm',
+    params: { formId: 'abc123', submissionId: 'xyz789' },
   },
-  requiredPermissions: [P.SUBMISSION_READ]
-})
+  requiredPermissions: [P.SUBMISSION_READ],
+});
 
 // File resource
 chefSecurity.inline({
   resourceSpec: { kind: 'file', params: { fileId: 'file123' } },
-  requiredPermissions: [P.SUBMISSION_READ]
-})
+  requiredPermissions: [P.SUBMISSION_READ],
+});
 
 // No resource (public endpoint)
 chefSecurity.inline({
   resourceSpec: { kind: 'none' },
   allowedAuth: ['public'],
-  requiredPermissions: []
-})
+  requiredPermissions: [],
+});
 ```
 
 The `params` are usually extracted from `req.params`, but you can override them if needed.
@@ -194,14 +210,17 @@ Sometimes you need to swap out services or change defaults. The `custom` method 
 
 ```javascript
 const mockFormService = {
-  readForm: jest.fn()
+  readForm: jest.fn(),
 };
 
-const middleware = chefSecurity.custom({
-  services: {
-    formService: mockFormService
-  }
-}, []);
+const middleware = chefSecurity.custom(
+  {
+    services: {
+      formService: mockFormService,
+    },
+  },
+  []
+);
 
 routes.use(middleware);
 ```
@@ -218,15 +237,18 @@ If you're starting from scratch (not using `chefSecurity`), you can use the lowe
 ```javascript
 const { buildSecurity } = require('../../../runtime-auth/security');
 
-const middleware = buildSecurity({
-  baseUrl: '/app',
-  services: {
-    authService: myAuthService,
-    formService: myFormService,
-    // ... etc
+const middleware = buildSecurity(
+  {
+    baseUrl: '/app',
+    services: {
+      authService: myAuthService,
+      formService: myFormService,
+      // ... etc
+    },
+    constants: myConstants,
   },
-  constants: myConstants
-}, policies);
+  policies
+);
 ```
 
 ## Request Context
@@ -380,6 +402,7 @@ The middleware also sets `req.currentUser` and `req.apiUser` for backward compat
 ## Error Handling
 
 The middleware throws `api-problem` Problem instances:
+
 - `404` - No matching policy found
 - `401` - Authentication failed
 - `404` - Resource not found
@@ -393,11 +416,12 @@ Here's how it's actually used in the webcomponents routes:
 
 ```javascript
 // File routes - explicit resource type
-routes.get('/:fileId',
+routes.get(
+  '/:fileId',
   chefSecurity.inline({
     allowedAuth: AuthCombinations.API_ONLY,
     requiredPermissions: [P.SUBMISSION_READ],
-    resourceSpec: { kind: 'file' }  // Auto-infers fileId from params
+    resourceSpec: { kind: 'file' }, // Auto-infers fileId from params
   }),
   originAccess,
   hasFilePermissions([P.SUBMISSION_READ]),
@@ -405,10 +429,11 @@ routes.get('/:fileId',
 );
 
 // Form schema - auto-inferred resource
-routes.get('/:formId/schema',
+routes.get(
+  '/:formId/schema',
   chefSecurity.inline({
     allowedAuth: AuthCombinations.API_ONLY,
-    requiredPermissions: [P.FORM_READ]
+    requiredPermissions: [P.FORM_READ],
     // resourceSpec auto-inferred as formOnly from :formId
   }),
   originAccess,
@@ -416,10 +441,11 @@ routes.get('/:formId/schema',
 );
 
 // Submission with multiple permissions
-routes.get('/:formId/submission/:formSubmissionId',
+routes.get(
+  '/:formId/submission/:formSubmissionId',
   chefSecurity.inline({
     allowedAuth: AuthCombinations.API_ONLY,
-    requiredPermissions: [P.FORM_READ, P.SUBMISSION_READ]
+    requiredPermissions: [P.FORM_READ, P.SUBMISSION_READ],
     // resourceSpec auto-inferred as submissionFromForm
   }),
   originAccess,
@@ -432,6 +458,7 @@ routes.get('/:formId/submission/:formSubmissionId',
 When testing routes that use this middleware, you'll need to mock the services. The test files in `app/tests/unit/runtime-auth/security/` show examples of how to structure mocks for the various strategies and services.
 
 Key things to mock:
+
 - `services.authService` - For user/auth lookups
 - `services.formService` - For form lookups
 - `services.rbacService` - For permission checks
@@ -439,4 +466,3 @@ Key things to mock:
 - `deps.oidc` - OIDC configuration if using `userOidc`
 
 The middleware is designed to be testable—all dependencies are injected, so you can swap in test doubles easily.
-
