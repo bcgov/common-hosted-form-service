@@ -714,6 +714,13 @@ function onSubmitButton(event) {
   currentForm.value = event.instance.parent.root;
   currentForm.value.form.action = undefined;
 
+  // Recalled/editing submissions: skip confirm dialog to avoid stalled submits
+  if (properties.submissionId && properties.submissionId !== 'new') {
+    confirmSubmit.value = true;
+    showSubmitConfirmDialog.value = false;
+    return;
+  }
+
   // if form has drafts enabled in form settings, show 'confirm submit?' dialog
   if (form.value.enableSubmitterDraft) {
     showSubmitConfirmDialog.value = true;
@@ -733,6 +740,14 @@ async function onBeforeSubmit(submission, next) {
   if (properties.preview) {
     // Force re-render form.io to reset submit button state
     reRenderFormIo.value += 1;
+    return;
+  }
+
+  // Recalled/editing submissions: bypass confirmation loop
+  if (properties.submissionId && properties.submissionId !== 'new') {
+    confirmSubmit.value = true;
+    showSubmitConfirmDialog.value = false;
+    next();
     return;
   }
 
@@ -837,11 +852,6 @@ async function onSubmitDone() {
     // updating an existing submission on the staff side
     emit('submission-updated');
   } else {
-    // For existing submissions, refresh from server before navigation
-    if (properties.submissionId && !properties.isDuplicate) {
-      await getFormData();
-    }
-
     // User created new submission
     router.push({
       name: 'FormSuccess',

@@ -16,8 +16,6 @@ describe("Form Designer", () => {
       console.log(err);
       return false;
     });
-    // Clear any persisted localStorage (e.g., autosave) between runs
-    cy.clearLocalStorage();
   });
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
@@ -30,22 +28,24 @@ describe("Form Designer", () => {
     cy.get("button").contains("Basic Fields").click();
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
-      .trigger('mouseup', { force: true });
-      cy.get('.btn-success').click();
+      cy.get("span.btn")
+        .contains("Text Field")
+
+        .trigger("mousedown", { which: 1 }, { force: true })
+        .trigger("mousemove", coords.x, -110, { force: true })
+        .trigger("mouseup", { force: true });
+      cy.get(".btn-success").click();
     });
     //Multiline Text
-    cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -110, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('.btn-success').click();
+    cy.get("div.formio-builder-form").then(($el) => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get("span.btn")
+        .contains("Multi-line Text")
+
+        .trigger("mousedown", { which: 1 }, { force: true })
+        .trigger("mousemove", coords.x, -110, { force: true })
+        .trigger("mouseup", { force: true });
+      cy.get(".btn-success").click();
     });
     // Form saving
   });
