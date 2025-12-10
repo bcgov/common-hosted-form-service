@@ -6,6 +6,7 @@ const log = require('../../components/log')(module.filename);
 
 const { Statuses } = require('../common/constants');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+const { validateFormSubmissionSchedule } = require('../common/scheduleService');
 
 const service = {
   _isRestoring: (data) => {
@@ -79,6 +80,13 @@ const service = {
           log.info(`Draft update blocked for submissionId=${formSubmissionId} due to status=${statuses[0]?.code}`);
           return false;
         }
+
+        // Validate schedule before allowing draft to be converted to submitted
+        if (!data.draft) {
+          const submissionData = await submissionService.read(formSubmissionId);
+          validateFormSubmissionSchedule(submissionData.form);
+        }
+
         submissionReceived = await service._handleStatusChange(submissionService, formSubmissionId, data, statuses, currentUser, trx);
         log.info(`Patched submissionId=${formSubmissionId} with new data`);
         await service._patchSubmission(formSubmissionId, data, currentUser, trx);

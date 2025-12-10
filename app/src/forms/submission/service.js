@@ -5,6 +5,7 @@ const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionU
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+const { checkIsFormExpired } = require('../common/scheduleService');
 
 const updateService = require('./updateService');
 
@@ -25,10 +26,15 @@ const service = {
         .withGraphFetched('identityProviders(orderDefault)')
         .throwIfNotFound(),
     ]).then((data) => {
+      const form = data[2];
+      // Process schedule status same way readPublishedForm does
+      if (form.schedule) {
+        form.schedule = checkIsFormExpired(form.schedule);
+      }
       return {
         submission: data[0],
         version: data[1],
-        form: data[2],
+        form: form,
       };
     });
   },
