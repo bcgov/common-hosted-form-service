@@ -1,3 +1,4 @@
+const uuid = require('uuid');
 const { RetentionClassification, RetentionPolicy, ScheduledSubmissionDeletion } = require('../common/models');
 const submissionService = require('../submission/service');
 const log = require('../../components/log')(module.filename);
@@ -31,6 +32,7 @@ const service = {
       });
     } else {
       return await RetentionPolicy.query().insert({
+        id: uuid.v4(),
         formId,
         retentionDays,
         retentionClassificationId,
@@ -52,6 +54,7 @@ const service = {
     }
 
     return await ScheduledSubmissionDeletion.query().insert({
+      id: uuid.v4(),
       submissionId,
       formId,
       eligibleForDeletionAt,

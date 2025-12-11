@@ -19,6 +19,7 @@ describe('recordsManagement controller', () => {
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
     };
     next = jest.fn();
   });
@@ -36,6 +37,21 @@ describe('recordsManagement controller', () => {
       expect(service.scheduleDeletion).toHaveBeenCalledWith('sub-123', 'form-123', 'testuser');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(mockResult);
+    });
+
+    it('should return 204 when no retention policy exists', async () => {
+      req.params = { formSubmissionId: 'sub-123' };
+      req.body = { formId: 'form-123' };
+      const error = new Error('No matching row found');
+      error.name = 'NotFoundError';
+
+      service.scheduleDeletion = jest.fn().mockRejectedValue(error);
+
+      await controller.scheduleDeletion(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.send).toHaveBeenCalled();
+      expect(next).not.toHaveBeenCalled();
     });
 
     it('should handle errors', async () => {
@@ -62,6 +78,31 @@ describe('recordsManagement controller', () => {
       expect(service.cancelDeletion).toHaveBeenCalledWith('sub-123');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(mockResult);
+    });
+
+    it('should return 204 when no retention policy exists', async () => {
+      req.params = { formSubmissionId: 'sub-123' };
+      const error = new Error('No matching row found');
+      error.name = 'NotFoundError';
+
+      service.cancelDeletion = jest.fn().mockRejectedValue(error);
+
+      await controller.cancelDeletion(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.send).toHaveBeenCalled();
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should handle errors', async () => {
+      req.params = { formSubmissionId: 'sub-123' };
+      const error = new Error('Service error');
+
+      service.cancelDeletion = jest.fn().mockRejectedValue(error);
+
+      await controller.cancelDeletion(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 

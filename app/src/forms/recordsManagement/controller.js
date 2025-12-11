@@ -20,6 +20,10 @@ module.exports = {
       const result = await service.scheduleDeletion(formSubmissionId, formId, user);
       res.status(200).json(result);
     } catch (err) {
+      if (err.name === 'NotFoundError') {
+        // Ignore because there is no retention policy
+        return res.status(204).send();
+      }
       log.error('scheduleDeletion error', err);
       next(err);
     }
@@ -31,6 +35,10 @@ module.exports = {
       const result = await service.cancelDeletion(formSubmissionId);
       res.status(200).json(result);
     } catch (err) {
+      if (err.name === 'NotFoundError') {
+        // Ignore because there is no retention policy
+        return res.status(204).send();
+      }
       log.error('cancelDeletion error', err);
       next(err);
     }

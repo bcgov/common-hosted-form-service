@@ -2,6 +2,10 @@ const localService = require('../../../../src/forms/recordsManagement/localServi
 const { RetentionPolicy, ScheduledSubmissionDeletion } = require('../../../../src/forms/common/models');
 const submissionService = require('../../../../src/forms/submission/service');
 
+const testUuid = '123';
+jest.mock('uuid', () => ({
+  v4: jest.fn().mockReturnValue(testUuid),
+}));
 jest.mock('../../../../src/forms/common/models');
 jest.mock('../../../../src/forms/submission/service');
 
@@ -89,7 +93,7 @@ describe('localService', () => {
 
   it('configureRetentionPolicy should create new retention policy if not exists', async () => {
     const formId = 'form-123';
-    const policyData = { retentionDays: 365, retentionClassificationId: 'class-123' };
+    const policyData = { retentionDays: 365, retentionClassificationId: 'class-123', retentionClassificationDescription: 'lorem ipsum' };
     const user = 'testuser';
 
     const mockInsert = jest.fn().mockResolvedValue({ ...policyData, formId, createdBy: user });
@@ -107,9 +111,11 @@ describe('localService', () => {
 
     expect(result).toEqual({ ...policyData, formId, createdBy: user });
     expect(mockInsert).toHaveBeenCalledWith({
+      id: testUuid,
       formId,
       retentionDays: policyData.retentionDays,
       retentionClassificationId: policyData.retentionClassificationId,
+      retentionClassificationDescription: policyData.retentionClassificationDescription,
       createdBy: user,
     });
   });
