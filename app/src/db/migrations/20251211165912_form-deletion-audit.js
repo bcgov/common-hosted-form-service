@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const stamps = require('../stamps');
 
-const CREATED_BY = 'migration-075-form-deletion-audit';
+const CREATED_BY = 'form-deletion-audit';
 
 /**
  * @param { import("knex").Knex } knex
