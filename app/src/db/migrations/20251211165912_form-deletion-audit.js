@@ -81,7 +81,7 @@ exports.up = function (knex) {
     )
     .then(() =>
       knex.schema.createTable('retention_policy', (table) => {
-        table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+        table.uuid('id').primary().defaultTo(uuidv4());
         table.uuid('formId').notNullable().unique().references('id').inTable('form').comment('Form ID this policy applies to');
         table.integer('retentionDays').nullable().comment('Days before hard deletion allowed (null = indefinite, default behavior)');
         table.uuid('retentionClassificationId').nullable().references('id').inTable('retention_classification').comment('Retention classification');
@@ -94,7 +94,7 @@ exports.up = function (knex) {
     )
     .then(() =>
       knex.schema.createTable('scheduled_submission_deletion', (table) => {
-        table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+        table.uuid('id').primary().defaultTo(uuidv4());
         table.uuid('submissionId').notNullable().unique().references('id').inTable('form_submission').onDelete('CASCADE').comment('Submission eligible for deletion');
         table.uuid('formId').notNullable().references('id').inTable('form').comment('Form this submission belongs to');
         table.timestamp('eligibleForDeletionAt').notNullable().comment('Date/time when submission is eligible for hard deletion');
