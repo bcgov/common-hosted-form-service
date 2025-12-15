@@ -14,7 +14,7 @@ describe('recordsManagement controller', () => {
     req = {
       params: {},
       body: {},
-      user: { usernameIdp: 'testuser' },
+      currentUser: { usernameIdp: 'testuser' },
     };
     res = {
       status: jest.fn().mockReturnThis(),
