@@ -16,7 +16,7 @@ module.exports = {
     try {
       const { formSubmissionId } = req.params;
       const { formId } = req.body;
-      const user = req.user?.usernameIdp || 'system';
+      const user = req.currentUser?.usernameIdp || 'system';
       const result = await service.scheduleDeletion(formSubmissionId, formId, user);
       res.status(200).json(result);
     } catch (err) {
@@ -58,7 +58,7 @@ module.exports = {
   setPolicy: async (req, res, next) => {
     try {
       const { formId } = req.params;
-      const user = req.user?.usernameIdp || 'system';
+      const user = req.currentUser?.usernameIdp || 'system';
       const result = await service.configureRetentionPolicy(formId, req.body, user);
       res.status(200).json(result);
     } catch (err) {

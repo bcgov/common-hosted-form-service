@@ -1,5 +1,6 @@
 const { Model } = require('objection');
 const { Timestamps } = require('../mixins');
+const stamps = require('../jsonSchema').stamps;
 
 class RetentionClassification extends Timestamps(Model) {
   static get tableName() {
@@ -30,10 +31,7 @@ class RetentionClassification extends Timestamps(Model) {
         display: { type: 'string', minLength: 1, maxLength: 255 },
         description: { type: ['string', 'null'] },
         active: { type: 'boolean' },
-        createdBy: { type: 'string' },
-        createdAt: { type: 'string' },
-        updatedBy: { type: ['string', 'null'] },
-        updatedAt: { type: ['string', 'null'] },
+        ...stamps,
       },
       additionalProperties: false,
     };
