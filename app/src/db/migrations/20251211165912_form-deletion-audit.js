@@ -107,6 +107,37 @@ exports.up = function (knex) {
         table.index(['status']);
         table.index(['submissionId']);
       })
+    )
+    .then(() =>
+      knex.schema.raw(`CREATE OR REPLACE FUNCTION public.submission_audited_func() RETURNS trigger AS $body$
+        DECLARE
+            v_old_data json;
+        BEGIN
+            if (TG_OP = 'UPDATE') then
+                v_old_data := row_to_json(OLD);
+                insert into public.form_submission_audit ("submissionId", "dbUser", "updatedByUsername", "actionTimestamp", "action", "originalData")
+                values (
+                OLD.id,
+                SESSION_USER,
+                NEW."updatedBy",
+                now(),
+                'U',
+                v_old_data);
+                RETURN NEW;
+            elsif (TG_OP = 'DELETE') then
+                v_old_data := row_to_json(OLD);
+                insert into public.form_submission_audit ("submissionId", "dbUser", "actionTimestamp", "action", "originalData")
+                values (
+                OLD.id,
+                SESSION_USER,
+                now(),
+                'D',
+                v_old_data);
+                RETURN OLD;
+            end if;
+            RETURN NULL;
+        END;
+        $body$ LANGUAGE plpgsql`)
     );
 };
 
@@ -116,6 +147,35 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return Promise.resolve()
+    .then(() =>
+      knex.schema.raw(`CREATE OR REPLACE FUNCTION public.submission_audited_func() RETURNS trigger AS $body$
+    DECLARE
+        v_old_data json;
+    BEGIN
+        if (TG_OP = 'UPDATE') then
+            v_old_data := row_to_json(OLD);
+            insert into public.form_submission_audit ("submissionId", "dbUser", "updatedByUsername", "actionTimestamp", "action", "originalData")
+            values (
+            OLD.id,
+            SESSION_USER,
+            NEW."updatedBy",
+            now(),
+            'U',
+            v_old_data);
+            RETURN NEW;
+        elsif (TG_OP = 'DELETE') then
+            v_old_data := row_to_json(OLD);
+            insert into public.form_submission_audit ("submissionId", "dbUser", "actionTimestamp", "action", "originalData")
+            values (
+            OLD.id,
+            SESSION_USER,
+            now(),
+            'D',
+            v_old_data);
+        end if;
+    END;
+    $body$ LANGUAGE plpgsql`)
+    )
     .then(() => knex.schema.dropTableIfExists('scheduled_submission_deletion'))
     .then(() => knex.schema.dropTableIfExists('retention_policy'))
     .then(() => knex.schema.dropTableIfExists('retention_classification'));
