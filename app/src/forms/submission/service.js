@@ -169,7 +169,7 @@ const service = {
   deleteSubmissionAndRelatedData: async (submissionId) => {
     let trx;
     try {
-      trx = FormSubmission.startTransaction();
+      trx = await FormSubmission.startTransaction();
 
       // Delete in the correct order based on foreign key dependencies
 
