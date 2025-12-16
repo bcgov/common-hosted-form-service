@@ -68,7 +68,8 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
-    "eventStreamConfig": "Event Stream Configuration"
+    "eventStreamConfig": "Event Stream Configuration",
+    "printConfig": "Print Configuration"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -100,6 +101,26 @@
     "editTitle": "Edit Event Stream Configuration",
     "fetchError": "An error occurred while fetching the Event Stream Configuration.",
     "save": "Save"
+  },
+  "printConfig": {
+    "title": "Print Configuration",
+    "description": "Configure how users can print form submissions",
+    "typeDefault": "Default",
+    "typeDefaultDescription": "Users can choose print method (browser print or template)",
+    "typeDirect": "Direct Print",
+    "typeDirectDescription": "Users print directly using a pre-configured template (PDF output)",
+    "selectTemplate": "Select Template",
+    "save": "Save Configuration",
+    "saving": "Saving...",
+    "saveSuccess": "Print configuration saved successfully",
+    "saveError": "An error occurred while saving print configuration",
+    "fetchError": "An error occurred while fetching print configuration",
+    "templateRequired": "Template is required when using Direct Print",
+    "noTemplatesAvailable": "No templates available. Please upload a template first.",
+    "templateDeleted": "The previously selected template has been deleted. Please select a new template.",
+    "currentConfig": "Current Configuration",
+    "type": "Type",
+    "template": "Template"
   },
   "encryptionKey": {
     "info": "Configure Encryption Keys for your form.",

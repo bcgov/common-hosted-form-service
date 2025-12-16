@@ -57,6 +57,10 @@ yarn-error.log*
 # devcontainer files
 !.devcontainer/chefs_local/local.sample.json
 
+# Docker Compose override files (local development)
+docker-compose.override.yml
+**/docker-compose.override.yml
+
 # temp office files
 ~$*
 *.*.bak

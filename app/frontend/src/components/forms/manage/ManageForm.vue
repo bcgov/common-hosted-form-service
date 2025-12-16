@@ -8,6 +8,7 @@ import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
 import ExternalAPIs from '~/components/forms/manage/ExternalAPIs.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
+import PrintConfig from '~/components/forms/manage/PrintConfig.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
@@ -25,6 +26,7 @@ const settingsPanel = ref(1);
 const subscription = ref(false);
 const subscriptionsPanel = ref(0);
 const versionsPanel = ref(0);
+const printConfigPanel = ref(1);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
@@ -307,6 +309,24 @@ defineExpose({
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ExternalAPIs />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- Print Configuration -->
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="printConfigPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="locale">
+            <strong>{{ $t('trans.manageForm.printConfig') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <PrintConfig />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
