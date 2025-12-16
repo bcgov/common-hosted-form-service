@@ -851,13 +851,14 @@ defineExpose({
             </template>
           </v-checkbox>
         </div>
-        <v-btn
-          prepend-icon="mdi:mdi-magnify"
-          variant="text"
-          @click="drawerOpen = true"
-        >
-          Advanced Search
-        </v-btn>
+        <div>
+          <AdvancedSubmissionSearch
+            v-model="drawerOpen"
+            :form-fields="formFields"
+            location="right"
+            @search="handleSearch"
+          />
+        </div>
 
         <div>
           <!-- search input -->
@@ -877,13 +878,6 @@ defineExpose({
           </div>
         </div>
       </div>
-      <!-- Drawer -->
-      <AdvancedSubmissionSearch
-        v-model="drawerOpen"
-        :form-fields="formFields"
-        location="right"
-        @search="handleSearch"
-      />
 
       <!-- table header -->
       <v-data-table-server
