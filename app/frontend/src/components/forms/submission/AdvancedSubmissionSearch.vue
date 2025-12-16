@@ -209,10 +209,10 @@ function clearAllApplied() {
               v-for="field in selectedFields"
               :key="field"
               closable
-              @click:close="removeField(field)"
               class="ma-1"
               color="primary"
               variant="outlined"
+              @click:close="removeField(field)"
             >
               {{ getLabel(field) }}
             </v-chip>
