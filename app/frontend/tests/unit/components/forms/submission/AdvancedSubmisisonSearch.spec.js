@@ -67,13 +67,13 @@ describe('AdvancedSubmissionSearch.vue', () => {
     expect(wrapper.emitted()['update:modelValue'][0]).toEqual([false]);
   });
 
-  it('emits search payload and closes drawer on emitSearch()', async () => {
+  it('emits search payload and closes drawer on emitSearchAndApply()', async () => {
     const wrapper = factory({ modelValue: true });
 
     wrapper.vm.searchQuery = 'abc';
     wrapper.vm.selectedFields = ['firstName', 'lastName'];
 
-    wrapper.vm.emitSearch();
+    wrapper.vm.emitSearchAndApply();
     await wrapper.vm.$nextTick();
 
     expect(wrapper.emitted().search[0][0]).toEqual({
