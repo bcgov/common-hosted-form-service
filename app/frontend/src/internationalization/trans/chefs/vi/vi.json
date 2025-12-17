@@ -881,7 +881,15 @@
     "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
     "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang",
     "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập.",
-    "fileUploadWarning": "Để tải lên tệp đính kèm của bạn, bạn phải nhấp vào nút 'Lưu dưới dạng bản nháp' hoặc gửi biểu mẫu của bạn. Nếu bạn thoát khỏi màn hình này, bạn sẽ mất tệp đính kèm của mình"
+    "fileUploadWarning": "Để tải lên tệp đính kèm của bạn, bạn phải nhấp vào nút 'Lưu dưới dạng bản nháp' hoặc gửi biểu mẫu của bạn. Nếu bạn thoát khỏi màn hình này, bạn sẽ mất tệp đính kèm của mình",
+    "enableAutoSave": "Bật bảo vệ tiến trình biểu mẫu – Tự động lưu tiến trình vào trình duyệt để khôi phục nếu trang bị đóng hoặc tải lại ngoài ý muốn"
+  },
+  "localAutosave": {
+    "title": "Khôi phục công việc của bạn?",
+    "message": "Tiến trình của phiên trước đã được lưu trong trình duyệt và có thể khôi phục ngay bây giờ, hoặc bạn có thể bắt đầu lại với biểu mẫu trống.",
+    "restore": "Khôi phục",
+    "discard": "Bắt đầu lại",
+    "restored": "Tiến trình của bạn từ phiên trước đã được khôi phục thành công."
   },
   "bCGovFooter": {
     "home": "Trang chủ",
