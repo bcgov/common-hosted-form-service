@@ -25,6 +25,8 @@ export const useRecordsManagementStore = defineStore('recordsManagement', {
         const notificationStore = useNotificationStore();
         // We ignore 404 errors because it just means a policy doesn't exist yet
         if (error.response && error.response.status === 404) {
+          // Reset to initial state so we don't show previous form's policy
+          this.formRetentionPolicy = getInitialRetentionPolicy();
           return;
         }
         notificationStore.addNotification({
