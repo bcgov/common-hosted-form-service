@@ -40,6 +40,23 @@ const { isRTL, form } = storeToRefs(formStore);
 
 const formId = computed(() => (properties.f ? properties.f : form.value.id));
 
+async function getReportName(printConfig, formValue, formIdValue) {
+  // If custom name is specified, use it
+  if (printConfig.reportNameOption === 'custom' && printConfig.reportName) {
+    return printConfig.reportName;
+  }
+
+  // Fetch form data if form name is missing
+  let formData = formValue;
+  if (!formData?.name) {
+    await formStore.fetchForm(formIdValue);
+    formData = form.value;
+  }
+
+  // Default: use form name only
+  return formData?.name || '';
+}
+
 function createBody(content, contentFileType, outputFileName, outputFileType) {
   return {
     options: {
@@ -55,6 +72,16 @@ function createBody(content, contentFileType, outputFileName, outputFileType) {
   };
 }
 
+async function generateDocument(submissionId, body, submission) {
+  if (submissionId?.length > 0) {
+    return await formService.docGen(submissionId, body);
+  }
+  return await utilsService.draftDocGen({
+    template: body,
+    submission: submission,
+  });
+}
+
 async function generateDirectPrint() {
   try {
     loading.value = true;
@@ -67,26 +94,35 @@ async function generateDirectPrint() {
 
     // Extract template content
     const temp = templateResponse.data.template.data;
-    const base64String = temp.map((code) => String.fromCharCode(code)).join('');
+    const base64String = temp
+      .map((code) => String.fromCodePoint(code))
+      .join('');
 
-    // Get template filename and extension
-    const { name, extension } = splitFileName(templateResponse.data.filename);
+    // Get template extension
+    const { extension } = splitFileName(templateResponse.data.filename);
     const outputFileType = properties.printConfig.outputFileType || 'pdf';
 
+    // Build report name based on printConfig options (fetches versions if needed)
+    const reportName = await getReportName(
+      properties.printConfig,
+      form.value,
+      formId.value
+    );
+
     // Create the request body
-    const body = createBody(base64String, extension, name, outputFileType);
+    const body = createBody(
+      base64String,
+      extension,
+      reportName,
+      outputFileType
+    );
 
     // Generate document
-    let response = null;
-    if (properties.submissionId?.length > 0) {
-      response = await formService.docGen(properties.submissionId, body);
-    } else {
-      const draftData = {
-        template: body,
-        submission: properties.submission,
-      };
-      response = await utilsService.draftDocGen(draftData);
-    }
+    const response = await generateDocument(
+      properties.submissionId,
+      body,
+      properties.submission
+    );
 
     // Create file to download
     const filename = getDisposition(response.headers['content-disposition']);

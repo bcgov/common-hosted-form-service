@@ -51,6 +51,8 @@ describe('DirectPrintButton.vue', () => {
           code: 'direct',
           templateId: 'test-template-id',
           outputFileType: 'pdf',
+          reportName: null,
+          reportNameOption: 'formName',
         },
       },
       global: {
@@ -113,6 +115,8 @@ describe('DirectPrintButton.vue', () => {
           code: 'direct',
           templateId: 'test-template-id',
           outputFileType: 'pdf',
+          reportName: null,
+          reportNameOption: 'formName',
         },
       },
       global: {
@@ -130,6 +134,9 @@ describe('DirectPrintButton.vue', () => {
       'test-template-id'
     );
     expect(docGenSpy).toHaveBeenCalledTimes(1);
+    // Verify reportName is set to form name
+    const docGenCall = docGenSpy.mock.calls[0];
+    expect(docGenCall[1].options.reportName).toBe('Test Form');
     expect(createDownloadSpy).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -299,5 +306,204 @@ describe('DirectPrintButton.vue', () => {
     await flushPromises();
 
     expect(wrapper.vm.loading).toBe(false);
+  });
+
+  it('uses custom reportName when reportNameOption is custom', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const documentTemplateReadSpy = vi.spyOn(
+      formService,
+      'documentTemplateRead'
+    );
+    documentTemplateReadSpy.mockResolvedValue({
+      data: {
+        template: {
+          data: [65, 66, 67],
+        },
+        filename: 'test-template.docx',
+      },
+    });
+
+    const docGenSpy = vi.spyOn(formService, 'docGen');
+    docGenSpy.mockResolvedValue({
+      headers: {
+        'content-disposition': 'attachment; filename="custom-name.pdf"',
+      },
+      data: new Blob(['test'], { type: 'application/pdf' }),
+    });
+
+    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
+    splitFileNameSpy.mockReturnValue({
+      name: 'test-template',
+      extension: 'docx',
+    });
+
+    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
+    getDispositionSpy.mockReturnValue('custom-name.pdf');
+
+    const wrapper = mount(DirectPrintButton, {
+      props: {
+        submissionId: 'test-submission-id',
+        printConfig: {
+          code: 'direct',
+          templateId: 'test-template-id',
+          outputFileType: 'pdf',
+          reportName: 'Custom Report Name',
+          reportNameOption: 'custom',
+        },
+      },
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    await wrapper.vm.generateDirectPrint();
+
+    const docGenCall = docGenSpy.mock.calls[0];
+    expect(docGenCall[1].options.reportName).toBe('Custom Report Name');
+  });
+
+  it('uses form name only when reportNameOption is formName', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const documentTemplateReadSpy = vi.spyOn(
+      formService,
+      'documentTemplateRead'
+    );
+    documentTemplateReadSpy.mockResolvedValue({
+      data: {
+        template: {
+          data: [65, 66, 67],
+        },
+        filename: 'test-template.docx',
+      },
+    });
+
+    const docGenSpy = vi.spyOn(formService, 'docGen');
+    docGenSpy.mockResolvedValue({
+      headers: {
+        'content-disposition': 'attachment; filename="test.pdf"',
+      },
+      data: new Blob(['test'], { type: 'application/pdf' }),
+    });
+
+    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
+    splitFileNameSpy.mockReturnValue({
+      name: 'test-template',
+      extension: 'docx',
+    });
+
+    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
+    getDispositionSpy.mockReturnValue('test.pdf');
+
+    const wrapper = mount(DirectPrintButton, {
+      props: {
+        submissionId: 'test-submission-id',
+        printConfig: {
+          code: 'direct',
+          templateId: 'test-template-id',
+          outputFileType: 'pdf',
+          reportName: null,
+          reportNameOption: 'formName',
+        },
+      },
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    await wrapper.vm.generateDirectPrint();
+
+    const docGenCall = docGenSpy.mock.calls[0];
+    expect(docGenCall[1].options.reportName).toBe('Test Form');
+  });
+
+  it('fetches form when form name is missing', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      // name is missing
+    };
+
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockResolvedValue();
+
+    const documentTemplateReadSpy = vi.spyOn(
+      formService,
+      'documentTemplateRead'
+    );
+    documentTemplateReadSpy.mockResolvedValue({
+      data: {
+        template: {
+          data: [65, 66, 67],
+        },
+        filename: 'test-template.docx',
+      },
+    });
+
+    const docGenSpy = vi.spyOn(formService, 'docGen');
+    docGenSpy.mockResolvedValue({
+      headers: {
+        'content-disposition': 'attachment; filename="test.pdf"',
+      },
+      data: new Blob(['test'], { type: 'application/pdf' }),
+    });
+
+    const createDownloadSpy = vi.spyOn(
+      printOptionsComposables,
+      'createDownload'
+    );
+    createDownloadSpy.mockImplementation(() => {});
+
+    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
+    splitFileNameSpy.mockReturnValue({
+      name: 'test-template',
+      extension: 'docx',
+    });
+
+    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
+    getDispositionSpy.mockReturnValue('test.pdf');
+
+    // After fetchForm, update form with name
+    fetchFormSpy.mockImplementation(() => {
+      formStore.form = {
+        id: 'test-form-id',
+        name: 'Fetched Form Name',
+      };
+      return Promise.resolve();
+    });
+
+    const wrapper = mount(DirectPrintButton, {
+      props: {
+        submissionId: 'test-submission-id',
+        printConfig: {
+          code: 'direct',
+          templateId: 'test-template-id',
+          outputFileType: 'pdf',
+          reportName: null,
+          reportNameOption: 'formName',
+        },
+      },
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    await wrapper.vm.generateDirectPrint();
+
+    expect(fetchFormSpy).toHaveBeenCalledWith('test-form-id');
+    const docGenCall = docGenSpy.mock.calls[0];
+    expect(docGenCall[1].options.reportName).toBe('Fetched Form Name');
   });
 });

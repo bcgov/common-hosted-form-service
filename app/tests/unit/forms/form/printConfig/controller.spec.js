@@ -18,6 +18,8 @@ const validDefaultConfig = {
   code: PrintConfigTypes.DEFAULT,
   templateId: null,
   outputFileType: null,
+  reportName: null,
+  reportNameOption: null,
 };
 
 const validDirectConfig = {
@@ -26,6 +28,8 @@ const validDirectConfig = {
   code: PrintConfigTypes.DIRECT,
   templateId: templateId,
   outputFileType: 'pdf',
+  reportName: null,
+  reportNameOption: 'formName',
 };
 
 const validRequest = {
@@ -140,6 +144,34 @@ describe('upsertPrintConfig', () => {
 
       expect(service.upsert).toBeCalledWith(updateRequest.params.formId, updateRequest.body, updateRequest.currentUser);
       expect(res.json).toBeCalledWith(validDirectConfig);
+      expect(res.status).toBeCalledWith(200);
+      expect(next).not.toBeCalled();
+    });
+
+    it('has a successful service call updating config with reportName and reportNameOption', async () => {
+      const updateRequest = {
+        ...validRequest,
+        body: {
+          code: PrintConfigTypes.DIRECT,
+          templateId: templateId,
+          outputFileType: 'pdf',
+          reportName: 'Custom Report Name',
+          reportNameOption: 'custom',
+        },
+      };
+      const configWithReportName = {
+        ...validDirectConfig,
+        reportName: 'Custom Report Name',
+        reportNameOption: 'custom',
+      };
+      service.upsert = jest.fn().mockResolvedValue(configWithReportName);
+      const req = getMockReq(updateRequest);
+      const { res, next } = getMockRes();
+
+      await controller.upsertPrintConfig(req, res, next);
+
+      expect(service.upsert).toBeCalledWith(updateRequest.params.formId, updateRequest.body, updateRequest.currentUser);
+      expect(res.json).toBeCalledWith(configWithReportName);
       expect(res.status).toBeCalledWith(200);
       expect(next).not.toBeCalled();
     });

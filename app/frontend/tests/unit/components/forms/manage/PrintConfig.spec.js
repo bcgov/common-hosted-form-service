@@ -8,7 +8,6 @@ import { fetchDocumentTemplates } from '~/composables/documentTemplate';
 import { printConfigService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { formService } from '~/services';
 
 vi.mock('~/composables/documentTemplate');
 
@@ -84,6 +83,8 @@ describe('PrintConfig.vue', () => {
         code: 'direct',
         templateId: 'test-template-id',
         outputFileType: 'pdf',
+        reportName: null,
+        reportNameOption: 'formName',
       },
     });
 
@@ -108,6 +109,8 @@ describe('PrintConfig.vue', () => {
     expect(readPrintConfigSpy).toHaveBeenCalledWith('test-form-id');
     expect(wrapper.vm.localConfig.code).toBe('direct');
     expect(wrapper.vm.localConfig.templateId).toBe('test-template-id');
+    expect(wrapper.vm.localConfig.reportNameOption).toBe('formName');
+    expect(wrapper.vm.localConfig.reportName).toBeNull();
   });
 
   it('handles 404 error when config does not exist', async () => {
@@ -178,6 +181,8 @@ describe('PrintConfig.vue', () => {
       code: 'direct',
       templateId: 'test-template-id',
       outputFileType: 'pdf',
+      reportName: null,
+      reportNameOption: 'formName',
     });
     expect(addNotificationSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -220,6 +225,8 @@ describe('PrintConfig.vue', () => {
       code: 'default',
       templateId: null,
       outputFileType: null,
+      reportName: null,
+      reportNameOption: null,
     });
   });
 
@@ -349,5 +356,197 @@ describe('PrintConfig.vue', () => {
     await flushPromises();
 
     expect(wrapper.vm.isDirectPrint).toBe(true);
+  });
+
+  it('loads reportName and reportNameOption from API', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({
+      data: {
+        code: 'direct',
+        templateId: 'test-template-id',
+        outputFileType: 'pdf',
+        reportName: 'Custom Report Name',
+        reportNameOption: 'custom',
+      },
+    });
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([
+      {
+        filename: 'test-template.docx',
+        templateId: 'test-template-id',
+        createdAt: '2024-01-01',
+        actions: '',
+      },
+    ]);
+
+    const wrapper = mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.localConfig.reportNameOption).toBe('custom');
+    expect(wrapper.vm.localConfig.reportName).toBe('Custom Report Name');
+  });
+
+  it('defaults reportNameOption to formName when not provided', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({
+      data: {
+        code: 'direct',
+        templateId: 'test-template-id',
+        outputFileType: 'pdf',
+        reportName: null,
+        reportNameOption: null,
+      },
+    });
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([
+      {
+        filename: 'test-template.docx',
+        templateId: 'test-template-id',
+        createdAt: '2024-01-01',
+        actions: '',
+      },
+    ]);
+
+    const wrapper = mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.localConfig.reportNameOption).toBe('formName');
+    expect(wrapper.vm.localConfig.reportName).toBeNull();
+  });
+
+  it('saves reportName and reportNameOption when custom option is selected', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({ data: null });
+
+    const upsertPrintConfigSpy = vi.spyOn(
+      printConfigService,
+      'upsertPrintConfig'
+    );
+    upsertPrintConfigSpy.mockResolvedValue({
+      data: {
+        code: 'direct',
+        templateId: 'test-template-id',
+        outputFileType: 'pdf',
+        reportName: 'My Custom Name',
+        reportNameOption: 'custom',
+      },
+    });
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([
+      {
+        filename: 'test-template.docx',
+        templateId: 'test-template-id',
+        createdAt: '2024-01-01',
+        actions: '',
+      },
+    ]);
+
+    const wrapper = mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.localConfig.code = 'direct';
+    wrapper.vm.localConfig.templateId = 'test-template-id';
+    wrapper.vm.localConfig.reportNameOption = 'custom';
+    wrapper.vm.localConfig.reportName = 'My Custom Name';
+
+    await wrapper.vm.handleSave();
+
+    expect(upsertPrintConfigSpy).toHaveBeenCalledWith('test-form-id', {
+      code: 'direct',
+      templateId: 'test-template-id',
+      outputFileType: 'pdf',
+      reportNameOption: 'custom',
+      reportName: 'My Custom Name',
+    });
+  });
+
+  it('saves null reportName when formName option is selected', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({ data: null });
+
+    const upsertPrintConfigSpy = vi.spyOn(
+      printConfigService,
+      'upsertPrintConfig'
+    );
+    upsertPrintConfigSpy.mockResolvedValue({
+      data: {
+        code: 'direct',
+        templateId: 'test-template-id',
+        outputFileType: 'pdf',
+        reportName: null,
+        reportNameOption: 'formName',
+      },
+    });
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([
+      {
+        filename: 'test-template.docx',
+        templateId: 'test-template-id',
+        createdAt: '2024-01-01',
+        actions: '',
+      },
+    ]);
+
+    const wrapper = mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.localConfig.code = 'direct';
+    wrapper.vm.localConfig.templateId = 'test-template-id';
+    wrapper.vm.localConfig.reportNameOption = 'formName';
+    wrapper.vm.localConfig.reportName = null;
+
+    await wrapper.vm.handleSave();
+
+    expect(upsertPrintConfigSpy).toHaveBeenCalledWith('test-form-id', {
+      code: 'direct',
+      templateId: 'test-template-id',
+      outputFileType: 'pdf',
+      reportNameOption: 'formName',
+      reportName: null,
+    });
   });
 });

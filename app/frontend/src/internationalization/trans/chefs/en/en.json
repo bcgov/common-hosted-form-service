@@ -120,7 +120,14 @@
     "templateDeleted": "The previously selected template has been deleted. Please select a new template.",
     "currentConfig": "Current Configuration",
     "type": "Type",
-    "template": "Template"
+    "template": "Template",
+    "reportNameLabel": "Output File Name",
+    "reportNameOptionFormName": "Use Form Name",
+    "reportNameOptionFormNameDescription": "Output file will be named using the form name",
+    "reportNameOptionCustom": "Use Custom Name",
+    "reportNameOptionCustomDescription": "Enter a custom name for the output file",
+    "reportNameCustomInput": "Custom File Name",
+    "reportNameCustomInputHint": "Enter the custom name for the generated document"
   },
   "encryptionKey": {
     "info": "Configure Encryption Keys for your form.",

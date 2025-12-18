@@ -32,6 +32,8 @@ exports.up = function (knex) {
           table.string('code').references('code').inTable('form_print_config_type_code').notNullable().index();
           table.uuid('templateId').references('id').inTable('document_template');
           table.string('outputFileType', 10).defaultTo('pdf');
+          table.string('reportName').nullable();
+          table.string('reportNameOption').nullable();
           stamps(knex, table);
         })
       )

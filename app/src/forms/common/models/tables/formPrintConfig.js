@@ -68,6 +68,12 @@ class FormPrintConfig extends Timestamps(Model) {
           anyOf: [{ type: 'string', pattern: Regex.UUID }, { type: 'null' }],
         },
         outputFileType: { type: ['string', 'null'] },
+        reportName: {
+          anyOf: [{ type: 'string' }, { type: 'null' }],
+        },
+        reportNameOption: {
+          anyOf: [{ type: 'string' }, { type: 'null' }],
+        },
         ...stamps,
       },
       additionalProperties: false,

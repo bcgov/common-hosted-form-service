@@ -15,6 +15,8 @@ const printConfig = ref(null);
 const localConfig = ref({
   code: 'default',
   templateId: null,
+  reportNameOption: 'formName',
+  reportName: null,
 });
 const loading = ref(true);
 const saving = ref(false);
@@ -62,12 +64,16 @@ async function fetchPrintConfig() {
       localConfig.value = {
         code: response.data.code || 'default',
         templateId: response.data.templateId || null,
+        reportNameOption: response.data.reportNameOption || 'formName',
+        reportName: response.data.reportName || null,
       };
     } else {
       // No config exists, use defaults
       localConfig.value = {
         code: 'default',
         templateId: null,
+        reportNameOption: 'formName',
+        reportName: null,
       };
     }
   } catch (e) {
@@ -80,6 +86,8 @@ async function fetchPrintConfig() {
     localConfig.value = {
       code: 'default',
       templateId: null,
+      reportNameOption: 'formName',
+      reportName: null,
     };
   }
 }
@@ -125,9 +133,19 @@ async function handleSave() {
     if (localConfig.value.code === 'direct') {
       data.templateId = localConfig.value.templateId;
       data.outputFileType = 'pdf';
+      // Include reportNameOption and reportName
+      data.reportNameOption = localConfig.value.reportNameOption || 'formName';
+      // Only include reportName if custom option is selected
+      if (localConfig.value.reportNameOption === 'custom') {
+        data.reportName = localConfig.value.reportName || form.value.name;
+      } else {
+        data.reportName = null;
+      }
     } else {
       data.templateId = null;
       data.outputFileType = null;
+      data.reportNameOption = null;
+      data.reportName = null;
     }
 
     await printConfigService.upsertPrintConfig(form.value.id, data);
@@ -195,7 +213,7 @@ async function handleSave() {
 
     <!-- Template Selection (when Direct is selected) -->
     <v-expand-transition>
-      <div v-if="isDirectPrint" class="mb-4">
+      <div v-if="isDirectPrint" class="mb-4 pl-12 pr-12">
         <v-alert
           v-if="!hasTemplates"
           type="warning"
@@ -214,7 +232,70 @@ async function handleSave() {
           :lang="locale"
           :disabled="!hasTemplates"
           clearable
+          class="mb-4"
         />
+
+        <!-- Output File Name Options (when Direct is selected) -->
+        <div class="mb-4">
+          <v-radio-group v-model="localConfig.reportNameOption" :lang="locale">
+            <template #label>
+              <div class="font-weight-bold">
+                {{ $t('trans.printConfig.reportNameLabel') }}
+              </div>
+            </template>
+            <v-radio
+              value="formName"
+              :label="$t('trans.printConfig.reportNameOptionFormName')"
+            >
+              <template #label>
+                <div>
+                  <div class="font-weight-medium">
+                    {{ $t('trans.printConfig.reportNameOptionFormName') }}
+                  </div>
+                  <div class="text-caption text-medium-emphasis">
+                    {{
+                      $t(
+                        'trans.printConfig.reportNameOptionFormNameDescription'
+                      )
+                    }}
+                  </div>
+                </div>
+              </template>
+            </v-radio>
+            <v-radio
+              value="custom"
+              :label="$t('trans.printConfig.reportNameOptionCustom')"
+            >
+              <template #label>
+                <div>
+                  <div class="font-weight-medium">
+                    {{ $t('trans.printConfig.reportNameOptionCustom') }}
+                  </div>
+                  <div class="text-caption text-medium-emphasis">
+                    {{
+                      $t('trans.printConfig.reportNameOptionCustomDescription')
+                    }}
+                  </div>
+                </div>
+              </template>
+            </v-radio>
+          </v-radio-group>
+
+          <!-- Custom Name Input (shown only when custom option is selected) -->
+          <v-expand-transition>
+            <v-text-field
+              v-if="localConfig.reportNameOption === 'custom'"
+              v-model="localConfig.reportName"
+              :label="$t('trans.printConfig.reportNameCustomInput')"
+              :hint="$t('trans.printConfig.reportNameCustomInputHint')"
+              :placeholder="form.name"
+              variant="outlined"
+              :lang="locale"
+              persistent-hint
+              class="mt-2"
+            />
+          </v-expand-transition>
+        </div>
       </div>
     </v-expand-transition>
 

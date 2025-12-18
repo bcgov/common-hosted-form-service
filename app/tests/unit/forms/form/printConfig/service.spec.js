@@ -29,6 +29,8 @@ const mockPrintConfig = {
   code: PrintConfigTypes.DIRECT,
   templateId: templateId,
   outputFileType: 'pdf',
+  reportName: null,
+  reportNameOption: 'formName',
   createdBy: currentUser.usernameIdp,
 };
 
@@ -250,6 +252,8 @@ describe('upsert', () => {
         code: PrintConfigTypes.DIRECT,
         templateId: templateId,
         outputFileType: 'pdf',
+        reportName: null,
+        reportNameOption: null,
         updatedBy: currentUser.usernameIdp,
       },
       mockTransaction
@@ -420,5 +424,99 @@ describe('upsert', () => {
       mockTransaction
     );
     expect(uuid.validate(queryHelpers.createPrintConfig.mock.calls[0][0].id)).toBe(true);
+  });
+
+  it('handles reportName and reportNameOption when updating config', async () => {
+    const data = {
+      code: PrintConfigTypes.DIRECT,
+      templateId: templateId,
+      outputFileType: 'pdf',
+      reportName: 'Custom Report Name',
+      reportNameOption: 'custom',
+    };
+    const updatedConfig = { ...mockPrintConfig, ...data };
+
+    queryHelpers.findTypeCodeById = jest.fn().mockResolvedValue(mockTypeCode);
+    queryHelpers.findTemplateById = jest.fn().mockResolvedValue(mockTemplate);
+    queryHelpers.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+    queryHelpers.findPrintConfigByFormId = jest.fn().mockResolvedValueOnce(mockPrintConfig).mockResolvedValueOnce(updatedConfig);
+    queryHelpers.updatePrintConfig = jest.fn().mockResolvedValue(updatedConfig);
+
+    const result = await service.upsert(formId, data, currentUser);
+
+    expect(result).toEqual(updatedConfig);
+    expect(queryHelpers.updatePrintConfig).toHaveBeenCalledWith(
+      mockPrintConfig.id,
+      {
+        code: PrintConfigTypes.DIRECT,
+        templateId: templateId,
+        outputFileType: 'pdf',
+        reportName: 'Custom Report Name',
+        reportNameOption: 'custom',
+        updatedBy: currentUser.usernameIdp,
+      },
+      mockTransaction
+    );
+  });
+
+  it('handles null reportName and reportNameOption when updating config', async () => {
+    const data = {
+      code: PrintConfigTypes.DIRECT,
+      templateId: templateId,
+      outputFileType: 'pdf',
+      reportName: null,
+      reportNameOption: 'formName',
+    };
+    const updatedConfig = { ...mockPrintConfig, ...data };
+
+    queryHelpers.findTypeCodeById = jest.fn().mockResolvedValue(mockTypeCode);
+    queryHelpers.findTemplateById = jest.fn().mockResolvedValue(mockTemplate);
+    queryHelpers.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+    queryHelpers.findPrintConfigByFormId = jest.fn().mockResolvedValueOnce(mockPrintConfig).mockResolvedValueOnce(updatedConfig);
+    queryHelpers.updatePrintConfig = jest.fn().mockResolvedValue(updatedConfig);
+
+    const result = await service.upsert(formId, data, currentUser);
+
+    expect(result).toEqual(updatedConfig);
+    expect(queryHelpers.updatePrintConfig).toHaveBeenCalledWith(
+      mockPrintConfig.id,
+      {
+        code: PrintConfigTypes.DIRECT,
+        templateId: templateId,
+        outputFileType: 'pdf',
+        reportName: null,
+        reportNameOption: 'formName',
+        updatedBy: currentUser.usernameIdp,
+      },
+      mockTransaction
+    );
+  });
+
+  it('handles reportName and reportNameOption when creating new config', async () => {
+    const data = {
+      code: PrintConfigTypes.DIRECT,
+      templateId: templateId,
+      outputFileType: 'pdf',
+      reportName: 'My Custom Name',
+      reportNameOption: 'custom',
+    };
+    const newConfig = { ...mockPrintConfig, ...data };
+
+    queryHelpers.findTypeCodeById = jest.fn().mockResolvedValue(mockTypeCode);
+    queryHelpers.findTemplateById = jest.fn().mockResolvedValue(mockTemplate);
+    queryHelpers.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+    queryHelpers.findPrintConfigByFormId = jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(newConfig);
+    queryHelpers.createPrintConfig = jest.fn().mockResolvedValue(newConfig);
+
+    const result = await service.upsert(formId, data, currentUser);
+
+    expect(result).toEqual(newConfig);
+    expect(queryHelpers.createPrintConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reportName: 'My Custom Name',
+        reportNameOption: 'custom',
+      }),
+      mockTransaction
+    );
   });
 });

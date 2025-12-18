@@ -107,6 +107,8 @@ const service = {
             code: data.code,
             templateId: data.templateId,
             outputFileType: data.outputFileType,
+            reportName: data.reportName || null,
+            reportNameOption: data.reportNameOption || null,
             updatedBy: currentUser.usernameIdp,
           },
           trx
