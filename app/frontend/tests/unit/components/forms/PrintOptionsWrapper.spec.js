@@ -4,8 +4,6 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
-import DirectPrintButton from '~/components/forms/DirectPrintButton.vue';
-import PrintOptions from '~/components/forms/PrintOptions.vue';
 import { printConfigService } from '~/services';
 import { useFormStore } from '~/store/form';
 
@@ -17,6 +15,30 @@ const STUBS = {
     template: '<div class="print-options-stub"></div>',
   },
 };
+
+function createDelayedResponse(data, delay = 100) {
+  const resolveAfterDelay = (resolve) => {
+    setTimeout(() => {
+      resolve(data);
+    }, delay);
+  };
+
+  return new Promise(resolveAfterDelay);
+}
+
+function createMountOptions(piniaInstance, props = {}) {
+  return {
+    props: {
+      submissionId: 'test-submission-id',
+      f: 'test-form-id',
+      ...props,
+    },
+    global: {
+      plugins: [piniaInstance],
+      stubs: STUBS,
+    },
+  };
+}
 
 describe('PrintOptionsWrapper.vue', () => {
   const pinia = createTestingPinia();
@@ -35,25 +57,12 @@ describe('PrintOptionsWrapper.vue', () => {
     };
 
     const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
-    readPrintConfigSpy.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({ data: null });
-          }, 100);
-        })
+    readPrintConfigSpy.mockImplementation(() =>
+      createDelayedResponse({ data: null })
     );
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: 'test-form-id',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(PrintOptionsWrapper, mountOptions);
 
     // Initially should show PrintOptions while loading
     expect(wrapper.find('.print-options-stub').exists()).toBeTruthy();
@@ -77,16 +86,8 @@ describe('PrintOptionsWrapper.vue', () => {
       },
     });
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: 'test-form-id',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(PrintOptionsWrapper, mountOptions);
 
     await flushPromises();
 
@@ -108,16 +109,8 @@ describe('PrintOptionsWrapper.vue', () => {
       },
     });
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: 'test-form-id',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(PrintOptionsWrapper, mountOptions);
 
     await flushPromises();
 
@@ -139,16 +132,8 @@ describe('PrintOptionsWrapper.vue', () => {
       },
     });
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: 'test-form-id',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(PrintOptionsWrapper, mountOptions);
 
     await flushPromises();
 
@@ -167,16 +152,8 @@ describe('PrintOptionsWrapper.vue', () => {
     error.response = { status: 404 };
     readPrintConfigSpy.mockRejectedValue(error);
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: 'test-form-id',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(PrintOptionsWrapper, mountOptions);
 
     await flushPromises();
 
@@ -193,16 +170,8 @@ describe('PrintOptionsWrapper.vue', () => {
     const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
     readPrintConfigSpy.mockResolvedValue({ data: null });
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: 'prop-form-id',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia, { f: 'prop-form-id' });
+    mount(PrintOptionsWrapper, mountOptions);
 
     await flushPromises();
 
@@ -218,16 +187,8 @@ describe('PrintOptionsWrapper.vue', () => {
     const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
     readPrintConfigSpy.mockResolvedValue({ data: null });
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: '',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia, { f: '' });
+    mount(PrintOptionsWrapper, mountOptions);
 
     await flushPromises();
 
@@ -243,16 +204,8 @@ describe('PrintOptionsWrapper.vue', () => {
     const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
     readPrintConfigSpy.mockResolvedValue({ data: null });
 
-    const wrapper = mount(PrintOptionsWrapper, {
-      props: {
-        submissionId: 'test-submission-id',
-        f: '',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia, { f: '' });
+    mount(PrintOptionsWrapper, mountOptions);
 
     await flushPromises();
 

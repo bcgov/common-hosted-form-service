@@ -54,8 +54,15 @@ const fetchPrintConfig = async (currentFormId) => {
   } catch (error) {
     // Intentionally catch and ignore: API doesn't exist or config not found
     // This is expected behavior - gracefully fall back to PrintOptions (current behavior)
-    // No error handling needed as fallback is the default behavior
-    printConfig.value = null;
+    // Only ignore 404 (not found) or network errors; re-throw unexpected errors
+    const isNotFound = error?.response?.status === 404;
+    const isNetworkError = !error?.response;
+    if (isNotFound || isNetworkError) {
+      printConfig.value = null;
+    } else {
+      // Re-throw unexpected errors
+      throw error;
+    }
   } finally {
     loading.value = false;
   }

@@ -6,7 +6,6 @@ import { nextTick } from 'vue';
 
 import FormMinistryProfile from '~/components/designer/profile/FormMinistryProfile.vue';
 import { useFormStore } from '~/store/form';
-import { Ministries } from '~/utils/constants';
 
 describe('FormMinistryProfile.vue', () => {
   const pinia = createTestingPinia();

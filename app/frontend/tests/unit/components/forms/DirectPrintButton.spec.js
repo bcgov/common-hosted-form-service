@@ -23,6 +23,93 @@ const STUBS = {
   },
 };
 
+function createPrintConfig(overrides = {}) {
+  return {
+    code: 'direct',
+    templateId: 'test-template-id',
+    outputFileType: 'pdf',
+    reportName: null,
+    reportNameOption: 'formName',
+    ...overrides,
+  };
+}
+
+function createMountOptions(piniaInstance, props = {}) {
+  return {
+    props: {
+      submissionId: 'test-submission-id',
+      printConfig: createPrintConfig(),
+      ...props,
+    },
+    global: {
+      plugins: [piniaInstance],
+      stubs: STUBS,
+    },
+  };
+}
+
+function createTemplateResponse() {
+  return {
+    data: {
+      template: {
+        data: [65, 66, 67],
+      },
+      filename: 'test-template.docx',
+    },
+  };
+}
+
+function createDocGenResponse(filename = 'test.pdf') {
+  return {
+    headers: {
+      'content-disposition': `attachment; filename="${filename}"`,
+    },
+    data: new Blob(['test'], { type: 'application/pdf' }),
+  };
+}
+
+function setupCommonMocks() {
+  const documentTemplateReadSpy = vi
+    .spyOn(formService, 'documentTemplateRead')
+    .mockResolvedValue(createTemplateResponse());
+
+  const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
+  splitFileNameSpy.mockReturnValue({
+    name: 'test-template',
+    extension: 'docx',
+  });
+
+  const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
+  getDispositionSpy.mockReturnValue('test.pdf');
+
+  const createDownloadSpy = vi.spyOn(printOptionsComposables, 'createDownload');
+  createDownloadSpy.mockImplementation(() => {});
+
+  return {
+    documentTemplateReadSpy,
+    splitFileNameSpy,
+    getDispositionSpy,
+    createDownloadSpy,
+  };
+}
+
+function createDelayedTemplateResponse(delay = 100) {
+  const templateData = {
+    data: {
+      template: { data: [65] },
+      filename: 'test.docx',
+    },
+  };
+
+  const resolveAfterDelay = (resolve) => {
+    setTimeout(() => {
+      resolve(templateData);
+    }, delay);
+  };
+
+  return new Promise(resolveAfterDelay);
+}
+
 describe('DirectPrintButton.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
@@ -44,22 +131,8 @@ describe('DirectPrintButton.vue', () => {
       name: 'Test Form',
     };
 
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: 'test-submission-id',
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-          reportName: null,
-          reportNameOption: 'formName',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
 
@@ -72,72 +145,25 @@ describe('DirectPrintButton.vue', () => {
       name: 'Test Form',
     };
 
-    const documentTemplateReadSpy = vi.spyOn(
-      formService,
-      'documentTemplateRead'
-    );
-    documentTemplateReadSpy.mockResolvedValue({
-      data: {
-        template: {
-          data: [65, 66, 67], // ABC in char codes
-        },
-        filename: 'test-template.docx',
-      },
-    });
+    const mocks = setupCommonMocks();
+    const docGenSpy = vi
+      .spyOn(formService, 'docGen')
+      .mockResolvedValue(createDocGenResponse());
 
-    const docGenSpy = vi.spyOn(formService, 'docGen');
-    docGenSpy.mockResolvedValue({
-      headers: {
-        'content-disposition': 'attachment; filename="test.pdf"',
-      },
-      data: new Blob(['test'], { type: 'application/pdf' }),
-    });
-
-    const createDownloadSpy = vi.spyOn(
-      printOptionsComposables,
-      'createDownload'
-    );
-    createDownloadSpy.mockImplementation(() => {});
-
-    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
-    splitFileNameSpy.mockReturnValue({
-      name: 'test-template',
-      extension: 'docx',
-    });
-
-    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
-    getDispositionSpy.mockReturnValue('test.pdf');
-
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: 'test-submission-id',
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-          reportName: null,
-          reportNameOption: 'formName',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
-
     await wrapper.vm.generateDirectPrint();
 
-    expect(documentTemplateReadSpy).toHaveBeenCalledWith(
+    expect(mocks.documentTemplateReadSpy).toHaveBeenCalledWith(
       'test-form-id',
       'test-template-id'
     );
     expect(docGenSpy).toHaveBeenCalledTimes(1);
-    // Verify reportName is set to form name
     const docGenCall = docGenSpy.mock.calls[0];
     expect(docGenCall[1].options.reportName).toBe('Test Form');
-    expect(createDownloadSpy).toHaveBeenCalledTimes(1);
+    expect(mocks.createDownloadSpy).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         text: 'trans.printOptions.docGrnSucess',
@@ -151,68 +177,26 @@ describe('DirectPrintButton.vue', () => {
       name: 'Test Form',
     };
 
-    const documentTemplateReadSpy = vi.spyOn(
-      formService,
-      'documentTemplateRead'
-    );
-    documentTemplateReadSpy.mockResolvedValue({
-      data: {
-        template: {
-          data: [65, 66, 67],
-        },
-        filename: 'test-template.docx',
-      },
+    const mocks = setupCommonMocks();
+    const draftDocGenSpy = vi
+      .spyOn(utilsService, 'draftDocGen')
+      .mockResolvedValue(createDocGenResponse());
+
+    const mountOptions = createMountOptions(pinia, {
+      submissionId: '',
+      submission: { test: 'data' },
     });
-
-    const draftDocGenSpy = vi.spyOn(utilsService, 'draftDocGen');
-    draftDocGenSpy.mockResolvedValue({
-      headers: {
-        'content-disposition': 'attachment; filename="test.pdf"',
-      },
-      data: new Blob(['test'], { type: 'application/pdf' }),
-    });
-
-    const createDownloadSpy = vi.spyOn(
-      printOptionsComposables,
-      'createDownload'
-    );
-    createDownloadSpy.mockImplementation(() => {});
-
-    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
-    splitFileNameSpy.mockReturnValue({
-      name: 'test-template',
-      extension: 'docx',
-    });
-
-    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
-    getDispositionSpy.mockReturnValue('test.pdf');
-
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: '',
-        submission: { test: 'data' },
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
-
     await wrapper.vm.generateDirectPrint();
 
-    expect(documentTemplateReadSpy).toHaveBeenCalledWith(
+    expect(mocks.documentTemplateReadSpy).toHaveBeenCalledWith(
       'test-form-id',
       'test-template-id'
     );
     expect(draftDocGenSpy).toHaveBeenCalledTimes(1);
-    expect(createDownloadSpy).toHaveBeenCalledTimes(1);
+    expect(mocks.createDownloadSpy).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         text: 'trans.printOptions.docGrnSucess',
@@ -226,29 +210,14 @@ describe('DirectPrintButton.vue', () => {
       name: 'Test Form',
     };
 
-    const documentTemplateReadSpy = vi.spyOn(
-      formService,
-      'documentTemplateRead'
+    vi.spyOn(formService, 'documentTemplateRead').mockRejectedValue(
+      new Error('Test error')
     );
-    documentTemplateReadSpy.mockRejectedValue(new Error('Test error'));
 
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: 'test-submission-id',
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
-
     await wrapper.vm.generateDirectPrint();
 
     expect(addNotificationSpy).toHaveBeenCalledWith(
@@ -264,38 +233,12 @@ describe('DirectPrintButton.vue', () => {
       name: 'Test Form',
     };
 
-    const documentTemplateReadSpy = vi.spyOn(
-      formService,
-      'documentTemplateRead'
-    );
-    documentTemplateReadSpy.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({
-              data: {
-                template: { data: [65] },
-                filename: 'test.docx',
-              },
-            });
-          }, 100);
-        })
+    vi.spyOn(formService, 'documentTemplateRead').mockImplementation(
+      createDelayedTemplateResponse
     );
 
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: 'test-submission-id',
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
 
@@ -314,52 +257,19 @@ describe('DirectPrintButton.vue', () => {
       name: 'Test Form',
     };
 
-    const documentTemplateReadSpy = vi.spyOn(
-      formService,
-      'documentTemplateRead'
-    );
-    documentTemplateReadSpy.mockResolvedValue({
-      data: {
-        template: {
-          data: [65, 66, 67],
-        },
-        filename: 'test-template.docx',
-      },
-    });
+    const mocks = setupCommonMocks();
+    mocks.getDispositionSpy.mockReturnValue('custom-name.pdf');
 
-    const docGenSpy = vi.spyOn(formService, 'docGen');
-    docGenSpy.mockResolvedValue({
-      headers: {
-        'content-disposition': 'attachment; filename="custom-name.pdf"',
-      },
-      data: new Blob(['test'], { type: 'application/pdf' }),
-    });
+    const docGenSpy = vi
+      .spyOn(formService, 'docGen')
+      .mockResolvedValue(createDocGenResponse('custom-name.pdf'));
 
-    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
-    splitFileNameSpy.mockReturnValue({
-      name: 'test-template',
-      extension: 'docx',
+    const printConfig = createPrintConfig({
+      reportName: 'Custom Report Name',
+      reportNameOption: 'custom',
     });
-
-    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
-    getDispositionSpy.mockReturnValue('custom-name.pdf');
-
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: 'test-submission-id',
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-          reportName: 'Custom Report Name',
-          reportNameOption: 'custom',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia, { printConfig });
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
     await wrapper.vm.generateDirectPrint();
@@ -374,52 +284,13 @@ describe('DirectPrintButton.vue', () => {
       name: 'Test Form',
     };
 
-    const documentTemplateReadSpy = vi.spyOn(
-      formService,
-      'documentTemplateRead'
-    );
-    documentTemplateReadSpy.mockResolvedValue({
-      data: {
-        template: {
-          data: [65, 66, 67],
-        },
-        filename: 'test-template.docx',
-      },
-    });
+    setupCommonMocks();
+    const docGenSpy = vi
+      .spyOn(formService, 'docGen')
+      .mockResolvedValue(createDocGenResponse());
 
-    const docGenSpy = vi.spyOn(formService, 'docGen');
-    docGenSpy.mockResolvedValue({
-      headers: {
-        'content-disposition': 'attachment; filename="test.pdf"',
-      },
-      data: new Blob(['test'], { type: 'application/pdf' }),
-    });
-
-    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
-    splitFileNameSpy.mockReturnValue({
-      name: 'test-template',
-      extension: 'docx',
-    });
-
-    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
-    getDispositionSpy.mockReturnValue('test.pdf');
-
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: 'test-submission-id',
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-          reportName: null,
-          reportNameOption: 'formName',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
     await wrapper.vm.generateDirectPrint();
@@ -434,70 +305,23 @@ describe('DirectPrintButton.vue', () => {
       // name is missing
     };
 
+    setupCommonMocks();
+    const docGenSpy = vi
+      .spyOn(formService, 'docGen')
+      .mockResolvedValue(createDocGenResponse());
+
     const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
-    fetchFormSpy.mockResolvedValue();
-
-    const documentTemplateReadSpy = vi.spyOn(
-      formService,
-      'documentTemplateRead'
-    );
-    documentTemplateReadSpy.mockResolvedValue({
-      data: {
-        template: {
-          data: [65, 66, 67],
-        },
-        filename: 'test-template.docx',
-      },
-    });
-
-    const docGenSpy = vi.spyOn(formService, 'docGen');
-    docGenSpy.mockResolvedValue({
-      headers: {
-        'content-disposition': 'attachment; filename="test.pdf"',
-      },
-      data: new Blob(['test'], { type: 'application/pdf' }),
-    });
-
-    const createDownloadSpy = vi.spyOn(
-      printOptionsComposables,
-      'createDownload'
-    );
-    createDownloadSpy.mockImplementation(() => {});
-
-    const splitFileNameSpy = vi.spyOn(transformUtils, 'splitFileName');
-    splitFileNameSpy.mockReturnValue({
-      name: 'test-template',
-      extension: 'docx',
-    });
-
-    const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
-    getDispositionSpy.mockReturnValue('test.pdf');
-
-    // After fetchForm, update form with name
-    fetchFormSpy.mockImplementation(() => {
+    const updateFormAfterFetch = () => {
       formStore.form = {
         id: 'test-form-id',
         name: 'Fetched Form Name',
       };
       return Promise.resolve();
-    });
+    };
+    fetchFormSpy.mockImplementation(updateFormAfterFetch);
 
-    const wrapper = mount(DirectPrintButton, {
-      props: {
-        submissionId: 'test-submission-id',
-        printConfig: {
-          code: 'direct',
-          templateId: 'test-template-id',
-          outputFileType: 'pdf',
-          reportName: null,
-          reportNameOption: 'formName',
-        },
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+    const mountOptions = createMountOptions(pinia);
+    const wrapper = mount(DirectPrintButton, mountOptions);
 
     await flushPromises();
     await wrapper.vm.generateDirectPrint();
