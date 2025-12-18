@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useFormStore } from '~/store/form';
 
@@ -38,14 +38,20 @@ const useDirectPrint = computed(() => {
 // eslint-disable-next-line no-unused-vars
 const formId = computed(() => (properties.f ? properties.f : form.value.id));
 
-onMounted(async () => {
+// Watch for formId to become available before making API call
+const fetchPrintConfig = async (currentFormId) => {
+  // Only make API call if formId is available (not empty)
+  if (!currentFormId) {
+    return;
+  }
+
   // Try to fetch print config
   // Will fail gracefully if API doesn't exist yet (404 or network error)
   // In that case, we fall back to default PrintOptions behavior
   try {
-    const response = await printConfigService.readPrintConfig(formId.value);
+    const response = await printConfigService.readPrintConfig(currentFormId);
     printConfig.value = response.data;
-  } catch {
+  } catch (error) {
     // Intentionally catch and ignore: API doesn't exist or config not found
     // This is expected behavior - gracefully fall back to PrintOptions (current behavior)
     // No error handling needed as fallback is the default behavior
@@ -53,7 +59,21 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
+};
+
+// Watch formId and fetch print config when it becomes available
+let hasFetched = false;
+watch(
+  formId,
+  (newFormId) => {
+    // Only fetch once when formId becomes available (not empty)
+    if (newFormId && !hasFetched) {
+      hasFetched = true;
+      fetchPrintConfig(newFormId);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

@@ -177,8 +177,8 @@ describe('create', () => {
       await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
     });
 
-    it('throws if filename contains "\\"', async () => {
-      const file = { originalname: 'bad\\file.txt' };
+    it(String.raw`throws if filename contains "\\"`, async () => {
+      const file = { originalname: String.raw`bad\file.txt` };
       await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
     });
   });

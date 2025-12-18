@@ -3,6 +3,37 @@ const uuid = require('uuid');
 const { PrintConfigTypes } = require('../../common/constants');
 const { FormPrintConfig, FormPrintConfigTypeCode, DocumentTemplate } = require('../../common/models');
 
+// Query helpers - extracted for easier mocking in tests
+const queryHelpers = {
+  findTypeCodeById: async (code) => {
+    return await FormPrintConfigTypeCode.query().findById(code);
+  },
+
+  findTemplateById: async (formId, templateId) => {
+    return await DocumentTemplate.query()
+      .modify('filterActive', true)
+      .modify('filterFormId', formId)
+      .findById(templateId)
+      .catch(() => null);
+  },
+
+  findPrintConfigByFormId: async (formId, trx) => {
+    return await FormPrintConfig.query(trx).modify('filterFormId', formId).first();
+  },
+
+  startTransaction: async () => {
+    return await FormPrintConfig.startTransaction();
+  },
+
+  updatePrintConfig: async (id, data, trx) => {
+    return await FormPrintConfig.query(trx).findById(id).patch(data);
+  },
+
+  createPrintConfig: async (data, trx) => {
+    return await FormPrintConfig.query(trx).insert(data);
+  },
+};
+
 const service = {
   validatePrintConfig: async (data) => {
     if (!data) {
@@ -13,7 +44,7 @@ const service = {
     }
 
     // Check that code exists in code table
-    const typeCode = await FormPrintConfigTypeCode.query().findById(data.code);
+    const typeCode = await queryHelpers.findTypeCodeById(data.code);
     if (!typeCode) {
       throw new Problem(422, `'code' must be a valid print config type code.`);
     }
@@ -39,11 +70,7 @@ const service = {
       throw new Problem(422, `'templateId' is required.`);
     }
 
-    const template = await DocumentTemplate.query()
-      .modify('filterActive', true)
-      .modify('filterFormId', formId)
-      .findById(templateId)
-      .catch(() => null);
+    const template = await queryHelpers.findTemplateById(formId, templateId);
 
     if (!template) {
       throw new Problem(422, `Template not found, inactive, or does not belong to the specified form.`);
@@ -53,7 +80,7 @@ const service = {
   },
 
   readPrintConfig: async (formId) => {
-    const result = await FormPrintConfig.query().modify('filterFormId', formId).first();
+    const result = await queryHelpers.findPrintConfigByFormId(formId);
     return result || null;
   },
 
@@ -63,44 +90,52 @@ const service = {
     const externalTrx = transaction != undefined;
     let trx;
     try {
-      trx = externalTrx ? transaction : await FormPrintConfig.startTransaction();
+      trx = externalTrx ? transaction : await queryHelpers.startTransaction();
 
       // If code is 'direct', validate template
       if (data.code === PrintConfigTypes.DIRECT) {
         await service.validateTemplate(formId, data.templateId);
       }
 
-      const existing = await FormPrintConfig.query(trx).modify('filterFormId', formId).first();
+      const existing = await queryHelpers.findPrintConfigByFormId(formId, trx);
 
       if (existing) {
         // Update existing config
-        await FormPrintConfig.query(trx).findById(existing.id).patch({
-          code: data.code,
-          templateId: data.templateId,
-          outputFileType: data.outputFileType,
-          updatedBy: currentUser.usernameIdp,
-        });
+        await queryHelpers.updatePrintConfig(
+          existing.id,
+          {
+            code: data.code,
+            templateId: data.templateId,
+            outputFileType: data.outputFileType,
+            updatedBy: currentUser.usernameIdp,
+          },
+          trx
+        );
       } else {
         // Create new config
         data.id = uuid.v4();
         data.formId = formId;
-        await FormPrintConfig.query(trx).insert({
-          ...data,
-          createdBy: currentUser.usernameIdp,
-        });
+        await queryHelpers.createPrintConfig(
+          {
+            ...data,
+            createdBy: currentUser.usernameIdp,
+          },
+          trx
+        );
       }
 
       if (!externalTrx) await trx.commit();
 
       // Return the updated/created config
-      return await FormPrintConfig.query(externalTrx ? trx : undefined)
-        .modify('filterFormId', formId)
-        .first();
+      return await queryHelpers.findPrintConfigByFormId(formId, externalTrx ? trx : undefined);
     } catch (err) {
       if (!externalTrx && trx) await trx.rollback();
       throw err;
     }
   },
 };
+
+// Export query helpers for testing
+service._queryHelpers = queryHelpers;
 
 module.exports = service;
