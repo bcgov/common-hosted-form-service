@@ -71,6 +71,13 @@ tags:
           the `submissionId`, such as `3CB9ACC7`
         - `{d.chefs.formVersion}`: The numeric version of the form that was used
           to create the submission, such as `1`
+  - name: Print Configuration
+    description: >
+      Print configuration allows forms to be configured with different print
+      behaviors. When set to "default", users can choose between browser print
+      or template-based document generation. When set to "direct", users will
+      print directly using a pre-configured document template, generating a PDF
+      output.
   - name: Submission
     description: >-
       These API endpoints handle the input data provided by a user that
@@ -605,6 +612,102 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/printConfig:
+    get:
+      summary: Get print configuration for a form
+      description: >
+        Gets the print configuration for a form. Returns `null` if no print
+        configuration has been set for the form.
+      operationId: readPrintConfig
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Print Configuration
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrintConfigResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Create or update print configuration for a form
+      description: >
+        Creates or updates the print configuration for a form. When `code` is set
+        to `direct`, a `templateId` must be provided and must reference an active
+        document template for the form. When `code` is set to `default`, the
+        `templateId` and `outputFileType` fields are ignored.
+      operationId: upsertPrintConfig
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Print Configuration
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrintConfigRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrintConfigResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '503':
@@ -4383,6 +4486,13 @@ components:
                 The unique identifier for the form that this document template
                 belongs to.
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            active:
+              type: boolean
+              description: >
+                Whether the document template is active. Inactive templates are
+                treated as if they do not exist and will not be returned by GET
+                routes.
+              example: true
             filename:
               type: string
               description: >
@@ -4390,6 +4500,117 @@ components:
                 originally uploaded.
               example: my_document_template.docx
         - $ref: '#/components/schemas/TimeStampCreate'
+    PrintConfigRequest:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          enum:
+            - default
+            - direct
+          description: >
+            The print configuration type. `default` allows users to choose
+            between browser print or template-based document generation.
+            `direct` forces users to print directly using a pre-configured
+            template, generating a PDF output.
+          example: direct
+        templateId:
+          type: string
+          format: uuid
+          nullable: true
+          description: >
+            The unique identifier for the document template to use when `code`
+            is `direct`. Required when `code` is `direct`, ignored when `code`
+            is `default`. Must reference an active document template for the
+            form.
+          example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
+        outputFileType:
+          type: string
+          nullable: true
+          description: >
+            The output file type for document generation. Defaults to `pdf` when
+            `code` is `direct`. Ignored when `code` is `default`.
+          example: pdf
+        reportName:
+          type: string
+          nullable: true
+          description: >
+            Custom name for the generated document file. Used when
+            `reportNameOption` is set to `custom`.
+          example: custom-report-name
+        reportNameOption:
+          type: string
+          nullable: true
+          enum:
+            - formName
+            - custom
+          description: >
+            Option for how to name the generated document file. `formName` uses
+            the form name, `custom` uses the value from `reportName`.
+          example: formName
+    PrintConfigResponse:
+      allOf:
+        - type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the print configuration.
+              example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
+            formId:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the form that this print
+                configuration belongs to.
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            code:
+              type: string
+              enum:
+                - default
+                - direct
+              description: >
+                The print configuration type.
+              example: direct
+            templateId:
+              type: string
+              format: uuid
+              nullable: true
+              description: >
+                The unique identifier for the document template used when `code`
+                is `direct`. `null` when `code` is `default`.
+              example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
+            outputFileType:
+              type: string
+              nullable: true
+              description: >
+                The output file type for document generation. Typically `pdf`
+                when `code` is `direct`, `null` when `code` is `default`.
+              example: pdf
+            reportName:
+              type: string
+              nullable: true
+              description: >
+                Custom name for the generated document file. Used when
+                `reportNameOption` is set to `custom`.
+              example: custom-report-name
+            reportNameOption:
+              type: string
+              nullable: true
+              enum:
+                - formName
+                - custom
+              description: >
+                Option for how to name the generated document file.
+              example: formName
+        - $ref: '#/components/schemas/TimeStampUserData'
+      description: >
+        The print configuration for a form. Returns `null` if no print
+        configuration has been set.
     EmailMessage:
       allOf:
         - type: object
@@ -5941,6 +6162,24 @@ components:
                     example: Bad Request
                   type:
                     example: https://httpstatuses.com/400
+    Conflict:
+      description: >-
+        The request conflicts with the current state of the resource. For
+        example, attempting to delete a document template that is in use by
+        a print configuration.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 409
+                  title:
+                    example: Conflict
+                  type:
+                    example: https://httpstatuses.com/409
     Forbidden:
       description: Lack required role to perform action
       content:
