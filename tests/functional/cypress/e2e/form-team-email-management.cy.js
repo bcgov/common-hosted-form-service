@@ -44,7 +44,7 @@ describe('Form Designer', () => {
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).click();
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
-    cy.wait(3000);
+    cy.wait(1000);
     //Manage column views
     cy.get(".mdi-view-column").click();
     cy.get("table").contains("td", "Reviewer").should("be.visible");
@@ -96,6 +96,38 @@ describe('Form Designer', () => {
       cy.get(titl).type("CHEFS submission Title");
       cy.get(".v-form > .v-btn").should("be.enabled");
       cy.get(".v-form > .v-btn").click();
+    });
+  });
+  it('Checks Advanced Search functionality', () => {
+    cy.viewport(1000, 1800);
+    cy.waitForLoad();
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    cy.wait(2000);
+    cy.get(".mdi-list-box-outline").click();
+    //Advance search on Submissions page
+    cy.get('.v-btn__prepend > .mdi-magnify').click();
+    //cy.contains('label', 'Search term').click({ force: true });
+    cy.contains('label', 'Search term')
+      .invoke('attr', 'for')
+       .then((id) => {
+        cy.get(`#${id}`).click().type('Nancy');
+      });
+
+    cy.get('.v-card-text > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.wait(1000);
+    cy.contains('simpletextfield').click({force: true});
+    cy.get('.v-card-text > .v-select > .v-input__control > .v-field > .v-field__append-inner').click();
+    cy.get('.v-card-text > .v-btn').click();
+    //Verify Submission table has only search results
+    cy.get('.v-data-table__tr > :nth-child(7)').contains('Nancy').should('be.visible');
+    cy.get('.v-data-table__tbody > :nth-child(1) > :nth-child(7)').contains('Edit uploaded draft').should('not.exist');
+    //Clear search results
+    cy.get('.v-btn--density-compact > .v-btn__content').click();
+    cy.get('.v-data-table__tr > :nth-child(7)').contains('Edit uploaded draft').should('exist');
+    cy.get('.v-data-table__tbody > :nth-child(4) > :nth-child(7)').contains('Nancy').should('exist');
+
+
     });
     //Delete form after test run
     cy.get('.mdi-cog').click();
