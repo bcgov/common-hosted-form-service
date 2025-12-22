@@ -73,14 +73,14 @@ describe('documentTemplateDelete', () => {
     it('has an unsuccessful service call', async () => {
       service.documentTemplateDelete = jest.fn().mockRejectedValueOnce(error);
       const req = getMockReq({
-        params: { documentTemplateId: documentTemplateId },
+        params: { formId: formId, documentTemplateId: documentTemplateId },
         currentUser: currentUser,
       });
       const { res, next } = getMockRes();
 
       await controller.documentTemplateDelete(req, res, next);
 
-      expect(service.documentTemplateDelete).toBeCalledWith(documentTemplateId, currentUser.usernameIdp);
+      expect(service.documentTemplateDelete).toBeCalledWith(formId, documentTemplateId, currentUser.usernameIdp);
       expect(res.sendStatus).not.toBeCalled();
       expect(next).toBeCalledWith(error);
     });
@@ -90,14 +90,14 @@ describe('documentTemplateDelete', () => {
     it('has a successful service call', async () => {
       service.documentTemplateDelete = jest.fn().mockResolvedValue();
       const req = getMockReq({
-        params: { documentTemplateId: documentTemplateId },
+        params: { formId: formId, documentTemplateId: documentTemplateId },
         currentUser: currentUser,
       });
       const { res, next } = getMockRes();
 
       await controller.documentTemplateDelete(req, res, next);
 
-      expect(service.documentTemplateDelete).toBeCalledWith(documentTemplateId, currentUser.usernameIdp);
+      expect(service.documentTemplateDelete).toBeCalledWith(formId, documentTemplateId, currentUser.usernameIdp);
       expect(res.sendStatus).toBeCalledWith(204);
       expect(next).not.toBeCalled();
     });

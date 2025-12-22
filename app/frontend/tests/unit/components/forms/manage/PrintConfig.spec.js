@@ -549,4 +549,162 @@ describe('PrintConfig.vue', () => {
       reportName: null,
     });
   });
+
+  it('dispatches print-config-updated event after successful save', async () => {
+    const dispatchEventSpy = vi.spyOn(globalThis, 'dispatchEvent');
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({ data: null });
+
+    const upsertPrintConfigSpy = vi.spyOn(
+      printConfigService,
+      'upsertPrintConfig'
+    );
+    upsertPrintConfigSpy.mockResolvedValue({});
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([
+      {
+        filename: 'test-template.docx',
+        templateId: 'test-template-id',
+        createdAt: '2024-01-01',
+        actions: '',
+      },
+    ]);
+
+    const wrapper = mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.localConfig.code = 'direct';
+    wrapper.vm.localConfig.templateId = 'test-template-id';
+
+    await wrapper.vm.handleSave();
+
+    expect(dispatchEventSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'print-config-updated',
+        detail: expect.objectContaining({
+          formId: 'test-form-id',
+        }),
+      })
+    );
+  });
+
+  it('listens for document-templates-updated event and refreshes templates', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({ data: null });
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([]);
+
+    const wrapper = mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Reset mock to count only after mount
+    vi.mocked(fetchDocumentTemplates).mockClear();
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([
+      {
+        filename: 'new-template.docx',
+        templateId: 'new-template-id',
+        createdAt: '2024-01-01',
+        actions: '',
+      },
+    ]);
+
+    // Dispatch event
+    globalThis.dispatchEvent(
+      new CustomEvent('document-templates-updated', {
+        detail: { formId: 'test-form-id' },
+      })
+    );
+
+    await flushPromises();
+
+    expect(fetchDocumentTemplates).toHaveBeenCalledWith('test-form-id');
+    expect(wrapper.vm.documentTemplates).toHaveLength(1);
+  });
+
+  it('ignores document-templates-updated event from other forms', async () => {
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({ data: null });
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([]);
+
+    mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Reset mock to count only after mount
+    vi.mocked(fetchDocumentTemplates).mockClear();
+
+    // Dispatch event for different form
+    globalThis.dispatchEvent(
+      new CustomEvent('document-templates-updated', {
+        detail: { formId: 'other-form-id' },
+      })
+    );
+
+    await flushPromises();
+
+    // Should not have been called for different form
+    expect(fetchDocumentTemplates).not.toHaveBeenCalled();
+  });
+
+  it('removes event listener on unmount', async () => {
+    const removeEventListenerSpy = vi.spyOn(globalThis, 'removeEventListener');
+    formStore.form = {
+      id: 'test-form-id',
+      name: 'Test Form',
+    };
+
+    const readPrintConfigSpy = vi.spyOn(printConfigService, 'readPrintConfig');
+    readPrintConfigSpy.mockResolvedValue({ data: null });
+
+    vi.mocked(fetchDocumentTemplates).mockResolvedValue([]);
+
+    const wrapper = mount(PrintConfig, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.unmount();
+
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'document-templates-updated',
+      expect.any(Function)
+    );
+  });
 });

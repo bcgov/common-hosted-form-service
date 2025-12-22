@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { fetchDocumentTemplates } from '~/composables/documentTemplate';
@@ -51,9 +51,29 @@ const templateRules = computed(() => {
   ];
 });
 
+function handleDocumentTemplatesUpdate(event) {
+  // Only refresh if it's for this form
+  if (event.detail.formId === form.value.id) {
+    fetchTemplates();
+  }
+}
+
 onMounted(async () => {
   await Promise.all([fetchPrintConfig(), fetchTemplates()]);
   loading.value = false;
+
+  // Listen for document template updates
+  globalThis.addEventListener(
+    'document-templates-updated',
+    handleDocumentTemplatesUpdate
+  );
+});
+
+onUnmounted(() => {
+  globalThis.removeEventListener(
+    'document-templates-updated',
+    handleDocumentTemplatesUpdate
+  );
 });
 
 async function fetchPrintConfig() {
@@ -150,6 +170,13 @@ async function handleSave() {
 
     await printConfigService.upsertPrintConfig(form.value.id, data);
     await fetchPrintConfig();
+
+    // Emit custom event to notify other components
+    globalThis.dispatchEvent(
+      new CustomEvent('print-config-updated', {
+        detail: { formId: form.value.id, printConfig: printConfig.value },
+      })
+    );
 
     notificationStore.addNotification({
       text: t('trans.printConfig.saveSuccess'),

@@ -1,3 +1,4 @@
+const Problem = require('api-problem');
 const { MockModel, MockTransaction } = require('../../../../common/dbHelper');
 
 const uuid = require('uuid');
@@ -5,6 +6,16 @@ const uuid = require('uuid');
 const service = require('../../../../../src/forms/form/documentTemplate/service');
 
 jest.mock('../../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
+
+jest.mock('../../../../../src/forms/common/models/tables/formPrintConfig', () => {
+  const mockModel = {
+    query: jest.fn().mockReturnThis(),
+    modify: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    first: jest.fn().mockResolvedValue(null),
+  };
+  return mockModel;
+});
 
 const documentTemplateId = uuid.v4();
 const formId = uuid.v4();
@@ -20,9 +31,19 @@ const documentTemplate = {
   template: 'My Template',
 };
 
+// Get the mocked FormPrintConfig after jest.mock has run
+const getMockPrintConfigModel = () => {
+  return require('../../../../../src/forms/common/models/tables/formPrintConfig');
+};
+
 beforeEach(() => {
   MockModel.mockReset();
   MockTransaction.mockReset();
+  const MockPrintConfig = getMockPrintConfigModel();
+  MockPrintConfig.query.mockReturnThis();
+  MockPrintConfig.modify.mockReturnThis();
+  MockPrintConfig.where.mockReturnThis();
+  MockPrintConfig.first.mockResolvedValue(null);
 });
 
 afterEach(() => {
@@ -82,13 +103,32 @@ describe('documentTemplateCreate', () => {
 });
 
 describe('documentTemplateDelete', () => {
+  it('should throw Problem when template is in use by PrintConfig', async () => {
+    const MockPrintConfig = getMockPrintConfigModel();
+    const printConfig = {
+      id: uuid.v4(),
+      formId: formId,
+      templateId: documentTemplateId,
+    };
+    MockPrintConfig.first.mockResolvedValueOnce(printConfig);
+
+    await expect(service.documentTemplateDelete(formId, documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(Problem);
+
+    expect(MockPrintConfig.query).toBeCalledTimes(1);
+    expect(MockPrintConfig.modify).toBeCalledWith('filterFormId', formId);
+    expect(MockPrintConfig.where).toBeCalledWith('templateId', documentTemplateId);
+    expect(MockPrintConfig.first).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(0);
+    expect(MockTransaction.rollback).toBeCalledTimes(0);
+  });
+
   it('should not roll back transaction create problems', async () => {
     const error = new Error('error');
     MockModel.startTransaction.mockImplementationOnce(() => {
       throw error;
     });
 
-    await expect(service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(error);
+    await expect(service.documentTemplateDelete(formId, documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(error);
 
     expect(MockTransaction.commit).toBeCalledTimes(0);
     expect(MockTransaction.rollback).toBeCalledTimes(0);
@@ -100,17 +140,22 @@ describe('documentTemplateDelete', () => {
       throw error;
     });
 
-    await expect(service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(error);
+    await expect(service.documentTemplateDelete(formId, documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(error);
 
     expect(MockTransaction.commit).toBeCalledTimes(0);
     expect(MockTransaction.rollback).toBeCalledTimes(1);
   });
 
-  it('should update database', async () => {
+  it('should update database when template is not in use', async () => {
     MockModel.mockResolvedValue(documentTemplate);
+    const MockPrintConfig = getMockPrintConfigModel();
 
-    await service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp);
+    await service.documentTemplateDelete(formId, documentTemplateId, currentUser.usernameIdp);
 
+    expect(MockPrintConfig.query).toBeCalledTimes(1);
+    expect(MockPrintConfig.modify).toBeCalledWith('filterFormId', formId);
+    expect(MockPrintConfig.where).toBeCalledWith('templateId', documentTemplateId);
+    expect(MockPrintConfig.first).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledWith(MockTransaction);
     expect(MockModel.patchAndFetchById).toBeCalledTimes(1);

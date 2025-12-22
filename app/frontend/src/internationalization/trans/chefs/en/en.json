@@ -82,6 +82,8 @@
     "uploadError": "An error occurred while uploading the template.",
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
+    "deleteErrorInUse": "Cannot delete template: Template is currently in use by Print Configuration. Please update Print Configuration settings first.",
+    "deleteDisabledTooltip": "This template is currently in use by Print Configuration. Please update Print Configuration settings first.",
     "fetchError": "An error occurred while fetching the template.",
     "info": "Upload a template to use the Common Document Generation Service (CDOGS)",
     "fileSizeError": "File size must be less than 25MB."

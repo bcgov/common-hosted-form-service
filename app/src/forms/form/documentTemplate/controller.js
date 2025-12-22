@@ -27,7 +27,7 @@ module.exports = {
    */
   documentTemplateDelete: async (req, res, next) => {
     try {
-      await service.documentTemplateDelete(req.params.documentTemplateId, req.currentUser.usernameIdp);
+      await service.documentTemplateDelete(req.params.formId, req.params.documentTemplateId, req.currentUser.usernameIdp);
       res.sendStatus(204);
     } catch (error) {
       next(error);

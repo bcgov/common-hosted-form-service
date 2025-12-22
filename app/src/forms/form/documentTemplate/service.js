@@ -1,5 +1,6 @@
+const Problem = require('api-problem');
 const uuid = require('uuid');
-const { DocumentTemplate } = require('../../common/models');
+const { DocumentTemplate, FormPrintConfig } = require('../../common/models');
 
 const service = {
   /**
@@ -42,11 +43,20 @@ const service = {
   /**
    * Deletes an active document template given its ID.
    *
+   * @param {uuid} formId the identifier for the form.
    * @param {uuid} documentTemplateId the id of the document template.
    * @param {string} currentUsername the currently logged in user's username.
    * @throws an Error if the document template does not exist.
+   * @throws a Problem if the template is in use by Print Configuration.
    */
-  documentTemplateDelete: async (documentTemplateId, currentUsername) => {
+  documentTemplateDelete: async (formId, documentTemplateId, currentUsername) => {
+    // Check if template is referenced by FormPrintConfig
+    const printConfigUsingTemplate = await FormPrintConfig.query().modify('filterFormId', formId).where('templateId', documentTemplateId).first();
+
+    if (printConfigUsingTemplate) {
+      throw new Problem(409, `Cannot delete template: Template is currently in use by Print Configuration. Please update or remove the Print Configuration first.`);
+    }
+
     let trx;
     try {
       trx = await DocumentTemplate.startTransaction();

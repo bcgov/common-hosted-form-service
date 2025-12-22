@@ -56,7 +56,7 @@ describe(`${basePath}/:formId/printConfig`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(0);
+    expect(apiAccess).toBeCalledTimes(1);
     expect(controller.readPrintConfig).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
