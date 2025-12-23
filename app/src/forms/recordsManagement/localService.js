@@ -144,7 +144,7 @@ const service = {
     }
   },
 
-  processDeletions: async (batchSize = 100) => {
+  processDeletions: async (batchSize = 500) => {
     try {
       // Only process deletions where the retention policy is enabled
       const eligible = await ScheduledSubmissionDeletion.query()
