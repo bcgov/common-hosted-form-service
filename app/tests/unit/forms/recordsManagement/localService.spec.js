@@ -1,5 +1,5 @@
 const localService = require('../../../../src/forms/recordsManagement/localService');
-const { RetentionPolicy, ScheduledSubmissionDeletion } = require('../../../../src/forms/common/models');
+const { RetentionPolicy, ScheduledSubmissionDeletion, SubmissionMetadata } = require('../../../../src/forms/common/models');
 const submissionService = require('../../../../src/forms/submission/service');
 
 const testUuid = '123';
@@ -91,10 +91,17 @@ describe('localService', () => {
     await expect(localService.getRetentionPolicy(formId)).rejects.toThrow(`No retention policy found for form ${formId}`);
   });
 
-  it('configureRetentionPolicy should create new retention policy if not exists', async () => {
+  it('configureRetentionPolicy should create new retention policy if not exists, no backfill for no existing submissions', async () => {
     const formId = 'form-123';
     const policyData = { retentionDays: 365, retentionClassificationId: 'class-123', retentionClassificationDescription: 'lorem ipsum' };
     const user = 'testuser';
+
+    const trx = {
+      commit: jest.fn().mockResolvedValue(),
+      rollback: jest.fn().mockResolvedValue(),
+    };
+
+    RetentionPolicy.startTransaction = jest.fn().mockResolvedValue(trx);
 
     const mockInsert = jest.fn().mockResolvedValue({ ...policyData, formId, createdBy: user });
 
@@ -107,6 +114,19 @@ describe('localService', () => {
         insert: mockInsert,
       });
 
+    SubmissionMetadata.query = jest.fn().mockReturnValueOnce({
+      select: jest.fn().mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        whereNotIn: jest.fn().mockResolvedValue([]),
+      }),
+    });
+
+    ScheduledSubmissionDeletion.query = jest.fn().mockReturnValueOnce({
+      select: jest.fn().mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+      }),
+    });
+
     const result = await localService.configureRetentionPolicy(formId, policyData, user);
 
     expect(result).toEqual({ ...policyData, formId, createdBy: user });
@@ -116,11 +136,68 @@ describe('localService', () => {
       retentionDays: policyData.retentionDays,
       retentionClassificationId: policyData.retentionClassificationId,
       retentionClassificationDescription: policyData.retentionClassificationDescription,
+      enabled: true,
       createdBy: user,
     });
   });
 
-  it('configureRetentionPolicy should update existing retention policy', async () => {
+  it('configureRetentionPolicy should create new retention policy if not exists, backfill for existing deleted submissions', async () => {
+    const formId = 'form-123';
+    const policyData = { retentionDays: 365, retentionClassificationId: 'class-123', retentionClassificationDescription: 'lorem ipsum' };
+    const user = 'testuser';
+
+    const trx = {
+      commit: jest.fn().mockResolvedValue(),
+      rollback: jest.fn().mockResolvedValue(),
+    };
+
+    RetentionPolicy.startTransaction = jest.fn().mockResolvedValue(trx);
+
+    const mockInsert = jest.fn().mockResolvedValue({ ...policyData, formId, createdBy: user });
+
+    RetentionPolicy.query = jest
+      .fn()
+      .mockReturnValueOnce({
+        findOne: jest.fn().mockResolvedValue(null),
+      })
+      .mockReturnValueOnce({
+        insert: mockInsert,
+      });
+
+    SubmissionMetadata.query = jest.fn().mockReturnValueOnce({
+      select: jest.fn().mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        whereNotIn: jest.fn().mockResolvedValue([
+          {
+            submissionId: '123',
+            deleted: true,
+          },
+        ]),
+      }),
+    });
+
+    ScheduledSubmissionDeletion.query = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      whereNotIn: jest.fn().mockReturnThis(),
+      insert: jest.fn().mockResolvedValue({}),
+    });
+
+    const result = await localService.configureRetentionPolicy(formId, policyData, user);
+
+    expect(result).toEqual({ ...policyData, formId, createdBy: user });
+    expect(mockInsert).toHaveBeenCalledWith({
+      id: testUuid,
+      formId,
+      retentionDays: policyData.retentionDays,
+      retentionClassificationId: policyData.retentionClassificationId,
+      retentionClassificationDescription: policyData.retentionClassificationDescription,
+      enabled: true,
+      createdBy: user,
+    });
+  });
+
+  it('configureRetentionPolicy should update existing retention policy, recalculates scheduled deletions if retention policy is enabled', async () => {
     const formId = 'form-123';
     const policyData = { retentionDays: 730, retentionClassificationId: 'class-456' };
     const user = 'testuser';
@@ -141,6 +218,13 @@ describe('localService', () => {
         patchAndFetchById: mockPatchAndFetchById,
       });
 
+    ScheduledSubmissionDeletion.query = jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnThis(),
+      whereNotIn: jest.fn().mockReturnThis(),
+      patch: jest.fn().mockResolvedValue(),
+      delete: jest.fn().mockResolvedValue(),
+    });
+
     const result = await localService.configureRetentionPolicy(formId, policyData, user);
 
     expect(result).toEqual({
@@ -149,8 +233,55 @@ describe('localService', () => {
       updatedBy: user,
     });
     expect(mockPatchAndFetchById).toHaveBeenCalledWith('policy-123', {
+      enabled: true,
       retentionDays: policyData.retentionDays,
       retentionClassificationId: policyData.retentionClassificationId,
+      retentionClassificationDescription: undefined,
+      updatedBy: user,
+      updatedAt: expect.any(String),
+    });
+  });
+
+  it('configureRetentionPolicy should update existing retention policy, deletes scheduled deletions if retention policy is disabled', async () => {
+    const formId = 'form-123';
+    const policyData = { retentionDays: 730, retentionClassificationId: 'class-456', enabled: false };
+    const user = 'testuser';
+    const existingPolicy = { id: 'policy-123', formId };
+
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({
+      id: 'policy-123',
+      ...policyData,
+      updatedBy: user,
+    });
+
+    RetentionPolicy.query = jest
+      .fn()
+      .mockReturnValueOnce({
+        findOne: jest.fn().mockResolvedValue(existingPolicy),
+      })
+      .mockReturnValueOnce({
+        patchAndFetchById: mockPatchAndFetchById,
+      });
+
+    ScheduledSubmissionDeletion.query = jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnThis(),
+      whereNotIn: jest.fn().mockReturnThis(),
+      patch: jest.fn().mockResolvedValue(),
+      delete: jest.fn().mockResolvedValue(),
+    });
+
+    const result = await localService.configureRetentionPolicy(formId, policyData, user);
+
+    expect(result).toEqual({
+      id: 'policy-123',
+      ...policyData,
+      updatedBy: user,
+    });
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith('policy-123', {
+      enabled: false,
+      retentionDays: policyData.retentionDays,
+      retentionClassificationId: policyData.retentionClassificationId,
+      retentionClassificationDescription: undefined,
       updatedBy: user,
       updatedAt: expect.any(String),
     });
@@ -250,32 +381,22 @@ describe('localService', () => {
   });
 
   it('processDeletions should process eligible deletions', async () => {
-    const mockScheduled = [
-      {
-        id: 'sched-1',
-        submissionId: 'sub-1',
-        status: 'pending',
-      },
+    const mockEligible = [
+      { id: 'sched-1', submissionId: 'sub-1' },
+      { id: 'sched-2', submissionId: 'sub-2' },
     ];
 
-    const mockLimit = jest.fn().mockResolvedValue(mockScheduled);
-    const mockWhere2 = jest.fn().mockReturnValue({
-      limit: mockLimit,
-    });
-    const mockWhere1 = jest.fn().mockReturnValue({
-      where: mockWhere2,
-    });
+    const mockQueryBuilder = {
+      join: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValue(mockEligible),
+      patchAndFetchById: jest.fn().mockResolvedValue({}),
+    };
 
-    ScheduledSubmissionDeletion.query = jest
-      .fn()
-      .mockReturnValueOnce({
-        where: mockWhere1,
-      })
-      .mockReturnValue({
-        patchAndFetchById: jest.fn().mockResolvedValue({ status: 'completed' }),
-      });
+    ScheduledSubmissionDeletion.query = jest.fn(() => mockQueryBuilder);
 
-    submissionService.deleteSubmissionAndRelatedData = jest.fn().mockResolvedValue(true);
+    submissionService.deleteSubmissionAndRelatedData = jest.fn().mockResolvedValue();
 
     const result = await localService.processDeletions(100);
 
@@ -284,17 +405,19 @@ describe('localService', () => {
   });
 
   it('processDeletions should return empty results if no eligible deletions', async () => {
-    const mockLimit = jest.fn().mockResolvedValue([]);
-    const mockWhere2 = jest.fn().mockReturnValue({
-      limit: mockLimit,
-    });
-    const mockWhere1 = jest.fn().mockReturnValue({
-      where: mockWhere2,
-    });
+    const mockEligible = [];
 
-    ScheduledSubmissionDeletion.query = jest.fn().mockReturnValue({
-      where: mockWhere1,
-    });
+    const mockQueryBuilder = {
+      join: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValue(mockEligible),
+      patchAndFetchById: jest.fn().mockResolvedValue({}),
+    };
+
+    ScheduledSubmissionDeletion.query = jest.fn(() => mockQueryBuilder);
+
+    submissionService.deleteSubmissionAndRelatedData = jest.fn().mockResolvedValue();
 
     const result = await localService.processDeletions(100);
 

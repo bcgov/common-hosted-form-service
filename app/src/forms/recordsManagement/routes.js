@@ -24,6 +24,9 @@ routes.get('/containers/:formId/policies', currentUser, hasFormPermissions([P.FO
 // Set/update retention policy for a form
 routes.post('/containers/:formId/policies', currentUser, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), controller.setPolicy);
 
+// Delete retention policy for a form
+routes.delete('/containers/:formId/policies', currentUser, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), controller.deletePolicy);
+
 // Internal: process eligible deletions (called by cron)
 routes.post('/internal/deletions/process', apiAccess.checkApiKey, controller.processDeletions);
 

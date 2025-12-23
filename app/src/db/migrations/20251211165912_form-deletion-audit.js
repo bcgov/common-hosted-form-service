@@ -86,6 +86,7 @@ exports.up = function (knex) {
         table.integer('retentionDays').nullable().comment('Days before hard deletion allowed (null = indefinite, default behavior)');
         table.uuid('retentionClassificationId').nullable().references('id').inTable('retention_classification').comment('Retention classification');
         table.string('retentionClassificationDescription').nullable().comment('Custom description for the retention classification');
+        table.boolean('enabled').defaultTo(true).comment('Whether this retention policy is currently enabled');
         stamps(knex, table);
 
         table.index(['formId']);

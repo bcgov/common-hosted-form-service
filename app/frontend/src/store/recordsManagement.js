@@ -8,6 +8,7 @@ const getInitialRetentionPolicy = () => ({
   retentionDays: null,
   retentionClassificationId: null,
   retentionClassificationDescription: null,
+  enabled: false,
 });
 
 export const useRecordsManagementStore = defineStore('recordsManagement', {
@@ -56,6 +57,23 @@ export const useRecordsManagementStore = defineStore('recordsManagement', {
           ),
           consoleError: i18n.t(
             'trans.store.recordsManagement.configureFormRetentionPolicyConsErrMsg',
+            { formId: formId, error: error }
+          ),
+        });
+      }
+    },
+    async deleteRetentionPolicy(formId) {
+      try {
+        await recordsManagementService.deleteFormRetentionPolicy(formId);
+        this.formRetentionPolicy = getInitialRetentionPolicy();
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t(
+            'trans.store.recordsManagement.deleteFormRetentionPolicyErrMsg'
+          ),
+          consoleError: i18n.t(
+            'trans.store.recordsManagement.deleteFormRetentionPolicyConsErrMsg',
             { formId: formId, error: error }
           ),
         });

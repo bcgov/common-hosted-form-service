@@ -1,5 +1,5 @@
 const uuid = require('uuid');
-const { RetentionClassification, RetentionPolicy, ScheduledSubmissionDeletion } = require('../common/models');
+const { RetentionClassification, RetentionPolicy, ScheduledSubmissionDeletion, SubmissionMetadata } = require('../common/models');
 const submissionService = require('../submission/service');
 const log = require('../../components/log')(module.filename);
 
@@ -15,30 +15,87 @@ const service = {
       retentionDays: policy.retentionDays,
       retentionClassificationId: policy.retentionClassificationId,
       retentionClassificationDescription: policy.retentionClassificationDescription,
+      enabled: policy.enabled,
     };
   },
 
   configureRetentionPolicy: async (formId, policyData, user) => {
-    const { retentionDays, retentionClassificationId, retentionClassificationDescription } = policyData;
-    const existing = await RetentionPolicy.query().findOne({ formId });
+    const { retentionDays, retentionClassificationId, retentionClassificationDescription, enabled = true } = policyData;
+    let trx;
 
-    if (existing) {
-      return await RetentionPolicy.query().patchAndFetchById(existing.id, {
-        retentionDays,
-        retentionClassificationId,
-        retentionClassificationDescription,
-        updatedBy: user,
-        updatedAt: new Date().toISOString(),
-      });
-    } else {
-      return await RetentionPolicy.query().insert({
-        id: uuid.v4(),
-        formId,
-        retentionDays,
-        retentionClassificationId,
-        retentionClassificationDescription,
-        createdBy: user,
-      });
+    try {
+      trx = await RetentionPolicy.startTransaction();
+      const existing = await RetentionPolicy.query(trx).findOne({ formId });
+
+      if (existing) {
+        // Policy exists - update it and recalculate scheduled deletion dates
+        const updated = await RetentionPolicy.query(trx).patchAndFetchById(existing.id, {
+          retentionDays,
+          retentionClassificationId,
+          retentionClassificationDescription,
+          enabled,
+          updatedBy: user,
+          updatedAt: new Date().toISOString(),
+        });
+
+        if (enabled) {
+          // Recalculate deletion dates for pending scheduled deletions
+          const eligibleForDeletionAt =
+            retentionDays === null
+              ? new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString()
+              : new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
+
+          await ScheduledSubmissionDeletion.query(trx).where('formId', formId).where('status', 'pending').patch({ eligibleForDeletionAt });
+        } else {
+          // Clean up all scheduled deletions for this form
+          await ScheduledSubmissionDeletion.query(trx).where('formId', formId).delete();
+        }
+
+        await trx.commit();
+        return updated;
+      } else {
+        // New policy - create it and backfill scheduled deletions
+        const policy = await RetentionPolicy.query(trx).insert({
+          id: uuid.v4(),
+          formId,
+          retentionDays,
+          retentionClassificationId,
+          retentionClassificationDescription,
+          enabled,
+          createdBy: user,
+        });
+
+        // Backfill scheduled deletions for existing submissions
+        const submissions = await SubmissionMetadata.query(trx)
+          .select('submissionId')
+          .where('formId', formId)
+          .where('deleted', true)
+          .whereNotIn('submissionId', ScheduledSubmissionDeletion.query(trx).select('submissionId').where('formId', formId));
+
+        if (submissions.length > 0) {
+          const eligibleForDeletionAt =
+            retentionDays === null
+              ? new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString()
+              : new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
+
+          const scheduledDeletions = submissions.map((sub) => ({
+            id: uuid.v4(),
+            submissionId: sub.submissionId,
+            formId,
+            eligibleForDeletionAt,
+            status: 'pending',
+            createdBy: 'system',
+          }));
+
+          await ScheduledSubmissionDeletion.query(trx).insert(scheduledDeletions);
+        }
+
+        await trx.commit();
+        return policy;
+      }
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
     }
   },
 
@@ -68,9 +125,35 @@ const service = {
     return { submissionId, cancelled: deleted > 0 };
   },
 
+  deleteRetentionPolicy: async (formId) => {
+    let trx;
+    try {
+      trx = await RetentionPolicy.startTransaction();
+
+      // Soft delete by disabling the policy
+      await RetentionPolicy.query(trx).where('formId', formId).delete();
+
+      // Clean up all scheduled deletions for this form
+      const deleted = await ScheduledSubmissionDeletion.query(trx).where('formId', formId).delete();
+
+      await trx.commit();
+      return { formId, deletedSchedules: deleted };
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
   processDeletions: async (batchSize = 100) => {
     try {
-      const eligible = await ScheduledSubmissionDeletion.query().where('status', 'pending').where('eligibleForDeletionAt', '<=', new Date()).limit(batchSize);
+      // Only process deletions where the retention policy is enabled
+      const eligible = await ScheduledSubmissionDeletion.query()
+        .join('retention_policy', 'scheduled_submission_deletion.formId', '=', 'retention_policy.formId')
+        .select('scheduled_submission_deletion.*')
+        .where('scheduled_submission_deletion.status', 'pending')
+        .where('scheduled_submission_deletion.eligibleForDeletionAt', '<=', new Date())
+        .where('retention_policy.enabled', true)
+        .limit(batchSize);
 
       if (eligible.length === 0) {
         return { processed: 0, results: [] };

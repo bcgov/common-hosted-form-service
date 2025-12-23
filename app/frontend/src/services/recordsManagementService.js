@@ -35,6 +35,17 @@ export default {
     );
   },
   /**
+   * @function deleteFormRetentionPolicy
+   * Deletes the retention policy for a form
+   * @param {string} formId The form ID
+   * @returns {Promise} An axios response
+   */
+  deleteFormRetentionPolicy(formId) {
+    return appAxios().delete(
+      `${ApiRoutes.RECORDS_MANAGEMENT}/containers/${formId}/policies`
+    );
+  },
+  /**
    * @function scheduleSubmissionDeletion
    * Schedules a submission for deletion based on the form's retention policy
    * @param {string} formSubmissionId The form submission ID

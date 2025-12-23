@@ -6,6 +6,7 @@ import { nextTick } from 'vue';
 import { useFormStore } from '~/store/form';
 import { useRecordsManagementStore } from '~/store/recordsManagement';
 import FormClassificationSettings from '~/components/designer/settings/FormClassificationSettings.vue';
+import vuetifyStub from '../../../../vuetify-stubs';
 
 // Mock the services
 vi.mock('~/services', async () => ({
@@ -92,13 +93,13 @@ describe('FormClassificationSettings.vue', async () => {
             props: ['modelValue'],
             emits: ['update:model-value'],
           },
-          'v-combobox': true,
-          'v-select': true,
-          'v-text-field': true,
-          'v-textarea': true,
-          'v-alert': true,
-          'v-tooltip': true,
-          'v-icon': true,
+          'v-combobox': vuetifyStub,
+          'v-select': vuetifyStub,
+          'v-text-field': vuetifyStub,
+          'v-textarea': vuetifyStub,
+          'v-alert': vuetifyStub,
+          'v-tooltip': vuetifyStub,
+          'v-icon': vuetifyStub,
         },
         mocks: {
           $t: (key) => key,
@@ -141,12 +142,12 @@ describe('FormClassificationSettings.vue', async () => {
             props: ['modelValue'],
             emits: ['update:model-value'],
           },
-          'v-combobox': true,
-          'v-select': true,
-          'v-textarea': true,
-          'v-alert': true,
-          'v-tooltip': true,
-          'v-icon': true,
+          'v-combobox': vuetifyStub,
+          'v-select': vuetifyStub,
+          'v-textarea': vuetifyStub,
+          'v-alert': vuetifyStub,
+          'v-tooltip': vuetifyStub,
+          'v-icon': vuetifyStub,
         },
         mocks: {
           $t: (key) => key,
@@ -175,6 +176,7 @@ describe('FormClassificationSettings.vue', async () => {
       retentionDays: 180,
       retentionClassificationId: 'class-1',
       retentionClassificationDescription: null,
+      enabled: true,
     };
 
     const wrapper = await mount(FormClassificationSettings, {
@@ -187,17 +189,17 @@ describe('FormClassificationSettings.vue', async () => {
               '<div class="base-panel-stub"><slot name="title" /><slot /></div>',
             props: ['title'],
           },
-          'v-checkbox': true,
-          'v-combobox': true,
-          'v-select': true,
-          'v-textarea': true,
+          'v-checkbox': vuetifyStub,
+          'v-combobox': vuetifyStub,
+          'v-select': vuetifyStub,
+          'v-textarea': vuetifyStub,
           'v-alert': {
             template:
               '<div class="v-alert-stub" :data-type="type"><slot /></div>',
             props: ['type', 'variant'],
           },
-          'v-tooltip': true,
-          'v-icon': true,
+          'v-tooltip': vuetifyStub,
+          'v-icon': vuetifyStub,
         },
         mocks: {
           $t: (key) => key,
@@ -206,8 +208,7 @@ describe('FormClassificationSettings.vue', async () => {
       },
     });
 
-    // Set enableHardDeletion to true since retention data exists
-    wrapper.vm.enableHardDeletion = true;
+    // Set retention policy enabled to true since retention data exists
     await wrapper.vm.$nextTick();
 
     const alert = wrapper.find('.v-alert-stub[data-type="warning"]');
@@ -231,13 +232,13 @@ describe('FormClassificationSettings.vue', async () => {
             props: ['modelValue'],
             emits: ['update:model-value'],
           },
-          'v-combobox': true,
-          'v-select': true,
-          'v-text-field': true,
-          'v-textarea': true,
-          'v-alert': true,
-          'v-tooltip': true,
-          'v-icon': true,
+          'v-combobox': vuetifyStub,
+          'v-select': vuetifyStub,
+          'v-text-field': vuetifyStub,
+          'v-textarea': vuetifyStub,
+          'v-alert': vuetifyStub,
+          'v-tooltip': vuetifyStub,
+          'v-icon': vuetifyStub,
         },
         mocks: {
           $t: (key) => key,
@@ -273,13 +274,13 @@ describe('FormClassificationSettings.vue', async () => {
               '<div class="base-panel-stub"><slot name="title" /><slot /></div>',
             props: ['title'],
           },
-          'v-checkbox': true,
-          'v-combobox': true,
-          'v-select': true,
-          'v-textarea': true,
-          'v-alert': true,
-          'v-tooltip': true,
-          'v-icon': true,
+          'v-checkbox': vuetifyStub,
+          'v-combobox': vuetifyStub,
+          'v-select': vuetifyStub,
+          'v-textarea': vuetifyStub,
+          'v-alert': vuetifyStub,
+          'v-tooltip': vuetifyStub,
+          'v-icon': vuetifyStub,
         },
         mocks: {
           $t: (key) => key,

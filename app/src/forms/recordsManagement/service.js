@@ -26,6 +26,13 @@ const service = {
     throw new Error(`RecordsManagement implementation '${implementation}' not available`);
   },
 
+  deleteRetentionPolicy: async (formId, user) => {
+    if (implementation === 'local') {
+      return localService.deleteRetentionPolicy(formId, user);
+    }
+    throw new Error(`RecordsManagement implementation '${implementation}' not available`);
+  },
+
   scheduleDeletion: async (submissionId, formId, user) => {
     if (implementation === 'local') {
       return localService.scheduleDeletion(submissionId, formId, user);

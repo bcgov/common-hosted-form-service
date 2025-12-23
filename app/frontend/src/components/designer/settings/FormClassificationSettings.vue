@@ -33,7 +33,6 @@ const retentionOptions = ref([
   { value: null, label: t('trans.formSettings.daysCustom') },
 ]);
 
-const enableHardDeletion = ref(false);
 const customDays = ref(null);
 const showCustomDays = ref(false);
 const isCustomRetention = ref(false);
@@ -56,10 +55,6 @@ const CLASSIFICATION_TYPES = computed(() => {
 
 onMounted(async () => {
   await fetchClassificationTypes();
-
-  if (formRetentionPolicy.value?.retentionClassificationId) {
-    enableHardDeletion.value = true;
-  }
 });
 
 async function fetchClassificationTypes() {
@@ -192,11 +187,9 @@ const handleEnableChange = (enabled) => {
 };
 
 watch(
-  () => enableHardDeletion.value,
+  () => formRetentionPolicy.value?.enabled,
   (newValue) => {
-    if (newValue && !formRetentionPolicy.value?.retentionDays) {
-      handleEnableChange(true);
-    }
+    handleEnableChange(newValue);
   }
 );
 </script>
@@ -210,7 +203,7 @@ watch(
     </template>
 
     <v-checkbox
-      v-model="enableHardDeletion"
+      v-model="formRetentionPolicy.enabled"
       hide-details="auto"
       data-test="enableHardDeletionCheckbox"
       class="my-0"
@@ -251,7 +244,7 @@ watch(
       </template>
     </v-checkbox>
 
-    <div v-if="enableHardDeletion" class="mt-4">
+    <div v-if="formRetentionPolicy.enabled" class="mt-4">
       <v-combobox
         v-model="selectedClassification"
         :items="CLASSIFICATION_TYPES"

@@ -41,6 +41,7 @@ class RetentionPolicy extends Timestamps(Model) {
         retentionDays: { type: ['integer', 'null'] },
         retentionClassificationId: { type: ['string', 'null'], pattern: Regex.UUID },
         retentionClassificationDescription: { type: ['string', 'null'] },
+        enabled: { type: 'boolean' },
         ...stamps,
       },
       additionalProperties: false,

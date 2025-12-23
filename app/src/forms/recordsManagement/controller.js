@@ -67,6 +67,18 @@ module.exports = {
     }
   },
 
+  deletePolicy: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const user = req.currentUser?.usernameIdp || 'system';
+      const result = await service.deleteRetentionPolicy(formId, user);
+      res.status(200).json(result);
+    } catch (err) {
+      log.error('deletePolicy error', err);
+      next(err);
+    }
+  },
+
   processDeletions: async (req, res, next) => {
     try {
       const batchSize = req.body?.batchSize || 100;

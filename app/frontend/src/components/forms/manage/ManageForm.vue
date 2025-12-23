@@ -106,8 +106,11 @@ async function updateSettings() {
     const { valid } = await settingsForm.value.validate();
     if (valid) {
       await formStore.updateForm();
-      if (formRetentionPolicy.value.retentionClassificationId) {
+      if (formRetentionPolicy.value.enabled) {
         await recordsManagementStore.configureRetentionPolicy(form.value.id);
+      } else if (formRetentionPolicy.value.formId) {
+        // If disabled and a policy exists, delete it
+        await recordsManagementStore.deleteRetentionPolicy(form.value.id);
       }
       formSettingsDisabled.value = true;
       notificationStore.addNotification({
