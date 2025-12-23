@@ -38,7 +38,12 @@ const service = {
           updatedAt: new Date().toISOString(),
         });
 
-        if (enabled) {
+        if (!enabled) {
+          // Clean up all scheduled deletions for this form
+          await ScheduledSubmissionDeletion.query(trx).where('formId', formId).delete();
+        }
+        // Only if there's a change in the retention days do we need to recalculate
+        else if (existing.retentionDays !== retentionDays) {
           // Recalculate deletion dates for pending scheduled deletions
           const eligibleForDeletionAt =
             retentionDays === null
@@ -46,9 +51,6 @@ const service = {
               : new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
 
           await ScheduledSubmissionDeletion.query(trx).where('formId', formId).where('status', 'pending').patch({ eligibleForDeletionAt });
-        } else {
-          // Clean up all scheduled deletions for this form
-          await ScheduledSubmissionDeletion.query(trx).where('formId', formId).delete();
         }
 
         await trx.commit();
