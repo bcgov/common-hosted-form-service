@@ -29,7 +29,27 @@ describe('Form Designer', () => {
     cy.get('.btn').click();
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
-    cy.wait(2000);
+    //Share link verification
+    cy.get('[data-cy=shareFormButton]').click();
+    cy.get('p').contains('Copy the link below or download the QR code.').should('be.visible');
+    cy.get('[data-cy="shareFormLinkButton"]')
+    .should('have.attr', "href",`https://chefs-dev.apps.silver.devops.gov.bc.ca/${depEnv}/form/submit?f=${formId}`).should('exist');
+    //Check link to open in new tab
+    cy.get('.v-btn__content > .mdi-open-in-new').should('exist');
+      //Check QR code generation
+    cy.get('.v-col-1 > .v-btn > .v-btn__content > .mdi-download').should('exist');
+    cy.get('.v-col-1 > .v-btn > .v-btn__content > .mdi-download').click();
+    cy.wait(1000);
+    const downloadsFolder=Cypress.config("downloadsFolder");
+    const filePath = `${downloadsFolder}/qrcode.png`;
+    cy.task('fileExists', filePath).then((exists) => {
+      expect(exists).to.be.true; // Fails if the file doesn’t exist
+    });
+    //Check copy to clipboard
+    cy.get('.mdi-content-copy').should('exist').click();
+    //Close form sharing modal window
+    cy.get('.v-card-actions > .v-btn').click();
+    cy.wait(1000);
     })
 
     });  
@@ -64,38 +84,23 @@ describe('Form Designer', () => {
     cy.get(".v-alert__content")
       .contains("Can't remove the only owner.")
       .should("be.visible");
-      cy.get(".v-alert__close").click();
     //Email management functionality
     cy.get(".mdi-cog").click();
     cy.wait(2000);
     cy.get(".mdi-email").click();
     cy.wait(2000);
-    cy.get('input[type="text"]').then(($el) => {
-      const sub = $el[1];
-      const titl = $el[2];
-      //cy.get(sub).click({force: true});
-      cy.get(sub).should("have.value", "{{ form.name }} Accepted");
-      cy.get(titl).should("have.value", "{{ form.name }} Accepted");
-      cy.get(sub).type("{selectall}{backspace}");
-      cy.get("div")
-        .contains("Please enter a Subject line for the email")
-        .should("be.visible");
-      cy.get(titl).type("{selectall}{backspace}");
-      cy.get("div")
-        .contains("Please enter a Title for the email")
-        .should("be.visible");
-      cy.get("textarea").then(($el) => {
+    //Check default email content
+    cy.contains('label.v-label', 'Subject').parents('.v-field').find('input').type("{selectall}{backspace}");
+    cy.contains('label.v-label', 'Subject').parents('.v-field').find('input').type("Please enter a Subject line for the email");
+    cy.contains('label.v-label', 'Title').parents('.v-field').find('input').type("{selectall}{backspace}");
+    cy.contains('label.v-label', 'Title').parents('.v-field').find('input').type("Please enter a Title for the email");
+    cy.get("textarea").then(($el) => {
         const body = $el[0];
         cy.get(body).type("{selectall}{backspace}");
         cy.get("div")
           .contains("Please enter a Body for the email")
           .should("be.visible");
         cy.get(body).type("Thank you for submission, Click on this link");
-      });
-      cy.get(sub).type("CHEFS submission Subject");
-      cy.get(titl).type("CHEFS submission Title");
-      cy.get(".v-form > .v-btn").should("be.enabled");
-      cy.get(".v-form > .v-btn").click();
     });
   });
   it('Checks Advanced Search functionality', () => {

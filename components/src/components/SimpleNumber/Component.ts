@@ -10,7 +10,7 @@ const ID = 'simplenumber';
 const DISPLAY = 'Number';
 
 // Apply the mixin to create the final component class
-export default class Component extends (ParentComponent as any) {
+export default class Component extends ParentComponent {
   static schema(...extend: any[]) {
     const baseSchema = ParentComponent.schema(
       {
@@ -30,7 +30,7 @@ export default class Component extends (ParentComponent as any) {
     return addRoundingToSchema(baseSchema);
   }
 
-  public static editForm = editForm;
+  public static readonly editForm = editForm;
 
   static get builderInfo() {
     return {

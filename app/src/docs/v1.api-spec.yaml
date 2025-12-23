@@ -117,6 +117,10 @@ tags:
   - name: Health
     description: >-
       These API endpoints are used for for health checks of CHEFS and its required services.
+  - name: Common Services
+    description: >-
+      These API endpoints are used to access the CSS (Common Service Showcase)
+      services, such as the single sign on service.
 paths:
   /forms:
     get:
@@ -4076,6 +4080,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /cs/css/idir/users:
+    get:
+      summary: List all idir users
+      operationId: queryIdirUsers
+      tags:
+        - Common Services
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      parameters:
+        - in: query
+          name: firstName
+          schema:
+            type: string
+          description: filter by first name
+          example: Jane
+        - in: query
+          name: lastName
+          schema:
+            type: string
+          description: filter by last name
+          example: Smith
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: filter by email
+          example: jane.smith@example.com
+        - in: query
+          name: guid
+          schema:
+            type: string
+          description: filter by GUID
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CssUserIdir'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   headers:
     RateLimit:
@@ -4160,7 +4218,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
+      example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
       required: true
     formSubmissionIdParam:
       in: path
@@ -4213,13 +4271,52 @@ components:
         allowSendUserToken:
           type: boolean
           description: Set by CHEFS Admin, true allows the sendUserToken to be set to true
+    CssUserIdir:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              username:
+                type: string
+                description: ID of the user
+                example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l@idir
+              email:
+                type: string
+                example: jsmith@gov.bc.ca
+              firstName:
+                type: string
+                example: Jane
+              lastName:
+                type: string
+                example: Smith
+              attributes:
+                type: object
+                properties:
+                  display_name:
+                    type: array
+                    items:
+                      type: string
+                      example: Jane Smith
+                  idir_user_guid:
+                    type: array
+                    items:
+                      type: string
+                      example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
+                  idir_username:
+                    type: array
+                    items:
+                      type: string
+                      example: JASMITH
     CurrentUser:
       type: object
       properties:
         id:
           type: string
           description: ID of the user
-          example: 5dad1ec9-d3c0-4b0f-8ead-cb4d9fa98987
+          example: ao9rsqw60nvf24pemkdik5e3fmo2kb6l
         idpUserId:
           type: string
           description: ID of the user provided by the identity provider
