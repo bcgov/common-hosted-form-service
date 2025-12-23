@@ -239,7 +239,7 @@ describe('form actions', () => {
       formService.deleteSubmission.mockResolvedValue({
         data: { submission: {}, form: {} },
       });
-      await mockStore.deleteSubmission('sId');
+      await mockStore.deleteSubmission('fId', 'sId');
 
       expect(formService.deleteSubmission).toHaveBeenCalledTimes(1);
       expect(formService.deleteSubmission).toHaveBeenCalledWith('sId');
@@ -247,7 +247,7 @@ describe('form actions', () => {
 
     it('deleteSubmission should dispatch to notifications/addNotification', async () => {
       formService.deleteSubmission.mockRejectedValue('');
-      await mockStore.deleteSubmission('sId');
+      await mockStore.deleteSubmission('fId', 'sId');
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));

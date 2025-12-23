@@ -364,7 +364,7 @@ describe('Document Templates', () => {
     });
 
     it('should query database', async () => {
-      MockModel.mockResolvedValue(documentTemplate);
+      MockModel.throwIfNotFound.mockResolvedValue(documentTemplate);
 
       const result = await service.documentTemplateRead(documentTemplateId);
 

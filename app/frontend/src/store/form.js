@@ -9,6 +9,7 @@ import {
   userService,
   encryptionKeyService,
   eventStreamConfigService,
+  recordsManagementService,
 } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
@@ -525,10 +526,14 @@ export const useFormStore = defineStore('form', {
     //
     // Submission
     //
-    async deleteSubmission(submissionId) {
+    async deleteSubmission(formId, submissionId) {
       try {
         // Get this submission
         await formService.deleteSubmission(submissionId);
+        await recordsManagementService.scheduleSubmissionDeletion(
+          submissionId,
+          formId
+        );
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionNotifyMsg'),
@@ -552,6 +557,12 @@ export const useFormStore = defineStore('form', {
         await formService.deleteMultipleSubmissions(submissionIds[0], formId, {
           data: { submissionIds: submissionIds },
         });
+        for (let subId of submissionIds) {
+          await recordsManagementService.scheduleSubmissionDeletion(
+            subId,
+            formId
+          );
+        }
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
@@ -573,6 +584,9 @@ export const useFormStore = defineStore('form', {
         await formService.restoreMultipleSubmissions(submissionIds[0], formId, {
           submissionIds: submissionIds,
         });
+        for (let subId of submissionIds) {
+          await recordsManagementService.restoreMultipleSubmissions(subId);
+        }
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.restoreSubmissionsNotiMsg'),
           ...NotificationTypes.SUCCESS,
@@ -595,6 +609,9 @@ export const useFormStore = defineStore('form', {
       try {
         // Get this submission
         await formService.restoreSubmission(submissionId, { deleted });
+        await recordsManagementService.cancelScheduledSubmissionDeletion(
+          submissionId
+        );
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
