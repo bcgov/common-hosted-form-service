@@ -38,9 +38,6 @@ userAccess.hasFormPermissions = jest.fn(() => {
   return hasFormPermissionsMock;
 });
 
-validateParameter.validateDocumentTemplateId = jest.fn((_req, _res, next) => {
-  next();
-});
 validateParameter.validateFormId = jest.fn((_req, _res, next) => {
   next();
 });
@@ -79,7 +76,6 @@ describe(`${basePath}`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -97,7 +93,6 @@ describe(`${basePath}`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -120,7 +115,6 @@ describe(`${basePath}/:formId`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -138,7 +132,6 @@ describe(`${basePath}/:formId`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -156,7 +149,6 @@ describe(`${basePath}/:formId`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -179,7 +171,6 @@ describe(`${basePath}/:formId/apiKey`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -197,7 +188,6 @@ describe(`${basePath}/:formId/apiKey`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -215,7 +205,6 @@ describe(`${basePath}/:formId/apiKey`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -238,7 +227,6 @@ describe(`${basePath}/:formId/apiKey/filesApiAccess`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -261,90 +249,6 @@ describe(`${basePath}/:formId/csvexport/fields`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
-    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
-  });
-});
-
-describe(`${basePath}/:formId/documentTemplates`, () => {
-  const formId = uuid.v4();
-  const path = `${basePath}/${formId}/documentTemplates`;
-
-  it('should have correct middleware for GET', async () => {
-    controller.documentTemplateList = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.get(path);
-
-    expect(apiAccess).toBeCalledTimes(1);
-    expect(controller.documentTemplateList).toBeCalledTimes(1);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
-    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
-  });
-
-  it('should have correct middleware for POST', async () => {
-    controller.documentTemplateCreate = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.post(path);
-
-    expect(apiAccess).toBeCalledTimes(1);
-    expect(controller.documentTemplateCreate).toBeCalledTimes(1);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
-    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
-  });
-});
-
-describe(`${basePath}/:formId/documentTemplates/:documentTemplateId`, () => {
-  const documentTemplateId = uuid.v4();
-  const formId = uuid.v4();
-  const path = `${basePath}/${formId}/documentTemplates/${documentTemplateId}`;
-
-  it('should have correct middleware for DELETE', async () => {
-    controller.documentTemplateDelete = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.delete(path);
-
-    expect(apiAccess).toBeCalledTimes(1);
-    expect(controller.documentTemplateDelete).toBeCalledTimes(1);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(1);
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
-    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
-  });
-
-  it('should have correct middleware for GET', async () => {
-    controller.documentTemplateRead = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.get(path);
-
-    expect(apiAccess).toBeCalledTimes(1);
-    expect(controller.documentTemplateRead).toBeCalledTimes(1);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -367,7 +271,6 @@ describe(`${basePath}/:formId/drafts`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -385,7 +288,6 @@ describe(`${basePath}/:formId/drafts`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -409,7 +311,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -427,7 +328,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -445,7 +345,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -469,7 +368,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId/publish`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -492,7 +390,6 @@ describe(`${basePath}/:formId/emailTemplate`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -515,7 +412,6 @@ describe(`${basePath}/:formId/emailTemplates`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -538,7 +434,6 @@ describe(`${basePath}/:formId/export`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -561,7 +456,6 @@ describe(`${basePath}/:formId/export/fields`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -584,7 +478,6 @@ describe(`${basePath}/:formId/options`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -607,7 +500,6 @@ describe(`${basePath}/:formId/statusCodes`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -630,7 +522,6 @@ describe(`${basePath}/:formId/submissions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -653,7 +544,6 @@ describe(`${basePath}/:formId/subscriptions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -671,7 +561,6 @@ describe(`${basePath}/:formId/subscriptions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -694,7 +583,6 @@ describe(`${basePath}/:formId/version`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -718,7 +606,6 @@ describe(`${basePath}/:formId/versions/:formVersionId`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
@@ -742,7 +629,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/fields`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
@@ -766,7 +652,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/multiSubmission`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
@@ -790,7 +675,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/publish`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
@@ -814,7 +698,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
@@ -832,7 +715,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
@@ -856,7 +738,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions/discover`, () 
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
@@ -879,7 +760,6 @@ describe(`${basePath}/formcomponents/proactivehelp/imageUrl/:componentId`, () =>
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
@@ -901,7 +781,6 @@ describe(`${basePath}/formcomponents/proactivehelp/list`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);

@@ -5,7 +5,6 @@ const uuid = require('uuid');
 const { EmailTypes, ScheduleType } = require('../../../../src/forms/common/constants');
 const service = require('../../../../src/forms/form/service');
 
-jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formEmailTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
 jest.mock('../../../../src/forms/common/scheduleService', () => ({
@@ -32,26 +31,17 @@ const {
   FormSubmission,
   FormSubmissionUser,
   FormSubmissionStatus,
-  DocumentTemplate,
   SubmissionMetadata,
   FormApiKey,
   FormSubscription,
   FormComponentsProactiveHelp,
 } = require('../../../../src/forms/common/models');
 
-const documentTemplateId = uuid.v4();
 const formId = uuid.v4();
 
 const currentUser = {
   usernameIdp: 'TESTER',
   id: uuid.v4(),
-};
-
-const documentTemplate = {
-  filename: 'cdogs_template.txt',
-  formId: formId,
-  id: documentTemplateId,
-  template: 'My Template',
 };
 
 const emailTemplateSubmissionConfirmation = {
@@ -229,157 +219,6 @@ jest.mock('../../../../src/components/eventStreamService', () => ({
     CREATED: 'created',
   },
 }));
-
-describe('Document Templates', () => {
-  describe('documentTemplateCreate', () => {
-    // Need to temporarily replace calls to other functions within the module -
-    // they will be tested elsewhere.
-    beforeEach(() => {
-      jest.spyOn(service, 'documentTemplateRead').mockImplementation(() => documentTemplate);
-    });
-
-    it('should not roll back transaction create problems', async () => {
-      const error = new Error('error');
-      MockModel.startTransaction.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.insert.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(1);
-    });
-
-    it('should update database', async () => {
-      MockModel.mockResolvedValue(documentTemplate);
-      const newDocumentTemplate = { ...documentTemplate };
-      delete newDocumentTemplate.id;
-
-      await service.documentTemplateCreate(formId, newDocumentTemplate, currentUser.usernameIdp);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith(MockTransaction);
-      expect(MockModel.insert).toBeCalledTimes(1);
-      expect(MockModel.insert).toBeCalledWith(
-        expect.objectContaining({
-          ...newDocumentTemplate,
-          createdBy: currentUser.usernameIdp,
-        })
-      );
-      expect(MockTransaction.commit).toBeCalledTimes(1);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-  });
-
-  describe('documentTemplateDelete', () => {
-    it('should not roll back transaction create problems', async () => {
-      const error = new Error('error');
-      MockModel.startTransaction.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateDelete(formId, documentTemplate, currentUser)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.patchAndFetchById.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(1);
-    });
-
-    it('should update database', async () => {
-      MockModel.mockResolvedValue(documentTemplate);
-
-      await service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith(MockTransaction);
-      expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
-      expect(MockModel.patchAndFetchById).toBeCalledWith(
-        documentTemplateId,
-        expect.objectContaining({
-          active: false,
-          updatedBy: currentUser.usernameIdp,
-        })
-      );
-      expect(MockTransaction.commit).toBeCalledTimes(1);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-  });
-
-  describe('documentTemplateList', () => {
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.query.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      expect(service.documentTemplateList).toThrow(error);
-    });
-
-    it('should query database', async () => {
-      MockModel.mockResolvedValue([documentTemplate]);
-
-      const result = await service.documentTemplateList(formId);
-
-      expect(result).toEqual([documentTemplate]);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith();
-      expect(MockModel.modify).toBeCalledTimes(2);
-      expect(MockModel.modify).toBeCalledWith('filterActive', true);
-      expect(MockModel.modify).toBeCalledWith('filterFormId', formId);
-    });
-  });
-
-  describe('documentTemplateRead', () => {
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.query.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      expect(service.documentTemplateRead).toThrow(error);
-    });
-
-    it('should query database', async () => {
-      MockModel.mockResolvedValue(documentTemplate);
-
-      const result = await service.documentTemplateRead(documentTemplateId);
-
-      expect(result).toEqual(documentTemplate);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith();
-      expect(MockModel.findById).toBeCalledTimes(1);
-      expect(MockModel.findById).toBeCalledWith(documentTemplateId);
-      expect(MockModel.modify).toBeCalledTimes(1);
-      expect(MockModel.modify).toBeCalledWith('filterActive', true);
-      expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
-    });
-  });
-});
 
 describe('_findFileIds', () => {
   it('should handle a blank everything', () => {
@@ -1891,95 +1730,6 @@ describe('readFormOptions', () => {
 
     const result = await service.readFormOptions(formId);
     expect(result.idpHints).toEqual(['idir', 'bceid']);
-  });
-});
-
-describe('documentTemplateCreate', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should rollback and throw if documentTemplateCreate fails', async () => {
-    DocumentTemplate.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
-    DocumentTemplate.query = jest.fn().mockImplementation(() => {
-      throw new Error('DB error');
-    });
-
-    await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser.usernameIdp)).rejects.toThrow('DB error');
-    expect(MockTransaction.rollback).toHaveBeenCalled();
-  });
-});
-describe('documentTemplateDelete', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should rollback and throw if documentTemplateDelete fails', async () => {
-    DocumentTemplate.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
-    DocumentTemplate.query = jest.fn().mockImplementation(() => {
-      throw new Error('DB error');
-    });
-
-    await expect(service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp)).rejects.toThrow('DB error');
-    expect(MockTransaction.rollback).toHaveBeenCalled();
-  });
-});
-
-describe('documentTemplateList', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should return empty array if no templates in documentTemplateList', async () => {
-    // Create a chainable mock object
-    const chain = {
-      modify: jest.fn().mockReturnThis(),
-      then: jest.fn((cb) => Promise.resolve(cb([]))),
-    };
-    // Mock DocumentTemplate.query to return the chainable object
-    DocumentTemplate.query = jest.fn(() => chain);
-
-    const result = await service.documentTemplateList(formId);
-
-    expect(result).toEqual([]);
-    expect(DocumentTemplate.query).toHaveBeenCalled();
-    expect(chain.modify).toHaveBeenCalledWith('filterFormId', formId);
-    expect(chain.modify).toHaveBeenCalledWith('filterActive', true);
-  });
-});
-
-describe('documentTemplateRead', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should throw if documentTemplateRead not found', async () => {
-    DocumentTemplate.query = jest.fn().mockReturnThis();
-    DocumentTemplate.findById = jest.fn().mockReturnThis();
-    DocumentTemplate.modify = jest.fn().mockReturnThis();
-    DocumentTemplate.throwIfNotFound = jest.fn().mockRejectedValue(new Error('Not found'));
-
-    await expect(service.documentTemplateRead(documentTemplateId)).rejects.toThrow('Not found');
   });
 });
 
