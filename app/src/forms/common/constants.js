@@ -112,4 +112,8 @@ module.exports = Object.freeze({
     APPROVED: 'APPROVED',
     DENIED: 'DENIED',
   },
+  PrintConfigTypes: {
+    DEFAULT: 'default',
+    DIRECT: 'direct',
+  },
 });
