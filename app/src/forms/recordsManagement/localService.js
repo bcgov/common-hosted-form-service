@@ -44,7 +44,7 @@ const service = {
       trx = await RetentionPolicy.startTransaction();
       const existing = await RetentionPolicy.query(trx).findOne({ formId });
 
-      const action = this.determineRetentionAction(existing, { retentionDays, enabled });
+      const action = service.determineRetentionAction(existing, { retentionDays, enabled });
 
       let result;
 
