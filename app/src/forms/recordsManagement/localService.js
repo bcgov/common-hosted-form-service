@@ -1,6 +1,7 @@
 const uuid = require('uuid');
 const { RetentionClassification, RetentionPolicy, ScheduledSubmissionDeletion, SubmissionMetadata } = require('../common/models');
 const submissionService = require('../submission/service');
+const { RetentionAction } = require('../common/constants');
 const log = require('../../components/log')(module.filename);
 
 const service = {
@@ -19,6 +20,22 @@ const service = {
     };
   },
 
+  determineRetentionAction(existing, incoming) {
+    if (!incoming.enabled) {
+      return RetentionAction.DISABLE;
+    }
+
+    if (!existing) {
+      return RetentionAction.CREATE;
+    }
+
+    if (existing.retentionDays !== incoming.retentionDays) {
+      return RetentionAction.RECALCUALTE;
+    }
+
+    return null;
+  },
+
   configureRetentionPolicy: async (formId, policyData, user) => {
     const { retentionDays, retentionClassificationId, retentionClassificationDescription, enabled = true } = policyData;
     let trx;
@@ -27,9 +44,13 @@ const service = {
       trx = await RetentionPolicy.startTransaction();
       const existing = await RetentionPolicy.query(trx).findOne({ formId });
 
+      const action = this.determineRetentionAction(existing, { retentionDays, enabled });
+
+      let result;
+
       if (existing) {
         // Policy exists - update it and recalculate scheduled deletion dates
-        const updated = await RetentionPolicy.query(trx).patchAndFetchById(existing.id, {
+        result = await RetentionPolicy.query(trx).patchAndFetchById(existing.id, {
           retentionDays,
           retentionClassificationId,
           retentionClassificationDescription,
@@ -37,27 +58,9 @@ const service = {
           updatedBy: user,
           updatedAt: new Date().toISOString(),
         });
-
-        if (!enabled) {
-          // Clean up all scheduled deletions for this form
-          await ScheduledSubmissionDeletion.query(trx).where('formId', formId).delete();
-        }
-        // Only if there's a change in the retention days do we need to recalculate
-        else if (existing.retentionDays !== retentionDays) {
-          // Recalculate deletion dates for pending scheduled deletions
-          const eligibleForDeletionAt =
-            retentionDays === null
-              ? new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString()
-              : new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
-
-          await ScheduledSubmissionDeletion.query(trx).where('formId', formId).where('status', 'pending').patch({ eligibleForDeletionAt });
-        }
-
-        await trx.commit();
-        return updated;
       } else {
         // New policy - create it and backfill scheduled deletions
-        const policy = await RetentionPolicy.query(trx).insert({
+        result = await RetentionPolicy.query(trx).insert({
           id: uuid.v4(),
           formId,
           retentionDays,
@@ -66,7 +69,22 @@ const service = {
           enabled,
           createdBy: user,
         });
+      }
 
+      if (action === RetentionAction.DISABLE) {
+        // Clean up all scheduled deletions for this form
+        await ScheduledSubmissionDeletion.query(trx).where('formId', formId).delete();
+      }
+
+      if (action === RetentionAction.RECALCUALTE) {
+        // Recalculate deletion dates for pending scheduled deletions
+        const eligibleForDeletionAt =
+          retentionDays === null ? new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString() : new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
+
+        await ScheduledSubmissionDeletion.query(trx).where('formId', formId).where('status', 'pending').patch({ eligibleForDeletionAt });
+      }
+
+      if (action === RetentionAction.CREATE) {
         // Backfill scheduled deletions for existing submissions
         const submissions = await SubmissionMetadata.query(trx)
           .select('submissionId')
@@ -91,10 +109,10 @@ const service = {
 
           await ScheduledSubmissionDeletion.query(trx).insert(scheduledDeletions);
         }
-
-        await trx.commit();
-        return policy;
       }
+
+      await trx.commit();
+      return result;
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
