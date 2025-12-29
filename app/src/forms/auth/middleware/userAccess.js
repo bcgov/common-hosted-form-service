@@ -415,7 +415,7 @@ const hasSubmissionPermissions = (permissions) => {
       // If the current user has elevated permissions on the form, they may have
       // access to all submissions for the form.
       if (req.currentUser) {
-        const formFromCurrentUser = await _getForm(req.currentUser, submissionForm.form.id, false);
+        const formFromCurrentUser = await _getForm(req.currentUser, submissionForm.form.id, false, req.headers);
 
         // Do they have the submission permissions requested on this form?
         if (_hasAllPermissions(formFromCurrentUser?.permissions, permissions)) {

@@ -7,7 +7,7 @@ const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 
 routes.use(currentUser);
-routes.use(requireFormTenantAssociation);
+// routes.use(requireFormTenantAssociation);
 
 routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);
