@@ -68,7 +68,8 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
-    "eventStreamConfig": "Event Stream Configuration"
+    "eventStreamConfig": "Event Stream Configuration",
+    "printConfig": "Print Configuration"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -81,6 +82,8 @@
     "uploadError": "An error occurred while uploading the template.",
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
+    "deleteErrorInUse": "Cannot delete template: Template is currently in use by Print Configuration. Please update Print Configuration settings first.",
+    "deleteDisabledTooltip": "This template is currently in use by Print Configuration. Please update Print Configuration settings first.",
     "fetchError": "An error occurred while fetching the template.",
     "info": "Upload a template to use the Common Document Generation Service (CDOGS)",
     "fileSizeError": "File size must be less than 25MB."
@@ -100,6 +103,33 @@
     "editTitle": "Edit Event Stream Configuration",
     "fetchError": "An error occurred while fetching the Event Stream Configuration.",
     "save": "Save"
+  },
+  "printConfig": {
+    "title": "Print Configuration",
+    "description": "Configure how users can print form submissions",
+    "typeDefault": "Default",
+    "typeDefaultDescription": "Users can choose print method (browser print or template)",
+    "typeDirect": "Direct Print",
+    "typeDirectDescription": "Users print directly using a pre-configured template (PDF output)",
+    "selectTemplate": "Select Template",
+    "save": "Save Configuration",
+    "saving": "Saving...",
+    "saveSuccess": "Print configuration saved successfully",
+    "saveError": "An error occurred while saving print configuration",
+    "fetchError": "An error occurred while fetching print configuration",
+    "templateRequired": "Template is required when using Direct Print",
+    "noTemplatesAvailable": "No templates available. Please upload a template first.",
+    "templateDeleted": "The previously selected template has been deleted. Please select a new template.",
+    "currentConfig": "Current Configuration",
+    "type": "Type",
+    "template": "Template",
+    "reportNameLabel": "Output File Name",
+    "reportNameOptionFormName": "Use Form Name",
+    "reportNameOptionFormNameDescription": "Output file will be named using the form name",
+    "reportNameOptionCustom": "Use Custom Name",
+    "reportNameOptionCustomDescription": "Enter a custom name for the output file",
+    "reportNameCustomInput": "Custom File Name",
+    "reportNameCustomInputHint": "Enter the custom name for the generated document"
   },
   "encryptionKey": {
     "info": "Configure Encryption Keys for your form.",

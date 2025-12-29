@@ -33,6 +33,8 @@ module.exports = {
   RetentionClassification: require('./tables/retentionClassification'),
   RetentionPolicy: require('./tables/retentionPolicy'),
   ScheduledSubmissionDeletion: require('./tables/scheduledSubmissionDeletion'),
+  FormPrintConfig: require('./tables/formPrintConfig'),
+  FormPrintConfigTypeCode: require('./tables/formPrintConfigTypeCode'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
