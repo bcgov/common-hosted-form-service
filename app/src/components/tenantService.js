@@ -30,8 +30,19 @@ class TenantService {
     }
     const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
     const headers = this._getAuthHeaders(req);
-    const { data } = await axios.get(url, { headers });
-    return data?.data?.tenants || [];
+    try {
+      const { data } = await axios.get(url, { headers });
+      return data?.data?.tenants || [];
+    } catch (error) {
+      const status = error?.response?.status;
+      const isUnavailable = [502, 503, 504].includes(status);
+      const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error?.code);
+      if (isUnavailable || isNetworkError) {
+        req._tenantServiceDegraded = true;
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getUserTenantGroupsAndRoles(req) {

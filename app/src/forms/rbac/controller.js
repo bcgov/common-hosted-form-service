@@ -160,6 +160,10 @@ module.exports = {
         return res.status(200).json([]);
       }
       const tenants = await tenantService.getCurrentUserTenants(req);
+      // If upstream tenant service was degraded, inform clients via header
+      if (req._tenantServiceDegraded) {
+        res.set('X-Tenant-Service-Status', 'degraded');
+      }
       res.status(200).json(tenants);
     } catch (error) {
       next(error);
