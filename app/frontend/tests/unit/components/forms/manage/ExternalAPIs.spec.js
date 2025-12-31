@@ -187,7 +187,7 @@ describe('ExternalAPIs.vue', () => {
     addNotificationSpy.mockReset();
     externalAPIListSpy.mockReset();
     externalAPIListSpy.mockImplementationOnce(() => {
-      throw new Error();
+      throw new Error('Error fetching external APIs');
     });
 
     await wrapper.vm.fetchExternalAPIs(formId);
@@ -320,7 +320,7 @@ describe('ExternalAPIs.vue', () => {
     addNotificationSpy.mockReset();
     externalAPIStatusCodesSpy.mockReset();
     externalAPIStatusCodesSpy.mockImplementationOnce(() => {
-      throw new Error();
+      throw new Error('Error fetching external API status codes');
     });
 
     await wrapper.vm.getExternalAPIStatusCodes();
@@ -372,7 +372,7 @@ describe('ExternalAPIs.vue', () => {
 
     addNotificationSpy.mockImplementation(() => {});
     externalAPIDeleteSpy.mockImplementation(() => {
-      throw new Error();
+      throw new Error('Error deleting external API');
     });
     externalAPIListSpy.mockImplementation(() => {
       return {
@@ -524,7 +524,7 @@ describe('ExternalAPIs.vue', () => {
 
     addNotificationSpy.mockImplementation(() => {});
     externalAPIUpdateSpy.mockImplementation(() => {
-      throw new Error();
+      throw new Error('Error updating external API');
     });
     externalAPIListSpy.mockImplementation(() => {
       return {
@@ -579,7 +579,7 @@ describe('ExternalAPIs.vue', () => {
 
     addNotificationSpy.mockImplementation(() => {});
     externalAPICreateSpy.mockImplementation(() => {
-      throw new Error();
+      throw new Error(' Error creating external API');
     });
     externalAPIListSpy.mockImplementation(() => {
       return {
