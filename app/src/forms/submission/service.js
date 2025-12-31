@@ -5,6 +5,7 @@ const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionU
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+const fileService = require('../file/service');
 const { checkIsFormExpired } = require('../common/scheduleService');
 
 const updateService = require('./updateService');
@@ -169,7 +170,11 @@ const service = {
   deleteSubmissionAndRelatedData: async (submissionId) => {
     let trx;
     try {
-      trx = await FormSubmission.startTransaction();
+      trx = await FileStorage.startTransaction();
+
+      // Delete the file from the storage service first
+      const fileRecords = await FileStorage.query(trx).where('formSubmissionId', submissionId);
+      fileService.deleteFiles(fileRecords.map((file) => file.id));
 
       // Delete in the correct order based on foreign key dependencies
 

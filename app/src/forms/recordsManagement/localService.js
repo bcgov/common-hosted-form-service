@@ -5,6 +5,14 @@ const { RetentionAction } = require('../common/constants');
 const log = require('../../components/log')(module.filename);
 
 const service = {
+  calculateRetentionDate: (retentionDays) => {
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+    const days = retentionDays === null ? 100 * 365 : retentionDays;
+
+    return new Date(Date.now() + days * MS_PER_DAY).toISOString();
+  },
+
   listRetentionClassifications: async () => {
     return await RetentionClassification.query().where('active', true);
   },
@@ -78,8 +86,7 @@ const service = {
 
       if (action === RetentionAction.RECALCUALTE) {
         // Recalculate deletion dates for pending scheduled deletions
-        const eligibleForDeletionAt =
-          retentionDays === null ? new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString() : new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
+        const eligibleForDeletionAt = service.calculateRetentionDate(retentionDays);
 
         await ScheduledSubmissionDeletion.query(trx).where('formId', formId).where('status', 'pending').patch({ eligibleForDeletionAt });
       }
@@ -93,10 +100,7 @@ const service = {
           .whereNotIn('submissionId', ScheduledSubmissionDeletion.query(trx).select('submissionId').where('formId', formId));
 
         if (submissions.length > 0) {
-          const eligibleForDeletionAt =
-            retentionDays === null
-              ? new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString()
-              : new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
+          const eligibleForDeletionAt = service.calculateRetentionDate(retentionDays);
 
           const scheduledDeletions = submissions.map((sub) => ({
             id: uuid.v4(),
@@ -122,13 +126,7 @@ const service = {
   scheduleDeletion: async (submissionId, formId, user) => {
     const policy = await service.getRetentionPolicy(formId);
 
-    let eligibleForDeletionAt;
-    if (policy.retentionDays === null) {
-      // Indefinite retention
-      eligibleForDeletionAt = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString();
-    } else {
-      eligibleForDeletionAt = new Date(Date.now() + policy.retentionDays * 24 * 60 * 60 * 1000).toISOString();
-    }
+    let eligibleForDeletionAt = service.calculateRetentionDate(policy.retentionDays);
 
     return await ScheduledSubmissionDeletion.query().insert({
       id: uuid.v4(),
