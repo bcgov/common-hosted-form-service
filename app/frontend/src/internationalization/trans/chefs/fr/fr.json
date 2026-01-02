@@ -206,7 +206,38 @@
     "encryptionKeyUpdatedBy": "Clé de cryptage mise à jour par",
     "encryptionKeyCopySnackbar": "Clé de chiffrement copiée dans le presse-papiers",
     "encryptionKeyCopyTooltip": "Copier la clé de chiffrement dans le presse-papiers",
-    "encryptionKeyGenerate": "Générer une clé de cryptage"
+    "encryptionKeyGenerate": "Générer une clé de cryptage",
+    "dataRetention": "Politique de conservation des données",
+    "enableHardDeletion": "Activer la suppression définitive automatique",
+    "hardDeletionTooltip": "Lorsque cette option est activée, les soumissions marquées pour suppression seront définitivement supprimées après la période de conservation.",
+    "hardDeletionWarning": "La suppression définitive est permanente et ne peut pas être annulée.",
+    "permanentDeletion": "Les données seront irrécupérables après la suppression.",
+    "dataClassification": "Classification des données",
+    "dataClassificationHint": "Catégorisez le type de données collectées par ce formulaire",
+    "retentionPeriod": "Période de conservation",
+    "retentionPeriodHint": "Durée de conservation des soumissions supprimées avant leur suppression définitive",
+    "classPublic": "Public",
+    "classInternal": "Interne",
+    "classSensitive": "Sensible",
+    "classConfidential": "Confidentiel",
+    "classProtected": "Protégé",
+    "classificationCustomHint": "Vous pouvez saisir une classification personnalisée si nécessaire",
+    "days30": "30 jours",
+    "days90": "90 jours",
+    "days180": "180 jours",
+    "year1": "1 an (365 jours)",
+    "years2": "2 ans (730 jours)",
+    "years5": "5 ans (1825 jours)",
+    "daysCustom": "Période personnalisée",
+    "customDaysLabel": "Période de conservation personnalisée (jours)",
+    "customDaysHint": "Entrez un nombre entre 1 et 3650 jours (10 ans)",
+    "classificationDescription": "Notes de classification",
+    "classificationDescriptionHint": "Description facultative expliquant pourquoi cette classification et cette période de conservation ont été choisies",
+    "retentionDaysUpdated": "Période de conservation mise à jour",
+    "deletionDisclaimerWithDays": "AVERTISSEMENT: Après {days} jours, les soumissions marquées pour suppression seront définitivement supprimées et ne pourront pas être récupérées.",
+    "setRetentionPrompt": "Veuillez définir une période de conservation pour compléter votre politique de conservation des données.",
+    "fetchRetentionClassificationListError": "Erreur lors de la récupération de la liste des classifications de conservation.",
+    "fetchRetentionClassificationListConsErrMsg": "Erreur lors de la récupération des classifications de conservation : {error}"
   },
   "formProfile": {
     "message": "L'équipe CHEFS collecte et organise des informations pour servir de contribution cruciale à l'élaboration de cas d'affaires complets. Ces cas joueront un rôle central dans la direction des opérations stratégiques et l'amélioration continue de CHEFS au cours des prochaines années. Cette initiative de collecte de données est essentielle pour éclairer les décisions critiques et façonner la trajectoire de CHEFS, assurant son adaptabilité et son efficacité face aux besoins et aux défis en constante évolution.",
@@ -1119,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Les paramètres d'abonnement pour ce formulaire ont été enregistrés.",
       "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Une erreur s'est produite lors de la récupération de la politique de conservation pour ce formulaire.",
+      "getFormRetentionPolicyConsErrMsg": "Erreur lors de l'obtention de la politique de conservation pour le formulaire {formId} : {error}",
+      "configureFormRetentionPolicyErrMsg": "Une erreur s'est produite lors de la configuration de la politique de conservation pour ce formulaire.",
+      "configureFormRetentionPolicyConsErrMsg": "Erreur lors de la configuration de la politique de conservation pour le formulaire {formId} : {error}"
     }
   },
   "admin": {

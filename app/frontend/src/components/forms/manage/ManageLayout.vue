@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
+import { useRecordsManagementStore } from '~/store/recordsManagement';
 import { FormPermissions } from '~/utils/constants';
 
 const { locale } = useI18n({ useScope: 'global' });
@@ -19,6 +20,8 @@ const properties = defineProps({
 
 const loading = ref(true);
 
+const recordsManagementStore = useRecordsManagementStore();
+
 const { form, permissions, isRTL } = storeToRefs(useFormStore());
 
 onMounted(async () => {
@@ -29,6 +32,7 @@ onMounted(async () => {
   await Promise.all([
     formStore.fetchForm(properties.f),
     formStore.getFormPermissionsForUser(properties.f),
+    recordsManagementStore.getFormRetentionPolicy(properties.f),
   ]);
 
   if (permissions.value.includes(FormPermissions.DESIGN_READ))

@@ -20,6 +20,7 @@ describe('Constants', () => {
       FORM_METADATA: '/formMetadata',
       ENCRYPTION_KEY: '/encryptionKey',
       EVENT_STREAM_CONFIG: '/eventStreamConfig',
+      RECORDS_MANAGEMENT: '/recordsManagement',
     });
   });
 
