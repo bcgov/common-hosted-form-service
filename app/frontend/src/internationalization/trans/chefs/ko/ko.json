@@ -206,7 +206,38 @@
     "encryptionKeyUpdatedBy": "암호화 키 업데이트됨",
     "encryptionKeyCopySnackbar": "암호화 키가 클립보드에 복사되었습니다.",
     "encryptionKeyCopyTooltip": "암호화 키를 클립보드에 복사",
-    "encryptionKeyGenerate": "암호화 키 생성"
+    "encryptionKeyGenerate": "암호화 키 생성",
+    "dataRetention": "데이터 보존 정책",
+    "enableHardDeletion": "자동 완전 삭제 활성화",
+    "hardDeletionTooltip": "활성화하면 삭제로 표시된 제출물이 보존 기간 후 영구적으로 제거됩니다.",
+    "hardDeletionWarning": "완전 삭제는 영구적이며 취소할 수 없습니다.",
+    "permanentDeletion": "삭제 후 데이터는 복구할 수 없게 됩니다.",
+    "dataClassification": "데이터 분류",
+    "dataClassificationHint": "이 양식에서 수집하는 데이터 유형 분류",
+    "retentionPeriod": "보존 기간",
+    "retentionPeriodHint": "영구 삭제 전까지 삭제된 제출물을 보관하는 기간",
+    "classPublic": "공개",
+    "classInternal": "내부용",
+    "classSensitive": "민감함",
+    "classConfidential": "기밀",
+    "classProtected": "보호됨",
+    "classificationCustomHint": "필요한 경우 사용자 정의 분류를 입력할 수 있습니다",
+    "days30": "30일",
+    "days90": "90일",
+    "days180": "180일",
+    "year1": "1년 (365일)",
+    "years2": "2년 (730일)",
+    "years5": "5년 (1825일)",
+    "daysCustom": "사용자 정의 기간",
+    "customDaysLabel": "사용자 정의 보존 기간 (일)",
+    "customDaysHint": "1일에서 3650일(10년) 사이의 숫자를 입력하세요",
+    "classificationDescription": "분류 참고 사항",
+    "classificationDescriptionHint": "이 분류와 보존 기간을 선택한 이유에 대한 선택적 설명",
+    "retentionDaysUpdated": "보존 기간이 업데이트되었습니다",
+    "deletionDisclaimerWithDays": "경고: {days}일 후, 삭제로 표시된 제출물은 영구적으로 삭제되며 복구할 수 없습니다.",
+    "setRetentionPrompt": "데이터 보존 정책을 완료하려면 보존 기간을 설정하세요.",
+    "fetchRetentionClassificationListError": "보존 분류 목록을 가져오는 중 오류가 발생했습니다.",
+    "fetchRetentionClassificationListConsErrMsg": "보존 분류를 가져오는 중 오류가 발생했습니다: {error}"
   },
   "formProfile": {
     "message": "CHEFS 팀은 포괄적인 비즈니스 케이스를 작성하는 데 중요한 입력으로 사용될 정보를 수집하고 조직하고 있습니다. 이러한 케이스는 향후 몇 년 동안 CHEFS의 전략적 운영과 지속적인 개선을 안내하는 데 중추적인 역할을 할 것입니다. 데이터 수집을 위한 이 이니셔티브는 중요한 결정에 정보를 제공하고 CHEFS의 궤도를 형성하는 데 필수적입니다. 이를 통해 CHEFS가 변화하는 필요와 도전에 대응하여 적응성과 효과를 보장합니다.",
@@ -1119,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "이 양식에 대한 구독 설정이 저장되었습니다.",
       "saveSubscriptionSettingsErrMsg": "구독 설정을 저장하는 동안 오류가 발생했습니다.",
       "saveSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정 저장 오류: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "이 양식의 보존 정책을 가져오는 동안 오류가 발생했습니다.",
+      "getFormRetentionPolicyConsErrMsg": "양식 {formId}에 대한 보존 정책 가져오기 오류: {error}",
+      "configureFormRetentionPolicyErrMsg": "이 양식의 보존 정책을 구성하는 동안 오류가 발생했습니다.",
+      "configureFormRetentionPolicyConsErrMsg": "양식 {formId}에 대한 보존 정책 구성 오류: {error}"
     }
   },
   "admin": {

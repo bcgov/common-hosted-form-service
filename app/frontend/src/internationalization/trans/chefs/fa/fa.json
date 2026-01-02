@@ -206,7 +206,38 @@
     "encryptionKeyUpdatedBy": "کلید رمزگذاری به روز شده توسط",
     "encryptionKeyCopySnackbar": "کلید رمزگذاری در کلیپ بورد کپی شد",
     "encryptionKeyCopyTooltip": "کلید رمزگذاری را در کلیپ بورد کپی کنید",
-    "encryptionKeyGenerate": "ایجاد کلید رمزگذاری"
+    "encryptionKeyGenerate": "ایجاد کلید رمزگذاری",
+    "dataRetention": "سیاست نگهداری داده‌ها",
+    "enableHardDeletion": "فعال‌سازی حذف خودکار دائمی",
+    "hardDeletionTooltip": "در صورت فعال‌سازی، پس از پایان دوره نگهداری، داده‌های علامت‌گذاری شده برای حذف به طور دائمی حذف می‌شوند.",
+    "hardDeletionWarning": "حذف دائمی قابل برگشت نیست.",
+    "permanentDeletion": "داده‌ها پس از حذف غیرقابل بازیابی خواهند بود.",
+    "dataClassification": "طبقه‌بندی داده‌ها",
+    "dataClassificationHint": "نوع داده‌های جمع‌آوری شده توسط این فرم را دسته‌بندی کنید",
+    "retentionPeriod": "دوره نگهداری",
+    "retentionPeriodHint": "مدت زمان نگهداری داده‌های حذف شده قبل از حذف دائمی",
+    "classPublic": "عمومی",
+    "classInternal": "داخلی",
+    "classSensitive": "حساس",
+    "classConfidential": "محرمانه",
+    "classProtected": "حفاظت شده",
+    "classificationCustomHint": "در صورت نیاز می‌توانید یک طبقه‌بندی سفارشی وارد کنید",
+    "days30": "۳۰ روز",
+    "days90": "۹۰ روز",
+    "days180": "۱۸۰ روز",
+    "year1": "۱ سال (۳۶۵ روز)",
+    "years2": "۲ سال (۷۳۰ روز)",
+    "years5": "۵ سال (۱۸۲۵ روز)",
+    "daysCustom": "دوره سفارشی",
+    "customDaysLabel": "دوره نگهداری سفارشی (روز)",
+    "customDaysHint": "عددی بین ۱ تا ۳۶۵۰ روز (۱۰ سال) وارد کنید",
+    "classificationDescription": "یادداشت‌های طبقه‌بندی",
+    "classificationDescriptionHint": "توضیحات اختیاری درباره دلیل انتخاب این طبقه‌بندی و دوره نگهداری",
+    "retentionDaysUpdated": "دوره نگهداری به‌روز شد",
+    "deletionDisclaimerWithDays": "هشدار: پس از {days} روز، داده‌های علامت‌گذاری شده برای حذف به طور دائمی حذف می‌شوند و قابل بازیابی نخواهند بود.",
+    "setRetentionPrompt": "لطفاً برای تکمیل سیاست نگهداری داده‌ها، یک دوره نگهداری تعیین کنید.",
+    "fetchRetentionClassificationListError": "خطا در دریافت فهرست طبقه‌بندی‌های نگهداری.",
+    "fetchRetentionClassificationListConsErrMsg": "خطا در دریافت طبقه‌بندی‌های نگهداری: {error}"
   },
   "formProfile": {
     "message": "تیم CHEFS اطلاعات را جمع آوری و سازماندهی می‌کند تا به عنوان ورودی حیاتی برای ساخت مورد کارهای تجاری جامع عمل کند. این موارد نقش کلیدی در راهنمایی عملیات استراتژیک و بهبود مستمر CHEFS در سال‌های آینده خواهند داشت. این اقدام برای جمع‌آوری داده‌ها برای اطلاع از تصمیمات حیاتی و شکل‌دهی مسیر CHEFS جهت اطمینان از قابلیت تطبیق و کارایی آن در مواجهه با نیازها و چالش‌های در حال تحول حیاتی است.",
@@ -1119,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "تنظیمات اشتراک برای این فرم ذخیره شده است.",
       "saveSubscriptionSettingsErrMsg": "هنگام تلاش برای ذخیره تنظیمات اشتراک خطایی روی داد.",
       "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "هنگام واکشی سیاست نگهداری برای این فرم خطایی روی داد.",
+      "getFormRetentionPolicyConsErrMsg": "خطا در دریافت سیاست نگهداری فرم {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "هنگام پیکربندی سیاست نگهداری برای این فرم خطایی روی داد.",
+      "configureFormRetentionPolicyConsErrMsg": "خطا در پیکربندی سیاست نگهداری برای فرم {formId}: {error}"
     }
   },
   "admin": {

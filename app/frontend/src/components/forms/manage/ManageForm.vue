@@ -12,6 +12,7 @@ import PrintConfig from '~/components/forms/manage/PrintConfig.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useRecordsManagementStore } from '~/store/recordsManagement';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import FormProfile from '~/components/designer/FormProfile.vue';
 
@@ -30,9 +31,12 @@ const printConfigPanel = ref(1);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
+const recordsManagementStore = useRecordsManagementStore();
 
 const { apiKey, drafts, form, permissions, isRTL, subscriptionData } =
   storeToRefs(formStore);
+
+const { formRetentionPolicy } = storeToRefs(recordsManagementStore);
 
 const canEditForm = computed(() =>
   permissions.value.includes(FormPermissions.FORM_UPDATE)
@@ -104,6 +108,12 @@ async function updateSettings() {
     const { valid } = await settingsForm.value.validate();
     if (valid) {
       await formStore.updateForm();
+      if (formRetentionPolicy.value.enabled) {
+        await recordsManagementStore.configureRetentionPolicy(form.value.id);
+      } else if (formRetentionPolicy.value.formId) {
+        // If disabled and a policy exists, delete it
+        await recordsManagementStore.deleteRetentionPolicy(form.value.id);
+      }
       formSettingsDisabled.value = true;
       notificationStore.addNotification({
         text: 'Your form settings have been updated successfully.',
