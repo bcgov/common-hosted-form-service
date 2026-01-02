@@ -15,13 +15,17 @@ All generated assets are automatically copied to the correct locations for servi
 
 These files are stored in source control and copied to `dist/embed/` during build:
 
-| File                                                                       | Purpose                               | HTTP Path                                      |
-| -------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------- |
-| [`chefs-form-viewer.js`](./chefs-form-viewer.js)                           | Main web component (development)      | `/app/embed/chefs-form-viewer.js`              |
-| [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)               | Simplified embed script (development) | `/app/embed/chefs-form-viewer-embed.js`        |
-| [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)   | Code generator tool                   | `/app/embed/chefs-form-viewer-generator.html`  |
-| [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html) | Interactive embed demo                | `/app/embed/chefs-form-viewer-embed-demo.html` |
-| [`README.md`](./README.md)                                                 | This documentation                    | `/app/embed/README.md`                         |
+| File                                                                                   | Purpose                               | HTTP Path                                            |
+| -------------------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------- |
+| [`chefs-form-viewer.js`](./chefs-form-viewer.js)                                       | Main web component (development)      | `/app/embed/chefs-form-viewer.js`                    |
+| [`chefs-form-viewer-embed.js`](./chefs-form-viewer-embed.js)                           | Simplified embed script (development) | `/app/embed/chefs-form-viewer-embed.js`              |
+| [`chefs-form-viewer-generator.html`](./chefs-form-viewer-generator.html)               | Code generator tool                   | `/app/embed/chefs-form-viewer-generator.html`        |
+| [`chefs-form-viewer-embed-demo.html`](./chefs-form-viewer-embed-demo.html)             | Interactive embed demo                | `/app/embed/chefs-form-viewer-embed-demo.html`       |
+| [`chefs-form-viewer-override-template.css`](./chefs-form-viewer-override-template.css) | CSS theme template for customization  | `/app/embed/chefs-form-viewer-override-template.css` |
+| [`chefs-form-viewer-theme-dark.css`](./chefs-form-viewer-theme-dark.css)               | Dark mode/cyberpunk demo theme        | `/app/embed/chefs-form-viewer-theme-dark.css`        |
+| [`chefs-form-viewer-theme-material.css`](./chefs-form-viewer-theme-material.css)       | Material Design demo theme            | `/app/embed/chefs-form-viewer-theme-material.css`    |
+| [`chefs-form-viewer-theme-demo.html`](./chefs-form-viewer-theme-demo.html)             | Theme testing demo tool               | `/app/embed/chefs-form-viewer-theme-demo.html`       |
+| [`README.md`](./README.md)                                                             | This documentation                    | `/app/embed/README.md`                               |
 
 #### **Generated Files** (created in `dist/embed/` during build)
 
@@ -59,6 +63,7 @@ These files are **not in source control** and are created by the build process:
 - **CSS and minified JS files are only available after CHEFS build process**
 - **Use `.min.js` files in production** for better performance and smaller downloads
 - **CSS files (`chefs-index.css`, `chefs-theme.css`) are automatically generated** and contain the complete CHEFS styling
+- **Custom themes**: Use `chefs-form-viewer-override-template.css` as a starting point. See demo themes (`chefs-form-viewer-theme-dark.css`, `chefs-form-viewer-theme-material.css`) for examples. Use `chefs-form-viewer-theme-demo.html` to test themes.
 
 **Note**: Generated files (`.min.js`, `.css`) are created during the build process and are not stored in the source repository.
 
