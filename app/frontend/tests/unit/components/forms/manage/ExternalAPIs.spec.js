@@ -7,40 +7,22 @@ import ExternalAPIs from '~/components/forms/manage/ExternalAPIs.vue';
 import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import vuetifyStub from '../../../../vuetify-stubs';
 
 const STUBS = {
-  VTooltip: {
-    name: 'VTooltip',
-    template: '<div class="v-tooltip-stub"><slot /></div>',
-  },
-  VBtn: {
-    template: '<div class="v-btn-stub"><slot /></div>',
-  },
-  VIcon: {
-    template: '<div class="v-icon-stub"><slot /></div>',
-  },
+  VTooltip: vuetifyStub,
+  VBtn: vuetifyStub,
+  VIcon: vuetifyStub,
   VDataTableServer: {
     template: '<div class="v-data-table-server"><slot /></div>',
     props: ['items', 'options', 'serverItemsLength', 'loading', 'pagination'],
   },
-  VForm: {
-    template: '<div class="v-form-stub"><slot /></div>',
-  },
-  VRow: {
-    template: '<div class="v-row-stub"><slot /></div>',
-  },
-  VCol: {
-    template: '<div class="v-col-stub"><slot /></div>',
-  },
-  VTextField: {
-    template: '<div class="v-text-field-stub"><slot /></div>',
-  },
-  VCheckbox: {
-    template: '<div class="v-checkbox-stub"><slot /></div>',
-  },
-  VSelect: {
-    template: '<div class="v-select-stub"><slot /></div>',
-  },
+  VForm: vuetifyStub,
+  VRow: vuetifyStub,
+  VCol: vuetifyStub,
+  VTextField: vuetifyStub,
+  VCheckbox: vuetifyStub,
+  VSelect: vuetifyStub,
 };
 
 const formId = '123';
