@@ -206,7 +206,38 @@
     "encryptionKeyUpdatedBy": "تم تحديث مفتاح التشفير بواسطة",
     "encryptionKeyCopySnackbar": "تم نسخ مفتاح التشفير إلى الحافظة",
     "encryptionKeyCopyTooltip": "نسخ مفتاح التشفير إلى الحافظة",
-    "encryptionKeyGenerate": "إنشاء مفتاح التشفير"
+    "encryptionKeyGenerate": "إنشاء مفتاح التشفير",
+    "dataRetention": "سياسة الاحتفاظ بالبيانات",
+    "enableHardDeletion": "تمكين الحذف التلقائي النهائي",
+    "hardDeletionTooltip": "عند التمكين، سيتم إزالة البيانات المعلمة للحذف بشكل دائم بعد فترة الاحتفاظ.",
+    "hardDeletionWarning": "الحذف النهائي دائم ولا يمكن التراجع عنه.",
+    "permanentDeletion": "البيانات ستكون غير قابلة للاسترداد بعد الحذف.",
+    "dataClassification": "تصنيف البيانات",
+    "dataClassificationHint": "تصنيف نوع البيانات التي يتم جمعها بواسطة هذا النموذج",
+    "retentionPeriod": "فترة الاحتفاظ",
+    "retentionPeriodHint": "المدة التي يتم الاحتفاظ فيها بالطلبات المحذوفة قبل الإزالة النهائية",
+    "classPublic": "عامة",
+    "classInternal": "داخلية",
+    "classSensitive": "حساسة",
+    "classConfidential": "سرية",
+    "classProtected": "محمية",
+    "classificationCustomHint": "يمكنك كتابة تصنيف مخصص إذا لزم الأمر",
+    "days30": "30 يوم",
+    "days90": "90 يوم",
+    "days180": "180 يوم",
+    "year1": "سنة واحدة (365 يوم)",
+    "years2": "سنتان (730 يوم)",
+    "years5": "5 سنوات (1825 يوم)",
+    "daysCustom": "فترة مخصصة",
+    "customDaysLabel": "فترة احتفاظ مخصصة (بالأيام)",
+    "customDaysHint": "أدخل رقمًا بين 1 و 3650 يومًا (10 سنوات)",
+    "classificationDescription": "ملاحظات التصنيف",
+    "classificationDescriptionHint": "وصف اختياري لسبب اختيار هذا التصنيف وفترة الاحتفاظ",
+    "retentionDaysUpdated": "تم تحديث فترة الاحتفاظ",
+    "deletionDisclaimerWithDays": "تحذير: بعد {days} يوم، سيتم حذف البيانات المعلمة للحذف بشكل دائم ولا يمكن استردادها.",
+    "setRetentionPrompt": "الرجاء تحديد فترة الاحتفاظ لإكمال سياسة الاحتفاظ بالبيانات.",
+    "fetchRetentionClassificationListError": "حدث خطأ أثناء جلب تصنيفات الاحتفاظ.",
+    "fetchRetentionClassificationListConsErrMsg": "حدث خطأ أثناء جلب تصنيفات الاحتفاظ: {error}"
   },
   "formProfile": {
     "message": "تقوم فرق CHEFS بجمع وتنظيم المعلومات لتكون مدخلات حاسمة لصياغة حالات أعمال شاملة. ستلعب هذه الحالات دورًا حيويًا في توجيه العمليات الاستراتيجية وتحسين CHEFS المستمر في السنوات القادمة. هذه المبادرة لجمع البيانات ضرورية لإعلام القرارات الحاسمة وتشكيل مسار CHEFS ، مما يضمن قابليتها للتكيف وفعاليتها في التعامل مع الاحتياجات والتحديات المتطورة.",
@@ -1119,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "تم حفظ إعدادات الاشتراك لهذا النموذج.",
       "saveSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة حفظ إعدادات الاشتراك.",
       "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "حدث خطأ أثناء جلب سياسة الاحتفاظ لهذا النموذج.",
+      "getFormRetentionPolicyConsErrMsg": "خطأ في الحصول على سياسة الاحتفاظ للنموذج {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "حدث خطأ أثناء تكوين سياسة الاحتفاظ لهذا النموذج.",
+      "configureFormRetentionPolicyConsErrMsg": "خطأ في تكوين سياسة الاحتفاظ للنموذج {formId}: {error}"
     }
   },
   "admin": {

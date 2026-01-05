@@ -30,6 +30,9 @@ module.exports = {
   FormMetadata: require('./tables/formMetadata'),
   FormEncryptionKey: require('./tables/formEncryptionKey'),
   FormEventStreamConfig: require('./tables/formEventStreamConfig'),
+  RetentionClassification: require('./tables/retentionClassification'),
+  RetentionPolicy: require('./tables/retentionPolicy'),
+  ScheduledSubmissionDeletion: require('./tables/scheduledSubmissionDeletion'),
   FormPrintConfig: require('./tables/formPrintConfig'),
   FormPrintConfigTypeCode: require('./tables/formPrintConfigTypeCode'),
 

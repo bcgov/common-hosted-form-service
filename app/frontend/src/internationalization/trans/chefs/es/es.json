@@ -206,7 +206,38 @@
     "encryptionKeyUpdatedBy": "Clave de cifrado actualizada por",
     "encryptionKeyCopySnackbar": "Clave de cifrado copiada al portapapeles",
     "encryptionKeyCopyTooltip": "Copiar la clave de cifrado al portapapeles",
-    "encryptionKeyGenerate": "Generar clave de cifrado"
+    "encryptionKeyGenerate": "Generar clave de cifrado",
+    "dataRetention": "Política de retención de datos",
+    "enableHardDeletion": "Habilitar eliminación automática permanente",
+    "hardDeletionTooltip": "Cuando está habilitado, las presentaciones marcadas para eliminación se eliminarán permanentemente después del período de retención.",
+    "hardDeletionWarning": "La eliminación permanente es definitiva y no se puede deshacer.",
+    "permanentDeletion": "Los datos serán irrecuperables después de la eliminación.",
+    "dataClassification": "Clasificación de datos",
+    "dataClassificationHint": "Categorizar el tipo de datos recopilados por este formulario",
+    "retentionPeriod": "Período de retención",
+    "retentionPeriodHint": "Cuánto tiempo mantener las presentaciones eliminadas antes de la eliminación permanente",
+    "classPublic": "Público",
+    "classInternal": "Interno",
+    "classSensitive": "Sensible",
+    "classConfidential": "Confidencial",
+    "classProtected": "Protegido",
+    "classificationCustomHint": "Puede escribir una clasificación personalizada si es necesario",
+    "days30": "30 días",
+    "days90": "90 días",
+    "days180": "180 días",
+    "year1": "1 año (365 días)",
+    "years2": "2 años (730 días)",
+    "years5": "5 años (1825 días)",
+    "daysCustom": "Período personalizado",
+    "customDaysLabel": "Período de retención personalizado (días)",
+    "customDaysHint": "Ingrese un número entre 1 y 3650 días (10 años)",
+    "classificationDescription": "Notas de clasificación",
+    "classificationDescriptionHint": "Descripción opcional de por qué se eligió esta clasificación y período de retención",
+    "retentionDaysUpdated": "Período de retención actualizado",
+    "deletionDisclaimerWithDays": "ADVERTENCIA: Después de {days} días, las presentaciones marcadas para eliminación serán eliminadas permanentemente y no se podrán recuperar.",
+    "setRetentionPrompt": "Por favor establezca un período de retención para completar su política de retención de datos.",
+    "fetchRetentionClassificationListError": "Error al obtener la lista de clasificaciones de retención.",
+    "fetchRetentionClassificationListConsErrMsg": "Error al obtener las clasificaciones de retención: {error}"
   },
   "formProfile": {
     "message": "El equipo de CHEFS está recopilando y organizando información para servir como entrada crucial para la elaboración de casos de negocio integrales. Estos casos jugarán un papel fundamental en la guía de la operación estratégica y la mejora continua de CHEFS en los próximos años. Esta iniciativa de recopilación de datos es esencial para informar decisiones críticas y dar forma a la trayectoria de CHEFS, asegurando su adaptabilidad y efectividad para abordar necesidades y desafíos en constante evolución.",
@@ -1119,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Se ha guardado la configuración de suscripción para este formulario.",
       "saveSubscriptionSettingsErrMsg": "Se produjo un error al intentar guardar la configuración de la suscripción.",
       "saveSubscriptionSettingsConsErrMsg": "Error al guardar la configuración de suscripción para el formulario {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Se produjo un error al obtener la política de retención para este formulario.",
+      "getFormRetentionPolicyConsErrMsg": "Error al obtener la política de retención para el formulario {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "Se produjo un error al configurar la política de retención para este formulario.",
+      "configureFormRetentionPolicyConsErrMsg": "Error al configurar la política de retención para el formulario {formId}: {error}"
     }
   },
   "admin": {
