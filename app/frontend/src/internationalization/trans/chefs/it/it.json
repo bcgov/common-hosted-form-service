@@ -914,8 +914,17 @@
     "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {error}",
     "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza",
     "formUnauthorizedMessage": "Non sei autorizzato a visualizzare questo modulo, si prega di contattare il proprietario del modulo per l'accesso.",
-    "fileUploadWarning": "Per caricare i tuoi allegati, devi cliccare sul pulsante \"Salva come bozza\" o inviare il tuo modulo. Se esci da questa schermata, perderai i tuoi allegati."
+    "fileUploadWarning": "Per caricare i tuoi allegati, devi cliccare sul pulsante \"Salva come bozza\" o inviare il tuo modulo. Se esci da questa schermata, perderai i tuoi allegati.",
+    "enableAutoSave": "Abilita protezione avanzamento modulo - Salva automaticamente i progressi localmente nel browser per recuperarli se la pagina viene chiusa o aggiornata accidentalmente"
   },
+  "localAutosave": {
+    "title": "Ripristinare il tuo lavoro?",
+    "message": "I progressi dell’ultima sessione sono stati salvati nel tuo browser e possono essere ripristinati ora, oppure puoi ricominciare con un modulo vuoto.",
+    "restore": "Ripristina lavoro",
+    "discard": "Ricomincia",
+    "restored": "I tuoi progressi dell’ultima sessione sono stati ripristinati con successo."
+  },
+
   "bCGovFooter": {
     "home": "Casa",
     "about": "Informazioni su gov.bc.ca",

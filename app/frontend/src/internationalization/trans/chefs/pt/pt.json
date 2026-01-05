@@ -914,7 +914,15 @@
     "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
     "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir",
     "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso.",
-    "fileUploadWarning": "Para enviar os seus anexos, deve clicar no botão 'Guardar como rascunho' ou enviar o seu formulário. Se sair deste ecrã, perderá os seus anexos"
+    "fileUploadWarning": "Para enviar os seus anexos, deve clicar no botão 'Guardar como rascunho' ou enviar o seu formulário. Se sair deste ecrã, perderá os seus anexos",
+    "enableAutoSave": "Ativar proteção de progresso do formulário – Armazene seu progresso localmente no navegador para recuperá-lo caso a página seja fechada ou atualizada acidentalmente"
+  },
+  "localAutosave": {
+    "title": "Restaurar seu trabalho?",
+    "message": "Seu progresso da última sessão foi salvo no navegador e pode ser restaurado agora, ou você pode começar novamente com um formulário em branco.",
+    "restore": "Restaurar trabalho",
+    "discard": "Recomeçar",
+    "restored": "Seu progresso da última sessão foi restaurado com sucesso."
   },
   "bCGovFooter": {
     "home": "Lar",
