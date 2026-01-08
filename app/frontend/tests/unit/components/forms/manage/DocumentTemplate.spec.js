@@ -9,7 +9,7 @@ import { afterEach, beforeEach, expect, vi } from 'vitest';
 
 import * as documentTemplateComposables from '~/composables/documentTemplate';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
-import { formService } from '~/services';
+import { formService, printConfigService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import getRouter from '~/router';
@@ -118,7 +118,7 @@ describe('DocumentTemplate.vue', () => {
       'fetchDocumentTemplates'
     );
     fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
-      throw new Error();
+      throw new Error('test error');
     });
 
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
@@ -193,7 +193,7 @@ describe('DocumentTemplate.vue', () => {
     });
 
     // Mock FileReader
-    window.FileReader = function () {
+    globalThis.FileReader = function () {
       this.readAsDataURL = vi.fn();
       this.onload = null;
       this.onerror = null;
@@ -295,6 +295,79 @@ describe('DocumentTemplate.vue', () => {
     await flushPromises();
 
     expect(wrapper.vm.fileInput.value).toBeUndefined();
+  });
+
+  it('dispatches document-templates-updated event after successful upload', async () => {
+    const dispatchEventSpy = vi.spyOn(globalThis, 'dispatchEvent');
+    const fetchDocumentTemplatesSpy = vi.spyOn(
+      documentTemplateComposables,
+      'fetchDocumentTemplates'
+    );
+    fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+      return [
+        {
+          actions: '',
+          createdAt: moment().format(),
+          filename: 'filename.txt',
+          templateId: '1',
+        },
+      ];
+    });
+    const readFileSpy = vi.spyOn(documentTemplateComposables, 'readFile');
+    readFileSpy.mockImplementationOnce(
+      async () => 'SGVsbG8ge2QuZmlyc3ROYW1lfS4='
+    );
+    const documentTemplateCreateSpy = vi.spyOn(
+      formService,
+      'documentTemplateCreate'
+    );
+    documentTemplateCreateSpy.mockResolvedValue({
+      data: {
+        active: true,
+        createdAt: moment().format(),
+        createdBy: 'DocumentTemplate.spec.js',
+        filename: 'filename.txt',
+        formId: '1',
+        id: '1',
+        template: {
+          type: 'Buffer',
+          data: [],
+        },
+        updatedAt: moment().format(),
+        updatedBy: null,
+      },
+    });
+
+    formStore.form = { id: '1' };
+
+    const wrapper = mount(DocumentTemplate, {
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    wrapper.vm.documentTemplates = ref([]);
+    await flushPromises();
+
+    const mockInputElement = document.createElement('input');
+    mockInputElement.type = 'file';
+    mockInputElement.reset = vi.fn();
+
+    wrapper.vm.fileInput = ref(mockInputElement);
+    wrapper.vm.uploadedFile = {
+      name: 'cdogs.txt',
+    };
+
+    await wrapper.vm.handleFileUpload();
+    await flushPromises();
+
+    expect(dispatchEventSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'document-templates-updated',
+        detail: { formId: '1' },
+      })
+    );
   });
 
   it('when handleFileUpload throws an error, it will show a notification', async () => {
@@ -481,7 +554,7 @@ describe('DocumentTemplate.vue', () => {
       return '#';
     });
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
-    const windowOpenSpy = vi.spyOn(window, 'open');
+    const windowOpenSpy = vi.spyOn(globalThis, 'open');
     const appendChildSpy = vi.spyOn(document.body, 'appendChild');
     addNotificationSpy.mockImplementation(() => {});
     windowOpenSpy.mockImplementation(() => {});
@@ -530,7 +603,7 @@ describe('DocumentTemplate.vue', () => {
       return '#';
     });
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
-    const windowOpenSpy = vi.spyOn(window, 'open');
+    const windowOpenSpy = vi.spyOn(globalThis, 'open');
     const appendChildSpy = vi.spyOn(document.body, 'appendChild');
     addNotificationSpy.mockImplementation(() => {});
     windowOpenSpy.mockImplementation(() => {});
@@ -578,7 +651,7 @@ describe('DocumentTemplate.vue', () => {
       'getDocumentTemplate'
     );
     getDocumentTemplateSpy.mockImplementationOnce(() => {
-      throw new Error();
+      throw new Error('test error');
     });
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
 
@@ -597,5 +670,410 @@ describe('DocumentTemplate.vue', () => {
     );
 
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('PrintConfig integration', () => {
+    it('should fetch print config on mount', async () => {
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+        return [];
+      });
+      const readPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      readPrintConfigSpy.mockResolvedValueOnce({ data: null });
+
+      mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      expect(readPrintConfigSpy).toHaveBeenCalledWith('1');
+    });
+
+    it('should disable delete button when template is in use', async () => {
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const readPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      readPrintConfigSpy.mockResolvedValueOnce({
+        data: {
+          id: 'config-1',
+          formId: '1',
+          code: 'direct',
+          templateId: 'template-1',
+        },
+      });
+
+      const wrapper = mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      expect(wrapper.vm.isTemplateInUse('template-1')).toBe(true);
+      expect(wrapper.vm.isTemplateInUse('template-2')).toBe(false);
+    });
+
+    it('should enable delete button when template is not in use', async () => {
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const readPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      readPrintConfigSpy.mockResolvedValueOnce({ data: null });
+
+      const wrapper = mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      expect(wrapper.vm.isTemplateInUse('template-1')).toBe(false);
+    });
+
+    it('should show error notification on 409 response', async () => {
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const readPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      readPrintConfigSpy.mockResolvedValueOnce({ data: null });
+      const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+      const documentTemplateDeleteSpy = vi.spyOn(
+        formService,
+        'documentTemplateDelete'
+      );
+      const error = new Error('Conflict');
+      error.response = { status: 409 };
+      documentTemplateDeleteSpy.mockRejectedValueOnce(error);
+
+      const wrapper = mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      await wrapper.vm.handleDelete({ templateId: 'template-1' });
+
+      await flushPromises();
+
+      expect(addNotificationSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          text: 'trans.documentTemplate.deleteErrorInUse',
+        })
+      );
+    });
+
+    it('should successfully delete when template is not in use', async () => {
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementation(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const readPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      readPrintConfigSpy.mockResolvedValue({ data: null });
+      const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+      const documentTemplateDeleteSpy = vi.spyOn(
+        formService,
+        'documentTemplateDelete'
+      );
+      documentTemplateDeleteSpy.mockResolvedValueOnce({});
+
+      const wrapper = mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      await wrapper.vm.handleDelete({ templateId: 'template-1' });
+
+      await flushPromises();
+
+      expect(addNotificationSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          text: 'trans.documentTemplate.deleteSuccess',
+        })
+      );
+    });
+
+    it('dispatches document-templates-updated event after successful delete', async () => {
+      const dispatchEventSpy = vi.spyOn(globalThis, 'dispatchEvent');
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementation(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const readPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      readPrintConfigSpy.mockResolvedValue({ data: null });
+      const documentTemplateDeleteSpy = vi.spyOn(
+        formService,
+        'documentTemplateDelete'
+      );
+      documentTemplateDeleteSpy.mockResolvedValueOnce({});
+
+      const wrapper = mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      await wrapper.vm.handleDelete({ templateId: 'template-1' });
+      await flushPromises();
+
+      expect(dispatchEventSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'document-templates-updated',
+          detail: { formId: '1' },
+        })
+      );
+    });
+
+    it('listens for print-config-updated event and refreshes print config', async () => {
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const fetchPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      fetchPrintConfigSpy.mockResolvedValue({ data: null });
+
+      mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      // Reset spy to count only after mount
+      fetchPrintConfigSpy.mockClear();
+      fetchPrintConfigSpy.mockResolvedValue({
+        data: { code: 'direct', templateId: 'template-1' },
+      });
+
+      // Dispatch event
+      globalThis.dispatchEvent(
+        new CustomEvent('print-config-updated', {
+          detail: {
+            formId: '1',
+            printConfig: { code: 'direct', templateId: 'template-1' },
+          },
+        })
+      );
+
+      await flushPromises();
+
+      expect(fetchPrintConfigSpy).toHaveBeenCalledWith('1');
+    });
+
+    it('ignores print-config-updated event from other forms', async () => {
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const fetchPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      fetchPrintConfigSpy.mockResolvedValue({ data: null });
+
+      mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      // Reset spy to count only after mount
+      fetchPrintConfigSpy.mockClear();
+
+      // Dispatch event for different form
+      globalThis.dispatchEvent(
+        new CustomEvent('print-config-updated', {
+          detail: {
+            formId: 'other-form-id',
+            printConfig: { code: 'direct', templateId: 'template-1' },
+          },
+        })
+      );
+
+      await flushPromises();
+
+      // Should not have been called for different form
+      expect(fetchPrintConfigSpy).not.toHaveBeenCalled();
+    });
+
+    it('removes event listener on unmount', async () => {
+      const removeEventListenerSpy = vi.spyOn(
+        globalThis,
+        'removeEventListener'
+      );
+      formStore.form = { id: '1' };
+
+      const fetchDocumentTemplatesSpy = vi.spyOn(
+        documentTemplateComposables,
+        'fetchDocumentTemplates'
+      );
+      fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+        return [
+          {
+            actions: '',
+            createdAt: moment().format(),
+            filename: 'filename.txt',
+            templateId: 'template-1',
+          },
+        ];
+      });
+      const readPrintConfigSpy = vi.spyOn(
+        printConfigService,
+        'readPrintConfig'
+      );
+      readPrintConfigSpy.mockResolvedValue({ data: null });
+
+      const wrapper = mount(DocumentTemplate, {
+        global: {
+          plugins: [router, pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.unmount();
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'print-config-updated',
+        expect.any(Function)
+      );
+    });
   });
 });
