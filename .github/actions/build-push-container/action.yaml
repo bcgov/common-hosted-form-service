@@ -179,9 +179,6 @@ runs:
       shell: bash
       env:
         IMAGE_NAME: ${{ inputs.image_name }}
+        IMAGE_DIGEST: ${{ steps.builder.outputs.digest }}
       run: |
-        if [[ "${{ env.IMAGE_VERSION }}" == "main" ]]; then
-          docker image inspect "ghcr.io/${{ env.GH_USERNAME }}/${IMAGE_NAME}:latest"
-        else
-          docker image inspect "ghcr.io/${{ env.GH_USERNAME }}/${IMAGE_NAME}:${{ env.IMAGE_VERSION }}"
-        fi
+        docker buildx imagetools inspect "ghcr.io/${{ env.GH_USERNAME }}/${IMAGE_NAME}@${IMAGE_DIGEST}"
