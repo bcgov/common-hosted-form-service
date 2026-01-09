@@ -169,8 +169,16 @@ runs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=registry,ref=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:buildcache
+        cache-to: type=registry,ref=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:buildcache,mode=max
 
     - name: Inspect Docker Image
       shell: bash
+      env:
+        IMAGE_NAME: ${{ inputs.image_name }}
       run: |
-        docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest
+        if [[ "${{ env.IMAGE_VERSION }}" == "main" ]]; then
+          docker image inspect "ghcr.io/${{ env.GH_USERNAME }}/${IMAGE_NAME}:latest"
+        else
+          docker image inspect "ghcr.io/${{ env.GH_USERNAME }}/${IMAGE_NAME}:${{ env.IMAGE_VERSION }}"
+        fi
