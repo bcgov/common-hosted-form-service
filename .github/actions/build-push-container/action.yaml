@@ -143,6 +143,9 @@ runs:
         username: ${{ inputs.dockerhub_username }}
         password: ${{ inputs.dockerhub_token }}
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Prepare Container Metadata tags
       id: meta
       uses: docker/metadata-action@v5
