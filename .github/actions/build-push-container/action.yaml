@@ -163,7 +163,11 @@ runs:
         labels: |
           org.opencontainers.image.revision=${{ env.IMAGE_REVISION }}
           org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
-
+    - name: Debug meta tags
+      shell: bash
+      run: |
+        echo "META TAGS:"
+        echo "${{ steps.meta.outputs.tags }}"
     - name: Build and Push to Container Registry
       id: builder
       uses: docker/build-push-action@v6
