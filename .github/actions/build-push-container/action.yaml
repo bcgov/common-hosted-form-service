@@ -174,6 +174,8 @@ runs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=registry,ref=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:buildcache
         cache-to: type=registry,ref=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:buildcache,mode=max
+        provenance: false
+        sbom: false
 
     - name: Inspect Docker Image
       shell: bash
