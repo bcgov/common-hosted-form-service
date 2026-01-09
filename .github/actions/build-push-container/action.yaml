@@ -178,4 +178,4 @@ runs:
     - name: Inspect Docker Image
       shell: bash
       run: |
-        docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest
+        docker buildx imagetools inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}@${{ steps.builder.outputs.digest }}
