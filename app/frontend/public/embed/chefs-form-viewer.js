@@ -580,6 +580,50 @@
     'x-powered-by', // Express header
   ]);
 
+  /**
+   * Headers that browsers forbid from being set via XMLHttpRequest.setRequestHeader().
+   * These headers are automatically set by the browser and cannot be modified by JavaScript.
+   * Filtering these prevents "Refused to set unsafe header" warnings in the console.
+   *
+   * Complete list per W3C specification:
+   * https://fetch.spec.whatwg.org/#forbidden-header-name
+   */
+  const FORBIDDEN_XHR_HEADERS = new Set([
+    'accept-charset', // Automatically set by browser
+    'accept-encoding', // Automatically set by browser
+    'access-control-request-headers', // CORS preflight header
+    'access-control-request-method', // CORS preflight header
+    'connection', // Automatically set by browser
+    'content-length', // Automatically set by browser
+    'cookie', // Automatically set by browser
+    'cookie2', // Automatically set by browser
+    'date', // Automatically set by browser
+    'dnt', // Do Not Track header
+    'expect', // HTTP/1.1 Expect header
+    'host', // Automatically set by browser
+    'keep-alive', // Automatically set by browser
+    'origin', // Automatically set by browser (CORS)
+    'referer', // Automatically set by browser
+    'te', // Transfer-Encoding negotiation
+    'trailer', // HTTP/1.1 Trailer header
+    'transfer-encoding', // Automatically set by browser
+    'upgrade', // Automatically set by browser
+    'via', // Proxy/Via header
+  ]);
+
+  /**
+   * Checks if a header name matches a forbidden pattern (e.g., proxy-*, sec-*).
+   * @param {string} headerName - Header name to check
+   * @returns {boolean} True if header matches a forbidden pattern
+   */
+  function isForbiddenHeaderPattern(headerName) {
+    const lowerName = headerName.toLowerCase();
+    return (
+      lowerName.startsWith('proxy-') || // All proxy-* headers are forbidden
+      lowerName.startsWith('sec-') // All sec-* headers are forbidden
+    );
+  }
+
   class ChefsFormViewer extends HTMLElement {
     static get observedAttributes() {
       return [
@@ -1182,6 +1226,34 @@
       }
 
       return false;
+    }
+
+    /**
+     * Filters out browser-forbidden headers from a headers object.
+     * Prevents "Refused to set unsafe header" warnings when headers are used
+     * in XMLHttpRequest.setRequestHeader() calls within Form.io custom JavaScript.
+     *
+     * @param {Object} headers - Headers object to filter
+     * @returns {Object} Filtered headers object with forbidden headers removed
+     * @private
+     */
+    _filterForbiddenHeaders(headers) {
+      if (!headers || typeof headers !== 'object') {
+        return headers;
+      }
+
+      const filtered = {};
+      for (const [key, value] of Object.entries(headers)) {
+        const lowerKey = key.toLowerCase();
+        // Skip forbidden headers and forbidden patterns
+        if (
+          !FORBIDDEN_XHR_HEADERS.has(lowerKey) &&
+          !isForbiddenHeaderPattern(key)
+        ) {
+          filtered[key] = value;
+        }
+      }
+      return filtered;
     }
 
     /**
@@ -2610,11 +2682,13 @@
         // evalContext: Objects available in Form.io custom JavaScript (calculated values, default values, conditional logic)
         // - token: Token object passed via 'token' attribute
         // - user: User object passed via 'user' attribute
-        // - headers: Headers object passed via 'headers' attribute
+        // - headers: Headers object passed via 'headers' attribute (filtered to remove browser-forbidden headers)
         evalContext: {
           ...(this.token && { token: this.token }),
           ...(this.user && { user: this.user }),
-          ...(this.headers && { headers: this.headers }),
+          ...(this.headers && {
+            headers: this._filterForbiddenHeaders(this.headers),
+          }),
         },
         componentOptions: {
           simplefile: this._getSimpleFileComponentOptions(),

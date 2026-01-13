@@ -1429,6 +1429,46 @@ describe('ChefsFormViewer internals', () => {
     logSpy.mockRestore();
   });
 
+  it('_filterForbiddenHeaders removes browser-forbidden headers', () => {
+    const headersWithForbidden = {
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+      host: 'example.com', // Forbidden
+      connection: 'keep-alive', // Forbidden
+      'accept-encoding': 'gzip', // Forbidden
+      cookie: 'session=abc', // Forbidden
+      referer: 'https://example.com', // Forbidden
+      'content-length': '123', // Forbidden
+      'proxy-authorization': 'test', // Forbidden pattern
+      'sec-fetch-mode': 'cors', // Forbidden pattern
+      'Content-Type': 'application/json', // Allowed
+      'X-API-Key': 'secret', // Allowed
+    };
+
+    const filtered = el._filterForbiddenHeaders(headersWithForbidden);
+    expect(filtered).toEqual({
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+      'Content-Type': 'application/json',
+      'X-API-Key': 'secret',
+    });
+    expect(filtered.host).toBeUndefined();
+    expect(filtered.connection).toBeUndefined();
+    expect(filtered['accept-encoding']).toBeUndefined();
+    expect(filtered.cookie).toBeUndefined();
+    expect(filtered.referer).toBeUndefined();
+    expect(filtered['content-length']).toBeUndefined();
+    expect(filtered['proxy-authorization']).toBeUndefined();
+    expect(filtered['sec-fetch-mode']).toBeUndefined();
+  });
+
+  it('_filterForbiddenHeaders handles null, undefined, and non-objects', () => {
+    expect(el._filterForbiddenHeaders(null)).toBe(null);
+    expect(el._filterForbiddenHeaders(undefined)).toBe(undefined);
+    expect(el._filterForbiddenHeaders('not-an-object')).toBe('not-an-object');
+    expect(el._filterForbiddenHeaders({})).toEqual({});
+  });
+
   it('_verifyAndParseSubmissionData handles valid and invalid payloads', () => {
     const logSpy = vi.spyOn(el._log, 'warn');
     expect(el._verifyAndParseSubmissionData({ data: { test: 1 } })).toEqual({
@@ -1467,6 +1507,26 @@ describe('ChefsFormViewer internals', () => {
     expect(options.evalContext.token).toEqual({ user: 'test' });
     expect(options.evalContext.user).toEqual({ name: 'John' });
     expect(options.evalContext.headers).toEqual({ 'X-Custom-Header': 'value' });
+  });
+
+  it('_buildFormioOptions filters forbidden headers from evalContext', () => {
+    el.headers = {
+      'X-Custom-Header': 'value',
+      host: 'example.com', // Should be filtered
+      Authorization: 'Bearer token',
+      'proxy-authorization': 'test', // Should be filtered
+    };
+    el._buildHooks = vi.fn().mockReturnValue({});
+    el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
+    el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
+
+    const options = el._buildFormioOptions();
+    expect(options.evalContext.headers).toEqual({
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+    });
+    expect(options.evalContext.headers.host).toBeUndefined();
+    expect(options.evalContext.headers['proxy-authorization']).toBeUndefined();
   });
 
   it('_getSimpleFileComponentOptions returns file operation configuration', () => {
