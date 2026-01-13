@@ -608,6 +608,7 @@
     'trailer', // HTTP/1.1 Trailer header
     'transfer-encoding', // Automatically set by browser
     'upgrade', // Automatically set by browser
+    'user-agent', // Automatically set by browser (some browsers still block this)
     'via', // Proxy/Via header
   ]);
 

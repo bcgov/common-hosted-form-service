@@ -1439,6 +1439,7 @@ describe('ChefsFormViewer internals', () => {
       cookie: 'session=abc', // Forbidden
       referer: 'https://example.com', // Forbidden
       'content-length': '123', // Forbidden
+      'user-agent': 'Mozilla/5.0', // Forbidden (some browsers still block)
       'proxy-authorization': 'test', // Forbidden pattern
       'sec-fetch-mode': 'cors', // Forbidden pattern
       'Content-Type': 'application/json', // Allowed
@@ -1458,6 +1459,7 @@ describe('ChefsFormViewer internals', () => {
     expect(filtered.cookie).toBeUndefined();
     expect(filtered.referer).toBeUndefined();
     expect(filtered['content-length']).toBeUndefined();
+    expect(filtered['user-agent']).toBeUndefined();
     expect(filtered['proxy-authorization']).toBeUndefined();
     expect(filtered['sec-fetch-mode']).toBeUndefined();
   });
