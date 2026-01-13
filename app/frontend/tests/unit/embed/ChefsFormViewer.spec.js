@@ -315,6 +315,12 @@ describe('FormViewerUtils', () => {
   });
 
   it('getJwtExpiry returns null for invalid tokens', () => {
+    // Suppress console.error for expected invalid token errors
+    // eslint-disable-next-line no-console
+    const originalConsoleError = console.error;
+    // eslint-disable-next-line no-console
+    console.error = vi.fn();
+
     expect(utils.getJwtExpiry('')).toBe(null);
     expect(utils.getJwtExpiry(null)).toBe(null);
     expect(utils.getJwtExpiry(undefined)).toBe(null);
@@ -325,6 +331,10 @@ describe('FormViewerUtils', () => {
     expect(utils.getJwtExpiry('header.invalid-base64.signature')).toBe(null);
     // Valid base64 but invalid JSON
     expect(utils.getJwtExpiry('header.aW52YWxpZC1qc29u.signature')).toBe(null);
+
+    // Restore console.error
+    // eslint-disable-next-line no-console
+    console.error = originalConsoleError;
   });
 
   it('getJwtExpiry returns null when no exp claim present', () => {
