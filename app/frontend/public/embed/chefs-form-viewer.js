@@ -515,6 +515,7 @@
    * - no-icons (boolean): do not load Font Awesome (icons will not render).
    * - token (string): JSON string containing token object for Form.io evalContext.
    * - user (string): JSON string containing user object for Form.io evalContext.
+   * - headers (string): JSON string containing headers object for Form.io evalContext.
    *
    * Notes on boolean attributes
    * - Standard HTML boolean semantics apply: presence, "true", empty string, "1" are treated as true.
@@ -622,6 +623,7 @@
       this.noIcons = false; // optional flag to disable loading icon CSS
       this.token = null; // optional token object for Form.io evalContext
       this.user = null; // optional user object for Form.io evalContext
+      this.headers = null; // optional headers object for Form.io evalContext
       this._prefillData = null; // cached prefill data for submission
       this.autoReloadOnSubmit = true; // auto-reload form as read-only after successful submission
 
@@ -690,6 +692,8 @@
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
      * - user: string; JSON string containing a user object that will be available in Form.io's evalContext
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
+     * - headers: string; JSON string containing a headers object that will be available in Form.io's evalContext
+     *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
      * - auto-reload-on-submit: boolean; when true (default), automatically reloads the form as read-only
      *   after successful submission, showing the submitted data. This provides a CHEFS-like experience
      *   out-of-the-box. Set to "false" to disable this behavior.
@@ -742,6 +746,9 @@
           break;
         case 'user':
           this.user = this._parseJsonAttribute(nv, 'user');
+          break;
+        case 'headers':
+          this.headers = this._parseJsonAttribute(nv, 'headers');
           break;
         case 'auto-reload-on-submit':
           this.autoReloadOnSubmit = bool(nv);
@@ -2600,6 +2607,7 @@
         evalContext: {
           ...(this.token && { token: this.token }),
           ...(this.user && { user: this.user }),
+          ...(this.headers && { headers: this.headers }),
         },
         componentOptions: {
           simplefile: this._getSimpleFileComponentOptions(),
