@@ -486,6 +486,7 @@
    *     language="en"
    *     token='{"sub":"user123","roles":["admin"]}'
    *     user='{"name":"John Doe","email":"john@example.com"}'
+   *     headers='{"X-Custom-Header":"value","Authorization":"Bearer ..."}'
    *     read-only
    *     isolate-styles
    *     debug
@@ -527,6 +528,7 @@
    *   el.authToken = '...';
    *   el.token = { sub: 'user123', roles: ['admin'] };
    *   el.user = { name: 'John Doe', email: 'john@example.com' };
+   *   el.headers = { 'X-Custom-Header': 'value', 'Authorization': 'Bearer ...' };
    *   el.endpoints = { themeCss: 'https://example.com/theme.css' };
    *   el.load();
    *
@@ -596,6 +598,7 @@
         'no-icons',
         'token',
         'user',
+        'headers',
         'auto-reload-on-submit',
       ];
     }
@@ -2604,6 +2607,10 @@
           ALLOWED_TAGS: ['iframe'],
         },
         hooks: this._buildHooks(),
+        // evalContext: Objects available in Form.io custom JavaScript (calculated values, default values, conditional logic)
+        // - token: Token object passed via 'token' attribute
+        // - user: User object passed via 'user' attribute
+        // - headers: Headers object passed via 'headers' attribute
         evalContext: {
           ...(this.token && { token: this.token }),
           ...(this.user && { user: this.user }),

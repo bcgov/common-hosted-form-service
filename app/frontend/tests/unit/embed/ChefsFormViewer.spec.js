@@ -427,6 +427,20 @@ describe('ChefsFormViewer', () => {
     expect(el.autoReloadOnSubmit).toBe(true);
   });
 
+  it('attributeChangedCallback handles headers attribute', () => {
+    const validHeaders =
+      '{"X-Custom-Header":"value","Authorization":"Bearer token"}';
+    el.setAttribute('headers', validHeaders);
+    expect(el.headers).toEqual({
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+    });
+
+    // Invalid JSON should set headers to null
+    el.setAttribute('headers', 'invalid-json');
+    expect(el.headers).toBeNull();
+  });
+
   it('connectedCallback sets logger and renders', () => {
     el.connectedCallback();
     expect(typeof el._log.info).toBe('function');
@@ -1403,6 +1417,18 @@ describe('ChefsFormViewer internals', () => {
     logSpy.mockRestore();
   });
 
+  it('_parseJsonAttribute parses headers attribute correctly', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    expect(
+      el._parseJsonAttribute('{"X-Custom-Header":"value"}', 'headers')
+    ).toEqual({
+      'X-Custom-Header': 'value',
+    });
+    expect(el._parseJsonAttribute('invalid-json', 'headers')).toBeNull();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
   it('_verifyAndParseSubmissionData handles valid and invalid payloads', () => {
     const logSpy = vi.spyOn(el._log, 'warn');
     expect(el._verifyAndParseSubmissionData({ data: { test: 1 } })).toEqual({
@@ -1430,6 +1456,7 @@ describe('ChefsFormViewer internals', () => {
     el.language = 'fr';
     el.token = { user: 'test' };
     el.user = { name: 'John' };
+    el.headers = { 'X-Custom-Header': 'value' };
     el._buildHooks = vi.fn().mockReturnValue({});
     el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
     el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
@@ -1439,6 +1466,7 @@ describe('ChefsFormViewer internals', () => {
     expect(options.language).toBe('fr');
     expect(options.evalContext.token).toEqual({ user: 'test' });
     expect(options.evalContext.user).toEqual({ name: 'John' });
+    expect(options.evalContext.headers).toEqual({ 'X-Custom-Header': 'value' });
   });
 
   it('_getSimpleFileComponentOptions returns file operation configuration', () => {

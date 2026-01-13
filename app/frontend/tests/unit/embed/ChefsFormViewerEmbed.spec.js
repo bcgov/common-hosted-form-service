@@ -140,6 +140,7 @@ describe('chefs-form-viewer-embed.js', () => {
       'read-only': 'true',
       token: encodeURIComponent('{"sub":"user123"}'),
       user: encodeURIComponent('{"name":"John"}'),
+      headers: encodeURIComponent('{"X-Custom-Header":"value"}'),
     };
     // Use a mock for setAttribute
     element.setAttribute = vi.fn();
@@ -156,8 +157,9 @@ describe('chefs-form-viewer-embed.js', () => {
     );
     // Should set read-only as boolean attribute
     expect(element.setAttribute).toHaveBeenCalledWith('read-only', '');
-    // Should set token and user as properties
+    // Should set token, user, and headers as properties
     expect(element.token).toEqual({ sub: 'user123' });
     expect(element.user).toEqual({ name: 'John' });
+    expect(element.headers).toEqual({ 'X-Custom-Header': 'value' });
   });
 });

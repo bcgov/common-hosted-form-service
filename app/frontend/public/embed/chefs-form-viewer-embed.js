@@ -13,6 +13,7 @@
  *   globalThis.ChefsViewerConfig = {
  *     token: { roles: ['admin'], sub: 'user123' },
  *     user: { name: 'John Doe', department: 'IT' },
+ *     headers: { 'X-Custom-Header': 'value', 'Authorization': 'Bearer ...' },
  *     // Override endpoints for custom CDN or local assets
  *     endpoints: {
  *       mainCss: 'https://mycdn.com/chefs-styles.css',
@@ -106,6 +107,7 @@
  * - `auto-reload-on-submit`: Auto-reload form as read-only after submission (true/false, default: true)
  * - `token`: URL-encoded JSON JWT token object
  * - `user`: URL-encoded JSON user object
+ * - `headers`: URL-encoded JSON headers object
  *
  * ## Error Handling
  *
@@ -282,7 +284,7 @@
   /**
    * Applies URL query parameters to the chefs-form-viewer element.
    * Converts parameter names to proper attribute names and handles special
-   * JSON parameters (token, user) by setting them as element properties.
+   * JSON parameters (token, user, headers) by setting them as element properties.
    *
    * @param {HTMLElement} element - The chefs-form-viewer element
    * @param {Object} params - Query parameters object from parseQueryParams
@@ -318,7 +320,7 @@
 
       const attrName = paramToAttribute(param);
 
-      if (param === 'token' || param === 'user') {
+      if (param === 'token' || param === 'user' || param === 'headers') {
         handleJsonParam(param, value);
       } else if (booleanParams.has(param)) {
         handleBooleanParam(attrName, value);
