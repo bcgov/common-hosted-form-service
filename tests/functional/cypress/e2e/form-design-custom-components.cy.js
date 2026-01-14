@@ -43,44 +43,78 @@ describe("Form Designer", () => {
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(1000);
-    // Filter the newly created form
-    cy.location("search").then((search) => {
-      let arr = search.split("=");
-      let arrayValues = arr[1].split("&");
-      cy.log(arrayValues[0]);
-      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
+    cy.location('search').then(search => {
+          //let pathName = fullUrl.pathname
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);   
+    //Go to  Menu
+    cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.wait(1000);
       //Publish the form
-      cy.get(".v-label > span").click();
-      cy.get("span").contains("Publish Version 1");
-      cy.contains("Continue").should("be.visible");
-      cy.contains("Continue").trigger("click");
+    cy.get(".v-label > span").click();
+    cy.get("span").contains("Publish Version 1");
+    cy.contains("Continue").should("be.visible");
+    cy.contains("Continue").trigger("click");
+      //codogs file upload
+    cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    let fileUploadInputField = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('test.docx');
+    cy.get('button[title="Upload"]').click();
+    cy.wait(1000);
+    cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    cy.get('input[type="radio"][value="default"]').should('be.checked');
+    cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
+    cy.get('input[type="radio"][aria-label="Direct Print"]').click();
+    cy.get('.pl-12 > .v-text-field > .v-input__control > .v-field > .v-field__append-inner').click();
+    cy.get('div.v-list-item-title').contains('test.docx').click();
+    
+    cy.get('input[type="radio"][value="formName"]').should('be.checked');
+    cy.get('input[type="radio"][value="custom"]').should('not.be.checked');
+    cy.get('input[type="radio"][value="custom"]').check({ force: true });
+    cy.wait(1000);
+    cy.contains('label', 'Custom File Name')   // find the label with the text
+      .invoke('attr', 'for')                   // get the "for" attribute (input ID)
+      .then((inputId) => {
+        cy.get(`#${inputId}`).type('My Custom File Name')  // type into the input
+    })
+      //Save print settings
+    cy.get('button[title="Save Configuration"]').click();
+    cy.get('.v-alert__content').contains('Print configuration saved successfully').should('be.visible');
+    cy.wait(1000);
       //Submit the form
-      cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-      cy.wait(1000);
-      cy.get('input[placeholder="Search by first name"]').type("CHEFS");
-      cy.get('input[placeholder="Search by email"]').type("chefs.testing@gov.bc.ca");
+    cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+    cy.wait(1000);
+    cy.get('input[placeholder="Search by first name"]').type("CHEFS");
+    cy.get('input[placeholder="Search by email"]').type("chefs.testing@gov.bc.ca");
       //Search button
-      cy.get('.col-md-12 > .btn').click();
-      cy.get('.search-results > tr > :nth-child(3)').contains('chefs.testing@gov.bc.ca').should('be.visible');
-      cy.get('.search-results > tr > :nth-child(2)').contains('CHEFS').should('be.visible');
+    cy.get('.col-md-12 > .btn').click();
+    cy.get('.search-results > tr > :nth-child(3)').contains('chefs.testing@gov.bc.ca').should('be.visible');
+    cy.get('.search-results > tr > :nth-child(2)').contains('CHEFS').should('be.visible');
       //Select serach item
-      cy.get(':nth-child(4) > .btn').click();
-      cy.get('.selected-user-info > :nth-child(1)').contains(' CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
-      cy.contains('strong', 'Username:') .parent().should('contain', 'CHEFSTST');
+    cy.get(':nth-child(4) > .btn').click();
+    cy.get('.selected-user-info > :nth-child(1)').contains(' CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
+    cy.contains('strong', 'Username:') .parent().should('contain', 'CHEFSTST');
       //clear selection
-      cy.get('.alert > .btn').click();
-      cy.get('.selected-user-info > :nth-child(1)').contains(' CHEFS Testing (CHEFSTST) CITZ:EX').should('not.be.visible');
-      cy.get('input[placeholder="Search by email"]').type("chefs.testing@gov.bc.ca");
+    cy.get('.alert > .btn').click();
+    cy.get('.selected-user-info > :nth-child(1)').contains(' CHEFS Testing (CHEFSTST) CITZ:EX').should('not.be.visible');
+    cy.get('input[placeholder="Search by email"]').type("chefs.testing@gov.bc.ca");
       //Search button
-      cy.get('.col-md-12 > .btn').click();
-      cy.get(':nth-child(4) > .btn').click();
-      cy.get('.selected-user-info > :nth-child(1)').contains(' CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
-      cy.get('button').contains('Submit').click();
-      cy.get('[data-test="continue-btn-continue"]').click({ force: true });
-      cy.wait(1000);
-      cy.get('.selected-user-view > :nth-child(1)').contains('CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
-    });
+    cy.get('.col-md-12 > .btn').click();
+    cy.get(':nth-child(4) > .btn').click();
+    cy.get('.selected-user-info > :nth-child(1)').contains(' CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
+    cy.get('button').contains('Submit').click();
+    cy.get('[data-test="continue-btn-continue"]').click({ force: true });
+    cy.wait(1000);
+    cy.get('.selected-user-view > :nth-child(1)').contains('CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
+    //Direct Print Verification
+    cy.get('.mdi-printer').click();
+    cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
+    cy.wait(1000);
+
+   }) 
 
 });
 
