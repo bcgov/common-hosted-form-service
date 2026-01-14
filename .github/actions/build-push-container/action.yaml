@@ -143,6 +143,9 @@ runs:
         username: ${{ inputs.dockerhub_username }}
         password: ${{ inputs.dockerhub_token }}
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Prepare Container Metadata tags
       id: meta
       uses: docker/metadata-action@v5
@@ -150,9 +153,9 @@ runs:
         images: |
           ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}
           docker.io/${{ inputs.dockerhub_organization }}/${{ inputs.image_name }},enable=${{ env.HAS_DOCKERHUB }}
-        # Always updates the 'latest' tag
+        # Only tag 'latest' for main branch builds (not PR builds)
         flavor: |
-          latest=true
+          latest=${{ inputs.pr_number == '' }}
         # Creates tags based off of branch names and semver tags
         tags: |
           type=raw,value=${{ env.IMAGE_VERSION }}
@@ -169,8 +172,15 @@ runs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=registry,ref=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:buildcache
+        cache-to: type=registry,ref=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:buildcache,mode=max
+        provenance: false
+        sbom: false
 
     - name: Inspect Docker Image
       shell: bash
+      env:
+        IMAGE_NAME: ${{ inputs.image_name }}
+        IMAGE_DIGEST: ${{ steps.builder.outputs.digest }}
       run: |
-        docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest
+        docker buildx imagetools inspect "ghcr.io/${{ env.GH_USERNAME }}/${IMAGE_NAME}@${IMAGE_DIGEST}"
