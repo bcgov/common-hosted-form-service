@@ -68,7 +68,8 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
-    "eventStreamConfig": "Event Stream Configuration"
+    "eventStreamConfig": "Event Stream Configuration",
+    "printConfig": "Print Configuration"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -81,6 +82,8 @@
     "uploadError": "An error occurred while uploading the template.",
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
+    "deleteErrorInUse": "Cannot delete template: Template is currently in use by Print Configuration. Please update Print Configuration settings first.",
+    "deleteDisabledTooltip": "This template is currently in use by Print Configuration. Please update Print Configuration settings first.",
     "fetchError": "An error occurred while fetching the template.",
     "info": "Upload a template to use the Common Document Generation Service (CDOGS)",
     "fileSizeError": "File size must be less than 25MB."
@@ -100,6 +103,33 @@
     "editTitle": "Edit Event Stream Configuration",
     "fetchError": "An error occurred while fetching the Event Stream Configuration.",
     "save": "Save"
+  },
+  "printConfig": {
+    "title": "Print Configuration",
+    "description": "Configure how users can print form submissions",
+    "typeDefault": "Default",
+    "typeDefaultDescription": "Users can choose print method (browser print or template)",
+    "typeDirect": "Direct Print",
+    "typeDirectDescription": "Users print directly using a pre-configured template (PDF output)",
+    "selectTemplate": "Select Template",
+    "save": "Save Configuration",
+    "saving": "Saving...",
+    "saveSuccess": "Print configuration saved successfully",
+    "saveError": "An error occurred while saving print configuration",
+    "fetchError": "An error occurred while fetching print configuration",
+    "templateRequired": "Template is required when using Direct Print",
+    "noTemplatesAvailable": "No templates available. Please upload a template first.",
+    "templateDeleted": "The previously selected template has been deleted. Please select a new template.",
+    "currentConfig": "Current Configuration",
+    "type": "Type",
+    "template": "Template",
+    "reportNameLabel": "Output File Name",
+    "reportNameOptionFormName": "Use Form Name",
+    "reportNameOptionFormNameDescription": "Output file will be named using the form name",
+    "reportNameOptionCustom": "Use Custom Name",
+    "reportNameOptionCustomDescription": "Enter a custom name for the output file",
+    "reportNameCustomInput": "Custom File Name",
+    "reportNameCustomInputHint": "Enter the custom name for the generated document"
   },
   "encryptionKey": {
     "info": "Configure Encryption Keys for your form.",
@@ -267,7 +297,38 @@
     "encryptionKeyUpdatedBy": "Encryption Key Updated By",
     "encryptionKeyCopySnackbar": "Encryption Key copied to clipboard",
     "encryptionKeyCopyTooltip": "Copy Encryption Key to clipboard",
-    "encryptionKeyGenerate": "Generate Encryption Key"
+    "encryptionKeyGenerate": "Generate Encryption Key",
+    "dataRetention": "Data Retention Policy",
+    "enableHardDeletion": "Enable automatic hard deletion",
+    "hardDeletionTooltip": "When enabled, submissions marked for deletion will be permanently removed after the retention period.",
+    "hardDeletionWarning": "Hard deletion is permanent and cannot be undone.",
+    "permanentDeletion": "Data will be unrecoverable after deletion.",
+    "dataClassification": "Data Classification",
+    "dataClassificationHint": "Categorize the type of data collected by this form",
+    "retentionPeriod": "Retention Period",
+    "retentionPeriodHint": "How long to keep deleted submissions before permanent removal",
+    "classPublic": "Public",
+    "classInternal": "Internal",
+    "classSensitive": "Sensitive",
+    "classConfidential": "Confidential",
+    "classProtected": "Protected",
+    "classificationCustomHint": "You can type a custom classification if needed",
+    "days30": "30 days",
+    "days90": "90 days",
+    "days180": "180 days",
+    "year1": "1 year (365 days)",
+    "years2": "2 years (730 days)",
+    "years5": "5 years (1825 days)",
+    "daysCustom": "Custom period",
+    "customDaysLabel": "Custom Retention Period (days)",
+    "customDaysHint": "Enter a number between 1 and 3650 days (10 years)",
+    "classificationDescription": "Classification Notes",
+    "classificationDescriptionHint": "Optional description of why this classification and retention period was chosen",
+    "retentionDaysUpdated": "Retention period updated",
+    "deletionDisclaimerWithDays": "WARNING: After {days} days, submissions marked for deletion will be permanently deleted and cannot be recovered.",
+    "setRetentionPrompt": "Please set a retention period to complete your data retention policy.",
+    "fetchRetentionClassificationListError": "Error fetching Retention Classification list.",
+    "fetchRetentionClassificationListConsErrMsg": "Error fetching retention classifications: {error}"
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
@@ -1182,6 +1243,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
       "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "An error occurred while fetching the retention policy for this form.",
+      "getFormRetentionPolicyConsErrMsg": "Error getting retention policy for form {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "An error occurred while configuring the retention policy for this form.",
+      "configureFormRetentionPolicyConsErrMsg": "Error configuring retention policy for form {formId}: {error}"
     }
   },
   "permissionUtils": {

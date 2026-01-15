@@ -62,12 +62,10 @@
     {
       "label": "chefs_local up",
       "type": "shell",
-      "command": "docker-compose",
+      "command": "bash",
       "args": [
-        "-f",
-        "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml",
-        "up",
-        "-d"
+        "-c",
+        "cd \"${workspaceFolder}/.devcontainer/chefs_local\" && if [ -f docker-compose.override.yml ]; then docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d; else docker-compose -f docker-compose.yml up -d; fi"
       ],
       "isBackground": true,
       "problemMatcher": []
@@ -75,11 +73,10 @@
     {
       "label": "chefs_local down",
       "type": "shell",
-      "command": "docker-compose",
+      "command": "bash",
       "args": [
-        "-f",
-        "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml",
-        "down"
+        "-c",
+        "cd \"${workspaceFolder}/.devcontainer/chefs_local\" && if [ -f docker-compose.override.yml ]; then docker-compose -f docker-compose.yml -f docker-compose.override.yml down; else docker-compose -f docker-compose.yml down; fi"
       ],
       "isBackground": true,
       "problemMatcher": []
