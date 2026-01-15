@@ -1711,8 +1711,11 @@
         try {
           const maybe = this.formioInstance.getComponent(key);
           if (maybe) return maybe;
-        } catch (_err) {
-          // ignore and fall through
+        } catch (err) {
+          this._log.debug('print:findComponent:getComponent:error', {
+            key,
+            error: err?.message || String(err),
+          });
         }
       }
 
