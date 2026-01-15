@@ -1668,9 +1668,10 @@
 
     /** Re-emit core Form.io events as component-level CustomEvents */
     _wireInstanceEvents() {
-      this.formioInstance.on('render', () =>
-        this._emit('formio:render', { form: this.form })
-      );
+      this.formioInstance.on('render', () => {
+        this._emit('formio:render', { form: this.form });
+        this._ensurePrintButtonEnabled('render');
+      });
       this.formioInstance.on('change', (evt) =>
         this._emit('formio:change', {
           changed: evt.changed,
@@ -1696,6 +1697,96 @@
             this._log.error('print:event:error', { error: error.message });
             this._emit('formio:error', { error: error.message });
           }
+        });
+      }
+    }
+
+    /**
+     * Safe component lookup by key without assuming Form.io getComponent signature.
+     */
+    _findComponentByKey(key) {
+      // Try Form.io's getComponent if available (single argument to avoid signature issues)
+      if (typeof this.formioInstance?.getComponent === 'function') {
+        try {
+          const maybe = this.formioInstance.getComponent(key);
+          if (maybe) return maybe;
+        } catch (_err) {
+          // ignore and fall through
+        }
+      }
+
+      // Fallback: walk components
+      if (typeof this.formioInstance?.everyComponent === 'function') {
+        let match = null;
+        this.formioInstance.everyComponent((comp) => {
+          if (!match && comp?.component?.key === key) {
+            match = comp;
+          }
+        });
+        if (match) return match;
+      }
+
+      return null;
+    }
+
+    /**
+     * Enable the print button even when the form is rendered read-only.
+     * This only targets the configured print button key.
+     */
+    _ensurePrintButtonEnabled(source = 'unknown') {
+      const entry = { source, key: this.printButtonKey };
+
+      if (!this.formioInstance || !this.printButtonKey) return;
+
+      const component = this._findComponentByKey(this.printButtonKey);
+      if (!component) {
+        this._log.debug('print:enable:notFound', entry);
+        return;
+      }
+
+      try {
+        // Override shouldDisabled for this component only so Form.io readOnly
+        // does not disable the configured print button.
+        Object.defineProperty(component, 'shouldDisabled', {
+          get: () => false,
+          configurable: true,
+        });
+
+        // Clear disabled flags
+        component.component.disabled = false;
+        component.disabled = false;
+        if (component.options?.disabled) {
+          const key = component.component?.key || this.printButtonKey;
+          component.options.disabled[key] = false;
+        }
+
+        // Apply to DOM if ref exists
+        if (typeof component.setDisabled === 'function') {
+          const targetRef =
+            component.refs?.button ||
+            component.refs?.input ||
+            component.refs?.buttonMessageContainer;
+          component.setDisabled(targetRef, false);
+        }
+
+        // Ensure visible (should already be)
+        component._visible = true;
+        if (typeof component.show === 'function') {
+          component.show();
+        }
+
+        this._log.debug('print:enable:applied', {
+          ...entry,
+          disabled: component.disabled,
+          componentDisabled: component.component?.disabled,
+          optionsDisabled:
+            component.options?.disabled &&
+            component.options.disabled[this.printButtonKey],
+        });
+      } catch (error) {
+        this._log.error('print:enable:error', {
+          ...entry,
+          error: error.message,
         });
       }
     }
@@ -3039,6 +3130,7 @@
       // Setup instance configuration (simplified - no prefill complexity)
       this._configureInstanceEndpoints();
       this._wireInstanceEvents();
+      this._ensurePrintButtonEnabled('init');
 
       // now Apply prefill in one shot
       await this._applyPrefill();
