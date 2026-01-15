@@ -735,6 +735,7 @@
      *   page/global CSS can affect the component (useful for integration and debugging).
      * - submit-button-key: string; the data key used to distinguish submit vs draft (default: "submit") Name/APiKey of formio Submit Button.
      * - print-button-key: string; Form.io component key for the print Action button (default: "print").
+     *   The viewer keeps this button enabled even in read-only mode so users can print submitted data.
      * - print-event-name: string; Form.io Event action name to trigger print (default: "printDocument").
      * - theme-css: string; URL of theme stylesheet to load after base styles.
      * - isolate-styles: boolean; when true and using Shadow DOM, applies minimal isolation CSS to reduce
@@ -1731,7 +1732,8 @@
 
     /**
      * Enable the print button even when the form is rendered read-only.
-     * This only targets the configured print button key.
+     * This only targets the configured print button key and is invoked after init/render
+     * (including auto-reload) to allow hardcopy printing of submitted data.
      */
     _ensurePrintButtonEnabled(source = 'unknown') {
       const entry = { source, key: this.printButtonKey };

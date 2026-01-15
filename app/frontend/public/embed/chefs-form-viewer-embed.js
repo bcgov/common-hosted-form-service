@@ -108,6 +108,7 @@
  * - `submit-button-key`: Form.io component key for the submit button (default: submit)
  * - `print-button-key`: Form.io component key for the print Action button (default: print)
  * - `print-event-name`: Form.io Event action name that triggers printing (default: printDocument)
+ *   The viewer keeps this button enabled when read-only so users can print submitted data.
  * - `token`: URL-encoded JSON JWT token object
  * - `user`: URL-encoded JSON user object
  * - `headers`: URL-encoded JSON headers object

@@ -1541,6 +1541,32 @@ describe('ChefsFormViewer internals', () => {
     expect(options.evalContext.headers['proxy-authorization']).toBeUndefined();
   });
 
+  it('_ensurePrintButtonEnabled re-enables the print button in read-only', () => {
+    const buttonRef = {};
+    const buttonComponent = {
+      component: { key: 'print', disabled: true },
+      disabled: true,
+      options: { disabled: { print: true } },
+      refs: { button: buttonRef },
+      setDisabled: vi.fn(),
+      show: vi.fn(),
+    };
+
+    el.formioInstance = {
+      getComponent: vi.fn().mockReturnValue(buttonComponent),
+    };
+    el.printButtonKey = 'print';
+
+    el._ensurePrintButtonEnabled('test');
+
+    expect(buttonComponent.shouldDisabled).toBe(false);
+    expect(buttonComponent.component.disabled).toBe(false);
+    expect(buttonComponent.disabled).toBe(false);
+    expect(buttonComponent.options.disabled.print).toBe(false);
+    expect(buttonComponent.setDisabled).toHaveBeenCalledWith(buttonRef, false);
+    expect(buttonComponent.show).toHaveBeenCalled();
+  });
+
   it('_getSimpleFileComponentOptions returns file operation configuration', () => {
     el._resolveUrl = vi.fn().mockReturnValue('https://test/files');
     el._emitCancelable = vi.fn().mockReturnValue(true);

@@ -162,4 +162,31 @@ describe('chefs-form-viewer-embed.js', () => {
     expect(element.user).toEqual({ name: 'John' });
     expect(element.headers).toEqual({ 'X-Custom-Header': 'value' });
   });
+
+  it('should pass print button attributes through applyQueryParams', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'print-button-key': 'printCustom',
+      'print-event-name': 'printDocumentCustom',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    expect(element.setAttribute).toHaveBeenCalledWith(
+      'print-button-key',
+      'printCustom'
+    );
+    expect(element.setAttribute).toHaveBeenCalledWith(
+      'print-event-name',
+      'printDocumentCustom'
+    );
+  });
 });
