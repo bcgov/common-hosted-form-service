@@ -105,6 +105,9 @@
  * - `no-icons`: Disable Font Awesome icons (true/false)
  * - `theme-css`: Custom theme CSS URL
  * - `auto-reload-on-submit`: Auto-reload form as read-only after submission (true/false, default: true)
+ * - `submit-button-key`: Form.io component key for the submit button (default: submit)
+ * - `print-button-key`: Form.io component key for the print Action button (default: print)
+ * - `print-event-name`: Form.io Event action name that triggers printing (default: printDocument)
  * - `token`: URL-encoded JSON JWT token object
  * - `user`: URL-encoded JSON user object
  * - `headers`: URL-encoded JSON headers object
@@ -276,9 +279,7 @@
    * @returns {boolean} True if parameter should be skipped
    */
   function shouldSkipParam(param, hasAuthToken) {
-    if (param === 'debug') return true;
-    if (param === 'api-key' && hasAuthToken) return true;
-    return false;
+    return param === 'api-key' && hasAuthToken;
   }
 
   /**
@@ -292,6 +293,7 @@
    */
   function applyQueryParams(element, params, logger) {
     const booleanParams = new Set([
+      'debug',
       'read-only',
       'isolate-styles',
       'no-icons',

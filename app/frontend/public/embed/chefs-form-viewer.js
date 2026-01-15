@@ -638,6 +638,8 @@
         'debug',
         'no-shadow',
         'submit-button-key',
+        'print-button-key',
+        'print-event-name',
         'theme-css',
         'isolate-styles',
         'no-icons',
@@ -666,6 +668,8 @@
       this._log = createLogger(false);
       this._isBusy = false; // shared lock for load/submit/draft
       this.submitButtonKey = 'submit';
+      this.printButtonKey = 'print';
+      this.printEventName = 'printDocument';
       this.themeCss = null; // optional theme CSS loaded after main CSS
       this.isolateStyles = false; // optional isolation of inherited outside styles
       this.noIcons = false; // optional flag to disable loading icon CSS
@@ -730,6 +734,8 @@
      *   host element and re-rendering the shell. In this mode, styles are loaded into document.head and
      *   page/global CSS can affect the component (useful for integration and debugging).
      * - submit-button-key: string; the data key used to distinguish submit vs draft (default: "submit") Name/APiKey of formio Submit Button.
+     * - print-button-key: string; Form.io component key for the print Action button (default: "print").
+     * - print-event-name: string; Form.io Event action name to trigger print (default: "printDocument").
      * - theme-css: string; URL of theme stylesheet to load after base styles.
      * - isolate-styles: boolean; when true and using Shadow DOM, applies minimal isolation CSS to reduce
      *   inheritance from the host page (via :host { all: initial } and a normalized container). Triggers
@@ -778,6 +784,12 @@
           break;
         case 'submit-button-key':
           this.submitButtonKey = nv || 'submit';
+          break;
+        case 'print-button-key':
+          this.printButtonKey = nv || 'print';
+          break;
+        case 'print-event-name':
+          this.printEventName = nv || 'printDocument';
           break;
         case 'theme-css':
           this.themeCss = nv || null;
@@ -1040,6 +1052,97 @@
     }
 
     /**
+     * Programmatically trigger print using direct print configuration.
+     * - If submissionId is present, prints the stored submission.
+     * - Otherwise, prints current draft data.
+     *
+     * @param {Object} options - Optional configuration/context
+     * @example
+     * await viewer.print(); // auto-detects submission vs draft
+     */
+    async print(options = {}) {
+      if (!this._acquireBusyLock('print')) return;
+      try {
+        const isSubmissionPrint = !!this.submissionId;
+        const url = isSubmissionPrint
+          ? this._resolveUrl('printSubmission')
+          : this._resolveUrl('printDraft');
+
+        const currentSubmission = this.getSubmission() || {};
+        const submissionData =
+          options.submissionData ||
+          currentSubmission?.data ||
+          currentSubmission?.submission?.data ||
+          {};
+
+        const payload = isSubmissionPrint
+          ? options.payload || {}
+          : options.payload || { submission: { data: submissionData } };
+
+        const proceed = this._emitCancelable('formio:beforePrint', {
+          formId: this.formId,
+          submissionId: this.submissionId,
+          isDraft: !isSubmissionPrint,
+          url,
+          payload,
+          options,
+        });
+        if (!proceed) return;
+        const allowed = await this._waitUntil();
+        if (!allowed) return;
+
+        const headers = this._mergeHeadersWithAuth(
+          payload && Object.keys(payload).length
+            ? { 'Content-Type': 'application/json' }
+            : {},
+          this._buildAuthHeader(url),
+          url
+        );
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers,
+          body:
+            payload && Object.keys(payload).length
+              ? JSON.stringify(payload)
+              : undefined,
+        });
+
+        if (!res.ok) {
+          const msg =
+            (await this._parseError(res, 'Print failed')) || 'Print failed';
+          this._log.error('print:error', { msg, status: res.status });
+          this._emit('formio:error', { error: msg });
+          return;
+        }
+
+        this.downloadFile.data = await res.blob();
+        this.downloadFile.headers = {
+          'content-type':
+            res.headers.get('content-type') || 'application/octet-stream',
+          'content-disposition':
+            res.headers.get('content-disposition') ||
+            'attachment; filename="document.pdf"',
+        };
+        this._triggerFileDownload();
+
+        this._log.info('print:ok', {
+          submissionId: this.submissionId,
+          isDraft: !isSubmissionPrint,
+        });
+        this._emit('formio:printDone', {
+          submissionId: this.submissionId,
+          isDraft: !isSubmissionPrint,
+        });
+      } catch (error) {
+        this._log.error('print:error', { error: error.message });
+        this._emit('formio:error', { error: error.message });
+      } finally {
+        this._releaseBusyLock();
+      }
+    }
+
+    /**
      * Sets the form data programmatically (pre-fills the form).
      *
      * Updates the Form.io instance with the provided data object.
@@ -1151,6 +1254,8 @@
         schema: `${base}/webcomponents/v1/form-viewer/${fid}/schema`,
         submit: `${base}/webcomponents/v1/form-viewer/${fid}/submit`,
         readSubmission: `${base}/webcomponents/v1/form-viewer/${fid}/submission/${sid}`,
+        printSubmission: `${base}/webcomponents/v1/print/${fid}/submission/${sid}/print`,
+        printDraft: `${base}/webcomponents/v1/print/${fid}/print`,
 
         // simplefile component routes
         files: `${base}/webcomponents/v1/files`,
@@ -1581,6 +1686,18 @@
       this.formioInstance.on('error', (err) =>
         this._emit('formio:error', { error: err?.message || String(err) })
       );
+
+      // Form.io Event action hook for printing
+      if (this.formioInstance?.on && this.printEventName) {
+        this.formioInstance.on(this.printEventName, async (evt) => {
+          try {
+            await this.print({ trigger: 'formioEvent', event: evt });
+          } catch (error) {
+            this._log.error('print:event:error', { error: error.message });
+            this._emit('formio:error', { error: error.message });
+          }
+        });
+      }
     }
 
     /** Fetch and parse the form schema from the backend */
