@@ -43,9 +43,8 @@ const getDirectPrintConfig = async (formId) => {
  * Generate a report name based on printConfig and form name.
  */
 const resolveReportName = (printConfig, formName) => {
-  if (printConfig?.reportNameOption === 'custom' && printConfig.reportName) {
-    return printConfig.reportName;
-  }
+  const customName = printConfig?.reportNameOption === 'custom' ? printConfig?.reportName : null;
+  if (customName) return customName;
   return formName || '';
 };
 
