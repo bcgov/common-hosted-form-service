@@ -97,6 +97,7 @@ module.exports = {
         .set({
           'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
+          'Access-Control-Expose-Headers': 'Content-Disposition, Content-Type',
         })
         .send(data);
     } catch (error) {
@@ -129,6 +130,7 @@ module.exports = {
         .set({
           'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
+          'Access-Control-Expose-Headers': 'Content-Disposition, Content-Type',
         })
         .send(data);
     } catch (error) {

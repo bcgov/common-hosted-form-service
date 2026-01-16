@@ -1117,6 +1117,13 @@
           return;
         }
 
+        this._log.debug('print:response:headers', {
+          status: res.status,
+          contentType: res.headers.get('content-type'),
+          contentDisposition: res.headers.get('content-disposition'),
+          exposedHeaders: res.headers.get('access-control-expose-headers'),
+        });
+
         this.downloadFile.data = await res.blob();
         this.downloadFile.headers = {
           'content-type':
