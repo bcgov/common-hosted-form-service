@@ -80,7 +80,11 @@ module.exports = {
       const submission = await submissionService.read(formSubmissionId);
       const template = await documentTemplateService.documentTemplateRead(printConfig.templateId);
 
-      const reportName = resolveReportName(printConfig, submission.form?.name);
+      let reportName = resolveReportName(printConfig, submission.form?.name);
+      if (!reportName) {
+        const form = await formService.readPublishedForm(formId);
+        reportName = resolveReportName(printConfig, form?.name);
+      }
       const templateBody = buildTemplateBody(template, reportName, printConfig.outputFileType, chefsTemplate(submission));
 
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);

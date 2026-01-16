@@ -84,6 +84,54 @@ describe('webcomponents/v1/print controller', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
+    it('falls back to form name when submission form name is missing', async () => {
+      const req = {
+        params: { formId: 'form-1', formSubmissionId: 'sub-1' },
+      };
+      const response = res();
+      const next = jest.fn();
+
+      jest.spyOn(printConfigService, 'readPrintConfig').mockResolvedValue({ code: PrintConfigTypes.DIRECT, templateId: 'tmpl-1', outputFileType: 'pdf' });
+      jest.spyOn(submissionService, 'read').mockResolvedValue({
+        submission: {
+          id: 'sub-1',
+          confirmationId: 'conf-1',
+          draft: false,
+          deleted: false,
+          createdBy: 'user',
+          createdAt: 'now',
+          updatedBy: 'user',
+          updatedAt: 'now',
+          submission: { data: {} },
+        },
+        version: { version: 3 },
+        form: null,
+      });
+      jest.spyOn(formService, 'readPublishedForm').mockResolvedValue({ name: 'Fallback Form' });
+      jest.spyOn(documentTemplateService, 'documentTemplateRead').mockResolvedValue({
+        filename: 'template.docx',
+        template: Buffer.from('file'),
+      });
+      jest.spyOn(cdogsService, 'templateUploadAndRender').mockResolvedValue({
+        data: Buffer.from('pdf'),
+        headers: {
+          'content-disposition': 'attachment; filename="file.pdf"',
+          'content-type': 'application/pdf',
+        },
+        status: 200,
+      });
+
+      await controller.printSubmission(req, response, next);
+
+      expect(formService.readPublishedForm).toHaveBeenCalledWith('form-1');
+      expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({ reportName: 'Fallback Form' }),
+        })
+      );
+      expect(response.status).toHaveBeenCalledWith(200);
+    });
+
     it('calls next with Problem when direct print config missing', async () => {
       const req = {
         params: { formId: 'form-1', formSubmissionId: 'sub-1' },
