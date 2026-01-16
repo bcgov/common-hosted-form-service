@@ -8,6 +8,8 @@ const documentTemplateService = require('../../../forms/form/documentTemplate/se
 const formService = require('../../../forms/form/service');
 const { PrintConfigTypes } = require('../../../forms/common/constants');
 
+const buildContentDisposition = (reportName = 'document', outputFileType = 'pdf') => `attachment; filename="${reportName || 'document'}.${outputFileType || 'pdf'}"`;
+
 /**
  * Build the CDOGS template body from a template record and data payload.
  */
@@ -88,7 +90,7 @@ module.exports = {
       const templateBody = buildTemplateBody(template, reportName, printConfig.outputFileType, chefsTemplate(submission));
 
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
-      const contentDisposition = headers['content-disposition'];
+      const contentDisposition = headers['content-disposition'] || buildContentDisposition(reportName, printConfig.outputFileType);
 
       res
         .status(status)
@@ -120,7 +122,7 @@ module.exports = {
       const templateBody = buildTemplateBody(template, reportName, printConfig.outputFileType, submissionData);
 
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
-      const contentDisposition = headers['content-disposition'];
+      const contentDisposition = headers['content-disposition'] || buildContentDisposition(reportName, printConfig.outputFileType);
 
       res
         .status(status)

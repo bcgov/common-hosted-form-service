@@ -193,5 +193,51 @@ describe('webcomponents/v1/print controller', () => {
       expect(response.send).toHaveBeenCalledWith(Buffer.from('pdf'));
       expect(next).not.toHaveBeenCalled();
     });
+
+    it('sets default Content-Disposition when CDOGS header missing', async () => {
+      const req = {
+        params: { formId: 'form-1', formSubmissionId: 'sub-1' },
+      };
+      const response = res();
+      const next = jest.fn();
+
+      jest.spyOn(printConfigService, 'readPrintConfig').mockResolvedValue({
+        code: PrintConfigTypes.DIRECT,
+        templateId: 'tmpl-1',
+        outputFileType: 'pdf',
+      });
+      jest.spyOn(submissionService, 'read').mockResolvedValue({
+        submission: {
+          id: 'sub-1',
+          confirmationId: 'conf-1',
+          draft: false,
+          deleted: false,
+          createdBy: 'user',
+          createdAt: 'now',
+          updatedBy: 'user',
+          updatedAt: 'now',
+          submission: { data: {} },
+        },
+        version: { version: 3 },
+        form: { name: 'Form Name' },
+      });
+      jest.spyOn(documentTemplateService, 'documentTemplateRead').mockResolvedValue({
+        filename: 'template.docx',
+        template: Buffer.from('file'),
+      });
+      jest.spyOn(cdogsService, 'templateUploadAndRender').mockResolvedValue({
+        data: Buffer.from('pdf'),
+        headers: { 'content-type': 'application/pdf' },
+        status: 200,
+      });
+
+      await controller.printSubmission(req, response, next);
+
+      expect(response.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Content-Disposition': 'attachment; filename="Form Name.pdf"',
+        })
+      );
+    });
   });
 });
