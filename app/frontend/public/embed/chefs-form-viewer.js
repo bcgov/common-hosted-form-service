@@ -531,6 +531,9 @@
    *   el.headers = { 'X-Custom-Header': 'value', 'Authorization': 'Bearer ...' };
    *   el.endpoints = { themeCss: 'https://example.com/theme.css' };
    *   el.load();
+   * - User token refresh (for OIDC/OAuth tokens from host application):
+   *   el.refreshUserToken({ token: accessToken }); // Auto-extracts expiry from JWT
+   *   el.refreshUserToken({ token: opaqueToken, expiresAt: 1234567890 }); // Manual expiry
    *
    * Overriding endpoints
    * - Set el.endpoints = { mainCss, formioJs, componentsJs, themeCss, schema, submit, readSubmission, iconsCss }
@@ -538,6 +541,8 @@
    * Core events (CustomEvent)
    * - formio:ready, formio:render, formio:change, formio:submit, formio:submitDone, formio:error
    * - formio:authTokenRefreshed: fired when auth token is refreshed (includes new and old tokens)
+   * - formio:userTokenRefreshed: fired when user token is updated via refreshUserToken()
+   * - formio:userTokenExpiring: fired when user token is about to expire (configurable buffer, default 60s)
    *
    * Lifecycle overview
    * 1) connectedCallback
@@ -558,12 +563,16 @@
    *       h) _applyPrefill() with single, robust strategy
    *       i) _wireInstanceEvents(); log `ready`
    *    - Emit `formio:ready`
-   * 3) submit()/draft()
+   * 3) User token management (optional, host application responsibility)
+   *    - Call refreshUserToken() when user's OIDC/OAuth token is refreshed
+   *    - Component will emit formio:userTokenExpiring before expiry (default 60s buffer)
+   *    - Host application should refresh token and call refreshUserToken() again
+   * 4) submit()/draft()
    *    - _programmaticSubmit(true|false) sets submitKey and calls _manualSubmit()
    *    - _manualSubmit() emits `formio:beforeSubmit` (waitUntil), POSTs to backend, emits `formio:submitDone` or `formio:error`
-   * 4) reload()
+   * 5) reload()
    *    - destroy() → load()
-   * 5) disconnectedCallback
+   * 6) disconnectedCallback
    *    - destroy()
    *
    * Attribute effects during lifecycle
@@ -753,6 +762,7 @@
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
      * - headers: string; JSON string containing a headers object that will be available in Form.io's evalContext
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
+     *   The Authorization header can be updated programmatically via refreshUserToken() for user token management.
      * - auto-reload-on-submit: boolean; when true (default), automatically reloads the form as read-only
      *   after successful submission, showing the submitted data. This provides a CHEFS-like experience
      *   out-of-the-box. Set to "false" to disable this behavior.

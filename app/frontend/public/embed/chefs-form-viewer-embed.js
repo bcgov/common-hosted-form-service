@@ -27,6 +27,17 @@
  *     after: function(element, formioInstance) {
  *       // Add event listeners after form loads
  *       element.addEventListener('formio:submitDone', handleSubmit);
+ *       
+ *       // Set up user token refresh (for OIDC/OAuth tokens from host application)
+ *       element.addEventListener('formio:userTokenExpiring', function(e) {
+ *         // Refresh user token before it expires
+ *         refreshUserAccessToken().then(function(newToken) {
+ *           element.refreshUserToken({ token: newToken });
+ *         });
+ *       });
+ *       
+ *       // Initial user token setup
+ *       element.refreshUserToken({ token: getCurrentUserToken() });
  *     },
  *     onMetadataLoaded: function(metadata) {
  *       // React to form metadata being loaded
@@ -84,6 +95,51 @@
  * };
  * ```
  *
+ * ## User Token Management
+ *
+ * The embed script supports managing user tokens (OIDC/OAuth) from the host application,
+ * separate from the CHEFS API auth token. User tokens are passed via the Authorization header
+ * in the headers parameter or updated programmatically.
+ *
+ * ### Method 1: Initial Setup via Headers Parameter
+ * ```javascript
+ * <script src="/app/embed/chefs-form-viewer-embed.js?form-id=123&auth-token=...&headers=%7B%22Authorization%22%3A%22Bearer%20user-token%22%7D"></script>
+ * ```
+ *
+ * ### Method 2: Programmatic Refresh (Recommended)
+ * ```javascript
+ * const element = document.querySelector('chefs-form-viewer');
+ * 
+ * // Refresh user token when it expires
+ * element.addEventListener('formio:userTokenExpiring', function(e) {
+ *   refreshUserAccessToken().then(function(newToken) {
+ *     element.refreshUserToken({ token: newToken });
+ *   });
+ * });
+ *
+ * // Initial token setup
+ * element.refreshUserToken({ token: getCurrentUserToken() });
+ * ```
+ *
+ * ### Method 3: Global Config Hook
+ * ```javascript
+ * globalThis.ChefsViewerConfig = {
+ *   after: function(element, formioInstance) {
+ *     // Set up user token refresh
+ *     element.addEventListener('formio:userTokenExpiring', function(e) {
+ *       refreshUserAccessToken().then(function(newToken) {
+ *         element.refreshUserToken({ token: newToken });
+ *       });
+ *     });
+ *     element.refreshUserToken({ token: getCurrentUserToken() });
+ *   }
+ * };
+ * ```
+ *
+ * **Events:**
+ * - `formio:userTokenRefreshed`: Fired when user token is updated via refreshUserToken()
+ * - `formio:userTokenExpiring`: Fired when user token is about to expire (default 60s before expiry)
+ *
  * ## Supported Parameters
  *
  * All chefs-form-viewer attributes can be passed as URL query parameters:
@@ -112,6 +168,9 @@
  * - `token`: URL-encoded JSON JWT token object
  * - `user`: URL-encoded JSON user object
  * - `headers`: URL-encoded JSON headers object
+ *   Contains headers available in Form.io's evalContext for custom JavaScript logic.
+ *   The Authorization header can be updated programmatically via refreshUserToken() for user token management.
+ *   Example: `headers=%7B%22Authorization%22%3A%22Bearer%20token%22%2C%22X-Custom%22%3A%22value%22%7D`
  *
  * ## Error Handling
  *

@@ -1103,6 +1103,295 @@ describe('ChefsFormViewer internals', () => {
     expect(el._scheduleNextTokenRefresh).not.toHaveBeenCalled();
   });
 
+  it('refreshUserToken updates headers and schedules refresh notification', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 3600; // 1 hour from now
+    const validJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjEyMzQ1Njc4OTB9.signature';
+
+    el.headers = { 'X-Custom-Header': 'value' };
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    // Mock JWT expiry extraction
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi
+      .fn()
+      .mockReturnValue(futureExp);
+
+    el.refreshUserToken({ token: validJwt });
+
+    expect(el.headers.Authorization).toBe(`Bearer ${validJwt}`);
+    expect(el.headers['X-Custom-Header']).toBe('value');
+    expect(el.userTokenExpiresAt).toBe(futureExp);
+    expect(el._scheduleUserTokenRefresh).toHaveBeenCalledWith(60);
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenRefreshed', {
+      expiresAt: futureExp,
+    });
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken updates evalContext when Form.io instance exists', () => {
+    const validJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjEyMzQ1Njc4OTB9.signature';
+
+    el.headers = {};
+    el.formioInstance = {
+      options: {
+        evalContext: { headers: {} },
+      },
+    };
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+
+    el.refreshUserToken({ token: validJwt });
+
+    expect(el.formioInstance.options.evalContext.headers.Authorization).toBe(
+      `Bearer ${validJwt}`
+    );
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken uses manual expiry when provided', () => {
+    const manualExpiry = 1234567890;
+    const opaqueToken = 'opaque-token-123';
+
+    el.headers = {};
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+
+    el.refreshUserToken({ token: opaqueToken, expiresAt: manualExpiry });
+
+    expect(el.userTokenExpiresAt).toBe(manualExpiry);
+    expect(el._scheduleUserTokenRefresh).toHaveBeenCalledWith(60);
+    expect(el.headers.Authorization).toBe(`Bearer ${opaqueToken}`);
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken uses custom buffer when provided', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 3600;
+    const validJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjEyMzQ1Njc4OTB9.signature';
+
+    el.headers = {};
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi
+      .fn()
+      .mockReturnValue(futureExp);
+
+    el.refreshUserToken({ token: validJwt, buffer: 120 });
+
+    expect(el._scheduleUserTokenRefresh).toHaveBeenCalledWith(120);
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken does not schedule refresh when no expiry available', () => {
+    const opaqueToken = 'opaque-token-without-expiry';
+
+    el.headers = {};
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+
+    el.refreshUserToken({ token: opaqueToken });
+
+    expect(el.headers.Authorization).toBe(`Bearer ${opaqueToken}`);
+    expect(el._scheduleUserTokenRefresh).not.toHaveBeenCalled();
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenRefreshed', {
+      expiresAt: null,
+    });
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken warns and returns early for invalid token', () => {
+    el.headers = {};
+    el._log = { warn: vi.fn() };
+
+    el.refreshUserToken({ token: null });
+    expect(el._log.warn).toHaveBeenCalledWith(
+      'refreshUserToken: invalid token'
+    );
+
+    el.refreshUserToken({ token: '' });
+    expect(el._log.warn).toHaveBeenCalledWith(
+      'refreshUserToken: invalid token'
+    );
+  });
+
+  it('_scheduleUserTokenRefresh sets timer based on expiry time', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 300; // 5 minutes from now
+    const buffer = 60;
+
+    el.userTokenExpiresAt = futureExp;
+    el._emit = vi.fn();
+
+    const originalSetTimeout = globalThis.setTimeout;
+    let capturedDelay;
+    globalThis.setTimeout = vi.fn((callback, delay) => {
+      capturedDelay = delay;
+      return 789; // Mock timer ID
+    });
+
+    el._scheduleUserTokenRefresh(buffer);
+
+    const expectedDelay = (futureExp - now - buffer) * 1000;
+    expect(capturedDelay).toBe(expectedDelay);
+    expect(el._userTokenRefreshTimer).toBe(789);
+
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleUserTokenRefresh uses minimum 10 second delay', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const soonExp = now + 5; // 5 seconds from now (less than buffer)
+
+    el.userTokenExpiresAt = soonExp;
+    el._emit = vi.fn();
+
+    const originalSetTimeout = globalThis.setTimeout;
+    let capturedDelay;
+    globalThis.setTimeout = vi.fn((callback, delay) => {
+      capturedDelay = delay;
+      return 789;
+    });
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(capturedDelay).toBe(10000); // Minimum 10 seconds
+
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleUserTokenRefresh clears existing timer', () => {
+    el.userTokenExpiresAt = Math.floor(Date.now() / 1000) + 3600;
+    el._userTokenRefreshTimer = 999;
+    el._emit = vi.fn();
+
+    const originalClearTimeout = globalThis.clearTimeout;
+    globalThis.clearTimeout = vi.fn();
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = vi.fn().mockReturnValue(888);
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(999);
+    expect(el._userTokenRefreshTimer).toBe(888);
+
+    globalThis.clearTimeout = originalClearTimeout;
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleUserTokenRefresh emits expiring event immediately when already expired', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const pastExp = now - 3600; // 1 hour ago
+
+    el.userTokenExpiresAt = pastExp;
+    el._emit = vi.fn();
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenExpiring', {
+      expiresAt: pastExp,
+      expired: true,
+    });
+  });
+
+  it('_scheduleUserTokenRefresh emits expiring event when timer fires', () => {
+    vi.useFakeTimers();
+
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 300; // 5 minutes from now
+
+    el.userTokenExpiresAt = futureExp;
+    el._emit = vi.fn();
+
+    el._scheduleUserTokenRefresh(60);
+
+    // Fast-forward time to trigger the timer
+    vi.advanceTimersByTime(240000); // 4 minutes
+
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenExpiring', {
+      expiresAt: futureExp,
+      expired: false,
+    });
+
+    vi.useRealTimers();
+  });
+
+  it('_scheduleUserTokenRefresh does nothing when no expiry set', () => {
+    el.userTokenExpiresAt = null;
+    el._emit = vi.fn();
+
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = vi.fn();
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(globalThis.setTimeout).not.toHaveBeenCalled();
+
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('destroy cleans up user token refresh timer', async () => {
+    el._userTokenRefreshTimer = 123;
+    el._jwtRefreshTimer = 456;
+    el.formioInstance = { destroy: vi.fn() };
+
+    const originalClearTimeout = globalThis.clearTimeout;
+    globalThis.clearTimeout = vi.fn();
+
+    await el.destroy();
+
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(123);
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(456);
+    expect(el._userTokenRefreshTimer).toBeNull();
+    expect(el._jwtRefreshTimer).toBeNull();
+
+    globalThis.clearTimeout = originalClearTimeout;
+  });
+
+  it('disconnectedCallback cleans up user token refresh timer', () => {
+    el._userTokenRefreshTimer = 789;
+    el._jwtRefreshTimer = 101;
+    el.destroy = vi.fn().mockResolvedValue(undefined);
+
+    const originalClearTimeout = globalThis.clearTimeout;
+    globalThis.clearTimeout = vi.fn();
+
+    el.disconnectedCallback();
+
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(789);
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(101);
+    expect(el._userTokenRefreshTimer).toBeNull();
+    expect(el._jwtRefreshTimer).toBeNull();
+    expect(el.destroy).toHaveBeenCalled();
+
+    globalThis.clearTimeout = originalClearTimeout;
+  });
+
   it('_registerAuthPlugin registers plugin with dynamic header resolution', () => {
     // Mock Formio global
     globalThis.globalThis.Formio = {

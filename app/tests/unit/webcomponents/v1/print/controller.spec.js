@@ -77,6 +77,7 @@ describe('webcomponents/v1/print controller', () => {
       );
       expect(response.status).toHaveBeenCalledWith(200);
       expect(response.set).toHaveBeenCalledWith({
+        'Access-Control-Expose-Headers': 'Content-Disposition, Content-Type',
         'Content-Disposition': 'attachment; filename="file.pdf"',
         'Content-Type': 'application/pdf',
       });
@@ -187,6 +188,7 @@ describe('webcomponents/v1/print controller', () => {
       );
       expect(response.status).toHaveBeenCalledWith(200);
       expect(response.set).toHaveBeenCalledWith({
+        'Access-Control-Expose-Headers': 'Content-Disposition, Content-Type',
         'Content-Disposition': 'attachment; filename="file.pdf"',
         'Content-Type': 'application/pdf',
       });
