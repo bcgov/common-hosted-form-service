@@ -4,7 +4,7 @@ const fs = require('fs'); // Module for file system
 module.exports = defineConfig({
   reporter: 'cypress-axe-reporter',
   reporterOptions: {
-    reportDir: 'axe-reports',
+    reportDir: 'tests/functional/cypress/axe-reports',
     outputFormat: 'json',
   },
   env: {
