@@ -695,6 +695,10 @@
       // if using authToken, then we can set an auto-refresh
       this._jwtRefreshTimer = null;
 
+      // User token lifecycle management (mirrors authToken pattern)
+      this.userTokenExpiresAt = null; // Unix timestamp from JWT exp claim
+      this._userTokenRefreshTimer = null; // Timer reference for cleanup
+
       // Track auth plugin registration to avoid re-registration
       this._authPluginRegistered = false;
 
@@ -851,6 +855,16 @@
     }
 
     disconnectedCallback() {
+      // Clean up auth token refresh timer
+      if (this._jwtRefreshTimer) {
+        clearTimeout(this._jwtRefreshTimer);
+        this._jwtRefreshTimer = null;
+      }
+      // Clean up user token refresh timer
+      if (this._userTokenRefreshTimer) {
+        clearTimeout(this._userTokenRefreshTimer);
+        this._userTokenRefreshTimer = null;
+      }
       this.destroy();
     }
 
@@ -995,6 +1009,64 @@
         });
         this._emit('formio:error', { error: error.message });
       }
+    }
+
+    /**
+     * Updates user Authorization header and schedules refresh notification.
+     * Expiry is automatically extracted from the JWT token's exp claim.
+     *
+     * This is for the host application's user token (OIDC/OAuth), which is
+     * separate from the CHEFS API auth token (auth-token attribute).
+     *
+     * @param {Object} options
+     * @param {string} options.token - Bearer token (required)
+     * @param {number} [options.expiresAt] - Override expiry for non-JWT tokens (optional)
+     * @param {number} [options.buffer=60] - Seconds before expiry to notify (optional)
+     *
+     * @fires ChefsFormViewer#formio:userTokenRefreshed - When token is updated
+     * @fires ChefsFormViewer#formio:userTokenExpiring - When token is about to expire
+     *
+     * @example
+     * // Standard JWT - expiry auto-extracted, 60s buffer
+     * viewer.refreshUserToken({ token: accessToken });
+     *
+     * @example
+     * // Custom buffer (e.g., 2 minutes before expiry)
+     * viewer.refreshUserToken({ token: accessToken, buffer: 120 });
+     *
+     * @example
+     * // Opaque token with manual expiry
+     * viewer.refreshUserToken({ token: opaqueToken, expiresAt: 1234567890 });
+     */
+    refreshUserToken({ token, expiresAt, buffer = 60 }) {
+      if (!token || typeof token !== 'string') {
+        this._log.warn('refreshUserToken: invalid token');
+        return;
+      }
+
+      // Auto-extract expiry from JWT, fall back to provided expiresAt
+      const expiry = FormViewerUtils.getJwtExpiry(token) || expiresAt;
+
+      // Update Authorization header in headers property
+      const currentHeaders = this.headers || {};
+      this.headers = { ...currentHeaders, Authorization: `Bearer ${token}` };
+
+      // Update live evalContext if Form.io instance exists
+      if (this.formioInstance?.options?.evalContext) {
+        this.formioInstance.options.evalContext.headers =
+          this._filterForbiddenHeaders(this.headers);
+      }
+
+      // Schedule refresh notification if we have an expiry
+      if (expiry) {
+        this.userTokenExpiresAt = expiry;
+        this._scheduleUserTokenRefresh(buffer);
+        this._log.info('userToken:refreshed', { expiresAt: expiry, buffer });
+      } else {
+        this._log.info('userToken:updated (no expiry, refresh not scheduled)');
+      }
+
+      this._emit('formio:userTokenRefreshed', { expiresAt: expiry || null });
     }
 
     /**
@@ -1203,6 +1275,16 @@
      * await viewer.destroy();
      */
     async destroy() {
+      // Clean up auth token refresh timer
+      if (this._jwtRefreshTimer) {
+        clearTimeout(this._jwtRefreshTimer);
+        this._jwtRefreshTimer = null;
+      }
+      // Clean up user token refresh timer
+      if (this._userTokenRefreshTimer) {
+        clearTimeout(this._userTokenRefreshTimer);
+        this._userTokenRefreshTimer = null;
+      }
       if (this.formioInstance?.destroy) this.formioInstance.destroy();
       this.formioInstance = null;
     }
@@ -2287,6 +2369,49 @@
         await this.refreshAuthToken();
         // refreshAuthToken() will call _scheduleNextTokenRefresh() again
       }, secondsUntilRefresh * 1000);
+    }
+
+    /**
+     * Schedules the user token expiring notification.
+     * Fires formio:userTokenExpiring (buffer) seconds before expiry.
+     * @param {number} buffer - Seconds before expiry to notify (default: 60)
+     * @private
+     */
+    _scheduleUserTokenRefresh(buffer = 60) {
+      // Clear any existing timer
+      if (this._userTokenRefreshTimer) {
+        clearTimeout(this._userTokenRefreshTimer);
+        this._userTokenRefreshTimer = null;
+      }
+
+      if (!this.userTokenExpiresAt) return;
+
+      const now = Math.floor(Date.now() / 1000);
+      let secondsUntilNotify = this.userTokenExpiresAt - now - buffer;
+
+      // Minimum 10 seconds
+      if (secondsUntilNotify < 10) secondsUntilNotify = 10;
+
+      // Check if already expired
+      if (now >= this.userTokenExpiresAt) {
+        this._emit('formio:userTokenExpiring', {
+          expiresAt: this.userTokenExpiresAt,
+          expired: true,
+        });
+        return;
+      }
+
+      this._userTokenRefreshTimer = setTimeout(() => {
+        this._emit('formio:userTokenExpiring', {
+          expiresAt: this.userTokenExpiresAt,
+          expired: false,
+        });
+      }, secondsUntilNotify * 1000);
+
+      this._log.debug('userToken:refreshScheduled', {
+        notifyIn: secondsUntilNotify,
+        expiresAt: this.userTokenExpiresAt,
+      });
     }
 
     _buildHooks() {
