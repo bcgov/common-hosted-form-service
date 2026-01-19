@@ -1808,12 +1808,9 @@ describe('ChefsFormViewer internals', () => {
       responseText: '{"success": true}',
     };
 
-    // Create a proper constructor that works with 'new'
-    globalThis.XMLHttpRequest = class {
-      constructor() {
-        Object.assign(this, mockXhr);
-      }
-    };
+    globalThis.XMLHttpRequest = vi.fn(function () {
+      Object.assign(this, mockXhr);
+    });
 
     const uploadPromise = el._handleFileUpload(formData, config);
 
