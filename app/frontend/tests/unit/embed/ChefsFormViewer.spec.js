@@ -1815,11 +1815,11 @@ describe('ChefsFormViewer internals', () => {
     const uploadPromise = el._handleFileUpload(formData, config);
 
     // Simulate successful upload
-    const loadCall = addEventListenerSpy.mock.calls.find(
+    const loadHandler = addEventListenerSpy.mock.calls.find(
       (call) => call[0] === 'load'
     );
-    if (loadCall && loadCall[1]) {
-      loadCall[1]();
+    if (loadHandler && loadHandler[1]) {
+      loadHandler[1]();
     }
 
     const result = await uploadPromise;
