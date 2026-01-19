@@ -7,7 +7,7 @@ class ResizeObserverStub {
   disconnect() {}
 }
 
-globalThis.ResizeObserver = window.ResizeObserver || ResizeObserverStub;
+globalThis.ResizeObserver = globalThis.ResizeObserver || ResizeObserverStub;
 
 // Mock window methods that jsdom doesn't implement
 if (typeof globalThis.print !== 'function') {
