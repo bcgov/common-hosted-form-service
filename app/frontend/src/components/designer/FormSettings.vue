@@ -7,6 +7,7 @@ import FormSubmissionSettings from '~/components/designer/settings/FormSubmissio
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
 import FormMetadataSettings from '~/components/designer/settings/FormMetadataSettings.vue';
 import FormEventStreamSettings from '~/components/designer/settings/FormEventStreamSettings.vue';
+import FormClassificationSettings from '~/components/designer/settings/FormClassificationSettings.vue';
 
 import { useFormStore } from '~/store/form';
 
@@ -40,6 +41,9 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
       </v-col>
       <v-col cols="12" md="6">
         <FormMetadataSettings :disabled="disabled" />
+      </v-col>
+      <v-col v-if="form.id" cols="12" md="6">
+        <FormClassificationSettings :disabled="disabled" />
       </v-col>
     </v-row>
     <v-row>

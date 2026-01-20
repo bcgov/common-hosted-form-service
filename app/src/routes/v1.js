@@ -17,6 +17,7 @@ const utils = require('../forms/utils');
 const index = require('../forms/public');
 const proxy = require('../forms/proxy');
 const commonServices = require('../forms/commonServices');
+const recordsManagement = require('../forms/recordsManagement');
 
 const statusService = require('../components/statusService');
 
@@ -33,6 +34,7 @@ const utilsPath = utils.mount(router);
 const publicPath = index.mount(router);
 const proxyPath = proxy.mount(router);
 const commonServicesPath = commonServices.mount(router);
+const recordsManagementPath = recordsManagement.mount(router);
 
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
@@ -60,6 +62,7 @@ router.get('/', (_req, res) => {
       publicPath,
       utilsPath,
       commonServicesPath,
+      recordsManagementPath,
     ],
   });
 });

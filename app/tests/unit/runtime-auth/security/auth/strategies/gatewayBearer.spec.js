@@ -2,6 +2,7 @@
 
 const gatewayBearerStrategy = require('../../../../../../src/runtime-auth/security/auth/strategies/gatewayBearer');
 const ERRORS = require('../../../../../../src/runtime-auth/security/errorMessages');
+const { GATEWAY_TOKEN_HEADER } = require('../../../../../../src/runtime-auth/security/auth/utils/headers');
 
 describe('auth/strategies/gatewayBearer', () => {
   let strategy;
@@ -41,28 +42,33 @@ describe('auth/strategies/gatewayBearer', () => {
     expect(typeof strategy.authenticate).toBe('function');
   });
 
-  it('should return true for Bearer authorization header', () => {
-    const req = { headers: { authorization: 'Bearer token123' } };
+  it('should return true for X-Chefs-Gateway-Token header', () => {
+    const req = { headers: { [GATEWAY_TOKEN_HEADER]: 'token123' } };
     expect(strategy.canHandle(req)).toBe(true);
   });
 
-  it('should return true for bearer authorization header (case insensitive)', () => {
-    const req = { headers: { authorization: 'bearer token123' } };
+  it('should return true for x-chefs-gateway-token header (case insensitive)', () => {
+    const req = { headers: { 'x-chefs-gateway-token': 'token123' } };
     expect(strategy.canHandle(req)).toBe(true);
   });
 
-  it('should return false for Basic authorization header', () => {
-    const req = { headers: { authorization: 'Basic dGVzdDp0ZXN0' } };
-    expect(strategy.canHandle(req)).toBe(false);
+  it('should return true for X-CHEFS-GATEWAY-TOKEN header (all caps)', () => {
+    const req = { headers: { 'X-CHEFS-GATEWAY-TOKEN': 'token123' } };
+    expect(strategy.canHandle(req)).toBe(true);
   });
 
-  it('should return false when no authorization header', () => {
+  it('should return true for x-Chefs-Gateway-Token header (mixed case)', () => {
+    const req = { headers: { 'x-Chefs-Gateway-Token': 'token123' } };
+    expect(strategy.canHandle(req)).toBe(true);
+  });
+
+  it('should return false when no X-Chefs-Gateway-Token header', () => {
     const req = { headers: {} };
     expect(strategy.canHandle(req)).toBe(false);
   });
 
-  it('should return false for invalid authorization format', () => {
-    const req = { headers: { authorization: 'Invalid format' } };
+  it('should return false when only Authorization header present', () => {
+    const req = { headers: { authorization: 'Bearer token123' } };
     expect(strategy.canHandle(req)).toBe(false);
   });
 
@@ -100,7 +106,7 @@ describe('auth/strategies/gatewayBearer', () => {
 
   it('should authenticate successfully with valid token', async () => {
     const req = {
-      headers: { authorization: 'Bearer valid-token' },
+      headers: { [GATEWAY_TOKEN_HEADER]: 'valid-token' },
       method: 'GET',
       path: '/test',
     };
@@ -138,7 +144,21 @@ describe('auth/strategies/gatewayBearer', () => {
     expect(mockAuthService.readUser).toHaveBeenCalledWith('runtime-auth-gateway-user');
   });
 
-  it('should throw error when no authorization header', async () => {
+  it('should authenticate successfully with all caps header', async () => {
+    const req = {
+      headers: { 'X-CHEFS-GATEWAY-TOKEN': 'valid-token' }, // Test case-insensitive lookup
+      method: 'GET',
+      path: '/test',
+    };
+
+    await strategy.authenticate(req);
+
+    expect(mockGatewayService.verifyTokenAndGetPayload).toHaveBeenCalledWith('valid-token');
+    expect(mockFormService.readApiKey).toHaveBeenCalledWith('form123');
+    expect(mockAuthService.readUser).toHaveBeenCalledWith('runtime-auth-gateway-user');
+  });
+
+  it('should throw error when no X-Chefs-Gateway-Token header', async () => {
     const req = {
       headers: {},
       method: 'GET',
@@ -155,7 +175,7 @@ describe('auth/strategies/gatewayBearer', () => {
     });
 
     const req = {
-      headers: { authorization: 'Bearer invalid-token' },
+      headers: { [GATEWAY_TOKEN_HEADER]: 'invalid-token' },
       method: 'GET',
       path: '/test',
     };
@@ -170,7 +190,7 @@ describe('auth/strategies/gatewayBearer', () => {
     });
 
     const req = {
-      headers: { authorization: 'Bearer token-without-formid' },
+      headers: { 'X-Chefs-Gateway-Token': 'token-without-formid' },
       method: 'GET',
       path: '/test',
     };
@@ -182,7 +202,7 @@ describe('auth/strategies/gatewayBearer', () => {
     mockFormService.readApiKey.mockResolvedValue(null);
 
     const req = {
-      headers: { authorization: 'Bearer valid-token' },
+      headers: { 'X-Chefs-Gateway-Token': 'valid-token' },
       method: 'GET',
       path: '/test',
     };
@@ -197,7 +217,7 @@ describe('auth/strategies/gatewayBearer', () => {
     });
 
     const req = {
-      headers: { authorization: 'Bearer valid-token' },
+      headers: { 'X-Chefs-Gateway-Token': 'valid-token' },
       method: 'GET',
       path: '/test',
     };
@@ -209,7 +229,7 @@ describe('auth/strategies/gatewayBearer', () => {
     mockAuthService.readUser.mockRejectedValue(new Error('User not found'));
 
     const req = {
-      headers: { authorization: 'Bearer valid-token' },
+      headers: { 'X-Chefs-Gateway-Token': 'valid-token' },
       method: 'GET',
       path: '/test',
     };
@@ -224,7 +244,7 @@ describe('auth/strategies/gatewayBearer', () => {
     });
 
     const req = {
-      headers: { authorization: 'Bearer valid-token' },
+      headers: { 'X-Chefs-Gateway-Token': 'valid-token' },
       method: 'GET',
       path: '/test',
     };
@@ -235,9 +255,9 @@ describe('auth/strategies/gatewayBearer', () => {
     expect(result.actor.metadata.apiKeyMetadata.filesApiAccess).toBe(false);
   });
 
-  it('should trim token from authorization header', async () => {
+  it('should use token value directly from X-Chefs-Gateway-Token header', async () => {
     const req = {
-      headers: { authorization: 'Bearer  token123  ' },
+      headers: { 'X-Chefs-Gateway-Token': 'token123' },
       method: 'GET',
       path: '/test',
     };
