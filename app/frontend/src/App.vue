@@ -6,10 +6,12 @@ import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
 import { computed, provide, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useTenantStore } from '~/store/tenant';
 
 const isWideLayout = ref(false);
 const ready = ref(false);
 const route = useRoute();
+const tenantStore = useTenantStore();
 
 const appTitle = computed(() => {
   return route && route.meta && route.meta.title
@@ -45,6 +47,8 @@ defineExpose({
 });
 
 onMounted(async () => {
+  // Initialize tenant store from localStorage
+  tenantStore.initializeStore();
   ready.value = true;
 });
 </script>

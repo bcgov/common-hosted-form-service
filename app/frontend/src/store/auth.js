@@ -167,6 +167,10 @@ export const useAuthStore = defineStore('auth', {
     },
     logout() {
       if (this.ready) {
+        // Clear tenant selection before logging out
+        const tenantStore = useTenantStore();
+        tenantStore.resetTenant();
+
         // if we have not specified a logoutUrl, then use default
         if (!this.logoutUrl) {
           window.location.replace(

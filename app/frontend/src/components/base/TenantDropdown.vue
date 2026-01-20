@@ -169,8 +169,12 @@ const goToCSTAR = () => {
   window.open(cstarUrl, '_blank');
 };
 
-// Initialize - fetch tenants on component mount
+// Initialize - load from localStorage and fetch tenants on component mount
 onMounted(async () => {
+  // Load persisted tenant selection from localStorage
+  tenantStore.initializeStore();
+
+  // Fetch available tenants
   if (tenantStore.tenants.length === 0) {
     await tenantStore.fetchTenants();
   }

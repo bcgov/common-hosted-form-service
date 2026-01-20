@@ -27,8 +27,9 @@ export function appAxios(timeout = 60000) {
       if (authStore?.ready && authStore?.authenticated) {
         cfg.headers.Authorization = `Bearer ${authStore.keycloak.token}`;
       }
-      // Add tenant ID header if tenant is selected
-      if (tenantStore?.selectedTenant?.id) {
+      // Add tenant ID header if tenant is selected, but exclude submission endpoints
+      const isSubmissionEndpoint = cfg.url && cfg.url.includes('/submissions');
+      if (tenantStore?.selectedTenant?.id && !isSubmissionEndpoint) {
         cfg.headers['x-tenant-id'] = tenantStore.selectedTenant.id;
       }
       return Promise.resolve(cfg);

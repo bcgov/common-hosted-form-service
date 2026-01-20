@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia';
-import { useLocalStorage } from '@vueuse/core';
 import { rbacService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 
 export const useTenantStore = defineStore('tenant', {
   state: () => ({
     tenants: [], // List of available tenants
-    selectedTenant: useLocalStorage('selectedTenant', null), // Currently selected tenant (persisted)
+    selectedTenant: null, // Currently selected tenant (persisted to localStorage)
     loading: false, // Loading state for API calls
     error: null, // Error message if any
   }),
@@ -44,6 +43,39 @@ export const useTenantStore = defineStore('tenant', {
 
   actions: {
     /**
+     * Initialize store - load selected tenant from localStorage
+     */
+    initializeStore() {
+      try {
+        const stored = localStorage.getItem('selectedTenant');
+        if (stored && stored !== 'null' && stored !== 'undefined') {
+          this.selectedTenant = JSON.parse(stored);
+        }
+      } catch (error) {
+        console.error('Error loading tenant from localStorage:', error);
+        localStorage.removeItem('selectedTenant');
+      }
+    },
+
+    /**
+     * Save selected tenant to localStorage
+     */
+    persistSelectedTenant() {
+      try {
+        if (this.selectedTenant) {
+          localStorage.setItem(
+            'selectedTenant',
+            JSON.stringify(this.selectedTenant)
+          );
+        } else {
+          localStorage.removeItem('selectedTenant');
+        }
+      } catch (error) {
+        console.error('Error saving tenant to localStorage:', error);
+      }
+    },
+
+    /**
      * Fetch all available tenants for the current user
      */
     async fetchTenants() {
@@ -59,7 +91,11 @@ export const useTenantStore = defineStore('tenant', {
           this.selectedTenant &&
           !this.getTenantById(this.selectedTenant.id)
         ) {
+          console.warn(
+            'Previously selected tenant no longer available, clearing selection'
+          );
           this.selectedTenant = null;
+          this.persistSelectedTenant();
         }
 
         // Don't auto-select first tenant - keep user in Classic CHEFS mode on login
@@ -80,7 +116,7 @@ export const useTenantStore = defineStore('tenant', {
      */
     selectTenant(tenant) {
       this.selectedTenant = tenant;
-      // Persist to localStorage automatically via useLocalStorage
+      this.persistSelectedTenant();
     },
 
     /**
@@ -88,6 +124,7 @@ export const useTenantStore = defineStore('tenant', {
      */
     clearSelectedTenant() {
       this.selectedTenant = null;
+      this.persistSelectedTenant();
     },
 
     /**
@@ -98,6 +135,7 @@ export const useTenantStore = defineStore('tenant', {
       this.selectedTenant = null;
       this.loading = false;
       this.error = null;
+      this.persistSelectedTenant();
     },
   },
 });
