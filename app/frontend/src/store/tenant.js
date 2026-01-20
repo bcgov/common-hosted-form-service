@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { rbacService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
+import getRouter from '~/router';
 
 export const useTenantStore = defineStore('tenant', {
   state: () => ({
@@ -79,6 +80,17 @@ export const useTenantStore = defineStore('tenant', {
      * Fetch all available tenants for the current user
      */
     async fetchTenants() {
+      // Skip tenant API call on submission pages - they don't need tenant info
+      try {
+        const router = getRouter();
+        if (router?.currentRoute?.value?.meta?.formSubmitMode) {
+          console.log('Skipping tenant fetch on submission page');
+          return;
+        }
+      } catch (error) {
+        // Router might not be available yet, continue with fetch
+      }
+
       this.loading = true;
       this.error = null;
 

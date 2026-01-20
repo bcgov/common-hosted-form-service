@@ -35,6 +35,8 @@
       density="compact"
       hide-details
       class="tenant-select"
+      @click="handleDropdownOpen"
+      @focus="handleDropdownOpen"
       @update:model-value="handleTenantChange"
     >
       <!-- Custom selection template to show placeholder when empty -->
@@ -169,12 +171,21 @@ const goToCSTAR = () => {
   window.open(cstarUrl, '_blank');
 };
 
-// Initialize - load from localStorage and fetch tenants on component mount
+// Lazy load tenants when dropdown is opened (if not already loaded)
+const handleDropdownOpen = async () => {
+  // Only fetch if we don't have tenants yet
+  if (tenantStore.tenants.length === 0 && !tenantStore.loading) {
+    await tenantStore.fetchTenants();
+  }
+};
+
+// Initialize - load from localStorage AND fetch tenants
 onMounted(async () => {
-  // Load persisted tenant selection from localStorage
+  // Load persisted tenant selection from localStorage (no API call)
   tenantStore.initializeStore();
 
-  // Fetch available tenants
+  // Fetch available tenants (API call)
+  // This is safe now because BCGovHeader only shows this component on allowed routes
   if (tenantStore.tenants.length === 0) {
     await tenantStore.fetchTenants();
   }

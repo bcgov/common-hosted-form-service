@@ -1,5 +1,7 @@
 <script setup>
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 import BCLogo from '~/assets/images/bc_logo.svg';
 import PrintLogo from '~/assets/images/bc_logo_print.svg';
 import { useFormStore } from '~/store/form';
@@ -17,8 +19,38 @@ defineProps({
   },
 });
 
+const route = useRoute();
 const { isRTL } = storeToRefs(useFormStore());
 const { authenticated, ready } = storeToRefs(useAuthStore());
+
+// Show tenant dropdown on all authenticated pages EXCEPT:
+// - Admin pages
+// - Submission viewing/submission pages (formSubmitMode routes)
+const showTenantDropdown = computed(() => {
+  if (!ready.value || !authenticated.value || !route.name) {
+    console.log('[TenantDropdown] Not ready/authenticated or no route name');
+    return false;
+  }
+
+  // Exclude these routes from showing tenant dropdown
+  const excludedRoutes = [
+    'Admin', // Admin panel
+    'AdministerForm', // Admin form management
+    'AdministerUser', // Admin user management
+    'FormSubmissions', // Viewing form submissions
+    'FormSubmit', // Public form submission
+    'FormView', // Viewing a submission
+    'FormSuccess', // Submission success page
+    'FormPreview', // Form preview
+    'UserSubmissions', // User's submissions
+    'UserFormView', // User viewing their submission
+    'UserFormDraftEdit', // User editing draft
+    'UserFormDuplicate', // User duplicating submission
+  ];
+
+  const shouldShow = !excludedRoutes.includes(route.name);
+  return shouldShow;
+});
 </script>
 
 <template>
@@ -70,11 +102,8 @@ const { authenticated, ready } = storeToRefs(useAuthStore());
         {{ appTitle }}
       </h1>
       <v-spacer />
-      <!-- Tenant Dropdown (visible when authenticated) -->
-      <div
-        v-if="ready && authenticated && !formSubmitMode"
-        class="tenant-dropdown-wrapper mr-4"
-      >
+      <!-- Tenant Dropdown (visible only on Forms list and Create Form pages) -->
+      <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper mr-4">
         <TenantDropdown />
       </div>
       <BaseAuthButton data-test="base-auth-btn" />
