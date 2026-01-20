@@ -84,7 +84,6 @@ export const useTenantStore = defineStore('tenant', {
       try {
         const router = getRouter();
         if (router?.currentRoute?.value?.meta?.formSubmitMode) {
-          console.log('Skipping tenant fetch on submission page');
           return;
         }
       } catch (error) {
