@@ -87,3 +87,6 @@ dummy
 
 # Ignore Windows reserved device files anywhere
 **/nul
+
+# Claude Code configuration
+.claude/

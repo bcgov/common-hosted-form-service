@@ -232,11 +232,10 @@ const testimonials = [
         <v-row justify="center" class="mb-12">
           <v-col cols="12" class="text-center">
             <p class="hero-subtitle mb-2" :lang="locale">
-              Want to work securely with your team, deliver forms faster, and
-              collaborate across government?
+              {{ $t('trans.landingPage.hero.subtitle') }}
             </p>
             <h1 class="enterprise-hero-title mb-8" :lang="locale">
-              Introducing Enterprise CHEFS and CSTAR!
+              {{ $t('trans.landingPage.hero.title') }}
             </h1>
           </v-col>
         </v-row>
@@ -247,35 +246,33 @@ const testimonials = [
           <v-col cols="12" md="6" class="mb-8 mb-md-0">
             <div class="enterprise-card-content">
               <h2 class="enterprise-section-title mb-4" :lang="locale">
-                Experience the new Enterprise CHEFS
+                {{ $t('trans.landingPage.hero.enterpriseTitle') }}
               </h2>
 
               <p class="enterprise-description mb-4" :lang="locale">
-                Enterprise CHEFS expands on the classic
-                <router-link :to="{ name: 'FormCreate' }" class="text-link"
-                  >CHEFS (Common Hosted Forms Service)</router-link
-                >
-                by working together with
+                {{ $t('trans.landingPage.hero.enterpriseDescription1') }}
+                <router-link :to="{ name: 'FormCreate' }" class="text-link">{{
+                  $t('trans.landingPage.hero.chefsLink')
+                }}</router-link>
+                {{ $t('trans.landingPage.hero.enterpriseDescription2') }}
                 <a
                   :href="cstarUrl"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-link"
-                  >CSTAR — Connected Services, Team Access, and Roles</a
+                  >{{ $t('trans.landingPage.hero.cstarLink') }}</a
                 >
-                — to create a shared, collaborative workspace.
+                {{ $t('trans.landingPage.hero.enterpriseDescription3') }}
               </p>
 
               <p class="enterprise-description mb-6" :lang="locale">
-                With Enterprise CHEFS, teams can securely share forms, assign
-                roles, and manage projects within their organization's
-                <strong>tenant</strong> — a dedicated workspace that keeps your
-                projects and permissions organized.
+                {{ $t('trans.landingPage.hero.enterpriseDescription4') }}
+                <strong>{{ $t('trans.landingPage.hero.tenant') }}</strong>
+                {{ $t('trans.landingPage.hero.enterpriseDescription5') }}
               </p>
 
               <p class="enterprise-description mb-8" :lang="locale">
-                Welcome to Enterprise CHEFS, where teams across government can
-                collaborate safely and efficiently.
+                {{ $t('trans.landingPage.hero.enterpriseDescription6') }}
               </p>
 
               <v-btn
@@ -285,7 +282,7 @@ const testimonials = [
                 class="go-to-chefs-btn"
                 data-test="go-to-chefs-btn"
               >
-                Go to CHEFS
+                {{ $t('trans.landingPage.hero.goToChefs') }}
                 <v-icon end>mdi-arrow-right</v-icon>
               </v-btn>
             </div>
@@ -295,33 +292,36 @@ const testimonials = [
           <v-col cols="12" md="6">
             <div class="enterprise-card-content">
               <h2 class="enterprise-section-title mb-4" :lang="locale">
-                CSTAR and Access Management
+                {{ $t('trans.landingPage.hero.cstarTitle') }}
               </h2>
 
               <p class="enterprise-description mb-4" :lang="locale">
-                Enterprise CHEFS works hand-in-hand with
+                {{ $t('trans.landingPage.hero.cstarDescription1') }}
                 <a
                   :href="cstarUrl"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-link"
                   >CSTAR</a
-                >. CSTAR helps you manage who has access to your forms and
-                guides users into <strong>tenants</strong>, assigning
-                <strong>roles</strong>, and connecting
-                <strong>services</strong>.
+                >{{ $t('trans.landingPage.hero.cstarDescription2') }}
+                <strong>{{ $t('trans.landingPage.hero.tenants') }}</strong
+                >{{ $t('trans.landingPage.hero.cstarDescription3') }}
+                <strong>{{ $t('trans.landingPage.hero.roles') }}</strong
+                >{{ $t('trans.landingPage.hero.cstarDescription4') }}
+                <strong>{{ $t('trans.landingPage.hero.services') }}</strong
+                >{{ $t('trans.landingPage.hero.cstarDescription5') }}
               </p>
 
               <p class="enterprise-description mb-6" :lang="locale">
-                Access to CSTAR is managed by
-                <strong
-                  >administrators within your ministry or organization</strong
-                >, ensuring permissions and memberships are securely controlled.
+                {{ $t('trans.landingPage.hero.cstarDescription6') }}
+                <strong>{{
+                  $t('trans.landingPage.hero.administrators')
+                }}</strong
+                >{{ $t('trans.landingPage.hero.cstarDescription7') }}
               </p>
 
               <p class="enterprise-description mb-8" :lang="locale">
-                You can use CSTAR to review your current tenant memberships or
-                request a new tenant if you're starting from scratch.
+                {{ $t('trans.landingPage.hero.cstarDescription8') }}
               </p>
 
               <v-btn
@@ -333,7 +333,7 @@ const testimonials = [
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Go To CSTAR
+                {{ $t('trans.landingPage.hero.goToCstar') }}
                 <v-icon end>mdi-arrow-right</v-icon>
               </v-btn>
             </div>
@@ -351,14 +351,11 @@ const testimonials = [
               closable
             >
               <template #title>
-                <strong>ATTENTION BCeID USERS</strong>
+                <strong>{{ $t('trans.landingPage.hero.alertTitle') }}</strong>
               </template>
               <div class="alert-content-wrapper">
-                <div class="alert-text">
-                  To ensure your account can be found by your team, please log
-                  in to CSTAR before using Enterprise CHEFS. This step allows
-                  your team admin to locate and add you to a tenant or group,
-                  making your account active and searchable in CSTAR.
+                <div class="alert-text" :lang="locale">
+                  {{ $t('trans.landingPage.hero.alertDescription') }}
                 </div>
                 <v-btn
                   size="small"
@@ -368,7 +365,7 @@ const testimonials = [
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Log in to CSTAR
+                  {{ $t('trans.landingPage.hero.loginToCstar') }}
                 </v-btn>
               </div>
             </v-alert>
@@ -383,19 +380,18 @@ const testimonials = [
         <v-row align="center" class="mb-12">
           <v-col cols="12" md="6" class="text-section">
             <h2 class="getting-started-title mb-6" :lang="locale">
-              New to CHEFS and not sure where to start?
+              {{ $t('trans.landingPage.gettingStarted.title') }}
             </h2>
             <p class="getting-started-description mb-0" :lang="locale">
-              Start by exploring our
+              {{ $t('trans.landingPage.gettingStarted.description1') }}
               <a
                 :href="techDocsUrl"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="doc-link"
-                >CHEFS Technical Documentation</a
+                >{{ $t('trans.landingPage.gettingStarted.techDocsLink') }}</a
               >
-              (Tech Docs) for setup guidance, or browse the example forms below
-              — each one was created by real CHEFS users.
+              {{ $t('trans.landingPage.gettingStarted.description2') }}
             </p>
           </v-col>
           <v-col cols="12" md="6" class="illustration-section">
@@ -465,10 +461,12 @@ const testimonials = [
                         @click="openFormViewer(example)"
                       >
                         <v-icon start>mdi-eye</v-icon>
-                        View Form
+                        {{ $t('trans.landingPage.gettingStarted.viewForm') }}
                       </v-btn>
                     </template>
-                    <span>View form in fullscreen</span>
+                    <span :lang="locale">{{
+                      $t('trans.landingPage.gettingStarted.viewFormTooltip')
+                    }}</span>
                   </v-tooltip>
                   <v-tooltip location="top">
                     <template #activator="{ props }">
@@ -480,10 +478,12 @@ const testimonials = [
                         @click="downloadFormJSON(example)"
                       >
                         <v-icon start>mdi-download</v-icon>
-                        Download
+                        {{ $t('trans.landingPage.gettingStarted.download') }}
                       </v-btn>
                     </template>
-                    <span>Download form as JSON</span>
+                    <span :lang="locale">{{
+                      $t('trans.landingPage.gettingStarted.downloadTooltip')
+                    }}</span>
                   </v-tooltip>
                 </div>
               </div>
@@ -513,8 +513,7 @@ const testimonials = [
         </v-col>
         <v-col cols="12" md="7">
           <h2 class="testimonials-title mb-8" :lang="locale">
-            Don't take our word for it, hear what our users have to say about
-            us.
+            {{ $t('trans.landingPage.testimonials.title') }}
           </h2>
         </v-col>
       </v-row>
@@ -535,7 +534,9 @@ const testimonials = [
             @keyup.enter="openKudosPage"
           >
             <v-card-text class="pa-6">
-              <h3 class="testimonial-card-title mb-3">CHEFS User</h3>
+              <h3 class="testimonial-card-title mb-3" :lang="locale">
+                {{ $t('trans.landingPage.testimonials.chefsUser') }}
+              </h3>
               <div class="d-flex align-center mb-4">
                 <v-rating
                   :model-value="testimonial.rating"
@@ -545,7 +546,9 @@ const testimonials = [
                   readonly
                   class="mr-2"
                 ></v-rating>
-                <span class="verified-label">{{ testimonial.label }}</span>
+                <span class="verified-label" :lang="locale">{{
+                  $t('trans.landingPage.testimonials.verifiedUser')
+                }}</span>
               </div>
 
               <h4 class="review-title mb-2">{{ testimonial.title }}</h4>
@@ -612,11 +615,10 @@ const testimonials = [
         <v-row justify="center">
           <v-col cols="12" md="8" class="text-center">
             <h2 class="final-cta-title mb-4" :lang="locale">
-              Get Started Using Enterprise CHEFS
+              {{ $t('trans.landingPage.finalCta.title') }}
             </h2>
             <p class="final-cta-description mb-6" :lang="locale">
-              Create online forms to collect information from your clients and
-              improve your workflows.
+              {{ $t('trans.landingPage.finalCta.description') }}
             </p>
             <v-btn
               color="primary"
@@ -624,7 +626,7 @@ const testimonials = [
               :to="{ name: 'Login' }"
               class="login-btn"
             >
-              Login to Get Started
+              {{ $t('trans.landingPage.finalCta.loginButton') }}
             </v-btn>
           </v-col>
         </v-row>
@@ -667,7 +669,7 @@ const testimonials = [
               variant="text"
               color="white"
               icon="mdi-download"
-              title="Download JSON"
+              :title="$t('trans.landingPage.formViewer.downloadTitle')"
               class="mr-2"
               @click="downloadFormJSON(selectedFormExample)"
             />
@@ -676,7 +678,7 @@ const testimonials = [
               variant="text"
               color="white"
               icon="mdi-close"
-              title="Close"
+              :title="$t('trans.landingPage.formViewer.close')"
               @click="closeFormViewer"
             />
           </div>
@@ -704,9 +706,11 @@ const testimonials = [
             @click="downloadFormJSON(selectedFormExample)"
           >
             <v-icon start>mdi-download</v-icon>
-            Download JSON
+            {{ $t('trans.landingPage.formViewer.downloadJson') }}
           </v-btn>
-          <v-btn color="primary" @click="closeFormViewer"> Close </v-btn>
+          <v-btn color="primary" @click="closeFormViewer">
+            {{ $t('trans.landingPage.formViewer.close') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

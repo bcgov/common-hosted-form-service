@@ -9,27 +9,27 @@
       <v-icon
         size="small"
         class="info-icon"
-        title="Enterprise CHEFS is the new version of CHEFS that supports multi-tenant access. Selecting your tenant will take you there automatically."
+        :title="$t('trans.tenantDropdown.infoTooltip')"
         >mdi-information-outline</v-icon
       >
-      <label for="tenant-select" class="tenant-label"
-        >Select tenant (opens in Enterprise CHEFS)
-      </label>
+      <label for="tenant-select" class="tenant-label" :lang="locale">{{
+        $t('trans.tenantDropdown.selectLabel')
+      }}</label>
     </div>
 
     <!-- Dropdown input -->
     <v-select
-      ref="selectRef"
       id="tenant-select"
+      ref="selectRef"
       v-model="selectedValue"
       :items="allTenantOptions"
       :loading="tenantStore.loading"
       :disabled="tenantStore.loading"
       :menu-props="{ closeOnClick: false }"
-      placeholder="Select from available tenants"
+      :placeholder="$t('trans.tenantDropdown.placeholder')"
       item-title="name"
       item-value="id"
-      no-data-text="No tenants found"
+      :no-data-text="$t('trans.tenantDropdown.noDataText')"
       prepend-inner-icon="mdi:mdi-home-account"
       variant="outlined"
       density="compact"
@@ -44,9 +44,9 @@
         <span v-if="selectedValue" class="selected-tenant">{{
           item.title
         }}</span>
-        <span v-else class="text-placeholder"
-          >Select from available tenants</span
-        >
+        <span v-else class="text-placeholder" :lang="locale">{{
+          $t('trans.tenantDropdown.placeholder')
+        }}</span>
       </template>
       <!-- CSTAR Link and Classic CHEFS at bottom of dropdown -->
       <template #append-item>
@@ -60,24 +60,30 @@
           <template #prepend>
             <v-icon size="small">mdi-swap-horizontal</v-icon>
           </template>
-          <span>Switch to Classic CHEFS</span>
+          <span :lang="locale">{{
+            $t('trans.tenantDropdown.switchToClassic')
+          }}</span>
         </v-list-item>
         <v-divider v-if="tenantStore.selectedTenant" />
         <v-list-item class="cstar-link-item" @click="goToCSTAR">
           <template #prepend>
             <v-icon size="small">mdi-open-in-new</v-icon>
           </template>
-          <span>Go to CSTAR (Connected Services, Team Access and Roles)</span>
+          <span :lang="locale">{{ $t('trans.tenantDropdown.goToCstar') }}</span>
         </v-list-item>
       </template>
 
       <!-- Custom no-data state with CSTAR link -->
       <template #no-data>
         <div class="no-data-wrapper">
-          <p class="no-data-message">No tenants available</p>
-          <p class="no-data-subtext">
-            Manage tenants in
-            <a href="#" class="cstar-link" @click.prevent="goToCSTAR">CSTAR</a>
+          <p class="no-data-message" :lang="locale">
+            {{ $t('trans.tenantDropdown.noTenantsAvailable') }}
+          </p>
+          <p class="no-data-subtext" :lang="locale">
+            {{ $t('trans.tenantDropdown.manageTenantsIn') }}
+            <a href="#" class="cstar-link" @click.prevent="goToCSTAR">{{
+              $t('trans.tenantDropdown.cstar')
+            }}</a>
           </p>
         </div>
       </template>
@@ -88,9 +94,12 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useTenantStore } from '~/store/tenant';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 const tenantStore = useTenantStore();
