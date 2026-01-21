@@ -8,6 +8,7 @@ import { formService, rbacService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useTenantStore } from '~/store/tenant';
 import { FormPermissions } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -49,9 +50,11 @@ const emailRecipients = ref([]);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
+const tenantStore = useTenantStore();
 
 const { user } = storeToRefs(useAuthStore());
 const { form, formSubmission, submissionUsers, isRTL } = storeToRefs(formStore);
+const { selectedTenant } = storeToRefs(tenantStore);
 
 // State Machine
 const showAssignee = computed(() => ['ASSIGNED'].includes(statusToSet.value));
@@ -242,8 +245,13 @@ async function getStatus() {
       ).statusCode;
       items.value = currentStatus.value.statusCodeDetail.nextCodes;
     }
+    // Filter out REVISING if drafts not enabled
     if (!form.value.enableSubmitterDraft) {
       items.value = items.value.filter((item) => item !== 'REVISING');
+    }
+    // Filter out ASSIGNED if tenant is selected
+    if (selectedTenant.value) {
+      items.value = items.value.filter((item) => item !== 'ASSIGNED');
     }
   } catch (error) {
     notificationStore.addNotification({

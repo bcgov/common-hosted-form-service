@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { IdentityMode } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -38,6 +39,13 @@ const IdpTypeList = computed(() => {
       text: t('trans.formSettings.specificTeamMembers'),
     },
   ];
+
+  // Filter out TEAM option if tenant is selected
+  const tenantStore = useTenantStore();
+  if (tenantStore.selectedTenant) {
+    return items.filter((item) => item.id !== ID_MODE.value.TEAM);
+  }
+
   // if we want it sorted...
   // return items.sort((a, b) => a.text.localeCompare(b.text));
   return items;

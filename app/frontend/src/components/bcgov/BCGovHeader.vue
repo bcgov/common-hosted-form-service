@@ -28,7 +28,6 @@ const { authenticated, ready } = storeToRefs(useAuthStore());
 // - Submission viewing/submission pages (formSubmitMode routes)
 const showTenantDropdown = computed(() => {
   if (!ready.value || !authenticated.value || !route.name) {
-    console.log('[TenantDropdown] Not ready/authenticated or no route name');
     return false;
   }
 
@@ -49,6 +48,7 @@ const showTenantDropdown = computed(() => {
   ];
 
   const shouldShow = !excludedRoutes.includes(route.name);
+
   return shouldShow;
 });
 </script>

@@ -53,7 +53,6 @@ export const useTenantStore = defineStore('tenant', {
           this.selectedTenant = JSON.parse(stored);
         }
       } catch (error) {
-        console.error('Error loading tenant from localStorage:', error);
         localStorage.removeItem('selectedTenant');
       }
     },
@@ -72,7 +71,7 @@ export const useTenantStore = defineStore('tenant', {
           localStorage.removeItem('selectedTenant');
         }
       } catch (error) {
-        console.error('Error saving tenant to localStorage:', error);
+        // Error saving tenant to localStorage
       }
     },
 
@@ -102,9 +101,6 @@ export const useTenantStore = defineStore('tenant', {
           this.selectedTenant &&
           !this.getTenantById(this.selectedTenant.id)
         ) {
-          console.warn(
-            'Previously selected tenant no longer available, clearing selection'
-          );
           this.selectedTenant = null;
           this.persistSelectedTenant();
         }

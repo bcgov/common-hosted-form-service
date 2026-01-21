@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import ShareForm from '~/components/forms/manage/ShareForm.vue';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 
 import { FormPermissions } from '~/utils/constants';
 
@@ -15,8 +16,10 @@ const { locale } = useI18n({ useScope: 'global' });
 const showDeleteDialog = ref(false);
 
 const formStore = useFormStore();
+const tenantStore = useTenantStore();
 
 const { form, permissions, isRTL } = storeToRefs(formStore);
+const { selectedTenant } = storeToRefs(tenantStore);
 
 const router = useRouter();
 
@@ -28,9 +31,12 @@ const canManageEmail = computed(() =>
   permissions.value.includes(FormPermissions.EMAIL_TEMPLATE_UPDATE)
 );
 
-const canManageTeam = computed(() =>
-  permissions.value.includes(FormPermissions.TEAM_UPDATE)
-);
+// Hide Team Management for tenanted forms
+const canManageTeam = computed(() => {
+  const hasPermission = permissions.value.includes(FormPermissions.TEAM_UPDATE);
+  const isTenanted = selectedTenant.value !== null;
+  return hasPermission && !isTenanted;
+});
 
 const canViewSubmissions = computed(() => {
   const perms = [
