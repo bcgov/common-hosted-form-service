@@ -38,7 +38,7 @@ describe("Form Designer", () => {
       cy.wait(1000);
   });
   });
-  it('Verify IDIR User Component', () => {
+  it('Verify Direct Print Configuration', () => {
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
@@ -63,17 +63,18 @@ describe("Form Designer", () => {
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('test.docx');
     cy.get('button[title="Upload"]').click();
-    cy.wait(1000);
+    cy.wait(500);
     cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('input[type="radio"][value="default"]').should('be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').click();
     cy.get('.pl-12 > .v-text-field > .v-input__control > .v-field > .v-field__append-inner').click();
+    cy.wait(500);
     cy.get('div.v-list-item-title').contains('test.docx').click();
     cy.get('input[type="radio"][value="formName"]').should('be.checked');
     cy.get('input[type="radio"][value="custom"]').should('not.be.checked');
     cy.get('input[type="radio"][value="custom"]').check({ force: true });
-    cy.wait(1000);
+    cy.wait(500);
     cy.contains('label', 'Custom File Name')   // find the label with the text
       .invoke('attr', 'for')                   // get the "for" attribute (input ID)
       .then((inputId) => {
@@ -82,7 +83,7 @@ describe("Form Designer", () => {
     //Save print settings
     cy.get('button[title="Save Configuration"]').click();
     cy.get('.v-alert__content').contains('Print configuration saved successfully').should('be.visible');
-    cy.wait(1000);
+    cy.wait(500);
     //Submit the form
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.wait(1000);
