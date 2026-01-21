@@ -1423,5 +1423,70 @@
     "noTenantsAvailable": "Nenhum inquilino disponível",
     "manageTenantsIn": "Gerenciar inquilinos em",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Deseja trabalhar com segurança com sua equipe, entregar formulários mais rapidamente e colaborar no governo?",
+      "title": "Apresentando Enterprise CHEFS e CSTAR!",
+      "enterpriseTitle": "Experimente o novo Enterprise CHEFS",
+      "tenant": "inquilino",
+      "description1": "Enterprise CHEFS é a nova versão do CHEFS que suporta acesso multilocatário e gerenciamento de equipe através do CSTAR (Connected Services, Team Access and Roles).",
+      "description2": "Com o Enterprise CHEFS, sua organização pode:",
+      "description3": "Trabalhar no modo ",
+      "description4": " - Cada inquilino tem seu próprio espaço seguro com formulários, dados e permissões isolados",
+      "description5": "Gerenciar acesso da equipe - Controle quem pode visualizar, editar ou gerenciar formulários dentro do seu inquilino",
+      "description6": "Manter a segurança dos dados - Os dados de cada inquilino estão completamente isolados de outros inquilinos",
+      "description7": "O Enterprise CHEFS também inclui todos os recursos poderosos que você conhece e ama do Classic CHEFS, como o construtor de formulários de arrastar e soltar, lógica condicional, envios criptografados e integrações de API.",
+      "loginButton": "Faça login para começar",
+      "goToChefs": "Ir para CHEFS",
+      "learnMore": "Saiba mais"
+    },
+    "gettingStarted": {
+      "title": "Novo no CHEFS e não sabe por onde começar?",
+      "description": "Você pode começar a criar formulários com alguns passos simples:",
+      "step1Title": "1. Faça login com sua conta IDIR ou BCeID",
+      "step2Title": "2. Crie um novo formulário ou use um modelo",
+      "step3Title": "3. Projete seu formulário com nosso construtor de arrastar e soltar",
+      "step4Title": "4. Publique e compartilhe seu formulário com sua equipe ou público",
+      "loginButton": "Faça login para começar",
+      "learnMore": "Saiba mais"
+    },
+    "examples": {
+      "demographicSurvey": "Exemplo | Pesquisa de coleta de dados demográficos",
+      "projectRequest": "Exemplo | Solicitação de projeto",
+      "permitApplication": "Exemplo | Solicitação de licença"
+    },
+    "testimonials": {
+      "title": "Não acredite apenas em nossa palavra, ouça o que nossos usuários têm a dizer sobre nós.",
+      "author": "Autor",
+      "role": "Função"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Usuário CHEFS 1",
+        "role": "Analista de programas",
+        "quote": "\"O CHEFS transformou a maneira como coletamos dados. O sistema multilocatário nos permite manter projetos separados enquanto compartilhamos as melhores práticas em todo o nosso departamento.\""
+      },
+      "testimonial2": {
+        "author": "Usuário CHEFS 2",
+        "role": "Gerente de projeto",
+        "quote": "\"A integração com o CSTAR torna o gerenciamento do acesso da equipe muito mais fácil. Posso integrar rapidamente novos membros da equipe e controlar exatamente o que eles podem fazer.\""
+      },
+      "testimonial3": {
+        "author": "Usuário CHEFS 3",
+        "role": "Administrador de TI",
+        "quote": "\"Apreciamos os recursos robustos de segurança e isolamento de dados. Cada inquilino está completamente separado, o que nos dá tranquilidade ao trabalhar com dados sensíveis.\""
+      }
+    },
+    "finalCta": {
+      "title": "Comece a usar o Enterprise CHEFS",
+      "description": "Crie formulários online para coletar informações de seus clientes e melhorar seu fluxo de trabalho.",
+      "loginButton": "Faça login para começar"
+    },
+    "formViewer": {
+      "title": "Visualizador de formulários",
+      "description": "Visualize como seu formulário ficará",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

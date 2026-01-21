@@ -1427,5 +1427,70 @@
     "noTenantsAvailable": "Walang available na tenant",
     "manageTenantsIn": "Pamahalaan ang mga tenant sa",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Gusto mo bang magtrabaho nang ligtas sa iyong koponan, maghatid ng mga form nang mas mabilis, at makipagtulungan sa gobyerno?",
+      "title": "Ipinapakilala ang Enterprise CHEFS at CSTAR!",
+      "enterpriseTitle": "Maranasan ang bagong Enterprise CHEFS",
+      "tenant": "tenant",
+      "description1": "Ang Enterprise CHEFS ay ang bagong bersyon ng CHEFS na sumusuporta sa multi-tenant access at pamamahala ng koponan sa pamamagitan ng CSTAR (Konektadong Serbisyo, Team Access at Roles).",
+      "description2": "Sa Enterprise CHEFS, ang iyong organisasyon ay maaaring:",
+      "description3": "Magtrabaho sa ",
+      "description4": " mode - Ang bawat tenant ay may sariling secure na espasyo na may ihiwalay na mga form, data, at pahintulot",
+      "description5": "Pamahalaan ang access ng koponan - Kontrolin kung sino ang maaaring tumingin, mag-edit, o pamahalaan ang mga form sa loob ng iyong tenant",
+      "description6": "Panatilihin ang seguridad ng data - Ang data ng bawat tenant ay ganap na ihiwalay mula sa ibang mga tenant",
+      "description7": "Ang Enterprise CHEFS ay sumasaklaw din sa lahat ng malakas na feature na alam at mahal mo mula sa Classic CHEFS, tulad ng drag-and-drop form builder, conditional logic, encrypted submissions, at API integrations.",
+      "loginButton": "Mag-login upang magsimula",
+      "goToChefs": "Pumunta sa CHEFS",
+      "learnMore": "Matuto pa"
+    },
+    "gettingStarted": {
+      "title": "Bago sa CHEFS at hindi alam kung saan magsisimula?",
+      "description": "Maaari kang magsimulang lumikha ng mga form sa ilang simpleng hakbang:",
+      "step1Title": "1. Mag-login gamit ang iyong IDIR o BCeID account",
+      "step2Title": "2. Lumikha ng bagong form o gumamit ng template",
+      "step3Title": "3. Idisenyo ang iyong form gamit ang aming drag-and-drop builder",
+      "step4Title": "4. I-publish at ibahagi ang iyong form sa iyong koponan o publiko",
+      "loginButton": "Mag-login upang magsimula",
+      "learnMore": "Matuto pa"
+    },
+    "examples": {
+      "demographicSurvey": "Halimbawa | Survey sa Pagkolekta ng Demographic Data",
+      "projectRequest": "Halimbawa | Kahilingan sa Proyekto",
+      "permitApplication": "Halimbawa | Aplikasyon para sa Permit"
+    },
+    "testimonials": {
+      "title": "Huwag lang magtiwala sa aming salita, pakinggan kung ano ang sinasabi ng aming mga user tungkol sa amin.",
+      "author": "May-akda",
+      "role": "Papel"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS User 1",
+        "role": "Program Analyst",
+        "quote": "\"Binago ng CHEFS ang paraan ng aming pagkolekta ng data. Pinapahintulutan kami ng multi-tenant system na panatilihing hiwalay ang mga proyekto habang nagbabahagi ng best practices sa buong aming departamento.\""
+      },
+      "testimonial2": {
+        "author": "CHEFS User 2",
+        "role": "Project Manager",
+        "quote": "\"Ang pagsasama sa CSTAR ay ginagawang mas madali ang pamamahala ng access ng koponan. Mabilis kong maidadagdag ang mga bagong miyembro ng koponan at eksaktong makokontrol kung ano ang maaari nilang gawin.\""
+      },
+      "testimonial3": {
+        "author": "CHEFS User 3",
+        "role": "IT Administrator",
+        "quote": "\"Pinahahalagahan namin ang matatag na seguridad at paghihiwalay ng data. Ang bawat tenant ay ganap na hiwalay, na nagbibigay sa amin ng kapayapaan ng isip kapag nagtatrabaho sa sensitibong data.\""
+      }
+    },
+    "finalCta": {
+      "title": "Simulan ang paggamit ng Enterprise CHEFS",
+      "description": "Lumikha ng mga online form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong workflow.",
+      "loginButton": "Mag-login upang magsimula"
+    },
+    "formViewer": {
+      "title": "Form Viewer",
+      "description": "I-preview kung ano ang hitsura ng iyong form",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

@@ -1423,5 +1423,70 @@
     "noTenantsAvailable": "No hay inquilinos disponibles",
     "manageTenantsIn": "Administrar inquilinos en",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "¿Desea trabajar de forma segura con su equipo, entregar formularios más rápido y colaborar en el gobierno?",
+      "title": "¡Presentamos Enterprise CHEFS y CSTAR!",
+      "enterpriseTitle": "Experimente el nuevo Enterprise CHEFS",
+      "tenant": "inquilino",
+      "description1": "Enterprise CHEFS es la nueva versión de CHEFS que admite acceso multiinquilino y administración de equipos a través de CSTAR (Servicios conectados, acceso de equipo y roles).",
+      "description2": "Con Enterprise CHEFS, su organización puede:",
+      "description3": "Trabajar en modo ",
+      "description4": " - Cada inquilino tiene su propio espacio seguro con formularios, datos y permisos aislados",
+      "description5": "Administrar el acceso del equipo - Controle quién puede ver, editar o administrar formularios dentro de su inquilino",
+      "description6": "Mantener la seguridad de los datos - Los datos de cada inquilino están completamente aislados de otros inquilinos",
+      "description7": "Enterprise CHEFS también incluye todas las potentes funciones que conoce y ama de Classic CHEFS, como el generador de formularios de arrastrar y soltar, lógica condicional, envíos cifrados e integraciones de API.",
+      "loginButton": "Inicie sesión para comenzar",
+      "goToChefs": "Ir a CHEFS",
+      "learnMore": "Más información"
+    },
+    "gettingStarted": {
+      "title": "¿Nuevo en CHEFS y no sabe por dónde empezar?",
+      "description": "Puede comenzar a crear formularios con unos pocos pasos simples:",
+      "step1Title": "1. Inicie sesión con su cuenta IDIR o BCeID",
+      "step2Title": "2. Cree un nuevo formulario o utilice una plantilla",
+      "step3Title": "3. Diseñe su formulario con nuestro generador de arrastrar y soltar",
+      "step4Title": "4. Publique y comparta su formulario con su equipo o el público",
+      "loginButton": "Inicie sesión para comenzar",
+      "learnMore": "Más información"
+    },
+    "examples": {
+      "demographicSurvey": "Ejemplo | Encuesta de recopilación de datos demográficos",
+      "projectRequest": "Ejemplo | Solicitud de proyecto",
+      "permitApplication": "Ejemplo | Solicitud de permiso"
+    },
+    "testimonials": {
+      "title": "No confíe solo en nuestra palabra, escuche lo que nuestros usuarios tienen que decir sobre nosotros.",
+      "author": "Autor",
+      "role": "Función"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Usuario de CHEFS 1",
+        "role": "Analista de programas",
+        "quote": "\"CHEFS ha transformado la forma en que recopilamos datos. El sistema multiinquilino nos permite mantener proyectos separados mientras compartimos las mejores prácticas en todo nuestro departamento.\""
+      },
+      "testimonial2": {
+        "author": "Usuario de CHEFS 2",
+        "role": "Director de proyecto",
+        "quote": "\"La integración con CSTAR facilita mucho la administración del acceso del equipo. Puedo incorporar rápidamente nuevos miembros del equipo y controlar exactamente lo que pueden hacer.\""
+      },
+      "testimonial3": {
+        "author": "Usuario de CHEFS 3",
+        "role": "Administrador de TI",
+        "quote": "\"Apreciamos las sólidas funciones de seguridad y aislamiento de datos. Cada inquilino está completamente separado, lo que nos brinda tranquilidad al trabajar con datos confidenciales.\""
+      }
+    },
+    "finalCta": {
+      "title": "Comience a usar Enterprise CHEFS",
+      "description": "Cree formularios en línea para recopilar información de sus clientes y mejorar su flujo de trabajo.",
+      "loginButton": "Inicie sesión para comenzar"
+    },
+    "formViewer": {
+      "title": "Visor de formularios",
+      "description": "Obtenga una vista previa de cómo se verá su formulario",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

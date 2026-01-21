@@ -1423,5 +1423,70 @@
     "noTenantsAvailable": "사용 가능한 테넌트 없음",
     "manageTenantsIn": "테넌트 관리 위치",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "팀과 안전하게 작업하고, 양식을 더 빠르게 제공하고, 정부에서 협업하고 싶으신가요?",
+      "title": "Enterprise CHEFS 및 CSTAR 소개!",
+      "enterpriseTitle": "새로운 Enterprise CHEFS 경험",
+      "tenant": "테넌트",
+      "description1": "Enterprise CHEFS는 CSTAR(연결된 서비스, 팀 액세스 및 역할)를 통해 다중 테넌트 액세스 및 팀 관리를 지원하는 CHEFS의 새 버전입니다.",
+      "description2": "Enterprise CHEFS를 사용하면 조직은 다음을 수행할 수 있습니다:",
+      "description3": "",
+      "description4": " 모드에서 작업 - 각 테넌트에는 격리된 양식, 데이터 및 권한이 있는 자체 보안 공간이 있습니다",
+      "description5": "팀 액세스 관리 - 테넌트 내에서 양식을 보고, 편집하거나 관리할 수 있는 사용자를 제어합니다",
+      "description6": "데이터 보안 유지 - 각 테넌트의 데이터는 다른 테넌트와 완전히 격리됩니다",
+      "description7": "Enterprise CHEFS에는 드래그 앤 드롭 양식 작성기, 조건부 논리, 암호화된 제출 및 API 통합과 같이 Classic CHEFS에서 알고 있고 좋아하는 모든 강력한 기능도 포함되어 있습니다.",
+      "loginButton": "로그인하여 시작",
+      "goToChefs": "CHEFS로 이동",
+      "learnMore": "자세히 알아보기"
+    },
+    "gettingStarted": {
+      "title": "CHEFS를 처음 사용하며 어디서부터 시작해야 할지 모르시나요?",
+      "description": "몇 가지 간단한 단계로 양식 만들기를 시작할 수 있습니다:",
+      "step1Title": "1. IDIR 또는 BCeID 계정으로 로그인",
+      "step2Title": "2. 새 양식을 만들거나 템플릿 사용",
+      "step3Title": "3. 드래그 앤 드롭 작성기로 양식 디자인",
+      "step4Title": "4. 양식을 게시하고 팀 또는 대중과 공유",
+      "loginButton": "로그인하여 시작",
+      "learnMore": "자세히 알아보기"
+    },
+    "examples": {
+      "demographicSurvey": "예시 | 인구통계 데이터 수집 설문조사",
+      "projectRequest": "예시 | 프로젝트 요청",
+      "permitApplication": "예시 | 허가 신청"
+    },
+    "testimonials": {
+      "title": "우리의 말만 믿지 마시고, 사용자들이 우리에 대해 무엇을 말하는지 들어보세요.",
+      "author": "저자",
+      "role": "역할"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS 사용자 1",
+        "role": "프로그램 분석가",
+        "quote": "\"CHEFS는 데이터 수집 방식을 변화시켰습니다. 다중 테넌트 시스템을 통해 프로젝트를 분리하면서 부서 전체에서 모범 사례를 공유할 수 있습니다.\""
+      },
+      "testimonial2": {
+        "author": "CHEFS 사용자 2",
+        "role": "프로젝트 관리자",
+        "quote": "\"CSTAR와의 통합으로 팀 액세스 관리가 훨씬 쉬워졌습니다. 새 팀원을 빠르게 온보딩하고 그들이 할 수 있는 작업을 정확하게 제어할 수 있습니다.\""
+      },
+      "testimonial3": {
+        "author": "CHEFS 사용자 3",
+        "role": "IT 관리자",
+        "quote": "\"강력한 보안 및 데이터 격리 기능에 감사드립니다. 각 테넌트가 완전히 분리되어 있어 민감한 데이터로 작업할 때 안심할 수 있습니다.\""
+      }
+    },
+    "finalCta": {
+      "title": "Enterprise CHEFS 사용 시작",
+      "description": "온라인 양식을 만들어 고객으로부터 정보를 수집하고 워크플로우를 개선하세요.",
+      "loginButton": "로그인하여 시작"
+    },
+    "formViewer": {
+      "title": "양식 뷰어",
+      "description": "양식 모양 미리보기",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

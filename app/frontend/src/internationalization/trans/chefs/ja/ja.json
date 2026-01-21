@@ -1423,5 +1423,70 @@
     "noTenantsAvailable": "利用可能なテナントがありません",
     "manageTenantsIn": "テナントを管理",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "チームと安全に作業し、フォームをより迅速に配信し、政府内で協力したいですか？",
+      "title": "Enterprise CHEFS と CSTAR のご紹介！",
+      "enterpriseTitle": "新しい Enterprise CHEFS を体験",
+      "tenant": "テナント",
+      "description1": "Enterprise CHEFS は、CSTAR（接続サービス、チームアクセス、役割）を通じてマルチテナントアクセスとチーム管理をサポートする CHEFS の新しいバージョンです。",
+      "description2": "Enterprise CHEFS を使用すると、組織は次のことができます：",
+      "description3": "",
+      "description4": "モードで作業 - 各テナントには、分離されたフォーム、データ、権限を持つ独自の安全なスペースがあります",
+      "description5": "チームアクセスを管理 - テナント内でフォームを表示、編集、管理できるユーザーを制御します",
+      "description6": "データセキュリティを維持 - 各テナントのデータは他のテナントから完全に分離されています",
+      "description7": "Enterprise CHEFS には、ドラッグアンドドロップフォームビルダー、条件付きロジック、暗号化された送信、API 統合など、Classic CHEFS で知っている強力な機能も含まれています。",
+      "loginButton": "ログインして開始",
+      "goToChefs": "CHEFS に移動",
+      "learnMore": "詳細を見る"
+    },
+    "gettingStarted": {
+      "title": "CHEFS は初めてで、どこから始めればよいかわかりませんか？",
+      "description": "いくつかの簡単な手順でフォームの作成を始めることができます：",
+      "step1Title": "1. IDIR または BCeID アカウントでログイン",
+      "step2Title": "2. 新しいフォームを作成するか、テンプレートを使用",
+      "step3Title": "3. ドラッグアンドドロップビルダーでフォームをデザイン",
+      "step4Title": "4. フォームを公開してチームまたは一般に共有",
+      "loginButton": "ログインして開始",
+      "learnMore": "詳細を見る"
+    },
+    "examples": {
+      "demographicSurvey": "例 | 人口統計データ収集調査",
+      "projectRequest": "例 | プロジェクトリクエスト",
+      "permitApplication": "例 | 許可申請"
+    },
+    "testimonials": {
+      "title": "私たちの言葉だけを信じないでください。ユーザーが私たちについて何と言っているかを聞いてください。",
+      "author": "著者",
+      "role": "役割"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS ユーザー 1",
+        "role": "プログラムアナリスト",
+        "quote": "\"CHEFS はデータ収集の方法を変えました。マルチテナントシステムにより、プロジェクトを分離しながら、部門全体でベストプラクティスを共有できます。\""
+      },
+      "testimonial2": {
+        "author": "CHEFS ユーザー 2",
+        "role": "プロジェクトマネージャー",
+        "quote": "\"CSTAR との統合により、チームアクセスの管理が非常に簡単になりました。新しいチームメンバーを迅速にオンボーディングし、彼らができることを正確に制御できます。\""
+      },
+      "testimonial3": {
+        "author": "CHEFS ユーザー 3",
+        "role": "IT 管理者",
+        "quote": "\"堅牢なセキュリティとデータ分離機能を高く評価しています。各テナントは完全に分離されており、機密データを扱う際に安心感を与えてくれます。\""
+      }
+    },
+    "finalCta": {
+      "title": "Enterprise CHEFS の使用を開始",
+      "description": "オンラインフォームを作成して顧客から情報を収集し、ワークフローを改善します。",
+      "loginButton": "ログインして開始"
+    },
+    "formViewer": {
+      "title": "フォームビューア",
+      "description": "フォームの外観をプレビュー",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

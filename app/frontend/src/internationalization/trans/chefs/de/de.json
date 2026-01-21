@@ -1423,5 +1423,70 @@
     "noTenantsAvailable": "Keine Mandanten verfügbar",
     "manageTenantsIn": "Mandanten verwalten in",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Möchten Sie sicher mit Ihrem Team arbeiten, Formulare schneller bereitstellen und in der Regierung zusammenarbeiten?",
+      "title": "Wir stellen vor: Enterprise CHEFS und CSTAR!",
+      "enterpriseTitle": "Erleben Sie das neue Enterprise CHEFS",
+      "tenant": "Mandant",
+      "description1": "Enterprise CHEFS ist die neue Version von CHEFS, die Mehrfachmandantenzugriff und Teamverwaltung über CSTAR (Connected Services, Team Access and Roles) unterstützt.",
+      "description2": "Mit Enterprise CHEFS kann Ihre Organisation:",
+      "description3": "Im ",
+      "description4": "-Modus arbeiten - Jeder Mandant hat seinen eigenen sicheren Bereich mit isolierten Formularen, Daten und Berechtigungen",
+      "description5": "Teamzugriff verwalten - Steuern Sie, wer Formulare in Ihrem Mandanten anzeigen, bearbeiten oder verwalten kann",
+      "description6": "Datensicherheit aufrechterhalten - Die Daten jedes Mandanten sind vollständig von anderen Mandanten isoliert",
+      "description7": "Enterprise CHEFS umfasst auch alle leistungsstarken Funktionen, die Sie von Classic CHEFS kennen und lieben, wie den Drag-and-Drop-Formular-Builder, bedingte Logik, verschlüsselte Übermittlungen und API-Integrationen.",
+      "loginButton": "Anmelden, um zu beginnen",
+      "goToChefs": "Zu CHEFS gehen",
+      "learnMore": "Mehr erfahren"
+    },
+    "gettingStarted": {
+      "title": "Neu bei CHEFS und wissen nicht, wo Sie anfangen sollen?",
+      "description": "Sie können mit ein paar einfachen Schritten mit der Erstellung von Formularen beginnen:",
+      "step1Title": "1. Melden Sie sich mit Ihrem IDIR- oder BCeID-Konto an",
+      "step2Title": "2. Erstellen Sie ein neues Formular oder verwenden Sie eine Vorlage",
+      "step3Title": "3. Gestalten Sie Ihr Formular mit unserem Drag-and-Drop-Builder",
+      "step4Title": "4. Veröffentlichen und teilen Sie Ihr Formular mit Ihrem Team oder der Öffentlichkeit",
+      "loginButton": "Anmelden, um zu beginnen",
+      "learnMore": "Mehr erfahren"
+    },
+    "examples": {
+      "demographicSurvey": "Beispiel | Umfrage zur Erfassung demografischer Daten",
+      "projectRequest": "Beispiel | Projektanfrage",
+      "permitApplication": "Beispiel | Genehmigungsantrag"
+    },
+    "testimonials": {
+      "title": "Vertrauen Sie nicht nur unserem Wort, hören Sie, was unsere Benutzer über uns zu sagen haben.",
+      "author": "Autor",
+      "role": "Rolle"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS-Benutzer 1",
+        "role": "Programmanalyst",
+        "quote": "\"CHEFS hat die Art und Weise verändert, wie wir Daten sammeln. Das Mehrfachmandantensystem ermöglicht es uns, Projekte getrennt zu halten und gleichzeitig Best Practices in unserer gesamten Abteilung zu teilen.\""
+      },
+      "testimonial2": {
+        "author": "CHEFS-Benutzer 2",
+        "role": "Projektmanager",
+        "quote": "\"Die Integration mit CSTAR macht die Verwaltung des Teamzugriffs so viel einfacher. Ich kann neue Teammitglieder schnell einbinden und genau kontrollieren, was sie tun können.\""
+      },
+      "testimonial3": {
+        "author": "CHEFS-Benutzer 3",
+        "role": "IT-Administrator",
+        "quote": "\"Wir schätzen die robusten Sicherheits- und Datenisolierungsfunktionen. Jeder Mandant ist vollständig getrennt, was uns Sicherheit bei der Arbeit mit sensiblen Daten gibt.\""
+      }
+    },
+    "finalCta": {
+      "title": "Beginnen Sie mit Enterprise CHEFS",
+      "description": "Erstellen Sie Online-Formulare, um Informationen von Ihren Kunden zu sammeln und Ihren Workflow zu verbessern.",
+      "loginButton": "Anmelden, um zu beginnen"
+    },
+    "formViewer": {
+      "title": "Formularanzeige",
+      "description": "Vorschau, wie Ihr Formular aussehen wird",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

@@ -1423,5 +1423,70 @@
     "noTenantsAvailable": "沒有可用的租戶",
     "manageTenantsIn": "在以下位置管理租戶",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "您是否希望與您的團隊安全地合作、更快地交付表單並在政府中協作？",
+      "title": "介紹 Enterprise CHEFS 和 CSTAR！",
+      "enterpriseTitle": "體驗新的 Enterprise CHEFS",
+      "tenant": "租戶",
+      "description1": "Enterprise CHEFS 是 CHEFS 的新版本，通過 CSTAR（連接服務、團隊訪問和角色）支持多租戶訪問和團隊管理。",
+      "description2": "使用 Enterprise CHEFS，您的組織可以：",
+      "description3": "以",
+      "description4": "模式工作 - 每個租戶都有自己的安全空間，具有隔離的表單、數據和權限",
+      "description5": "管理團隊訪問 - 控制誰可以在您的租戶內查看、編輯或管理表單",
+      "description6": "維護數據安全 - 每個租戶的數據完全與其他租戶隔離",
+      "description7": "Enterprise CHEFS 還包括您熟悉和喜愛的 Classic CHEFS 的所有強大功能，例如拖放表單生成器、條件邏輯、加密提交和 API 集成。",
+      "loginButton": "登入開始",
+      "goToChefs": "轉到 CHEFS",
+      "learnMore": "了解更多"
+    },
+    "gettingStarted": {
+      "title": "剛接觸 CHEFS，不知道從哪裡開始？",
+      "description": "您可以通過幾個簡單的步驟開始創建表單：",
+      "step1Title": "1. 使用您的 IDIR 或 BCeID 帳戶登入",
+      "step2Title": "2. 創建新表單或使用模板",
+      "step3Title": "3. 使用我們的拖放生成器設計您的表單",
+      "step4Title": "4. 發佈並與您的團隊或公眾分享您的表單",
+      "loginButton": "登入開始",
+      "learnMore": "了解更多"
+    },
+    "examples": {
+      "demographicSurvey": "示例 | 人口統計數據收集調查",
+      "projectRequest": "示例 | 項目請求",
+      "permitApplication": "示例 | 許可申請"
+    },
+    "testimonials": {
+      "title": "不要只相信我們的話，聽聽我們的用戶對我們的評價。",
+      "author": "作者",
+      "role": "角色"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS 用戶 1",
+        "role": "項目分析師",
+        "quote": "\"CHEFS 改變了我們收集數據的方式。多租戶系統允許我們保持項目分離，同時在整個部門共享最佳實踐。\""
+      },
+      "testimonial2": {
+        "author": "CHEFS 用戶 2",
+        "role": "項目經理",
+        "quote": "\"與 CSTAR 的集成使團隊訪問管理變得更加容易。我可以快速加入新團隊成員並準確控制他們可以做什麼。\""
+      },
+      "testimonial3": {
+        "author": "CHEFS 用戶 3",
+        "role": "IT 管理員",
+        "quote": "\"我們讚賞強大的安全性和數據隔離功能。每個租戶完全分離，這讓我們在處理敏感數據時感到安心。\""
+      }
+    },
+    "finalCta": {
+      "title": "開始使用 Enterprise CHEFS",
+      "description": "創建在線表單以從您的客戶那裡收集信息並改進您的工作流程。",
+      "loginButton": "登入開始"
+    },
+    "formViewer": {
+      "title": "表單查看器",
+      "description": "預覽您的表單外觀",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

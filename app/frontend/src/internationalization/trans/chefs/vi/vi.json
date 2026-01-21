@@ -1427,5 +1427,70 @@
     "noTenantsAvailable": "Không có thuê bao nào",
     "manageTenantsIn": "Quản lý thuê bao trong",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Bạn có muốn làm việc an toàn với nhóm của mình, cung cấp biểu mẫu nhanh hơn và hợp tác trong chính phủ không?",
+      "title": "Giới thiệu Enterprise CHEFS và CSTAR!",
+      "enterpriseTitle": "Trải nghiệm Enterprise CHEFS mới",
+      "tenant": "thuê bao",
+      "description1": "Enterprise CHEFS là phiên bản mới của CHEFS hỗ trợ truy cập đa thuê bao và quản lý nhóm thông qua CSTAR (Dịch vụ kết nối, quyền truy cập nhóm và vai trò).",
+      "description2": "Với Enterprise CHEFS, tổ chức của bạn có thể:",
+      "description3": "Làm việc trong chế độ ",
+      "description4": " - Mỗi thuê bao có không gian an toàn riêng với các biểu mẫu, dữ liệu và quyền riêng biệt",
+      "description5": "Quản lý quyền truy cập nhóm - Kiểm soát ai có thể xem, chỉnh sửa hoặc quản lý biểu mẫu trong thuê bao của bạn",
+      "description6": "Duy trì bảo mật dữ liệu - Dữ liệu của mỗi thuê bao được cách ly hoàn toàn với các thuê bao khác",
+      "description7": "Enterprise CHEFS cũng bao gồm tất cả các tính năng mạnh mẽ mà bạn biết và yêu thích từ Classic CHEFS, như trình tạo biểu mẫu kéo và thả, logic có điều kiện, gửi được mã hóa và tích hợp API.",
+      "loginButton": "Đăng nhập để bắt đầu",
+      "goToChefs": "Đi đến CHEFS",
+      "learnMore": "Tìm hiểu thêm"
+    },
+    "gettingStarted": {
+      "title": "Mới sử dụng CHEFS và không biết bắt đầu từ đâu?",
+      "description": "Bạn có thể bắt đầu tạo biểu mẫu với một vài bước đơn giản:",
+      "step1Title": "1. Đăng nhập bằng tài khoản IDIR hoặc BCeID của bạn",
+      "step2Title": "2. Tạo biểu mẫu mới hoặc sử dụng mẫu",
+      "step3Title": "3. Thiết kế biểu mẫu của bạn với trình tạo kéo và thả của chúng tôi",
+      "step4Title": "4. Xuất bản và chia sẻ biểu mẫu của bạn với nhóm hoặc công chúng",
+      "loginButton": "Đăng nhập để bắt đầu",
+      "learnMore": "Tìm hiểu thêm"
+    },
+    "examples": {
+      "demographicSurvey": "Ví dụ | Khảo sát thu thập dữ liệu nhân khẩu học",
+      "projectRequest": "Ví dụ | Yêu cầu dự án",
+      "permitApplication": "Ví dụ | Đơn xin giấy phép"
+    },
+    "testimonials": {
+      "title": "Đừng chỉ tin lời chúng tôi, hãy nghe những gì người dùng của chúng tôi nói về chúng tôi.",
+      "author": "Tác giả",
+      "role": "Vai trò"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Người dùng CHEFS 1",
+        "role": "Nhà phân tích chương trình",
+        "quote": "\"CHEFS đã thay đổi cách chúng tôi thu thập dữ liệu. Hệ thống đa thuê bao cho phép chúng tôi giữ các dự án riêng biệt trong khi chia sẻ các thực hành tốt nhất trong toàn bộ phòng ban.\""
+      },
+      "testimonial2": {
+        "author": "Người dùng CHEFS 2",
+        "role": "Quản lý dự án",
+        "quote": "\"Tích hợp với CSTAR làm cho việc quản lý quyền truy cập nhóm dễ dàng hơn rất nhiều. Tôi có thể nhanh chóng đưa các thành viên mới vào nhóm và kiểm soát chính xác những gì họ có thể làm.\""
+      },
+      "testimonial3": {
+        "author": "Người dùng CHEFS 3",
+        "role": "Quản trị viên CNTT",
+        "quote": "\"Chúng tôi đánh giá cao các tính năng bảo mật và cách ly dữ liệu mạnh mẽ. Mỗi thuê bao được tách biệt hoàn toàn, mang lại cho chúng tôi sự an tâm khi làm việc với dữ liệu nhạy cảm.\""
+      }
+    },
+    "finalCta": {
+      "title": "Bắt đầu sử dụng Enterprise CHEFS",
+      "description": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
+      "loginButton": "Đăng nhập để bắt đầu"
+    },
+    "formViewer": {
+      "title": "Trình xem biểu mẫu",
+      "description": "Xem trước biểu mẫu của bạn sẽ trông như thế nào",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

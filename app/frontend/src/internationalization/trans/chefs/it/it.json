@@ -1423,5 +1423,70 @@
     "noTenantsAvailable": "Nessun tenant disponibile",
     "manageTenantsIn": "Gestisci tenant in",
     "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Vuoi lavorare in sicurezza con il tuo team, consegnare moduli più velocemente e collaborare nel governo?",
+      "title": "Presentiamo Enterprise CHEFS e CSTAR!",
+      "enterpriseTitle": "Sperimenta il nuovo Enterprise CHEFS",
+      "tenant": "tenant",
+      "description1": "Enterprise CHEFS è la nuova versione di CHEFS che supporta l'accesso multi-tenant e la gestione del team tramite CSTAR (Connected Services, Team Access and Roles).",
+      "description2": "Con Enterprise CHEFS, la tua organizzazione può:",
+      "description3": "Lavorare in modalità ",
+      "description4": " - Ogni tenant ha il proprio spazio sicuro con moduli, dati e autorizzazioni isolati",
+      "description5": "Gestire l'accesso del team - Controlla chi può visualizzare, modificare o gestire moduli all'interno del tuo tenant",
+      "description6": "Mantenere la sicurezza dei dati - I dati di ogni tenant sono completamente isolati da altri tenant",
+      "description7": "Enterprise CHEFS include anche tutte le potenti funzionalità che conosci e ami di Classic CHEFS, come il costruttore di moduli drag-and-drop, logica condizionale, invii crittografati e integrazioni API.",
+      "loginButton": "Accedi per iniziare",
+      "goToChefs": "Vai a CHEFS",
+      "learnMore": "Scopri di più"
+    },
+    "gettingStarted": {
+      "title": "Nuovo su CHEFS e non sai da dove iniziare?",
+      "description": "Puoi iniziare a creare moduli con pochi semplici passaggi:",
+      "step1Title": "1. Accedi con il tuo account IDIR o BCeID",
+      "step2Title": "2. Crea un nuovo modulo o usa un modello",
+      "step3Title": "3. Progetta il tuo modulo con il nostro costruttore drag-and-drop",
+      "step4Title": "4. Pubblica e condividi il tuo modulo con il tuo team o il pubblico",
+      "loginButton": "Accedi per iniziare",
+      "learnMore": "Scopri di più"
+    },
+    "examples": {
+      "demographicSurvey": "Esempio | Sondaggio di raccolta dati demografici",
+      "projectRequest": "Esempio | Richiesta di progetto",
+      "permitApplication": "Esempio | Richiesta di permesso"
+    },
+    "testimonials": {
+      "title": "Non fidarti solo della nostra parola, ascolta cosa hanno da dire i nostri utenti su di noi.",
+      "author": "Autore",
+      "role": "Ruolo"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Utente CHEFS 1",
+        "role": "Analista di programma",
+        "quote": "\"CHEFS ha trasformato il modo in cui raccogliamo i dati. Il sistema multi-tenant ci consente di mantenere i progetti separati condividendo al contempo le migliori pratiche in tutto il nostro dipartimento.\""
+      },
+      "testimonial2": {
+        "author": "Utente CHEFS 2",
+        "role": "Project Manager",
+        "quote": "\"L'integrazione con CSTAR rende la gestione dell'accesso del team molto più semplice. Posso integrare rapidamente nuovi membri del team e controllare esattamente cosa possono fare.\""
+      },
+      "testimonial3": {
+        "author": "Utente CHEFS 3",
+        "role": "Amministratore IT",
+        "quote": "\"Apprezziamo le robuste funzionalità di sicurezza e isolamento dei dati. Ogni tenant è completamente separato, il che ci dà tranquillità quando lavoriamo con dati sensibili.\""
+      }
+    },
+    "finalCta": {
+      "title": "Inizia a usare Enterprise CHEFS",
+      "description": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare il tuo flusso di lavoro.",
+      "loginButton": "Accedi per iniziare"
+    },
+    "formViewer": {
+      "title": "Visualizzatore moduli",
+      "description": "Anteprima di come apparirà il tuo modulo",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }
