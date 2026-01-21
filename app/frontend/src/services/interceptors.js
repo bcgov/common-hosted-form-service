@@ -27,9 +27,24 @@ export function appAxios(timeout = 60000) {
       if (authStore?.ready && authStore?.authenticated) {
         cfg.headers.Authorization = `Bearer ${authStore.keycloak.token}`;
       }
-      // Add tenant ID header if tenant is selected, but exclude submission endpoints
-      const isSubmissionEndpoint = cfg.url && cfg.url.includes('/submissions');
-      if (tenantStore?.selectedTenant?.id && !isSubmissionEndpoint) {
+
+      // Add tenant ID header if tenant is selected
+      // EXCLUDE: Public form submission endpoints (POST to /forms/{id}/submissions or /submissions)
+      // INCLUDE: Submission listing/management endpoints (GET /forms/{id}/submissions, etc.)
+      const isPublicFormSubmission =
+        cfg.url &&
+        cfg.url.match(/\/forms\/[^/]+\/submissions$/) &&
+        cfg.method?.toLowerCase() === 'post';
+
+      const isPublicSubmissionEndpoint =
+        cfg.url &&
+        cfg.url.match(/\/submissions\/[^/]+$/) &&
+        cfg.method?.toLowerCase() === 'get';
+
+      const shouldExcludeTenantHeader =
+        isPublicFormSubmission || isPublicSubmissionEndpoint;
+
+      if (tenantStore?.selectedTenant?.id && !shouldExcludeTenantHeader) {
         cfg.headers['x-tenant-id'] = tenantStore.selectedTenant.id;
       }
       return Promise.resolve(cfg);
