@@ -1161,7 +1161,7 @@
       if (replace) {
         this.hostData = { ...data };
       } else {
-        this.hostData = { ...(this.hostData || {}), ...data };
+        this.hostData = { ...this.hostData, ...data };
       }
 
       // Update live evalContext if Form.io instance exists
