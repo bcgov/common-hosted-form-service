@@ -2,7 +2,7 @@ const { getMockReq, getMockRes } = require('@jest-mock/express');
 
 const { Statuses } = require('../../../../src/forms/common/constants');
 const controller = require('../../../../src/forms/submission/controller');
-const formService = require('../../../../src/forms/form/service');
+const documentTemplateService = require('../../../../src/forms/form/documentTemplate/service');
 const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
 const cdogsService = require('../../../../src/components/cdogsService');
@@ -88,7 +88,14 @@ describe('template rendering', () => {
   const validSubmission = {
     submission: {
       confirmationId: '0763A618',
+      formVersion: 1,
       id: '0763a618-de57-454b-99cc-3a7c5e992b77',
+      createdAt: '2025-08-12T20:02:53.467Z',
+      createdBy: 'TEST@idir',
+      updatedAt: '2025-10-07T21:57:01.858Z',
+      updatedBy: 'TEST2@idir',
+      deleted: false,
+      draft: false,
       submission: {
         data: {
           simpletextfield: 'firstName lastName',
@@ -107,6 +114,12 @@ describe('template rendering', () => {
         confirmationId: '0763A618',
         formVersion: 1,
         submissionId: '0763a618-de57-454b-99cc-3a7c5e992b77',
+        createdAt: '2025-08-12T20:02:53.467Z',
+        createdBy: 'TEST@idir',
+        updatedAt: '2025-10-07T21:57:01.858Z',
+        updatedBy: 'TEST2@idir',
+        isDeleted: false,
+        isDraft: false,
       },
       simpletextfield: 'firstName lastName',
       submit: true,
@@ -243,11 +256,10 @@ describe('template rendering', () => {
     describe('200 response when', () => {
       test('request is valid', async () => {
         service.read = jest.fn().mockReturnValue(validSubmission);
-        formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
+        documentTemplateService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
         cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
-
         await controller.templateRender(req, res, next);
 
         expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
@@ -263,7 +275,7 @@ describe('template rendering', () => {
 
       test('cdogs response has no content disposition', async () => {
         service.read = jest.fn().mockReturnValue(validSubmission);
-        formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
+        documentTemplateService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
         const cdogsResponse = structuredClone(mockCdogsResponse);
         delete cdogsResponse.headers['content-disposition'];
         cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
@@ -291,7 +303,7 @@ describe('template rendering', () => {
         ...validCdogsTemplate,
       },
       params: {
-        formSubmissionId: validSubmission.submission.id,
+        formSubmissionId: validSubmission.submission.submissionId,
       },
     };
 

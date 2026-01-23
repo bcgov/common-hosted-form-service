@@ -62,6 +62,14 @@ describe('Form Designer', () => {
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').should("not.be.checked");
     cy.contains('span','Display assignee column for reviewers').should("not.exist");
     cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').click();
+    cy.get('[data-test="enableTeamMemberDraftShare"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
+    cy.get('[data-test="canUploadDraftCheckbox"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
+    cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
+    cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should('not.be.enabled')
+    .and("not.be.checked");
     cy.get('[data-test="canEditForm"]').click();
     
     //Logout to submit the public form
@@ -76,6 +84,8 @@ describe('Form Designer', () => {
     cy.wait(2000);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
+    //Draft manage button existence
+    cy.get('.d-inline-block').should('not.exist');
     //form submission
     cy.get('button').contains('Submit').click();
     cy.waitForLoad();

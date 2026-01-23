@@ -62,12 +62,10 @@
     {
       "label": "chefs_local up",
       "type": "shell",
-      "command": "docker-compose",
+      "command": "bash",
       "args": [
-        "-f",
-        "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml",
-        "up",
-        "-d"
+        "-c",
+        "cd \"${workspaceFolder}/.devcontainer/chefs_local\" && if [ -f docker-compose.override.yml ]; then docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d; else docker-compose -f docker-compose.yml up -d; fi"
       ],
       "isBackground": true,
       "problemMatcher": []
@@ -75,11 +73,10 @@
     {
       "label": "chefs_local down",
       "type": "shell",
-      "command": "docker-compose",
+      "command": "bash",
       "args": [
-        "-f",
-        "${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml",
-        "down"
+        "-c",
+        "cd \"${workspaceFolder}/.devcontainer/chefs_local\" && if [ -f docker-compose.override.yml ]; then docker-compose -f docker-compose.yml -f docker-compose.override.yml down; else docker-compose -f docker-compose.yml down; fi"
       ],
       "isBackground": true,
       "problemMatcher": []
@@ -136,6 +133,27 @@
         "reveal": "always",
         "focus": false,
         "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Refresh Webcomponents",
+      "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/webcomponents.sh",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "WORKSPACE_ROOT": "${workspaceFolder}"
+        }
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
       },
       "problemMatcher": []
     }

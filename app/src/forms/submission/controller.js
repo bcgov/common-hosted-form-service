@@ -2,9 +2,29 @@ const cdogsService = require('../../components/cdogsService');
 
 const { Statuses } = require('../common/constants');
 const emailService = require('../email/emailService');
-const formService = require('../form/service');
+const documentTemplateService = require('../form/documentTemplate/service');
 
 const service = require('./service');
+
+const chefsTemplate = (submission) => {
+  /*
+    A helper method to build the data object for CDOGS export
+   */
+  return {
+    ...submission.submission.submission.data,
+    chefs: {
+      formVersion: submission.version.version,
+      submissionId: submission.submission.id,
+      confirmationId: submission.submission.confirmationId,
+      createdBy: submission.submission.createdBy,
+      createdAt: submission.submission.createdAt,
+      updatedBy: submission.submission.updatedBy,
+      updatedAt: submission.submission.updatedAt,
+      isDraft: submission.submission.draft,
+      isDeleted: submission.submission.deleted,
+    },
+  };
+};
 
 module.exports = {
   read: async (req, res, next) => {
@@ -152,20 +172,13 @@ module.exports = {
   templateRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
-      const template = await formService.documentTemplateRead(req.params.documentTemplateId);
+      const template = await documentTemplateService.documentTemplateRead(req.params.documentTemplateId);
       const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
       const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
       const convertTo = req.query.convertTo || 'pdf';
-
       const templateBody = {
-        data: {
-          ...submission.submission.submission.data,
-          chefs: {
-            confirmationId: submission.submission.confirmationId,
-            formVersion: submission.version.version,
-            submissionId: submission.submission.id,
-          },
-        },
+        ...req.body,
+        data: chefsTemplate(submission),
         options: {
           convertTo: convertTo,
           overwrite: true,
@@ -204,24 +217,18 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
+
       const templateBody = {
         ...req.body,
-        data: {
-          ...submission.submission.submission.data,
-          chefs: {
-            confirmationId: submission.submission.confirmationId,
-            formVersion: submission.version.version,
-            submissionId: submission.submission.id,
-          },
-        },
+        data: chefsTemplate(submission),
       };
+
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
-
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
         })
         .send(data);
@@ -242,12 +249,13 @@ module.exports = {
     try {
       const templateBody = { ...req.body.template, data: req.body.submission.data };
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+
       const contentDisposition = headers['content-disposition'];
 
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
         })
         .send(data);

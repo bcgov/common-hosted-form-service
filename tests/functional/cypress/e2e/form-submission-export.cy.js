@@ -139,7 +139,10 @@ describe('Form Designer', () => {
     cy.get('.v-slide-group__content > [tabindex="-1"]').click();
     cy.get('[tabindex="-1"] > .v-btn__content').click();
     cy.waitForLoad();
-    cy.get('.mdi-close-circle').click();
+    cy.get('.mdi-close-circle').then($el => {
+    const close_btn=$el[1];
+    cy.get(close_btn).click();
+    });
     cy.get('input[type=file]').attachFile('test.docx');
     cy.waitForLoad();
     cy.get('.v-selection-control-group > .v-text-field > .v-input__control > .v-field').click();

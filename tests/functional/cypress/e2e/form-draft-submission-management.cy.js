@@ -92,8 +92,11 @@ it('Verify draft submission', () => {
     cy.waitForLoad();
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
+    //Draft manage button existence
+    cy.get('.d-inline-block').should('not.be.enabled').and('exist');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
-    cy.get('div > .bg-primary').click();
+    //cy.get('div > .bg-primary').click();
+    cy.get('.v-card-actions > div > .bg-primary').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT');
     //Verify draft delete button exist
     cy.get('[icon-size="x-small"] > .v-btn').should('be.exist');

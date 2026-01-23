@@ -5,7 +5,6 @@ const { EmailTypes, ScheduleType } = require('../common/constants');
 const eventService = require('../event/eventService');
 const moment = require('moment');
 const {
-  DocumentTemplate,
   FileStorage,
   Form,
   FormApiKey,
@@ -24,7 +23,7 @@ const {
   FormSubscription,
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
-const { checkIsFormExpired, isDateValid, isDateInFuture } = require('../common/scheduleService');
+const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
@@ -425,89 +424,6 @@ const service = {
       });
   },
 
-  /**
-   * Creates a document template that can be used to generate a document from
-   * a form's submission data.
-   *
-   * @param {uuid} formId the identifier for the form.
-   * @param {object} data the data for the document template.
-   * @param {string} currentUsername the currently logged in user's username.
-   * @returns the created object.
-   */
-  documentTemplateCreate: async (formId, data, currentUsername) => {
-    let trx;
-
-    try {
-      const documentTemplate = {
-        id: uuid.v4(),
-        formId: formId,
-        filename: data.filename,
-        template: data.template,
-        createdBy: currentUsername,
-      };
-
-      trx = await DocumentTemplate.startTransaction();
-      await DocumentTemplate.query(trx).insert(documentTemplate);
-      await trx.commit();
-
-      const result = await service.documentTemplateRead(documentTemplate.id);
-
-      return result;
-    } catch (error) {
-      if (trx) {
-        await trx.rollback();
-      }
-
-      throw error;
-    }
-  },
-
-  /**
-   * Deletes an active document template given its ID.
-   *
-   * @param {uuid} documentTemplateId the id of the document template.
-   * @param {string} currentUsername the currently logged in user's username.
-   * @throws an Error if the document template does not exist.
-   */
-  documentTemplateDelete: async (documentTemplateId, currentUsername) => {
-    let trx;
-    try {
-      trx = await DocumentTemplate.startTransaction();
-      await DocumentTemplate.query(trx).patchAndFetchById(documentTemplateId, {
-        active: false,
-        updatedBy: currentUsername,
-      });
-      await trx.commit();
-    } catch (error) {
-      if (trx) {
-        await trx.rollback();
-      }
-
-      throw error;
-    }
-  },
-
-  /**
-   * Gets the active document templates for a form.
-   *
-   * @param {uuid} formId the identifier for the form.
-   * @returns a Promise for the document templates belonging to a form.
-   */
-  documentTemplateList: (formId) => {
-    return DocumentTemplate.query().modify('filterFormId', formId).modify('filterActive', true);
-  },
-
-  /**
-   * Reads an active document template given its ID.
-   *
-   * @param {uuid} documentTemplateId the id of the document template.
-   * @returns a Promise for the document template.
-   * @throws an Error if the document template does not exist.
-   */
-  documentTemplateRead: (documentTemplateId) => {
-    return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
-  },
-
   _initFormSubmissionsListQuery: (formId, params, currentUser, shouldIncludeAssignee = false) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
@@ -585,54 +501,148 @@ const service = {
     );
 
     if (params.paginationEnabled) {
-      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
+      return await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
     }
 
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
+  async processPaginationData(query, page, itemsPerPage, search, searchEnabled) {
     const isSearchEnabled = (x) => (x !== undefined ? JSON.parse(x) : false);
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
-    if (isSearchAble) {
-      let submissionsData = await query;
-      let result = {
-        results: [],
-        total: 0,
-      };
 
-      const isDateLike = (x, s) =>
-        !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
-      const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
-      const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+    if (isSearchAble && search) {
+      const submissionsData = await query;
+      return this.searchSubmissions(submissionsData, search, page, itemsPerPage);
+    }
 
-      let searchedData = submissionsData.filter((data) => {
-        return Object.keys(data).some((key) => {
-          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
-            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
-              if (isDateLike(data[key], search) || isStringLike(data[key], search) || isNumberLike(data[key], search)) {
-                result.total = result.total + 1;
-                return true;
-              }
-              return false;
-            }
-            return false;
-          }
-          return false;
-        });
-      });
-      if (itemsPerPage !== -1) {
-        let start = page * itemsPerPage;
-        let end = page * itemsPerPage + itemsPerPage;
-        result.results = searchedData.slice(start, end);
-      } else {
-        result.results = searchedData;
-      }
-      return result;
-    } else if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
+    if (itemsPerPage && Number.parseInt(itemsPerPage) >= 0 && Number.parseInt(page) >= 0) {
       return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
+
     return await query;
+  },
+
+  searchSubmissions(submissionsData, search, page, itemsPerPage) {
+    const result = {
+      results: [],
+      total: 0,
+    };
+
+    const term = search.value || search;
+    const searchFields = search.fields || [];
+
+    const ignoredFields = new Set(['submissionId', 'formVersionId', 'formId']);
+
+    const isDateLike = (x, s) =>
+      !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
+
+    const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
+
+    const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+
+    const isBoolLike = (x, s) => {
+      // Only bother if the data value itself is a boolean
+      if (!typeUtils.isBoolean(x)) return false;
+
+      // If the search term is already a boolean
+      if (typeUtils.isBoolean(s)) {
+        return x === s;
+      }
+
+      // If the search term is a string, normalize and match "true"/"false"
+      if (typeUtils.isString(s)) {
+        const normalized = s.trim().toLowerCase();
+        if (normalized === 'true') return x === true;
+        if (normalized === 'false') return x === false;
+      }
+
+      return false;
+    };
+
+    function deepSearch(data, term) {
+      if (data === null || data === undefined) return false;
+
+      const normalized = String(term).toLowerCase();
+
+      // Primitive
+      if (typeof data !== 'object') {
+        const match = isDateLike(data, term) || isStringLike(data, term) || isNumberLike(data, term) || isBoolLike(data, term);
+        return match;
+      }
+
+      // Array
+      if (Array.isArray(data)) {
+        return data.some((item) => deepSearch(item, term));
+      }
+
+      // Object
+      for (const [key, value] of Object.entries(data)) {
+        // Key matches AND value is truthy → true
+
+        if (key.toLowerCase() === normalized && Boolean(value)) {
+          return true;
+        }
+
+        // Primitive value check
+
+        if (
+          typeof value !== 'object' &&
+          value !== null &&
+          value !== undefined &&
+          (isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term) || isBoolLike(value, term))
+        ) {
+          return true;
+        }
+
+        // Nested object/array
+        if (typeof value === 'object') {
+          if (deepSearch(value, term)) return true;
+        }
+      }
+
+      return false;
+    }
+
+    const searchedData = submissionsData.filter((row) => {
+      const hasSelectedFields = Array.isArray(searchFields) && searchFields.length > 0;
+      const fieldsToSearch = hasSelectedFields ? searchFields : Object.keys(row);
+
+      const matched = fieldsToSearch.some((field) => {
+        if (ignoredFields.has(field)) return false;
+
+        const value = row[field];
+
+        // If no fields are selected → simple / shallow search only on primitives
+        if (!hasSelectedFields) {
+          if (value === null || value === undefined) return false;
+          if (typeof value === 'object') return false; // skip objects/arrays in simple mode
+
+          const primitiveMatch = isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term) || isBoolLike(value, term);
+
+          return primitiveMatch;
+        }
+
+        // If fields ARE selected → deep search into that field
+        return deepSearch(value, term);
+      });
+
+      if (matched) result.total += 1;
+      return matched;
+    });
+
+    // ---------------------------------------------------------
+    // Pagination
+    // ---------------------------------------------------------
+    if (itemsPerPage !== -1) {
+      const start = page * itemsPerPage;
+      const end = start + itemsPerPage;
+      result.results = searchedData.slice(start, end);
+    } else {
+      result.results = searchedData;
+    }
+
+    return result;
   },
 
   publishVersion: async (formId, formVersionId, currentUser, params = {}) => {
@@ -710,7 +720,11 @@ const service = {
     let result;
     try {
       const formVersion = await service.readVersion(formVersionId);
-      const { identityProviders } = await service.readForm(formVersion.formId);
+      const form = await service.readForm(formVersion.formId);
+      const { identityProviders } = form;
+
+      // Validate schedule before allowing submission
+      validateSubmissionSchedule(form.schedule);
 
       trx = await FormSubmission.startTransaction();
 

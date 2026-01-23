@@ -9,7 +9,7 @@ import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue
 import FormViewer from '~/components/designer/FormViewer.vue';
 import NotesPanel from '~/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '~/components/forms/submission/StatusPanel.vue';
-import PrintOptions from '~/components/forms/PrintOptions.vue';
+import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
 import { checkSubmissionUpdate } from '~/utils/permissionUtils';
 
 import { useFormStore } from '~/store/form';
@@ -144,7 +144,7 @@ defineExpose({
           </span>
 
           <span>
-            <PrintOptions :submission-id="submissionId" />
+            <PrintOptionsWrapper :submission-id="submissionId" />
           </span>
           <span>
             <v-tooltip location="bottom">
