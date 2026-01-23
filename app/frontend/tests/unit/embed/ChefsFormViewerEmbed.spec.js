@@ -189,4 +189,89 @@ describe('chefs-form-viewer-embed.js', () => {
       'printDocumentCustom'
     );
   });
+
+  it('should handle no-shadow as a boolean parameter', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'no-shadow': 'true',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    expect(element.setAttribute).toHaveBeenCalledWith('no-shadow', '');
+  });
+
+  it('should handle host-data as JSON and set as hostData property', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const hostData = { config: { maxItems: 10 }, lookupData: ['a', 'b'] };
+    const params = {
+      'form-id': 'abc',
+      'host-data': encodeURIComponent(JSON.stringify(hostData)),
+    };
+
+    applyQueryParams(element, params, logger);
+
+    // Should set as hostData property (camelCase), not as attribute
+    expect(element.hostData).toEqual(hostData);
+    expect(element.setAttribute).not.toHaveBeenCalledWith(
+      'host-data',
+      expect.anything()
+    );
+  });
+
+  it('should handle submit-mode as a string attribute', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'submit-mode': 'host',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    expect(element.setAttribute).toHaveBeenCalledWith('submit-mode', 'host');
+  });
+
+  it('should handle invalid host-data JSON gracefully', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'host-data': 'invalid-json',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    // Should warn about invalid JSON
+    expect(logger.warn).toHaveBeenCalled();
+    // Should not set hostData property
+    expect(element.hostData).toBeUndefined();
+  });
 });

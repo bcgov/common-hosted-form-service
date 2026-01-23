@@ -2660,4 +2660,509 @@ describe('ChefsFormViewer internals', () => {
     createElementSpy.mockRestore();
     vi.useRealTimers();
   });
+
+  // hostData tests
+  it('host-data attribute parses valid JSON', () => {
+    el.setAttribute('host-data', '{"lookup":[1,2,3],"config":{"max":10}}');
+    expect(el.hostData).toEqual({ lookup: [1, 2, 3], config: { max: 10 } });
+  });
+
+  it('host-data attribute handles invalid JSON gracefully', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    el.setAttribute('host-data', 'not valid json');
+    expect(el.hostData).toBeNull();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it('host-data attribute handles empty string', () => {
+    el.setAttribute('host-data', '');
+    expect(el.hostData).toBeNull();
+  });
+
+  it('hostData property can be set directly', () => {
+    el.hostData = { directData: 'value' };
+    expect(el.hostData).toEqual({ directData: 'value' });
+  });
+
+  it('setHostData merges data by default', () => {
+    el.hostData = { existing: 'value1' };
+    el.setHostData({ newData: 'value2' });
+    expect(el.hostData).toEqual({ existing: 'value1', newData: 'value2' });
+  });
+
+  it('setHostData replaces data when replace option is true', () => {
+    el.hostData = { existing: 'value1', old: 'data' };
+    el.setHostData({ fresh: 'value2' }, { replace: true });
+    expect(el.hostData).toEqual({ fresh: 'value2' });
+    expect(el.hostData.existing).toBeUndefined();
+    expect(el.hostData.old).toBeUndefined();
+  });
+
+  it('setHostData rejects non-object data', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    el.hostData = { existing: 'value' };
+
+    el.setHostData(null);
+    expect(el.hostData).toEqual({ existing: 'value' });
+
+    el.setHostData('string');
+    expect(el.hostData).toEqual({ existing: 'value' });
+
+    el.setHostData([1, 2, 3]);
+    expect(el.hostData).toEqual({ existing: 'value' });
+
+    expect(logSpy).toHaveBeenCalledTimes(3);
+    logSpy.mockRestore();
+  });
+
+  it('setHostData updates live evalContext when formioInstance exists', () => {
+    el.formioInstance = {
+      options: {
+        evalContext: {},
+      },
+    };
+    el.setHostData({ liveData: 'test' });
+    expect(el.formioInstance.options.evalContext.host).toEqual({
+      liveData: 'test',
+    });
+  });
+
+  it('setHostData emits formio:hostDataChanged event', () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostDataChanged', eventSpy);
+
+    el.setHostData({ eventData: 'value' });
+
+    expect(eventSpy).toHaveBeenCalled();
+    const eventDetail = eventSpy.mock.calls[0][0].detail;
+    expect(eventDetail.hostData).toEqual({ eventData: 'value' });
+  });
+
+  it('getHostData returns null when hostData is not set', () => {
+    el.hostData = null;
+    expect(el.getHostData()).toBeNull();
+  });
+
+  it('getHostData returns a copy of hostData', () => {
+    el.hostData = { original: 'value' };
+    const copy = el.getHostData();
+    expect(copy).toEqual({ original: 'value' });
+
+    // Mutating the copy should not affect the original
+    copy.mutated = 'new';
+    expect(el.hostData.mutated).toBeUndefined();
+  });
+
+  it('_buildFormioOptions includes hostData in evalContext as host', () => {
+    el.hostData = { config: { feature: true }, lookup: ['a', 'b'] };
+    el._buildHooks = vi.fn().mockReturnValue({});
+    el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
+    el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
+
+    const options = el._buildFormioOptions();
+    expect(options.evalContext.host).toEqual({
+      config: { feature: true },
+      lookup: ['a', 'b'],
+    });
+  });
+
+  it('_buildFormioOptions excludes host from evalContext when hostData is null', () => {
+    el.hostData = null;
+    el._buildHooks = vi.fn().mockReturnValue({});
+    el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
+    el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
+
+    const options = el._buildFormioOptions();
+    expect(options.evalContext.host).toBeUndefined();
+  });
+
+  it('_parseJsonAttribute parses host-data attribute correctly', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    expect(
+      el._parseJsonAttribute('{"employees":[{"id":1}]}', 'host-data')
+    ).toEqual({
+      employees: [{ id: 1 }],
+    });
+    expect(el._parseJsonAttribute('invalid-json', 'host-data')).toBeNull();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  // submit-mode attribute tests
+  it('submit-mode attribute defaults to chefs', () => {
+    expect(el.submitMode).toBe('chefs');
+  });
+
+  it('submit-mode attribute parses valid values', () => {
+    el.setAttribute('submit-mode', 'host');
+    expect(el.submitMode).toBe('host');
+
+    el.setAttribute('submit-mode', 'none');
+    expect(el.submitMode).toBe('none');
+
+    el.setAttribute('submit-mode', 'chefs');
+    expect(el.submitMode).toBe('chefs');
+  });
+
+  it('submit-mode attribute handles empty string as chefs', () => {
+    el.setAttribute('submit-mode', '');
+    expect(el.submitMode).toBe('chefs');
+  });
+
+  it('submitMode property can be set directly', () => {
+    el.submitMode = 'host';
+    expect(el.submitMode).toBe('host');
+
+    el.submitMode = 'none';
+    expect(el.submitMode).toBe('none');
+  });
+
+  // _handleHostSubmit tests
+  it('_handleHostSubmit emits formio:hostSubmit with correct detail', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.formId = 'test-form-id';
+    el.formName = 'Test Form';
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    const submission = { data: { field: 'value' } };
+    await el._handleHostSubmit(submission, true);
+
+    expect(eventSpy).toHaveBeenCalled();
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.data).toEqual({ field: 'value' });
+    expect(detail.submission).toBe(submission);
+    expect(detail.formId).toBe('test-form-id');
+    expect(detail.formName).toBe('Test Form');
+    expect(detail.isDraft).toBe(false);
+    expect(detail.timestamp).toBeDefined();
+    expect(typeof detail.waitUntil).toBe('function');
+  });
+
+  it('_handleHostSubmit sets isDraft true for draft saves', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: {} }, false);
+
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.isDraft).toBe(true);
+  });
+
+  it('_handleHostSubmit auto-displays read-only for host mode submissions', async () => {
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    const submission = { data: { name: 'test' } };
+    await el._handleHostSubmit(submission, true);
+
+    expect(el._displayAsReadOnly).toHaveBeenCalledWith({ name: 'test' });
+  });
+
+  it('_handleHostSubmit does not auto-display for host mode drafts', async () => {
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, false);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  it('_handleHostSubmit does not auto-display for none mode', async () => {
+    el.submitMode = 'none';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, true);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  it('_handleHostSubmit respects preventDefault from event', async () => {
+    el.addEventListener('formio:hostSubmit', (e) => e.preventDefault());
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, true);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  it('_handleHostSubmit respects waitUntil returning false', async () => {
+    el.addEventListener('formio:hostSubmit', (e) => {
+      e.detail.waitUntil(Promise.resolve(false));
+    });
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, true);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  // _displayAsReadOnly tests
+  it('_displayAsReadOnly sets readOnly and reloads with data', async () => {
+    el.readOnly = false;
+    el.reload = vi.fn().mockResolvedValue(undefined);
+    el.setSubmission = vi.fn();
+
+    await el._displayAsReadOnly({ field: 'value' });
+
+    expect(el.readOnly).toBe(true);
+    expect(el.reload).toHaveBeenCalled();
+    expect(el.setSubmission).toHaveBeenCalledWith({ field: 'value' });
+  });
+
+  // _manualSubmit with submitMode tests
+  it('_manualSubmit calls _handleHostSubmit for host mode', async () => {
+    el.submitMode = 'host';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+
+    await el._manualSubmit({ data: { test: 'value' } }, true);
+
+    expect(el._handleHostSubmit).toHaveBeenCalledWith(
+      { data: { test: 'value' } },
+      true
+    );
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('_manualSubmit calls _handleHostSubmit for none mode', async () => {
+    el.submitMode = 'none';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+
+    await el._manualSubmit({ data: { test: 'value' } }, false);
+
+    expect(el._handleHostSubmit).toHaveBeenCalledWith(
+      { data: { test: 'value' } },
+      false
+    );
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('_manualSubmit posts to backend for default chefs mode', async () => {
+    el.submitMode = 'chefs';
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submit');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+    el._emit = vi.fn();
+    el._parseError = vi.fn();
+    el.parsers = {
+      submitResult: vi.fn().mockReturnValue({ submission: { id: 'sub-123' } }),
+    };
+    el._handleAutoReload = vi.fn().mockResolvedValue(undefined);
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ id: 'sub-123' }),
+    });
+
+    await el._manualSubmit({ data: { test: 'value' } }, true);
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://test/submit',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ submission: { data: { test: 'value' } } }),
+      })
+    );
+  });
+
+  // reload() method tests
+  it('reload calls destroy then load', async () => {
+    el.destroy = vi.fn().mockResolvedValue(undefined);
+    el.load = vi.fn().mockResolvedValue(undefined);
+
+    await el.reload();
+
+    expect(el.destroy).toHaveBeenCalled();
+    expect(el.load).toHaveBeenCalled();
+  });
+
+  it('reload is called in correct order', async () => {
+    const callOrder = [];
+    el.destroy = vi.fn().mockImplementation(async () => {
+      callOrder.push('destroy');
+    });
+    el.load = vi.fn().mockImplementation(async () => {
+      callOrder.push('load');
+    });
+
+    await el.reload();
+
+    expect(callOrder).toEqual(['destroy', 'load']);
+  });
+
+  // print() method tests
+  it('print acquires and releases busy lock', async () => {
+    const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
+    const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      blob: () => Promise.resolve(new Blob(['pdf'])),
+      headers: {
+        get: vi.fn().mockReturnValue('application/pdf'),
+      },
+    });
+
+    el._triggerFileDownload = vi.fn();
+    el._emit = vi.fn();
+
+    await el.print();
+
+    expect(acquireSpy).toHaveBeenCalledWith('print');
+    expect(releaseSpy).toHaveBeenCalled();
+    acquireSpy.mockRestore();
+    releaseSpy.mockRestore();
+  });
+
+  it('print emits formio:beforePrint event', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:beforePrint', eventSpy);
+
+    el._acquireBusyLock = vi.fn().mockReturnValue(true);
+    el._releaseBusyLock = vi.fn();
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._pendingWaits = [];
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      blob: () => Promise.resolve(new Blob(['pdf'])),
+      headers: { get: vi.fn().mockReturnValue('application/pdf') },
+    });
+
+    el._triggerFileDownload = vi.fn();
+
+    await el.print();
+
+    expect(eventSpy).toHaveBeenCalled();
+    expect(eventSpy.mock.calls[0][0].detail.formId).toBe(el.formId);
+  });
+
+  it('print handles print errors gracefully', async () => {
+    el._acquireBusyLock = vi.fn().mockReturnValue(true);
+    el._releaseBusyLock = vi.fn();
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._parseError = vi.fn().mockResolvedValue('Print service error');
+    el._emit = vi.fn();
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+    });
+
+    await el.print();
+
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'Print service error',
+    });
+  });
+
+  it('print respects cancelled event', async () => {
+    el._acquireBusyLock = vi.fn().mockReturnValue(true);
+    el._releaseBusyLock = vi.fn();
+    el._emitCancelable = vi.fn().mockReturnValue(false);
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+
+    await el.print();
+
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  // Additional edge cases for _handleHostSubmit
+  it('_handleHostSubmit handles empty submission data', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: null }, true);
+
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.data).toEqual({});
+    expect(el._displayAsReadOnly).toHaveBeenCalledWith({});
+  });
+
+  it('_handleHostSubmit handles undefined submission', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit(undefined, true);
+
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.data).toEqual({});
+  });
+
+  // Additional edge cases for _displayAsReadOnly
+  it('_displayAsReadOnly awaits reload before setSubmission', async () => {
+    const callOrder = [];
+    el.reload = vi.fn().mockImplementation(async () => {
+      callOrder.push('reload');
+    });
+    el.setSubmission = vi.fn().mockImplementation(() => {
+      callOrder.push('setSubmission');
+    });
+
+    await el._displayAsReadOnly({ test: 'data' });
+
+    expect(callOrder).toEqual(['reload', 'setSubmission']);
+  });
+
+  // Edge cases for submitMode with _manualSubmit
+  it('_manualSubmit skips backend when submitMode is host and event is cancelled', async () => {
+    el.submitMode = 'host';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(false);
+    el._pendingWaits = [];
+
+    await el._manualSubmit({ data: {} }, true);
+
+    expect(el._handleHostSubmit).not.toHaveBeenCalled();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('_manualSubmit skips backend when submitMode is none and waitUntil returns false', async () => {
+    el.submitMode = 'none';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [Promise.resolve(false)];
+
+    await el._manualSubmit({ data: {} }, true);
+
+    expect(el._handleHostSubmit).not.toHaveBeenCalled();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
 });

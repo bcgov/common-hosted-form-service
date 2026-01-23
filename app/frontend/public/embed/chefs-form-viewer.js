@@ -543,6 +543,11 @@
    * - formio:authTokenRefreshed: fired when auth token is refreshed (includes new and old tokens)
    * - formio:userTokenRefreshed: fired when user token is updated via refreshUserToken()
    * - formio:userTokenExpiring: fired when user token is about to expire (configurable buffer, default 60s)
+   * - formio:hostSubmit: fired when submitMode is 'host' or 'none' (for both submit and draft).
+   *   Emitted after Form.io validation passes. Detail includes { data, submission, formId,
+   *   formName, timestamp, isDraft }. Host can call event.preventDefault() to prevent auto
+   *   read-only display (in 'host' mode, submissions only). Use event.detail.waitUntil(promise)
+   *   for async operations.
    *
    * Lifecycle overview
    * 1) connectedCallback
@@ -656,6 +661,8 @@
         'user',
         'headers',
         'auto-reload-on-submit',
+        'host-data',
+        'submit-mode',
       ];
     }
 
@@ -685,8 +692,10 @@
       this.token = null; // optional token object for Form.io evalContext
       this.user = null; // optional user object for Form.io evalContext
       this.headers = null; // optional headers object for Form.io evalContext
+      this.hostData = null; // arbitrary host application data for Form.io evalContext
       this._prefillData = null; // cached prefill data for submission
       this.autoReloadOnSubmit = true; // auto-reload form as read-only after successful submission
+      this.submitMode = 'chefs'; // 'chefs' (default) | 'host' | 'none'
 
       // Asset loading state machine
       this._assetState = 'IDLE';
@@ -766,6 +775,19 @@
      * - auto-reload-on-submit: boolean; when true (default), automatically reloads the form as read-only
      *   after successful submission, showing the submitted data. This provides a CHEFS-like experience
      *   out-of-the-box. Set to "false" to disable this behavior.
+     * - host-data: string; JSON string containing arbitrary host application data that will be available
+     *   in Form.io's evalContext as `host`. Use this to pass datasets, lookup tables, configuration objects,
+     *   or any structured data that form components need to access via custom JavaScript (calculated values,
+     *   conditional logic, default values). Must be valid JSON. Can also be set programmatically via
+     *   setHostData() for dynamic updates after form initialization.
+     * - submit-mode (string): Controls how form submission and draft saves are handled.
+     *   - "chefs" (default): Normal flow - submits/saves to CHEFS backend after validation.
+     *   - "host": After validation, emits formio:hostSubmit event for host to handle data.
+     *     For submissions: automatically displays read-only unless host calls preventDefault().
+     *     For drafts: no auto read-only display (drafts are meant to be edited later).
+     *   - "none": After validation, emits formio:hostSubmit but does NOT auto-display read-only.
+     *     Host is fully responsible for what happens after (both submit and draft).
+     *   Note: Event detail includes isDraft boolean so host can distinguish submit from draft.
      */
     attributeChangedCallback(name, _ov, nv) {
       switch (name) {
@@ -827,6 +849,12 @@
           break;
         case 'auto-reload-on-submit':
           this.autoReloadOnSubmit = bool(nv);
+          break;
+        case 'host-data':
+          this.hostData = this._parseJsonAttribute(nv, 'host-data');
+          break;
+        case 'submit-mode':
+          this.submitMode = nv || 'chefs';
           break;
       }
     }
@@ -1080,6 +1108,91 @@
     }
 
     /**
+     * Sets arbitrary host application data that will be available in Form.io's evalContext.
+     *
+     * This allows host applications to pass datasets, objects, lookup tables, or any
+     * structured data that form components can read via custom JavaScript (calculated
+     * values, conditional logic, default values, etc.). The data is accessible in
+     * Form.io components as `host` (e.g., `host.myData`, `host.config.setting`).
+     *
+     * By default, data is shallow-merged with existing hostData. Use `{ replace: true }`
+     * to completely replace all existing hostData.
+     *
+     * If the form is already initialized, the evalContext is updated immediately so
+     * components can access the new data without reloading the form.
+     *
+     * @param {Object} data - Arbitrary data object to add to evalContext. Must be a non-null, non-array object.
+     * @param {Object} [options] - Configuration options
+     * @param {boolean} [options.replace=false] - If true, replaces all hostData; if false, shallow merges with existing
+     * @returns {void}
+     *
+     * @fires ChefsFormViewer#formio:hostDataChanged - After data is updated, with { hostData } payload
+     *
+     * @example
+     * // Set initial host data
+     * viewer.setHostData({
+     *   lookupTable: [{ code: 'A', name: 'Alpha' }, { code: 'B', name: 'Beta' }],
+     *   config: { maxItems: 10, enableFeatureX: true }
+     * });
+     *
+     * @example
+     * // Merge additional data (default behavior)
+     * viewer.setHostData({ newDataset: fetchedResults });
+     *
+     * @example
+     * // Replace all hostData
+     * viewer.setHostData({ freshData: newData }, { replace: true });
+     *
+     * @example
+     * // In Form.io calculated value or conditional:
+     * // value = host.lookupTable?.find(x => x.code === data.selectedCode)?.name || '';
+     * // show = host.config?.enableFeatureX === true;
+     */
+    setHostData(data, options = {}) {
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        this._log.warn(
+          'setHostData: data must be a non-null, non-array object'
+        );
+        return;
+      }
+
+      const replace = options.replace === true;
+
+      if (replace) {
+        this.hostData = { ...data };
+      } else {
+        this.hostData = { ...(this.hostData || {}), ...data };
+      }
+
+      // Update live evalContext if Form.io instance exists
+      if (this.formioInstance?.options?.evalContext) {
+        this.formioInstance.options.evalContext.host = this.hostData;
+      }
+
+      this._log.info('hostData:updated', {
+        keys: Object.keys(this.hostData),
+        replace,
+      });
+      this._emit('formio:hostDataChanged', { hostData: this.hostData });
+    }
+
+    /**
+     * Gets the current host data object.
+     *
+     * Returns a shallow copy of the hostData to prevent external mutation.
+     * Returns null if no hostData has been set.
+     *
+     * @returns {Object|null} Copy of current hostData or null if not set
+     *
+     * @example
+     * const currentData = viewer.getHostData();
+     * console.log(currentData?.config?.maxItems);
+     */
+    getHostData() {
+      return this.hostData ? { ...this.hostData } : null;
+    }
+
+    /**
      * Programmatically submits the form data to the backend.
      *
      * Sets the submit flag and posts current form data to the submission endpoint.
@@ -1270,6 +1383,27 @@
      */
     getSubmission() {
       return this.formioInstance?.submission || null;
+    }
+
+    /**
+     * Displays submission data in read-only mode without submitting to CHEFS.
+     *
+     * Used internally by submit-mode="host" to display form data after the host
+     * handles submission. Reloads the form in read-only mode and populates it
+     * with the provided data.
+     *
+     * @param {Object} data - The form data object to display
+     * @returns {Promise<void>} Resolves when the form is reloaded and data is set
+     * @private
+     */
+    async _displayAsReadOnly(data) {
+      this._log.info('_displayAsReadOnly:begin');
+
+      this.readOnly = true;
+      await this.reload();
+      this.setSubmission(data);
+
+      this._log.info('_displayAsReadOnly:done');
     }
 
     /**
@@ -2469,6 +2603,12 @@
       });
       if (!allow) return;
 
+      // Handle host-controlled submission modes (both submit and draft)
+      if (this.submitMode === 'host' || this.submitMode === 'none') {
+        await this._handleHostSubmit(submission, isSubmit);
+        return;
+      }
+
       const url = this._resolveUrl('submit');
       // debug: submit post
       this._emit('formio:submit', { submission });
@@ -2497,6 +2637,61 @@
       if (this.autoReloadOnSubmit && isSubmit && submitParsed.submission?.id) {
         await this._handleAutoReload(submitParsed.submission);
       }
+    }
+
+    /**
+     * Handles submission/draft when submitMode is 'host' or 'none'.
+     * Emits formio:hostSubmit for the host application to handle the data,
+     * and optionally displays as read-only (in 'host' mode, for submissions only).
+     *
+     * Note: Form.io validation has already passed before this method is called
+     * (the beforeSubmit hook is only invoked after Form.io's built-in validation).
+     *
+     * @param {Object} submission - The validated submission object with data
+     * @param {boolean} isSubmit - True for final submission, false for draft save
+     * @returns {Promise<void>} Resolves when host submission handling completes
+     * @private
+     *
+     * @fires ChefsFormViewer#formio:hostSubmit - Emitted for host to handle submission/draft.
+     *   Detail includes { data, submission, formId, formName, timestamp, isDraft }.
+     *   Host can call event.preventDefault() to prevent auto read-only display (in 'host' mode).
+     *   Host can call event.detail.waitUntil(promise) for async operations before display.
+     */
+    async _handleHostSubmit(submission, isSubmit = true) {
+      const data = submission?.data || {};
+      const isDraft = !isSubmit;
+
+      this._log.info('hostSubmit:begin', {
+        submitMode: this.submitMode,
+        isDraft,
+      });
+
+      // Emit hostSubmit event for host application to handle
+      // Note: Validation already passed via Form.io's beforeSubmit hook
+      const proceed = this._emitCancelable('formio:hostSubmit', {
+        data,
+        submission,
+        formId: this.formId,
+        formName: this.formName,
+        timestamp: new Date().toISOString(),
+        isDraft,
+      });
+
+      // Wait for any async operations from host
+      const allowed = await this._waitUntil();
+
+      this._log.info('hostSubmit:eventHandled', { proceed, allowed, isDraft });
+
+      // For 'host' mode: auto-display as read-only unless cancelled (submissions only, not drafts)
+      if (this.submitMode === 'host' && proceed && allowed && !isDraft) {
+        await this._displayAsReadOnly(data);
+      }
+
+      // For 'none' mode or drafts: host is fully responsible, we do nothing more
+      this._log.info('hostSubmit:done', {
+        submitMode: this.submitMode,
+        isDraft,
+      });
     }
 
     /**
@@ -3039,12 +3234,14 @@
         // - token: Token object passed via 'token' attribute
         // - user: User object passed via 'user' attribute
         // - headers: Headers object passed via 'headers' attribute (filtered to remove browser-forbidden headers)
+        // - host: Arbitrary host application data passed via 'host-data' attribute or setHostData() method
         evalContext: {
           ...(this.token && { token: this.token }),
           ...(this.user && { user: this.user }),
           ...(this.headers && {
             headers: this._filterForbiddenHeaders(this.headers),
           }),
+          ...(this.hostData && { host: this.hostData }),
         },
         componentOptions: {
           simplefile: this._getSimpleFileComponentOptions(),
