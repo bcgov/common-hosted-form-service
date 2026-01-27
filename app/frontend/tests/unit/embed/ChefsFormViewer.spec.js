@@ -315,6 +315,12 @@ describe('FormViewerUtils', () => {
   });
 
   it('getJwtExpiry returns null for invalid tokens', () => {
+    // Suppress console.error for expected invalid token errors
+    // eslint-disable-next-line no-console
+    const originalConsoleError = console.error;
+    // eslint-disable-next-line no-console
+    console.error = vi.fn();
+
     expect(utils.getJwtExpiry('')).toBe(null);
     expect(utils.getJwtExpiry(null)).toBe(null);
     expect(utils.getJwtExpiry(undefined)).toBe(null);
@@ -325,6 +331,10 @@ describe('FormViewerUtils', () => {
     expect(utils.getJwtExpiry('header.invalid-base64.signature')).toBe(null);
     // Valid base64 but invalid JSON
     expect(utils.getJwtExpiry('header.aW52YWxpZC1qc29u.signature')).toBe(null);
+
+    // Restore console.error
+    // eslint-disable-next-line no-console
+    console.error = originalConsoleError;
   });
 
   it('getJwtExpiry returns null when no exp claim present', () => {
@@ -425,6 +435,20 @@ describe('ChefsFormViewer', () => {
     // Empty string should be true
     el.setAttribute('auto-reload-on-submit', '');
     expect(el.autoReloadOnSubmit).toBe(true);
+  });
+
+  it('attributeChangedCallback handles headers attribute', () => {
+    const validHeaders =
+      '{"X-Custom-Header":"value","Authorization":"Bearer token"}';
+    el.setAttribute('headers', validHeaders);
+    expect(el.headers).toEqual({
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+    });
+
+    // Invalid JSON should set headers to null
+    el.setAttribute('headers', 'invalid-json');
+    expect(el.headers).toBeNull();
   });
 
   it('connectedCallback sets logger and renders', () => {
@@ -1079,6 +1103,295 @@ describe('ChefsFormViewer internals', () => {
     expect(el._scheduleNextTokenRefresh).not.toHaveBeenCalled();
   });
 
+  it('refreshUserToken updates headers and schedules refresh notification', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 3600; // 1 hour from now
+    const validJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjEyMzQ1Njc4OTB9.signature';
+
+    el.headers = { 'X-Custom-Header': 'value' };
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    // Mock JWT expiry extraction
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi
+      .fn()
+      .mockReturnValue(futureExp);
+
+    el.refreshUserToken({ token: validJwt });
+
+    expect(el.headers.Authorization).toBe(`Bearer ${validJwt}`);
+    expect(el.headers['X-Custom-Header']).toBe('value');
+    expect(el.userTokenExpiresAt).toBe(futureExp);
+    expect(el._scheduleUserTokenRefresh).toHaveBeenCalledWith(60);
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenRefreshed', {
+      expiresAt: futureExp,
+    });
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken updates evalContext when Form.io instance exists', () => {
+    const validJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjEyMzQ1Njc4OTB9.signature';
+
+    el.headers = {};
+    el.formioInstance = {
+      options: {
+        evalContext: { headers: {} },
+      },
+    };
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+
+    el.refreshUserToken({ token: validJwt });
+
+    expect(el.formioInstance.options.evalContext.headers.Authorization).toBe(
+      `Bearer ${validJwt}`
+    );
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken uses manual expiry when provided', () => {
+    const manualExpiry = 1234567890;
+    const opaqueToken = 'opaque-token-123';
+
+    el.headers = {};
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+
+    el.refreshUserToken({ token: opaqueToken, expiresAt: manualExpiry });
+
+    expect(el.userTokenExpiresAt).toBe(manualExpiry);
+    expect(el._scheduleUserTokenRefresh).toHaveBeenCalledWith(60);
+    expect(el.headers.Authorization).toBe(`Bearer ${opaqueToken}`);
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken uses custom buffer when provided', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 3600;
+    const validJwt =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjEyMzQ1Njc4OTB9.signature';
+
+    el.headers = {};
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi
+      .fn()
+      .mockReturnValue(futureExp);
+
+    el.refreshUserToken({ token: validJwt, buffer: 120 });
+
+    expect(el._scheduleUserTokenRefresh).toHaveBeenCalledWith(120);
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken does not schedule refresh when no expiry available', () => {
+    const opaqueToken = 'opaque-token-without-expiry';
+
+    el.headers = {};
+    el._emit = vi.fn();
+    el._scheduleUserTokenRefresh = vi.fn();
+    el._filterForbiddenHeaders = vi.fn((headers) => headers);
+
+    const originalGetJwtExpiry = globalThis.FormViewerUtils.getJwtExpiry;
+    globalThis.FormViewerUtils.getJwtExpiry = vi.fn().mockReturnValue(null);
+
+    el.refreshUserToken({ token: opaqueToken });
+
+    expect(el.headers.Authorization).toBe(`Bearer ${opaqueToken}`);
+    expect(el._scheduleUserTokenRefresh).not.toHaveBeenCalled();
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenRefreshed', {
+      expiresAt: null,
+    });
+
+    globalThis.FormViewerUtils.getJwtExpiry = originalGetJwtExpiry;
+  });
+
+  it('refreshUserToken warns and returns early for invalid token', () => {
+    el.headers = {};
+    el._log = { warn: vi.fn() };
+
+    el.refreshUserToken({ token: null });
+    expect(el._log.warn).toHaveBeenCalledWith(
+      'refreshUserToken: invalid token'
+    );
+
+    el.refreshUserToken({ token: '' });
+    expect(el._log.warn).toHaveBeenCalledWith(
+      'refreshUserToken: invalid token'
+    );
+  });
+
+  it('_scheduleUserTokenRefresh sets timer based on expiry time', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 300; // 5 minutes from now
+    const buffer = 60;
+
+    el.userTokenExpiresAt = futureExp;
+    el._emit = vi.fn();
+
+    const originalSetTimeout = globalThis.setTimeout;
+    let capturedDelay;
+    globalThis.setTimeout = vi.fn((callback, delay) => {
+      capturedDelay = delay;
+      return 789; // Mock timer ID
+    });
+
+    el._scheduleUserTokenRefresh(buffer);
+
+    const expectedDelay = (futureExp - now - buffer) * 1000;
+    expect(capturedDelay).toBe(expectedDelay);
+    expect(el._userTokenRefreshTimer).toBe(789);
+
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleUserTokenRefresh uses minimum 10 second delay', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const soonExp = now + 5; // 5 seconds from now (less than buffer)
+
+    el.userTokenExpiresAt = soonExp;
+    el._emit = vi.fn();
+
+    const originalSetTimeout = globalThis.setTimeout;
+    let capturedDelay;
+    globalThis.setTimeout = vi.fn((callback, delay) => {
+      capturedDelay = delay;
+      return 789;
+    });
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(capturedDelay).toBe(10000); // Minimum 10 seconds
+
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleUserTokenRefresh clears existing timer', () => {
+    el.userTokenExpiresAt = Math.floor(Date.now() / 1000) + 3600;
+    el._userTokenRefreshTimer = 999;
+    el._emit = vi.fn();
+
+    const originalClearTimeout = globalThis.clearTimeout;
+    globalThis.clearTimeout = vi.fn();
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = vi.fn().mockReturnValue(888);
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(999);
+    expect(el._userTokenRefreshTimer).toBe(888);
+
+    globalThis.clearTimeout = originalClearTimeout;
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('_scheduleUserTokenRefresh emits expiring event immediately when already expired', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const pastExp = now - 3600; // 1 hour ago
+
+    el.userTokenExpiresAt = pastExp;
+    el._emit = vi.fn();
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenExpiring', {
+      expiresAt: pastExp,
+      expired: true,
+    });
+  });
+
+  it('_scheduleUserTokenRefresh emits expiring event when timer fires', () => {
+    vi.useFakeTimers();
+
+    const now = Math.floor(Date.now() / 1000);
+    const futureExp = now + 300; // 5 minutes from now
+
+    el.userTokenExpiresAt = futureExp;
+    el._emit = vi.fn();
+
+    el._scheduleUserTokenRefresh(60);
+
+    // Fast-forward time to trigger the timer
+    vi.advanceTimersByTime(240000); // 4 minutes
+
+    expect(el._emit).toHaveBeenCalledWith('formio:userTokenExpiring', {
+      expiresAt: futureExp,
+      expired: false,
+    });
+
+    vi.useRealTimers();
+  });
+
+  it('_scheduleUserTokenRefresh does nothing when no expiry set', () => {
+    el.userTokenExpiresAt = null;
+    el._emit = vi.fn();
+
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = vi.fn();
+
+    el._scheduleUserTokenRefresh(60);
+
+    expect(globalThis.setTimeout).not.toHaveBeenCalled();
+
+    globalThis.setTimeout = originalSetTimeout;
+  });
+
+  it('destroy cleans up user token refresh timer', async () => {
+    el._userTokenRefreshTimer = 123;
+    el._jwtRefreshTimer = 456;
+    el.formioInstance = { destroy: vi.fn() };
+
+    const originalClearTimeout = globalThis.clearTimeout;
+    globalThis.clearTimeout = vi.fn();
+
+    await el.destroy();
+
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(123);
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(456);
+    expect(el._userTokenRefreshTimer).toBeNull();
+    expect(el._jwtRefreshTimer).toBeNull();
+
+    globalThis.clearTimeout = originalClearTimeout;
+  });
+
+  it('disconnectedCallback cleans up user token refresh timer', () => {
+    el._userTokenRefreshTimer = 789;
+    el._jwtRefreshTimer = 101;
+    el.destroy = vi.fn().mockResolvedValue(undefined);
+
+    const originalClearTimeout = globalThis.clearTimeout;
+    globalThis.clearTimeout = vi.fn();
+
+    el.disconnectedCallback();
+
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(789);
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(101);
+    expect(el._userTokenRefreshTimer).toBeNull();
+    expect(el._jwtRefreshTimer).toBeNull();
+    expect(el.destroy).toHaveBeenCalled();
+
+    globalThis.clearTimeout = originalClearTimeout;
+  });
+
   it('_registerAuthPlugin registers plugin with dynamic header resolution', () => {
     // Mock Formio global
     globalThis.globalThis.Formio = {
@@ -1403,6 +1716,60 @@ describe('ChefsFormViewer internals', () => {
     logSpy.mockRestore();
   });
 
+  it('_parseJsonAttribute parses headers attribute correctly', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    expect(
+      el._parseJsonAttribute('{"X-Custom-Header":"value"}', 'headers')
+    ).toEqual({
+      'X-Custom-Header': 'value',
+    });
+    expect(el._parseJsonAttribute('invalid-json', 'headers')).toBeNull();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it('_filterForbiddenHeaders removes browser-forbidden headers', () => {
+    const headersWithForbidden = {
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+      host: 'example.com', // Forbidden
+      connection: 'keep-alive', // Forbidden
+      'accept-encoding': 'gzip', // Forbidden
+      cookie: 'session=abc', // Forbidden
+      referer: 'https://example.com', // Forbidden
+      'content-length': '123', // Forbidden
+      'user-agent': 'Mozilla/5.0', // Forbidden (some browsers still block)
+      'proxy-authorization': 'test', // Forbidden pattern
+      'sec-fetch-mode': 'cors', // Forbidden pattern
+      'Content-Type': 'application/json', // Allowed
+      'X-API-Key': 'secret', // Allowed
+    };
+
+    const filtered = el._filterForbiddenHeaders(headersWithForbidden);
+    expect(filtered).toEqual({
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+      'Content-Type': 'application/json',
+      'X-API-Key': 'secret',
+    });
+    expect(filtered.host).toBeUndefined();
+    expect(filtered.connection).toBeUndefined();
+    expect(filtered['accept-encoding']).toBeUndefined();
+    expect(filtered.cookie).toBeUndefined();
+    expect(filtered.referer).toBeUndefined();
+    expect(filtered['content-length']).toBeUndefined();
+    expect(filtered['user-agent']).toBeUndefined();
+    expect(filtered['proxy-authorization']).toBeUndefined();
+    expect(filtered['sec-fetch-mode']).toBeUndefined();
+  });
+
+  it('_filterForbiddenHeaders handles null, undefined, and non-objects', () => {
+    expect(el._filterForbiddenHeaders(null)).toBe(null);
+    expect(el._filterForbiddenHeaders(undefined)).toBe(undefined);
+    expect(el._filterForbiddenHeaders('not-an-object')).toBe('not-an-object');
+    expect(el._filterForbiddenHeaders({})).toEqual({});
+  });
+
   it('_verifyAndParseSubmissionData handles valid and invalid payloads', () => {
     const logSpy = vi.spyOn(el._log, 'warn');
     expect(el._verifyAndParseSubmissionData({ data: { test: 1 } })).toEqual({
@@ -1430,6 +1797,7 @@ describe('ChefsFormViewer internals', () => {
     el.language = 'fr';
     el.token = { user: 'test' };
     el.user = { name: 'John' };
+    el.headers = { 'X-Custom-Header': 'value' };
     el._buildHooks = vi.fn().mockReturnValue({});
     el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
     el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
@@ -1439,6 +1807,53 @@ describe('ChefsFormViewer internals', () => {
     expect(options.language).toBe('fr');
     expect(options.evalContext.token).toEqual({ user: 'test' });
     expect(options.evalContext.user).toEqual({ name: 'John' });
+    expect(options.evalContext.headers).toEqual({ 'X-Custom-Header': 'value' });
+  });
+
+  it('_buildFormioOptions filters forbidden headers from evalContext', () => {
+    el.headers = {
+      'X-Custom-Header': 'value',
+      host: 'example.com', // Should be filtered
+      Authorization: 'Bearer token',
+      'proxy-authorization': 'test', // Should be filtered
+    };
+    el._buildHooks = vi.fn().mockReturnValue({});
+    el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
+    el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
+
+    const options = el._buildFormioOptions();
+    expect(options.evalContext.headers).toEqual({
+      'X-Custom-Header': 'value',
+      Authorization: 'Bearer token',
+    });
+    expect(options.evalContext.headers.host).toBeUndefined();
+    expect(options.evalContext.headers['proxy-authorization']).toBeUndefined();
+  });
+
+  it('_ensurePrintButtonEnabled re-enables the print button in read-only', () => {
+    const buttonRef = {};
+    const buttonComponent = {
+      component: { key: 'print', disabled: true },
+      disabled: true,
+      options: { disabled: { print: true } },
+      refs: { button: buttonRef },
+      setDisabled: vi.fn(),
+      show: vi.fn(),
+    };
+
+    el.formioInstance = {
+      getComponent: vi.fn().mockReturnValue(buttonComponent),
+    };
+    el.printButtonKey = 'print';
+
+    el._ensurePrintButtonEnabled('test');
+
+    expect(buttonComponent.shouldDisabled).toBe(false);
+    expect(buttonComponent.component.disabled).toBe(false);
+    expect(buttonComponent.disabled).toBe(false);
+    expect(buttonComponent.options.disabled.print).toBe(false);
+    expect(buttonComponent.setDisabled).toHaveBeenCalledWith(buttonRef, false);
+    expect(buttonComponent.show).toHaveBeenCalled();
   });
 
   it('_getSimpleFileComponentOptions returns file operation configuration', () => {
@@ -2253,5 +2668,510 @@ describe('ChefsFormViewer internals', () => {
 
     createElementSpy.mockRestore();
     vi.useRealTimers();
+  });
+
+  // hostData tests
+  it('host-data attribute parses valid JSON', () => {
+    el.setAttribute('host-data', '{"lookup":[1,2,3],"config":{"max":10}}');
+    expect(el.hostData).toEqual({ lookup: [1, 2, 3], config: { max: 10 } });
+  });
+
+  it('host-data attribute handles invalid JSON gracefully', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    el.setAttribute('host-data', 'not valid json');
+    expect(el.hostData).toBeNull();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it('host-data attribute handles empty string', () => {
+    el.setAttribute('host-data', '');
+    expect(el.hostData).toBeNull();
+  });
+
+  it('hostData property can be set directly', () => {
+    el.hostData = { directData: 'value' };
+    expect(el.hostData).toEqual({ directData: 'value' });
+  });
+
+  it('setHostData merges data by default', () => {
+    el.hostData = { existing: 'value1' };
+    el.setHostData({ newData: 'value2' });
+    expect(el.hostData).toEqual({ existing: 'value1', newData: 'value2' });
+  });
+
+  it('setHostData replaces data when replace option is true', () => {
+    el.hostData = { existing: 'value1', old: 'data' };
+    el.setHostData({ fresh: 'value2' }, { replace: true });
+    expect(el.hostData).toEqual({ fresh: 'value2' });
+    expect(el.hostData.existing).toBeUndefined();
+    expect(el.hostData.old).toBeUndefined();
+  });
+
+  it('setHostData rejects non-object data', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    el.hostData = { existing: 'value' };
+
+    el.setHostData(null);
+    expect(el.hostData).toEqual({ existing: 'value' });
+
+    el.setHostData('string');
+    expect(el.hostData).toEqual({ existing: 'value' });
+
+    el.setHostData([1, 2, 3]);
+    expect(el.hostData).toEqual({ existing: 'value' });
+
+    expect(logSpy).toHaveBeenCalledTimes(3);
+    logSpy.mockRestore();
+  });
+
+  it('setHostData updates live evalContext when formioInstance exists', () => {
+    el.formioInstance = {
+      options: {
+        evalContext: {},
+      },
+    };
+    el.setHostData({ liveData: 'test' });
+    expect(el.formioInstance.options.evalContext.host).toEqual({
+      liveData: 'test',
+    });
+  });
+
+  it('setHostData emits formio:hostDataChanged event', () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostDataChanged', eventSpy);
+
+    el.setHostData({ eventData: 'value' });
+
+    expect(eventSpy).toHaveBeenCalled();
+    const eventDetail = eventSpy.mock.calls[0][0].detail;
+    expect(eventDetail.hostData).toEqual({ eventData: 'value' });
+  });
+
+  it('getHostData returns null when hostData is not set', () => {
+    el.hostData = null;
+    expect(el.getHostData()).toBeNull();
+  });
+
+  it('getHostData returns a copy of hostData', () => {
+    el.hostData = { original: 'value' };
+    const copy = el.getHostData();
+    expect(copy).toEqual({ original: 'value' });
+
+    // Mutating the copy should not affect the original
+    copy.mutated = 'new';
+    expect(el.hostData.mutated).toBeUndefined();
+  });
+
+  it('_buildFormioOptions includes hostData in evalContext as host', () => {
+    el.hostData = { config: { feature: true }, lookup: ['a', 'b'] };
+    el._buildHooks = vi.fn().mockReturnValue({});
+    el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
+    el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
+
+    const options = el._buildFormioOptions();
+    expect(options.evalContext.host).toEqual({
+      config: { feature: true },
+      lookup: ['a', 'b'],
+    });
+  });
+
+  it('_buildFormioOptions excludes host from evalContext when hostData is null', () => {
+    el.hostData = null;
+    el._buildHooks = vi.fn().mockReturnValue({});
+    el._getSimpleFileComponentOptions = vi.fn().mockReturnValue({});
+    el._getBCAddressComponentOptions = vi.fn().mockReturnValue({});
+
+    const options = el._buildFormioOptions();
+    expect(options.evalContext.host).toBeUndefined();
+  });
+
+  it('_parseJsonAttribute parses host-data attribute correctly', () => {
+    const logSpy = vi.spyOn(el._log, 'warn');
+    expect(
+      el._parseJsonAttribute('{"employees":[{"id":1}]}', 'host-data')
+    ).toEqual({
+      employees: [{ id: 1 }],
+    });
+    expect(el._parseJsonAttribute('invalid-json', 'host-data')).toBeNull();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  // submit-mode attribute tests
+  it('submit-mode attribute defaults to chefs', () => {
+    expect(el.submitMode).toBe('chefs');
+  });
+
+  it('submit-mode attribute parses valid values', () => {
+    el.setAttribute('submit-mode', 'host');
+    expect(el.submitMode).toBe('host');
+
+    el.setAttribute('submit-mode', 'none');
+    expect(el.submitMode).toBe('none');
+
+    el.setAttribute('submit-mode', 'chefs');
+    expect(el.submitMode).toBe('chefs');
+  });
+
+  it('submit-mode attribute handles empty string as chefs', () => {
+    el.setAttribute('submit-mode', '');
+    expect(el.submitMode).toBe('chefs');
+  });
+
+  it('submitMode property can be set directly', () => {
+    el.submitMode = 'host';
+    expect(el.submitMode).toBe('host');
+
+    el.submitMode = 'none';
+    expect(el.submitMode).toBe('none');
+  });
+
+  // _handleHostSubmit tests
+  it('_handleHostSubmit emits formio:hostSubmit with correct detail', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.formId = 'test-form-id';
+    el.formName = 'Test Form';
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    const submission = { data: { field: 'value' } };
+    await el._handleHostSubmit(submission, true);
+
+    expect(eventSpy).toHaveBeenCalled();
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.data).toEqual({ field: 'value' });
+    expect(detail.submission).toBe(submission);
+    expect(detail.formId).toBe('test-form-id');
+    expect(detail.formName).toBe('Test Form');
+    expect(detail.isDraft).toBe(false);
+    expect(detail.timestamp).toBeDefined();
+    expect(typeof detail.waitUntil).toBe('function');
+  });
+
+  it('_handleHostSubmit sets isDraft true for draft saves', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: {} }, false);
+
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.isDraft).toBe(true);
+  });
+
+  it('_handleHostSubmit auto-displays read-only for host mode submissions', async () => {
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    const submission = { data: { name: 'test' } };
+    await el._handleHostSubmit(submission, true);
+
+    expect(el._displayAsReadOnly).toHaveBeenCalledWith({ name: 'test' });
+  });
+
+  it('_handleHostSubmit does not auto-display for host mode drafts', async () => {
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, false);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  it('_handleHostSubmit does not auto-display for none mode', async () => {
+    el.submitMode = 'none';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, true);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  it('_handleHostSubmit respects preventDefault from event', async () => {
+    el.addEventListener('formio:hostSubmit', (e) => e.preventDefault());
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, true);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  it('_handleHostSubmit respects waitUntil returning false', async () => {
+    el.addEventListener('formio:hostSubmit', (e) => {
+      e.detail.waitUntil(Promise.resolve(false));
+    });
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+
+    await el._handleHostSubmit({ data: { name: 'test' } }, true);
+
+    expect(el._displayAsReadOnly).not.toHaveBeenCalled();
+  });
+
+  // _displayAsReadOnly tests
+  it('_displayAsReadOnly sets readOnly and reloads with data', async () => {
+    el.readOnly = false;
+    el.reload = vi.fn().mockResolvedValue(undefined);
+    el.setSubmission = vi.fn();
+
+    await el._displayAsReadOnly({ field: 'value' });
+
+    expect(el.readOnly).toBe(true);
+    expect(el.reload).toHaveBeenCalled();
+    expect(el.setSubmission).toHaveBeenCalledWith({ field: 'value' });
+  });
+
+  // _manualSubmit with submitMode tests
+  it('_manualSubmit calls _handleHostSubmit for host mode', async () => {
+    el.submitMode = 'host';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+
+    await el._manualSubmit({ data: { test: 'value' } }, true);
+
+    expect(el._handleHostSubmit).toHaveBeenCalledWith(
+      { data: { test: 'value' } },
+      true
+    );
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('_manualSubmit calls _handleHostSubmit for none mode', async () => {
+    el.submitMode = 'none';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+
+    await el._manualSubmit({ data: { test: 'value' } }, false);
+
+    expect(el._handleHostSubmit).toHaveBeenCalledWith(
+      { data: { test: 'value' } },
+      false
+    );
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('_manualSubmit posts to backend for default chefs mode', async () => {
+    el.submitMode = 'chefs';
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/submit');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+    el._emit = vi.fn();
+    el._parseError = vi.fn();
+    el.parsers = {
+      submitResult: vi.fn().mockReturnValue({ submission: { id: 'sub-123' } }),
+    };
+    el._handleAutoReload = vi.fn().mockResolvedValue(undefined);
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ id: 'sub-123' }),
+    });
+
+    await el._manualSubmit({ data: { test: 'value' } }, true);
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://test/submit',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ submission: { data: { test: 'value' } } }),
+      })
+    );
+  });
+
+  // reload() method tests
+  it('reload calls destroy then load', async () => {
+    el.destroy = vi.fn().mockResolvedValue(undefined);
+    el.load = vi.fn().mockResolvedValue(undefined);
+
+    await el.reload();
+
+    expect(el.destroy).toHaveBeenCalled();
+    expect(el.load).toHaveBeenCalled();
+  });
+
+  it('reload is called in correct order', async () => {
+    const callOrder = [];
+    el.destroy = vi.fn().mockImplementation(async () => {
+      callOrder.push('destroy');
+    });
+    el.load = vi.fn().mockImplementation(async () => {
+      callOrder.push('load');
+    });
+
+    await el.reload();
+
+    expect(callOrder).toEqual(['destroy', 'load']);
+  });
+
+  // print() method tests
+  it('print acquires and releases busy lock', async () => {
+    const acquireSpy = vi.spyOn(el, '_acquireBusyLock').mockReturnValue(true);
+    const releaseSpy = vi.spyOn(el, '_releaseBusyLock');
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      blob: () => Promise.resolve(new Blob(['pdf'])),
+      headers: {
+        get: vi.fn().mockReturnValue('application/pdf'),
+      },
+    });
+
+    el._triggerFileDownload = vi.fn();
+    el._emit = vi.fn();
+
+    await el.print();
+
+    expect(acquireSpy).toHaveBeenCalledWith('print');
+    expect(releaseSpy).toHaveBeenCalled();
+    acquireSpy.mockRestore();
+    releaseSpy.mockRestore();
+  });
+
+  it('print emits formio:beforePrint event', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:beforePrint', eventSpy);
+
+    el._acquireBusyLock = vi.fn().mockReturnValue(true);
+    el._releaseBusyLock = vi.fn();
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._pendingWaits = [];
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: true,
+      blob: () => Promise.resolve(new Blob(['pdf'])),
+      headers: { get: vi.fn().mockReturnValue('application/pdf') },
+    });
+
+    el._triggerFileDownload = vi.fn();
+
+    await el.print();
+
+    expect(eventSpy).toHaveBeenCalled();
+    expect(eventSpy.mock.calls[0][0].detail.formId).toBe(el.formId);
+  });
+
+  it('print handles print errors gracefully', async () => {
+    el._acquireBusyLock = vi.fn().mockReturnValue(true);
+    el._releaseBusyLock = vi.fn();
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [];
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._parseError = vi.fn().mockResolvedValue('Print service error');
+    el._emit = vi.fn();
+
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+    });
+
+    await el.print();
+
+    expect(el._emit).toHaveBeenCalledWith('formio:error', {
+      error: 'Print service error',
+    });
+  });
+
+  it('print respects cancelled event', async () => {
+    el._acquireBusyLock = vi.fn().mockReturnValue(true);
+    el._releaseBusyLock = vi.fn();
+    el._emitCancelable = vi.fn().mockReturnValue(false);
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/print');
+
+    await el.print();
+
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  // Additional edge cases for _handleHostSubmit
+  it('_handleHostSubmit handles empty submission data', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit({ data: null }, true);
+
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.data).toEqual({});
+    expect(el._displayAsReadOnly).toHaveBeenCalledWith({});
+  });
+
+  it('_handleHostSubmit handles undefined submission', async () => {
+    const eventSpy = vi.fn();
+    el.addEventListener('formio:hostSubmit', eventSpy);
+
+    el.submitMode = 'host';
+    el._displayAsReadOnly = vi.fn().mockResolvedValue(undefined);
+    el._pendingWaits = [];
+
+    await el._handleHostSubmit(undefined, true);
+
+    const detail = eventSpy.mock.calls[0][0].detail;
+    expect(detail.data).toEqual({});
+  });
+
+  // Additional edge cases for _displayAsReadOnly
+  it('_displayAsReadOnly awaits reload before setSubmission', async () => {
+    const callOrder = [];
+    el.reload = vi.fn().mockImplementation(async () => {
+      callOrder.push('reload');
+    });
+    el.setSubmission = vi.fn().mockImplementation(() => {
+      callOrder.push('setSubmission');
+    });
+
+    await el._displayAsReadOnly({ test: 'data' });
+
+    expect(callOrder).toEqual(['reload', 'setSubmission']);
+  });
+
+  // Edge cases for submitMode with _manualSubmit
+  it('_manualSubmit skips backend when submitMode is host and event is cancelled', async () => {
+    el.submitMode = 'host';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(false);
+    el._pendingWaits = [];
+
+    await el._manualSubmit({ data: {} }, true);
+
+    expect(el._handleHostSubmit).not.toHaveBeenCalled();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('_manualSubmit skips backend when submitMode is none and waitUntil returns false', async () => {
+    el.submitMode = 'none';
+    el._handleHostSubmit = vi.fn().mockResolvedValue(undefined);
+    el._emitCancelable = vi.fn().mockReturnValue(true);
+    el._pendingWaits = [Promise.resolve(false)];
+
+    await el._manualSubmit({ data: {} }, true);
+
+    expect(el._handleHostSubmit).not.toHaveBeenCalled();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 });
