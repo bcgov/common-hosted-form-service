@@ -447,6 +447,16 @@
               ></textarea>
               <small>User object for Form.io evalContext</small>
             </div>
+
+            <div class="form-group">
+              <label for="headersJson">Headers (JSON)</label>
+              <textarea
+                id="headersJson"
+                rows="3"
+                placeholder='{"X-Custom-Header":"value","Authorization":"Bearer ..."}'
+              ></textarea>
+              <small>Headers object for Form.io evalContext</small>
+            </div>
           </div>
         </div>
 
@@ -581,6 +591,7 @@
             .value.trim(),
           tokenJson: document.getElementById('tokenJson').value.trim(),
           userJson: document.getElementById('userJson').value.trim(),
+          headersJson: document.getElementById('headersJson').value.trim(),
           readOnly: document.getElementById('readOnly').checked,
           debug: document.getElementById('debug').checked,
           isolateStyles: document.getElementById('isolateStyles').checked,
@@ -732,6 +743,7 @@
         for (const { key, value } of [
           { key: 'token', value: config.tokenJson },
           { key: 'user', value: config.userJson },
+          { key: 'headers', value: config.headersJson },
         ]) {
           if (value) {
             try {
@@ -803,6 +815,7 @@
         return [
           { key: 'token', value: config.tokenJson },
           { key: 'user', value: config.userJson },
+          { key: 'headers', value: config.headersJson },
         ]
           .map(({ key, value }) => {
             if (value) {
@@ -861,6 +874,7 @@
         return [
           { key: 'token', value: config.tokenJson },
           { key: 'user', value: config.userJson },
+          { key: 'headers', value: config.headersJson },
         ]
           .map(({ key, value }) => {
             if (value) {
