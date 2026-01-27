@@ -239,6 +239,31 @@ describe('updateService', () => {
       expect(patchAndFetchById).not.toHaveBeenCalled();
       expect(fileService.moveSubmissionFile).not.toHaveBeenCalled();
     });
+
+    it('should throw error from moveSubmissionFile instead of silently catching', async () => {
+      const fileIds = ['f1'];
+      const data = {};
+      const id = 557;
+      const user = { usernameIdp: 'uploader' };
+      const trx = {};
+
+      const submissionService = {
+        _findFileIds: jest.fn().mockReturnValue(fileIds),
+      };
+
+      fileService.read.mockResolvedValue({ id: 'f1', formSubmissionId: null });
+
+      const patchAndFetchById = jest.fn().mockResolvedValue({});
+      FileStorage.query.mockReturnValue({ patchAndFetchById });
+
+      // Mock moveSubmissionFile to throw
+      fileService.moveSubmissionFile.mockRejectedValue(new Error('File move failed'));
+
+      // Should throw, not silently catch
+      await expect(updateService._handleFileUploads(submissionService, data, id, user, trx)).rejects.toThrow('File move failed');
+
+      expect(fileService.moveSubmissionFile).toHaveBeenCalledWith(id, { id: 'f1', formSubmissionId: null }, 'uploader');
+    });
   });
 
   describe('update', () => {

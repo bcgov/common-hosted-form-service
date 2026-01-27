@@ -2,6 +2,7 @@ const config = require('config');
 const uuid = require('uuid');
 const path = require('path');
 const { FileStorage } = require('../common/models');
+const log = require('../../components/log')(module.filename);
 const storageService = require('./storage/storageService');
 
 const PERMANENT_STORAGE = config.get('files.permanent');
@@ -144,18 +145,35 @@ const service = {
    * @param {string} updatedBy the user who is saving the submission.
    */
   moveSubmissionFile: async (submissionId, fileStorage, updatedBy) => {
-    // Move the file from its current directory to the "submissions" subdirectory.
-    const path = await storageService.move(fileStorage, 'submissions', submissionId);
-    if (!path) {
-      throw new Error('Error moving files for submission');
-    }
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
 
-    await FileStorage.query().patchAndFetchById(fileStorage.id, {
-      formSubmissionId: submissionId,
-      path: path,
-      storage: PERMANENT_STORAGE,
-      updatedBy: updatedBy,
-    });
+      // Move the file from its current directory to the "submissions" subdirectory.
+      const path = await storageService.move(fileStorage, 'submissions', submissionId);
+      if (!path) {
+        throw new Error('Error moving files for submission');
+      }
+
+      await FileStorage.query(trx).patchAndFetchById(fileStorage.id, {
+        formSubmissionId: submissionId,
+        path: path,
+        storage: PERMANENT_STORAGE,
+        updatedBy: updatedBy,
+      });
+
+      await trx.commit();
+
+      // Only after successful commit, remove the original object from storage.
+      try {
+        await storageService.delete(fileStorage);
+      } catch (delErr) {
+        log.error(`Failed to delete original file after move for file ${fileStorage.id}`, delErr);
+      }
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 
   moveSubmissionFiles: async (submissionId, currentUser) => {

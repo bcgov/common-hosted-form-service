@@ -168,18 +168,10 @@ class ObjectStorageService {
 
   async move(fileStorage, ...subdirs) {
     try {
-      const sourcePath = fileStorage.path;
       const file = await this.copyFile(fileStorage, ...subdirs);
       if (file) {
         // this doesn't return the new key/path, but we can build it
         const newPath = this._join(this._key, ...subdirs, fileStorage.id);
-        // now delete original...
-        const params = {
-          Bucket: this._bucket,
-          Key: sourcePath,
-        };
-
-        await this._s3.send(new DeleteObjectCommand(params));
 
         return newPath;
       }
