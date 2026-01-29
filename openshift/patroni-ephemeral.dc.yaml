@@ -18,7 +18,7 @@ labels:
   app.kubernetes.io/name: patroni
   app.kubernetes.io/managed-by: template
   app.kubernetes.io/part-of: "${APP_NAME}-${INSTANCE}"
-  app.kubernetes.io/version: "12"
+  app.kubernetes.io/version: "16.4"
   app.openshift.io/runtime: postgresql
   cluster-name: "${INSTANCE}"
 objects:
@@ -235,6 +235,8 @@ objects:
           volumes:
             - name: postgresql
               emptyDir: {}
+          imagePullSecrets:
+            - name: artifact-chefs-service-account
       updateStrategy:
         type: RollingUpdate
   - apiVersion: v1
@@ -337,12 +339,12 @@ parameters:
       resides.
     displayName: ImageStream Namespace
     required: true
-    value: bcgov-docker-local
+    value: bb16-n1dc-common-docker
   - name: IMAGE_STREAM_TAG
     description: Patroni ImageTag
     displayName: ImageStream Tag
     required: true
-    value: patroni-postgres:2.0.1-12.4-latest
+    value: patroni-postgres:4.0.1
   - name: CPU_REQUEST
     description: Starting amount of CPU the container can use.
     displayName: CPU Request
