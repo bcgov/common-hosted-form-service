@@ -194,6 +194,29 @@ class TenantService {
 
     return true;
   }
+
+  /**
+   * Get users for a specific tenant from CSTAR
+   * @param {object} currentUser - Current user object with tenantId and authentication details
+   * @param {object} headers - Request headers for authentication
+   * @returns {Promise<Array>} Array of user objects
+   */
+  async getTenantUsers(currentUser, headers = null) {
+    if (!currentUser) {
+      throw new Error(`${SERVICE}: missing currentUser`);
+    }
+    if (!currentUser.tenantId) {
+      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+    }
+    if (!headers) {
+      throw new Error(`${SERVICE}: missing headers for tenant API authentication`);
+    }
+
+    const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
+    const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', currentUser.tenantId)}`;
+    const { data } = await axios.get(url, { headers });
+    return data?.data?.users || [];
+  }
 }
 
 /**
