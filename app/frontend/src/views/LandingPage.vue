@@ -60,12 +60,12 @@ const cstarUrl = computed(() => {
     hostname.includes('dev') ||
     hostname.includes('-pr-')
   ) {
-    return 'https://cstar-dev.apps.silver.devops.gov.bc.ca/tenants';
+    return 'https://cstar-dev.apps.silver.devops.gov.bc.ca';
   }
 
   // For test and prod environments
   // TODO: Update prod URL when available
-  return 'https://tenant-management-system-test-frontend.apps.silver.devops.gov.bc.ca/tenants';
+  return 'https://cstar-test.apps.silver.devops.gov.bc.ca';
 });
 
 // Form examples data
