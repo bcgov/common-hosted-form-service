@@ -24,6 +24,7 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
+    cy.checkA11yPage();
   });  
 // Publish a simple form with Simplebc Address component
  it('Checks Export/Import design functionality', () => {
