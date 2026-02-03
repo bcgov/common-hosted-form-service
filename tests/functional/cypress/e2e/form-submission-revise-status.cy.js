@@ -25,12 +25,16 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
-  });  
+  }); 
+  it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get('button').contains('Basic Fields').click();  
+        
+  }); 
 // Publish a simple form 
 it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    cy.get('button').contains('Basic Fields').click();
     //Phone Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
@@ -41,7 +45,7 @@ it('Verify draft submission', () => {
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
-    //Multiline Text
+    //Text field
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Text Field')

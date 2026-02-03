@@ -26,11 +26,13 @@ describe('Form Designer', () => {
     formsettings();
     cy.checkA11yPage();
   });
+  it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get('button').contains('BC Government').click();   
+    });
   it('checks Apikey Settings', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
-    cy.get('button').contains('BC Government').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-key="simplebcaddress"]')
