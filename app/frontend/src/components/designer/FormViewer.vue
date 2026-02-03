@@ -145,6 +145,8 @@ const viewerOptions = computed(() => {
   // Force recomputation of viewerOptions after rerendered formio to prevent duplicate submission update calls
   reRenderFormIo.value;
 
+  const evalContextUser = getEvalContextUser();
+
   return {
     sanitizeConfig: {
       addTags: ['iframe'],
@@ -167,10 +169,48 @@ const viewerOptions = computed(() => {
     },
     evalContext: {
       token: tokenParsed.value,
-      user: user.value,
+      user: evalContextUser,
     },
   };
 });
+
+function getEvalContextUser() {
+  // New submission (no submissionId), use current logged in user
+  if (!properties.submissionId) {
+    return user.value;
+  }
+
+  // Reviewer viewing in read-only mode, use submitter
+  if (properties.readOnly && submissionRecord.value?.createdBy) {
+    return {
+      id: submissionRecord.value.createdBy,
+      username: submissionRecord.value.createdBy,
+      fullName:
+        submissionRecord.value.createdByUsername ||
+        submissionRecord.value.createdBy,
+      email: submissionRecord.value.createdByEmail || '',
+    };
+  }
+
+  // Submitter editing their own submission, use submitter
+  if (
+    !properties.staffEditMode &&
+    submissionRecord.value?.createdBy &&
+    submissionRecord.value.createdBy === user.value?.usernameIdp
+  ) {
+    return {
+      id: submissionRecord.value.createdBy,
+      username: submissionRecord.value.createdBy,
+      fullName:
+        submissionRecord.value.createdByUsername ||
+        submissionRecord.value.createdBy,
+      email: submissionRecord.value.createdByEmail || '',
+    };
+  }
+
+  // Reviewer editing a submission, use current logged in user
+  return user.value;
+}
 
 const canSaveDraft = computed(
   () =>
