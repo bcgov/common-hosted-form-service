@@ -22,10 +22,14 @@ describe("Form Designer", () => {
     cy.waitForLoad();
     formsettings();
   });
+  it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('BC Government').click();
+  });
   it("Add IDIR User Component", () => {
     cy.viewport(1000, 1100);
-    cy.wait(1000);
-    cy.get('button').contains('BC Government').click();
     cy.wait(1000);
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
@@ -111,7 +115,7 @@ describe("Form Designer", () => {
     cy.get('.selected-user-view > :nth-child(1)').contains('CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
     //Direct Print Verification
     cy.get('.mdi-printer').click();
-    cy.wait(1000);
+    cy.wait(2000);
     cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
    }) 
 });
