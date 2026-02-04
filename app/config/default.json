@@ -34,6 +34,7 @@
     "adminDashboardUrl": "",
     "apiPath": "api/v1",
     "basePath": "/app",
+    "cstarBaseUrl": "https://cstar-dev.apps.silver.devops.gov.bc.ca",
     "oidc": {
       "clientId": "chefs-frontend-localhost-5300",
       "realm": "standard",

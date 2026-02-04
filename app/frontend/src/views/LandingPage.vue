@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { Form } from '@formio/vue';
 
 // import { useAuthStore } from '~/store/auth';
+import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
 
 // Import form example images
@@ -37,6 +38,7 @@ import successStoriesJson from '~/assets/example_form_json/chefs_success_stories
 const { locale } = useI18n({ useScope: 'global' });
 
 // const authStore = useAuthStore();
+const appStore = useAppStore();
 const formStore = useFormStore();
 
 // const { authenticated } = storeToRefs(authStore);
@@ -50,22 +52,12 @@ const techDocsUrl =
 const kudosPageUrl =
   'https://citz-do.atlassian.net/wiki/spaces/CCP/pages/338722826/CHEFS+Kudos+Page';
 
-// Determine CSTAR URL based on environment
+// Get CSTAR URL from config
 const cstarUrl = computed(() => {
-  const hostname = window.location.hostname;
-
-  // Check if localhost, dev, or pr environment
-  if (
-    hostname === 'localhost' ||
-    hostname.includes('dev') ||
-    hostname.includes('-pr-')
-  ) {
-    return 'https://cstar-dev.apps.silver.devops.gov.bc.ca';
-  }
-
-  // For test and prod environments
-  // TODO: Update prod URL when available
-  return 'https://cstar-test.apps.silver.devops.gov.bc.ca';
+  return (
+    appStore.config?.cstarBaseUrl ||
+    'https://cstar-dev.apps.silver.devops.gov.bc.ca'
+  );
 });
 
 // Form examples data

@@ -95,6 +95,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useAppStore } from '~/store/app';
 import { useTenantStore } from '~/store/tenant';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
@@ -102,6 +103,7 @@ import { useNotificationStore } from '~/store/notification';
 const { locale } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
+const appStore = useAppStore();
 const tenantStore = useTenantStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
@@ -172,11 +174,9 @@ const switchToClassicChefs = async () => {
 
 // Navigate to CSTAR external system
 const goToCSTAR = () => {
-  // Get CSTAR URL from config or environment
-  // TODO change to env later
   const cstarUrl =
-    import.meta.env.VITE_CSTAR_URL ||
-    'https://tenant-management-system-dev-frontend.apps.silver.devops.gov.bc.ca';
+    appStore.config?.cstarBaseUrl ||
+    'https://cstar-dev.apps.silver.devops.gov.bc.ca';
   window.open(cstarUrl, '_blank');
 };
 

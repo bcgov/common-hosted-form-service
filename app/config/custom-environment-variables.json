@@ -36,6 +36,7 @@
     "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
+    "cstarBaseUrl": "VITE_CSTAR_BASE_URL",
     "oidc": {
       "clientId": "OIDC_CLIENTID",
       "realm": "OIDC_REALM",
