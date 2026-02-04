@@ -32,7 +32,27 @@ class TenantService {
     const headers = this._getAuthHeaders(req);
     try {
       const { data } = await axios.get(url, { headers });
-      return data?.data?.tenants || [];
+      const tenants = data?.data?.tenants || [];
+      if (!Array.isArray(tenants) || tenants.length === 0) return [];
+
+      const tenantsWithRoles = await Promise.all(
+        tenants.map(async (tenant) => {
+          const tenantId = tenant?.id;
+          if (!tenantId) return { ...tenant, roles: [] };
+
+          const reqContext = {
+            ...req,
+            currentUser: { ...req.currentUser, tenantId },
+            headers: req.headers,
+          };
+
+          const groups = await this.getUserTenantGroupsAndRoles(reqContext);
+          const roles = Array.isArray(groups) ? groups.flatMap((group) => group.roles || []) : [];
+          return { ...tenant, roles: [...new Set(roles)] };
+        })
+      );
+
+      return tenantsWithRoles;
     } catch (error) {
       const status = error?.response?.status;
       const isUnavailable = [502, 503, 504].includes(status);
@@ -197,25 +217,22 @@ class TenantService {
 
   /**
    * Get users for a specific tenant from CSTAR
-   * @param {object} currentUser - Current user object with tenantId and authentication details
-   * @param {object} headers - Request headers for authentication
+   * @param {object} req - Express request object with currentUser and headers
    * @returns {Promise<Array>} Array of user objects
    */
-  async getTenantUsers(currentUser, headers = null) {
-    if (!currentUser) {
+  async getTenantUsers(req) {
+    if (!req || !req.currentUser) {
       throw new Error(`${SERVICE}: missing currentUser`);
     }
-    if (!currentUser.tenantId) {
+    if (!req.currentUser.tenantId) {
       throw new Error(`${SERVICE}: missing currentUser.tenantId`);
-    }
-    if (!headers) {
-      throw new Error(`${SERVICE}: missing headers for tenant API authentication`);
     }
 
     const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
-    const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', currentUser.tenantId)}`;
+    const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', req.currentUser.tenantId)}`;
+    const headers = this._getAuthHeaders(req);
     const { data } = await axios.get(url, { headers });
-    return data?.data?.users || [];
+    return data?.data?.users || data?.users || [];
   }
 }
 
