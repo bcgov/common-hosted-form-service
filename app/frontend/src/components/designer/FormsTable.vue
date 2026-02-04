@@ -24,7 +24,7 @@ const tenantStore = useTenantStore();
 
 const { formList, isRTL } = storeToRefs(formStore);
 const { user } = storeToRefs(useAuthStore());
-const { selectedTenant } = storeToRefs(tenantStore);
+const { selectedTenant, isFormAdmin } = storeToRefs(tenantStore);
 
 const headers = computed(() => [
   {
@@ -43,9 +43,14 @@ const headers = computed(() => [
   },
 ]);
 
-const canCreateForm = computed(() =>
-  idpStore.isPrimary(user?.value?.idp?.code)
-);
+const canCreateForm = computed(() => {
+  // For Enterprise CHEFS (tenanted): check if user has form_admin role on selected tenant
+  // For Classic CHEFS: use the primary IdP check
+  if (selectedTenant.value) {
+    return isFormAdmin.value;
+  }
+  return idpStore.isPrimary(user?.value?.idp?.code);
+});
 
 const pageTitle = computed(() => {
   // Show "My Forms" for Classic CHEFS (no tenant selected)

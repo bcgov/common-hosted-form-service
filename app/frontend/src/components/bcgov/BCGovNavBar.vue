@@ -22,9 +22,14 @@ const tenantStore = useTenantStore();
 const { authenticated, isAdmin, identityProvider } = storeToRefs(
   useAuthStore()
 );
-const { selectedTenant } = storeToRefs(tenantStore);
+const { selectedTenant, isFormAdmin } = storeToRefs(tenantStore);
 
 const hasPrivileges = computed(() => {
+  // For Enterprise CHEFS (tenanted): check if user has form_admin role on selected tenant
+  // For Classic CHEFS: use the primary IdP check
+  if (selectedTenant.value) {
+    return isFormAdmin.value;
+  }
   return idpStore.isPrimary(identityProvider?.value?.code);
 });
 

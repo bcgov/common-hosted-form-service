@@ -30,6 +30,12 @@ export const useTenantStore = defineStore('tenant', {
     hasTenants: (state) => state.tenants.length > 0,
 
     /**
+     * Check if the selected tenant has form_admin role
+     */
+    isFormAdmin: (state) =>
+      state.selectedTenant?.roles?.includes('form_admin') ?? false,
+
+    /**
      * Get formatted tenant list for dropdown
      */
     tenantsList: (state) =>
