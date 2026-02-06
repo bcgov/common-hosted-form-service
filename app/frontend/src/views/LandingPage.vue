@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { Form } from '@formio/vue';
 
-// import { useAuthStore } from '~/store/auth';
+import { useAuthStore } from '~/store/auth';
 import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
 
@@ -37,11 +37,11 @@ import successStoriesJson from '~/assets/example_form_json/chefs_success_stories
 
 const { locale } = useI18n({ useScope: 'global' });
 
-// const authStore = useAuthStore();
+const authStore = useAuthStore();
 const appStore = useAppStore();
 const formStore = useFormStore();
 
-// const { authenticated } = storeToRefs(authStore);
+const { authenticated } = storeToRefs(authStore);
 const { isRTL } = storeToRefs(formStore);
 
 // Tech Docs URL
@@ -613,6 +613,16 @@ const testimonials = [
               {{ $t('trans.landingPage.finalCta.description') }}
             </p>
             <v-btn
+              v-if="authenticated"
+              color="primary"
+              size="large"
+              :to="{ name: 'FormCreate' }"
+              class="login-btn"
+            >
+              {{ $t('trans.homePage.createFormLabel') }}
+            </v-btn>
+            <v-btn
+              v-else
               color="primary"
               size="large"
               :to="{ name: 'Login' }"
