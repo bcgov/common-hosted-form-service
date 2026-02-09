@@ -2210,10 +2210,11 @@ describe('ChefsFormViewer internals', () => {
       .fn()
       .mockReturnValue({ 'X-Chefs-Gateway-Token': 'test' });
 
-    // Mock XMLHttpRequest
+    // Mock XMLHttpRequest with proper spy tracking
+    const addEventListenerSpy = vi.fn();
     const mockXhr = {
       upload: { addEventListener: vi.fn() },
-      addEventListener: vi.fn(),
+      addEventListener: addEventListenerSpy,
       open: vi.fn(),
       setRequestHeader: vi.fn(),
       send: vi.fn(),
@@ -2222,15 +2223,19 @@ describe('ChefsFormViewer internals', () => {
       responseText: '{"success": true}',
     };
 
-    globalThis.XMLHttpRequest = vi.fn(() => mockXhr);
+    globalThis.XMLHttpRequest = vi.fn(function () {
+      Object.assign(this, mockXhr);
+    });
 
     const uploadPromise = el._handleFileUpload(formData, config);
 
     // Simulate successful upload
-    const loadHandler = mockXhr.addEventListener.mock.calls.find(
+    const loadHandler = addEventListenerSpy.mock.calls.find(
       (call) => call[0] === 'load'
-    )[1];
-    loadHandler();
+    );
+    if (loadHandler && loadHandler[1]) {
+      loadHandler[1]();
+    }
 
     const result = await uploadPromise;
     expect(result.data).toEqual({ success: true });
@@ -2504,7 +2509,11 @@ describe('ChefsFormViewer internals', () => {
 
   it('_createFormioInstance falls back to Form constructor', async () => {
     const mockForm = { id: 'test-form' };
-    globalThis.Formio = { Form: vi.fn().mockReturnValue(mockForm) };
+    // Create a proper constructor function
+    const FormConstructor = vi.fn(function() {
+      Object.assign(this, mockForm);
+    });
+    globalThis.Formio = { Form: FormConstructor };
     globalThis.FormViewerUtils.validateGlobalMethods = vi
       .fn()
       .mockReturnValue(false);
@@ -2520,7 +2529,7 @@ describe('ChefsFormViewer internals', () => {
       schema,
       options
     );
-    expect(result).toBe(mockForm);
+    expect(result).toEqual(expect.objectContaining(mockForm));
     delete globalThis.Formio;
   });
 
