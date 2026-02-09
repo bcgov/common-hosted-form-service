@@ -49,6 +49,50 @@ describe('Form Designer', () => {
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
+    //Publish the form
+    cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="publishRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.get('span').contains('Publish Version 1');
+    cy.contains('Continue').should('be.visible');
+    cy.contains('Continue').trigger('click');
+    //Update form design version
+    cy.get('.mdi-plus').click();
+    //Add new component to version 1
+    cy.get('div.formio-builder-form').then($el => {
+    const coords = $el[0].getBoundingClientRect();
+    cy.get('span.btn').contains('Columns - 2')
+    .trigger('mousedown', { which: 1}, { force: true })
+    .trigger('mousemove', coords.x, -140, { force: true })
+    .trigger('mouseup', { force: true });
+    cy.get('.btn-success').click();
+    });
+     // Form saving
+    cy.wait(1000); 
+    cy.get('[data-cy=saveButton]').click();
+    cy.wait(2000);
+    cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.get('span').contains('Please publish or delete your latest draft version before starting a new version.').should('exist');
+    cy.get('.mdi-plus').should('not.be.enabled');
+    cy.get('button[title="Delete Version"]').should('be.visible');
+    cy.get('button[title="Delete Version"]').click();
+    cy.get('span').contains('Are you sure you wish to delete this Version?').should('be.visible');
+    cy.get('button').contains('Delete').should('be.visible').click();
+    cy.get('button[title="Delete Version"]').should('not.exist');
+    //Update form design version
+    cy.get('.mdi-plus').click();
+    cy.get('div.formio-builder-form').then($el => {
+    const coords = $el[0].getBoundingClientRect();
+    cy.get('span.btn').contains('Columns - 3')
+    .trigger('mousedown', { which: 1}, { force: true })
+    .trigger('mousemove', coords.x, -140, { force: true })
+    .trigger('mouseup', { force: true });
+    cy.get('.btn-success').click();
+    });
+    //Form saving
+    cy.wait(1000); 
+    cy.get('[data-cy=saveButton]').click();
+    cy.wait(1000);
     cy.get('.mdi-dots-vertical').click();
     cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
     cy.wait(500);
