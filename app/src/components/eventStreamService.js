@@ -228,7 +228,7 @@ class EventStreamService {
     } catch (e) {
       log.error(e.message, { function: 'connected' });
     }
-    return false;
+    return true;
   }
 
   async _getForm(formId) {
