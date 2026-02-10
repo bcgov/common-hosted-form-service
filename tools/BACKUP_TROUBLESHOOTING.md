@@ -14,7 +14,6 @@ Notes for debugging and operating the Patroni/PostgreSQL backups (bcgov/backup-c
   - **Monthly** — Last calendar day of month → stored under `monthly/YYYY-MM-DD`
 - **Storage:** Backups are written to the PVC mounted at `/backups/` (e.g. `backup-a12c97-<env>`).
 - **Config:** `backup-postgres-config` ConfigMap and `patroni-master-secret` (DB credentials).
-- **On completion:** The backup script runs **`backup.sh -l`** to print a full listing of existing backups (same output you see at the end of a backup job log).
 
 To get a **weekly** or **monthly** backup on demand, run the same one-off job on a **Sunday** or on the **last day of the month**; the script classifies by date.
 
@@ -28,9 +27,9 @@ Run a single backup without waiting for the cron schedule. Use the same command 
 
 Switch to the target project first, then create the job:
 
-| Environment | Namespace     | Commands |
-|-------------|---------------|----------|
-| **Dev**     | `a12c97-dev`  | `oc project a12c97-dev` then `oc create job troubleshoot-backup-1 --from=cronjob/backup-postgres -n a12c97-dev` |
+| Environment | Namespace     | Commands                                                                                                          |
+| ----------- | ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Dev**     | `a12c97-dev`  | `oc project a12c97-dev` then `oc create job troubleshoot-backup-1 --from=cronjob/backup-postgres -n a12c97-dev`   |
 | **Test**    | `a12c97-test` | `oc project a12c97-test` then `oc create job troubleshoot-backup-1 --from=cronjob/backup-postgres -n a12c97-test` |
 | **Prod**    | `a12c97-prod` | `oc project a12c97-prod` then `oc create job troubleshoot-backup-1 --from=cronjob/backup-postgres -n a12c97-prod` |
 
@@ -67,9 +66,9 @@ To list backups, check sizes, or prune old backups manually, run a short-lived p
 
 Use the helper YAML in this directory (replace `<env>` with the target environment):
 
-| Environment | Namespace     | PVC name            | YAML file |
-|-------------|---------------|---------------------|-----------|
-| **Dev**     | `a12c97-dev`  | `backup-a12c97-dev`  | [backup-review-pod-dev.yaml](./backup-review-pod-dev.yaml) |
+| Environment | Namespace     | PVC name             | YAML file                                                    |
+| ----------- | ------------- | -------------------- | ------------------------------------------------------------ |
+| **Dev**     | `a12c97-dev`  | `backup-a12c97-dev`  | [backup-review-pod-dev.yaml](./backup-review-pod-dev.yaml)   |
 | **Test**    | `a12c97-test` | `backup-a12c97-test` | [backup-review-pod-test.yaml](./backup-review-pod-test.yaml) |
 | **Prod**    | `a12c97-prod` | `backup-a12c97-prod` | [backup-review-pod-prod.yaml](./backup-review-pod-prod.yaml) |
 
@@ -97,8 +96,6 @@ ls -laR /mnt/daily /mnt/weekly /mnt/monthly
 # Or list all backup files with sizes in a single view
 find /mnt/daily /mnt/weekly /mnt/monthly -type f -exec ls -lh {} \;
 ```
-
-**Same listing as the backup job:** The backup container itself uses **`backup.sh -l`** to show the full backup listing when a run completes. To get that same output, run a one-off backup job and check its logs, or rsh into a backup pod (if you have a long-running backup deployment) and run `backup.sh -l` there.
 
 ### Example: prune to keep only recent backups
 
