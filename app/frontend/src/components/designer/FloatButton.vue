@@ -242,17 +242,27 @@ defineExpose({
             </v-btn>
           </div>
           <!-- Preview Button -->
-          <div
-            class="d-flex flex-column align-center icon-button"
-            :class="{ 'disabled-router': !canPreview }"
-            data-cy="previewRouterLink"
-            @click="handlePreviewClick"
+          <v-tooltip
+            :disabled="canPreview"
+            location="top"
+            text="Please save your draft to preview"
           >
-            <v-btn :disabled="!canPreview" density="compact" icon stacked>
-              <v-icon icon="mdi:mdi-eye" />
-              {{ $t('trans.floatButton.preview') }}
-            </v-btn>
-          </div>
+            <template #activator="{ props }">
+              <div v-bind="props">
+                <div
+                  class="d-flex flex-column align-center icon-button"
+                  :class="{ 'disabled-router': !canPreview }"
+                  data-cy="previewRouterLink"
+                  @click="canPreview && handlePreviewClick()"
+                >
+                  <v-btn :disabled="!canPreview" density="compact" icon stacked>
+                    <v-icon icon="mdi:mdi-eye" />
+                    {{ $t('trans.floatButton.preview') }}
+                  </v-btn>
+                </div>
+              </div>
+            </template>
+          </v-tooltip>
 
           <!-- Manage Button (Router-link) -->
           <router-link
@@ -410,18 +420,33 @@ defineExpose({
 
             <v-list>
               <!-- Preview Button -->
+
               <v-list-item>
-                <div
-                  class="d-flex flex-column"
-                  :class="{ 'disabled-router': !canPreview }"
-                  data-cy="previewRouterLink"
-                  @click="handlePreviewClick"
+                <v-tooltip
+                  :disabled="canPreview"
+                  location="top"
+                  text="Please save your draft to preview"
                 >
-                  <v-btn :disabled="!canPreview" density="compact" prepend-icon>
-                    <v-icon class="mr-1" icon="mdi:mdi-eye" />
-                    {{ $t('trans.floatButton.preview') }}
-                  </v-btn>
-                </div>
+                  <template #activator="{ props }">
+                    <div v-bind="props">
+                      <div
+                        class="d-flex flex-column"
+                        :class="{ 'disabled-router': !canPreview }"
+                        data-cy="previewRouterLink"
+                        @click="handlePreviewClick"
+                      >
+                        <v-btn
+                          :disabled="!canPreview"
+                          density="compact"
+                          prepend-icon
+                        >
+                          <v-icon class="mr-1" icon="mdi:mdi-eye" />
+                          {{ $t('trans.floatButton.preview') }}
+                        </v-btn>
+                      </div>
+                    </div>
+                  </template>
+                </v-tooltip>
               </v-list-item>
               <!-- Manage Button (Router-link) -->
               <v-list-item>
