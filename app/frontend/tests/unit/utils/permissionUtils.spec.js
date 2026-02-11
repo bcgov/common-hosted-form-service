@@ -161,13 +161,17 @@ describe('preFlightAuth', () => {
     mockNext.mockReset();
     addNotificationSpy.mockReset();
     alertNavigateSpy.mockReset();
+    alertNavigateSpy.mockImplementation(() => {});
     errorNavigateSpy.mockReset();
+    errorNavigateSpy.mockImplementation(() => {});
     getSubmissionOptionsSpy.mockReset();
     readFormOptionsSpy.mockReset();
   });
 
   afterAll(() => {
     mockNext.mockRestore();
+    alertNavigateSpy.mockRestore();
+    errorNavigateSpy.mockRestore();
     getSubmissionOptionsSpy.mockReset();
     readFormOptionsSpy.mockRestore();
   });
@@ -197,7 +201,6 @@ describe('preFlightAuth', () => {
 
       throw error;
     });
-    alertNavigateSpy.mockImplementation(() => {});
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
 
@@ -223,7 +226,6 @@ describe('preFlightAuth', () => {
 
       throw error;
     });
-    alertNavigateSpy.mockImplementation(() => {});
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
 
