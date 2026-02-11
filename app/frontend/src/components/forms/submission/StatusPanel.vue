@@ -8,7 +8,6 @@ import { formService, rbacService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { useTenantStore } from '~/store/tenant';
 import { FormPermissions } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -50,11 +49,8 @@ const emailRecipients = ref([]);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
-const tenantStore = useTenantStore();
-
 const { user } = storeToRefs(useAuthStore());
 const { form, formSubmission, submissionUsers, isRTL } = storeToRefs(formStore);
-const { selectedTenant } = storeToRefs(tenantStore);
 
 // State Machine
 const showAssignee = computed(() => ['ASSIGNED'].includes(statusToSet.value));
