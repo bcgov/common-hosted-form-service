@@ -59,6 +59,7 @@ export const useTenantStore = defineStore('tenant', {
           this.selectedTenant = JSON.parse(stored);
         }
       } catch (error) {
+        console.warn('Failed to parse stored tenant, clearing:', error); // eslint-disable-line no-console
         localStorage.removeItem('selectedTenant');
       }
     },
@@ -77,7 +78,7 @@ export const useTenantStore = defineStore('tenant', {
           localStorage.removeItem('selectedTenant');
         }
       } catch (error) {
-        // Error saving tenant to localStorage
+        console.warn('Failed to persist tenant to localStorage:', error); // eslint-disable-line no-console
       }
     },
 
@@ -92,7 +93,7 @@ export const useTenantStore = defineStore('tenant', {
           return;
         }
       } catch (error) {
-        // Router might not be available yet, continue with fetch
+        console.warn('Router not available during fetchTenants:', error); // eslint-disable-line no-console
       }
 
       this.loading = true;

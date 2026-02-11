@@ -161,6 +161,7 @@ defineExpose({
           query: { f: item.id },
         }"
         target="_blank"
+        rel="noopener noreferrer"
       >
         <v-tooltip location="bottom">
           <template #activator="{ props }">

@@ -133,7 +133,11 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
           </h4>
           <p class="mt-2 mb-0" :lang="locale">
             {{ $t('trans.formSettings.info') }}
-            <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
+            <a
+              href="https://engage.gov.bc.ca/govtogetherbc/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               govTogetherBC.
               <v-icon size="small" color="primary" icon="mdi:mdi-open-in-new" />
             </a>

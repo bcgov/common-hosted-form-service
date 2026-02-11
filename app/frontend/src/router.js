@@ -445,50 +445,48 @@ export default function getRouter(basePath = '/') {
     },
   });
 
-  router.beforeEach((to, from, next) => {
+  function handleFirstTransition(to, authStore) {
+    if (!isFirstTransition) return;
+
+    // Always call rbac/current if authenticated and on first page load
+    if (authStore?.ready && authStore?.authenticated) {
+      const formStore = useFormStore();
+      formStore.getFormsForCurrentUser();
+      const tenantStore = useTenantStore();
+      tenantStore.fetchTenants();
+    }
+
+    // Handle proper redirections on first page load
+    if (to.query.r) {
+      router.replace({
+        path: to.query.r.replace(basePath, ''),
+        query: (({ r, ...q }) => q)(to.query), // eslint-disable-line no-unused-vars
+      });
+    }
+  }
+
+  function handleAuthRedirect(to, authStore) {
+    const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
+    if (!requiresAuth || !authStore.ready || authStore.authenticated) return;
+
+    const redirectUri = location.origin + basePath + to.path + location.search;
+    authStore.redirectUri = redirectUri;
+
+    const idpStore = useIdpStore();
+    const idpHint =
+      to.meta.requiresAuth === 'primary'
+        ? idpStore.primaryIdp?.code ?? null
+        : undefined;
+    authStore.login(idpHint);
+  }
+
+  router.beforeEach((to, _from, next) => {
     NProgress.start();
 
     const authStore = useAuthStore();
-    const idpStore = useIdpStore();
 
-    if (isFirstTransition) {
-      // Always call rbac/current if authenticated and on first page load
-      if (authStore?.ready && authStore?.authenticated) {
-        const formStore = useFormStore();
-        formStore.getFormsForCurrentUser();
-      }
-
-      // Handle proper redirections on first page load
-      if (to.query.r) {
-        router.replace({
-          path: to.query.r.replace(basePath, ''),
-          query: (({ r, ...q }) => q)(to.query), // eslint-disable-line no-unused-vars
-        });
-      }
-    }
-
-    // Force login redirect if not authenticated
-    // Note some pages (Submit and Success) only require auth if the form being loaded is secured
-    // in those cases, see the beforeEnter navigation guards for auth loop determination
-    if (
-      to.matched.some((route) => route.meta.requiresAuth) &&
-      authStore.ready &&
-      !authStore.authenticated
-    ) {
-      const redirectUri =
-        location.origin + basePath + to.path + location.search;
-      authStore.redirectUri = redirectUri;
-
-      // Determine what kind of redirect behavior is needed
-      let idpHint = undefined;
-      if (
-        typeof to.meta.requiresAuth === 'string' &&
-        to.meta.requiresAuth === 'primary'
-      ) {
-        idpHint = idpStore.primaryIdp ? idpStore.primaryIdp.code : null;
-      }
-      authStore.login(idpHint);
-    }
+    handleFirstTransition(to, authStore);
+    handleAuthRedirect(to, authStore);
 
     // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
     const tenantStore = useTenantStore();
@@ -498,12 +496,11 @@ export default function getRouter(basePath = '/') {
       tenantStore.selectedTenant &&
       !tenantStore.isFormAdmin
     ) {
-      // Redirect to forms list if user doesn't have form_admin role
       return next({ name: 'UserForms' });
     }
 
     // Update document title if applicable
-    document.title = to.meta.title ? to.meta.title : import.meta.env.VITE_TITLE;
+    document.title = to.meta.title || import.meta.env.VITE_TITLE;
     next();
   });
 

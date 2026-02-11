@@ -188,6 +188,7 @@ defineExpose({
                 :href="githubLinkBulkUpload"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -236,6 +237,7 @@ defineExpose({
                 :href="githubLinkScheduleAndReminderFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -278,6 +280,7 @@ defineExpose({
                 :href="githubLinkCopyFromExistingFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -320,6 +323,7 @@ defineExpose({
                 :href="githubLinkEventSubscriptionFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -362,6 +366,7 @@ defineExpose({
                 :href="githubLinkWideFormLayout"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
