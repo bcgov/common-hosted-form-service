@@ -150,7 +150,7 @@ const downloadFormJSON = (example) => {
 
 // Method to open kudos page
 const openKudosPage = () => {
-  window.open(kudosPageUrl, '_blank');
+  window.open(kudosPageUrl, '_blank', 'noopener,noreferrer');
 };
 
 // Formio form viewer options - readonly mode
