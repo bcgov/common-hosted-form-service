@@ -249,10 +249,6 @@ async function getStatus() {
     if (!form.value.enableSubmitterDraft) {
       items.value = items.value.filter((item) => item !== 'REVISING');
     }
-    // Filter out ASSIGNED if tenant is selected
-    if (selectedTenant.value) {
-      items.value = items.value.filter((item) => item !== 'ASSIGNED');
-    }
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.statusPanel.notifyErrorCode'),
