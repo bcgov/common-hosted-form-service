@@ -2,6 +2,7 @@ const emailService = require('../email/emailService');
 const formService = require('../submission/service');
 const service = require('./service');
 const tenantService = require('../../components/tenantService');
+const userService = require('../user/service');
 module.exports = {
   list: async (req, res, next) => {
     try {
@@ -53,7 +54,8 @@ module.exports = {
   },
   getCurrentUserForms: async (req, res, next) => {
     try {
-      const response = await service.getCurrentUserForms(req.currentUser, req.query);
+      // Pass headers for tenant API authentication
+      const response = await service.getCurrentUserForms(req.currentUser, req.query, req.headers);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -69,7 +71,54 @@ module.exports = {
   },
   getFormUsers: async (req, res, next) => {
     try {
-      const response = await service.getFormUsers(req.query);
+      let response;
+      if (req.currentUser && req.currentUser.tenantId) {
+        // If user has tenantId, get users for that tenant from CSTAR
+        const tenantUsers = await tenantService.getTenantUsers(req);
+        response = await Promise.all(
+          tenantUsers.map(async (user) => {
+            const ssoUser = user?.ssoUser || {};
+            const idpType = ssoUser?.idpType || null;
+            const identityProviders = idpType ? [idpType] : [];
+            let resolvedUserId = user?.id || null;
+
+            if (ssoUser?.ssoUserId) {
+              const dbUser = await userService.readByKeycloakId(ssoUser.ssoUserId);
+              if (dbUser?.id) {
+                resolvedUserId = dbUser.id;
+              }
+            }
+
+            return {
+              userId: resolvedUserId,
+              idpUserId: ssoUser?.ssoUserId || null,
+              username: ssoUser?.userName || null,
+              fullName: ssoUser?.displayName || null,
+              firstName: ssoUser?.firstName || null,
+              lastName: ssoUser?.lastName || null,
+              email: ssoUser?.email || null,
+              formId: null,
+              formName: null,
+              labels: [],
+              user_idpCode: idpType,
+              identityProviders,
+              form_login_required: identityProviders,
+              idps: identityProviders,
+              active: user?.isDeleted === false,
+              formVersionId: null,
+              version: null,
+              roles: [],
+              permissions: [],
+              published: null,
+              versionUpdatedAt: null,
+              formDescription: null,
+            };
+          })
+        );
+      } else {
+        // Otherwise get form users from local service
+        response = await service.getFormUsers(req.query);
+      }
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -155,8 +204,14 @@ module.exports = {
   },
   getCurrentUserTenants: async (req, res, next) => {
     try {
-      if (!req.currentUser || !req.currentUser.idpUserId) return res.status(200).json([]);
+      if (!req.currentUser || !req.currentUser.idpUserId) {
+        return res.status(200).json([]);
+      }
       const tenants = await tenantService.getCurrentUserTenants(req);
+      // If upstream tenant service was degraded, inform clients via header
+      if (req._tenantServiceDegraded) {
+        res.set('X-Tenant-Service-Status', 'degraded');
+      }
       res.status(200).json(tenants);
     } catch (error) {
       next(error);
@@ -182,7 +237,6 @@ module.exports = {
       const result = await tenantService.assignGroupsToForm(req, formId, groupIds);
       res.status(200).json({ success: result });
     } catch (error) {
-      console.error('Error in assignGroupsToForm:', error);
       next(error);
     }
   },

@@ -44,6 +44,12 @@ jobs:
           CYPRESS_depEnv: 'pr-${{ inputs.pr-number }}'
           
      - uses: actions/upload-artifact@v4
+       if: always()
+       with:
+          name: cypress-axe-reports
+          path: '${{ github.workspace }}/tests/functional/cypress/axe-reports'
+     
+     - uses: actions/upload-artifact@v4
        if: failure()
        with:
           name: cypress-screenshots

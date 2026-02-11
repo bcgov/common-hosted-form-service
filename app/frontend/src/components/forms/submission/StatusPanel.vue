@@ -49,7 +49,6 @@ const emailRecipients = ref([]);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
-
 const { user } = storeToRefs(useAuthStore());
 const { form, formSubmission, submissionUsers, isRTL } = storeToRefs(formStore);
 
@@ -242,6 +241,7 @@ async function getStatus() {
       ).statusCode;
       items.value = currentStatus.value.statusCodeDetail.nextCodes;
     }
+    // Filter out REVISING if drafts not enabled
     if (!form.value.enableSubmitterDraft) {
       items.value = items.value.filter((item) => item !== 'REVISING');
     }

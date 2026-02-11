@@ -85,6 +85,8 @@
     "uploadError": "خطایی در هنگام بارگذاری قالب رخ داد.",
     "deleteSuccess": "قالب با موفقیت حذف شد.",
     "deleteError": "خطایی در هنگام حذف قالب رخ داد.",
+    "deleteErrorInUse": "نمی‌توان قالب را حذف کرد: قالب در حال حاضر توسط پیکربندی چاپ استفاده می‌شود. لطفاً ابتدا تنظیمات پیکربندی چاپ را به‌روزرسانی کنید.",
+    "deleteDisabledTooltip": "این قالب در حال حاضر توسط پیکربندی چاپ استفاده می‌شود. لطفاً ابتدا تنظیمات پیکربندی چاپ را به‌روزرسانی کنید.",
     "fetchError": "خطایی در هنگام دریافت قالب رخ داد.",
     "info": "قالبی را بارگذاری کنید تا از خدمات تولید سند مشترک (CDOGS) استفاده کنید",
     "fileSizeError": "اندازه فایل باید کمتر از 25 مگابایت باشد."
@@ -204,7 +206,38 @@
     "encryptionKeyUpdatedBy": "کلید رمزگذاری به روز شده توسط",
     "encryptionKeyCopySnackbar": "کلید رمزگذاری در کلیپ بورد کپی شد",
     "encryptionKeyCopyTooltip": "کلید رمزگذاری را در کلیپ بورد کپی کنید",
-    "encryptionKeyGenerate": "ایجاد کلید رمزگذاری"
+    "encryptionKeyGenerate": "ایجاد کلید رمزگذاری",
+    "dataRetention": "سیاست نگهداری داده‌ها",
+    "enableHardDeletion": "فعال‌سازی حذف خودکار دائمی",
+    "hardDeletionTooltip": "در صورت فعال‌سازی، پس از پایان دوره نگهداری، داده‌های علامت‌گذاری شده برای حذف به طور دائمی حذف می‌شوند.",
+    "hardDeletionWarning": "حذف دائمی قابل برگشت نیست.",
+    "permanentDeletion": "داده‌ها پس از حذف غیرقابل بازیابی خواهند بود.",
+    "dataClassification": "طبقه‌بندی داده‌ها",
+    "dataClassificationHint": "نوع داده‌های جمع‌آوری شده توسط این فرم را دسته‌بندی کنید",
+    "retentionPeriod": "دوره نگهداری",
+    "retentionPeriodHint": "مدت زمان نگهداری داده‌های حذف شده قبل از حذف دائمی",
+    "classPublic": "عمومی",
+    "classInternal": "داخلی",
+    "classSensitive": "حساس",
+    "classConfidential": "محرمانه",
+    "classProtected": "حفاظت شده",
+    "classificationCustomHint": "در صورت نیاز می‌توانید یک طبقه‌بندی سفارشی وارد کنید",
+    "days30": "۳۰ روز",
+    "days90": "۹۰ روز",
+    "days180": "۱۸۰ روز",
+    "year1": "۱ سال (۳۶۵ روز)",
+    "years2": "۲ سال (۷۳۰ روز)",
+    "years5": "۵ سال (۱۸۲۵ روز)",
+    "daysCustom": "دوره سفارشی",
+    "customDaysLabel": "دوره نگهداری سفارشی (روز)",
+    "customDaysHint": "عددی بین ۱ تا ۳۶۵۰ روز (۱۰ سال) وارد کنید",
+    "classificationDescription": "یادداشت‌های طبقه‌بندی",
+    "classificationDescriptionHint": "توضیحات اختیاری درباره دلیل انتخاب این طبقه‌بندی و دوره نگهداری",
+    "retentionDaysUpdated": "دوره نگهداری به‌روز شد",
+    "deletionDisclaimerWithDays": "هشدار: پس از {days} روز، داده‌های علامت‌گذاری شده برای حذف به طور دائمی حذف می‌شوند و قابل بازیابی نخواهند بود.",
+    "setRetentionPrompt": "لطفاً برای تکمیل سیاست نگهداری داده‌ها، یک دوره نگهداری تعیین کنید.",
+    "fetchRetentionClassificationListError": "خطا در دریافت فهرست طبقه‌بندی‌های نگهداری.",
+    "fetchRetentionClassificationListConsErrMsg": "خطا در دریافت طبقه‌بندی‌های نگهداری: {error}"
   },
   "formProfile": {
     "message": "تیم CHEFS اطلاعات را جمع آوری و سازماندهی می‌کند تا به عنوان ورودی حیاتی برای ساخت مورد کارهای تجاری جامع عمل کند. این موارد نقش کلیدی در راهنمایی عملیات استراتژیک و بهبود مستمر CHEFS در سال‌های آینده خواهند داشت. این اقدام برای جمع‌آوری داده‌ها برای اطلاع از تصمیمات حیاتی و شکل‌دهی مسیر CHEFS جهت اطمینان از قابلیت تطبیق و کارایی آن در مواجهه با نیازها و چالش‌های در حال تحول حیاتی است.",
@@ -1117,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "تنظیمات اشتراک برای این فرم ذخیره شده است.",
       "saveSubscriptionSettingsErrMsg": "هنگام تلاش برای ذخیره تنظیمات اشتراک خطایی روی داد.",
       "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "هنگام واکشی سیاست نگهداری برای این فرم خطایی روی داد.",
+      "getFormRetentionPolicyConsErrMsg": "خطا در دریافت سیاست نگهداری فرم {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "هنگام پیکربندی سیاست نگهداری برای این فرم خطایی روی داد.",
+      "configureFormRetentionPolicyConsErrMsg": "خطا در پیکربندی سیاست نگهداری برای فرم {formId}: {error}"
     }
   },
   "admin": {
@@ -1155,6 +1194,33 @@
     "editTitle": "ویرایش پیکربندی جریان رویداد",
     "fetchError": "هنگام واکشی پیکربندی جریان رویداد خطایی روی داد.",
     "save": "ذخیره کنید"
+  },
+  "printConfig": {
+    "title": "پیکربندی چاپ",
+    "description": "پیکربندی نحوه چاپ ارسال‌های فرم توسط کاربران",
+    "typeDefault": "پیش‌فرض",
+    "typeDefaultDescription": "کاربران می‌توانند روش چاپ را انتخاب کنند (چاپ مرورگر یا قالب)",
+    "typeDirect": "چاپ مستقیم",
+    "typeDirectDescription": "کاربران مستقیماً با استفاده از قالب از پیش پیکربندی شده چاپ می‌کنند (خروجی PDF)",
+    "selectTemplate": "انتخاب قالب",
+    "save": "ذخیره پیکربندی",
+    "saving": "در حال ذخیره...",
+    "saveSuccess": "پیکربندی چاپ با موفقیت ذخیره شد",
+    "saveError": "خطایی در هنگام ذخیره پیکربندی چاپ رخ داد",
+    "fetchError": "خطایی در هنگام دریافت پیکربندی چاپ رخ داد",
+    "templateRequired": "هنگام استفاده از چاپ مستقیم، قالب الزامی است",
+    "noTemplatesAvailable": "هیچ قالبی در دسترس نیست. لطفاً ابتدا یک قالب بارگذاری کنید.",
+    "templateDeleted": "قالب انتخاب شده قبلی حذف شده است. لطفاً یک قالب جدید انتخاب کنید.",
+    "currentConfig": "پیکربندی فعلی",
+    "type": "نوع",
+    "template": "قالب",
+    "reportNameLabel": "نام فایل خروجی",
+    "reportNameOptionFormName": "استفاده از نام فرم",
+    "reportNameOptionFormNameDescription": "فایل خروجی با استفاده از نام فرم نامگذاری می‌شود",
+    "reportNameOptionCustom": "استفاده از نام سفارشی",
+    "reportNameOptionCustomDescription": "یک نام سفارشی برای فایل خروجی وارد کنید",
+    "reportNameCustomInput": "نام فایل سفارشی",
+    "reportNameCustomInputHint": "نام سفارشی برای سند تولید شده وارد کنید"
   },
   "encryptionKey": {
     "info": "کلیدهای رمزگذاری را برای فرم خود پیکربندی کنید.",
@@ -1245,5 +1311,182 @@
     "shuttingDown": "CHEFS در حال خاموش شدن است.",
     "notReady": "CHEFS نمی‌تواند به تمام سرویس‌های مورد نیاز متصل شود.",
     "unableToReachBackend": "نمی‌توان به سرویس backend دسترسی پیدا کرد."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
+      "title": "Introducing Enterprise CHEFS and CSTAR!",
+      "enterpriseTitle": "Experience the new Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
+      "chefsLink": "CHEFS (Common Hosted Forms Service)",
+      "enterpriseDescription2": "by working together with",
+      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
+      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
+      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
+      "tenant": "tenant",
+      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
+      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+      "goToChefs": "Go to CHEFS",
+      "cstarTitle": "CSTAR and Access Management",
+      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
+      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
+      "tenants": "tenants",
+      "cstarDescription3": ", assigning",
+      "roles": "roles",
+      "cstarDescription4": ", and connecting",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "Access to CSTAR is managed by",
+      "administrators": "administrators within your ministry or organization",
+      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
+      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
+      "goToCstar": "Go To CSTAR",
+      "alertTitle": "ATTENTION BCeID USERS",
+      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
+      "loginToCstar": "Log in to CSTAR"
+    },
+    "gettingStarted": {
+      "title": "New to CHEFS and not sure where to start?",
+      "description1": "Start by exploring our",
+      "techDocsLink": "CHEFS Technical Documentation",
+      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
+      "viewForm": "View Form",
+      "download": "Download",
+      "viewFormTooltip": "View form in fullscreen",
+      "downloadTooltip": "Download form as JSON",
+      "exploreForm": "Explore Example Form →"
+    },
+    "examples": {
+      "demographicSurvey": "Example | Demographic Data Collection Survey",
+      "calculationsGrid": "Example | Calculations in Data Grid",
+      "postCourseSurvey": "Example | POST-COURSE SURVEY",
+      "architectureForum": "Example | CHEFS Architecture Forum Survey",
+      "conditionalLogic": "Example | Conditional Logic",
+      "calculatedValues": "Example | Calculated Values",
+      "teamLunchOrder": "Example | Team Lunch Order",
+      "navigationButtons": "Example | Navigation Buttons",
+      "successStories": "Example | CHEFS Success Stories"
+    },
+    "testimonials": {
+      "title": "Don't take our word for it, hear what our users have to say about us.",
+      "chefsUser": "CHEFS User",
+      "verifiedUser": "Verified User",
+      "viewOnKudos": "View on Kudos Page →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Great communication and collaboration",
+        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
+        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "External User, CGI",
+        "tagHelpful": "Helpful",
+        "tagGreatSupport": "Great Support"
+      },
+      "testimonial2": {
+        "title": "Accessible yet powerful",
+        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
+        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
+        "tagHelpful": "Helpful",
+        "tagEasyToUse": "Easy To Use"
+      },
+      "testimonial3": {
+        "title": "Clear documentation and helpful support",
+        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
+        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
+        "reviewer": "Emma Armitage",
+        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
+        "tagHelpful": "Helpful",
+        "tagShared": "Shared With My Team"
+      }
+    },
+    "finalCta": {
+      "title": "Get Started Using Enterprise CHEFS",
+      "description": "Create online forms to collect information from your clients and improve your workflows.",
+      "loginButton": "Login to Get Started"
+    },
+    "formViewer": {
+      "downloadJson": "Download JSON",
+      "close": "Close",
+      "downloadTitle": "Download JSON"
+    }
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Enterprise CHEFS نسخه جدید CHEFS است که از دسترسی چند مستأجر پشتیبانی می‌کند. انتخاب مستأجر شما به طور خودکار شما را به آنجا می‌برد.",
+    "selectLabel": "مستأجر را انتخاب کنید (در Enterprise CHEFS باز می‌شود)",
+    "placeholder": "از مستأجران موجود انتخاب کنید",
+    "noDataText": "مستأجری یافت نشد",
+    "switchToClassic": "تعویض به Classic CHEFS",
+    "goToCstar": "رفتن به CSTAR (خدمات متصل، دسترسی تیم و نقش‌ها)",
+    "noTenantsAvailable": "مستأجری در دسترس نیست",
+    "manageTenantsIn": "مدیریت مستأجران در",
+    "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "آیا می‌خواهید با تیم خود به صورت ایمن کار کنید، فرم‌ها را سریع‌تر تحویل دهید و در دولت همکاری کنید؟",
+      "title": "معرفی Enterprise CHEFS و CSTAR!",
+      "enterpriseTitle": "Enterprise CHEFS جدید را تجربه کنید",
+      "tenant": "مستأجر",
+      "description1": "Enterprise CHEFS نسخه جدید CHEFS است که از دسترسی چند مستأجر و مدیریت تیم از طریق CSTAR (خدمات متصل، دسترسی تیم و نقش‌ها) پشتیبانی می‌کند.",
+      "description2": "با Enterprise CHEFS، سازمان شما می‌تواند:",
+      "description3": "در حالت ",
+      "description4": " کار کند - هر مستأجر فضای امن خود را با فرم‌ها، داده‌ها و مجوزهای جداگانه دارد",
+      "description5": "دسترسی تیم را مدیریت کند - کنترل کنید چه کسی می‌تواند فرم‌ها را در مستأجر شما مشاهده، ویرایش یا مدیریت کند",
+      "description6": "امنیت داده‌ها را حفظ کند - داده‌های هر مستأجر کاملاً از مستأجران دیگر جدا شده است",
+      "description7": "Enterprise CHEFS همچنین شامل تمام ویژگی‌های قدرتمندی است که از Classic CHEFS می‌شناسید و دوست دارید، مانند سازنده فرم کشیدن و رها کردن، منطق شرطی، ارسال‌های رمزگذاری شده و یکپارچه‌سازی‌های API.",
+      "loginButton": "وارد شوید تا شروع کنید",
+      "goToChefs": "رفتن به CHEFS",
+      "learnMore": "بیشتر بدانید"
+    },
+    "gettingStarted": {
+      "title": "تازه وارد CHEFS هستید و نمی‌دانید از کجا شروع کنید؟",
+      "description": "می‌توانید با چند مرحله ساده شروع به ایجاد فرم کنید:",
+      "step1Title": "1. با حساب IDIR یا BCeID خود وارد شوید",
+      "step2Title": "2. یک فرم جدید ایجاد کنید یا از یک الگو استفاده کنید",
+      "step3Title": "3. فرم خود را با سازنده کشیدن و رها کردن ما طراحی کنید",
+      "step4Title": "4. فرم خود را منتشر کنید و با تیم یا عموم به اشتراک بگذارید",
+      "loginButton": "وارد شوید تا شروع کنید",
+      "learnMore": "بیشتر بدانید"
+    },
+    "examples": {
+      "demographicSurvey": "مثال | نظرسنجی جمع‌آوری داده‌های جمعیتی",
+      "projectRequest": "مثال | درخواست پروژه",
+      "permitApplication": "مثال | درخواست مجوز"
+    },
+    "testimonials": {
+      "title": "فقط به حرف ما اعتماد نکنید، بشنوید کاربران ما درباره ما چه می‌گویند.",
+      "author": "نویسنده",
+      "role": "نقش"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "کاربر CHEFS 1",
+        "role": "تحلیلگر برنامه",
+        "quote": "\"CHEFS نحوه جمع‌آوری داده‌ها را تغییر داده است. سیستم چند مستأجر به ما اجازه می‌دهد پروژه‌ها را جدا نگه داریم در حالی که بهترین شیوه‌ها را در سراسر بخش خود به اشتراک می‌گذاریم.\""
+      },
+      "testimonial2": {
+        "author": "کاربر CHEFS 2",
+        "role": "مدیر پروژه",
+        "quote": "\"یکپارچه‌سازی با CSTAR مدیریت دسترسی تیم را بسیار آسان‌تر می‌کند. می‌توانم به سرعت اعضای جدید تیم را اضافه کنم و دقیقاً کنترل کنم که چه کاری می‌توانند انجام دهند.\""
+      },
+      "testimonial3": {
+        "author": "کاربر CHEFS 3",
+        "role": "مدیر فناوری اطلاعات",
+        "quote": "\"ما از ویژگی‌های امنیتی قوی و جداسازی داده‌ها قدردانی می‌کنیم. هر مستأجر کاملاً جدا است، که به ما آرامش خاطر هنگام کار با داده‌های حساس می‌دهد.\""
+      }
+    },
+    "finalCta": {
+      "title": "شروع به استفاده از Enterprise CHEFS کنید",
+      "description": "فرم‌های آنلاین ایجاد کنید تا اطلاعات را از مشتریان خود جمع‌آوری کنید و گردش کار خود را بهبود بخشید.",
+      "loginButton": "وارد شوید تا شروع کنید"
+    },
+    "formViewer": {
+      "title": "نمایشگر فرم",
+      "description": "پیش‌نمایش اینکه فرم شما چگونه به نظر می‌رسد",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

@@ -85,6 +85,8 @@
     "uploadError": "テンプレートのアップロード中にエラーが発生しました。",
     "deleteSuccess": "テンプレートが正常に削除されました。",
     "deleteError": "テンプレートの削除中にエラーが発生しました。",
+    "deleteErrorInUse": "テンプレートを削除できません：テンプレートは現在印刷設定で使用されています。まず印刷設定を更新してください。",
+    "deleteDisabledTooltip": "このテンプレートは現在印刷設定で使用されています。まず印刷設定を更新してください。",
     "fetchError": "テンプレートの取得中にエラーが発生しました。",
     "info": "共通ドキュメント生成サービス（CDOGS）を使用するためのテンプレートをアップロードしてください",
     "fileSizeError": "ファイルサイズは25MB以下でなければなりません。"
@@ -204,7 +206,38 @@
     "encryptionKeyUpdatedBy": "暗号化キーの更新者",
     "encryptionKeyCopySnackbar": "暗号化キーがクリップボードにコピーされました",
     "encryptionKeyCopyTooltip": "暗号化キーをクリップボードにコピー",
-    "encryptionKeyGenerate": "暗号化キーの生成"
+    "encryptionKeyGenerate": "暗号化キーの生成",
+    "dataRetention": "データ保持ポリシー",
+    "enableHardDeletion": "自動完全削除を有効にする",
+    "hardDeletionTooltip": "有効にすると、削除対象としてマークされた提出物は保持期間後に完全に削除されます。",
+    "hardDeletionWarning": "完全削除は永久的であり、元に戻すことはできません。",
+    "permanentDeletion": "削除後、データは復元できなくなります。",
+    "dataClassification": "データ分類",
+    "dataClassificationHint": "このフォームで収集されるデータの種類を分類する",
+    "retentionPeriod": "保持期間",
+    "retentionPeriodHint": "完全削除する前に削除された提出物を保持する期間",
+    "classPublic": "公開",
+    "classInternal": "内部",
+    "classSensitive": "機密",
+    "classConfidential": "極秘",
+    "classProtected": "保護",
+    "classificationCustomHint": "必要に応じてカスタム分類を入力できます",
+    "days30": "30日間",
+    "days90": "90日間",
+    "days180": "180日間",
+    "year1": "1年間（365日）",
+    "years2": "2年間（730日）",
+    "years5": "5年間（1825日）",
+    "daysCustom": "カスタム期間",
+    "customDaysLabel": "カスタム保持期間（日数）",
+    "customDaysHint": "1〜3650日（10年）の間の数字を入力してください",
+    "classificationDescription": "分類に関する注記",
+    "classificationDescriptionHint": "この分類と保持期間が選択された理由の任意の説明",
+    "retentionDaysUpdated": "保持期間が更新されました",
+    "deletionDisclaimerWithDays": "警告：{days}日後、削除対象としてマークされた提出物は完全に削除され、復元できなくなります。",
+    "setRetentionPrompt": "データ保持ポリシーを完了するには、保持期間を設定してください。",
+    "fetchRetentionClassificationListError": "保持分類リストの取得中にエラーが発生しました。",
+    "fetchRetentionClassificationListConsErrMsg": "保持分類の取得中にエラーが発生しました: {error}"
   },
   "formProfile": {
     "message": "CHEFSチームは包括的なビジネスケースの作成に重要な入力となる情報を収集し、整理しています。これらのケースは、CHEFSの戦略的な運用と今後の改善を指南するうえで重要な役割を果たします。データを収集するこの取り組みは、重要な意思決定の情報提供やCHEFSの軌道を形作るために不可欠です。これにより、CHEFSが変化するニーズと課題に対応するための適応性と効果を確保します.",
@@ -1117,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "このフォームの購読設定が保存されました。",
       "saveSubscriptionSettingsErrMsg": "サブスクリプション設定を保存しようとしたときにエラーが発生しました。",
       "saveSubscriptionSettingsConsErrMsg": "フォーム {formId} のサブスクリプション設定を保存中にエラーが発生しました: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "このフォームの保持ポリシーの取得中にエラーが発生しました。",
+      "getFormRetentionPolicyConsErrMsg": "フォーム {formId} の保持ポリシーの取得中にエラーが発生しました: {error}",
+      "configureFormRetentionPolicyErrMsg": "このフォームの保持ポリシーの構成中にエラーが発生しました。",
+      "configureFormRetentionPolicyConsErrMsg": "フォーム {formId} の保持ポリシーの構成中にエラーが発生しました: {error}"
     }
   },
   "admin": {
@@ -1155,6 +1194,33 @@
     "editTitle": "イベントストリーム構成の編集",
     "fetchError": "イベント ストリーム構成の取得中にエラーが発生しました。",
     "save": "保存"
+  },
+  "printConfig": {
+    "title": "印刷設定",
+    "description": "ユーザーがフォーム送信を印刷する方法を設定します",
+    "typeDefault": "デフォルト",
+    "typeDefaultDescription": "ユーザーは印刷方法を選択できます（ブラウザ印刷またはテンプレート）",
+    "typeDirect": "直接印刷",
+    "typeDirectDescription": "ユーザーは事前設定されたテンプレートを使用して直接印刷します（PDF出力）",
+    "selectTemplate": "テンプレートを選択",
+    "save": "設定を保存",
+    "saving": "保存中...",
+    "saveSuccess": "印刷設定が正常に保存されました",
+    "saveError": "印刷設定の保存中にエラーが発生しました",
+    "fetchError": "印刷設定の取得中にエラーが発生しました",
+    "templateRequired": "直接印刷を使用する場合はテンプレートが必要です",
+    "noTemplatesAvailable": "テンプレートがありません。まずテンプレートをアップロードしてください。",
+    "templateDeleted": "以前に選択したテンプレートが削除されました。新しいテンプレートを選択してください。",
+    "currentConfig": "現在の設定",
+    "type": "タイプ",
+    "template": "テンプレート",
+    "reportNameLabel": "出力ファイル名",
+    "reportNameOptionFormName": "フォーム名を使用",
+    "reportNameOptionFormNameDescription": "出力ファイルはフォーム名を使用して命名されます",
+    "reportNameOptionCustom": "カスタム名を使用",
+    "reportNameOptionCustomDescription": "出力ファイルのカスタム名を入力してください",
+    "reportNameCustomInput": "カスタムファイル名",
+    "reportNameCustomInputHint": "生成されたドキュメントのカスタム名を入力してください"
   },
   "encryptionKey": {
     "info": "フォームの暗号化キーを設定します。",
@@ -1245,5 +1311,182 @@
     "shuttingDown": "CHEFSがシャットダウンしています。",
     "notReady": "CHEFSは必要なすべてのサービスに接続できません。",
     "unableToReachBackend": "バックエンドサービスに到達できません。"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
+      "title": "Introducing Enterprise CHEFS and CSTAR!",
+      "enterpriseTitle": "Experience the new Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
+      "chefsLink": "CHEFS (Common Hosted Forms Service)",
+      "enterpriseDescription2": "by working together with",
+      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
+      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
+      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
+      "tenant": "tenant",
+      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
+      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+      "goToChefs": "Go to CHEFS",
+      "cstarTitle": "CSTAR and Access Management",
+      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
+      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
+      "tenants": "tenants",
+      "cstarDescription3": ", assigning",
+      "roles": "roles",
+      "cstarDescription4": ", and connecting",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "Access to CSTAR is managed by",
+      "administrators": "administrators within your ministry or organization",
+      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
+      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
+      "goToCstar": "Go To CSTAR",
+      "alertTitle": "ATTENTION BCeID USERS",
+      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
+      "loginToCstar": "Log in to CSTAR"
+    },
+    "gettingStarted": {
+      "title": "New to CHEFS and not sure where to start?",
+      "description1": "Start by exploring our",
+      "techDocsLink": "CHEFS Technical Documentation",
+      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
+      "viewForm": "View Form",
+      "download": "Download",
+      "viewFormTooltip": "View form in fullscreen",
+      "downloadTooltip": "Download form as JSON",
+      "exploreForm": "Explore Example Form →"
+    },
+    "examples": {
+      "demographicSurvey": "Example | Demographic Data Collection Survey",
+      "calculationsGrid": "Example | Calculations in Data Grid",
+      "postCourseSurvey": "Example | POST-COURSE SURVEY",
+      "architectureForum": "Example | CHEFS Architecture Forum Survey",
+      "conditionalLogic": "Example | Conditional Logic",
+      "calculatedValues": "Example | Calculated Values",
+      "teamLunchOrder": "Example | Team Lunch Order",
+      "navigationButtons": "Example | Navigation Buttons",
+      "successStories": "Example | CHEFS Success Stories"
+    },
+    "testimonials": {
+      "title": "Don't take our word for it, hear what our users have to say about us.",
+      "chefsUser": "CHEFS User",
+      "verifiedUser": "Verified User",
+      "viewOnKudos": "View on Kudos Page →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Great communication and collaboration",
+        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
+        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "External User, CGI",
+        "tagHelpful": "Helpful",
+        "tagGreatSupport": "Great Support"
+      },
+      "testimonial2": {
+        "title": "Accessible yet powerful",
+        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
+        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
+        "tagHelpful": "Helpful",
+        "tagEasyToUse": "Easy To Use"
+      },
+      "testimonial3": {
+        "title": "Clear documentation and helpful support",
+        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
+        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
+        "reviewer": "Emma Armitage",
+        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
+        "tagHelpful": "Helpful",
+        "tagShared": "Shared With My Team"
+      }
+    },
+    "finalCta": {
+      "title": "Get Started Using Enterprise CHEFS",
+      "description": "Create online forms to collect information from your clients and improve your workflows.",
+      "loginButton": "Login to Get Started"
+    },
+    "formViewer": {
+      "downloadJson": "Download JSON",
+      "close": "Close",
+      "downloadTitle": "Download JSON"
+    }
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Enterprise CHEFS は、マルチテナントアクセスをサポートする CHEFS の新しいバージョンです。テナントを選択すると、自動的にそこに移動します。",
+    "selectLabel": "テナントを選択（Enterprise CHEFS で開く）",
+    "placeholder": "利用可能なテナントから選択",
+    "noDataText": "テナントが見つかりません",
+    "switchToClassic": "Classic CHEFS に切り替え",
+    "goToCstar": "CSTAR に移動（接続サービス、チームアクセス、役割）",
+    "noTenantsAvailable": "利用可能なテナントがありません",
+    "manageTenantsIn": "テナントを管理",
+    "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "チームと安全に作業し、フォームをより迅速に配信し、政府内で協力したいですか？",
+      "title": "Enterprise CHEFS と CSTAR のご紹介！",
+      "enterpriseTitle": "新しい Enterprise CHEFS を体験",
+      "tenant": "テナント",
+      "description1": "Enterprise CHEFS は、CSTAR（接続サービス、チームアクセス、役割）を通じてマルチテナントアクセスとチーム管理をサポートする CHEFS の新しいバージョンです。",
+      "description2": "Enterprise CHEFS を使用すると、組織は次のことができます：",
+      "description3": "",
+      "description4": "モードで作業 - 各テナントには、分離されたフォーム、データ、権限を持つ独自の安全なスペースがあります",
+      "description5": "チームアクセスを管理 - テナント内でフォームを表示、編集、管理できるユーザーを制御します",
+      "description6": "データセキュリティを維持 - 各テナントのデータは他のテナントから完全に分離されています",
+      "description7": "Enterprise CHEFS には、ドラッグアンドドロップフォームビルダー、条件付きロジック、暗号化された送信、API 統合など、Classic CHEFS で知っている強力な機能も含まれています。",
+      "loginButton": "ログインして開始",
+      "goToChefs": "CHEFS に移動",
+      "learnMore": "詳細を見る"
+    },
+    "gettingStarted": {
+      "title": "CHEFS は初めてで、どこから始めればよいかわかりませんか？",
+      "description": "いくつかの簡単な手順でフォームの作成を始めることができます：",
+      "step1Title": "1. IDIR または BCeID アカウントでログイン",
+      "step2Title": "2. 新しいフォームを作成するか、テンプレートを使用",
+      "step3Title": "3. ドラッグアンドドロップビルダーでフォームをデザイン",
+      "step4Title": "4. フォームを公開してチームまたは一般に共有",
+      "loginButton": "ログインして開始",
+      "learnMore": "詳細を見る"
+    },
+    "examples": {
+      "demographicSurvey": "例 | 人口統計データ収集調査",
+      "projectRequest": "例 | プロジェクトリクエスト",
+      "permitApplication": "例 | 許可申請"
+    },
+    "testimonials": {
+      "title": "私たちの言葉だけを信じないでください。ユーザーが私たちについて何と言っているかを聞いてください。",
+      "author": "著者",
+      "role": "役割"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS ユーザー 1",
+        "role": "プログラムアナリスト",
+        "quote": "\"CHEFS はデータ収集の方法を変えました。マルチテナントシステムにより、プロジェクトを分離しながら、部門全体でベストプラクティスを共有できます。\""
+      },
+      "testimonial2": {
+        "author": "CHEFS ユーザー 2",
+        "role": "プロジェクトマネージャー",
+        "quote": "\"CSTAR との統合により、チームアクセスの管理が非常に簡単になりました。新しいチームメンバーを迅速にオンボーディングし、彼らができることを正確に制御できます。\""
+      },
+      "testimonial3": {
+        "author": "CHEFS ユーザー 3",
+        "role": "IT 管理者",
+        "quote": "\"堅牢なセキュリティとデータ分離機能を高く評価しています。各テナントは完全に分離されており、機密データを扱う際に安心感を与えてくれます。\""
+      }
+    },
+    "finalCta": {
+      "title": "Enterprise CHEFS の使用を開始",
+      "description": "オンラインフォームを作成して顧客から情報を収集し、ワークフローを改善します。",
+      "loginButton": "ログインして開始"
+    },
+    "formViewer": {
+      "title": "フォームビューア",
+      "description": "フォームの外観をプレビュー",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

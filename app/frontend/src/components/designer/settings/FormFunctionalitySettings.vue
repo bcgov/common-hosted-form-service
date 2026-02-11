@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 import { IdentityMode } from '~/utils/constants';
 
 const props = defineProps({
@@ -33,9 +34,11 @@ const githubLinkWideFormLayout = ref(
 const authStore = useAuthStore();
 const formStore = useFormStore();
 const idpStore = useIdpStore();
+const tenantStore = useTenantStore();
 
 const { identityProvider } = storeToRefs(authStore);
 const { form, isRTL } = storeToRefs(formStore);
+const { selectedTenant } = storeToRefs(tenantStore);
 
 const primaryIdpUser = computed(() =>
   idpStore.isPrimary(identityProvider?.value?.code)
@@ -133,9 +136,12 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Show Assignee -->
+    <!-- Show Assignee - Hide for tenanted forms -->
     <v-checkbox
-      v-if="form.enableStatusUpdates || form.enableSubmitterRevision"
+      v-if="
+        !selectedTenant &&
+        (form.enableStatusUpdates || form.enableSubmitterRevision)
+      "
       v-model="form.showAssigneeInSubmissionsTable"
       :disabled="disabledStates.general"
       hide-details="auto"
@@ -328,7 +334,7 @@ defineExpose({
     <!-- Wide Form Layout -->
     <v-checkbox
       v-model="form.wideFormLayout"
-      :disabled="disabledStates.public"
+      :disabled="disabledStates.general"
       hide-details="auto"
       class="my-0"
       data-test="canAllowWideFormLayoutCheckbox"
@@ -367,8 +373,9 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Share Draft -->
+    <!-- Share Draft - Hide for tenanted forms -->
     <v-checkbox
+      v-if="!selectedTenant"
       v-model="form.enableTeamMemberDraftShare"
       :disabled="disabledStates.draftShare"
       hide-details="auto"

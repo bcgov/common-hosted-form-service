@@ -85,6 +85,8 @@
     "uploadError": "上传模板时发生错误。",
     "deleteSuccess": "模板删除成功。",
     "deleteError": "删除模板时发生错误。",
+    "deleteErrorInUse": "无法删除模板：模板当前正在被打印配置使用。请先更新打印配置设置。",
+    "deleteDisabledTooltip": "此模板当前正在被打印配置使用。请先更新打印配置设置。",
     "fetchError": "获取模板时发生错误。",
     "info": "上传模板以使用公共文档生成服务（CDOGS）",
     "fileSizeError": "文件大小必须小于25MB。"
@@ -204,7 +206,38 @@
     "encryptionKeyUpdatedBy": "加密密钥更新者",
     "encryptionKeyCopySnackbar": "加密密钥已复制到剪贴板",
     "encryptionKeyCopyTooltip": "将加密密钥复制到剪贴板",
-    "encryptionKeyGenerate": "生成加密密钥"
+    "encryptionKeyGenerate": "生成加密密钥",
+    "dataRetention": "数据保留策略",
+    "enableHardDeletion": "启用自动永久删除",
+    "hardDeletionTooltip": "启用后，标记为删除的提交将在保留期结束后被永久删除。",
+    "hardDeletionWarning": "永久删除是不可逆的，无法撤销。",
+    "permanentDeletion": "删除后数据将无法恢复。",
+    "dataClassification": "数据分类",
+    "dataClassificationHint": "对此表单收集的数据类型进行分类",
+    "retentionPeriod": "保留期限",
+    "retentionPeriodHint": "在永久删除前保留已删除提交的时间",
+    "classPublic": "公开",
+    "classInternal": "内部",
+    "classSensitive": "敏感",
+    "classConfidential": "机密",
+    "classProtected": "受保护",
+    "classificationCustomHint": "如有需要可以输入自定义分类",
+    "days30": "30天",
+    "days90": "90天",
+    "days180": "180天",
+    "year1": "1年（365天）",
+    "years2": "2年（730天）",
+    "years5": "5年（1825天）",
+    "daysCustom": "自定义期限",
+    "customDaysLabel": "自定义保留期限（天数）",
+    "customDaysHint": "输入1到3650天（10年）之间的数字",
+    "classificationDescription": "分类说明",
+    "classificationDescriptionHint": "可选择说明为什么选择此分类和保留期限",
+    "retentionDaysUpdated": "保留期限已更新",
+    "deletionDisclaimerWithDays": "警告：{days}天后，标记为删除的提交将被永久删除，无法恢复。",
+    "setRetentionPrompt": "请设置保留期限以完成您的数据保留策略。",
+    "fetchRetentionClassificationListError": "获取保留分类列表时出错。",
+    "fetchRetentionClassificationListConsErrMsg": "获取保留分类时出错：{error}"
   },
   "formProfile": {
     "message": "CHEFS团队正在收集和组织信息，作为制定全面业务案例的关键输入。这些案例将在指导CHEFS未来几年的战略运作和持续改进中发挥关键作用。这一收集数据的倡议对于提供关键决策的信息和塑造CHEFS轨迹至关重要，确保其在应对不断变化的需求和挑战中的适应性和有效性。",
@@ -1117,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "此表单的订阅设置已保存。",
       "saveSubscriptionSettingsErrMsg": "尝试保存订阅设置时出错。",
       "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "获取此表单的保留策略时发生错误。",
+      "getFormRetentionPolicyConsErrMsg": "获取表单 {formId} 的保留策略时出错：{error}",
+      "configureFormRetentionPolicyErrMsg": "配置此表单的保留策略时发生错误。",
+      "configureFormRetentionPolicyConsErrMsg": "配置表单 {formId} 的保留策略时出错：{error}"
     }
   },
   "admin": {
@@ -1155,6 +1194,33 @@
     "editTitle": "编辑事件流配置",
     "fetchError": "获取事件流配置时发生错误。",
     "save": "节省"
+  },
+  "printConfig": {
+    "title": "打印配置",
+    "description": "配置用户如何打印表单提交",
+    "typeDefault": "默认",
+    "typeDefaultDescription": "用户可以选择打印方法（浏览器打印或模板）",
+    "typeDirect": "直接打印",
+    "typeDirectDescription": "用户使用预配置的模板直接打印（PDF输出）",
+    "selectTemplate": "选择模板",
+    "save": "保存配置",
+    "saving": "保存中...",
+    "saveSuccess": "打印配置保存成功",
+    "saveError": "保存打印配置时发生错误",
+    "fetchError": "获取打印配置时发生错误",
+    "templateRequired": "使用直接打印时需要模板",
+    "noTemplatesAvailable": "没有可用的模板。请先上传模板。",
+    "templateDeleted": "之前选择的模板已被删除。请选择新模板。",
+    "currentConfig": "当前配置",
+    "type": "类型",
+    "template": "模板",
+    "reportNameLabel": "输出文件名",
+    "reportNameOptionFormName": "使用表单名称",
+    "reportNameOptionFormNameDescription": "输出文件将使用表单名称命名",
+    "reportNameOptionCustom": "使用自定义名称",
+    "reportNameOptionCustomDescription": "输入输出文件的自定义名称",
+    "reportNameCustomInput": "自定义文件名",
+    "reportNameCustomInputHint": "输入生成文档的自定义名称"
   },
   "encryptionKey": {
     "info": "为您的表单配置加密密钥。",
@@ -1245,5 +1311,182 @@
     "shuttingDown": "CHEFS 正在关闭。",
     "notReady": "CHEFS 无法连接到所有必需的服务。",
     "unableToReachBackend": "无法访问后端服务。"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
+      "title": "Introducing Enterprise CHEFS and CSTAR!",
+      "enterpriseTitle": "Experience the new Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
+      "chefsLink": "CHEFS (Common Hosted Forms Service)",
+      "enterpriseDescription2": "by working together with",
+      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
+      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
+      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
+      "tenant": "tenant",
+      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
+      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+      "goToChefs": "Go to CHEFS",
+      "cstarTitle": "CSTAR and Access Management",
+      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
+      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
+      "tenants": "tenants",
+      "cstarDescription3": ", assigning",
+      "roles": "roles",
+      "cstarDescription4": ", and connecting",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "Access to CSTAR is managed by",
+      "administrators": "administrators within your ministry or organization",
+      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
+      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
+      "goToCstar": "Go To CSTAR",
+      "alertTitle": "ATTENTION BCeID USERS",
+      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
+      "loginToCstar": "Log in to CSTAR"
+    },
+    "gettingStarted": {
+      "title": "New to CHEFS and not sure where to start?",
+      "description1": "Start by exploring our",
+      "techDocsLink": "CHEFS Technical Documentation",
+      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
+      "viewForm": "View Form",
+      "download": "Download",
+      "viewFormTooltip": "View form in fullscreen",
+      "downloadTooltip": "Download form as JSON",
+      "exploreForm": "Explore Example Form →"
+    },
+    "examples": {
+      "demographicSurvey": "Example | Demographic Data Collection Survey",
+      "calculationsGrid": "Example | Calculations in Data Grid",
+      "postCourseSurvey": "Example | POST-COURSE SURVEY",
+      "architectureForum": "Example | CHEFS Architecture Forum Survey",
+      "conditionalLogic": "Example | Conditional Logic",
+      "calculatedValues": "Example | Calculated Values",
+      "teamLunchOrder": "Example | Team Lunch Order",
+      "navigationButtons": "Example | Navigation Buttons",
+      "successStories": "Example | CHEFS Success Stories"
+    },
+    "testimonials": {
+      "title": "Don't take our word for it, hear what our users have to say about us.",
+      "chefsUser": "CHEFS User",
+      "verifiedUser": "Verified User",
+      "viewOnKudos": "View on Kudos Page →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Great communication and collaboration",
+        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
+        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "External User, CGI",
+        "tagHelpful": "Helpful",
+        "tagGreatSupport": "Great Support"
+      },
+      "testimonial2": {
+        "title": "Accessible yet powerful",
+        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
+        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
+        "tagHelpful": "Helpful",
+        "tagEasyToUse": "Easy To Use"
+      },
+      "testimonial3": {
+        "title": "Clear documentation and helpful support",
+        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
+        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
+        "reviewer": "Emma Armitage",
+        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
+        "tagHelpful": "Helpful",
+        "tagShared": "Shared With My Team"
+      }
+    },
+    "finalCta": {
+      "title": "Get Started Using Enterprise CHEFS",
+      "description": "Create online forms to collect information from your clients and improve your workflows.",
+      "loginButton": "Login to Get Started"
+    },
+    "formViewer": {
+      "downloadJson": "Download JSON",
+      "close": "Close",
+      "downloadTitle": "Download JSON"
+    }
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Enterprise CHEFS 是支持多租户访问的新版本 CHEFS。选择您的租户将自动带您到那里。",
+    "selectLabel": "选择租户（在 Enterprise CHEFS 中打开）",
+    "placeholder": "从可用租户中选择",
+    "noDataText": "未找到租户",
+    "switchToClassic": "切换到 Classic CHEFS",
+    "goToCstar": "转到 CSTAR（连接服务、团队访问和角色）",
+    "noTenantsAvailable": "没有可用的租户",
+    "manageTenantsIn": "在以下位置管理租户",
+    "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "您是否希望与您的团队安全地合作、更快地交付表单并在政府中协作？",
+      "title": "介绍 Enterprise CHEFS 和 CSTAR！",
+      "enterpriseTitle": "体验新的 Enterprise CHEFS",
+      "tenant": "租户",
+      "description1": "Enterprise CHEFS 是 CHEFS 的新版本，通过 CSTAR（连接服务、团队访问和角色）支持多租户访问和团队管理。",
+      "description2": "使用 Enterprise CHEFS，您的组织可以：",
+      "description3": "以",
+      "description4": "模式工作 - 每个租户都有自己的安全空间，具有隔离的表单、数据和权限",
+      "description5": "管理团队访问 - 控制谁可以在您的租户内查看、编辑或管理表单",
+      "description6": "维护数据安全 - 每个租户的数据完全与其他租户隔离",
+      "description7": "Enterprise CHEFS 还包括您熟悉和喜爱的 Classic CHEFS 的所有强大功能，例如拖放表单生成器、条件逻辑、加密提交和 API 集成。",
+      "loginButton": "登录开始",
+      "goToChefs": "转到 CHEFS",
+      "learnMore": "了解更多"
+    },
+    "gettingStarted": {
+      "title": "刚接触 CHEFS，不知道从哪里开始？",
+      "description": "您可以通过几个简单的步骤开始创建表单：",
+      "step1Title": "1. 使用您的 IDIR 或 BCeID 帐户登录",
+      "step2Title": "2. 创建新表单或使用模板",
+      "step3Title": "3. 使用我们的拖放生成器设计您的表单",
+      "step4Title": "4. 发布并与您的团队或公众分享您的表单",
+      "loginButton": "登录开始",
+      "learnMore": "了解更多"
+    },
+    "examples": {
+      "demographicSurvey": "示例 | 人口统计数据收集调查",
+      "projectRequest": "示例 | 项目请求",
+      "permitApplication": "示例 | 许可申请"
+    },
+    "testimonials": {
+      "title": "不要只相信我们的话，听听我们的用户对我们的评价。",
+      "author": "作者",
+      "role": "角色"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS 用户 1",
+        "role": "项目分析师",
+        "quote": "\"CHEFS 改变了我们收集数据的方式。多租户系统允许我们保持项目分离，同时在整个部门共享最佳实践。\""
+      },
+      "testimonial2": {
+        "author": "CHEFS 用户 2",
+        "role": "项目经理",
+        "quote": "\"与 CSTAR 的集成使团队访问管理变得更加容易。我可以快速加入新团队成员并准确控制他们可以做什么。\""
+      },
+      "testimonial3": {
+        "author": "CHEFS 用户 3",
+        "role": "IT 管理员",
+        "quote": "\"我们赞赏强大的安全性和数据隔离功能。每个租户完全分离，这让我们在处理敏感数据时感到安心。\""
+      }
+    },
+    "finalCta": {
+      "title": "开始使用 Enterprise CHEFS",
+      "description": "创建在线表单以从您的客户那里收集信息并改进您的工作流程。",
+      "loginButton": "登录开始"
+    },
+    "formViewer": {
+      "title": "表单查看器",
+      "description": "预览您的表单外观",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

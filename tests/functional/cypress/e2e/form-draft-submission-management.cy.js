@@ -24,6 +24,7 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
+    cy.checkA11yPage();
   });  
 // Publish a simple form 
 it('Verify draft submission', () => {
@@ -36,7 +37,7 @@ it('Verify draft submission', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
+      .trigger('mousemove', coords.x, -1, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
     });
@@ -46,7 +47,7 @@ it('Verify draft submission', () => {
         cy.get('span.btn').contains('Multi-line Text')
         
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mousemove', coords.x, +1, { force: true })
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
@@ -92,6 +93,8 @@ it('Verify draft submission', () => {
     cy.waitForLoad();
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
+    //Draft manage button existence
+    cy.get('.d-inline-block').should('not.be.enabled').and('exist');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //cy.get('div > .bg-primary').click();
     cy.get('.v-card-actions > div > .bg-primary').click();

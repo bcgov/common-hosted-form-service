@@ -85,6 +85,8 @@
     "uploadError": "Nagkaroon ng error habang ina-upload ang template.",
     "deleteSuccess": "Matagumpay na natanggal ang template.",
     "deleteError": "Nagkaroon ng error habang tinatanggal ang template.",
+    "deleteErrorInUse": "Hindi maaaring tanggalin ang template: Ang template ay kasalukuyang ginagamit ng Print Configuration. Pakisuri muna ang mga setting ng Print Configuration.",
+    "deleteDisabledTooltip": "Ang template na ito ay kasalukuyang ginagamit ng Print Configuration. Pakisuri muna ang mga setting ng Print Configuration.",
     "fetchError": "Nagkaroon ng error habang kinukuha ang template.",
     "info": "Mag-upload ng template upang gamitin ang Common Document Generation Service (CDOGS)",
     "fileSizeError": "Ang laki ng file ay dapat mas mababa sa 25MB."
@@ -204,7 +206,38 @@
     "encryptionKeyUpdatedBy": "Encryption Key Na-update Ni",
     "encryptionKeyCopySnackbar": "Nakopya ang Encryption Key sa clipboard",
     "encryptionKeyCopyTooltip": "Kopyahin ang Encryption Key sa clipboard",
-    "encryptionKeyGenerate": "Bumuo ng Encryption Key"
+    "encryptionKeyGenerate": "Bumuo ng Encryption Key",
+    "dataRetention": "Patakaran sa Pagpapanatili ng Data",
+    "enableHardDeletion": "Paganahin ang awtomatikong permanenteng pagtanggal",
+    "hardDeletionTooltip": "Kapag pinagana, ang mga submission na minarkahan para sa pagtanggal ay permanenteng matatanggal pagkatapos ng panahon ng pagpapanatili.",
+    "hardDeletionWarning": "Ang permanenteng pagtanggal ay hindi na maibabalik.",
+    "permanentDeletion": "Ang data ay hindi na maibabalik pagkatapos matanggal.",
+    "dataClassification": "Klasipikasyon ng Data",
+    "dataClassificationHint": "I-kategorya ang uri ng datos na kinokolekta ng form na ito",
+    "retentionPeriod": "Panahon ng Pagpapanatili",
+    "retentionPeriodHint": "Gaano katagal panatilihin ang mga tinanggal na submission bago permanenteng alisin",
+    "classPublic": "Pampubliko",
+    "classInternal": "Panloob",
+    "classSensitive": "Sensitibo",
+    "classConfidential": "Kumpidensyal",
+    "classProtected": "Protektado",
+    "classificationCustomHint": "Maaari kang mag-type ng custom na klasipikasyon kung kinakailangan",
+    "days30": "30 araw",
+    "days90": "90 araw",
+    "days180": "180 araw",
+    "year1": "1 taon (365 araw)",
+    "years2": "2 taon (730 araw)",
+    "years5": "5 taon (1825 araw)",
+    "daysCustom": "Custom na panahon",
+    "customDaysLabel": "Custom na Panahon ng Pagpapanatili (araw)",
+    "customDaysHint": "Maglagay ng numero sa pagitan ng 1 at 3650 araw (10 taon)",
+    "classificationDescription": "Mga Tala sa Klasipikasyon",
+    "classificationDescriptionHint": "Opsyonal na paglalarawan kung bakit pinili ang klasipikasyong ito at panahon ng pagpapanatili",
+    "retentionDaysUpdated": "Na-update ang panahon ng pagpapanatili",
+    "deletionDisclaimerWithDays": "BABALA: Pagkatapos ng {days} araw, ang mga submission na minarkahan para sa pagtanggal ay permanenteng matatanggal at hindi na maibabalik.",
+    "setRetentionPrompt": "Mangyaring magtakda ng panahon ng pagpapanatili upang makumpleto ang iyong patakaran sa pagpapanatili ng data.",
+    "fetchRetentionClassificationListError": "May naganap na error habang kinukuha ang listahan ng mga klasipikasyon ng pagpapanatili.",
+    "fetchRetentionClassificationListConsErrMsg": "May naganap na error habang kinukuha ang mga klasipikasyon ng pagpapanatili: {error}"
   },
   "formProfile": {
     "message": "Ang CHEFS team ay nagkokolekta at nag-oorganisa ng impormasyon upang magsilbing mahalagang input para sa pagbuo ng kapsulang kaso ng negosyo. Ang mga kaso na ito ay magiging pangunahing bahagi sa paggabay sa pangangasiwa at patuloy na pagpapabuti ng CHEFS sa mga darating na taon. Ang inisyatibang ito sa pagsasama ng datos ay mahalaga para sa pagbibigay impormasyon sa mga kritikal na desisyon at pagsanay sa takbo ng CHEFS, tiyak na nagiging adaptable at epektibo sa pagsasaad sa mga nagbabagong pangangailangan at hamon.",
@@ -1115,6 +1148,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
       "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
       "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "May naganap na error habang kinukuha ang retention policy para sa form na ito.",
+      "getFormRetentionPolicyConsErrMsg": "Error sa pagkuha ng retention policy para sa form {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "May naganap na error habang kino-configure ang retention policy para sa form na ito.",
+      "configureFormRetentionPolicyConsErrMsg": "Error sa pag-configure ng retention policy para sa form {formId}: {error}"
     }
   },
   "admin": {
@@ -1153,6 +1192,33 @@
     "editTitle": "I-edit ang Configuration ng Stream ng Event",
     "fetchError": "May naganap na error habang kinukuha ang Configuration ng Stream ng Kaganapan.",
     "save": "I-save"
+  },
+  "printConfig": {
+    "title": "Print Configuration",
+    "description": "I-configure kung paano maaaring mag-print ang mga user ng form submissions",
+    "typeDefault": "Default",
+    "typeDefaultDescription": "Maaaring pumili ang mga user ng paraan ng pag-print (browser print o template)",
+    "typeDirect": "Direct Print",
+    "typeDirectDescription": "Direktang nagpi-print ang mga user gamit ang pre-configured template (PDF output)",
+    "selectTemplate": "Pumili ng Template",
+    "save": "I-save ang Configuration",
+    "saving": "Sinasave...",
+    "saveSuccess": "Matagumpay na na-save ang print configuration",
+    "saveError": "May naganap na error habang sinasave ang print configuration",
+    "fetchError": "May naganap na error habang kinukuha ang print configuration",
+    "templateRequired": "Kailangan ang template kapag gumagamit ng Direct Print",
+    "noTemplatesAvailable": "Walang available na template. Pakisuri muna ang template.",
+    "templateDeleted": "Na-delete na ang dating napiling template. Pakisuri ang bagong template.",
+    "currentConfig": "Kasalukuyang Configuration",
+    "type": "Uri",
+    "template": "Template",
+    "reportNameLabel": "Output File Name",
+    "reportNameOptionFormName": "Gamitin ang Form Name",
+    "reportNameOptionFormNameDescription": "Gagamitin ang form name sa pagpapangalan ng output file",
+    "reportNameOptionCustom": "Gamitin ang Custom Name",
+    "reportNameOptionCustomDescription": "Maglagay ng custom name para sa output file",
+    "reportNameCustomInput": "Custom File Name",
+    "reportNameCustomInputHint": "Maglagay ng custom name para sa generated document"
   },
   "encryptionKey": {
     "info": "I-configure ang Mga Encryption Key para sa iyong form.",
@@ -1249,5 +1315,182 @@
     "shuttingDown": "Ang CHEFS ay nagsasara.",
     "notReady": "Hindi makakonekta ang CHEFS sa lahat ng kinakailangang serbisyo.",
     "unableToReachBackend": "Hindi maabot ang backend service."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
+      "title": "Introducing Enterprise CHEFS and CSTAR!",
+      "enterpriseTitle": "Experience the new Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
+      "chefsLink": "CHEFS (Common Hosted Forms Service)",
+      "enterpriseDescription2": "by working together with",
+      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
+      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
+      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
+      "tenant": "tenant",
+      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
+      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+      "goToChefs": "Go to CHEFS",
+      "cstarTitle": "CSTAR and Access Management",
+      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
+      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
+      "tenants": "tenants",
+      "cstarDescription3": ", assigning",
+      "roles": "roles",
+      "cstarDescription4": ", and connecting",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "Access to CSTAR is managed by",
+      "administrators": "administrators within your ministry or organization",
+      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
+      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
+      "goToCstar": "Go To CSTAR",
+      "alertTitle": "ATTENTION BCeID USERS",
+      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
+      "loginToCstar": "Log in to CSTAR"
+    },
+    "gettingStarted": {
+      "title": "New to CHEFS and not sure where to start?",
+      "description1": "Start by exploring our",
+      "techDocsLink": "CHEFS Technical Documentation",
+      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
+      "viewForm": "View Form",
+      "download": "Download",
+      "viewFormTooltip": "View form in fullscreen",
+      "downloadTooltip": "Download form as JSON",
+      "exploreForm": "Explore Example Form →"
+    },
+    "examples": {
+      "demographicSurvey": "Example | Demographic Data Collection Survey",
+      "calculationsGrid": "Example | Calculations in Data Grid",
+      "postCourseSurvey": "Example | POST-COURSE SURVEY",
+      "architectureForum": "Example | CHEFS Architecture Forum Survey",
+      "conditionalLogic": "Example | Conditional Logic",
+      "calculatedValues": "Example | Calculated Values",
+      "teamLunchOrder": "Example | Team Lunch Order",
+      "navigationButtons": "Example | Navigation Buttons",
+      "successStories": "Example | CHEFS Success Stories"
+    },
+    "testimonials": {
+      "title": "Don't take our word for it, hear what our users have to say about us.",
+      "chefsUser": "CHEFS User",
+      "verifiedUser": "Verified User",
+      "viewOnKudos": "View on Kudos Page →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Great communication and collaboration",
+        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
+        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "External User, CGI",
+        "tagHelpful": "Helpful",
+        "tagGreatSupport": "Great Support"
+      },
+      "testimonial2": {
+        "title": "Accessible yet powerful",
+        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
+        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
+        "tagHelpful": "Helpful",
+        "tagEasyToUse": "Easy To Use"
+      },
+      "testimonial3": {
+        "title": "Clear documentation and helpful support",
+        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
+        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
+        "reviewer": "Emma Armitage",
+        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
+        "tagHelpful": "Helpful",
+        "tagShared": "Shared With My Team"
+      }
+    },
+    "finalCta": {
+      "title": "Get Started Using Enterprise CHEFS",
+      "description": "Create online forms to collect information from your clients and improve your workflows.",
+      "loginButton": "Login to Get Started"
+    },
+    "formViewer": {
+      "downloadJson": "Download JSON",
+      "close": "Close",
+      "downloadTitle": "Download JSON"
+    }
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Ang Enterprise CHEFS ay ang bagong bersyon ng CHEFS na sumusuporta sa multi-tenant access. Ang pagpili ng iyong tenant ay awtomatikong dadalhin ka doon.",
+    "selectLabel": "Pumili ng tenant (bubukas sa Enterprise CHEFS)",
+    "placeholder": "Pumili mula sa available na mga tenant",
+    "noDataText": "Walang nahanap na tenant",
+    "switchToClassic": "Lumipat sa Classic CHEFS",
+    "goToCstar": "Pumunta sa CSTAR (Konektadong Serbisyo, Team Access at Roles)",
+    "noTenantsAvailable": "Walang available na tenant",
+    "manageTenantsIn": "Pamahalaan ang mga tenant sa",
+    "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Gusto mo bang magtrabaho nang ligtas sa iyong koponan, maghatid ng mga form nang mas mabilis, at makipagtulungan sa gobyerno?",
+      "title": "Ipinapakilala ang Enterprise CHEFS at CSTAR!",
+      "enterpriseTitle": "Maranasan ang bagong Enterprise CHEFS",
+      "tenant": "tenant",
+      "description1": "Ang Enterprise CHEFS ay ang bagong bersyon ng CHEFS na sumusuporta sa multi-tenant access at pamamahala ng koponan sa pamamagitan ng CSTAR (Konektadong Serbisyo, Team Access at Roles).",
+      "description2": "Sa Enterprise CHEFS, ang iyong organisasyon ay maaaring:",
+      "description3": "Magtrabaho sa ",
+      "description4": " mode - Ang bawat tenant ay may sariling secure na espasyo na may ihiwalay na mga form, data, at pahintulot",
+      "description5": "Pamahalaan ang access ng koponan - Kontrolin kung sino ang maaaring tumingin, mag-edit, o pamahalaan ang mga form sa loob ng iyong tenant",
+      "description6": "Panatilihin ang seguridad ng data - Ang data ng bawat tenant ay ganap na ihiwalay mula sa ibang mga tenant",
+      "description7": "Ang Enterprise CHEFS ay sumasaklaw din sa lahat ng malakas na feature na alam at mahal mo mula sa Classic CHEFS, tulad ng drag-and-drop form builder, conditional logic, encrypted submissions, at API integrations.",
+      "loginButton": "Mag-login upang magsimula",
+      "goToChefs": "Pumunta sa CHEFS",
+      "learnMore": "Matuto pa"
+    },
+    "gettingStarted": {
+      "title": "Bago sa CHEFS at hindi alam kung saan magsisimula?",
+      "description": "Maaari kang magsimulang lumikha ng mga form sa ilang simpleng hakbang:",
+      "step1Title": "1. Mag-login gamit ang iyong IDIR o BCeID account",
+      "step2Title": "2. Lumikha ng bagong form o gumamit ng template",
+      "step3Title": "3. Idisenyo ang iyong form gamit ang aming drag-and-drop builder",
+      "step4Title": "4. I-publish at ibahagi ang iyong form sa iyong koponan o publiko",
+      "loginButton": "Mag-login upang magsimula",
+      "learnMore": "Matuto pa"
+    },
+    "examples": {
+      "demographicSurvey": "Halimbawa | Survey sa Pagkolekta ng Demographic Data",
+      "projectRequest": "Halimbawa | Kahilingan sa Proyekto",
+      "permitApplication": "Halimbawa | Aplikasyon para sa Permit"
+    },
+    "testimonials": {
+      "title": "Huwag lang magtiwala sa aming salita, pakinggan kung ano ang sinasabi ng aming mga user tungkol sa amin.",
+      "author": "May-akda",
+      "role": "Papel"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS User 1",
+        "role": "Program Analyst",
+        "quote": "\"Binago ng CHEFS ang paraan ng aming pagkolekta ng data. Pinapahintulutan kami ng multi-tenant system na panatilihing hiwalay ang mga proyekto habang nagbabahagi ng best practices sa buong aming departamento.\""
+      },
+      "testimonial2": {
+        "author": "CHEFS User 2",
+        "role": "Project Manager",
+        "quote": "\"Ang pagsasama sa CSTAR ay ginagawang mas madali ang pamamahala ng access ng koponan. Mabilis kong maidadagdag ang mga bagong miyembro ng koponan at eksaktong makokontrol kung ano ang maaari nilang gawin.\""
+      },
+      "testimonial3": {
+        "author": "CHEFS User 3",
+        "role": "IT Administrator",
+        "quote": "\"Pinahahalagahan namin ang matatag na seguridad at paghihiwalay ng data. Ang bawat tenant ay ganap na hiwalay, na nagbibigay sa amin ng kapayapaan ng isip kapag nagtatrabaho sa sensitibong data.\""
+      }
+    },
+    "finalCta": {
+      "title": "Simulan ang paggamit ng Enterprise CHEFS",
+      "description": "Lumikha ng mga online form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong workflow.",
+      "loginButton": "Mag-login upang magsimula"
+    },
+    "formViewer": {
+      "title": "Form Viewer",
+      "description": "I-preview kung ano ang hitsura ng iyong form",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

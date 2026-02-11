@@ -29,10 +29,10 @@ const showDeleteDialog = ref(false);
 
 const formStore = useFormStore();
 
-const { isRTL } = storeToRefs(formStore);
+const { form, isRTL } = storeToRefs(formStore);
 
 async function delSub() {
-  await formStore.deleteSubmission(properties.submissionId);
+  await formStore.deleteSubmission(form.value.id, properties.submissionId);
   showDeleteDialog.value = false;
   emit('deleted');
 }

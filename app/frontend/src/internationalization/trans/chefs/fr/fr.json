@@ -85,6 +85,8 @@
     "uploadError": "Une erreur s'est produite lors du téléchargement du modèle.",
     "deleteSuccess": "Modèle supprimé avec succès.",
     "deleteError": "Une erreur s'est produite lors de la suppression du modèle.",
+    "deleteErrorInUse": "Impossible de supprimer le modèle : Le modèle est actuellement utilisé par la Configuration d'impression. Veuillez d'abord mettre à jour les paramètres de Configuration d'impression.",
+    "deleteDisabledTooltip": "Ce modèle est actuellement utilisé par la Configuration d'impression. Veuillez d'abord mettre à jour les paramètres de Configuration d'impression.",
     "fetchError": "Une erreur s'est produite lors de la récupération du modèle.",
     "info": "Téléchargez un modèle pour utiliser le Service de Génération de Documents Communs (CDOGS)",
     "fileSizeError": "La taille du fichier doit être inférieure à 25 Mo."
@@ -125,7 +127,7 @@
     "addMoreValidEmailAddrs": "Ajoutez une ou plusieurs adresses e-mail valides",
     "formScheduleSettings": "Paramètres de planification de formulaire",
     "opensubmissions": "Soumissions ouvertes",
-    "submissionsDeadline": "Combien de temps souhaitez-vous recevoir les soumissions ?",
+    "submissionsDeadline": "Combien de temps souhaitez-vous recevoir les soumissions?",
     "keepSubmissnOpenTilUnplished": "Rester ouvert jusqu'à dépublication manuelle",
     "submissionsClosingDate": "Planifier une date de clôture",
     "submissionPeriod": "Configurer la période de soumission",
@@ -204,7 +206,38 @@
     "encryptionKeyUpdatedBy": "Clé de cryptage mise à jour par",
     "encryptionKeyCopySnackbar": "Clé de chiffrement copiée dans le presse-papiers",
     "encryptionKeyCopyTooltip": "Copier la clé de chiffrement dans le presse-papiers",
-    "encryptionKeyGenerate": "Générer une clé de cryptage"
+    "encryptionKeyGenerate": "Générer une clé de cryptage",
+    "dataRetention": "Politique de conservation des données",
+    "enableHardDeletion": "Activer la suppression définitive automatique",
+    "hardDeletionTooltip": "Lorsque cette option est activée, les soumissions marquées pour suppression seront définitivement supprimées après la période de conservation.",
+    "hardDeletionWarning": "La suppression définitive est permanente et ne peut pas être annulée.",
+    "permanentDeletion": "Les données seront irrécupérables après la suppression.",
+    "dataClassification": "Classification des données",
+    "dataClassificationHint": "Catégorisez le type de données collectées par ce formulaire",
+    "retentionPeriod": "Période de conservation",
+    "retentionPeriodHint": "Durée de conservation des soumissions supprimées avant leur suppression définitive",
+    "classPublic": "Public",
+    "classInternal": "Interne",
+    "classSensitive": "Sensible",
+    "classConfidential": "Confidentiel",
+    "classProtected": "Protégé",
+    "classificationCustomHint": "Vous pouvez saisir une classification personnalisée si nécessaire",
+    "days30": "30 jours",
+    "days90": "90 jours",
+    "days180": "180 jours",
+    "year1": "1 an (365 jours)",
+    "years2": "2 ans (730 jours)",
+    "years5": "5 ans (1825 jours)",
+    "daysCustom": "Période personnalisée",
+    "customDaysLabel": "Période de conservation personnalisée (jours)",
+    "customDaysHint": "Entrez un nombre entre 1 et 3650 jours (10 ans)",
+    "classificationDescription": "Notes de classification",
+    "classificationDescriptionHint": "Description facultative expliquant pourquoi cette classification et cette période de conservation ont été choisies",
+    "retentionDaysUpdated": "Période de conservation mise à jour",
+    "deletionDisclaimerWithDays": "AVERTISSEMENT: Après {days} jours, les soumissions marquées pour suppression seront définitivement supprimées et ne pourront pas être récupérées.",
+    "setRetentionPrompt": "Veuillez définir une période de conservation pour compléter votre politique de conservation des données.",
+    "fetchRetentionClassificationListError": "Erreur lors de la récupération de la liste des classifications de conservation.",
+    "fetchRetentionClassificationListConsErrMsg": "Erreur lors de la récupération des classifications de conservation : {error}"
   },
   "formProfile": {
     "message": "L'équipe CHEFS collecte et organise des informations pour servir de contribution cruciale à l'élaboration de cas d'affaires complets. Ces cas joueront un rôle central dans la direction des opérations stratégiques et l'amélioration continue de CHEFS au cours des prochaines années. Cette initiative de collecte de données est essentielle pour éclairer les décisions critiques et façonner la trajectoire de CHEFS, assurant son adaptabilité et son efficacité face aux besoins et aux défis en constante évolution.",
@@ -1117,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Les paramètres d'abonnement pour ce formulaire ont été enregistrés.",
       "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Une erreur s'est produite lors de la récupération de la politique de conservation pour ce formulaire.",
+      "getFormRetentionPolicyConsErrMsg": "Erreur lors de l'obtention de la politique de conservation pour le formulaire {formId} : {error}",
+      "configureFormRetentionPolicyErrMsg": "Une erreur s'est produite lors de la configuration de la politique de conservation pour ce formulaire.",
+      "configureFormRetentionPolicyConsErrMsg": "Erreur lors de la configuration de la politique de conservation pour le formulaire {formId} : {error}"
     }
   },
   "admin": {
@@ -1155,6 +1194,33 @@
     "editTitle": "Modifier la configuration du flux d'événements",
     "fetchError": "Une erreur s'est produite lors de la récupération de la configuration du flux d'événements.",
     "save": "Sauvegarder"
+  },
+  "printConfig": {
+    "title": "Configuration d'impression",
+    "description": "Configurez comment les utilisateurs peuvent imprimer les soumissions de formulaire",
+    "typeDefault": "Par défaut",
+    "typeDefaultDescription": "Les utilisateurs peuvent choisir la méthode d'impression (impression du navigateur ou modèle)",
+    "typeDirect": "Impression directe",
+    "typeDirectDescription": "Les utilisateurs impriment directement en utilisant un modèle préconfiguré (sortie PDF)",
+    "selectTemplate": "Sélectionner le modèle",
+    "save": "Enregistrer la configuration",
+    "saving": "Enregistrement...",
+    "saveSuccess": "Configuration d'impression enregistrée avec succès",
+    "saveError": "Une erreur s'est produite lors de l'enregistrement de la configuration d'impression",
+    "fetchError": "Une erreur s'est produite lors de la récupération de la configuration d'impression",
+    "templateRequired": "Le modèle est requis lors de l'utilisation de l'impression directe",
+    "noTemplatesAvailable": "Aucun modèle disponible. Veuillez d'abord télécharger un modèle.",
+    "templateDeleted": "Le modèle précédemment sélectionné a été supprimé. Veuillez sélectionner un nouveau modèle.",
+    "currentConfig": "Configuration actuelle",
+    "type": "Type",
+    "template": "Modèle",
+    "reportNameLabel": "Nom du fichier de sortie",
+    "reportNameOptionFormName": "Utiliser le nom du formulaire",
+    "reportNameOptionFormNameDescription": "Le fichier de sortie sera nommé en utilisant le nom du formulaire",
+    "reportNameOptionCustom": "Utiliser un nom personnalisé",
+    "reportNameOptionCustomDescription": "Entrez un nom personnalisé pour le fichier de sortie",
+    "reportNameCustomInput": "Nom de fichier personnalisé",
+    "reportNameCustomInputHint": "Entrez le nom personnalisé pour le document généré"
   },
   "encryptionKey": {
     "info": "Configurez les clés de chiffrement pour votre formulaire.",
@@ -1245,5 +1311,117 @@
     "shuttingDown": "CHEFS s'arrête.",
     "notReady": "CHEFS ne peut pas se connecter à tous les services requis.",
     "unableToReachBackend": "Impossible d'atteindre le service backend."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Vous souhaitez travailler en toute sécurité avec votre équipe, fournir des formulaires plus rapidement et collaborer au sein du gouvernement?",
+      "title": "Présentation d'Enterprise CHEFS et CSTAR!",
+      "enterpriseTitle": "Découvrez le nouveau Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS s'appuie sur le classique",
+      "chefsLink": "CHEFS (Service commun d'hébergement de formulaires)",
+      "enterpriseDescription2": "en travaillant conjointement avec",
+      "cstarLink": "CSTAR — Services connectés, accès d'équipe et rôles",
+      "enterpriseDescription3": "— pour créer un espace de travail partagé et collaboratif.",
+      "enterpriseDescription4": "Avec Enterprise CHEFS, les équipes peuvent partager des formulaires en toute sécurité, attribuer des rôles et gérer des projets au sein du",
+      "tenant": "locataire",
+      "enterpriseDescription5": "de leur organisation — un espace de travail dédié qui maintient vos projets et permissions organisés.",
+      "enterpriseDescription6": "Bienvenue dans Enterprise CHEFS, où les équipes gouvernementales peuvent collaborer en toute sécurité et efficacement.",
+      "goToChefs": "Aller à CHEFS",
+      "cstarTitle": "CSTAR et gestion des accès",
+      "cstarDescription1": "Enterprise CHEFS fonctionne en tandem avec",
+      "cstarDescription2": ". CSTAR vous aide à gérer qui a accès à vos formulaires et guide les utilisateurs dans les",
+      "tenants": "locataires",
+      "cstarDescription3": ", en attribuant des",
+      "roles": "rôles",
+      "cstarDescription4": ", et en connectant des",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "L'accès à CSTAR est géré par les",
+      "administrators": "administrateurs de votre ministère ou organisation",
+      "cstarDescription7": ", garantissant que les autorisations et les adhésions sont contrôlées de manière sécurisée.",
+      "cstarDescription8": "Vous pouvez utiliser CSTAR pour consulter vos adhésions actuelles aux locataires ou demander un nouveau locataire si vous débutez.",
+      "goToCstar": "Aller à CSTAR",
+      "alertTitle": "ATTENTION UTILISATEURS BCeID",
+      "alertDescription": "Pour que votre compte puisse être trouvé par votre équipe, veuillez vous connecter à CSTAR avant d'utiliser Enterprise CHEFS. Cette étape permet à l'administrateur de votre équipe de vous localiser et de vous ajouter à un locataire ou un groupe, rendant votre compte actif et consultable dans CSTAR.",
+      "loginToCstar": "Se connecter à CSTAR"
+    },
+    "gettingStarted": {
+      "title": "Nouveau sur CHEFS et vous ne savez pas par où commencer?",
+      "description1": "Commencez par explorer notre",
+      "techDocsLink": "Documentation technique CHEFS",
+      "description2": "(Documentation technique) pour obtenir des conseils de configuration, ou parcourez les exemples de formulaires ci-dessous — chacun a été créé par de véritables utilisateurs de CHEFS.",
+      "viewForm": "Voir le formulaire",
+      "download": "Télécharger",
+      "viewFormTooltip": "Voir le formulaire en plein écran",
+      "downloadTooltip": "Télécharger le formulaire en JSON",
+      "exploreForm": "Explorer l'exemple de formulaire →"
+    },
+    "examples": {
+      "demographicSurvey": "Exemple | Sondage de collecte de données démographiques",
+      "calculationsGrid": "Exemple | Calculs dans une grille de données",
+      "postCourseSurvey": "Exemple | SONDAGE POST-COURS",
+      "architectureForum": "Exemple | Sondage du forum d'architecture CHEFS",
+      "conditionalLogic": "Exemple | Logique conditionnelle",
+      "calculatedValues": "Exemple | Valeurs calculées",
+      "teamLunchOrder": "Exemple | Commande de déjeuner d'équipe",
+      "navigationButtons": "Exemple | Boutons de navigation",
+      "successStories": "Exemple | Histoires de réussite CHEFS"
+    },
+    "testimonials": {
+      "title": "Ne nous croyez pas sur parole, écoutez ce que nos utilisateurs ont à dire à notre sujet.",
+      "chefsUser": "Utilisateur CHEFS",
+      "verifiedUser": "Utilisateur vérifié",
+      "viewOnKudos": "Voir sur la page Kudos →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Excellente communication et collaboration",
+        "date": "Évalué à Victoria, C.-B., Canada le 19 mai 2024",
+        "content": "\"L'équipe de polysomnographie aimerait partager à quel point nous apprécions que vous preniez en compte nos commentaires lors de votre planification de sprint. Nous sommes très enthousiastes à l'idée de contribuer à l'amélioration de CHEFS pour les utilisateurs finaux. La collaboration et la communication entre les équipes sont grandement appréciées par notre client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "Utilisateur externe, CGI",
+        "tagHelpful": "Utile",
+        "tagGreatSupport": "Excellent support"
+      },
+      "testimonial2": {
+        "title": "Accessible mais puissant",
+        "date": "Évalué à Victoria, C.-B., Canada le 24 juin 2023",
+        "content": "\"CHEFS est très simple pour les non-codeurs. Vous pouvez débloquer plus d'options si vous le souhaitez, mais la fonctionnalité de base est très facile à utiliser pour les personnes non super techniques ou non expertes en code.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Analyste principal en planification d'urgence, Division de la résilience climatique, de la compétitivité et de la réconciliation, Agriculture et Alimentation",
+        "tagHelpful": "Utile",
+        "tagEasyToUse": "Facile à utiliser"
+      },
+      "testimonial3": {
+        "title": "Documentation claire et support utile",
+        "date": "Évalué à Victoria, C.-B., Canada le 6 mai 2025",
+        "content": "\"La documentation CHEFS est claire et bien structurée pour comprendre comment créer des formulaires et se connecter. Je tiens à remercier le canal Teams CHEFS pour ses réponses rapides à mes questions restantes.\"",
+        "reviewer": "Emma Armitage",
+        "role": "Analyste géospatiale SIG, Services d'information sur les ressources naturelles et services numériques",
+        "tagHelpful": "Utile",
+        "tagShared": "Partagé avec mon équipe"
+      }
+    },
+    "finalCta": {
+      "title": "Commencez à utiliser Enterprise CHEFS",
+      "description": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
+      "loginButton": "Se connecter pour commencer"
+    },
+    "formViewer": {
+      "downloadJson": "Télécharger JSON",
+      "close": "Fermer",
+      "downloadTitle": "Télécharger JSON"
+    }
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Enterprise CHEFS est la nouvelle version de CHEFS qui prend en charge l'accès multi-locataire. La sélection de votre locataire vous y amènera automatiquement.",
+    "selectLabel": "Sélectionnez le locataire (s'ouvre dans Enterprise CHEFS)",
+    "placeholder": "Sélectionnez parmi les locataires disponibles",
+    "noDataText": "Aucun locataire trouvé",
+    "switchToClassic": "Passer à Classic CHEFS",
+    "goToCstar": "Aller à CSTAR (Services connectés, accès d'équipe et rôles)",
+    "noTenantsAvailable": "Aucun locataire disponible",
+    "manageTenantsIn": "Gérer les locataires dans",
+    "cstar": "CSTAR"
   }
 }

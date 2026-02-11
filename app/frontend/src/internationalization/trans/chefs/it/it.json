@@ -85,6 +85,8 @@
     "uploadError": "Si è verificato un errore durante il caricamento del template.",
     "deleteSuccess": "Template eliminato con successo.",
     "deleteError": "Si è verificato un errore durante l'eliminazione del template.",
+    "deleteErrorInUse": "Impossibile eliminare il template: Il template è attualmente in uso dalla Configurazione di stampa. Si prega di aggiornare prima le impostazioni della Configurazione di stampa.",
+    "deleteDisabledTooltip": "Questo template è attualmente in uso dalla Configurazione di stampa. Si prega di aggiornare prima le impostazioni della Configurazione di stampa.",
     "fetchError": "Si è verificato un errore durante il recupero del template.",
     "info": "Carica un template per utilizzare il Servizio di Generazione Documenti Comuni (CDOGS)",
     "fileSizeError": "La dimensione del file deve essere inferiore a 25 MB."
@@ -204,7 +206,38 @@
     "encryptionKeyUpdatedBy": "Chiave di crittografia aggiornata da",
     "encryptionKeyCopySnackbar": "Chiave di crittografia copiata negli appunti",
     "encryptionKeyCopyTooltip": "Copia la chiave di crittografia negli appunti",
-    "encryptionKeyGenerate": "Genera chiave di crittografia"
+    "encryptionKeyGenerate": "Genera chiave di crittografia",
+    "dataRetention": "Politica di conservazione dei dati",
+    "enableHardDeletion": "Abilitare l'eliminazione definitiva automatica",
+    "hardDeletionTooltip": "Quando abilitato, le sottomissioni contrassegnate per l'eliminazione saranno rimosse permanentemente dopo il periodo di conservazione.",
+    "hardDeletionWarning": "L'eliminazione definitiva è permanente e non può essere annullata.",
+    "permanentDeletion": "I dati saranno irrecuperabili dopo l'eliminazione.",
+    "dataClassification": "Classificazione dei dati",
+    "dataClassificationHint": "Categorizzare il tipo di dati raccolti da questo modulo",
+    "retentionPeriod": "Periodo di conservazione",
+    "retentionPeriodHint": "Per quanto tempo conservare le sottomissioni eliminate prima della rimozione permanente",
+    "classPublic": "Pubblico",
+    "classInternal": "Interno",
+    "classSensitive": "Sensibile",
+    "classConfidential": "Confidenziale",
+    "classProtected": "Protetto",
+    "classificationCustomHint": "È possibile digitare una classificazione personalizzata se necessario",
+    "days30": "30 giorni",
+    "days90": "90 giorni",
+    "days180": "180 giorni",
+    "year1": "1 anno (365 giorni)",
+    "years2": "2 anni (730 giorni)",
+    "years5": "5 anni (1825 giorni)",
+    "daysCustom": "Periodo personalizzato",
+    "customDaysLabel": "Periodo di conservazione personalizzato (giorni)",
+    "customDaysHint": "Inserisci un numero tra 1 e 3650 giorni (10 anni)",
+    "classificationDescription": "Note di classificazione",
+    "classificationDescriptionHint": "Descrizione opzionale del motivo per cui sono stati scelti questa classificazione e periodo di conservazione",
+    "retentionDaysUpdated": "Periodo di conservazione aggiornato",
+    "deletionDisclaimerWithDays": "AVVERTENZA: Dopo {days} giorni, le sottomissioni contrassegnate per l'eliminazione saranno eliminate permanentemente e non potranno essere recuperate.",
+    "setRetentionPrompt": "Si prega di impostare un periodo di conservazione per completare la politica di conservazione dei dati.",
+    "fetchRetentionClassificationListError": "Errore durante il recupero dell'elenco delle classificazioni di conservazione.",
+    "fetchRetentionClassificationListConsErrMsg": "Errore durante il recupero delle classificazioni di conservazione: {error}"
   },
   "formProfile": {
     "message": "Il team CHEFS sta raccogliendo e organizzando informazioni per servire come input cruciale per la creazione di casi aziendali completi. Questi casi avranno un ruolo cruciale nella guida dell'operazione strategica e nell'ulteriore miglioramento di CHEFS nei prossimi anni. Questa iniziativa di raccolta dati è essenziale per informare decisioni critiche e plasmare la traiettoria di CHEFS, garantendone adattabilità ed efficacia nel affrontare esigenze e sfide in evoluzione.",
@@ -1117,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Le impostazioni di iscrizione per questo modulo sono state salvate.",
       "saveSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di salvare le impostazioni dell'abbonamento.",
       "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Si è verificato un errore durante il recupero della politica di conservazione per questo modulo.",
+      "getFormRetentionPolicyConsErrMsg": "Errore durante il recupero della politica di conservazione per il modulo {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "Si è verificato un errore durante la configurazione della politica di conservazione per questo modulo.",
+      "configureFormRetentionPolicyConsErrMsg": "Errore durante la configurazione della politica di conservazione per il modulo {formId}: {error}"
     }
   },
   "admin": {
@@ -1155,6 +1194,33 @@
     "editTitle": "Modifica configurazione flusso eventi",
     "fetchError": "Si è verificato un errore durante il recupero della configurazione del flusso di eventi.",
     "save": "Salva"
+  },
+  "printConfig": {
+    "title": "Configurazione di stampa",
+    "description": "Configura come gli utenti possono stampare le invii del modulo",
+    "typeDefault": "Predefinito",
+    "typeDefaultDescription": "Gli utenti possono scegliere il metodo di stampa (stampa del browser o modello)",
+    "typeDirect": "Stampa diretta",
+    "typeDirectDescription": "Gli utenti stampano direttamente utilizzando un modello preconfigurato (output PDF)",
+    "selectTemplate": "Seleziona modello",
+    "save": "Salva configurazione",
+    "saving": "Salvataggio...",
+    "saveSuccess": "Configurazione di stampa salvata con successo",
+    "saveError": "Si è verificato un errore durante il salvataggio della configurazione di stampa",
+    "fetchError": "Si è verificato un errore durante il recupero della configurazione di stampa",
+    "templateRequired": "Il modello è richiesto quando si utilizza la stampa diretta",
+    "noTemplatesAvailable": "Nessun modello disponibile. Si prega di caricare prima un modello.",
+    "templateDeleted": "Il modello selezionato in precedenza è stato eliminato. Si prega di selezionare un nuovo modello.",
+    "currentConfig": "Configurazione corrente",
+    "type": "Tipo",
+    "template": "Modello",
+    "reportNameLabel": "Nome file di output",
+    "reportNameOptionFormName": "Usa nome modulo",
+    "reportNameOptionFormNameDescription": "Il file di output sarà denominato utilizzando il nome del modulo",
+    "reportNameOptionCustom": "Usa nome personalizzato",
+    "reportNameOptionCustomDescription": "Inserisci un nome personalizzato per il file di output",
+    "reportNameCustomInput": "Nome file personalizzato",
+    "reportNameCustomInputHint": "Inserisci il nome personalizzato per il documento generato"
   },
   "encryptionKey": {
     "info": "Configura le chiavi di crittografia per il tuo modulo.",
@@ -1245,5 +1311,182 @@
     "shuttingDown": "CHEFS si sta spegnendo.",
     "notReady": "CHEFS non può connettersi a tutti i servizi richiesti.",
     "unableToReachBackend": "Impossibile raggiungere il servizio backend."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
+      "title": "Introducing Enterprise CHEFS and CSTAR!",
+      "enterpriseTitle": "Experience the new Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
+      "chefsLink": "CHEFS (Common Hosted Forms Service)",
+      "enterpriseDescription2": "by working together with",
+      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
+      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
+      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
+      "tenant": "tenant",
+      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
+      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+      "goToChefs": "Go to CHEFS",
+      "cstarTitle": "CSTAR and Access Management",
+      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
+      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
+      "tenants": "tenants",
+      "cstarDescription3": ", assigning",
+      "roles": "roles",
+      "cstarDescription4": ", and connecting",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "Access to CSTAR is managed by",
+      "administrators": "administrators within your ministry or organization",
+      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
+      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
+      "goToCstar": "Go To CSTAR",
+      "alertTitle": "ATTENTION BCeID USERS",
+      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
+      "loginToCstar": "Log in to CSTAR"
+    },
+    "gettingStarted": {
+      "title": "New to CHEFS and not sure where to start?",
+      "description1": "Start by exploring our",
+      "techDocsLink": "CHEFS Technical Documentation",
+      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
+      "viewForm": "View Form",
+      "download": "Download",
+      "viewFormTooltip": "View form in fullscreen",
+      "downloadTooltip": "Download form as JSON",
+      "exploreForm": "Explore Example Form →"
+    },
+    "examples": {
+      "demographicSurvey": "Example | Demographic Data Collection Survey",
+      "calculationsGrid": "Example | Calculations in Data Grid",
+      "postCourseSurvey": "Example | POST-COURSE SURVEY",
+      "architectureForum": "Example | CHEFS Architecture Forum Survey",
+      "conditionalLogic": "Example | Conditional Logic",
+      "calculatedValues": "Example | Calculated Values",
+      "teamLunchOrder": "Example | Team Lunch Order",
+      "navigationButtons": "Example | Navigation Buttons",
+      "successStories": "Example | CHEFS Success Stories"
+    },
+    "testimonials": {
+      "title": "Don't take our word for it, hear what our users have to say about us.",
+      "chefsUser": "CHEFS User",
+      "verifiedUser": "Verified User",
+      "viewOnKudos": "View on Kudos Page →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Great communication and collaboration",
+        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
+        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "External User, CGI",
+        "tagHelpful": "Helpful",
+        "tagGreatSupport": "Great Support"
+      },
+      "testimonial2": {
+        "title": "Accessible yet powerful",
+        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
+        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
+        "tagHelpful": "Helpful",
+        "tagEasyToUse": "Easy To Use"
+      },
+      "testimonial3": {
+        "title": "Clear documentation and helpful support",
+        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
+        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
+        "reviewer": "Emma Armitage",
+        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
+        "tagHelpful": "Helpful",
+        "tagShared": "Shared With My Team"
+      }
+    },
+    "finalCta": {
+      "title": "Get Started Using Enterprise CHEFS",
+      "description": "Create online forms to collect information from your clients and improve your workflows.",
+      "loginButton": "Login to Get Started"
+    },
+    "formViewer": {
+      "downloadJson": "Download JSON",
+      "close": "Close",
+      "downloadTitle": "Download JSON"
+    }
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Enterprise CHEFS è la nuova versione di CHEFS che supporta l'accesso multi-tenant. Selezionando il tuo tenant verrai portato automaticamente lì.",
+    "selectLabel": "Seleziona tenant (si apre in Enterprise CHEFS)",
+    "placeholder": "Seleziona tra i tenant disponibili",
+    "noDataText": "Nessun tenant trovato",
+    "switchToClassic": "Passa a Classic CHEFS",
+    "goToCstar": "Vai a CSTAR (Servizi connessi, accesso team e ruoli)",
+    "noTenantsAvailable": "Nessun tenant disponibile",
+    "manageTenantsIn": "Gestisci tenant in",
+    "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Vuoi lavorare in sicurezza con il tuo team, consegnare moduli più velocemente e collaborare nel governo?",
+      "title": "Presentiamo Enterprise CHEFS e CSTAR!",
+      "enterpriseTitle": "Sperimenta il nuovo Enterprise CHEFS",
+      "tenant": "tenant",
+      "description1": "Enterprise CHEFS è la nuova versione di CHEFS che supporta l'accesso multi-tenant e la gestione del team tramite CSTAR (Connected Services, Team Access and Roles).",
+      "description2": "Con Enterprise CHEFS, la tua organizzazione può:",
+      "description3": "Lavorare in modalità ",
+      "description4": " - Ogni tenant ha il proprio spazio sicuro con moduli, dati e autorizzazioni isolati",
+      "description5": "Gestire l'accesso del team - Controlla chi può visualizzare, modificare o gestire moduli all'interno del tuo tenant",
+      "description6": "Mantenere la sicurezza dei dati - I dati di ogni tenant sono completamente isolati da altri tenant",
+      "description7": "Enterprise CHEFS include anche tutte le potenti funzionalità che conosci e ami di Classic CHEFS, come il costruttore di moduli drag-and-drop, logica condizionale, invii crittografati e integrazioni API.",
+      "loginButton": "Accedi per iniziare",
+      "goToChefs": "Vai a CHEFS",
+      "learnMore": "Scopri di più"
+    },
+    "gettingStarted": {
+      "title": "Nuovo su CHEFS e non sai da dove iniziare?",
+      "description": "Puoi iniziare a creare moduli con pochi semplici passaggi:",
+      "step1Title": "1. Accedi con il tuo account IDIR o BCeID",
+      "step2Title": "2. Crea un nuovo modulo o usa un modello",
+      "step3Title": "3. Progetta il tuo modulo con il nostro costruttore drag-and-drop",
+      "step4Title": "4. Pubblica e condividi il tuo modulo con il tuo team o il pubblico",
+      "loginButton": "Accedi per iniziare",
+      "learnMore": "Scopri di più"
+    },
+    "examples": {
+      "demographicSurvey": "Esempio | Sondaggio di raccolta dati demografici",
+      "projectRequest": "Esempio | Richiesta di progetto",
+      "permitApplication": "Esempio | Richiesta di permesso"
+    },
+    "testimonials": {
+      "title": "Non fidarti solo della nostra parola, ascolta cosa hanno da dire i nostri utenti su di noi.",
+      "author": "Autore",
+      "role": "Ruolo"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Utente CHEFS 1",
+        "role": "Analista di programma",
+        "quote": "\"CHEFS ha trasformato il modo in cui raccogliamo i dati. Il sistema multi-tenant ci consente di mantenere i progetti separati condividendo al contempo le migliori pratiche in tutto il nostro dipartimento.\""
+      },
+      "testimonial2": {
+        "author": "Utente CHEFS 2",
+        "role": "Project Manager",
+        "quote": "\"L'integrazione con CSTAR rende la gestione dell'accesso del team molto più semplice. Posso integrare rapidamente nuovi membri del team e controllare esattamente cosa possono fare.\""
+      },
+      "testimonial3": {
+        "author": "Utente CHEFS 3",
+        "role": "Amministratore IT",
+        "quote": "\"Apprezziamo le robuste funzionalità di sicurezza e isolamento dei dati. Ogni tenant è completamente separato, il che ci dà tranquillità quando lavoriamo con dati sensibili.\""
+      }
+    },
+    "finalCta": {
+      "title": "Inizia a usare Enterprise CHEFS",
+      "description": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare il tuo flusso di lavoro.",
+      "loginButton": "Accedi per iniziare"
+    },
+    "formViewer": {
+      "title": "Visualizzatore moduli",
+      "description": "Anteprima di come apparirà il tuo modulo",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

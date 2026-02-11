@@ -38,6 +38,59 @@ export default {
   },
 
   //
+  // Tenant Management calls
+  //
+
+  /**
+   * @function getCurrentUserTenants
+   * Get the list of tenants available to the current user
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  getCurrentUserTenants(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/current/tenants`, { params });
+  },
+
+  /**
+   * @function getGroupsForCurrentTenant
+   * Get the list of groups for the current tenant
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  getGroupsForCurrentTenant(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/current/groups`, { params });
+  },
+
+  /**
+   * @function getFormGroups
+   * Get the list of groups associated with a form
+   * @param {String} formId The form ID
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  getFormGroups(formId, params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/forms/${formId}/groups`, {
+      params,
+    });
+  },
+
+  /**
+   * @function assignGroupsToForm
+   * Assign groups to a form
+   * @param {String} formId The form ID
+   * @param {Array} groupIds The array of group IDs to assign
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  assignGroupsToForm(formId, groupIds, params = {}) {
+    return appAxios().put(
+      `${ApiRoutes.RBAC}/forms/${formId}/groups`,
+      { groupIds },
+      { params }
+    );
+  },
+
+  //
   // Form Management calls
   //
 

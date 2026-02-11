@@ -34,6 +34,7 @@
   "frontend": {
     "apiPath": "api/v1",
     "basePath": "/app",
+    "cstarBaseUrl": "https://cstar-dev.apps.silver.devops.gov.bc.ca",
     "oidc": {
       "clientId": "chefs-frontend-localhost-5300",
       "realm": "standard",
@@ -95,14 +96,22 @@
         "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
+      },
+      "css": {
+        "endpoint": "https://api.loginproxy.gov.bc.ca/api",
+        "tokenEndpoint": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+        "clientId": "CSS_CLIENT_ID",
+        "clientSecret": "CSS_CLIENT_SECRET",
+        "environment": "dev"
       }
     }
   },
   "cstar": {
-    "endpoint": "https://tenant-management-system-pr-202-frontend.apps.silver.devops.gov.bc.ca/api/v1/",
+    "endpoint": "https://cstar-dev.apps.silver.devops.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
-    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups",
-    "listGroupsForTenant": "/tenants/{tenantId}/groups"
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
+    "listGroupsForTenant": "tenants/{tenantId}/groups",
+    "listTenantUsersPath": "tenants/{tenantId}/users"
   },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",
@@ -118,5 +127,13 @@
       "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
       "precisionPoints": 100
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": "/workspaces/common-hosted-form-service/app/webcomponents/v1/assets"
+    }
+  },
+  "gateway": {
+    "jwtLifetime": "30m"
   }
 }

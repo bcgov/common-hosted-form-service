@@ -1,7 +1,6 @@
 const config = require('config');
 const axios = require('axios');
 const jwtService = require('./jwtService');
-const errorToProblem = require('./errorToProblem');
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
@@ -23,57 +22,87 @@ class TenantService {
   }
 
   async getCurrentUserTenants(req) {
-    if (!req.currentUser || !req.currentUser.idpUserId) {
-      return [];
+    if (!req || !req.currentUser) {
+      throw new Error(`${SERVICE}: missing currentUser`);
     }
+    if (!req.currentUser.idpUserId) {
+      throw new Error(`${SERVICE}: missing currentUser.idpUserId`);
+    }
+    const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
+    const headers = this._getAuthHeaders(req);
     try {
-      const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
-      const headers = this._getAuthHeaders(req);
       const { data } = await axios.get(url, { headers });
-      return data?.data?.tenants || [];
-    } catch (e) {
-      errorToProblem(SERVICE, e);
-      return [];
+      const tenants = data?.data?.tenants || [];
+      if (!Array.isArray(tenants) || tenants.length === 0) return [];
+
+      const tenantsWithRoles = await Promise.all(
+        tenants.map(async (tenant) => {
+          const tenantId = tenant?.id;
+          if (!tenantId) return { ...tenant, roles: [] };
+
+          const reqContext = {
+            ...req,
+            currentUser: { ...req.currentUser, tenantId },
+            headers: req.headers,
+          };
+
+          const groups = await this.getUserTenantGroupsAndRoles(reqContext);
+          const roles = Array.isArray(groups) ? groups.flatMap((group) => group.roles || []) : [];
+          return { ...tenant, roles: [...new Set(roles)] };
+        })
+      );
+
+      return tenantsWithRoles;
+    } catch (error) {
+      const status = error?.response?.status;
+      const isUnavailable = [502, 503, 504].includes(status);
+      const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error?.code);
+      if (isUnavailable || isNetworkError) {
+        req._tenantServiceDegraded = true;
+        return [];
+      }
+      throw error;
     }
   }
 
   async getUserTenantGroupsAndRoles(req) {
-    if (!req.currentUser || !req.currentUser.idpUserId || !req.currentUser.tenantId) {
-      return [];
+    if (!req || !req.currentUser) {
+      throw new Error(`${SERVICE}: missing currentUser`);
     }
-    try {
-      const userId = req.currentUser.idpUserId;
-      const tenantId = req.currentUser.tenantId;
-      const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
-      const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
-      const headers = this._getAuthHeaders(req);
-      const { data } = await axios.get(url, { headers });
-      return (data?.data?.groups || []).map((group) => ({
-        id: group.id,
-        name: group.name,
-        roles: (group.sharedServiceRoles || []).filter((role) => role.enabled).map((role) => role.name),
-      }));
-    } catch (e) {
-      errorToProblem(SERVICE, e);
-      return [];
+    if (!req.currentUser.idpUserId) {
+      throw new Error(`${SERVICE}: missing currentUser.idpUserId`);
     }
+    if (!req.currentUser.tenantId) {
+      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+    }
+
+    const userId = req.currentUser.idpUserId.toUpperCase();
+    const tenantId = req.currentUser.tenantId;
+    const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
+    const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
+    const headers = this._getAuthHeaders(req);
+    const { data } = await axios.get(url, { headers });
+    return (data?.data?.groups || []).map((group) => ({
+      id: group.id,
+      name: group.name,
+      roles: (group.sharedServiceRoles || []).filter((role) => role.enabled).map((role) => role.name),
+    }));
   }
 
   async getGroupsForCurrentTenant(req) {
-    if (!req.currentUser || !req.currentUser.tenantId) {
-      return [];
+    if (!req || !req.currentUser) {
+      throw new Error(`${SERVICE}: missing currentUser`);
     }
-    try {
-      const tenantId = req.currentUser.tenantId;
-      const groupPath = config.get('cstar.listGroupsForTenant');
-      const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId)}`;
-      const headers = this._getAuthHeaders(req);
-      const { data } = await axios.get(url, { headers });
-      return data?.data?.groups || [];
-    } catch (e) {
-      errorToProblem(SERVICE, e);
-      return [];
+    if (!req.currentUser.tenantId) {
+      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
     }
+
+    const tenantId = req.currentUser.tenantId;
+    const groupPath = config.get('cstar.listGroupsForTenant');
+    const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId)}`;
+    const headers = this._getAuthHeaders(req);
+    const { data } = await axios.get(url, { headers });
+    return data?.data?.groups || [];
   }
 
   /**
@@ -83,56 +112,58 @@ class TenantService {
    * - availableGroups: groups in tenant not yet linked to the form
    */
   async getFormGroups(req, formId) {
-    const empty = { associatedGroups: [], missingGroups: [], availableGroups: [] };
-    try {
-      if (!req.currentUser?.tenantId) return empty;
+    if (!req || !req.currentUser) {
+      throw new Error(`${SERVICE}: missing currentUser`);
+    }
+    if (!req.currentUser.tenantId) {
+      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+    }
+    if (!formId) {
+      throw new Error(`${SERVICE}: missing formId`);
+    }
 
-      // Ensure the form belongs to the user's tenant
-      const formTenant = await FormTenant.query().where({ formId, tenantId: req.currentUser.tenantId }).first();
-      if (!formTenant) return empty;
+    // Ensure the form belongs to the user's tenant
+    const formTenant = await FormTenant.query().where({ formId, tenantId: req.currentUser.tenantId }).first();
+    if (!formTenant) throw new Error(`${SERVICE}: form not found in tenant`);
 
-      // Associations from DB
-      const formGroups = await FormGroup.query().where({ formId }).select('groupId');
-      const associatedGroupIds = formGroups.map((fg) => fg.groupId);
+    // Associations from DB
+    const formGroups = await FormGroup.query().where({ formId }).select('groupId');
+    const associatedGroupIds = formGroups.map((fg) => fg.groupId);
 
-      // Source of truth
-      const allTenantGroups = await this.getGroupsForCurrentTenant(req);
+    // Source of truth
+    const allTenantGroups = await this.getGroupsForCurrentTenant(req);
 
-      // Associated and present
-      const associatedGroups = allTenantGroups
-        .filter((g) => associatedGroupIds.includes(g.id))
-        .map((g) => ({
-          id: g.id,
-          name: g.name,
-          description: g.description,
-          isAssociated: true,
-        }));
-
-      // Associated but missing from source-of-truth
-      const missingGroupIds = associatedGroupIds.filter((id) => !allTenantGroups.some((g) => g.id === id));
-      const missingGroups = missingGroupIds.map((id) => ({
-        id,
-        name: 'Group no longer available',
-        description: 'This group may have been deleted from the tenant',
+    // Associated and present
+    const associatedGroups = allTenantGroups
+      .filter((g) => associatedGroupIds.includes(g.id))
+      .map((g) => ({
+        id: g.id,
+        name: g.name,
+        description: g.description,
         isAssociated: true,
-        isDeleted: true,
       }));
 
-      // Available for association
-      const availableGroups = allTenantGroups
-        .filter((g) => !associatedGroupIds.includes(g.id))
-        .map((g) => ({
-          id: g.id,
-          name: g.name,
-          description: g.description,
-          isAssociated: false,
-        }));
+    // Associated but missing from source-of-truth
+    const missingGroupIds = associatedGroupIds.filter((id) => !allTenantGroups.some((g) => g.id === id));
+    const missingGroups = missingGroupIds.map((id) => ({
+      id,
+      name: 'Group no longer available',
+      description: 'This group may have been deleted from the tenant',
+      isAssociated: true,
+      isDeleted: true,
+    }));
 
-      return { associatedGroups, missingGroups, availableGroups };
-    } catch (e) {
-      errorToProblem(SERVICE, e);
-      return { associatedGroups: [], missingGroups: [], availableGroups: [] };
-    }
+    // Available for association
+    const availableGroups = allTenantGroups
+      .filter((g) => !associatedGroupIds.includes(g.id))
+      .map((g) => ({
+        id: g.id,
+        name: g.name,
+        description: g.description,
+        isAssociated: false,
+      }));
+
+    return { associatedGroups, missingGroups, availableGroups };
   }
 
   /**
@@ -143,20 +174,31 @@ class TenantService {
    * @returns {Promise<boolean>} true if successful, false otherwise
    */
   async assignGroupsToForm(req, formId, groupIds) {
-    if (!req.currentUser || !req.currentUser.tenantId) return false;
+    if (!req || !req.currentUser) {
+      throw new Error(`${SERVICE}: missing currentUser`);
+    }
+    if (!req.currentUser.tenantId) {
+      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+    }
+    if (!formId) {
+      throw new Error(`${SERVICE}: missing formId`);
+    }
+    if (!Array.isArray(groupIds)) {
+      throw new Error(`${SERVICE}: groupIds must be an array`);
+    }
 
     // 1. Check form exists
     const form = await Form.query().findById(formId);
-    if (!form) return false;
+    if (!form) throw new Error(`${SERVICE}: form not found`);
 
     // 2. Check form belongs to tenant
     const formTenant = await FormTenant.query().where({ formId, tenantId: req.currentUser.tenantId }).first();
-    if (!formTenant) return false;
+    if (!formTenant) throw new Error(`${SERVICE}: form not in tenant`);
 
     // 3. Check user has a group with form_admin role
     const userGroups = await this.getUserTenantGroupsAndRoles(req);
     const hasFormAdmin = userGroups.some((g) => g.roles.includes('form_admin'));
-    if (!hasFormAdmin) return false;
+    if (!hasFormAdmin) throw new Error(`${SERVICE}: insufficient permissions`);
 
     // 4. Remove existing group assignments for this form
     await FormGroup.query().delete().where({ formId });
@@ -172,20 +214,59 @@ class TenantService {
 
     return true;
   }
+
+  /**
+   * Get users for a specific tenant from CSTAR
+   * @param {object} req - Express request object with currentUser and headers
+   * @returns {Promise<Array>} Array of user objects
+   */
+  async getTenantUsers(req) {
+    if (!req || !req.currentUser) {
+      throw new Error(`${SERVICE}: missing currentUser`);
+    }
+    if (!req.currentUser.tenantId) {
+      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+    }
+
+    const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
+    const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', req.currentUser.tenantId)}`;
+    const headers = this._getAuthHeaders(req);
+    const { data } = await axios.get(url, { headers });
+    return data?.data?.users || data?.users || [];
+  }
 }
 
 /**
  * Get user roles and permissions for a tenant-aware user.
- * @param {object} userInfo
+ * @param {object} userInfo - User information object
+ * @param {object} headers - Request headers for authentication
  * @returns {Promise<{roles: string[], permissions: string[]}>}
  */
-async function getUserRolesAndPermissions(userInfo) {
+async function getUserRolesAndPermissions(userInfo, headers = null) {
+  if (!userInfo) {
+    throw new Error(`${SERVICE}: missing userInfo`);
+  }
+  if (!userInfo.idpUserId) {
+    throw new Error(`${SERVICE}: missing userInfo.idpUserId`);
+  }
+  if (!userInfo.tenantId) {
+    throw new Error(`${SERVICE}: missing userInfo.tenantId`);
+  }
+  if (!headers) {
+    throw new Error(`${SERVICE}: missing headers for tenant API authentication`);
+  }
+
   // Fetch all roles with permissions directly from the DB
   const allRoles = await Role.query().withGraphFetched('permissions');
-  const groups = await module.exports.getUserTenantGroupsAndRoles({ currentUser: userInfo });
+
+  // Create request-like object with headers for authentication
+  const reqContext = { currentUser: userInfo, headers };
+  const groups = await module.exports.getUserTenantGroupsAndRoles(reqContext);
+
   const userRoles = Array.isArray(groups) ? groups.flatMap((group) => group.roles) : [];
   const userRolesSet = new Set(userRoles);
   const userPermissions = allRoles.filter((role) => userRolesSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+
   return {
     roles: userRoles,
     permissions: [...new Set(userPermissions)],
@@ -201,6 +282,10 @@ async function getUserRolesAndPermissions(userInfo) {
  * @returns {Promise<boolean>}
  */
 async function canCreateForm(req) {
+  if (!req || !req.currentUser) {
+    throw new Error(`${SERVICE}: missing currentUser`);
+  }
+
   const idpCode = req.currentUser?.idp?.toLowerCase();
   const tenantId = req.currentUser?.tenantId;
 
@@ -217,17 +302,16 @@ async function canCreateForm(req) {
  * If the user has no tenantId, the caller should decide access (middleware allows).
  */
 async function isFormInUsersTenant(req, formId) {
-  try {
-    const tenantId = req.currentUser?.tenantId;
-    if (!tenantId) return true; // non-tenant users handled by caller/middleware
-    if (!uuid.validate(formId)) return false;
-
-    const ft = await FormTenant.query().where({ formId, tenantId }).first();
-    return !!ft;
-  } catch (e) {
-    errorToProblem(SERVICE, e);
-    return false;
+  if (!req || !req.currentUser) {
+    throw new Error(`${SERVICE}: missing currentUser`);
   }
+
+  const tenantId = req.currentUser?.tenantId;
+  if (!tenantId) return true; // non-tenant users handled by caller/middleware
+  if (!uuid.validate(formId)) return false;
+
+  const ft = await FormTenant.query().where({ formId, tenantId }).first();
+  return !!ft;
 }
 
 module.exports = Object.assign(new TenantService(), {

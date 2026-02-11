@@ -36,6 +36,7 @@
     "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
+    "cstarBaseUrl": "VITE_CSTAR_BASE_URL",
     "oidc": {
       "clientId": "OIDC_CLIENTID",
       "realm": "OIDC_REALM",
@@ -91,13 +92,30 @@
         "tokenEndpoint": "SC_CS_CDOGS_TOKEN_ENDPOINT",
         "clientId": "SC_CS_CDOGS_CLIENT_ID",
         "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
+      },
+      "css": {
+        "endpoint": "SC_CS_CSS_ENDPOINT",
+        "tokenEndpoint": "SC_CS_CSS_TOKEN_ENDPOINT",
+        "clientId": "SC_CS_CSS_CLIENT_ID",
+        "clientSecret": "SC_CS_CSS_CLIENT_SECRET",
+        "environment": "SC_CS_CSS_ENVIRONMENT"
       }
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": "WC_ASSETS_ROOTS"
+    }
+  },
+  "gateway": {
+    "jwtSecret": "GATEWAY_JWTSECRET",
+    "jwtLifetime": "GATEWAY_JWTLIFETIME"
   },
   "cstar": {
     "endpoint": "CSTAR_ENDPOINT",
     "listUserTenantsPath": "CSTAR_LIST_USER_TENANTS_PATH",
     "listGroupsForUserForTenantPath": "CSTAR_LIST_GROUPS_FOR_USER_FOR_TENANT_PATH",
-    "listGroupsForTenant": "CSTAR_LIST_GROUPS_FOR_TENANT"
+    "listGroupsForTenant": "CSTAR_LIST_GROUPS_FOR_TENANT",
+    "listTenantUsersPath": "tenants/{tenantId}/users"
   }
 }

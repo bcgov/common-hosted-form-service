@@ -85,6 +85,8 @@
     "uploadError": "Произошла ошибка при загрузке шаблона.",
     "deleteSuccess": "Шаблон успешно удален.",
     "deleteError": "Произошла ошибка при удалении шаблона.",
+    "deleteErrorInUse": "Невозможно удалить шаблон: Шаблон в настоящее время используется в Конфигурации печати. Пожалуйста, сначала обновите настройки Конфигурации печати.",
+    "deleteDisabledTooltip": "Этот шаблон в настоящее время используется в Конфигурации печати. Пожалуйста, сначала обновите настройки Конфигурации печати.",
     "fetchError": "Произошла ошибка при получении шаблона.",
     "info": "Загрузите шаблон для использования Общей службы генерации документов (CDOGS)",
     "fileSizeError": "Размер файла должен быть менее 25 МБ."
@@ -204,7 +206,38 @@
     "encryptionKeyUpdatedBy": "Ключ шифрования обновлен",
     "encryptionKeyCopySnackbar": "Ключ шифрования скопирован в буфер обмена",
     "encryptionKeyCopyTooltip": "Копировать ключ шифрования в буфер обмена",
-    "encryptionKeyGenerate": "Сгенерировать ключ шифрования"
+    "encryptionKeyGenerate": "Сгенерировать ключ шифрования",
+    "dataRetention": "Политика хранения данных",
+    "enableHardDeletion": "Включить автоматическое безвозвратное удаление",
+    "hardDeletionTooltip": "При включении этой опции отмеченные для удаления данные будут безвозвратно удалены после истечения срока хранения.",
+    "hardDeletionWarning": "Безвозвратное удаление является постоянным и не может быть отменено.",
+    "permanentDeletion": "Данные будут невосстановимы после удаления.",
+    "dataClassification": "Классификация данных",
+    "dataClassificationHint": "Категоризируйте тип данных, собираемых этой формой",
+    "retentionPeriod": "Период хранения",
+    "retentionPeriodHint": "Как долго хранить удаленные данные перед безвозвратным удалением",
+    "classPublic": "Публичные",
+    "classInternal": "Внутренние",
+    "classSensitive": "Конфиденциальные",
+    "classConfidential": "Секретные",
+    "classProtected": "Защищенные",
+    "classificationCustomHint": "При необходимости вы можете ввести пользовательскую классификацию",
+    "days30": "30 дней",
+    "days90": "90 дней",
+    "days180": "180 дней",
+    "year1": "1 год (365 дней)",
+    "years2": "2 года (730 дней)",
+    "years5": "5 лет (1825 дней)",
+    "daysCustom": "Пользовательский период",
+    "customDaysLabel": "Пользовательский период хранения (дни)",
+    "customDaysHint": "Введите число от 1 до 3650 дней (10 лет)",
+    "classificationDescription": "Примечания к классификации",
+    "classificationDescriptionHint": "Необязательное описание того, почему выбраны эта классификация и период хранения",
+    "retentionDaysUpdated": "Период хранения обновлен",
+    "deletionDisclaimerWithDays": "ПРЕДУПРЕЖДЕНИЕ: Через {days} дней отмеченные для удаления данные будут безвозвратно удалены и не смогут быть восстановлены.",
+    "setRetentionPrompt": "Пожалуйста, установите период хранения для завершения настройки политики хранения данных.",
+    "fetchRetentionClassificationListError": "Ошибка при получении списка классификаций хранения.",
+    "fetchRetentionClassificationListConsErrMsg": "Ошибка при получении классификаций хранения: {error}"
   },
   "formProfile": {
     "message": "Команда CHEFS собирает и систематизирует информацию для создания ключевых аргументов в пользу формирования всесторонних деловых кейсов. Эти кейсы будут играть решающую роль в направлении стратегической операции и постоянного совершенствования CHEFS в ближайшие годы. Эта инициатива по сбору данных является необходимой для принятия важных решений и формирования траектории CHEFS, обеспечивая его адаптивность и эффективность в решении изменяющихся потребностей и вызовов.",
@@ -1117,6 +1150,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Настройки подписки для этой формы сохранены.",
       "saveSubscriptionSettingsErrMsg": "Произошла ошибка при попытке сохранить настройки подписки.",
       "saveSubscriptionSettingsConsErrMsg": "Ошибка сохранения настроек подписки для формы {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Произошла ошибка при получении политики хранения для этой формы.",
+      "getFormRetentionPolicyConsErrMsg": "Ошибка при получении политики хранения формы {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "Произошла ошибка при настройке политики хранения для этой формы.",
+      "configureFormRetentionPolicyConsErrMsg": "Ошибка при настройке политики хранения формы {formId}: {error}"
     }
   },
   "admin": {
@@ -1155,6 +1194,33 @@
     "editTitle": "Изменить конфигурацию потока событий",
     "fetchError": "Произошла ошибка при получении конфигурации потока событий.",
     "save": "Сохранять"
+  },
+  "printConfig": {
+    "title": "Конфигурация печати",
+    "description": "Настройте, как пользователи могут печатать отправки форм",
+    "typeDefault": "По умолчанию",
+    "typeDefaultDescription": "Пользователи могут выбрать метод печати (печать браузера или шаблон)",
+    "typeDirect": "Прямая печать",
+    "typeDirectDescription": "Пользователи печатают напрямую, используя предварительно настроенный шаблон (вывод PDF)",
+    "selectTemplate": "Выбрать шаблон",
+    "save": "Сохранить конфигурацию",
+    "saving": "Сохранение...",
+    "saveSuccess": "Конфигурация печати успешно сохранена",
+    "saveError": "Произошла ошибка при сохранении конфигурации печати",
+    "fetchError": "Произошла ошибка при получении конфигурации печати",
+    "templateRequired": "Шаблон требуется при использовании прямой печати",
+    "noTemplatesAvailable": "Нет доступных шаблонов. Пожалуйста, сначала загрузите шаблон.",
+    "templateDeleted": "Ранее выбранный шаблон был удален. Пожалуйста, выберите новый шаблон.",
+    "currentConfig": "Текущая конфигурация",
+    "type": "Тип",
+    "template": "Шаблон",
+    "reportNameLabel": "Имя выходного файла",
+    "reportNameOptionFormName": "Использовать имя формы",
+    "reportNameOptionFormNameDescription": "Выходной файл будет назван с использованием имени формы",
+    "reportNameOptionCustom": "Использовать пользовательское имя",
+    "reportNameOptionCustomDescription": "Введите пользовательское имя для выходного файла",
+    "reportNameCustomInput": "Пользовательское имя файла",
+    "reportNameCustomInputHint": "Введите пользовательское имя для созданного документа"
   },
   "encryptionKey": {
     "info": "Настройте ключи шифрования для вашей формы.",
@@ -1245,5 +1311,182 @@
     "shuttingDown": "CHEFS завершает работу.",
     "notReady": "CHEFS не может подключиться ко всем необходимым службам.",
     "unableToReachBackend": "Не удается достичь серверной службы."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
+      "title": "Introducing Enterprise CHEFS and CSTAR!",
+      "enterpriseTitle": "Experience the new Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
+      "chefsLink": "CHEFS (Common Hosted Forms Service)",
+      "enterpriseDescription2": "by working together with",
+      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
+      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
+      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
+      "tenant": "tenant",
+      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
+      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+      "goToChefs": "Go to CHEFS",
+      "cstarTitle": "CSTAR and Access Management",
+      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
+      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
+      "tenants": "tenants",
+      "cstarDescription3": ", assigning",
+      "roles": "roles",
+      "cstarDescription4": ", and connecting",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "Access to CSTAR is managed by",
+      "administrators": "administrators within your ministry or organization",
+      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
+      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
+      "goToCstar": "Go To CSTAR",
+      "alertTitle": "ATTENTION BCeID USERS",
+      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
+      "loginToCstar": "Log in to CSTAR"
+    },
+    "gettingStarted": {
+      "title": "New to CHEFS and not sure where to start?",
+      "description1": "Start by exploring our",
+      "techDocsLink": "CHEFS Technical Documentation",
+      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
+      "viewForm": "View Form",
+      "download": "Download",
+      "viewFormTooltip": "View form in fullscreen",
+      "downloadTooltip": "Download form as JSON",
+      "exploreForm": "Explore Example Form →"
+    },
+    "examples": {
+      "demographicSurvey": "Example | Demographic Data Collection Survey",
+      "calculationsGrid": "Example | Calculations in Data Grid",
+      "postCourseSurvey": "Example | POST-COURSE SURVEY",
+      "architectureForum": "Example | CHEFS Architecture Forum Survey",
+      "conditionalLogic": "Example | Conditional Logic",
+      "calculatedValues": "Example | Calculated Values",
+      "teamLunchOrder": "Example | Team Lunch Order",
+      "navigationButtons": "Example | Navigation Buttons",
+      "successStories": "Example | CHEFS Success Stories"
+    },
+    "testimonials": {
+      "title": "Don't take our word for it, hear what our users have to say about us.",
+      "chefsUser": "CHEFS User",
+      "verifiedUser": "Verified User",
+      "viewOnKudos": "View on Kudos Page →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Great communication and collaboration",
+        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
+        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "External User, CGI",
+        "tagHelpful": "Helpful",
+        "tagGreatSupport": "Great Support"
+      },
+      "testimonial2": {
+        "title": "Accessible yet powerful",
+        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
+        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
+        "tagHelpful": "Helpful",
+        "tagEasyToUse": "Easy To Use"
+      },
+      "testimonial3": {
+        "title": "Clear documentation and helpful support",
+        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
+        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
+        "reviewer": "Emma Armitage",
+        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
+        "tagHelpful": "Helpful",
+        "tagShared": "Shared With My Team"
+      }
+    },
+    "finalCta": {
+      "title": "Get Started Using Enterprise CHEFS",
+      "description": "Create online forms to collect information from your clients and improve your workflows.",
+      "loginButton": "Login to Get Started"
+    },
+    "formViewer": {
+      "downloadJson": "Download JSON",
+      "close": "Close",
+      "downloadTitle": "Download JSON"
+    }
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Enterprise CHEFS — это новая версия CHEFS, которая поддерживает мультитенантный доступ. Выбор вашего арендатора автоматически перенесет вас туда.",
+    "selectLabel": "Выберите арендатора (открывается в Enterprise CHEFS)",
+    "placeholder": "Выберите из доступных арендаторов",
+    "noDataText": "Арендаторы не найдены",
+    "switchToClassic": "Переключиться на Classic CHEFS",
+    "goToCstar": "Перейти в CSTAR (Подключенные службы, доступ команды и роли)",
+    "noTenantsAvailable": "Нет доступных арендаторов",
+    "manageTenantsIn": "Управление арендаторами в",
+    "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Хотите безопасно работать со своей командой, быстрее предоставлять формы и сотрудничать в правительстве?",
+      "title": "Представляем Enterprise CHEFS и CSTAR!",
+      "enterpriseTitle": "Откройте для себя новый Enterprise CHEFS",
+      "tenant": "арендатор",
+      "description1": "Enterprise CHEFS — это новая версия CHEFS, которая поддерживает мультитенантный доступ и управление командой через CSTAR (Подключенные службы, доступ команды и роли).",
+      "description2": "С Enterprise CHEFS ваша организация может:",
+      "description3": "Работать в режиме ",
+      "description4": " - У каждого арендатора есть собственное безопасное пространство с изолированными формами, данными и разрешениями",
+      "description5": "Управлять доступом команды - Контролируйте, кто может просматривать, редактировать или управлять формами в вашем арендаторе",
+      "description6": "Поддерживать безопасность данных - Данные каждого арендатора полностью изолированы от других арендаторов",
+      "description7": "Enterprise CHEFS также включает все мощные функции, которые вы знаете и любите в Classic CHEFS, такие как конструктор форм с перетаскиванием, условная логика, зашифрованные отправки и интеграции API.",
+      "loginButton": "Войти, чтобы начать",
+      "goToChefs": "Перейти к CHEFS",
+      "learnMore": "Узнать больше"
+    },
+    "gettingStarted": {
+      "title": "Новичок в CHEFS и не знаете, с чего начать?",
+      "description": "Вы можете начать создавать формы с помощью нескольких простых шагов:",
+      "step1Title": "1. Войдите с помощью учетной записи IDIR или BCeID",
+      "step2Title": "2. Создайте новую форму или используйте шаблон",
+      "step3Title": "3. Разработайте свою форму с помощью нашего конструктора с перетаскиванием",
+      "step4Title": "4. Опубликуйте и поделитесь своей формой с командой или общественностью",
+      "loginButton": "Войти, чтобы начать",
+      "learnMore": "Узнать больше"
+    },
+    "examples": {
+      "demographicSurvey": "Пример | Опрос по сбору демографических данных",
+      "projectRequest": "Пример | Запрос проекта",
+      "permitApplication": "Пример | Заявка на разрешение"
+    },
+    "testimonials": {
+      "title": "Не верьте только нашим словам, послушайте, что наши пользователи говорят о нас.",
+      "author": "Автор",
+      "role": "Роль"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Пользователь CHEFS 1",
+        "role": "Аналитик программ",
+        "quote": "\"CHEFS изменил способ сбора данных. Мультитенантная система позволяет нам разделять проекты, одновременно делясь лучшими практиками по всему отделу.\""
+      },
+      "testimonial2": {
+        "author": "Пользователь CHEFS 2",
+        "role": "Менеджер проекта",
+        "quote": "\"Интеграция с CSTAR значительно упрощает управление доступом команды. Я могу быстро добавлять новых членов команды и точно контролировать, что они могут делать.\""
+      },
+      "testimonial3": {
+        "author": "Пользователь CHEFS 3",
+        "role": "ИТ-администратор",
+        "quote": "\"Мы ценим надежные функции безопасности и изоляции данных. Каждый арендатор полностью отделен, что дает нам спокойствие при работе с конфиденциальными данными.\""
+      }
+    },
+    "finalCta": {
+      "title": "Начните использовать Enterprise CHEFS",
+      "description": "Создавайте онлайн-формы для сбора информации от ваших клиентов и улучшения рабочего процесса.",
+      "loginButton": "Войти, чтобы начать"
+    },
+    "formViewer": {
+      "title": "Просмотрщик форм",
+      "description": "Предварительный просмотр вашей формы",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
   }
 }

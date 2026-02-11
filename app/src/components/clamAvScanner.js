@@ -47,8 +47,7 @@ class ClamAVScanner {
   async checkConnection(retries = 3, delay = 5000) {
     for (let i = 0; i < retries; i++) {
       try {
-        this.isInitialized = true;
-        //await this._initialize();
+        await this._initialize();
         return this.isInitialized;
       } catch (err) {
         log.error(`Failed to initialize ClamAV (attempt ${i + 1}/${retries}):`, err);

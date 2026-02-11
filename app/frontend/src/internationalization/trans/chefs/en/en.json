@@ -68,7 +68,8 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
-    "eventStreamConfig": "Event Stream Configuration"
+    "eventStreamConfig": "Event Stream Configuration",
+    "printConfig": "Print Configuration"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -81,6 +82,8 @@
     "uploadError": "An error occurred while uploading the template.",
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
+    "deleteErrorInUse": "Cannot delete template: Template is currently in use by Print Configuration. Please update Print Configuration settings first.",
+    "deleteDisabledTooltip": "This template is currently in use by Print Configuration. Please update Print Configuration settings first.",
     "fetchError": "An error occurred while fetching the template.",
     "info": "Upload a template to use the Common Document Generation Service (CDOGS)",
     "fileSizeError": "File size must be less than 25MB."
@@ -100,6 +103,33 @@
     "editTitle": "Edit Event Stream Configuration",
     "fetchError": "An error occurred while fetching the Event Stream Configuration.",
     "save": "Save"
+  },
+  "printConfig": {
+    "title": "Print Configuration",
+    "description": "Configure how users can print form submissions",
+    "typeDefault": "Default",
+    "typeDefaultDescription": "Users can choose print method (browser print or template)",
+    "typeDirect": "Direct Print",
+    "typeDirectDescription": "Users print directly using a pre-configured template (PDF output)",
+    "selectTemplate": "Select Template",
+    "save": "Save Configuration",
+    "saving": "Saving...",
+    "saveSuccess": "Print configuration saved successfully",
+    "saveError": "An error occurred while saving print configuration",
+    "fetchError": "An error occurred while fetching print configuration",
+    "templateRequired": "Template is required when using Direct Print",
+    "noTemplatesAvailable": "No templates available. Please upload a template first.",
+    "templateDeleted": "The previously selected template has been deleted. Please select a new template.",
+    "currentConfig": "Current Configuration",
+    "type": "Type",
+    "template": "Template",
+    "reportNameLabel": "Output File Name",
+    "reportNameOptionFormName": "Use Form Name",
+    "reportNameOptionFormNameDescription": "Output file will be named using the form name",
+    "reportNameOptionCustom": "Use Custom Name",
+    "reportNameOptionCustomDescription": "Enter a custom name for the output file",
+    "reportNameCustomInput": "Custom File Name",
+    "reportNameCustomInputHint": "Enter the custom name for the generated document"
   },
   "encryptionKey": {
     "info": "Configure Encryption Keys for your form.",
@@ -267,7 +297,38 @@
     "encryptionKeyUpdatedBy": "Encryption Key Updated By",
     "encryptionKeyCopySnackbar": "Encryption Key copied to clipboard",
     "encryptionKeyCopyTooltip": "Copy Encryption Key to clipboard",
-    "encryptionKeyGenerate": "Generate Encryption Key"
+    "encryptionKeyGenerate": "Generate Encryption Key",
+    "dataRetention": "Data Retention Policy",
+    "enableHardDeletion": "Enable automatic hard deletion",
+    "hardDeletionTooltip": "When enabled, submissions marked for deletion will be permanently removed after the retention period.",
+    "hardDeletionWarning": "Hard deletion is permanent and cannot be undone.",
+    "permanentDeletion": "Data will be unrecoverable after deletion.",
+    "dataClassification": "Data Classification",
+    "dataClassificationHint": "Categorize the type of data collected by this form",
+    "retentionPeriod": "Retention Period",
+    "retentionPeriodHint": "How long to keep deleted submissions before permanent removal",
+    "classPublic": "Public",
+    "classInternal": "Internal",
+    "classSensitive": "Sensitive",
+    "classConfidential": "Confidential",
+    "classProtected": "Protected",
+    "classificationCustomHint": "You can type a custom classification if needed",
+    "days30": "30 days",
+    "days90": "90 days",
+    "days180": "180 days",
+    "year1": "1 year (365 days)",
+    "years2": "2 years (730 days)",
+    "years5": "5 years (1825 days)",
+    "daysCustom": "Custom period",
+    "customDaysLabel": "Custom Retention Period (days)",
+    "customDaysHint": "Enter a number between 1 and 3650 days (10 years)",
+    "classificationDescription": "Classification Notes",
+    "classificationDescriptionHint": "Optional description of why this classification and retention period was chosen",
+    "retentionDaysUpdated": "Retention period updated",
+    "deletionDisclaimerWithDays": "WARNING: After {days} days, submissions marked for deletion will be permanently deleted and cannot be recovered.",
+    "setRetentionPrompt": "Please set a retention period to complete your data retention policy.",
+    "fetchRetentionClassificationListError": "Error fetching Retention Classification list.",
+    "fetchRetentionClassificationListConsErrMsg": "Error fetching retention classifications: {error}"
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
@@ -1182,6 +1243,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
       "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "An error occurred while fetching the retention policy for this form.",
+      "getFormRetentionPolicyConsErrMsg": "Error getting retention policy for form {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "An error occurred while configuring the retention policy for this form.",
+      "configureFormRetentionPolicyConsErrMsg": "Error configuring retention policy for form {formId}: {error}"
     }
   },
   "permissionUtils": {
@@ -1254,5 +1321,117 @@
     "recall": "Recall Submission",
     "recallErrMsg": "An error occurred while recalling this submission",
     "recallConsErrMsg": "Error recalling submission {submissionId}: {error}"
+  },
+  "tenantDropdown": {
+    "infoTooltip": "Enterprise CHEFS is the new version of CHEFS that supports multi-tenant access. Selecting your tenant will take you there automatically.",
+    "selectLabel": "Select tenant (opens in Enterprise CHEFS)",
+    "placeholder": "Select from available tenants",
+    "noDataText": "No tenants found",
+    "switchToClassic": "Switch to Classic CHEFS",
+    "goToCstar": "Go to CSTAR (Connected Services, Team Access and Roles)",
+    "noTenantsAvailable": "No tenants available",
+    "manageTenantsIn": "Manage tenants in",
+    "cstar": "CSTAR"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
+      "title": "Introducing Enterprise CHEFS and CSTAR!",
+      "enterpriseTitle": "Experience the new Enterprise CHEFS",
+      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
+      "chefsLink": "CHEFS (Common Hosted Forms Service)",
+      "enterpriseDescription2": "by working together with",
+      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
+      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
+      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
+      "tenant": "tenant",
+      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
+      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+      "goToChefs": "Go to CHEFS",
+      "cstarTitle": "CSTAR and Access Management",
+      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
+      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
+      "tenants": "tenants",
+      "cstarDescription3": ", assigning",
+      "roles": "roles",
+      "cstarDescription4": ", and connecting",
+      "services": "services",
+      "cstarDescription5": ".",
+      "cstarDescription6": "Access to CSTAR is managed by",
+      "administrators": "administrators within your ministry or organization",
+      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
+      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
+      "goToCstar": "Go To CSTAR",
+      "alertTitle": "ATTENTION BCeID USERS",
+      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
+      "loginToCstar": "Log in to CSTAR"
+    },
+    "gettingStarted": {
+      "title": "New to CHEFS and not sure where to start?",
+      "description1": "Start by exploring our",
+      "techDocsLink": "CHEFS Technical Documentation",
+      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
+      "viewForm": "View Form",
+      "download": "Download",
+      "viewFormTooltip": "View form in fullscreen",
+      "downloadTooltip": "Download form as JSON",
+      "exploreForm": "Explore Example Form →"
+    },
+    "examples": {
+      "demographicSurvey": "Example | Demographic Data Collection Survey",
+      "calculationsGrid": "Example | Calculations in Data Grid",
+      "postCourseSurvey": "Example | POST-COURSE SURVEY",
+      "architectureForum": "Example | CHEFS Architecture Forum Survey",
+      "conditionalLogic": "Example | Conditional Logic",
+      "calculatedValues": "Example | Calculated Values",
+      "teamLunchOrder": "Example | Team Lunch Order",
+      "navigationButtons": "Example | Navigation Buttons",
+      "successStories": "Example | CHEFS Success Stories"
+    },
+    "testimonials": {
+      "title": "Don't take our word for it, hear what our users have to say about us.",
+      "chefsUser": "CHEFS User",
+      "verifiedUser": "Verified User",
+      "viewOnKudos": "View on Kudos Page →"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "title": "Great communication and collaboration",
+        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
+        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
+        "reviewer": "Leah Macdonald",
+        "role": "External User, CGI",
+        "tagHelpful": "Helpful",
+        "tagGreatSupport": "Great Support"
+      },
+      "testimonial2": {
+        "title": "Accessible yet powerful",
+        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
+        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
+        "reviewer": "Karl Martinson",
+        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
+        "tagHelpful": "Helpful",
+        "tagEasyToUse": "Easy To Use"
+      },
+      "testimonial3": {
+        "title": "Clear documentation and helpful support",
+        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
+        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
+        "reviewer": "Emma Armitage",
+        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
+        "tagHelpful": "Helpful",
+        "tagShared": "Shared With My Team"
+      }
+    },
+    "finalCta": {
+      "title": "Get Started Using Enterprise CHEFS",
+      "description": "Create online forms to collect information from your clients and improve your workflows.",
+      "loginButton": "Login to Get Started"
+    },
+    "formViewer": {
+      "downloadJson": "Download JSON",
+      "close": "Close",
+      "downloadTitle": "Download JSON"
+    }
   }
 }

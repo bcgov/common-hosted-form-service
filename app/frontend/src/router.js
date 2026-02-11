@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 import { preFlightAuth } from '~/utils/permissionUtils';
 import { formService } from '~/services';
 let isFirstTransition = true;
@@ -487,6 +488,18 @@ export default function getRouter(basePath = '/') {
         idpHint = idpStore.primaryIdp ? idpStore.primaryIdp.code : null;
       }
       authStore.login(idpHint);
+    }
+
+    // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
+    const tenantStore = useTenantStore();
+    if (
+      to.name === 'FormCreate' &&
+      authStore.authenticated &&
+      tenantStore.selectedTenant &&
+      !tenantStore.isFormAdmin
+    ) {
+      // Redirect to forms list if user doesn't have form_admin role
+      return next({ name: 'UserForms' });
     }
 
     // Update document title if applicable
