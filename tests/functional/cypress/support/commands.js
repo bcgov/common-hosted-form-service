@@ -1,4 +1,5 @@
 import 'cypress-file-upload';
+import 'cypress-axe';
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -24,3 +25,13 @@ import 'cypress-file-upload';
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('checkA11yPage', () => {
+  cy.get('body', { timeout: 10000 }).should('be.visible');
+  cy.injectAxe();
+
+  cy.checkA11y(null, {
+    includedImpacts: ['critical', 'serious', 'moderate', 'minor'],
+    skipFailures: true,
+  }, cy.cypressAxeReporterCallBack, true);
+});
