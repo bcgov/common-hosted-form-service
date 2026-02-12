@@ -10,31 +10,30 @@ Cypress.Commands.add('waitForLoad', () => {
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
-
-
 describe('Form Designer', () => {
 
-  
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
       console.log(err);
       return false;
     });
+it('Form Settings page', () => {
     
-
- // Form design page with Advanced Data components 
-
-// Checks the Container component
-it('Checks the Container component', () => {
-
-  cy.viewport(1000, 1100);
+    cy.viewport(1000, 1100);
     formsettings();
-    cy.intercept('POST', '**/forms/*', (req) => {
-      console.log(req);
-    }).as('formCreate');
+        
+}); 
+it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Advanced Data').click();
+  });
+// Checks the Container component
+it('Checks the Container component', () => {
+    cy.viewport(1000, 1100); 
+    
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Container')
@@ -99,54 +98,7 @@ it('Checks the Container component', () => {
           cy.get('.btn-success').click();
       
       });
-      /*
-        //Verify Edit Json button   
-      cy.get('[ref=editJson]').then($el => {
       
-              const rem=$el[1];
-              rem.click();
-      
-      });
-      
-      let acecont=cy.get('div.ace_content');
-      
-      cy.get('div.ace_content').then($el => {
-      cy.get('div.ace_content').type('{selectall}{backspace}');
-      
-      var pretty=JSON.stringify({
-        "type": "datagrid",
-  
-              "components": [
-                {
-                "type": "select",
-                  data: {
-                  values: [
-                    {
-                      "value": "male",
-                      "label": "Male"
-                    },
-                    {
-                      "value": "female",
-                      "label": "Female"
-                    }
-                  ]
-                 },
-                 
-                } 
-              ]
-      })
-        
-      cy.get('div.ace_content').type(pretty,{ parseSpecialCharSequences: false });
-      cy.wait(2000);
-      
-      cy.get('.ui').click();
-      cy.contains('Male').should('be.visible');
-      
-      cy.get('button').contains('Save').click();
-         
-       */       
-          
-      //});
     }); 
    // Checks the Edit Grid Component
   it('Checks the Edit Grid Component', () => {
