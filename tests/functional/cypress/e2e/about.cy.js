@@ -20,5 +20,6 @@ describe('Application About Page', () => {
       cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     }
     
+    cy.checkA11yPage();
   });
 });
