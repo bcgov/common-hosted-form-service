@@ -54,6 +54,7 @@ it('Verify draft submission', () => {
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
+    cy.wait(1000);
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;

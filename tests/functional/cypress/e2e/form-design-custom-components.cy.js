@@ -72,8 +72,9 @@ describe("Form Designer", () => {
     cy.get('input[type="radio"][value="default"]').should('be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').click();
-    cy.get('.pl-12 > .v-text-field > .v-input__control > .v-field > .v-field__append-inner').click();
     cy.wait(500);
+    cy.get('.pl-12 > .v-text-field > .v-input__control > .v-field > .v-field__append-inner').click();
+    cy.wait(1000);
     cy.get('div.v-list-item-title').contains('test.docx').click();
     cy.get('input[type="radio"][value="formName"]').should('be.checked');
     cy.get('input[type="radio"][value="custom"]').should('not.be.checked');
@@ -114,8 +115,9 @@ describe("Form Designer", () => {
     cy.wait(1000);
     cy.get('.selected-user-view > :nth-child(1)').contains('CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
     //Direct Print Verification
-    cy.get('.mdi-printer').click();
     cy.wait(2000);
+    cy.get('.mdi-printer').should('be.visible').click();
+    cy.wait(1000);
     cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
    }) 
 });
