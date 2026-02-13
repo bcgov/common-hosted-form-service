@@ -107,10 +107,10 @@ const SAVE_TEXT = computed(() => {
 });
 
 const PREVIEW_TOOLTIP = computed(() => {
-  if (!properties.canPreview) {
-    return 'Save Draft to preview form';
-  } else {
+  if (properties.canPreview) {
     return 'Save to preview updated form version';
+  } else {
+    return 'Save Draft to preview form';
   }
 });
 
