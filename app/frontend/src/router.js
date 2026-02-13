@@ -40,7 +40,12 @@ export default function getRouter(basePath = '/') {
       {
         path: '/about',
         name: 'About',
-        component: () => import('~/views/LandingPage.vue'),
+        component: () => {
+          const tenantStore = useTenantStore();
+          return tenantStore.isTenantFeatureEnabled
+            ? import('~/views/LandingPage.vue')
+            : import('~/views/About.vue');
+        },
         meta: {
           hasLogin: true,
         },
@@ -453,7 +458,9 @@ export default function getRouter(basePath = '/') {
       const formStore = useFormStore();
       formStore.getFormsForCurrentUser();
       const tenantStore = useTenantStore();
-      tenantStore.fetchTenants();
+      if (tenantStore.isTenantFeatureEnabled) {
+        tenantStore.fetchTenants();
+      }
     }
 
     // Handle proper redirections on first page load
@@ -493,6 +500,7 @@ export default function getRouter(basePath = '/') {
     if (
       to.name === 'FormCreate' &&
       authStore.authenticated &&
+      tenantStore.isTenantFeatureEnabled &&
       tenantStore.selectedTenant &&
       !tenantStore.isFormAdmin
     ) {

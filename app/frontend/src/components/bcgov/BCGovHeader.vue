@@ -6,6 +6,7 @@ import BCLogo from '~/assets/images/bc_logo.svg';
 import PrintLogo from '~/assets/images/bc_logo_print.svg';
 import { useFormStore } from '~/store/form';
 import { useAuthStore } from '~/store/auth';
+import { useTenantStore } from '~/store/tenant';
 import TenantDropdown from '~/components/base/TenantDropdown.vue';
 
 defineProps({
@@ -22,11 +23,13 @@ defineProps({
 const route = useRoute();
 const { isRTL } = storeToRefs(useFormStore());
 const { authenticated, ready } = storeToRefs(useAuthStore());
+const tenantStore = useTenantStore();
 
 // Show tenant dropdown on all authenticated pages EXCEPT:
 // - Admin pages
 // - Submission viewing/submission pages (formSubmitMode routes)
 const showTenantDropdown = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled) return false;
   if (!ready.value || !authenticated.value || !route.name) {
     return false;
   }

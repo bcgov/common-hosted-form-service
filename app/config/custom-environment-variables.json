@@ -37,6 +37,7 @@
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
     "cstarBaseUrl": "VITE_CSTAR_BASE_URL",
+    "tenantFeatureEnabled": "VITE_TENANT_FEATURE_ENABLED",
     "oidc": {
       "clientId": "OIDC_CLIENTID",
       "realm": "OIDC_REALM",
