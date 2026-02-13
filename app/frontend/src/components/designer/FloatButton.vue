@@ -106,6 +106,14 @@ const SAVE_TEXT = computed(() => {
   return t('trans.floatButton.save');
 });
 
+const PREVIEW_TOOLTIP = computed(() => {
+  if (!properties.canPreview) {
+    return 'Save Draft to preview form';
+  } else {
+    return 'Save to preview updated form version';
+  }
+});
+
 const isManageEnabled = computed(() => properties.formId);
 
 const isPublishEnabled = computed(() =>
@@ -242,11 +250,7 @@ defineExpose({
             </v-btn>
           </div>
           <!-- Preview Button -->
-          <v-tooltip
-            :disabled="canPreview"
-            location="top"
-            text="Please save your draft to preview"
-          >
+          <v-tooltip location="top" :text="PREVIEW_TOOLTIP">
             <template #activator="{ props }">
               <div v-bind="props">
                 <div
@@ -422,11 +426,7 @@ defineExpose({
               <!-- Preview Button -->
 
               <v-list-item>
-                <v-tooltip
-                  :disabled="canPreview"
-                  location="top"
-                  text="Please save your draft to preview"
-                >
+                <v-tooltip location="top" :text="{ PREVIEW_TOOLTIP }">
                   <template #activator="{ props }">
                     <div v-bind="props">
                       <div
