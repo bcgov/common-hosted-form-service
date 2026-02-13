@@ -136,12 +136,9 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Show Assignee - Hide for tenanted forms -->
+    <!-- Show Assignee -->
     <v-checkbox
-      v-if="
-        !selectedTenant &&
-        (form.enableStatusUpdates || form.enableSubmitterRevision)
-      "
+      v-if="form.enableStatusUpdates || form.enableSubmitterRevision"
       v-model="form.showAssigneeInSubmissionsTable"
       :disabled="disabledStates.general"
       hide-details="auto"
