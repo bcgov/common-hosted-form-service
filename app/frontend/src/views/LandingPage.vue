@@ -138,14 +138,14 @@ const closeFormViewer = () => {
 const downloadFormJSON = (example) => {
   const jsonString = JSON.stringify(example.schema, null, 2);
   const blob = new Blob([jsonString], { type: 'application/json' });
-  const url = window.URL.createObjectURL(blob);
+  const url = globalThis.URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
   link.download = example.fileName;
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
-  window.URL.revokeObjectURL(url);
+  link.remove();
+  globalThis.URL.revokeObjectURL(url);
 };
 
 // Method to open kudos page
@@ -634,24 +634,6 @@ const testimonials = [
         </v-row>
       </v-container>
     </div>
-
-    <!--    &lt;!&ndash; Footer Acknowledgment Section &ndash;&gt;
-    <div class="footer-acknowledgment-wrapper">
-      <v-container>
-        <v-row>
-          <v-col cols="12">
-            <p class="footer-acknowledgment" :lang="locale">
-              The B.C. Public Service acknowledges the territories of First
-              Nations around B.C. and is grateful to carry out our work on these
-              lands. We acknowledge the rights, interests, priorities, and
-              concerns of all Indigenous Peoples - First Nations, Métis, and
-              Inuit - respecting and acknowledging their distinct cultures,
-              histories, rights, laws, and governments.
-            </p>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>-->
 
     <!-- Form Viewer Modal -->
     <v-dialog
@@ -1155,17 +1137,17 @@ const testimonials = [
         }
 
         &.tag-green {
-          background-color: #4caf50 !important;
+          background-color: #2e7d32 !important;
           color: white !important;
         }
 
         &.tag-blue {
-          background-color: #2196f3 !important;
+          background-color: #1565c0 !important;
           color: white !important;
         }
 
         &.tag-pink {
-          background-color: #e91e63 !important;
+          background-color: #ad1457 !important;
           color: white !important;
         }
       }

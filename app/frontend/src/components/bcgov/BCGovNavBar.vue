@@ -76,6 +76,7 @@ const formsMenuText = computed(() => {
             data-cy="help"
             href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs"
             target="_blank"
+            rel="noopener noreferrer"
             :lang="locale"
             >{{ $t('trans.bCGovNavBar.help') }}</a
           >
@@ -85,6 +86,7 @@ const formsMenuText = computed(() => {
             data-cy="feedback"
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
+            rel="noopener noreferrer"
             :lang="locale"
             >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >

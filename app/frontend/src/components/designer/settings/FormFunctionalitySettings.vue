@@ -136,12 +136,9 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Show Assignee - Hide for tenanted forms -->
+    <!-- Show Assignee -->
     <v-checkbox
-      v-if="
-        !selectedTenant &&
-        (form.enableStatusUpdates || form.enableSubmitterRevision)
-      "
+      v-if="form.enableStatusUpdates || form.enableSubmitterRevision"
       v-model="form.showAssigneeInSubmissionsTable"
       :disabled="disabledStates.general"
       hide-details="auto"
@@ -188,6 +185,7 @@ defineExpose({
                 :href="githubLinkBulkUpload"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -236,6 +234,7 @@ defineExpose({
                 :href="githubLinkScheduleAndReminderFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -278,6 +277,7 @@ defineExpose({
                 :href="githubLinkCopyFromExistingFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -320,6 +320,7 @@ defineExpose({
                 :href="githubLinkEventSubscriptionFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -362,6 +363,7 @@ defineExpose({
                 :href="githubLinkWideFormLayout"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}

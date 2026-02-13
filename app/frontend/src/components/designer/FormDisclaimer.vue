@@ -38,6 +38,7 @@ const { isRTL } = storeToRefs(useFormStore());
         <a
           href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/resources/privacy-officers"
           target="_blank"
+          rel="noopener noreferrer"
           :lang="locale"
         >
           {{ $t('trans.formDisclaimer.privacyOfficer') }}
