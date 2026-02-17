@@ -47,8 +47,8 @@ jobs:
        if: always()
        with:
           name: cypress-axe-reports
-          path: '${{ github.workspace }}/tests/functional/cypress/axe-reports'
-     
+          run: mkdir -p tests/functional/cypress/axe-reports
+          
      - uses: actions/upload-artifact@v4
        if: failure()
        with:
