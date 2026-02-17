@@ -256,7 +256,7 @@ async function handleFileAction(item, action) {
 
     if (action === 'preview') {
       // Open the file in a new tab
-      window.open(url, '_blank');
+      window.open(url, '_blank', 'noopener,noreferrer');
       globalThis.URL.revokeObjectURL(url);
     } else if (action === 'download') {
       // Create an anchor element and trigger download
@@ -314,6 +314,7 @@ defineExpose({
               :href="techdocsLinkTemplateUpload"
               class="preview_info_link_field_white"
               target="_blank"
+              rel="noopener noreferrer"
               :lang="locale"
             >
               {{ $t('trans.formSettings.learnMore') }}

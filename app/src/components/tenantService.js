@@ -184,7 +184,7 @@ class TenantService {
       throw new Error(`${SERVICE}: missing formId`);
     }
     if (!Array.isArray(groupIds)) {
-      throw new Error(`${SERVICE}: groupIds must be an array`);
+      throw new TypeError(`${SERVICE}: groupIds must be an array`);
     }
 
     // 1. Check form exists

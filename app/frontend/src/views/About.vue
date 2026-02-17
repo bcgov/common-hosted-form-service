@@ -72,9 +72,13 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
         </h2>
         <p :lang="locale">
           {{ $t('trans.homePage.chefsHowToSub') }}
-          <a :href="howToVideoUrl" target="_blank" :lang="locale"
-            >{{ $t('trans.homePage.getStarted') }}!</a
-          >
+          <a
+            :href="howToVideoUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            :lang="locale"
+            >{{ $t('trans.homePage.getStarted') }}!
+          </a>
         </p>
       </v-col>
       <v-col cols="12" lg="4">

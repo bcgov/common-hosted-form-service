@@ -177,7 +177,7 @@ const goToCSTAR = () => {
   const cstarUrl =
     appStore.config?.cstarBaseUrl ||
     'https://cstar-dev.apps.silver.devops.gov.bc.ca';
-  window.open(cstarUrl, '_blank');
+  window.open(cstarUrl, '_blank', 'noopener,noreferrer');
 };
 
 // Lazy load tenants when dropdown is opened (if not already loaded)

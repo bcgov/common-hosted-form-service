@@ -260,6 +260,7 @@ export default {
             :href="techdocsLink"
             class="preview_info_link_field_white"
             target="_blank"
+            rel="noopener noreferrer"
             :hreflang="lang"
           >
             {{ $t('trans.formSettings.learnMore') }}
