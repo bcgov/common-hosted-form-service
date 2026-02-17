@@ -508,7 +508,8 @@ export default function getRouter(basePath = '/') {
     }
 
     // Update document title if applicable
-    document.title = to.meta.title || import.meta.env.VITE_TITLE;
+    document.title =
+      to.meta.title || import.meta.env.VITE_TITLE || 'Common Hosted Forms';
     next();
   });
 

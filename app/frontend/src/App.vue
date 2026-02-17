@@ -16,7 +16,7 @@ const tenantStore = useTenantStore();
 const appTitle = computed(() => {
   return route && route.meta && route.meta.title
     ? route.meta.title
-    : import.meta.env.VITE_TITLE;
+    : import.meta.env.VITE_TITLE || 'Common Hosted Forms';
 });
 
 const isFormSubmitMode = computed(() => {
