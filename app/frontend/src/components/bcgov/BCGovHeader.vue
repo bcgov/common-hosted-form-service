@@ -39,11 +39,8 @@ const showTenantDropdown = computed(() => {
     'Admin', // Admin panel
     'AdministerForm', // Admin form management
     'AdministerUser', // Admin user management
-    'FormSubmissions', // Viewing form submissions
     'FormSubmit', // Public form submission
-    'FormView', // Viewing a submission
     'FormSuccess', // Submission success page
-    'FormPreview', // Form preview
     'UserSubmissions', // User's submissions
     'UserFormView', // User viewing their submission
     'UserFormDraftEdit', // User editing draft
