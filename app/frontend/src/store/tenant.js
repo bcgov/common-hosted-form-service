@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
+import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
 import getRouter from '~/router';
 
@@ -24,6 +25,15 @@ export const useTenantStore = defineStore('tenant', {
       if (val === undefined || val === null) return true;
       if (typeof val === 'string') return val.toLowerCase() !== 'false';
       return Boolean(val);
+    },
+
+    /**
+     * Whether the current user logged in via BC Services Card.
+     * BCSC users don't participate in tenant features.
+     */
+    isBCServicesCardUser: () => {
+      const authStore = useAuthStore();
+      return authStore.identityProvider?.code === 'bcservicescard';
     },
 
     /**
@@ -67,7 +77,7 @@ export const useTenantStore = defineStore('tenant', {
      * Initialize store - load selected tenant from localStorage
      */
     initializeStore() {
-      if (!this.isTenantFeatureEnabled) return;
+      if (!this.isTenantFeatureEnabled || this.isBCServicesCardUser) return;
       try {
         const stored = localStorage.getItem('selectedTenant');
         if (stored && stored !== 'null' && stored !== 'undefined') {
@@ -101,7 +111,7 @@ export const useTenantStore = defineStore('tenant', {
      * Fetch all available tenants for the current user
      */
     async fetchTenants() {
-      if (!this.isTenantFeatureEnabled) return;
+      if (!this.isTenantFeatureEnabled || this.isBCServicesCardUser) return;
       // Skip tenant API call on submission pages - they don't need tenant info
       try {
         const router = getRouter();

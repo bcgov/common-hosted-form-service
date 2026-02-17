@@ -29,7 +29,8 @@ const tenantStore = useTenantStore();
 // - Admin pages
 // - Submission viewing/submission pages (formSubmitMode routes)
 const showTenantDropdown = computed(() => {
-  if (!tenantStore.isTenantFeatureEnabled) return false;
+  if (!tenantStore.isTenantFeatureEnabled || tenantStore.isBCServicesCardUser)
+    return false;
   if (!ready.value || !authenticated.value || !route.name) {
     return false;
   }

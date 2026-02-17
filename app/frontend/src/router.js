@@ -458,7 +458,11 @@ export default function getRouter(basePath = '/') {
       const formStore = useFormStore();
       formStore.getFormsForCurrentUser();
       const tenantStore = useTenantStore();
-      if (tenantStore.isTenantFeatureEnabled && !to.meta?.formSubmitMode) {
+      if (
+        tenantStore.isTenantFeatureEnabled &&
+        !to.meta?.formSubmitMode &&
+        !tenantStore.isBCServicesCardUser
+      ) {
         tenantStore.fetchTenants();
       }
     }
