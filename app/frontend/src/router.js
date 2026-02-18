@@ -458,7 +458,11 @@ export default function getRouter(basePath = '/') {
       const formStore = useFormStore();
       formStore.getFormsForCurrentUser();
       const tenantStore = useTenantStore();
-      if (tenantStore.isTenantFeatureEnabled) {
+      if (
+        tenantStore.isTenantFeatureEnabled &&
+        !to.meta?.formSubmitMode &&
+        !tenantStore.isBCServicesCardUser
+      ) {
         tenantStore.fetchTenants();
       }
     }
@@ -508,7 +512,8 @@ export default function getRouter(basePath = '/') {
     }
 
     // Update document title if applicable
-    document.title = to.meta.title || import.meta.env.VITE_TITLE;
+    document.title =
+      to.meta.title || import.meta.env.VITE_TITLE || 'Common Hosted Forms';
     next();
   });
 

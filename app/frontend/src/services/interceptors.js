@@ -29,24 +29,20 @@ export function appAxios(timeout = 60000) {
       }
 
       // Add tenant ID header if tenant is selected
-      // EXCLUDE: Public form submission endpoints (POST to /forms/{id}/submissions)
-      // EXCLUDE: GET /submissions/{id} from /user routes (submitter context, not tenanted)
-      // INCLUDE: GET /submissions/{id} from /form routes (reviewer context, tenanted)
-      const isPublicFormSubmission =
-        cfg.url &&
-        cfg.url.match(/\/forms\/[^/]+\/submissions$/) &&
-        cfg.method?.toLowerCase() === 'post';
+      // EXCLUDE all requests from public/submitter routes — these pages operate
+      // outside tenant scope (form submission, submission viewing, draft editing)
+      const noTenantHeaderPaths = [
+        '/form/submit',
+        '/form/success',
+        '/user/view',
+        '/user/draft',
+        '/user/duplicate',
+      ];
+      const isNoTenantRoute = noTenantHeaderPaths.some((p) =>
+        window.location.pathname.includes(p)
+      );
 
-      const isUserContextSubmissionGet =
-        cfg.url &&
-        cfg.url.match(/\/submissions\/[^/]+$/) &&
-        cfg.method?.toLowerCase() === 'get' &&
-        window.location.pathname.includes('/user');
-
-      const shouldExcludeTenantHeader =
-        isPublicFormSubmission || isUserContextSubmissionGet;
-
-      if (tenantStore?.selectedTenant?.id && !shouldExcludeTenantHeader) {
+      if (tenantStore?.selectedTenant?.id && !isNoTenantRoute) {
         cfg.headers['x-tenant-id'] = tenantStore.selectedTenant.id;
       }
       return Promise.resolve(cfg);
