@@ -121,6 +121,40 @@ function isClosingMessageValid(schedule) {
   return true;
 }
 
+async function ensureTenantFormSetup(currentUser, headers, trx, formId) {
+  if (!currentUser.tenantId) {
+    return;
+  }
+
+  if (!headers) {
+    throw new Problem(500, 'Request headers required for tenant form creation');
+  }
+
+  const formTenant = {
+    id: uuid.v4(),
+    formId,
+    tenantId: currentUser.tenantId,
+    createdBy: currentUser.usernameIdp,
+  };
+  await FormTenant.query(trx).insert(formTenant);
+
+  const reqContext = { currentUser, headers };
+  const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext);
+  const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes('form_admin'));
+
+  if (adminGroups.length === 0) {
+    throw new Problem(403, 'User does not belong to any group with form_admin role');
+  }
+
+  const formGroups = adminGroups.map((group) => ({
+    id: uuid.v4(),
+    formId,
+    groupId: group.id,
+    createdBy: currentUser.usernameIdp,
+  }));
+  await FormGroup.query(trx).insert(formGroups);
+}
+
 const service = {
   /**
    * Validates reminder settings against schedule configuration
@@ -290,41 +324,7 @@ const service = {
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
 
-      // tenant specific processing
-      if (currentUser.tenantId) {
-        // Validate that headers are provided for tenant operations
-        if (!headers) {
-          throw new Problem(500, 'Request headers required for tenant form creation');
-        }
-
-        const formTenant = {
-          id: uuid.v4(),
-          formId: obj.id,
-          tenantId: currentUser.tenantId,
-          createdBy: currentUser.usernameIdp,
-        };
-        await FormTenant.query(trx).insert(formTenant);
-
-        // Create minimal request-like object for tenantService
-        // Following the pattern that tenantService expects
-        const reqContext = { currentUser, headers };
-
-        const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext);
-        const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes('form_admin'));
-
-        if (adminGroups.length === 0) {
-          throw new Problem(403, 'User does not belong to any group with form_admin role');
-        }
-
-        const formGroups = adminGroups.map((group) => ({
-          id: uuid.v4(),
-          formId: obj.id,
-          groupId: group.id,
-          createdBy: currentUser.usernameIdp,
-        }));
-        await FormGroup.query(trx).insert(formGroups);
-      }
-      //end tenant specific processing
+      await ensureTenantFormSetup(currentUser, headers, trx, obj.id);
 
       await trx.commit();
       const result = await service.readForm(obj.id);
