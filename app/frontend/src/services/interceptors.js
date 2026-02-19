@@ -39,7 +39,7 @@ export function appAxios(timeout = 60000) {
         '/user/duplicate',
       ];
       const isNoTenantRoute = noTenantHeaderPaths.some((p) =>
-        window.location.pathname.includes(p)
+        globalThis.location.pathname.includes(p)
       );
 
       if (tenantStore?.selectedTenant?.id && !isNoTenantRoute) {

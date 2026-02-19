@@ -1,40 +1,67 @@
 import { flushPromises, shallowMount } from '@vue/test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRoute } from 'vue-router';
 import { ref } from 'vue';
 
 import App from '~/App.vue';
+import { useAppStore } from '~/store/app';
+import { useAuthStore } from '~/store/auth';
+import { useTenantStore } from '~/store/tenant';
+
+// tenant store uses these; mock to avoid side-effects
+vi.mock('~/store/notification', () => ({
+  useNotificationStore: () => ({ addNotification: vi.fn() }),
+}));
+
+vi.mock('~/router', () => ({
+  default: vi.fn(() => ({ currentRoute: { value: { meta: {} } } })),
+}));
 
 vi.mock('vue-router');
 
 describe('App.vue', () => {
-  it('renders', async () => {
-    const name = 'NotFormSubmitOrFormView';
+  let pinia;
 
-    useRoute.mockReturnValue({
-      query: {
-        name,
-      },
-    });
+  beforeEach(() => {
+    pinia = createPinia();
+    setActivePinia(pinia);
+    // Prevent identityProvider getter from throwing when keycloak is accessed
+    // during initializeStore → isBCServicesCardUser on mount
+    const authStore = useAuthStore();
+    authStore.keycloak = { tokenParsed: null };
+  });
 
-    const wrapper = shallowMount(App, {
+  const mountApp = (routeMock, stubs = {}) => {
+    useRoute.mockReturnValue(routeMock);
+    return shallowMount(App, {
       global: {
+        plugins: [pinia],
         stubs: {
-          VLayout: {
-            name: 'VLayout',
-            template: '<div class="v-layout-stub"><slot /></div>',
-          },
-          VMain: {
-            name: 'VMain',
-            template: '<div class="v-main-stub"><slot /></div>',
-          },
           RouterView: {
             name: 'RouterView',
             template: '<div class="v-router-view-stub"><slot /></div>',
           },
+          ...stubs,
         },
       },
     });
+  };
+
+  it('renders', async () => {
+    const wrapper = mountApp(
+      { query: { name: 'NotFormSubmitOrFormView' } },
+      {
+        VLayout: {
+          name: 'VLayout',
+          template: '<div class="v-layout-stub"><slot /></div>',
+        },
+        VMain: {
+          name: 'VMain',
+          template: '<div class="v-main-stub"><slot /></div>',
+        },
+      }
+    );
 
     await flushPromises();
 
@@ -47,47 +74,13 @@ describe('App.vue', () => {
   });
 
   it('isWidePage should be main for non FormSubmit, FormView, FormSuccess views', () => {
-    const name = 'NotFormSubmitOrFormView';
-
-    useRoute.mockReturnValue({
-      query: {
-        name,
-      },
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
+    const wrapper = mountApp({ query: { name: 'NotFormSubmitOrFormView' } });
     expect(wrapper.vm.isWidePage).toBe('main');
     expect(wrapper.vm.isValidRoute).toBeFalsy();
   });
 
   it('isWidePage should be main for non FormSubmit, FormView, FormSuccess views even if isWideLayout is true', async () => {
-    const name = 'NotFormSubmitOrFormView';
-
-    useRoute.mockReturnValue({
-      query: {
-        name,
-      },
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
+    const wrapper = mountApp({ query: { name: 'NotFormSubmitOrFormView' } });
     wrapper.vm.isWideLayout = ref(true);
     await flushPromises();
     expect(wrapper.vm.isWidePage).toBe('main');
@@ -95,88 +88,28 @@ describe('App.vue', () => {
   });
 
   it('isWidePage should be main-wide for FormSubmit', () => {
-    const name = 'FormSubmit';
-
-    useRoute.mockReturnValue({
-      name,
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
+    const wrapper = mountApp({ name: 'FormSubmit' });
     wrapper.vm.isWideLayout = true;
     expect(wrapper.vm.isWidePage).toBe('main-wide');
     expect(wrapper.vm.isValidRoute).toBeTruthy();
   });
 
   it('isWidePage should be main-wide for FormView', () => {
-    const name = 'FormView';
-
-    useRoute.mockReturnValue({
-      name,
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
+    const wrapper = mountApp({ name: 'FormView' });
     wrapper.vm.isWideLayout = true;
     expect(wrapper.vm.isWidePage).toBe('main-wide');
     expect(wrapper.vm.isValidRoute).toBeTruthy();
   });
 
   it('isWidePage should be main-wide for FormSuccess', () => {
-    const name = 'FormSuccess';
-
-    useRoute.mockReturnValue({
-      name,
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
+    const wrapper = mountApp({ name: 'FormSuccess' });
     wrapper.vm.isWideLayout = true;
     expect(wrapper.vm.isWidePage).toBe('main-wide');
     expect(wrapper.vm.isValidRoute).toBeTruthy();
   });
 
   it('setWideLayout should toggle isWideLayout', () => {
-    const name = 'FormView';
-
-    useRoute.mockReturnValue({
-      name,
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
+    const wrapper = mountApp({ name: 'FormView' });
     expect(wrapper.vm.isWideLayout).toBeFalsy();
     wrapper.vm.setWideLayout(true);
     expect(wrapper.vm.isWideLayout).toBeTruthy();
@@ -184,43 +117,43 @@ describe('App.vue', () => {
   });
 
   it('isFormSubmitMode should return formSubmitMode from the router if it exists', () => {
-    useRoute.mockReturnValue({
-      meta: {
-        formSubmitMode: true,
-      },
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
+    const wrapper = mountApp({ meta: { formSubmitMode: true } });
     expect(wrapper.vm.isFormSubmitMode).toBeTruthy();
   });
 
-  it('appTitle should be retrieved from the route otherwise from the environment variable', () => {
+  it('appTitle appends | Classic when tenant feature is enabled and no tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
-    useRoute.mockReturnValue({
-      meta: {
-        title: TITLE,
-      },
-    });
-    const wrapper = shallowMount(App, {
-      global: {
-        stubs: {
-          RouterView: {
-            name: 'RouterView',
-            template: '<div class="v-router-view-stub"><slot /></div>',
-          },
-        },
-      },
-    });
+    const wrapper = mountApp({ meta: { title: TITLE } });
+    // isTenantFeatureEnabled defaults to true; no tenant selected → Classic
+    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Classic`);
+  });
 
+  it('appTitle appends | Enterprise when a tenant is selected', () => {
+    const TITLE = 'THIS IS AN APP TITLE';
+    const tenantStore = useTenantStore();
+    tenantStore.selectedTenant = { id: 't1', name: 'Tenant 1' };
+    const wrapper = mountApp({ meta: { title: TITLE } });
+    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Enterprise`);
+  });
+
+  it('appTitle has no suffix when tenant feature is disabled', () => {
+    const TITLE = 'THIS IS AN APP TITLE';
+    useAppStore().config = { tenantFeatureEnabled: false };
+    const wrapper = mountApp({ meta: { title: TITLE } });
     expect(wrapper.vm.appTitle).toEqual(TITLE);
+  });
+
+  it('calls tenantStore.initializeStore on mount', async () => {
+    // Ensure keycloak is defined so identityProvider getter does not throw
+    const authStore = useAuthStore();
+    authStore.keycloak = { tokenParsed: null };
+
+    const tenantStore = useTenantStore();
+    const initSpy = vi.spyOn(tenantStore, 'initializeStore');
+
+    mountApp({ query: {} });
+    await flushPromises();
+
+    expect(initSpy).toHaveBeenCalledOnce();
   });
 });

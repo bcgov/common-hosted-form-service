@@ -14,9 +14,15 @@ const route = useRoute();
 const tenantStore = useTenantStore();
 
 const appTitle = computed(() => {
-  return route && route.meta && route.meta.title
-    ? route.meta.title
-    : import.meta.env.VITE_TITLE || 'Common Hosted Forms';
+  const base =
+    route && route.meta && route.meta.title
+      ? route.meta.title
+      : import.meta.env.VITE_TITLE || 'Common Hosted Forms';
+
+  if (!tenantStore.isTenantFeatureEnabled) return base;
+
+  const suffix = tenantStore.selectedTenant ? 'Enterprise' : 'Classic';
+  return `${base} | ${suffix}`;
 });
 
 const isFormSubmitMode = computed(() => {
