@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import { ref } from 'vue';
 
 import App from '~/App.vue';
+import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useTenantStore } from '~/store/tenant';
 
@@ -120,8 +121,24 @@ describe('App.vue', () => {
     expect(wrapper.vm.isFormSubmitMode).toBeTruthy();
   });
 
-  it('appTitle should be retrieved from the route otherwise from the environment variable', () => {
+  it('appTitle appends | Classic when tenant feature is enabled and no tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
+    const wrapper = mountApp({ meta: { title: TITLE } });
+    // isTenantFeatureEnabled defaults to true; no tenant selected → Classic
+    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Classic`);
+  });
+
+  it('appTitle appends | Enterprise when a tenant is selected', () => {
+    const TITLE = 'THIS IS AN APP TITLE';
+    const tenantStore = useTenantStore();
+    tenantStore.selectedTenant = { id: 't1', name: 'Tenant 1' };
+    const wrapper = mountApp({ meta: { title: TITLE } });
+    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Enterprise`);
+  });
+
+  it('appTitle has no suffix when tenant feature is disabled', () => {
+    const TITLE = 'THIS IS AN APP TITLE';
+    useAppStore().config = { tenantFeatureEnabled: false };
     const wrapper = mountApp({ meta: { title: TITLE } });
     expect(wrapper.vm.appTitle).toEqual(TITLE);
   });
