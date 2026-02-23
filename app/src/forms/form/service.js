@@ -28,6 +28,7 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
+const log = require('../../components/log')(module.filename);
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -486,6 +487,8 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params, currentUser) => {
+    log.info('listFormSubmissions service start', { formId, paginationEnabled: params.paginationEnabled });
+
     // First, get form settings to check if assignee data should be included
     const form = await service.readForm(formId);
 
@@ -500,10 +503,28 @@ const service = {
       fields.map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
     );
 
-    if (params.paginationEnabled) {
-      return await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
+    try {
+      const knexQuery = query.toKnexQuery();
+      const toSql = knexQuery.toSQL();
+      log.info('listFormSubmissions Knex query', {
+        sql: toSql.sql,
+        bindings: toSql.bindings,
+      });
+    } catch (err) {
+      log.warn('listFormSubmissions Knex query debug failed, falling back to toString', { err: err.message });
+      log.info('listFormSubmissions Knex query', { sql: query.toString() });
     }
 
+    if (params.paginationEnabled) {
+      const result = await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
+      log.info('listFormSubmissions service complete (pagination path)', {
+        formId,
+        resultCount: Array.isArray(result) ? result.length : result?.results?.length ?? 0,
+      });
+      return result;
+    }
+
+    log.info('listFormSubmissions service complete (non-pagination path)', { formId });
     return query;
   },
 
@@ -512,15 +533,37 @@ const service = {
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
 
     if (isSearchAble && search) {
+      log.info('processPaginationData: using search path', { page, itemsPerPage });
       const submissionsData = await query;
-      return this.searchSubmissions(submissionsData, search, page, itemsPerPage);
+      const result = this.searchSubmissions(submissionsData, search, page, itemsPerPage);
+      log.info('processPaginationData: search complete', {
+        inputRows: submissionsData?.length ?? 0,
+        resultCount: result?.results?.length ?? 0,
+        total: result?.total ?? 0,
+      });
+      return result;
     }
 
     if (itemsPerPage && Number.parseInt(itemsPerPage) >= 0 && Number.parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
+      log.info('processPaginationData: using page path', { page, itemsPerPage });
+      const result = await query.page(Number.parseInt(page), Number.parseInt(itemsPerPage));
+      log.info('processPaginationData: page complete', {
+        resultCount: result?.results?.length ?? 0,
+        total: result?.total ?? 0,
+      });
+      return result;
     }
 
-    return await query;
+    log.info('processPaginationData: using full fetch path (itemsPerPage invalid or -1)', {
+      page,
+      itemsPerPage,
+      itemsPerPageParsed: Number.parseInt(itemsPerPage),
+    });
+    const result = await query;
+    log.info('processPaginationData: full fetch complete', {
+      resultCount: Array.isArray(result) ? result.length : 0,
+    });
+    return result;
   },
 
   searchSubmissions(submissionsData, search, page, itemsPerPage) {
