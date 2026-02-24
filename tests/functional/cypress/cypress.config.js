@@ -2,6 +2,11 @@ const { defineConfig } = require('cypress')
 const fs = require('fs'); // Module for file system
 
 module.exports = defineConfig({
+  reporter: 'cypress-axe-reporter',
+  reporterOptions: {
+    reportDir: 'tests/functional/cypress/axe-reports',
+    outputFormat: 'json',
+  },
   env: {
     depEnv: 'app',
     auth_base_url: 'http://localhost:8082',
@@ -30,10 +35,12 @@ module.exports = defineConfig({
     baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
     specPattern: 'e2e/*.cy.{js,jsx,ts,tsx}',
     testIsolation: false,
-    supportFile: 'support/index.js',
+    supportFile: 'support/e2e.js',
     numTestsKeptInMemory: 5,
     experimentalMemoryManagement: true,
     setupNodeEvents(on, config) {
+      require('cypress-axe-reporter/plugin')(on);
+
       on('task', {
         fileExists(filePath) {
           return fs.existsSync(filePath);
@@ -42,7 +49,5 @@ module.exports = defineConfig({
 
       return config;
     },
-  }
-  
   },
-)
+});

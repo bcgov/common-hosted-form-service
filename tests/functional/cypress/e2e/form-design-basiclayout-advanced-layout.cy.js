@@ -24,12 +24,19 @@ it('Visits the form settings page', () => {
   cy.waitForLoad();
   formsettings();
 });
+it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.intercept('POST', '**/forms/*', (req) => {
+      console.log(req);
+    }).as('formCreate');
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Advanced Layout').click();
+});
 
   // Form design page for Field set components
 it('Checks the Field set', () => {
-
   cy.viewport(1000, 1100);
-  cy.get('button').contains('Advanced Layout').click();
   cy.get('div.formio-builder-form').then($el => {
     const coords = $el[0].getBoundingClientRect();
     cy.get('span.btn').contains('Field Set')
