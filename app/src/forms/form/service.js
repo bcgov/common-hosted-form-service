@@ -92,12 +92,12 @@ function validateScheduleObject(schedule = {}) {
  * @returns {Boolean} True if late submission config is valid
  */
 function isLateSubmissionConfigValid(schedule) {
-  const lateSubmissionsEnabled = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
+  const lateSubmissionsEnabled = schedule?.allowLateSubmissions?.enabled;
 
   if (lateSubmissionsEnabled) {
-    const hasValidTerm = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
+    const hasValidTerm = schedule?.allowLateSubmissions?.forNext?.term;
 
-    const hasValidInterval = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
+    const hasValidInterval = schedule?.allowLateSubmissions?.forNext?.intervalType;
 
     if (!hasValidTerm || !hasValidInterval) {
       return false;
@@ -134,7 +134,7 @@ const service = {
     }
 
     // Check if schedule exists and is properly configured
-    if (!data.schedule || !data.schedule.enabled || !data.schedule.scheduleType || data.schedule.scheduleType === ScheduleType.MANUAL) {
+    if (!data.schedule?.enabled || !data.schedule?.scheduleType || data.schedule?.scheduleType === ScheduleType.MANUAL) {
       return false;
     }
 
@@ -185,7 +185,7 @@ const service = {
         });
       } else if (typeof currentData === 'object' && currentData !== null) {
         Object.keys(currentData).forEach((key) => {
-          if (key === 'data' && currentData[key] && currentData[key].id) {
+          if (key === 'data' && currentData[key]?.id) {
             // Add the file ID if it exists
             fileIds.push(currentData[key].id);
           } else {
@@ -346,7 +346,7 @@ const service = {
         code: p.code,
         createdBy: currentUser.usernameIdp,
       }));
-      if (fIdps && fIdps.length) await FormIdentityProvider.query(trx).insert(fIdps);
+      if (fIdps?.length) await FormIdentityProvider.query(trx).insert(fIdps);
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
@@ -439,7 +439,7 @@ const service = {
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
     // Only apply assigned user filter if both conditions are true
-    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser?.id) {
       query.where('formSubmissionAssignedToUserId', currentUser.id);
     }
 
@@ -461,7 +461,7 @@ const service = {
       selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
     }
 
-    if (params.fields && params.fields.length) {
+    if (params.fields?.length) {
       fields = Array.isArray(params.fields) ? params.fields.flatMap((f) => f.split(',').map((s) => s.trim())) : params.fields.split(',').map((s) => s.trim());
       if (fields.includes('updatedAt')) selection.push('updatedAt');
       if (fields.includes('updatedBy')) selection.push('updatedBy');
@@ -517,7 +517,7 @@ const service = {
   },
 
   async processPaginationData(query, page, itemsPerPage, search, searchEnabled) {
-    const isSearchEnabled = (x) => (x !== undefined ? JSON.parse(x) : false);
+    const isSearchEnabled = (x) => (x === undefined ? false : JSON.parse(x));
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
 
     if (isSearchAble && search) {
@@ -570,7 +570,8 @@ const service = {
 
     const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
 
-    const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+    const isNumberLike = (x, s) =>
+      (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && Number.parseFloat(x) === Number.parseFloat(s);
 
     const isBoolLike = (x, s) => {
       // Only bother if the data value itself is a boolean
@@ -665,12 +666,12 @@ const service = {
     // ---------------------------------------------------------
     // Pagination
     // ---------------------------------------------------------
-    if (itemsPerPage !== -1) {
+    if (itemsPerPage === -1) {
+      result.results = searchedData;
+    } else {
       const start = page * itemsPerPage;
       const end = start + itemsPerPage;
       result.results = searchedData.slice(start, end);
-    } else {
-      result.results = searchedData;
     }
 
     return result;
@@ -853,12 +854,10 @@ const service = {
         const submissionDataArray = data.submission.data;
         const recordWithoutData = data;
         delete recordWithoutData.submission.data;
-        let recordsToInsert = [];
-        let submissionId;
         // let's create multiple submissions with same metadata
-        service.popFormLevelInfo(submissionDataArray).map((singleData) => {
-          submissionId = uuid.v4();
-          recordsToInsert.push({
+        const recordsToInsert = service.popFormLevelInfo(submissionDataArray).map((singleData) => {
+          const submissionId = uuid.v4();
+          return {
             ...recordWithoutData,
             id: submissionId,
             formVersionId: formVersion.id,
@@ -868,7 +867,7 @@ const service = {
               ...recordWithoutData.submission,
               data: singleData,
             },
-          });
+          };
         });
         const result = await FormSubmission.query(trx).insert(recordsToInsert);
         const perms = [Permissions.SUBMISSION_CREATE, Permissions.SUBMISSION_READ];
@@ -1097,7 +1096,7 @@ const service = {
     let result = [];
     result = await FormComponentsProactiveHelp.query().modify('findByComponentId', componentId);
     let item = result.length > 0 ? result[0] : null;
-    let imageUrl = item !== null ? 'data:' + item.imageType + ';' + 'base64' + ',' + item.image : '';
+    let imageUrl = item === null ? '' : 'data:' + item.imageType + ';' + 'base64' + ',' + item.image;
     return { url: imageUrl };
   },
 
@@ -1226,7 +1225,7 @@ const service = {
   // Get all the email templates for a form
   readEmailTemplates: async (formId) => {
     const hasEmailTemplate = (emailTemplates, type) => {
-      return emailTemplates.find((t) => t.type === type) !== undefined;
+      return emailTemplates.some((t) => t.type === type);
     };
 
     let result = await FormEmailTemplate.query().modify('filterFormId', formId);
