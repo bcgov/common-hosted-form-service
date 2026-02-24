@@ -503,18 +503,6 @@ const service = {
       fields.map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
     );
 
-    try {
-      const knexQuery = query.toKnexQuery();
-      const toSql = knexQuery.toSQL();
-      log.info('listFormSubmissions Knex query', {
-        sql: toSql.sql,
-        bindings: toSql.bindings,
-      });
-    } catch (err) {
-      log.warn('listFormSubmissions Knex query debug failed, falling back to toString', { err: err.message });
-      log.info('listFormSubmissions Knex query', { sql: query.toString() });
-    }
-
     if (params.paginationEnabled) {
       const result = await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
       log.info('listFormSubmissions service complete (pagination path)', {
