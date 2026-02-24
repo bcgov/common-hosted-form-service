@@ -47,10 +47,11 @@ jobs:
        run: mkdir -p tests/functional/cypress/axe-reports
        if: always()  
 
-     - uses: actions/upload-artifact@v4
+     - name: Upload axe reports
+       uses: actions/upload-artifact@v4
        if: always()
        with:
-        name: axe-reports
+        name: cypress-axe-reports
         path: '${{ github.workspace }}/tests/functional/cypress/axe-reports'
         if-no-files-found: warn
  
