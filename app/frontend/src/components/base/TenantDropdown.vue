@@ -151,7 +151,7 @@ onMounted(async () => {
 
   // Fetch available tenants (API call)
   // This is safe now because BCGovHeader only shows this component on allowed routes
-  if (tenantStore.tenants.length === 0) {
+  if (tenantStore.tenants.length === 0 && !tenantStore.serviceDegraded) {
     await tenantStore.fetchTenants();
   }
 

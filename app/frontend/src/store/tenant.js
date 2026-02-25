@@ -11,6 +11,7 @@ export const useTenantStore = defineStore('tenant', {
     selectedTenant: null, // Currently selected tenant (persisted to localStorage)
     loading: false, // Loading state for API calls
     error: null, // Error message if any
+    serviceDegraded: false, // True when X-Tenant-Service-Status: degraded header received
   }),
 
   getters: {
@@ -112,6 +113,7 @@ export const useTenantStore = defineStore('tenant', {
      */
     async fetchTenants() {
       if (!this.isTenantFeatureEnabled || this.isBCServicesCardUser) return;
+      if (this.loading) return;
       // Skip tenant API call on submission pages - they don't need tenant info
       try {
         const router = getRouter();
@@ -128,6 +130,17 @@ export const useTenantStore = defineStore('tenant', {
       try {
         const response = await rbacService.getCurrentUserTenants();
         this.tenants = response.data || [];
+        this.serviceDegraded =
+          response.headers?.['x-tenant-service-status']?.toLowerCase() ===
+          'degraded';
+
+        if (this.serviceDegraded) {
+          useNotificationStore().addNotification({
+            text: 'CSTAR is temporarily unavailable. Tenant selection is currently disabled.',
+            consoleError:
+              'X-Tenant-Service-Status: degraded received from /current/tenants',
+          });
+        }
 
         // If user had a previously selected tenant, validate it still exists
         if (
@@ -175,6 +188,7 @@ export const useTenantStore = defineStore('tenant', {
       this.selectedTenant = null;
       this.loading = false;
       this.error = null;
+      this.serviceDegraded = false;
       this.persistSelectedTenant();
     },
   },
