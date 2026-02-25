@@ -3,6 +3,7 @@ const formService = require('../submission/service');
 const service = require('./service');
 const tenantService = require('../../components/tenantService');
 const userService = require('../user/service');
+const authService = require('../auth/service');
 module.exports = {
   list: async (req, res, next) => {
     try {
@@ -86,6 +87,22 @@ module.exports = {
               const dbUser = await userService.readByKeycloakId(ssoUser.ssoUserId);
               if (dbUser?.id) {
                 resolvedUserId = dbUser.id;
+              } else {
+                // User has not yet logged into CHEFS (e.g. service-role user managed
+                // purely through CSTAR). Auto-provision them so assignment works.
+                const provisioned = await authService.createUser({
+                  idpUserId: ssoUser.ssoUserId,
+                  keycloakId: ssoUser.ssoUserId,
+                  username: ssoUser.userName || null,
+                  fullName: ssoUser.displayName || null,
+                  email: ssoUser.email || null,
+                  firstName: ssoUser.firstName || null,
+                  lastName: ssoUser.lastName || null,
+                  idp: idpType,
+                });
+                if (provisioned?.id) {
+                  resolvedUserId = provisioned.id;
+                }
               }
             }
 
