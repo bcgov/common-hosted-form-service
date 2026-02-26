@@ -21,7 +21,7 @@ const appTitle = computed(() => {
 
   if (!tenantStore.isTenantFeatureEnabled) return base;
 
-  const suffix = tenantStore.selectedTenant ? 'Enterprise' : 'Classic';
+  const suffix = tenantStore.selectedTenant ? 'Enterprise' : 'Personal';
   return `${base} | ${suffix}`;
 });
 
