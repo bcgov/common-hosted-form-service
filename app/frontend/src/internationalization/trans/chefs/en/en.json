@@ -1333,7 +1333,7 @@
     "selectLabel": "Select tenant (opens in Enterprise CHEFS)",
     "placeholder": "Select from available tenants",
     "noDataText": "No tenants found",
-    "switchToClassic": "Switch to Classic CHEFS",
+    "switchToClassic": "Switch to Personal CHEFS",
     "goToCstar": "Go to CSTAR (Connected Services, Team Access and Roles)",
     "noTenantsAvailable": "No tenants available",
     "manageTenantsIn": "Manage tenants in",

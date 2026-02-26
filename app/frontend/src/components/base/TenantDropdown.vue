@@ -30,6 +30,11 @@
       <template #selection="{ item }">
         <span class="selected-tenant">{{ item.title }}</span>
       </template>
+      <!-- Render divider between Personal CHEFS and tenant options -->
+      <template #item="{ props, item }">
+        <v-divider v-if="item.raw.type === 'divider'" />
+        <v-list-item v-else v-bind="props" />
+      </template>
       <!-- CSTAR Link at bottom of dropdown -->
       <template #append-item>
         <v-divider />
@@ -92,9 +97,10 @@ const notificationStore = useNotificationStore();
 const selectedValue = ref(null);
 const selectRef = ref(null);
 
-// Build dropdown items: Classic CHEFS (value=null) is always the first entry
+// Build dropdown items: Personal CHEFS (value=null) is always the first entry
 const allTenantOptions = computed(() => [
-  { id: null, name: 'Classic CHEFS', value: null },
+  { id: null, name: 'Personal CHEFS', value: null },
+  { type: 'divider' },
   ...tenantStore.tenantsList,
 ]);
 
@@ -112,7 +118,7 @@ const handleTenantChange = async (value) => {
       selectedValue.value = null;
     }
 
-    // Fetch forms for the selected tenant (or Classic CHEFS if no tenant)
+    // Fetch forms for the selected tenant (or Personal CHEFS if no tenant)
     // Form store will automatically handle errors and show notifications
     await formStore.getFormsForCurrentUser();
 
@@ -151,7 +157,7 @@ onMounted(async () => {
 
   // Fetch available tenants (API call)
   // This is safe now because BCGovHeader only shows this component on allowed routes
-  if (tenantStore.tenants.length === 0) {
+  if (tenantStore.tenants.length === 0 && !tenantStore.serviceDegraded) {
     await tenantStore.fetchTenants();
   }
 
