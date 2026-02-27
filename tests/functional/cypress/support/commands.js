@@ -20,7 +20,7 @@ Cypress.Commands.add('checkA11yPage', () => {
       // Call task to write axe report
       cy.task('writeAxeReport', {
         results: { violations }, // ✅ wrap in results object
-        filePath: '/axe-reports/report.json',
+        filePath: 'axe-reports/report.json',
       });
     },
     true
