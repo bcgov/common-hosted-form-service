@@ -166,7 +166,7 @@ it('Submission revise status Assignment', () => {
     cy.get('.v-chip__content').contains('chefs.testing@gov.bc.ca').should('be.visible');
     cy.get('input[type="text"]').then($el => {
       const text_btn=$el[2];
-    cy.get(text_btn).type('NI');
+    cy.get(text_btn).type('ZX');
     });
     //Verify validation message to add another member for revise status assignment
     cy.contains('No results found. Please add team members in the draft/submission manage page.').should('be.visible');

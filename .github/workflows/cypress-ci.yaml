@@ -43,17 +43,12 @@ jobs:
           CYPRESS_keycloakPassword: ${{ secrets.Password }}
           CYPRESS_depEnv: 'pr-${{ inputs.pr-number }}'
 
-     - name: cypress create-axe-reports-directory
-       run: mkdir -p tests/functional/cypress/axe-reports
-       if: always()  
-
-     - name: Upload axe reports
-       uses: actions/upload-artifact@v4
+     - uses: actions/upload-artifact@v4
        if: always()
        with:
-        name: cypress-axe-reports
-        path: '${{ github.workspace }}/tests/functional/cypress/axe-reports'
-        if-no-files-found: warn
+          name: cypress-axe-reports
+          path: '${{ github.workspace }}/tests/functional/cypress/axe-reports'
+          if-no-files-found: ignore
  
      - uses: actions/upload-artifact@v4
        if: failure()
