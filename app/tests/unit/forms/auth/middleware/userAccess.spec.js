@@ -498,6 +498,7 @@ describe('filterMultipleSubmissions', () => {
         body: { submissionIds: [] },
         currentUser: {},
         formIdWithDeletePermission: formId,
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -507,6 +508,7 @@ describe('filterMultipleSubmissions', () => {
       await filterMultipleSubmissions(req, res, next);
 
       expect(service.getUserForms).toBeCalled();
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -740,6 +742,7 @@ describe('hasFormPermissions', () => {
       ]);
       const req = getMockReq({
         currentUser: {},
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -749,6 +752,7 @@ describe('hasFormPermissions', () => {
       await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
       expect(service.getUserForms).toBeCalled();
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -1132,6 +1136,7 @@ describe('hasSubmissionPermissions', () => {
       ]);
       const req = getMockReq({
         currentUser: {},
+        headers: { authorization: 'Bearer token' },
         params: {
           formSubmissionId: formSubmissionId,
         },
@@ -1143,6 +1148,7 @@ describe('hasSubmissionPermissions', () => {
       expect(service.checkSubmissionPermission).toBeCalledTimes(0);
       expect(service.getSubmissionForm).toBeCalledTimes(1);
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -1415,6 +1421,7 @@ describe('hasFormRoles', () => {
       ]);
       const req = getMockReq({
         currentUser: {},
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -1424,6 +1431,7 @@ describe('hasFormRoles', () => {
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -1776,6 +1784,7 @@ describe('hasRoleDeletePermissions', () => {
         currentUser: {
           id: userId,
         },
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -1785,6 +1794,7 @@ describe('hasRoleDeletePermissions', () => {
       await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
@@ -2188,6 +2198,7 @@ describe('hasRoleModifyPermissions', () => {
         currentUser: {
           id: userId,
         },
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
           userId: userId2,
@@ -2198,6 +2209,7 @@ describe('hasRoleModifyPermissions', () => {
       await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();

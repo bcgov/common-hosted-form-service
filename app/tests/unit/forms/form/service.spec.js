@@ -15,6 +15,7 @@ jest.mock('../../../../src/forms/common/scheduleService', () => ({
 }));
 
 const { eventStreamService } = require('../../../../src/components/eventStreamService');
+const tenantService = require('../../../../src/components/tenantService');
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
 const eventService = require('../../../../src/forms//event/eventService');
@@ -35,6 +36,8 @@ const {
   FormApiKey,
   FormSubscription,
   FormComponentsProactiveHelp,
+  FormTenant,
+  FormGroup,
 } = require('../../../../src/forms/common/models');
 
 const formId = uuid.v4();
@@ -185,6 +188,12 @@ function resetModels() {
     secret: 'secret',
     filesApiAccess: false,
   });
+
+  FormTenant.query = jest.fn().mockReturnThis();
+  FormTenant.insert = jest.fn().mockReturnThis();
+
+  FormGroup.query = jest.fn().mockReturnThis();
+  FormGroup.insert = jest.fn().mockReturnThis();
 }
 
 beforeEach(() => {
@@ -218,6 +227,10 @@ jest.mock('../../../../src/components/eventStreamService', () => ({
   SUBMISSION_EVENT_TYPES: {
     CREATED: 'created',
   },
+}));
+
+jest.mock('../../../../src/components/tenantService', () => ({
+  getUserTenantGroupsAndRoles: jest.fn(),
 }));
 
 describe('_findFileIds', () => {
@@ -1146,6 +1159,67 @@ describe('createForm', () => {
         showAssigneeInSubmissionsTable: true, // Should be true because of the OR logic
       })
     );
+  });
+
+  it('should throw when tenant form creation is attempted without headers', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValueOnce({});
+
+    const tenantUser = {
+      ...currentUser,
+      tenantId: uuid.v4(),
+    };
+
+    await expect(service.createForm({ name: 'Tenant Form', schema: { components: [] } }, tenantUser)).rejects.toThrow('Request headers required for tenant form creation');
+    expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create FormTenant and FormGroup records for tenant users with form_admin groups', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValueOnce({ id: formId, versions: [], identityProviders: [] });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    tenantService.getUserTenantGroupsAndRoles.mockResolvedValueOnce([
+      { id: 'group-1', roles: ['form_admin', 'form_viewer'] },
+      { id: 'group-2', roles: ['form_viewer'] },
+    ]);
+
+    const tenantUser = {
+      ...currentUser,
+      tenantId: uuid.v4(),
+    };
+    const headers = { authorization: 'Bearer token' };
+
+    await service.createForm({ name: 'Tenant Form', schema: { components: [] } }, tenantUser, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({
+      currentUser: tenantUser,
+      headers,
+    });
+    expect(FormTenant.insert).toHaveBeenCalledTimes(1);
+    expect(FormGroup.insert).toHaveBeenCalledTimes(1);
+    expect(FormRoleUser.insert).toHaveBeenCalledTimes(0);
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw 403 when tenant user has no form_admin group', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValueOnce({ id: formId, versions: [], identityProviders: [] });
+
+    tenantService.getUserTenantGroupsAndRoles.mockResolvedValueOnce([{ id: 'group-1', roles: ['form_viewer'] }]);
+
+    const tenantUser = {
+      ...currentUser,
+      tenantId: uuid.v4(),
+    };
+
+    await expect(service.createForm({ name: 'Tenant Form', schema: { components: [] } }, tenantUser, { authorization: 'Bearer token' })).rejects.toThrow(
+      'User does not belong to any group with form_admin role'
+    );
+
+    expect(FormGroup.insert).toHaveBeenCalledTimes(0);
+    expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
   });
 });
 
