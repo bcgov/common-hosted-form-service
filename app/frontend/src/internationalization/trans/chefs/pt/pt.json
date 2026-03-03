@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "Ocorreu um erro ao tentar buscar e-mails de destinatários para este envio.",
     "fetchSubmissionUsersConsErr": "Erro ao obter e-mails de destinatários para",
     "assignSubmissnToFormReviewer": "Os envios podem ser atribuídos a revisores de formulários.<br /> Para adicionar mais membros da equipe como revisores de formulário, vá para a página Gerenciar deste formulário.",
+    "assignSubmissnToFormReviewerTenanted": "Os envios podem ser atribuídos a revisores de formulários. <br />Para adicionar ou atualizar membros como revisores de formulário, acesse o CSTAR e atualize o grupo apropriado.",
     "update": "ATUALIZAR",
     "revise": "REVER",
     "complete": "COMPLETO",

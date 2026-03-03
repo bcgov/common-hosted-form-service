@@ -833,6 +833,7 @@
     "fetchSubmissionUsersErr": "An error occurred while trying to fetch recipient emails for this submission.",
     "fetchSubmissionUsersConsErr": "Error getting recipient emails for",
     "assignSubmissnToFormReviewer": "Submissions can be assigned to Form Reviewers. <br />To add more team members as Form Reviewers, go to the Manage page for this form.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "UPDATE",
     "revise": "REVISE",
     "complete": "COMPLETE",

@@ -121,11 +121,11 @@ describe('App.vue', () => {
     expect(wrapper.vm.isFormSubmitMode).toBeTruthy();
   });
 
-  it('appTitle appends | Classic when tenant feature is enabled and no tenant is selected', () => {
+  it('appTitle appends | Personal when tenant feature is enabled and no tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
     const wrapper = mountApp({ meta: { title: TITLE } });
-    // isTenantFeatureEnabled defaults to true; no tenant selected → Classic
-    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Classic`);
+    // isTenantFeatureEnabled defaults to true; no tenant selected → Personal
+    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Personal`);
   });
 
   it('appTitle appends | Enterprise when a tenant is selected', () => {
