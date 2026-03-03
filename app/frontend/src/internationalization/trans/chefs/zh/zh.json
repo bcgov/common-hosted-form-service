@@ -720,7 +720,7 @@
     "fetchSubmissionUsersErr": "尝试获取此提交的收件人电子邮件时发生错误。",
     "fetchSubmissionUsersConsErr": "获取收件人电子邮件时出错",
     "assignSubmissnToFormReviewer": "提交的内容可以分配给表单审阅者。<br />要将更多团队成员添加为表单审阅者，请转到此表单的管理页面。",
-    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
+    "assignSubmissnToFormReviewerTenanted": "提交的内容可以分配给表单审阅者。<br />要添加或更新表单审阅者成员，请前往 CSTAR 并更新相应的组。",
     "update": "更新",
     "revise": "修订",
     "complete": "完全的",

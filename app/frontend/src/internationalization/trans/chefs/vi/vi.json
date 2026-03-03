@@ -720,7 +720,7 @@
     "fetchSubmissionUsersErr": "Đã xảy ra lỗi khi cố gắng tìm nạp email của người nhận cho nội dung gửi này.",
     "fetchSubmissionUsersConsErr": "Lỗi nhận email người nhận cho",
     "assignSubmissnToFormReviewer": "Nội dung gửi có thể được chỉ định cho Người đánh giá biểu mẫu.<br /> Để thêm nhiều thành viên nhóm làm Người đánh giá biểu mẫu, hãy chuyển đến trang Quản lý cho biểu mẫu này.",
-    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
+    "assignSubmissnToFormReviewerTenanted": "Nội dung gửi có thể được chỉ định cho Người đánh giá biểu mẫu. <br />Để thêm hoặc cập nhật thành viên làm Người đánh giá biểu mẫu, hãy truy cập CSTAR và cập nhật nhóm phù hợp.",
     "update": "CẬP NHẬT",
     "revise": "ÔN LẠI",
     "complete": "HOÀN THÀNH",

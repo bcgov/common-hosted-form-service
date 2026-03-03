@@ -720,7 +720,7 @@
     "fetchSubmissionUsersErr": "Під час спроби отримати електронні листи одержувачів для цього надсилання сталася помилка.",
     "fetchSubmissionUsersConsErr": "Помилка отримання електронних листів одержувачів для",
     "assignSubmissnToFormReviewer": "Подання можна призначити рецензентам форм.<br /> Щоб додати більше членів команди як рецензентів форм, перейдіть на сторінку керування цією формою.",
-    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
+    "assignSubmissnToFormReviewerTenanted": "Подання можна призначити рецензентам форм. <br />Щоб додати або оновити членів як рецензентів форм, перейдіть до CSTAR та оновіть відповідну групу.",
     "update": "ОНОВЛЕННЯ",
     "revise": "ПЕРЕГЛЯНУТИ",
     "complete": "ЗАВЕРШЕНО",
