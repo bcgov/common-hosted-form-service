@@ -8,6 +8,7 @@ import { formService, rbacService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useTenantStore } from '~/store/tenant';
 import { FormPermissions } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -51,6 +52,8 @@ const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 const { user } = storeToRefs(useAuthStore());
 const { form, formSubmission, submissionUsers, isRTL } = storeToRefs(formStore);
+const { selectedTenant } = storeToRefs(useTenantStore());
+const isTenanted = computed(() => selectedTenant.value !== null);
 
 // State Machine
 const showAssignee = computed(() => ['ASSIGNED'].includes(statusToSet.value));
@@ -460,7 +463,11 @@ defineExpose({
                   <span
                     :lang="locale"
                     v-html="
-                      $t('trans.statusPanel.assignSubmissnToFormReviewer')
+                      isTenanted
+                        ? $t(
+                            'trans.statusPanel.assignSubmissnToFormReviewerTenanted'
+                          )
+                        : $t('trans.statusPanel.assignSubmissnToFormReviewer')
                     "
                   >
                   </span>
