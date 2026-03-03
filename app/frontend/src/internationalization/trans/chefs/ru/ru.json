@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "Произошла ошибка при попытке получить адреса электронной почты получателей для этой отправки.",
     "fetchSubmissionUsersConsErr": "Ошибка получения писем получателя для",
     "assignSubmissnToFormReviewer": "Материалы могут быть назначены рецензентам форм.<br /> Чтобы добавить других членов команды в качестве рецензентов формы, перейдите на страницу «Управление» для этой формы.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "ОБНОВИТЬ",
     "revise": "ИСПРАВИТЬ",
     "complete": "ЗАВЕРШЕНО",

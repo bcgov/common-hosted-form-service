@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "Une erreur s'est produite lors de la tentative de récupération des e-mails des destinataires pour cette soumission.",
     "fetchSubmissionUsersConsErr": "Erreur lors de la récupération des e-mails des destinataires pour",
     "assignSubmissnToFormReviewer": "Les soumissions peuvent être attribuées à des réviseurs de formulaires.<br /> Pour ajouter d'autres membres de l'équipe en tant que réviseurs de formulaires, accédez à la page Gérer de ce formulaire.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "MISE À JOUR",
     "revise": "RÉVISER",
     "complete": "COMPLET",

@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "嘗試獲取此提交的收件人電子郵件時發生錯誤。",
     "fetchSubmissionUsersConsErr": "獲取收件人電子郵件時出錯",
     "assignSubmissnToFormReviewer": "提交的內容可以分配給表單審閱者。<br />要將更多團隊成員添加為表單審閱者，請轉到此表單的管理頁面。",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "更新",
     "revise": "修訂",
     "complete": "完全的",

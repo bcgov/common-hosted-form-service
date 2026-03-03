@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "Se produjo un error al intentar obtener los correos electrónicos de los destinatarios para este envío.",
     "fetchSubmissionUsersConsErr": "Error al obtener los correos electrónicos de los destinatarios para",
     "assignSubmissnToFormReviewer": "Los envíos se pueden asignar a revisores de formularios.<br /> Para agregar más miembros del equipo como revisores de formularios, vaya a la página Administrar de este formulario.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "ACTUALIZAR",
     "revise": "REVISAR",
     "complete": "COMPLETO",

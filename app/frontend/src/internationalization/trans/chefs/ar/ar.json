@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "حدث خطأ أثناء محاولة جلب رسائل البريد الإلكتروني للمستلمين لهذا الإرسال.",
     "fetchSubmissionUsersConsErr": "خطأ في الحصول على رسائل البريد الإلكتروني للمستلم لـ",
     "assignSubmissnToFormReviewer": "يمكن تعيين التقديمات لمراجعي النموذج.<br /> لإضافة المزيد من أعضاء الفريق كمراجعين للنموذج ، انتقل إلى صفحة الإدارة لهذا النموذج.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "تحديث",
     "revise": "يراجع",
     "complete": "مكتمل",

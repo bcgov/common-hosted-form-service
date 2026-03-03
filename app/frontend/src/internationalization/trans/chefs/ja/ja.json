@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "この送信の受信者の電子メールを取得しようとしたときにエラーが発生しました。",
     "fetchSubmissionUsersConsErr": "受信者の電子メールを取得中にエラーが発生しました",
     "assignSubmissnToFormReviewer": "提出物はフォームレビュー担当者に割り当てることができます。<br />さらにチームメンバーをフォームレビュー担当者として追加するには、このフォームの「管理」ページに移動します。",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "アップデート",
     "revise": "改訂",
     "complete": "完了",

@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "هنگام تلاش برای واکشی ایمیل‌های گیرنده برای این ارسال، خطایی روی داد.",
     "fetchSubmissionUsersConsErr": "خطا در دریافت ایمیل های گیرنده برای",
     "assignSubmissnToFormReviewer": "موارد ارسالی را می توان به بازبینان فرم اختصاص داد.<br /> برای افزودن اعضای تیم بیشتر به عنوان بازبینان فرم، به صفحه مدیریت این فرم بروید.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "به روز رسانی",
     "revise": "تجدید نظر کنید",
     "complete": "کامل",

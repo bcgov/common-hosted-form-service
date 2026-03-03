@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "इस सबमिशन के लिए प्राप्तकर्ता ईमेल लाने का प्रयास करते समय एक त्रुटि उत्पन्न हुई।",
     "fetchSubmissionUsersConsErr": "प्राप्तकर्ता के ईमेल प्राप्त करने में त्रुटि",
     "assignSubmissnToFormReviewer": "सबमिशन फॉर्म समीक्षकों को सौंपे जा सकते हैं।<br /> फ़ॉर्म समीक्षक के रूप में अधिक टीम सदस्यों को जोड़ने के लिए, इस फ़ॉर्म के प्रबंधन पृष्ठ पर जाएँ।",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "अद्यतन",
     "revise": "दोहराना",
     "complete": "पूरा",

@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "May naganap na error habang sinusubukang kunin ang mga email ng tatanggap para sa pagsusumiteng ito.",
     "fetchSubmissionUsersConsErr": "Error sa pagkuha ng mga email ng tatanggap para sa",
     "assignSubmissnToFormReviewer": "Maaaring italaga ang mga pagsusumite sa Mga Tagasuri ng Form.<br /> Upang magdagdag ng higit pang mga miyembro ng koponan bilang Mga Tagasuri ng Form, pumunta sa pahina ng Pamahalaan para sa form na ito.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "I-UPDATE",
     "revise": "REVISE",
     "complete": "KUMPLETO",
