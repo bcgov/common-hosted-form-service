@@ -27,6 +27,9 @@ userAccess.hasFormPermissions = jest.fn(() => {
     next();
   });
 });
+userAccess.requireCreateFormPermission = jest.fn((_req, _res, next) => {
+  next();
+});
 
 const formId = uuid.v4();
 const formVersionDraftId = uuid.v4();

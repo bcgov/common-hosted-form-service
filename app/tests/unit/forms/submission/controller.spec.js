@@ -5,6 +5,7 @@ const controller = require('../../../../src/forms/submission/controller');
 const documentTemplateService = require('../../../../src/forms/form/documentTemplate/service');
 const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
+const userService = require('../../../../src/forms/user/service');
 const cdogsService = require('../../../../src/components/cdogsService');
 
 describe('addStatus', () => {
@@ -65,6 +66,54 @@ describe('addStatus', () => {
     expect(service.changeStatusState).toBeCalledTimes(1);
     expect(emailService.statusCompleted).toBeCalledTimes(1);
     expect(emailService.statusCompleted).toBeCalledWith('123', 1, ['a@a.com'], 'Email Content', 'a');
+  });
+
+  it('should validate direct assignedToUserId and proceed when user exists', async () => {
+    const req = {
+      params: { formSubmissionId: '1' },
+      body: {
+        code: Statuses.ASSIGNED,
+        assignedToUserId: '6a5ec46a-c5e1-436e-9db5-a798cc96e851',
+      },
+      currentUser: {},
+      headers: { referer: 'a' },
+    };
+    const { res, next } = getMockRes();
+
+    userService.read = jest.fn().mockResolvedValue({ id: '6a5ec46a-c5e1-436e-9db5-a798cc96e851' });
+    service.read = jest.fn().mockResolvedValue({ form: { id: '123' } });
+    service.changeStatusState = jest.fn().mockResolvedValue([1, 2, 3]);
+
+    await controller.addStatus(req, res, next);
+
+    expect(userService.read).toBeCalledWith('6a5ec46a-c5e1-436e-9db5-a798cc96e851');
+    expect(service.changeStatusState).toBeCalledWith('1', req.body, req.currentUser);
+    expect(res.status).toBeCalledWith(200);
+    expect(next).not.toBeCalled();
+  });
+
+  it('should return 400 when direct assignedToUserId does not exist', async () => {
+    const req = {
+      params: { formSubmissionId: '1' },
+      body: {
+        code: Statuses.ASSIGNED,
+        assignedToUserId: '6a5ec46a-c5e1-436e-9db5-a798cc96e851',
+      },
+      currentUser: {},
+      headers: { referer: 'a' },
+    };
+    const { res, next } = getMockRes();
+
+    userService.read = jest.fn().mockRejectedValue(new Error('not found'));
+    service.changeStatusState = jest.fn();
+
+    await controller.addStatus(req, res, next);
+
+    expect(userService.read).toBeCalledWith('6a5ec46a-c5e1-436e-9db5-a798cc96e851');
+    expect(service.changeStatusState).not.toBeCalled();
+    expect(res.status).toBeCalledWith(400);
+    expect(res.json).toBeCalledWith({ detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.' });
+    expect(next).not.toBeCalled();
   });
 });
 

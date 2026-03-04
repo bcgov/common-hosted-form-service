@@ -61,6 +61,30 @@ describe('read', () => {
   });
 });
 
+describe('readByKeycloakId', () => {
+  it('should return null when keycloakId is missing', () => {
+    const result = service.readByKeycloakId();
+
+    expect(result).toBeNull();
+    expect(MockModel.query).toBeCalledTimes(0);
+    expect(MockModel.modify).toBeCalledTimes(0);
+    expect(MockModel.first).toBeCalledTimes(0);
+  });
+
+  it('should query user by keycloakId', () => {
+    const keycloakId = 'kc-user-123';
+
+    service.readByKeycloakId(keycloakId);
+
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.modify).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledWith('filterKeycloakId', keycloakId);
+    expect(MockModel.first).toBeCalledTimes(1);
+    expect(MockModel.first).toBeCalledWith();
+  });
+});
+
 describe('deleteUserPreferences', () => {
   it('should delete user form preference table by user id', async () => {
     await service.deleteUserPreferences({ id: userId });
