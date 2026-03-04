@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import { rbacService } from '~/services';
+import { useAppStore } from '~/store/app';
+import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
 import getRouter from '~/router';
 
@@ -9,9 +11,32 @@ export const useTenantStore = defineStore('tenant', {
     selectedTenant: null, // Currently selected tenant (persisted to localStorage)
     loading: false, // Loading state for API calls
     error: null, // Error message if any
+    serviceDegraded: false, // True when X-Tenant-Service-Status: degraded header received
   }),
 
   getters: {
+    /**
+     * Whether tenant (Enterprise CHEFS) features are enabled.
+     * Reads from app config; handles string "false" from node-config.
+     * Defaults to true if not set (backward compatible).
+     */
+    isTenantFeatureEnabled: () => {
+      const appStore = useAppStore();
+      const val = appStore.config?.tenantFeatureEnabled;
+      if (val === undefined || val === null) return true;
+      if (typeof val === 'string') return val.toLowerCase() !== 'false';
+      return Boolean(val);
+    },
+
+    /**
+     * Whether the current user logged in via BC Services Card.
+     * BCSC users don't participate in tenant features.
+     */
+    isBCServicesCardUser: () => {
+      const authStore = useAuthStore();
+      return authStore.identityProvider?.code === 'bcservicescard';
+    },
+
     /**
      * Get the current selected tenant
      */
@@ -53,12 +78,14 @@ export const useTenantStore = defineStore('tenant', {
      * Initialize store - load selected tenant from localStorage
      */
     initializeStore() {
+      if (!this.isTenantFeatureEnabled || this.isBCServicesCardUser) return;
       try {
         const stored = localStorage.getItem('selectedTenant');
         if (stored && stored !== 'null' && stored !== 'undefined') {
           this.selectedTenant = JSON.parse(stored);
         }
       } catch (error) {
+        console.warn('Failed to parse stored tenant, clearing:', error); // eslint-disable-line no-console
         localStorage.removeItem('selectedTenant');
       }
     },
@@ -77,7 +104,7 @@ export const useTenantStore = defineStore('tenant', {
           localStorage.removeItem('selectedTenant');
         }
       } catch (error) {
-        // Error saving tenant to localStorage
+        console.warn('Failed to persist tenant to localStorage:', error); // eslint-disable-line no-console
       }
     },
 
@@ -85,6 +112,8 @@ export const useTenantStore = defineStore('tenant', {
      * Fetch all available tenants for the current user
      */
     async fetchTenants() {
+      if (!this.isTenantFeatureEnabled || this.isBCServicesCardUser) return;
+      if (this.loading) return;
       // Skip tenant API call on submission pages - they don't need tenant info
       try {
         const router = getRouter();
@@ -92,7 +121,7 @@ export const useTenantStore = defineStore('tenant', {
           return;
         }
       } catch (error) {
-        // Router might not be available yet, continue with fetch
+        console.warn('Router not available during fetchTenants:', error); // eslint-disable-line no-console
       }
 
       this.loading = true;
@@ -101,6 +130,17 @@ export const useTenantStore = defineStore('tenant', {
       try {
         const response = await rbacService.getCurrentUserTenants();
         this.tenants = response.data || [];
+        this.serviceDegraded =
+          response.headers?.['x-tenant-service-status']?.toLowerCase() ===
+          'degraded';
+
+        if (this.serviceDegraded) {
+          useNotificationStore().addNotification({
+            text: 'CSTAR is temporarily unavailable. Tenant selection is currently disabled.',
+            consoleError:
+              'X-Tenant-Service-Status: degraded received from /current/tenants',
+          });
+        }
 
         // If user had a previously selected tenant, validate it still exists
         if (
@@ -148,6 +188,7 @@ export const useTenantStore = defineStore('tenant', {
       this.selectedTenant = null;
       this.loading = false;
       this.error = null;
+      this.serviceDegraded = false;
       this.persistSelectedTenant();
     },
   },

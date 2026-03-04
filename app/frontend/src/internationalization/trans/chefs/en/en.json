@@ -833,6 +833,7 @@
     "fetchSubmissionUsersErr": "An error occurred while trying to fetch recipient emails for this submission.",
     "fetchSubmissionUsersConsErr": "Error getting recipient emails for",
     "assignSubmissnToFormReviewer": "Submissions can be assigned to Form Reviewers. <br />To add more team members as Form Reviewers, go to the Manage page for this form.",
+    "assignSubmissnToFormReviewerTenanted": "Submissions can be assigned to Form Reviewers. <br />To add or update members as Form Reviewers, go to CSTAR and update the appropriate group.",
     "update": "UPDATE",
     "revise": "REVISE",
     "complete": "COMPLETE",
@@ -1074,7 +1075,13 @@
     "chefsHowToSub": "Our Quickstart Guide will introduce you to some of the basic functions of CHEFS.",
     "getStartedToChefs": "Get started using CHEFS",
     "createOnlineTitle": "Create online forms to collect information from your clients and improve your workflows.",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "enterpriseSectionTitle": "Experience the new Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS expands on the classic CHEFS (Common Hosted Forms Service) by working together with CSTAR — Connected Services, Team Access, and Roles — to create a shared, collaborative workspace.",
+    "enterpriseSectionBody2": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's tenant — a dedicated workspace that keeps your projects and permissions organized.",
+    "enterpriseSectionWelcome": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "designForm": "Design Form",
@@ -1327,7 +1334,7 @@
     "selectLabel": "Select tenant (opens in Enterprise CHEFS)",
     "placeholder": "Select from available tenants",
     "noDataText": "No tenants found",
-    "switchToClassic": "Switch to Classic CHEFS",
+    "switchToClassic": "Switch to Personal CHEFS",
     "goToCstar": "Go to CSTAR (Connected Services, Team Access and Roles)",
     "noTenantsAvailable": "No tenants available",
     "manageTenantsIn": "Manage tenants in",

@@ -147,7 +147,7 @@ function goToPreview() {
     name: 'FormPreview',
     query: { f: properties.formId, d: properties.draftId },
   });
-  window.open(route.href);
+  window.open(route.href, '_blank', 'noopener,noreferrer');
 }
 
 defineExpose({

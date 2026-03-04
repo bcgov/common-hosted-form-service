@@ -4,19 +4,6 @@
     v-if="tenantStore.hasTenants || tenantStore.loading"
     class="tenant-dropdown-container"
   >
-    <!-- Label with info icon - only show when in Classic CHEFS -->
-    <div v-if="!tenantStore.selectedTenant" class="tenant-label-wrapper">
-      <v-icon
-        size="small"
-        class="info-icon"
-        :title="$t('trans.tenantDropdown.infoTooltip')"
-        >mdi-information-outline</v-icon
-      >
-      <label for="tenant-select" class="tenant-label" :lang="locale">{{
-        $t('trans.tenantDropdown.selectLabel')
-      }}</label>
-    </div>
-
     <!-- Dropdown input -->
     <v-select
       id="tenant-select"
@@ -39,32 +26,18 @@
       @focus="handleDropdownOpen"
       @update:model-value="handleTenantChange"
     >
-      <!-- Custom selection template to show placeholder when empty -->
+      <!-- Custom selection template -->
       <template #selection="{ item }">
-        <span v-if="selectedValue" class="selected-tenant">{{
-          item.title
-        }}</span>
-        <span v-else class="text-placeholder" :lang="locale">{{
-          $t('trans.tenantDropdown.placeholder')
-        }}</span>
+        <span class="selected-tenant">{{ item.title }}</span>
       </template>
-      <!-- CSTAR Link and Classic CHEFS at bottom of dropdown -->
+      <!-- Render divider between Personal CHEFS and tenant options -->
+      <template #item="{ props, item }">
+        <v-divider v-if="item.raw.type === 'divider'" />
+        <v-list-item v-else v-bind="props" />
+      </template>
+      <!-- CSTAR Link at bottom of dropdown -->
       <template #append-item>
         <v-divider />
-        <!-- Classic CHEFS link - only show when tenant is selected -->
-        <v-list-item
-          v-if="tenantStore.selectedTenant"
-          class="classic-chefs-link-item"
-          @click.stop="switchToClassicChefs"
-        >
-          <template #prepend>
-            <v-icon size="small">mdi-swap-horizontal</v-icon>
-          </template>
-          <span :lang="locale">{{
-            $t('trans.tenantDropdown.switchToClassic')
-          }}</span>
-        </v-list-item>
-        <v-divider v-if="tenantStore.selectedTenant" />
         <v-list-item class="cstar-link-item" @click="goToCSTAR">
           <template #prepend>
             <v-icon size="small">mdi-open-in-new</v-icon>
@@ -88,6 +61,20 @@
         </div>
       </template>
     </v-select>
+
+    <!-- Info tooltip icon -->
+    <v-tooltip location="bottom" max-width="300">
+      <template #activator="{ props }">
+        <v-icon
+          v-bind="props"
+          size="small"
+          class="info-icon"
+          :aria-label="$t('trans.tenantDropdown.infoTooltip')"
+          >mdi-information-outline</v-icon
+        >
+      </template>
+      <span :lang="locale">{{ $t('trans.tenantDropdown.infoTooltip') }}</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -110,10 +97,12 @@ const notificationStore = useNotificationStore();
 const selectedValue = ref(null);
 const selectRef = ref(null);
 
-// Build dropdown items with only actual tenants (no Classic CHEFS option)
-const allTenantOptions = computed(() => {
-  return tenantStore.tenantsList;
-});
+// Build dropdown items: Personal CHEFS (value=null) is always the first entry
+const allTenantOptions = computed(() => [
+  { id: null, name: 'Personal CHEFS', value: null },
+  { type: 'divider' },
+  ...tenantStore.tenantsList,
+]);
 
 // Handle tenant selection change
 const handleTenantChange = async (value) => {
@@ -129,34 +118,7 @@ const handleTenantChange = async (value) => {
       selectedValue.value = null;
     }
 
-    // Fetch forms for the selected tenant (or Classic CHEFS if no tenant)
-    // Form store will automatically handle errors and show notifications
-    await formStore.getFormsForCurrentUser();
-
-    // Navigate to forms list page
-    await router.push({ name: 'UserForms' });
-  } catch (error) {
-    // Note: formStore.getFormsForCurrentUser() doesn't throw errors,
-    // but router.push might fail. Only show error if navigation fails.
-    notificationStore.addNotification({
-      text: 'Error navigating to forms. Please try again.',
-      consoleError: error,
-    });
-  }
-};
-
-// Switch back to Classic CHEFS (non-tenanted mode)
-const switchToClassicChefs = async () => {
-  try {
-    tenantStore.clearSelectedTenant();
-    selectedValue.value = null;
-
-    // Close the dropdown menu using isMenuOpen
-    if (selectRef.value && selectRef.value.isMenuOpen) {
-      selectRef.value.isMenuOpen = false;
-    }
-
-    // Fetch forms for Classic CHEFS mode (no tenant)
+    // Fetch forms for the selected tenant (or Personal CHEFS if no tenant)
     // Form store will automatically handle errors and show notifications
     await formStore.getFormsForCurrentUser();
 
@@ -177,7 +139,7 @@ const goToCSTAR = () => {
   const cstarUrl =
     appStore.config?.cstarBaseUrl ||
     'https://cstar-dev.apps.silver.devops.gov.bc.ca';
-  window.open(cstarUrl, '_blank');
+  window.open(cstarUrl, '_blank', 'noopener,noreferrer');
 };
 
 // Lazy load tenants when dropdown is opened (if not already loaded)
@@ -195,7 +157,7 @@ onMounted(async () => {
 
   // Fetch available tenants (API call)
   // This is safe now because BCGovHeader only shows this component on allowed routes
-  if (tenantStore.tenants.length === 0) {
+  if (tenantStore.tenants.length === 0 && !tenantStore.serviceDegraded) {
     await tenantStore.fetchTenants();
   }
 
@@ -209,9 +171,7 @@ onMounted(async () => {
 watch(
   () => tenantStore.selectedTenant,
   (newTenant) => {
-    if (newTenant) {
-      selectedValue.value = newTenant.id;
-    }
+    selectedValue.value = newTenant ? newTenant.id : null;
   }
 );
 </script>
@@ -231,42 +191,6 @@ $mobile-breakpoint: 600px;
     align-items: stretch;
     gap: 0.5rem;
     width: 100%;
-  }
-}
-
-.tenant-label-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  flex-shrink: 0;
-  white-space: nowrap;
-
-  .info-icon {
-    color: white;
-    opacity: 0.9;
-    flex-shrink: 0;
-    font-size: 1rem !important;
-    height: 1rem;
-    width: 1rem;
-    min-width: 1rem;
-    min-height: 1rem;
-  }
-
-  .tenant-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: white;
-    display: inline;
-    margin: 0;
-    padding: 0;
-    line-height: 1.2;
-  }
-
-  @media (max-width: $mobile-breakpoint) {
-    font-size: 0.8rem;
-    white-space: normal;
   }
 }
 
@@ -294,16 +218,10 @@ $mobile-breakpoint: 600px;
   }
 }
 
-.text-placeholder {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
-  display: block;
-  line-height: 1.5;
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.info-icon {
+  color: #fcba19;
+  flex-shrink: 0;
+  cursor: default;
 }
 
 .selected-tenant {

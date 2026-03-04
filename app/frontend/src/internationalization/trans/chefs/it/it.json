@@ -720,6 +720,7 @@
     "fetchSubmissionUsersErr": "Si è verificato un errore durante il tentativo di recuperare le email dei destinatari per questo invio.",
     "fetchSubmissionUsersConsErr": "Errore durante il recupero delle email del destinatario per",
     "assignSubmissnToFormReviewer": "Gli invii possono essere assegnati ai revisori dei moduli.<br /> Per aggiungere altri membri del team come revisori del modulo, vai alla pagina Gestisci per questo modulo.",
+    "assignSubmissnToFormReviewerTenanted": "Gli invii possono essere assegnati ai revisori dei moduli. <br />Per aggiungere o aggiornare i membri come revisori del modulo, vai su CSTAR e aggiorna il gruppo appropriato.",
     "update": "AGGIORNAMENTO",
     "revise": "RIVEDERE",
     "complete": "COMPLETARE",

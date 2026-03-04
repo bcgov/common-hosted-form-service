@@ -5,11 +5,13 @@ import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 
 const { locale } = useI18n({ useScope: 'global' });
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const tenantStore = useTenantStore();
 
 const { authenticated } = storeToRefs(authStore);
 const { isRTL } = storeToRefs(formStore);
@@ -65,6 +67,44 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
       </v-row>
     </v-sheet>
 
+    <!-- Enterprise CHEFS section -->
+    <v-sheet class="enterprise-highlight pa-5">
+      <v-row justify="center">
+        <v-col lg="8">
+          <div class="mode-badges mb-4">
+            <v-chip
+              color="grey-lighten-1"
+              variant="flat"
+              class="mr-2"
+              :lang="locale"
+            >
+              {{ $t('trans.homePage.classicChefsLabel') }}
+            </v-chip>
+            <v-chip
+              color="primary"
+              variant="flat"
+              :class="{ 'active-mode': tenantStore.selectedTenant }"
+              :lang="locale"
+            >
+              {{ $t('trans.homePage.enterpriseChefsLabel') }}
+            </v-chip>
+          </div>
+          <h2 class="mb-4" :lang="locale">
+            {{ $t('trans.homePage.enterpriseSectionTitle') }}
+          </h2>
+          <p :lang="locale">
+            {{ $t('trans.homePage.enterpriseSectionBody1') }}
+          </p>
+          <p :lang="locale">
+            {{ $t('trans.homePage.enterpriseSectionBody2') }}
+          </p>
+          <p class="enterprise-welcome font-weight-medium" :lang="locale">
+            {{ $t('trans.homePage.enterpriseSectionWelcome') }}
+          </p>
+        </v-col>
+      </v-row>
+    </v-sheet>
+
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
         <h2 :lang="locale">
@@ -72,9 +112,13 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
         </h2>
         <p :lang="locale">
           {{ $t('trans.homePage.chefsHowToSub') }}
-          <a :href="howToVideoUrl" target="_blank" :lang="locale"
-            >{{ $t('trans.homePage.getStarted') }}!</a
-          >
+          <a
+            :href="howToVideoUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            :lang="locale"
+            >{{ $t('trans.homePage.getStarted') }}!
+          </a>
         </p>
       </v-col>
       <v-col cols="12" lg="4">
@@ -165,6 +209,27 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
   margin: 0;
   .help-highlight {
     background-color: #f1f8ff;
+  }
+
+  .enterprise-highlight {
+    background-color: #e8f4fd;
+    border-left: 4px solid #003366;
+  }
+
+  .mode-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .active-mode {
+    font-weight: 700;
+  }
+
+  .enterprise-welcome {
+    color: #003366;
+    margin-top: 1rem;
   }
 
   .example-text {
