@@ -3,6 +3,7 @@ const cdogsService = require('../../components/cdogsService');
 const { Statuses } = require('../common/constants');
 const emailService = require('../email/emailService');
 const documentTemplateService = require('../form/documentTemplate/service');
+const userService = require('../user/service');
 
 const service = require('./service');
 
@@ -116,6 +117,14 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
+      // Validate assignee before writing status to avoid DB FK constraint errors.
+      if (req.body?.assignedToUserId) {
+        const dbUser = await userService.read(req.body.assignedToUserId).catch(() => null);
+        if (!dbUser?.id) {
+          return res.status(400).json({ detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.' });
+        }
+      }
+
       const tasks = [service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser), service.read(req.params.formSubmissionId)];
       const [response, submission] = await Promise.all(tasks);
       // send an email (async in the background)
