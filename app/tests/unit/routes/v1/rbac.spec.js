@@ -47,6 +47,7 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/rbac/service');
+const tenantService = require('../../../../src/components/tenantService');
 
 const emailService = require('../../../../src/forms/email/emailService');
 const submissionService = require('../../../../src/forms/submission/service');
@@ -457,8 +458,12 @@ describe(`${basePath}/current/tenants`, () => {
 
   describe('GET', () => {
     it('should return 200', async () => {
+      userAccess.currentUser.mockImplementation((req, _res, next) => {
+        req.currentUser = { idpUserId: 'user-123' };
+        next();
+      });
       // mock a success return value...
-      service.getCurrentUserTenants = jest.fn().mockReturnValue([{ id: 'tenant1', name: 'Tenant 1' }]);
+      tenantService.getCurrentUserTenants = jest.fn().mockReturnValue([{ id: 'tenant1', name: 'Tenant 1' }]);
 
       const response = await appRequest.get(path);
 
@@ -468,8 +473,12 @@ describe(`${basePath}/current/tenants`, () => {
     });
 
     it('should handle 401', async () => {
+      userAccess.currentUser.mockImplementation((req, _res, next) => {
+        req.currentUser = { idpUserId: 'user-123' };
+        next();
+      });
       // mock an authentication/permission issue...
-      service.getCurrentUserTenants = jest.fn(() => {
+      tenantService.getCurrentUserTenants = jest.fn(() => {
         throw new Problem(401);
       });
 
@@ -480,8 +489,12 @@ describe(`${basePath}/current/tenants`, () => {
     });
 
     it('should handle 500', async () => {
+      userAccess.currentUser.mockImplementation((req, _res, next) => {
+        req.currentUser = { idpUserId: 'user-123' };
+        next();
+      });
       // mock an unexpected error...
-      service.getCurrentUserTenants = jest.fn(() => {
+      tenantService.getCurrentUserTenants = jest.fn(() => {
         throw new Error();
       });
 

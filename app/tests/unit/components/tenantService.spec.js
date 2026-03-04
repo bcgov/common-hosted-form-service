@@ -31,6 +31,7 @@ describe('TenantService', () => {
 
   afterEach(() => {
     mockAxios.reset();
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 

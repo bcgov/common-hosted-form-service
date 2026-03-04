@@ -4,6 +4,11 @@ jest.mock('../../../../src/forms/common/models/tables/role', () => MockModel);
 
 const service = require('../../../../src/forms/role/service');
 
+beforeEach(() => {
+  MockModel.allowGraph = jest.fn().mockReturnThis();
+  MockModel.findOne = jest.fn().mockReturnThis();
+});
+
 afterEach(() => {
   MockModel.mockReset();
   jest.restoreAllMocks();
