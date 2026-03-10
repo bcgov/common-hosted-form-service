@@ -344,8 +344,14 @@ async function updateStatus() {
       await getStatus();
     }
   } catch (error) {
+    const isAssignedUserNotLoggedIn =
+      isTenanted.value &&
+      error?.response?.status === 400 &&
+      error?.response?.data?.detail?.includes('Assigned user must sign in');
     notificationStore.addNotification({
-      text: t('trans.statusPanel.addNoteErrMsg'),
+      text: isAssignedUserNotLoggedIn
+        ? t('trans.statusPanel.assignedUserNotLoggedIn')
+        : t('trans.statusPanel.addNoteErrMsg'),
       consoleError: t('trans.statusPanel.addNoteConsoleErrMsg', {
         error: error,
       }),

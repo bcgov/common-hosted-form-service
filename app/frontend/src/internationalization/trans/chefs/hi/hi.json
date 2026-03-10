@@ -724,7 +724,8 @@
     "update": "अद्यतन",
     "revise": "दोहराना",
     "complete": "पूरा",
-    "assign": "सौंपना"
+    "assign": "सौंपना",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "लोड हो रहा है कृपया प्रतीक्षा करें",

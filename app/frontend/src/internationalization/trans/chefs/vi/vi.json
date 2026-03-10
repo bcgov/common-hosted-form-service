@@ -724,7 +724,8 @@
     "update": "CẬP NHẬT",
     "revise": "ÔN LẠI",
     "complete": "HOÀN THÀNH",
-    "assign": "GIAO PHÓ"
+    "assign": "GIAO PHÓ",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Tải vui lòng đợi",

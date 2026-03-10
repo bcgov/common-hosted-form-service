@@ -724,7 +724,8 @@
     "update": "ACTUALIZAR",
     "revise": "REVISAR",
     "complete": "COMPLETO",
-    "assign": "ASIGNAR"
+    "assign": "ASIGNAR",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Cargando por favor espere",

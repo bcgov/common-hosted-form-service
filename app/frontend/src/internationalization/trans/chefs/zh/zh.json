@@ -724,7 +724,8 @@
     "update": "更新",
     "revise": "修订",
     "complete": "完全的",
-    "assign": "分配"
+    "assign": "分配",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "加载请稍候",
