@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useFormStore } from '~/store/form';
 import { useDisplay } from 'vuetify';
+import { FormPermissions } from '~/utils/constants';
 
 const formStore = useFormStore();
 
@@ -63,7 +64,7 @@ const properties = defineProps({
   },
 });
 
-const { form } = storeToRefs(formStore);
+const { form, permissions } = storeToRefs(formStore);
 
 const emit = defineEmits(['redo', 'save', 'undo', 'export', 'import-file']);
 
@@ -106,11 +107,29 @@ const SAVE_TEXT = computed(() => {
   return t('trans.floatButton.save');
 });
 
+//This is text describing the reasons a user is unable to publish the form. Either lack of permissions, or no new version of the form to save
+const PUBLISH_TEXT = computed(() => {
+  if (!canPublish.value) {
+    return 'Insufficient permissions to publish form';
+  } else if (!properties.newVersion) {
+    return 'Please save a new version to publish';
+  } else {
+    return 'Publish form';
+  }
+});
+
 const isManageEnabled = computed(() => properties.formId);
 
-const isPublishEnabled = computed(() =>
-  properties.newVersion ? false : properties.formId && properties.draftId
-);
+const canPublish = computed(() => {
+  return permissions.value.includes(FormPermissions.FORM_UPDATE);
+});
+
+const isPublishEnabled = computed(() => {
+  return (
+    canPublish.value &&
+    (properties.newVersion ? false : properties.formId && properties.draftId)
+  );
+});
 
 function onEventScroll() {
   isAtTopOfPage.value = window.scrollY === 0;
@@ -290,22 +309,27 @@ defineExpose({
             }"
             custom
           >
-            <div
-              class="d-flex flex-column align-center icon-button"
-              :class="{ 'disabled-router': !isPublishEnabled }"
-              data-cy="publishRouterLink"
-            >
-              <v-btn
-                :disabled="!isPublishEnabled"
-                density="compact"
-                stacked
-                icon
-                @click="navigate"
-              >
-                <v-icon icon="mdi:mdi-file-upload" />
-                {{ $t('trans.floatButton.publish') }}
-              </v-btn>
-            </div>
+            <v-tooltip location="top" :text="PUBLISH_TEXT">
+              <template #activator="{ props: tooltipProps }">
+                <div
+                  v-bind="tooltipProps"
+                  class="d-flex flex-column align-center icon-button"
+                  :class="{ 'disabled-router': !isPublishEnabled }"
+                  data-cy="publishRouterLink"
+                >
+                  <v-btn
+                    :disabled="!isPublishEnabled"
+                    density="compact"
+                    stacked
+                    icon
+                    @click="navigate"
+                  >
+                    <v-icon icon="mdi:mdi-file-upload" />
+                    {{ $t('trans.floatButton.publish') }}
+                  </v-btn>
+                </div>
+              </template>
+            </v-tooltip>
           </router-link>
 
           <v-divider vertical inset :thickness="2" />
@@ -345,6 +369,7 @@ defineExpose({
           </div>
         </div>
       </div>
+      <!-- Menu for Small screens -->
       <div v-else class="d-flex align-center icon-button">
         <!-- Undo Button -->
         <div
@@ -468,21 +493,26 @@ defineExpose({
                   }"
                   custom
                 >
-                  <div
-                    class="d-flex flex-column"
-                    :class="{ 'disabled-router': !isPublishEnabled }"
-                    data-cy="publishRouterLink"
-                  >
-                    <v-btn
-                      :disabled="!isPublishEnabled"
-                      density="compact"
-                      prepend-icon
-                      @click="navigate"
-                    >
-                      <v-icon class="mr-1" icon="mdi:mdi-file-upload" />
-                      {{ $t('trans.floatButton.publish') }}
-                    </v-btn>
-                  </div>
+                  <v-tooltip :text="PUBLISH_TEXT">
+                    <template #activator="{ props }">
+                      <div
+                        v-bind="props"
+                        class="d-flex flex-column"
+                        :class="{ 'disabled-router': !isPublishEnabled }"
+                        data-cy="publishRouterLink"
+                      >
+                        <v-btn
+                          :disabled="!isPublishEnabled"
+                          density="compact"
+                          prepend-icon
+                          @click="navigate"
+                        >
+                          <v-icon class="mr-1" icon="mdi:mdi-file-upload" />
+                          {{ $t('trans.floatButton.publish') }}
+                        </v-btn>
+                      </div>
+                    </template>
+                  </v-tooltip>
                 </router-link>
               </v-list-item>
               <v-divider :thickness="2" />
@@ -585,7 +615,6 @@ defineExpose({
 
   .disabled-router {
     opacity: 0.5;
-    pointer-events: none;
   }
 
   .v-btn {
