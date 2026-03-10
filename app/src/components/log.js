@@ -22,6 +22,17 @@ class NullTransport extends Transport {
 }
 
 /**
+ * Format that adds correlationId from cls-rtracer to every log entry when available
+ */
+const correlationIdFormat = format((info) => {
+  const correlationId = clsRtracer.id();
+  if (correlationId) {
+    info.correlationId = correlationId;
+  }
+  return info;
+});
+
+/**
  * Main Winston Logger
  * @returns {object} Winston Logger
  */
@@ -30,6 +41,7 @@ const log = createLogger({
   format: format.combine(
     format.errors({ stack: true }), // Force errors to show stacktrace
     format.timestamp(), // Add ISO timestamp to each entry
+    correlationIdFormat(), // Add correlationId when in request context
     format.json() // Force output to be in JSON format
   ),
   level: config.get('server.logLevel'),
