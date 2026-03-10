@@ -71,9 +71,10 @@ describe("Form Designer", () => {
     cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('input[type="radio"][value="default"]').should('be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
-    cy.get('input[type="radio"][aria-label="Direct Print"]').click();
-    cy.wait(500);
-    cy.get('.pl-12 > .v-text-field > .v-input__control > .v-field > .v-field__append-inner').click();
+    cy.wait(1000);
+    cy.get('input[type="radio"][aria-label="Direct Print"]').click({ force: true });
+    cy.wait(1000);
+    cy.get('.pl-12 > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
     cy.wait(1000);
     cy.get('div.v-list-item-title').contains('test.docx').click();
     cy.get('input[type="radio"][value="formName"]').should('be.checked');
