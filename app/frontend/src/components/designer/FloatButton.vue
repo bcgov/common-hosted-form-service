@@ -111,10 +111,11 @@ const SAVE_TEXT = computed(() => {
 const PUBLISH_TEXT = computed(() => {
   if (!canPublish.value) {
     return 'Insufficient permissions to publish form';
-  } else if (!properties.newVersion) {
-    return 'Please save a new version to publish';
-  } else {
+  }
+  if (properties.newVersion) {
     return 'Publish form';
+  } else {
+    return 'Please save a new version to publish';
   }
 });
 const PREVIEW_TOOLTIP = computed(() => {
