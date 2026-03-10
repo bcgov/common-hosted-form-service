@@ -23,10 +23,10 @@ class TenantService {
 
   async getCurrentUserTenants(req) {
     if (!req || !req.currentUser) {
-      throw new Error(`${SERVICE}: missing currentUser`);
+      throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.idpUserId) {
-      throw new Error(`${SERVICE}: missing currentUser.idpUserId`);
+      throw new TypeError(`${SERVICE}: missing currentUser.idpUserId`);
     }
     const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
     const headers = this._getAuthHeaders(req);
@@ -67,13 +67,13 @@ class TenantService {
 
   async getUserTenantGroupsAndRoles(req) {
     if (!req || !req.currentUser) {
-      throw new Error(`${SERVICE}: missing currentUser`);
+      throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.idpUserId) {
-      throw new Error(`${SERVICE}: missing currentUser.idpUserId`);
+      throw new TypeError(`${SERVICE}: missing currentUser.idpUserId`);
     }
     if (!req.currentUser.tenantId) {
-      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+      throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
     }
 
     const userId = req.currentUser.idpUserId.toUpperCase();
@@ -91,10 +91,10 @@ class TenantService {
 
   async getGroupsForCurrentTenant(req) {
     if (!req || !req.currentUser) {
-      throw new Error(`${SERVICE}: missing currentUser`);
+      throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.tenantId) {
-      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+      throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
     }
 
     const tenantId = req.currentUser.tenantId;
@@ -113,13 +113,13 @@ class TenantService {
    */
   async getFormGroups(req, formId) {
     if (!req || !req.currentUser) {
-      throw new Error(`${SERVICE}: missing currentUser`);
+      throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.tenantId) {
-      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+      throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
     }
     if (!formId) {
-      throw new Error(`${SERVICE}: missing formId`);
+      throw new TypeError(`${SERVICE}: missing formId`);
     }
 
     // Ensure the form belongs to the user's tenant
@@ -175,13 +175,13 @@ class TenantService {
    */
   async assignGroupsToForm(req, formId, groupIds) {
     if (!req || !req.currentUser) {
-      throw new Error(`${SERVICE}: missing currentUser`);
+      throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.tenantId) {
-      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+      throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
     }
     if (!formId) {
-      throw new Error(`${SERVICE}: missing formId`);
+      throw new TypeError(`${SERVICE}: missing formId`);
     }
     if (!Array.isArray(groupIds)) {
       throw new TypeError(`${SERVICE}: groupIds must be an array`);
@@ -222,10 +222,10 @@ class TenantService {
    */
   async getTenantUsers(req) {
     if (!req || !req.currentUser) {
-      throw new Error(`${SERVICE}: missing currentUser`);
+      throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.tenantId) {
-      throw new Error(`${SERVICE}: missing currentUser.tenantId`);
+      throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
     }
 
     const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
@@ -244,16 +244,16 @@ class TenantService {
  */
 async function getUserRolesAndPermissions(userInfo, headers = null) {
   if (!userInfo) {
-    throw new Error(`${SERVICE}: missing userInfo`);
+    throw new TypeError(`${SERVICE}: missing userInfo`);
   }
   if (!userInfo.idpUserId) {
-    throw new Error(`${SERVICE}: missing userInfo.idpUserId`);
+    throw new TypeError(`${SERVICE}: missing userInfo.idpUserId`);
   }
   if (!userInfo.tenantId) {
-    throw new Error(`${SERVICE}: missing userInfo.tenantId`);
+    throw new TypeError(`${SERVICE}: missing userInfo.tenantId`);
   }
   if (!headers) {
-    throw new Error(`${SERVICE}: missing headers for tenant API authentication`);
+    throw new TypeError(`${SERVICE}: missing headers for tenant API authentication`);
   }
 
   // Fetch all roles with permissions directly from the DB
@@ -283,7 +283,7 @@ async function getUserRolesAndPermissions(userInfo, headers = null) {
  */
 async function canCreateForm(req) {
   if (!req || !req.currentUser) {
-    throw new Error(`${SERVICE}: missing currentUser`);
+    throw new TypeError(`${SERVICE}: missing currentUser`);
   }
 
   const idpCode = req.currentUser?.idp?.toLowerCase();
@@ -303,7 +303,7 @@ async function canCreateForm(req) {
  */
 async function isFormInUsersTenant(req, formId) {
   if (!req || !req.currentUser) {
-    throw new Error(`${SERVICE}: missing currentUser`);
+    throw new TypeError(`${SERVICE}: missing currentUser`);
   }
 
   const tenantId = req.currentUser?.tenantId;
