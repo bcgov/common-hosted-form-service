@@ -19,7 +19,10 @@ jwtService.protect = jest.fn(() => {
 });
 
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
-userAccess.currentUser = jest.fn((_req, _res, next) => {
+userAccess.currentUser = jest.fn((req, _res, next) => {
+  req.currentUser = {
+    id: '123',
+  };
   next();
 });
 userAccess.hasFormPermissions = jest.fn(() => {
