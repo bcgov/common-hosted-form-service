@@ -724,7 +724,8 @@
     "update": "업데이트",
     "revise": "개정하다",
     "complete": "완벽한",
-    "assign": "양수인"
+    "assign": "양수인",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "로딩 중 기다려주세요",

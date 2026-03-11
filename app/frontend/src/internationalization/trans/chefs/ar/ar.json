@@ -724,7 +724,8 @@
     "update": "تحديث",
     "revise": "يراجع",
     "complete": "مكتمل",
-    "assign": "تعيين"
+    "assign": "تعيين",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "جاري التحميل الرجاءالانتظار",

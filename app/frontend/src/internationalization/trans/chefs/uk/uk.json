@@ -724,7 +724,8 @@
     "update": "ОНОВЛЕННЯ",
     "revise": "ПЕРЕГЛЯНУТИ",
     "complete": "ЗАВЕРШЕНО",
-    "assign": "ПРИЗНАЧИТИ"
+    "assign": "ПРИЗНАЧИТИ",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Завантаження, будь ласка, зачекайте",

@@ -724,7 +724,8 @@
     "update": "به روز رسانی",
     "revise": "تجدید نظر کنید",
     "complete": "کامل",
-    "assign": "اختصاص دهید"
+    "assign": "اختصاص دهید",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "در حال بارگذاری لطفا صبر کنید",
