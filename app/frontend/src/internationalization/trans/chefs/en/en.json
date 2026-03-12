@@ -837,7 +837,8 @@
     "update": "UPDATE",
     "revise": "REVISE",
     "complete": "COMPLETE",
-    "assign": "ASSIGN"
+    "assign": "ASSIGN",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Loading... Please wait",

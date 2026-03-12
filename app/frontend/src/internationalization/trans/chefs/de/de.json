@@ -724,7 +724,8 @@
     "update": "AKTUALISIEREN",
     "revise": "ÜBERARBEITEN",
     "complete": "VOLLSTÄNDIG",
-    "assign": "ZUORDNEN"
+    "assign": "ZUORDNEN",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Laden, bitte warten",

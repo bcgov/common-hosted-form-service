@@ -724,7 +724,8 @@
     "update": "AGGIORNAMENTO",
     "revise": "RIVEDERE",
     "complete": "COMPLETARE",
-    "assign": "ASSEGNARE"
+    "assign": "ASSEGNARE",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Attendere il caricamento prego",

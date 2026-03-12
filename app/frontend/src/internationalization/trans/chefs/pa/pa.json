@@ -724,7 +724,8 @@
     "update": "ਅੱਪਡੇਟ ਕਰੋ",
     "revise": "ਸੰਸ਼ੋਧਨ ਕਰੋ",
     "complete": "ਸੰਪੂਰਨ",
-    "assign": "ਅਸਾਈਨ ਕਰੋ"
+    "assign": "ਅਸਾਈਨ ਕਰੋ",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",

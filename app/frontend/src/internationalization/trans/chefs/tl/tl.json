@@ -724,7 +724,8 @@
     "update": "I-UPDATE",
     "revise": "REVISE",
     "complete": "KUMPLETO",
-    "assign": "I-ASSIGN"
+    "assign": "I-ASSIGN",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Naglo-load... Mangyaring maghintay",
