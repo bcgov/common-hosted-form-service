@@ -31,6 +31,7 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.visit(`/${depEnv}`); 
+    cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
@@ -139,7 +140,10 @@ describe('Form Designer', () => {
     cy.get('.v-slide-group__content > [tabindex="-1"]').click();
     cy.get('[tabindex="-1"] > .v-btn__content').click();
     cy.waitForLoad();
-    cy.get('.mdi-close-circle').click();
+    cy.get('.mdi-close-circle').then($el => {
+    const close_btn=$el[1];
+    cy.get(close_btn).click();
+    });
     cy.get('input[type=file]').attachFile('test.docx');
     cy.waitForLoad();
     cy.get('.v-selection-control-group > .v-text-field > .v-input__control > .v-field').click();

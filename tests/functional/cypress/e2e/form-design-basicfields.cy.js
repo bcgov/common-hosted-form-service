@@ -27,11 +27,15 @@ describe('Form Designer', () => {
     formsettings();
 
   });
+  it('Getting page', () => {
     
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Basic Fields').click();
+  });  
 // Verifying fields in the form settings page
   it('Basic Fields components', () => {
     cy.viewport(1000, 1100);
-    cy.get('button').contains('Basic Fields').click();
     let textFields = ["First Name", "Middle Name", "Last Name"];
 
     for(let i=0; i<textFields.length; i++) {

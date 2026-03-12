@@ -2,7 +2,7 @@ const cdogsService = require('../../components/cdogsService');
 
 const { Statuses } = require('../common/constants');
 const emailService = require('../email/emailService');
-const formService = require('../form/service');
+const documentTemplateService = require('../form/documentTemplate/service');
 
 const service = require('./service');
 
@@ -172,7 +172,7 @@ module.exports = {
   templateRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
-      const template = await formService.documentTemplateRead(req.params.documentTemplateId);
+      const template = await documentTemplateService.documentTemplateRead(req.params.documentTemplateId);
       const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
       const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
       const convertTo = req.query.convertTo || 'pdf';

@@ -1,0 +1,632 @@
+/**
+ * CHEFS Form Viewer - Dark Mode / Cyberpunk Theme
+ * 
+ * A futuristic dark theme with neon accents, glowing effects, and high contrast.
+ * Perfect for tech-forward applications or gaming/entertainment platforms.
+ * 
+ * Design Philosophy:
+ * - Dark backgrounds (#0a0a0a, #1a1a1a, #2a2a2a) for reduced eye strain
+ * - Neon accent colors (cyan, magenta, green) for vibrant highlights
+ * - Glowing focus states for interactive feedback
+ * - Sharp, angular borders for a tech-inspired aesthetic
+ * - High contrast text for readability
+ * 
+ * IMPORTANT: This theme uses !important declarations to override CHEFS default styles
+ * and the component's inline styles. The dark background should be immediately visible.
+ */
+
+/* Override component's inline form-control style */
+:host .form-control {
+  background-color: #2a2a2a !important;
+  color: #e0e0e0 !important;
+}
+
+/* ============================================================================
+ * ROOT CONTAINER STRUCTURE
+ * ============================================================================
+ */
+
+:host .v-application {
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  background: #0a0a0a !important;
+  color: #e0e0e0 !important;
+}
+
+:host .v-layout.app {
+  background: #0a0a0a !important;
+}
+
+:host .v-main.app {
+  background: #0a0a0a !important;
+}
+
+:host .v-container.main {
+  background: #0a0a0a !important;
+}
+
+:host .v-container--fluid {
+  background: #0a0a0a !important;
+}
+
+:host .v-skeleton-loader {
+  background: #0a0a0a !important;
+}
+
+:host .form-wrapper {
+  padding: 2rem !important;
+  background-color: #1a1a1a !important;
+  border: 3px solid #00ffff !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.1) !important;
+}
+
+:host #formio-container {
+  background: #1a1a1a !important;
+}
+
+
+/* ============================================================================
+ * FORM.IO FORM STRUCTURE
+ * ============================================================================
+ */
+
+:host .formio-form {
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+  color: #e0e0e0 !important;
+  background: #1a1a1a !important;
+}
+
+:host .formio-form.formio-read-only {
+  opacity: 0.8;
+}
+
+:host .formio-form.formio-read-only .form-control {
+  background-color: #2a2a2a;
+  color: #888;
+  border-color: #444;
+}
+
+
+/* ============================================================================
+ * FORM.IO COMPONENTS
+ * ============================================================================
+ */
+
+:host .formio-component {
+  margin-bottom: 1.5rem;
+}
+
+:host .formio-component-button {
+  margin-top: 1.5rem;
+}
+
+:host .formio-component-button .btn {
+  text-transform: uppercase;
+  padding: 12px 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 0.875rem;
+  border-radius: 0;
+  border: 2px solid;
+  transition: all 0.3s ease;
+}
+
+:host .formio-component-submit .btn.btn-primary {
+  background-color: #00ffff;
+  border-color: #00ffff;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+:host .formio-component-submit .btn.btn-primary:hover {
+  background-color: #00cccc;
+  border-color: #00cccc;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+:host .formio-component-datagrid {
+  border: 1px solid #00ffff;
+  background: #1a1a1a;
+}
+
+:host .formio-component-simpletabs > .card {
+  border: 2px solid #ff00ff;
+  background: #1a1a1a;
+  border-radius: 0;
+}
+
+:host .formio-component-simpletabs > .card > .card-header {
+  background: #2a2a2a;
+  border-bottom: 2px solid #ff00ff;
+}
+
+:host .formio-component-simpletabs .nav-item {
+  background-color: #2a2a2a;
+  margin-right: 4px;
+  border: 1px solid #ff00ff;
+}
+
+:host .formio-component-simpletabs .nav-link {
+  font-weight: 600;
+  color: #ff00ff;
+  border-radius: 0;
+}
+
+:host .formio-component-simpletabs .nav-link.active {
+  color: #000;
+  background: #ff00ff;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+}
+
+:host .formio-component-simpletabs .nav-link.active:hover {
+  color: #000;
+  cursor: default;
+  text-decoration: none;
+}
+
+:host .formio-component-file .fileSelector {
+  margin-left: 24px;
+  border: 1px dashed #00ffff;
+  padding: 1rem;
+  background: #2a2a2a;
+}
+
+:host .formio-component-simplefile a[href] {
+  color: #00ffff;
+  text-decoration: underline;
+}
+
+:host .formio-component-simplefile a[href]:hover {
+  color: #00cccc;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+}
+
+:host .formio-component-simpletextarea .card-body.bg-light {
+  background-color: #2a2a2a !important;
+  border: 2px solid #00ffff;
+  border-radius: 0;
+}
+
+:host .formio-component .table {
+  background: #1a1a1a;
+  border: 1px solid #00ffff;
+  color: #e0e0e0;
+}
+
+:host .formio-component .table th {
+  background: #2a2a2a;
+  border-color: #00ffff;
+  color: #00ffff;
+}
+
+:host .formio-component .table td {
+  border-color: #444;
+}
+
+
+/* ============================================================================
+ * BOOTSTRAP FORM CONTROLS
+ * ============================================================================
+ */
+
+:host .form-control {
+  background-color: #2a2a2a !important;
+  color: #e0e0e0 !important;
+  border: 2px solid #444 !important;
+  border-radius: 0 !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+  transition: all 0.3s ease !important;
+}
+
+:host .form-control:focus {
+  background-color: #2a2a2a !important;
+  color: #fff !important;
+  border-color: #00ffff !important;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), inset 0 0 10px rgba(0, 255, 255, 0.2) !important;
+  outline: none !important;
+}
+
+:host .form-control::placeholder,
+:host .form-control .choices__placeholder {
+  color: #666;
+  opacity: 1;
+}
+
+:host .form-control.is-invalid,
+:host .was-validated .form-control:invalid {
+  border-color: #ff00ff;
+  background-image: none;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+}
+
+:host .input-group > .flatpickr-input.form-control + .form-control.input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+:host .input-group > .flatpickr-input.form-control.is-invalid + .form-control.input {
+  border: 2px solid #ff00ff;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+}
+
+:host .input-group > .flatpickr-input.form-control.is-invalid + .form-control.input:focus {
+  border-color: #ff00ff;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+}
+
+
+/* ============================================================================
+ * BUTTONS
+ * ============================================================================
+ */
+
+:host .btn {
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 0;
+  border: 2px solid;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+}
+
+:host .btn.btn-primary {
+  background-color: #00ffff !important;
+  border-color: #00ffff !important;
+  color: #000 !important;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.7) !important;
+}
+
+:host .btn.btn-primary:hover {
+  background-color: #00cccc;
+  border-color: #00cccc;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+:host .btn.btn-primary:disabled,
+:host .btn.btn-primary[disabled='disabled'] {
+  background-color: #2a2a2a;
+  border-color: #444;
+  opacity: 0.5;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+  text-decoration: none;
+}
+
+:host .btn.btn-secondary {
+  background-color: #2a2a2a;
+  border-color: #666;
+  color: #e0e0e0;
+}
+
+:host .btn.btn-secondary:hover {
+  background-color: #444;
+  border-color: #888;
+  box-shadow: 0 0 15px rgba(136, 136, 136, 0.5);
+}
+
+:host .btn.btn-success {
+  background-color: #00ff00;
+  border-color: #00ff00;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+:host .btn.btn-success:hover {
+  background-color: #00cc00;
+  box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
+}
+
+:host .btn.btn-danger {
+  background-color: #ff00ff;
+  border-color: #ff00ff;
+  color: #000;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+}
+
+:host .btn.btn-danger:hover {
+  background-color: #cc00cc;
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
+}
+
+
+/* ============================================================================
+ * CHOICES.JS DROPDOWNS
+ * ============================================================================
+ */
+
+:host .choices__list--dropdown {
+  background: #1a1a1a;
+  border: 2px solid #00ffff;
+  border-radius: 0;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+:host .choices__list--dropdown .choices__item {
+  color: #e0e0e0;
+  background: #1a1a1a;
+}
+
+:host .choices__list--dropdown .choices__item:not(.is-selected) {
+  color: #e0e0e0;
+}
+
+:host .choices__list--dropdown .choices__item:hover {
+  background-color: #00ffff;
+  color: #000;
+}
+
+:host .choices__list--dropdown .choices__item.is-selected {
+  background-color: #00ffff;
+  color: #000;
+}
+
+:host .choices__list--multiple {
+  background: #2a2a2a;
+  border: 2px solid #00ffff;
+}
+
+:host .choices__list--multiple .choices__item {
+  margin-bottom: 4px;
+  font-size: 13px;
+  background-color: #00ffff;
+  color: #000;
+  border-color: #00ffff;
+  border-radius: 0;
+}
+
+:host .choices__list--multiple .choices__item:hover {
+  background-color: #00cccc;
+  border-color: #00cccc;
+  color: #000;
+}
+
+:host .choices__list--multiple .choices__button {
+  background-color: transparent;
+  color: #000;
+  border-color: transparent;
+}
+
+:host .choices.is-disabled .choices__input {
+  background-color: #2a2a2a;
+  color: #666;
+}
+
+
+/* ============================================================================
+ * CARDS AND PANELS
+ * ============================================================================
+ */
+
+:host .card-header {
+  font-weight: 700;
+  color: #00ffff;
+  opacity: 1;
+  background: #2a2a2a;
+  padding: 1rem;
+  border-bottom: 2px solid #00ffff;
+  border-radius: 0;
+}
+
+:host .card-body {
+  padding: 1.5rem;
+  background: #1a1a1a;
+  border: none;
+  color: #e0e0e0;
+}
+
+:host .card {
+  background: #1a1a1a;
+  border: 2px solid #00ffff;
+  border-radius: 0;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+:host .card-header .fa-minus-square-o::before,
+:host .card-header .fa-plus-square-o::before {
+  font-size: 130%;
+  color: #00ffff;
+}
+
+
+/* ============================================================================
+ * VALIDATION AND ERROR MESSAGES
+ * ============================================================================
+ */
+
+:host .formio-error-wrapper {
+  background-color: transparent;
+  padding: 0;
+}
+
+:host .formio-warning-wrapper {
+  padding: 0;
+}
+
+:host .form-text {
+  font-size: 0.85em;
+  color: #888;
+}
+
+:host .form-text.error {
+  background: none !important;
+  color: #ff00ff;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+}
+
+:host .invalid-feedback {
+  font-size: 100%;
+  color: #ff00ff;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+}
+
+
+/* ============================================================================
+ * RADIO BUTTONS AND CHECKBOXES
+ * ============================================================================
+ */
+
+:host .form-radio .form-check {
+  margin-bottom: 8px;
+}
+
+:host .form-radio .form-check-label {
+  font-size: 1em;
+  color: #e0e0e0;
+}
+
+:host .form-radio .form-check-label .form-check-input {
+  transform: scale(1.3);
+  accent-color: #00ffff;
+}
+
+:host .form-radio .form-check-label span {
+  margin-left: 8px;
+}
+
+
+/* ============================================================================
+ * TYPOGRAPHY
+ * ============================================================================
+ */
+
+:host h1 {
+  font-size: 2em;
+  color: #00ffff;
+  line-height: 1.2;
+  font-weight: 700;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+}
+
+:host h2 {
+  font-size: 1.7em;
+  color: #00ffff;
+  line-height: 1.2;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+:host h3 {
+  font-size: 1.3em;
+  color: #ff00ff;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+:host h4 {
+  font-size: 1.05em;
+  color: #e0e0e0;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+:host h5 {
+  font-size: 0.95em;
+  color: #e0e0e0;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+:host p {
+  color: #e0e0e0;
+  line-height: 1.7;
+}
+
+
+/* ============================================================================
+ * LINKS
+ * ============================================================================
+ */
+
+:host a {
+  color: #00ffff;
+  text-decoration: underline;
+}
+
+:host a:hover {
+  color: #00cccc;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+  text-decoration: underline;
+}
+
+
+/* ============================================================================
+ * TOOLTIPS
+ * ============================================================================
+ */
+
+:host .tooltip-inner {
+  background-color: #1a1a1a;
+  border-radius: 0;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+  font-size: 0.85em;
+  border: 1px solid #00ffff;
+  color: #e0e0e0;
+}
+
+
+/* ============================================================================
+ * GRID AND COLUMNS
+ * ============================================================================
+ */
+
+:host div[class^='col-']:nth-child(n + 1) {
+  padding-top: 0;
+}
+
+
+/* ============================================================================
+ * CSS VARIABLES (THEME OVERRIDES)
+ * ============================================================================
+ */
+
+:host {
+  --bs-primary: #00ffff;
+  --bs-secondary: #666;
+  --bs-success: #00ff00;
+  --bs-danger: #ff00ff;
+  --bs-warning: #ffff00;
+  --bs-info: #00ffff;
+  
+  --bs-body-font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+  --bs-body-font-size: 14px;
+  --bs-body-color: #e0e0e0;
+  --bs-body-bg: #1a1a1a;
+  
+  --bs-link-color: #00ffff;
+  --bs-link-hover-color: #00cccc;
+  
+  --bs-border-color: #444;
+  --bs-border-radius: 0;
+  
+  --bs-form-valid-color: #00ff00;
+  --bs-form-valid-border-color: #00ff00;
+  --bs-form-invalid-color: #ff00ff;
+  --bs-form-invalid-border-color: #ff00ff;
+  
+  --v-theme-overlay-multiplier: 1;
+  --v-scrollbar-offset: 0px;
+}
+
+
+/* ============================================================================
+ * UTILITY CLASSES
+ * ============================================================================
+ */
+
+:host hr {
+  margin-bottom: 1em;
+  border-color: #444;
+}
+
+:host hr.orange {
+  border-top: 2px solid #ff00ff;
+}
+

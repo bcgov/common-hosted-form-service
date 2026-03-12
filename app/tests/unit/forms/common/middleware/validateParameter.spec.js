@@ -5,6 +5,7 @@ const constants = require('../../../../../src/forms/common/constants');
 const validateParameter = require('../../../../../src/forms/common/middleware/validateParameter');
 const externalApiService = require('../../../../../src/forms/form/externalApi/service');
 const formService = require('../../../../../src/forms/form/service');
+const documentTemplateService = require('../../../../../src/forms/form/documentTemplate/service');
 const submissionService = require('../../../../../src/forms/submission/service');
 
 // Various types of invalid UUIDs that we see in API calls.
@@ -75,7 +76,7 @@ describe('validateDocumentTemplateId', () => {
     },
   };
 
-  formService.documentTemplateRead = jest.fn().mockReturnValue(mockReadDocumentTemplateResponse);
+  documentTemplateService.documentTemplateRead = jest.fn().mockReturnValue(mockReadDocumentTemplateResponse);
   submissionService.read = jest.fn().mockReturnValue(mockReadSubmissionResponse);
 
   describe('400 response when', () => {
@@ -91,7 +92,7 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(0);
       expect(submissionService.read).toBeCalledTimes(0);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
@@ -104,7 +105,7 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, eachDocumentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(0);
       expect(submissionService.read).toBeCalledTimes(0);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
@@ -123,13 +124,13 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(0);
       expect(submissionService.read).toBeCalledTimes(0);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('formId does not match', async () => {
-      formService.documentTemplateRead.mockReturnValueOnce({
+      documentTemplateService.documentTemplateRead.mockReturnValueOnce({
         formId: uuid.v4(),
         id: documentTemplateId,
       });
@@ -143,7 +144,7 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(1);
       expect(submissionService.read).toBeCalledTimes(0);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
@@ -164,7 +165,7 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(1);
       expect(submissionService.read).toBeCalledTimes(1);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
@@ -184,14 +185,14 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(0);
       expect(submissionService.read).toBeCalledTimes(1);
       expect(next).toBeCalledWith(error);
     });
 
-    test('formService.documentTemplateRead', async () => {
+    test('documentTemplateService.documentTemplateRead', async () => {
       const error = new Error();
-      formService.documentTemplateRead.mockRejectedValueOnce(error);
+      documentTemplateService.documentTemplateRead.mockRejectedValueOnce(error);
       const req = getMockReq({
         params: {
           formId: formId,
@@ -202,7 +203,7 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(1);
       expect(submissionService.read).toBeCalledTimes(0);
       expect(next).toBeCalledWith(error);
     });
@@ -220,7 +221,7 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(1);
       expect(submissionService.read).toBeCalledTimes(0);
       expect(next).toBeCalledWith();
     });
@@ -236,7 +237,7 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(documentTemplateService.documentTemplateRead).toBeCalledTimes(1);
       expect(submissionService.read).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });

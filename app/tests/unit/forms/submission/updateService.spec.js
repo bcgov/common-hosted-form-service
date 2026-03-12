@@ -25,12 +25,16 @@ jest.mock('../../../../src/components/log', () => () => ({
   error: jest.fn(),
   info: jest.fn(),
 }));
+jest.mock('../../../../src/forms/common/scheduleService', () => ({
+  validateFormSubmissionSchedule: jest.fn(),
+}));
 
 describe('updateService', () => {
   const { FormSubmission, FormSubmissionStatus, SubmissionMetadata } = require('../../../../src/forms/common/models');
   const emailService = require('../../../../src/forms/email/emailService');
   const eventService = require('../../../../src/forms/event/eventService');
   const { eventStreamService } = require('../../../../src/components/eventStreamService');
+  const { validateFormSubmissionSchedule } = require('../../../../src/forms/common/scheduleService');
 
   let submissionService;
   let trx;
@@ -43,6 +47,7 @@ describe('updateService', () => {
     };
     trx = {};
     jest.clearAllMocks();
+    validateFormSubmissionSchedule.mockClear();
   });
 
   describe('_isRestoring', () => {
@@ -241,7 +246,7 @@ describe('updateService', () => {
       const data = { deleted: true };
       updateService._isRestoring = jest.fn().mockReturnValue(true);
       updateService._restoreSubmission = jest.fn();
-      submissionService.read = jest.fn().mockResolvedValue({});
+      submissionService.read = jest.fn().mockResolvedValue({ submission: {}, form: {} });
 
       await updateService.update(submissionService, 1, data, { usernameIdp: 'user' }, null, trx);
 
@@ -265,7 +270,7 @@ describe('updateService', () => {
       updateService._handleStatusChange = jest.fn().mockResolvedValue(true);
       updateService._patchSubmission = jest.fn();
       updateService._handleFileUploads = jest.fn();
-      submissionService.read = jest.fn().mockResolvedValue({ submission: {}, id: 1 });
+      submissionService.read = jest.fn().mockResolvedValue({ submission: {}, form: {}, id: 1 });
       updateService._sendNotifications = jest.fn();
 
       await updateService.update(submissionService, 1, {}, { usernameIdp: 'user' }, null, trx);
@@ -274,6 +279,58 @@ describe('updateService', () => {
       expect(updateService._patchSubmission).toHaveBeenCalled();
       expect(updateService._handleFileUploads).toHaveBeenCalled();
       expect(updateService._sendNotifications).toHaveBeenCalled();
+    });
+
+    it('validates schedule when converting draft to submitted', async () => {
+      updateService._isRestoring = jest.fn().mockReturnValue(false);
+      updateService._getStatuses = jest.fn().mockResolvedValue([]);
+      updateService._shouldBlockDraftUpdate = jest.fn().mockReturnValue(false);
+      updateService._handleStatusChange = jest.fn().mockResolvedValue(true);
+      updateService._patchSubmission = jest.fn();
+      updateService._handleFileUploads = jest.fn();
+      updateService._sendNotifications = jest.fn();
+      const formData = { schedule: { expire: false } };
+      submissionService.read = jest.fn().mockResolvedValue({ submission: {}, form: formData, id: 1 });
+
+      await updateService.update(submissionService, 1, { draft: false }, { usernameIdp: 'user' }, null, trx);
+
+      expect(submissionService.read).toHaveBeenCalledWith(1);
+      expect(validateFormSubmissionSchedule).toHaveBeenCalledWith(formData);
+      expect(updateService._handleStatusChange).toHaveBeenCalled();
+    });
+
+    it('does not validate schedule when updating draft', async () => {
+      updateService._isRestoring = jest.fn().mockReturnValue(false);
+      updateService._getStatuses = jest.fn().mockResolvedValue([]);
+      updateService._shouldBlockDraftUpdate = jest.fn().mockReturnValue(false);
+      updateService._handleStatusChange = jest.fn().mockResolvedValue(false);
+      updateService._patchSubmission = jest.fn();
+      updateService._handleFileUploads = jest.fn();
+      updateService._sendNotifications = jest.fn();
+      submissionService.read = jest.fn().mockResolvedValue({ submission: {}, form: {}, id: 1 });
+
+      await updateService.update(submissionService, 1, { draft: true }, { usernameIdp: 'user' }, null, trx);
+
+      expect(validateFormSubmissionSchedule).not.toHaveBeenCalled();
+      expect(updateService._patchSubmission).toHaveBeenCalled();
+    });
+
+    it('throws error when schedule validation fails', async () => {
+      updateService._isRestoring = jest.fn().mockReturnValue(false);
+      updateService._getStatuses = jest.fn().mockResolvedValue([]);
+      updateService._shouldBlockDraftUpdate = jest.fn().mockReturnValue(false);
+      const formData = { schedule: { expire: true, allowLateSubmissions: false } };
+      submissionService.read = jest.fn().mockResolvedValue({ submission: {}, form: formData, id: 1 });
+      const scheduleError = new Error('Form submission period has expired');
+      scheduleError.status = 403;
+      validateFormSubmissionSchedule.mockImplementation(() => {
+        throw scheduleError;
+      });
+
+      await expect(updateService.update(submissionService, 1, { draft: false }, { usernameIdp: 'user' }, null, trx)).rejects.toThrow('Form submission period has expired');
+
+      expect(validateFormSubmissionSchedule).toHaveBeenCalledWith(formData);
+      expect(updateService._patchSubmission).not.toHaveBeenCalled();
     });
 
     it('does not commit or rollback external transaction on successful update', async () => {

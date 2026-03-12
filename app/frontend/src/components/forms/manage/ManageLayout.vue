@@ -7,6 +7,7 @@ import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useNotificationStore } from '~/store/notification';
 import { useFormStore } from '~/store/form';
+import { useRecordsManagementStore } from '~/store/recordsManagement';
 import { FormPermissions } from '~/utils/constants';
 
 const { locale, t } = useI18n({ useScope: 'global' });
@@ -20,7 +21,9 @@ const properties = defineProps({
 
 const loading = ref(true);
 
+
 const notificationStore = useNotificationStore();
+const recordsManagementStore = useRecordsManagementStore();
 
 const { form, permissions, isRTL } = storeToRefs(useFormStore());
 
@@ -38,12 +41,15 @@ onMounted(async () => {
       text: t('trans.baseSecure.401UnAuthorizedErrMsg'),
     });
   }
+  
+  await recordsManagementStore.getFormRetentionPolicy(properties.f);
 
   if (permissions.value.includes(FormPermissions.DESIGN_READ))
     await formStore.fetchDrafts(properties.f);
 
   loading.value = false;
 });
+
 </script>
 
 <template>

@@ -2,7 +2,7 @@ const { getMockReq, getMockRes } = require('@jest-mock/express');
 
 const { Statuses } = require('../../../../src/forms/common/constants');
 const controller = require('../../../../src/forms/submission/controller');
-const formService = require('../../../../src/forms/form/service');
+const documentTemplateService = require('../../../../src/forms/form/documentTemplate/service');
 const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
 const cdogsService = require('../../../../src/components/cdogsService');
@@ -256,7 +256,7 @@ describe('template rendering', () => {
     describe('200 response when', () => {
       test('request is valid', async () => {
         service.read = jest.fn().mockReturnValue(validSubmission);
-        formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
+        documentTemplateService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
         cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
@@ -275,7 +275,7 @@ describe('template rendering', () => {
 
       test('cdogs response has no content disposition', async () => {
         service.read = jest.fn().mockReturnValue(validSubmission);
-        formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
+        documentTemplateService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
         const cdogsResponse = structuredClone(mockCdogsResponse);
         delete cdogsResponse.headers['content-disposition'];
         cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);

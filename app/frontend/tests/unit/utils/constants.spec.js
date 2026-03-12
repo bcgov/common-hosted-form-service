@@ -15,10 +15,12 @@ describe('Constants', () => {
       USERS: '/users',
       UTILS: '/utils',
       FILES_API_ACCESS: '/filesApiAccess',
+      PRINT_CONFIG: '/printConfig',
       PROXY: '/proxy',
       FORM_METADATA: '/formMetadata',
       ENCRYPTION_KEY: '/encryptionKey',
       EVENT_STREAM_CONFIG: '/eventStreamConfig',
+      RECORDS_MANAGEMENT: '/recordsManagement',
     });
   });
 

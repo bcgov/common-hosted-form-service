@@ -10,7 +10,7 @@ import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
 import { useAppStore } from '~/store/app';
-import { FormRoleCodes } from '~/utils/constants';
+import { FormPermissions, FormRoleCodes } from '~/utils/constants';
 import { STUBS } from '../../stubs';
 import moment from 'moment';
 
@@ -70,6 +70,14 @@ describe('SubmissionsTable.vue', () => {
       },
       global: {
         plugins: [router, pinia],
+        stubs: {
+          ...STUBS,
+          AdvancedSubmissionSearch: {
+            name: 'AdvancedSubmissionSearch',
+            template: '<div/>',
+            emits: ['search'],
+          },
+        },
       },
     });
 
@@ -263,6 +271,52 @@ describe('SubmissionsTable.vue', () => {
     formStore.permissions = [];
 
     expect(wrapper.vm.showSubmissionsExport).toBeFalsy();
+  });
+
+  it('canDeleteSubmissions and event header are only enabled with submission_delete permission', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.SUBMISSION_APPROVER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = [
+        FormPermissions.SUBMISSION_READ,
+        FormPermissions.SUBMISSION_REVIEW,
+      ];
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => Promise.resolve());
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = ['firstName'];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.canDeleteSubmissions).toBe(false);
+    expect(wrapper.vm.HEADERS.some((h) => h.key === 'event')).toBe(false);
+
+    formStore.permissions = [
+      FormPermissions.SUBMISSION_READ,
+      FormPermissions.SUBMISSION_REVIEW,
+      FormPermissions.SUBMISSION_DELETE,
+    ];
+
+    expect(wrapper.vm.canDeleteSubmissions).toBe(true);
+    expect(wrapper.vm.HEADERS.some((h) => h.key === 'event')).toBe(true);
   });
 
   it('userColumns will return the values inside of userFormPreferences.value.preferences.columns filtered by the specified formFields or an empty array', () => {

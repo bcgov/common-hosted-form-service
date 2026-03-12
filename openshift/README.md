@@ -163,6 +163,18 @@ oc create -n $NAMESPACE secret generic $APP_NAME-event-stream-service \
   --from-literal=password=$ess_password
 ```
 
+A secret for CHEFS Gateway to configure issued JWT tokens
+
+```sh
+
+export JWT_SECRET="$(openssl rand -base64 32)"
+
+oc create -n $NAMESPACE secret generic $APP_NAME-gateway \
+  --type=Opaque \
+  --from-literal=jwtSecret=$JWT_SECRET \
+  --from-literal=jwtLifetime=15m
+```
+
 ## Deployment
 
 This application is currently designed as a single application pod deployment. It will host a static frontend containing all of the Vue.js resources and assets, and a Node.js backend which serves the API that the frontend requires. We are currently leveraging Openshift Routes with path based filtering to forward incoming traffic to the right deployment service.

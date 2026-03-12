@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import {
@@ -9,7 +9,7 @@ import {
   readFile,
 } from '~/composables/documentTemplate';
 import { useFormStore } from '~/store/form';
-import { formService } from '~/services';
+import { formService, printConfigService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
@@ -19,6 +19,7 @@ let cdogsTemplate = ref(null);
 const documentTemplates = ref([]);
 const enablePreview = ref(false);
 const fileInput = ref(null);
+const printConfig = ref(null);
 const headers = ref([
   { title: 'File Name', key: 'filename' },
   { title: 'Date Created', key: 'createdAt' },
@@ -32,7 +33,14 @@ const techdocsLinkTemplateUpload = ref(
   'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/'
 );
 let uploadedFile = null; // File uploaded into the File Input
-const validFileExtensions = ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'];
+const validFileExtensions = new Set([
+  'txt',
+  'docx',
+  'html',
+  'odt',
+  'pptx',
+  'xlsx',
+]);
 
 const notificationStore = useNotificationStore();
 
@@ -43,9 +51,51 @@ const validationRules = computed(() => [
   isValidFile.value || t('trans.documentTemplate.invalidFileMessage'),
 ]);
 
+const isTemplateInUse = (templateId) => {
+  return printConfig.value?.templateId === templateId;
+};
+
+function handlePrintConfigUpdate(event) {
+  // Only refresh if it's for this form
+  if (event.detail.formId === form.value.id) {
+    fetchPrintConfig();
+  }
+}
+
 onMounted(async () => {
-  await fetchTemplates();
+  await Promise.all([fetchTemplates(), fetchPrintConfig()]);
+
+  // Listen for print config updates
+  globalThis.addEventListener('print-config-updated', handlePrintConfigUpdate);
 });
+
+onUnmounted(() => {
+  globalThis.removeEventListener(
+    'print-config-updated',
+    handlePrintConfigUpdate
+  );
+});
+
+async function fetchPrintConfig() {
+  try {
+    const response = await printConfigService.readPrintConfig(form.value.id);
+    if (response.data) {
+      printConfig.value = response.data;
+    }
+  } catch (e) {
+    // Config doesn't exist (404) - this is fine, template not in use
+    if (e.response?.status === 404) {
+      printConfig.value = null;
+    } else {
+      // Handle unexpected errors - set to null and let component continue
+      printConfig.value = null;
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.debug('Error fetching print config:', e);
+      }
+    }
+  }
+}
 
 async function fetchTemplates() {
   loading.value = true;
@@ -95,7 +145,7 @@ function handleFileInput(event) {
 
     // validate file extension
     const fileExtension = event[0].name.split('.').pop();
-    if (validFileExtensions.includes(fileExtension)) {
+    if (validFileExtensions.has(fileExtension)) {
       isValidFile.value = true;
     } else {
       isValidFile.value = false;
@@ -122,6 +172,13 @@ async function handleFileUpload() {
     cdogsTemplate.value = result.data;
 
     await fetchTemplates();
+
+    // Emit custom event to notify other components
+    globalThis.dispatchEvent(
+      new CustomEvent('document-templates-updated', {
+        detail: { formId: form.value.id },
+      })
+    );
 
     // Reset the file input
     if (fileInput.value) {
@@ -157,17 +214,32 @@ async function handleDelete(item) {
   try {
     await formService.documentTemplateDelete(form.value.id, item.templateId);
     await fetchTemplates();
+
+    // Emit custom event to notify other components
+    globalThis.dispatchEvent(
+      new CustomEvent('document-templates-updated', {
+        detail: { formId: form.value.id },
+      })
+    );
+
     notificationStore.addNotification({
       text: t('trans.documentTemplate.deleteSuccess'),
       ...NotificationTypes.SUCCESS,
     });
   } catch (e) {
-    notificationStore.addNotification({
-      text: t('trans.documentTemplate.deleteError'),
-      consoleError: t('trans.documentTemplate.deleteError', {
-        error: e.message,
-      }),
-    });
+    if (e.response?.status === 409) {
+      notificationStore.addNotification({
+        text: t('trans.documentTemplate.deleteErrorInUse'),
+        ...NotificationTypes.ERROR,
+      });
+    } else {
+      notificationStore.addNotification({
+        text: t('trans.documentTemplate.deleteError'),
+        consoleError: t('trans.documentTemplate.deleteError', {
+          error: e.message,
+        }),
+      });
+    }
   } finally {
     loading.value = false;
   }
@@ -185,7 +257,7 @@ async function handleFileAction(item, action) {
     if (action === 'preview') {
       // Open the file in a new tab
       window.open(url, '_blank');
-      window.URL.revokeObjectURL(url);
+      globalThis.URL.revokeObjectURL(url);
     } else if (action === 'download') {
       // Create an anchor element and trigger download
       const a = document.createElement('a');
@@ -193,7 +265,7 @@ async function handleFileAction(item, action) {
       a.download = item.filename;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      globalThis.URL.revokeObjectURL(url);
       a.remove();
     }
   } catch (e) {
@@ -303,15 +375,19 @@ defineExpose({
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-icon
-                color="red"
+                :color="isTemplateInUse(item.templateId) ? 'grey' : 'red'"
                 v-bind="props"
                 class="action-icon"
-                @click="handleDelete(item)"
+                :class="{ 'disabled-icon': isTemplateInUse(item.templateId) }"
+                @click="!isTemplateInUse(item.templateId) && handleDelete(item)"
               >
                 mdi-minus-circle
               </v-icon>
             </template>
-            <span>{{ $t('trans.documentTemplate.delete') }}</span>
+            <span v-if="isTemplateInUse(item.templateId)">
+              {{ $t('trans.documentTemplate.deleteDisabledTooltip') }}
+            </span>
+            <span v-else>{{ $t('trans.documentTemplate.delete') }}</span>
           </v-tooltip>
         </div>
       </template>
@@ -367,6 +443,11 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.disabled-icon {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .submissions-table {

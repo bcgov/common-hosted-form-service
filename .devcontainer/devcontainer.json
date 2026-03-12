@@ -10,7 +10,6 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/git:1": {}
-
   },
 
   // Use this environment variable if you need to bind mount your local source code into a new container.
@@ -30,7 +29,7 @@
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "chmod +x ./.devcontainer/*.sh && bash ./.devcontainer/post-install.sh",
+  "postCreateCommand": "chmod +x ./.devcontainer/*.sh && . /etc/profile.d/java.sh && export JAVA_HOME && bash ./.devcontainer/post-install.sh",
 
   // Configure tool-specific properties.
   "customizations": {
@@ -39,9 +38,8 @@
         "cweijan.vscode-postgresql-client2", // PostgreSQL client
         "dbaeumer.vscode-eslint", // ESLint to catch problems early
         "esbenp.prettier-vscode", // Prettier to format files on save
-        "postman.postman-for-vscode", // Postman for integration tests
         "redocly.openapi-vs-code", // ReDocly to catch OpenAPI errors
-        "vue.volar", // Vue 3 recommended extension
+        "vue.volar", // Volar for Vue 3 development
         "SonarSource.sonarlint-vscode", // sonarqube static analysis
         "k6.k6" // k6 for load testing
       ],
@@ -50,9 +48,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "sonarlint.autoDownload": true,
-        "sonarlint.ls.javaHome": "/usr/lib/jvm/java-17-openjdk-amd64",
         "sonarlint.analysisExcludesStandalone": "**/*.{c,cpp,h,hpp,cc,cxx}"
-
       }
     }
   },
@@ -87,5 +83,4 @@
     }
   },
   "mounts": ["source=npm-cache,target=/root/.npm,type=volume"]
-
 }

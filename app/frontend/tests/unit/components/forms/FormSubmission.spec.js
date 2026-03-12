@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 
 import FormSubmission from '~/components/forms/FormSubmission.vue';
 import { useFormStore } from '~/store/form';
+import { FormPermissions } from '~/utils/constants';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
@@ -255,6 +256,52 @@ describe('FormSubmission.vue', () => {
     await wrapper.vm.toggleSubmissionEdit(true);
     expect(wrapper.vm.submissionReadOnly).toBeFalsy();
     expect(fetchSubmissionSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('only shows delete control when user has submission_delete permission', async () => {
+    const setWideLayout = vi.fn();
+    formStore.form = {
+      id: 0,
+      name: 'This is a form title',
+    };
+    formStore.permissions = [FormPermissions.SUBMISSION_READ];
+    const fetchSubmissionSpy = vi.spyOn(formStore, 'fetchSubmission');
+    fetchSubmissionSpy.mockImplementation(() => {});
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {});
+
+    const wrapper = mount(FormSubmission, {
+      props: {
+        submissionId: submissionId,
+      },
+      global: {
+        plugins: [pinia],
+        mocks: {
+          $filters: {
+            formatDateLong: vi.fn().mockReturnValue('formatted date long'),
+          },
+        },
+        provide: {
+          setWideLayout,
+        },
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find('.delete-submission-stub').exists()).toBe(false);
+
+    formStore.permissions = [
+      FormPermissions.SUBMISSION_READ,
+      FormPermissions.SUBMISSION_DELETE,
+    ];
+    await flushPromises();
+
+    expect(wrapper.find('.delete-submission-stub').exists()).toBe(true);
   });
 
   describe('enableSubmitterRevision logic', () => {

@@ -29,13 +29,18 @@ describe('Form Designer', () => {
         formsettings();
         
     }); 
+    it('Getting page ready', () => {
+    
+        cy.viewport(1000, 1100);
+        cy.get('button').contains('Advanced Fields').click();  
+        
+    }); 
     it('Checks the simpleradioadvanced', () => {
 
     cy.viewport(1000, 1800);
     cy.waitForLoad();
     
  // Form design page with advanced Fields components
-    cy.get('button').contains('Advanced Fields').click();
     cy.get('button').contains('Advanced Fields').click();
     cy.waitForLoad();
     cy.get('div.formio-builder-form').then($el => {

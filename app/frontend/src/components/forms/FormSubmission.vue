@@ -9,11 +9,11 @@ import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue
 import FormViewer from '~/components/designer/FormViewer.vue';
 import NotesPanel from '~/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '~/components/forms/submission/StatusPanel.vue';
-import PrintOptions from '~/components/forms/PrintOptions.vue';
+import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
 import { checkSubmissionUpdate } from '~/utils/permissionUtils';
 
 import { useFormStore } from '~/store/form';
-import { NotificationTypes } from '~/utils/constants';
+import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
 const { locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
@@ -39,6 +39,9 @@ const formStore = useFormStore();
 const { form, formSubmission, permissions, isRTL } = storeToRefs(formStore);
 
 const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
+const canDeleteSubmission = computed(() =>
+  permissions.value?.includes(FormPermissions.SUBMISSION_DELETE)
+);
 
 onMounted(async () => {
   await formStore.fetchSubmission({ submissionId: properties.submissionId });
@@ -144,7 +147,7 @@ defineExpose({
           </span>
 
           <span>
-            <PrintOptions :submission-id="submissionId" />
+            <PrintOptionsWrapper :submission-id="submissionId" />
           </span>
           <span>
             <v-tooltip location="bottom">
@@ -168,7 +171,11 @@ defineExpose({
               </span>
             </v-tooltip>
           </span>
-          <DeleteSubmission :submission-id="submissionId" @deleted="onDelete" />
+          <DeleteSubmission
+            v-if="canDeleteSubmission"
+            :submission-id="submissionId"
+            @deleted="onDelete"
+          />
         </div>
       </div>
     </div>

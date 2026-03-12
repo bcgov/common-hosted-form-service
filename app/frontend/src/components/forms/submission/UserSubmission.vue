@@ -33,7 +33,7 @@ const loading = ref(true);
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
-const { formSubmission } = storeToRefs(formStore);
+const { formSubmission, form } = storeToRefs(formStore);
 
 onMounted(async () => {
   await formStore.fetchSubmission({ submissionId: properties.submissionId });
@@ -67,6 +67,7 @@ onMounted(async () => {
         :read-only="readOnly"
         :saved="saved"
         :submission-id="submissionId"
+        :form-id="form?.id"
       />
     </v-container>
   </v-skeleton-loader>

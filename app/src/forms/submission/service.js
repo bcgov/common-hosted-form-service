@@ -1,10 +1,12 @@
 const uuid = require('uuid');
 
 const { Statuses } = require('../common/constants');
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
+const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUser, FileStorage, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+const fileService = require('../file/service');
+const { checkIsFormExpired } = require('../common/scheduleService');
 
 const updateService = require('./updateService');
 
@@ -25,10 +27,15 @@ const service = {
         .withGraphFetched('identityProviders(orderDefault)')
         .throwIfNotFound(),
     ]).then((data) => {
+      const form = data[2];
+      // Process schedule status same way readPublishedForm does
+      if (form.schedule) {
+        form.schedule = checkIsFormExpired(form.schedule);
+      }
       return {
         submission: data[0],
         version: data[1],
-        form: data[2],
+        form: form,
       };
     });
   },
@@ -136,9 +143,11 @@ const service = {
     let result;
     try {
       trx = await FormSubmission.startTransaction();
+      const now = new Date().toISOString();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
         deleted: true,
         updatedBy: currentUser.usernameIdp,
+        updatedAt: now,
       });
       await trx.commit();
       result = await service.read(formSubmissionId);
@@ -152,11 +161,52 @@ const service = {
     }
   },
 
+  /**
+   * Hard delete a submission and all its related data
+   *
+   * @param {string} submissionId - The ID of the submission to delete
+   * @returns {Object} Result indicating success or failure
+   */
+  deleteSubmissionAndRelatedData: async (submissionId) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      // Delete the file from the storage service first
+      const fileRecords = await FileStorage.query(trx).where('formSubmissionId', submissionId);
+      fileService.deleteFiles(fileRecords.map((file) => file.id));
+
+      // Delete in the correct order based on foreign key dependencies
+
+      // 1. Delete notes
+      await Note.query(trx).where('submissionId', submissionId).delete();
+
+      // 2. Delete status records
+      await FormSubmissionStatus.query(trx).where('submissionId', submissionId).delete();
+
+      // 3. Delete user associations
+      await FormSubmissionUser.query(trx).where('formSubmissionId', submissionId).delete();
+
+      // 4. Delete file records
+      await FileStorage.query(trx).where('formSubmissionId', submissionId).delete();
+
+      // 5. Delete the submission record
+      const result = await FormSubmission.query(trx).where('id', submissionId).delete();
+
+      await trx.commit();
+      return { success: result > 0 };
+    } catch (error) {
+      if (trx) await trx.rollback();
+      throw error;
+    }
+  },
+
   deleteMultipleSubmissions: async (submissionIds, currentUser) => {
     let trx;
     try {
       trx = await FormSubmission.startTransaction();
-      await FormSubmission.query(trx).patch({ deleted: true, updatedBy: currentUser.usernameIdp }).whereIn('id', submissionIds);
+      const now = new Date().toISOString();
+      await FormSubmission.query(trx).patch({ deleted: true, updatedBy: currentUser.usernameIdp, updatedAt: now }).whereIn('id', submissionIds);
       await trx.commit();
       return await service.readSubmissionData(submissionIds);
     } catch (err) {

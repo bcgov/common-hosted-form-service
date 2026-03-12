@@ -1,0 +1,723 @@
+/**
+ * CHEFS Form Viewer - Custom Override CSS Template
+ * 
+ * This file documents all CSS classes and selectors that can be overridden
+ * to completely customize the appearance of forms in embedded mode.
+ * 
+ * Usage:
+ * 1. Copy this file and rename it to your custom theme name
+ * 2. Fill in the override values for each section you want to customize
+ * 3. Set the `theme-css` attribute on <chefs-form-viewer> to point to your CSS file
+ *    Example: <chefs-form-viewer theme-css="/path/to/your-overrides.css">
+ * 
+ * IMPORTANT: When using Shadow DOM (default), all selectors must target :host
+ * or use ::part() if parts are exposed. When using no-shadow mode, standard
+ * CSS selectors work normally.
+ * 
+ * Shadow DOM Mode (default):
+ *   - Use :host selector to scope styles to the component
+ *   - Styles cascade into Shadow DOM automatically
+ *   - Example: :host .form-wrapper { ... }
+ * 
+ * Light DOM Mode (no-shadow attribute):
+ *   - Use standard CSS selectors
+ *   - Example: .form-wrapper { ... }
+ * 
+ * CRITICAL: Using !important Declarations
+ * 
+ * This template uses !important declarations for critical properties because:
+ * 
+ * 1. Component Inline Styles: The component includes inline styles with !important
+ *    (e.g., .form-control { background-color: #fff !important; }) that must be
+ *    overridden for theme customization.
+ * 
+ * 2. CHEFS Default Styles: The chefs-index.css loads before your theme CSS and
+ *    may have high specificity. Using !important ensures your theme styles take
+ *    precedence.
+ * 
+ * 3. CSS Variables: Some properties are controlled by CSS variables from
+ *    chefs-theme.css. Using !important helps override those defaults.
+ * 
+ * 4. Theme Reliability: For complete visual overrides, using !important is
+ *    appropriate and ensures your theme works consistently across all scenarios.
+ * 
+ * When to use !important:
+ *   - Background colors (to override CHEFS defaults and inline styles)
+ *   - Form controls (.form-control) - REQUIRED to override inline !important
+ *   - Critical visual properties (colors, borders, shadows, backgrounds)
+ *   - Properties that must override CSS variables
+ * 
+ * When !important may not be needed:
+ *   - Less critical properties (padding, margin, font-size) - but keeping it
+ *     ensures reliability
+ *   - Properties that don't conflict with defaults
+ * 
+ * Note: While !important is generally discouraged in CSS, it is the recommended
+ * approach for theme files that need to completely override default styling.
+ */
+
+/* ============================================================================
+ * 1. ROOT CONTAINER STRUCTURE
+ * ============================================================================
+ * The component creates this structure:
+ * <chefs-form-viewer>
+ *   <div class="v-application" id="app">
+ *     <div class="v-layout app">
+ *       <main class="v-main app">
+ *         <div class="v-container v-locale--is-ltr main">
+ *           <div class="v-skeleton-loader">
+ *             <div class="v-container v-container--fluid v-locale--is-ltr">
+ *               <div>
+ *                 <div class="form-wrapper">
+ *                   <div id="formio-container"></div>
+ *                 </div>
+ *               </div>
+ *             </div>
+ *           </div>
+ *         </div>
+ *       </main>
+ *     </div>
+ *   </div>
+ * </chefs-form-viewer>
+ */
+
+/* Root application container (Vuetify) */
+:host .v-application {
+  /* Override: Font family, base font size, line height */
+  /* Use !important to override CHEFS defaults */
+  font-family: /* your font stack */ !important;
+  font-size: /* your base size */ !important;
+  line-height: /* your line height */ !important;
+  background: /* your background */ !important;
+  color: /* your text color */ !important;
+}
+
+/* Layout wrapper */
+:host .v-layout.app {
+  /* Override: Layout direction, background */
+}
+
+/* Main content area */
+:host .v-main.app {
+  /* Override: Padding, margins */
+}
+
+/* Container (Bootstrap/Vuetify hybrid) */
+:host .v-container.main {
+  /* Override: Max width, padding */
+}
+
+:host .v-container--fluid {
+  /* Override: Fluid container padding */
+}
+
+/* Skeleton loader (loading state) */
+:host .v-skeleton-loader {
+  /* Override: Loading animation, background */
+  background: /* your background */;
+}
+
+/* Form wrapper - PRIMARY OVERRIDE POINT */
+:host .form-wrapper {
+  /* Override: Padding, margins, background, borders */
+  /* Use !important to override CHEFS defaults */
+  padding: /* your padding */ !important;
+  background-color: /* your background */ !important;
+  border: /* your border */ !important;
+  border-radius: /* your radius */ !important;
+  box-shadow: /* your shadow */ !important;
+}
+
+/* Form.io container */
+:host #formio-container {
+  /* Override: Container-specific styles */
+}
+
+
+/* ============================================================================
+ * 2. FORM.IO FORM STRUCTURE
+ * ============================================================================
+ * Form.io renders forms with these key classes:
+ */
+
+/* Main form element */
+:host .formio-form {
+  /* Override: Form-level styles */
+  font-family: /* inherit or override */;
+  color: /* your text color */;
+}
+
+/* Read-only form state */
+:host .formio-form.formio-read-only {
+  /* Override: Read-only form appearance */
+}
+
+:host .formio-form.formio-read-only .form-control {
+  /* Override: Read-only input appearance */
+  background-color: /* your readonly bg */;
+  color: /* your readonly text */;
+}
+
+
+/* ============================================================================
+ * 3. FORM.IO COMPONENTS
+ * ============================================================================
+ * Each Form.io component has a .formio-component-{type} class
+ */
+
+/* Generic component wrapper */
+:host .formio-component {
+  /* Override: Component spacing, margins */
+  margin-bottom: /* your spacing */;
+}
+
+/* Button component */
+:host .formio-component-button {
+  margin-top: /* your spacing */;
+}
+
+:host .formio-component-button .btn {
+  /* Override: Button text transform, padding, font weight */
+  text-transform: /* uppercase | none | lowercase */;
+  padding: /* your padding */;
+  font-weight: /* your weight */;
+  letter-spacing: /* your spacing */;
+  font-size: /* your size */;
+}
+
+/* Submit button */
+:host .formio-component-submit .btn.btn-primary {
+  /* Override: Submit button appearance */
+}
+
+/* Data Grid component */
+:host .formio-component-datagrid {
+  /* Override: Data grid container */
+}
+
+:host .formio-component-datagrid label.field-required.control-label--hidden::after {
+  /* Override: Hide required asterisk in table headers */
+  content: '';
+}
+
+/* Simple Tabs component */
+:host .formio-component-simpletabs {
+  /* Override: Tabs container */
+}
+
+:host .formio-component-simpletabs > .card {
+  border: /* your border */;
+}
+
+:host .formio-component-simpletabs > .card > .card-header {
+  background: /* your background */;
+}
+
+:host .formio-component-simpletabs .nav-item {
+  background-color: /* your tab bg */;
+  margin-right: /* your spacing */;
+}
+
+:host .formio-component-simpletabs .nav-link {
+  /* Override: Tab link appearance */
+  font-weight: /* your weight */;
+}
+
+:host .formio-component-simpletabs .nav-link.active {
+  color: /* your active color */;
+  background: /* your active bg */;
+}
+
+:host .formio-component-simpletabs .nav-link.active:hover {
+  color: /* your hover color */;
+  cursor: /* default | pointer */;
+  text-decoration: /* none | underline */;
+}
+
+/* File upload component */
+:host .formio-component-file .fileSelector {
+  margin-left: /* your spacing */;
+}
+
+:host .formio-component-file .file .row {
+  margin-left: /* your spacing */;
+}
+
+/* Simple File component */
+:host .formio-component-simplefile {
+  /* Override: Simple file component */
+}
+
+:host .formio-component-simplefile a[href] {
+  /* Override: File download links */
+  pointer-events: /* auto | none */;
+  color: /* your link color */;
+  text-decoration: /* your decoration */;
+  cursor: /* your cursor */;
+}
+
+/* Simple Textarea component */
+:host .formio-component-simpletextarea .card-body.bg-light {
+  /* Override: Textarea appearance */
+  background-color: /* your bg */;
+  border: /* your border */;
+}
+
+/* Table component */
+:host .formio-component .table {
+  word-break: /* break-word | break-all | normal */;
+}
+
+
+/* ============================================================================
+ * 4. BOOTSTRAP FORM CONTROLS
+ * ============================================================================
+ * Form.io uses Bootstrap form controls
+ */
+
+/* Form control (inputs, selects, textareas) */
+:host .form-control {
+  /* Override: Input base styles */
+  /* CRITICAL: Use !important - component has inline style with !important */
+  background-color: /* your bg */ !important;
+  color: /* your text color */ !important;
+  border: /* your border */ !important;
+  border-radius: /* your radius */ !important;
+  padding: /* your padding */ !important;
+  font-size: /* your size */ !important;
+}
+
+/* Placeholder text */
+:host .form-control::placeholder,
+:host .form-control .choices__placeholder {
+  color: /* your placeholder color */;
+  opacity: /* your opacity */;
+}
+
+/* Invalid/error state */
+:host .form-control.is-invalid,
+:host .was-validated .form-control:invalid {
+  /* Override: Error state appearance */
+  border-color: /* your error color */;
+  background-image: /* none | your icon */;
+}
+
+/* Input groups (date/time pickers) */
+:host .input-group > .flatpickr-input.form-control {
+  /* Override: Date picker input */
+}
+
+:host .input-group > .flatpickr-input.form-control + .form-control.input {
+  border-top-left-radius: /* your radius */;
+  border-bottom-left-radius: /* your radius */;
+}
+
+:host .input-group > .flatpickr-input.form-control.is-invalid + .form-control.input {
+  border: /* your error border */;
+}
+
+:host .input-group > .flatpickr-input.form-control.is-invalid + .form-control.input:focus {
+  border-color: /* your error color */;
+  box-shadow: /* your error shadow */;
+}
+
+
+/* ============================================================================
+ * 5. BUTTONS
+ * ============================================================================
+ */
+
+/* Base button (extends Vuetify .v-btn) */
+:host .btn {
+  /* Override: Button base styles */
+  padding: /* your padding */;
+  font-weight: /* your weight */;
+  border-radius: /* your radius */;
+}
+
+/* Primary button */
+:host .btn.btn-primary {
+  /* Use !important to override CHEFS defaults */
+  background-color: /* your primary color */ !important;
+  border: /* your border */ !important;
+  color: /* your text color */ !important;
+  box-shadow: /* your shadow */ !important;
+}
+
+:host .btn.btn-primary:hover {
+  background-color: /* your hover color */;
+  text-decoration: /* underline | none */;
+}
+
+:host .btn.btn-primary:disabled,
+:host .btn.btn-primary[disabled='disabled'] {
+  background-color: /* your disabled bg */;
+  opacity: /* your opacity */;
+  color: /* your disabled color */;
+  cursor: /* default | not-allowed */;
+  text-decoration: /* none */;
+}
+
+/* Secondary button */
+:host .btn.btn-secondary {
+  background-color: /* your secondary color */;
+  border-color: /* your border color */;
+}
+
+/* Success button */
+:host .btn.btn-success {
+  background-color: /* your success color */;
+  border-color: /* your border color */;
+}
+
+/* Danger button */
+:host .btn.btn-danger {
+  background-color: /* your danger color */;
+  border-color: /* your border color */;
+}
+
+
+/* ============================================================================
+ * 6. CHOICES.JS DROPDOWNS
+ * ============================================================================
+ * Form.io uses Choices.js for select/dropdown components
+ */
+
+/* Dropdown list */
+:host .choices__list--dropdown {
+  /* Override: Dropdown container */
+}
+
+:host .choices__list--dropdown .choices__item {
+  /* Override: Dropdown item */
+  color: /* your text color */;
+}
+
+:host .choices__list--dropdown .choices__item:not(.is-selected) {
+  color: /* your unselected color */;
+}
+
+:host .choices__list--dropdown .choices__item:hover {
+  background-color: /* your hover bg */;
+  color: /* your hover text */;
+}
+
+/* Multiple select */
+:host .choices__list--multiple {
+  /* Override: Multiple select container */
+}
+
+:host .choices__list--multiple .choices__item {
+  margin-bottom: /* your spacing */;
+  font-size: /* your size */;
+  background-color: /* your bg */;
+  color: /* your text */;
+  border-color: /* your border */;
+}
+
+:host .choices__list--multiple .choices__item:hover {
+  background-color: /* your hover bg */;
+  border-color: /* your hover border */;
+  color: /* your hover text */;
+}
+
+:host .choices__list--multiple .choices__button {
+  /* Override: Remove button in multiple select */
+  background-color: /* your bg */;
+  color: /* your text */;
+  border-color: /* your border */;
+}
+
+/* Placeholder */
+:host .choices__placeholder button {
+  /* Override: Hide remove button when placeholder shown */
+  display: /* none | block */;
+}
+
+/* Disabled state */
+:host .choices.is-disabled .choices__input {
+  background-color: /* your disabled bg */;
+}
+
+
+/* ============================================================================
+ * 7. CARDS AND PANELS
+ * ============================================================================
+ */
+
+/* Card header */
+:host .card-header {
+  font-weight: /* your weight */;
+  color: /* your color */;
+  opacity: /* your opacity */;
+  background: /* your background */;
+  padding: /* your padding */;
+}
+
+/* Card body */
+:host .card-body {
+  padding: /* your padding */;
+  background: /* your background */;
+  border: /* your border */;
+}
+
+/* Expand/collapse icons */
+:host .card-header .fa-minus-square-o::before,
+:host .card-header .fa-plus-square-o::before {
+  font-size: /* your size */;
+  color: /* your color */;
+}
+
+
+/* ============================================================================
+ * 8. VALIDATION AND ERROR MESSAGES
+ * ============================================================================
+ */
+
+/* Error wrapper */
+:host .formio-error-wrapper {
+  background-color: /* transparent | your bg */;
+  padding: /* your padding */;
+}
+
+/* Warning wrapper */
+:host .formio-warning-wrapper {
+  padding: /* your padding */;
+}
+
+/* Form text (help text) */
+:host .form-text {
+  font-size: /* your size */;
+  color: /* your color */;
+}
+
+/* Error text */
+:host .form-text.error {
+  background: /* none | your bg */;
+  color: /* your error color */;
+}
+
+/* Invalid feedback */
+:host .invalid-feedback {
+  font-size: /* your size */;
+  color: /* your error color */;
+}
+
+
+/* ============================================================================
+ * 9. RADIO BUTTONS AND CHECKBOXES
+ * ============================================================================
+ */
+
+:host .form-radio .form-check {
+  margin-bottom: /* your spacing */;
+}
+
+:host .form-radio .form-check-label {
+  font-size: /* your size */;
+}
+
+:host .form-radio .form-check-label .form-check-input {
+  transform: scale(/* your scale */);
+}
+
+:host .form-radio .form-check-label span {
+  margin-left: /* your spacing */;
+}
+
+
+/* ============================================================================
+ * 10. TYPOGRAPHY
+ * ============================================================================
+ */
+
+:host h1 {
+  font-size: /* your size */;
+  color: /* your color */;
+  line-height: /* your line height */;
+  font-weight: /* your weight */;
+}
+
+:host h2 {
+  font-size: /* your size */;
+  color: /* your color */;
+  line-height: /* your line height */;
+  font-weight: /* your weight */;
+}
+
+:host h3 {
+  font-size: /* your size */;
+  color: /* your color */;
+  line-height: /* your line height */;
+  font-weight: /* your weight */;
+}
+
+:host h4 {
+  font-size: /* your size */;
+  color: /* your color */;
+  line-height: /* your line height */;
+  font-weight: /* your weight */;
+}
+
+:host h5 {
+  font-size: /* your size */;
+  color: /* your color */;
+  line-height: /* your line height */;
+  font-weight: /* your weight */;
+}
+
+:host p {
+  color: /* your color */;
+  line-height: /* your line height */;
+}
+
+
+/* ============================================================================
+ * 11. LINKS
+ * ============================================================================
+ */
+
+:host a {
+  color: /* your link color */;
+  text-decoration: /* your decoration */;
+}
+
+:host a:hover {
+  color: /* your hover color */;
+  text-decoration: /* your hover decoration */;
+}
+
+
+/* ============================================================================
+ * 12. TOOLTIPS
+ * ============================================================================
+ */
+
+:host .tooltip-inner {
+  background-color: /* your bg */;
+  border-radius: /* your radius */;
+  box-shadow: /* your shadow */;
+  font-size: /* your size */;
+}
+
+
+/* ============================================================================
+ * 13. GRID AND COLUMNS
+ * ============================================================================
+ */
+
+:host div[class^='col-']:nth-child(n + 1) {
+  padding-top: /* your spacing */;
+}
+
+
+/* ============================================================================
+ * 14. CSS VARIABLES (THEME OVERRIDES)
+ * ============================================================================
+ * Override CSS variables defined in chefs-theme.css
+ * These variables control Bootstrap and Vuetify theming
+ */
+
+:host {
+  /* Bootstrap color variables */
+  --bs-primary: /* your primary color */;
+  --bs-secondary: /* your secondary color */;
+  --bs-success: /* your success color */;
+  --bs-danger: /* your danger color */;
+  --bs-warning: /* your warning color */;
+  --bs-info: /* your info color */;
+  
+  /* Bootstrap body variables */
+  --bs-body-font-family: /* your font family */;
+  --bs-body-font-size: /* your font size */;
+  --bs-body-color: /* your text color */;
+  --bs-body-bg: /* your background */;
+  
+  /* Bootstrap link variables */
+  --bs-link-color: /* your link color */;
+  --bs-link-hover-color: /* your hover color */;
+  
+  /* Bootstrap border variables */
+  --bs-border-color: /* your border color */;
+  --bs-border-radius: /* your border radius */;
+  
+  /* Bootstrap form variables */
+  --bs-form-valid-color: /* your valid color */;
+  --bs-form-valid-border-color: /* your valid border */;
+  --bs-form-invalid-color: /* your invalid color */;
+  --bs-form-invalid-border-color: /* your invalid border */;
+  
+  /* Vuetify theme variables */
+  --v-theme-overlay-multiplier: /* your multiplier */;
+  --v-scrollbar-offset: /* your offset */;
+}
+
+
+/* ============================================================================
+ * 15. UTILITY CLASSES
+ * ============================================================================
+ */
+
+/* Horizontal rule */
+:host hr {
+  margin-bottom: /* your spacing */;
+}
+
+:host hr.orange {
+  border-top: /* your border */;
+}
+
+
+/* ============================================================================
+ * 16. COMPONENT-SPECIFIC OVERRIDES
+ * ============================================================================
+ * Add custom overrides for specific Form.io component types
+ */
+
+/* Example: Custom component override */
+:host .formio-component-your-custom-component {
+  /* Your custom styles */
+}
+
+
+/* ============================================================================
+ * 17. RESPONSIVE BREAKPOINTS
+ * ============================================================================
+ * Use media queries for responsive overrides
+ */
+
+@media (max-width: 576px) {
+  :host .form-wrapper {
+    /* Mobile styles */
+  }
+}
+
+@media (min-width: 768px) {
+  :host .form-wrapper {
+    /* Tablet styles */
+  }
+}
+
+@media (min-width: 992px) {
+  :host .form-wrapper {
+    /* Desktop styles */
+  }
+}
+
+
+/* ============================================================================
+ * 18. PRINT STYLES
+ * ============================================================================
+ */
+
+@media print {
+  :host .form-wrapper {
+    /* Print-specific styles */
+  }
+  
+  :host .btn {
+    /* Hide buttons in print */
+    display: none;
+  }
+}
+
