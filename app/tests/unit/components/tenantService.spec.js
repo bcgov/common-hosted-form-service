@@ -194,14 +194,14 @@ describe('TenantService', () => {
               id: 'group-1',
               name: 'Group 1',
               sharedServiceRoles: [
-                { name: 'form_admin', enabled: true },
-                { name: 'form_designer', enabled: true },
+                { name: 'form_admin', isDeleted: false },
+                { name: 'form_designer', isDeleted: false },
               ],
             },
             {
               id: 'group-2',
               name: 'Group 2',
-              sharedServiceRoles: [{ name: 'submission_reviewer', enabled: true }],
+              sharedServiceRoles: [{ name: 'submission_reviewer', isDeleted: false }],
             },
           ],
         },
@@ -216,7 +216,7 @@ describe('TenantService', () => {
       expect(jwtService.getBearerToken).toHaveBeenCalledWith(req);
     });
 
-    it('should include only enabled shared service roles', async () => {
+    it('should include only non-deleted shared service roles', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       mockAxios.onGet(apiUrl).reply(200, {
         data: {
@@ -225,8 +225,8 @@ describe('TenantService', () => {
               id: 'group-1',
               name: 'Group 1',
               sharedServiceRoles: [
-                { name: 'form_admin', enabled: true },
-                { name: 'form_designer', enabled: false },
+                { name: 'form_admin', isDeleted: false },
+                { name: 'form_designer', isDeleted: true },
               ],
             },
           ],
@@ -501,7 +501,7 @@ describe('TenantService', () => {
             {
               id: 'group-1',
               name: 'Admin Group',
-              sharedServiceRoles: [{ name: 'form_admin', enabled: true }],
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
             },
           ],
         },
@@ -589,7 +589,7 @@ describe('TenantService', () => {
             {
               id: 'group-1',
               name: 'Regular Group',
-              sharedServiceRoles: [{ name: 'form_designer', enabled: true }],
+              sharedServiceRoles: [{ name: 'form_designer', isDeleted: false }],
             },
           ],
         },
@@ -615,7 +615,7 @@ describe('TenantService', () => {
             {
               id: 'group-1',
               name: 'Admin Group',
-              sharedServiceRoles: [{ name: 'form_admin', enabled: true }],
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
             },
           ],
         },
@@ -668,8 +668,8 @@ describe('TenantService', () => {
               id: 'group-1',
               name: 'Admin Group',
               sharedServiceRoles: [
-                { name: 'form_admin', enabled: true },
-                { name: 'form_designer', enabled: true },
+                { name: 'form_admin', isDeleted: false },
+                { name: 'form_designer', isDeleted: false },
               ],
             },
           ],
@@ -765,7 +765,7 @@ describe('TenantService', () => {
             {
               id: 'group-1',
               name: 'Admin Group',
-              sharedServiceRoles: [{ name: 'form_admin', enabled: true }],
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
             },
           ],
         },
@@ -790,7 +790,7 @@ describe('TenantService', () => {
             {
               id: 'group-1',
               name: 'Regular Group',
-              sharedServiceRoles: [{ name: 'form_designer', enabled: true }],
+              sharedServiceRoles: [{ name: 'form_designer', isDeleted: false }],
             },
           ],
         },
