@@ -85,7 +85,7 @@ class TenantService {
     return (data?.data?.groups || []).map((group) => ({
       id: group.id,
       name: group.name,
-      roles: (group.sharedServiceRoles || []).filter((role) => role.enabled).map((role) => role.name),
+      roles: (group.sharedServiceRoles || []).filter((role) => role.isDeleted !== true).map((role) => role.name),
     }));
   }
 
