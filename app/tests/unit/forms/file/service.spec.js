@@ -271,6 +271,120 @@ describe('create', () => {
     });
   });
 
+  describe('moveSubmissionFile', () => {
+    it('should update file path after S3 move succeeds', async () => {
+      const submissionId = 'test-submission-id';
+      const updatedBy = 'test-user';
+      const fileStorage = {
+        id: 'test-file-id',
+        path: 'chefs/prod/uploads/test-file-id',
+        formSubmissionId: null,
+        storage: 'objectStorage',
+      };
+      const newPath = `chefs/prod/submissions/${submissionId}/test-file-id`;
+
+      // Mock storageService.move to return new path
+      storageService.move = jest.fn().mockResolvedValue(newPath);
+
+      // Mock FileStorage.query().patchAndFetchById to return updated record
+      FileStorage.query = jest.fn().mockReturnValue({
+        patchAndFetchById: jest.fn().mockResolvedValue({
+          ...fileStorage,
+          path: newPath,
+          formSubmissionId: submissionId,
+        }),
+      });
+
+      // Mock storageService.delete (called after DB commit)
+      storageService.delete = jest.fn().mockResolvedValue(true);
+
+      await service.moveSubmissionFile(submissionId, fileStorage, updatedBy);
+
+      expect(storageService.move).toHaveBeenCalledWith(fileStorage, 'submissions', submissionId);
+      expect(FileStorage.query().patchAndFetchById).toHaveBeenCalledWith(
+        fileStorage.id,
+        expect.objectContaining({
+          path: newPath,
+          formSubmissionId: submissionId,
+        })
+      );
+      expect(storageService.delete).toHaveBeenCalledWith(fileStorage);
+    });
+
+    it('should not delete original file if DB update fails', async () => {
+      const submissionId = 'test-submission-id';
+      const updatedBy = 'test-user';
+      const fileStorage = {
+        id: 'test-file-id',
+        path: 'chefs/prod/uploads/test-file-id',
+      };
+      const newPath = `chefs/prod/submissions/${submissionId}/test-file-id`;
+
+      // Mock storageService.move to return new path (S3 copy succeeds)
+      storageService.move = jest.fn().mockResolvedValue(newPath);
+
+      // Mock transaction
+      const mockTrx = {
+        commit: jest.fn().mockResolvedValue(),
+        rollback: jest.fn().mockResolvedValue(),
+      };
+
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTrx);
+
+      // Mock DB update to fail
+      FileStorage.query = jest.fn().mockReturnValue({
+        patchAndFetchById: jest.fn().mockRejectedValue(new Error('DB update failed')),
+      });
+
+      storageService.delete = jest.fn().mockResolvedValue(true);
+
+      await expect(service.moveSubmissionFile(submissionId, fileStorage, updatedBy)).rejects.toThrow('DB update failed');
+
+      // delete should NOT have been called
+      expect(storageService.delete).not.toHaveBeenCalled();
+      // rollback should have been called
+      expect(mockTrx.rollback).toHaveBeenCalled();
+    });
+
+    it('should log error but not fail if S3 delete fails after DB commit', async () => {
+      const submissionId = 'test-submission-id';
+      const updatedBy = 'test-user';
+      const fileStorage = {
+        id: 'test-file-id',
+        path: 'chefs/prod/uploads/test-file-id',
+      };
+      const newPath = `chefs/prod/submissions/${submissionId}/test-file-id`;
+
+      storageService.move = jest.fn().mockResolvedValue(newPath);
+
+      const mockTrx = {
+        commit: jest.fn().mockResolvedValue(),
+        rollback: jest.fn().mockResolvedValue(),
+      };
+
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTrx);
+
+      FileStorage.query = jest.fn().mockReturnValue({
+        patchAndFetchById: jest.fn().mockResolvedValue({
+          ...fileStorage,
+          path: newPath,
+          formSubmissionId: submissionId,
+        }),
+      });
+
+      // Mock delete to fail after DB commit
+      storageService.delete = jest.fn().mockRejectedValue(new Error('S3 delete failed'));
+
+      // Should NOT throw even though delete failed
+      await expect(service.moveSubmissionFile(submissionId, fileStorage, updatedBy)).resolves.not.toThrow();
+
+      // Commit should have succeeded
+      expect(mockTrx.commit).toHaveBeenCalled();
+      // Delete was attempted
+      expect(storageService.delete).toHaveBeenCalled();
+    });
+  });
+
   describe('clone coverage', () => {
     it('clone: should create a new file record with new ID', async () => {
       FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
