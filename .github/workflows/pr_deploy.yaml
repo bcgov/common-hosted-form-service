@@ -104,7 +104,7 @@ jobs:
           route_prefix: ${{ vars.ROUTE_PREFIX }}
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Release Comment on PR
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@70d2764d1a7d5d9560b100cbea0077fc8f633987  # SHA for v3
         if: success()
         with:
           header: release

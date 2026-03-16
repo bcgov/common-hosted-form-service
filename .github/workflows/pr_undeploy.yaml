@@ -52,7 +52,7 @@ jobs:
           oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ env.PR_NUMBER }}
       - name: Remove Release Comment on PR
         if: github.event_name == 'workflow_dispatch'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@70d2764d1a7d5d9560b100cbea0077fc8f633987  # SHA for v3
         with:
           header: release
           delete: true
