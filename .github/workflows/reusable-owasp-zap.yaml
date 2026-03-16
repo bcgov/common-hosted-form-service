@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Run Scan
-        uses: zaproxy/action-full-scan@v0.13.0
+        uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c
         with:
           # Do not create GitHub Issues
           allow_issue_writing: false
