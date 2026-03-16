@@ -12,6 +12,8 @@ jobs:
   test-app:
     name: Unit Tests (App)
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     defaults:
       run:
         working-directory: app
@@ -71,6 +73,8 @@ jobs:
   test-frontend:
     name: Unit Tests (Frontend)
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     defaults:
       run:
         working-directory: app/frontend
