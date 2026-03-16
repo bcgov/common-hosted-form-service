@@ -10,7 +10,7 @@ export function formsettings(){
     }
     else
     {
-        cy.visit(`/${depEnv}`); 
+        cy.visit(`${depEnv}`); 
     }
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
