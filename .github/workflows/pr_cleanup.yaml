@@ -30,7 +30,7 @@ jobs:
           exit 1
           
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get last run timestamp
         id: get_last_run
@@ -50,7 +50,7 @@ jobs:
           echo "$NOW" > $LAST_RUN_FILE
 
       - name: Upload last run timestamp artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pr-cleanup-last-run
           path: ${{ env.LAST_RUN_FILE }}

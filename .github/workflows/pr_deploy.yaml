@@ -59,7 +59,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout repository from pull request
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Build & Push
@@ -85,7 +85,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout repository from pull request
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Deploy to environment

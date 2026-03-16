@@ -25,20 +25,17 @@ jobs:
       matrix:
         version: [20]
     steps:
-      - name: Opt into Node 24 for actions
-        run: echo "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true" >> "$GITHUB_ENV"
-        working-directory: ${{ github.workspace }}
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Check CodeClimate Secrets
         id: check-secrets
         run: echo "HAS_CC_SECRETS=${{ secrets.CC_TEST_REPORTER_ID != '' }}" >> $GITHUB_OUTPUT
       - name: Use Node.js ${{ matrix.version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.version }}
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-app
         env:
           cache-name: cache-node-modules
@@ -58,7 +55,7 @@ jobs:
           CI: true
       - name: Save Coverage Results
         if: matrix.version == 20
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
@@ -89,17 +86,14 @@ jobs:
       matrix:
         version: [20]
     steps:
-      - name: Opt into Node 24 for actions
-        run: echo "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true" >> "$GITHUB_ENV"
-        working-directory: ${{ github.workspace }}
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.version }}
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-frontend
         env:
           cache-name: cache-node-modules
@@ -119,7 +113,7 @@ jobs:
           CI: true
       - name: Save Coverage Results
         if: matrix.version == 20
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
@@ -144,7 +138,7 @@ jobs:
   #   timeout-minutes: 10
   #   steps:
   #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
+  #       uses: actions/checkout@v5
   #     - name: Restore Coverage Results
   #       uses: actions/download-artifact@v4
   #     - name: Publish code coverage

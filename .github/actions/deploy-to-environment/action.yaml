@@ -52,12 +52,12 @@ runs:
         curl -sL "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz" | tar -xzf - -C "${OC_DIR}" oc
         echo "${OC_DIR}" >> "${GITHUB_PATH}"
     - name: Checkout repository from pull request
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: ${{ inputs.ref }}
       if: ${{ inputs.ref != '' }}
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       if: ${{ inputs.ref == '' }}
 
     - name: Login to OpenShift Cluster

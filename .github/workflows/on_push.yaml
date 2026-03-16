@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Build & Push
         uses: ./.github/actions/build-push-container
         with:
@@ -44,7 +44,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Deploy to Dev
         uses: ./.github/actions/deploy-to-environment
         with:
@@ -79,7 +79,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Deploy to Test
         uses: ./.github/actions/deploy-to-environment
         with:
@@ -108,7 +108,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Deploy to Prod
         uses: ./.github/actions/deploy-to-environment
         with:
