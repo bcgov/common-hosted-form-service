@@ -37,12 +37,10 @@ jobs:
           curl -sL "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz" | tar -xzf - -C "${OC_DIR}" oc
           echo "${OC_DIR}" >> "${GITHUB_PATH}"
       - name: Login to OpenShift Cluster
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ vars.NAMESPACE_PREFIX }}-dev
+        shell: bash
+        run: |
+          oc login --token="${{ secrets.OPENSHIFT_TOKEN }}" --server="${{ secrets.OPENSHIFT_SERVER }}" --insecure-skip-tls-verify
+          oc project "${{ vars.NAMESPACE_PREFIX }}-dev"
       - name: Remove PR Deployment
         shell: bash
         run: |

@@ -61,13 +61,10 @@ runs:
       if: ${{ inputs.ref == '' }}
 
     - name: Login to OpenShift Cluster
-      uses: redhat-actions/oc-login@v1
-
-      with:
-        openshift_server_url: ${{ inputs.openshift_server }}
-        openshift_token: ${{ inputs.openshift_token }}
-        insecure_skip_tls_verify: true
-        namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+      shell: bash
+      run: |
+        oc login --token="${{ inputs.openshift_token }}" --server="${{ inputs.openshift_server }}" --insecure-skip-tls-verify
+        oc project "${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
 
     - name: Deploy Patroni Secret
       shell: bash
