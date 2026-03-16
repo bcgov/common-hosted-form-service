@@ -2981,6 +2981,121 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rbac/current/tenants:
+    get:
+      summary: Get tenants for current user
+      operationId: getCurrentUserTenants
+      tags:
+        - RBAC
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TenantSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rbac/current/groups:
+    get:
+      summary: Get groups for current tenant
+      operationId: getGroupsForCurrentTenant
+      tags:
+        - RBAC
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TenantGroup'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rbac/forms/{formId}/groups:
+    get:
+      summary: Get groups assigned to a form
+      operationId: getFormGroups
+      tags:
+        - RBAC
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormGroupsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Assign groups to a form
+      operationId: assignGroupsToForm
+      tags:
+        - RBAC
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormGroupsAssignRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormGroupsAssignResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /users:
     get:
       summary: Get a list of users and their roles
@@ -5385,6 +5500,105 @@ components:
               type: boolean
               example: true
         - $ref: '#/components/schemas/TimeStampUserData'
+    TenantSummary:
+      type: object
+      description: Tenant available to the current user, including resolved CHEFS roles.
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 6d1f624d-d690-4280-a81a-8c4f7a8f3d8f
+        name:
+          type: string
+          example: Sample Tenant
+        roles:
+          type: array
+          description: Role names derived from the user's tenant groups.
+          items:
+            type: string
+          example:
+            - form_admin
+            - form_designer
+      additionalProperties: true
+    TenantGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 10cdb358-2e0d-46a5-bacf-791a02a81cdd
+        name:
+          type: string
+          example: Group 1
+        description:
+          type: string
+          example: sample group description
+        createdDateTime:
+          type: string
+          example: '2026-01-29'
+        updatedDateTime:
+          type: string
+          example: '2026-01-29'
+        createdBy:
+          type: string
+          example: Smith, John
+        updatedBy:
+          type: string
+          example: GRT09EF4C19SFRT1EAF852461B3E4EF3D
+    FormGroupAssignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d6c1ec98-6ea6-4ab5-bca8-7b4a9e016062
+        name:
+          type: string
+          example: admin group
+        description:
+          type: string
+          example: admin
+        isAssociated:
+          type: boolean
+          example: true
+        isDeleted:
+          type: boolean
+          description: Present only when an associated group no longer exists in the source tenant.
+          example: true
+    FormGroupsResponse:
+      type: object
+      properties:
+        associatedGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormGroupAssignment'
+        missingGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormGroupAssignment'
+        availableGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormGroupAssignment'
+    FormGroupsAssignRequest:
+      type: object
+      required:
+        - groupIds
+      properties:
+        groupIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          example:
+            - d6c1ec98-6ea6-4ab5-bca8-7b4a9e016062
+            - ee95d199-7882-45b2-a980-e070ad426282
+    FormGroupsAssignResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
     Label:
       type: array
       example:
