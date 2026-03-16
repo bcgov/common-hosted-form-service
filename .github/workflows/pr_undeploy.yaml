@@ -12,6 +12,9 @@ on:
         required: true
         type: string
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   remove-pr-dev:
     name: Remove PR build from dev namespace
@@ -24,11 +27,15 @@ jobs:
       PR_NUMBER: ${{ github.event.inputs.pr-number || github.event.pull_request.number }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.14"
+        uses: actions/checkout@v5
+      - name: Install OpenShift CLI (oc)
+        shell: bash
+        run: |
+          OC_VERSION="4.14.62"
+          OC_DIR="${HOME}/oc-bin"
+          mkdir -p "${OC_DIR}"
+          curl -sL "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz" | tar -xzf - -C "${OC_DIR}" oc
+          echo "${OC_DIR}" >> "${GITHUB_PATH}"
       - name: Login to OpenShift Cluster
         uses: redhat-actions/oc-login@v1
         with:
@@ -45,7 +52,7 @@ jobs:
           oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ env.PR_NUMBER }}
       - name: Remove Release Comment on PR
         if: github.event_name == 'workflow_dispatch'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@70d2764d1a7d5d9560b100cbea0077fc8f633987  # SHA for v3
         with:
           header: release
           delete: true
