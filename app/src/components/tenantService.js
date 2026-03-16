@@ -197,8 +197,8 @@ class TenantService {
 
     // 3. Check user has a group with form_admin role
     const userGroups = await this.getUserTenantGroupsAndRoles(req);
-    const hasFormAdmin = userGroups.some((g) => g.roles.includes('form_admin'));
-    if (!hasFormAdmin) throw new Error(`${SERVICE}: insufficient permissions`);
+    const hasAccess = userGroups.some((g) => g.roles.includes('form_admin'));
+    if (!hasAccess) throw new Error(`${SERVICE}: insufficient permissions`);
 
     // 4. Remove existing group assignments for this form
     await FormGroup.query().delete().where({ formId });

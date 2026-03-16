@@ -237,6 +237,17 @@ export default function getRouter(basePath = '/') {
             props: createProps,
           },
           {
+            path: 'groups',
+            name: 'FormGroups',
+            component: () => import('~/views/form/Groups.vue'),
+            meta: {
+              breadcrumbTitle: 'Group Management',
+              requiresAuth: 'primary',
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'view',
             name: 'FormView',
             component: () => import('~/views/form/View.vue'),
