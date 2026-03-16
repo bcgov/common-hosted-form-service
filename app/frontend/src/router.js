@@ -510,8 +510,9 @@ export default function getRouter(basePath = '/') {
     handleFirstTransition(to, authStore);
     handleAuthRedirect(to, authStore);
 
-    // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
     const tenantStore = useTenantStore();
+
+    // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
     if (
       to.name === 'FormCreate' &&
       authStore.authenticated &&
@@ -520,6 +521,15 @@ export default function getRouter(basePath = '/') {
       !tenantStore.isFormAdmin
     ) {
       return next({ name: 'UserForms' });
+    }
+
+    // Group Management is only for tenanted forms — redirect non-tenanted users to FormManage
+    if (
+      to.name === 'FormGroups' &&
+      authStore.authenticated &&
+      !tenantStore.selectedTenant
+    ) {
+      return next({ name: 'FormManage', query: { f: to.query.f } });
     }
 
     // Update document title if applicable

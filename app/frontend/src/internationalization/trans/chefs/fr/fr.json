@@ -892,7 +892,8 @@
     "noAssignedGroups": "Aucun groupe assigné à ce formulaire",
     "addGroup": "Ajouter le groupe",
     "removeGroup": "Supprimer le groupe",
-    "deleted": "Supprimé"
+    "deleted": "Supprimé",
+    "noTenantAccess": "La gestion des groupes est uniquement disponible pour les formulaires liés à un locataire. Veuillez sélectionner un locataire pour continuer."
   },
   "floatButton": {
     "publish": "Publier",

@@ -1015,7 +1015,8 @@
     "noAssignedGroups": "No groups assigned to this form",
     "addGroup": "Add group",
     "removeGroup": "Remove group",
-    "deleted": "Deleted"
+    "deleted": "Deleted",
+    "noTenantAccess": "Group management is only available for tenanted forms. Please select a tenant to continue."
   },
   "floatButton": {
     "publish": "Publish",

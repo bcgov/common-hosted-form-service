@@ -7,6 +7,7 @@ import { rbacService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useTenantStore } from '~/store/tenant';
+import { NotificationTypes } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -58,7 +59,14 @@ const filteredAssigned = computed(() => {
   );
 });
 
+// True when the component is loaded without a tenant context (direct URL access, degraded state)
+const noTenant = computed(() => !tenantStore.selectedTenant);
+
 onMounted(() => {
+  if (noTenant.value) {
+    loading.value = false;
+    return;
+  }
   loadItems();
 });
 
@@ -77,6 +85,7 @@ async function loadFormGroups() {
     missingGroups.value = data.missingGroups || [];
   } catch (error) {
     notificationStore.addNotification({
+      ...NotificationTypes.ERROR,
       text: t('trans.groupManagement.getGroupsErrMsg'),
       consoleError: `Error loading form groups: ${error}`,
     });
@@ -109,10 +118,12 @@ async function saveGroups() {
     await rbacService.assignGroupsToForm(properties.formId, groupIds);
     await loadFormGroups();
     notificationStore.addNotification({
+      ...NotificationTypes.SUCCESS,
       text: t('trans.groupManagement.saveSuccessMsg'),
     });
   } catch (error) {
     notificationStore.addNotification({
+      ...NotificationTypes.ERROR,
       text: t('trans.groupManagement.saveErrMsg'),
       consoleError: `Error saving group associations: ${error}`,
     });
@@ -125,6 +136,7 @@ defineExpose({
   assignedGroups,
   availableGroups,
   canManageGroups,
+  noTenant,
   filteredAvailable,
   filteredAssigned,
   loading,
@@ -174,8 +186,13 @@ defineExpose({
       </div>
     </v-container>
 
+    <!-- Fallback: no tenant context (direct URL access or degraded state) -->
+    <v-alert v-if="noTenant" type="error" class="mb-4" :lang="locale">
+      {{ $t('trans.groupManagement.noTenantAccess') }}
+    </v-alert>
+
     <v-alert
-      v-if="missingGroups.length > 0"
+      v-if="!noTenant && missingGroups.length > 0"
       class="mb-4"
       type="warning"
       density="compact"
@@ -188,13 +205,13 @@ defineExpose({
       }}
     </v-alert>
 
-    <v-row v-if="loading" class="mt-4">
+    <v-row v-if="!noTenant && loading" class="mt-4">
       <v-col class="d-flex justify-center">
         <v-progress-circular indeterminate color="primary" />
       </v-col>
     </v-row>
 
-    <v-row v-else class="mt-2 group-panels">
+    <v-row v-else-if="!noTenant" class="mt-2 group-panels">
       <!-- Available Groups -->
       <v-col cols="12" md="5">
         <v-card variant="outlined" height="100%">
@@ -383,7 +400,7 @@ defineExpose({
       </v-col>
     </v-row>
 
-    <v-row class="mt-4">
+    <v-row v-if="!noTenant" class="mt-4">
       <v-col class="d-flex justify-end">
         <v-btn
           color="primary"
