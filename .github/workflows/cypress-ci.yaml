@@ -37,7 +37,7 @@ jobs:
          cache-dependency-path: 'tests/functional/cypress/package-lock.json'
          
      - name: cypress install
-       uses: cypress-io/github-action@v7
+       uses: cypress-io/github-action@82482149c343a5dee155d22104111b9319f9dd45  # SHA for v7
        with:
           working-directory: 'tests/functional/cypress'
           browser:  chrome
