@@ -38,9 +38,13 @@ jobs:
           echo "${OC_DIR}" >> "${GITHUB_PATH}"
       - name: Login to OpenShift Cluster
         shell: bash
+        env:
+          OC_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+          OC_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+          OC_NAMESPACE: ${{ vars.NAMESPACE_PREFIX }}-dev
         run: |
-          oc login --token="${{ secrets.OPENSHIFT_TOKEN }}" --server="${{ secrets.OPENSHIFT_SERVER }}" --insecure-skip-tls-verify
-          oc project "${{ vars.NAMESPACE_PREFIX }}-dev"
+          oc login --token="${OC_TOKEN}" --server="${OC_SERVER}" --insecure-skip-tls-verify
+          oc project "${OC_NAMESPACE}"
       - name: Remove PR Deployment
         shell: bash
         run: |

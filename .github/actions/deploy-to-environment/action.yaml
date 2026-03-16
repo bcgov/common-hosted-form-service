@@ -62,9 +62,13 @@ runs:
 
     - name: Login to OpenShift Cluster
       shell: bash
+      env:
+        OC_TOKEN: ${{ inputs.openshift_token }}
+        OC_SERVER: ${{ inputs.openshift_server }}
+        OC_NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
       run: |
-        oc login --token="${{ inputs.openshift_token }}" --server="${{ inputs.openshift_server }}" --insecure-skip-tls-verify
-        oc project "${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
+        oc login --token="${OC_TOKEN}" --server="${OC_SERVER}" --insecure-skip-tls-verify
+        oc project "${OC_NAMESPACE}"
 
     - name: Deploy Patroni Secret
       shell: bash
