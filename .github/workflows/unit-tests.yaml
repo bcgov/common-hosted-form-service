@@ -55,7 +55,7 @@ jobs:
           CI: true
       - name: Save Coverage Results
         if: matrix.version == 20
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
@@ -113,7 +113,7 @@ jobs:
           CI: true
       - name: Save Coverage Results
         if: matrix.version == 20
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage

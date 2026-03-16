@@ -46,14 +46,14 @@ jobs:
           CYPRESS_keycloakPassword: ${{ secrets.Password }}
           CYPRESS_depEnv: 'pr-${{ inputs.pr-number }}'
 
-     - uses: actions/upload-artifact@v5
+     - uses: actions/upload-artifact@v6
        if: always()
        with:
           name: cypress-axe-reports
           path: '${{ github.workspace }}/tests/functional/cypress/axe-reports'
           if-no-files-found: ignore
  
-     - uses: actions/upload-artifact@v5
+     - uses: actions/upload-artifact@v6
        if: failure()
        with:
           name: cypress-screenshots
