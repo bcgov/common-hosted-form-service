@@ -25,6 +25,8 @@ jobs:
       matrix:
         version: [20]
     steps:
+      - name: Opt into Node 24 for actions
+        run: echo "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true" >> "$GITHUB_ENV"
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Check CodeClimate Secrets
@@ -86,6 +88,8 @@ jobs:
       matrix:
         version: [20]
     steps:
+      - name: Opt into Node 24 for actions
+        run: echo "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true" >> "$GITHUB_ENV"
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.version }}
