@@ -1,5 +1,8 @@
 name: ClamAV Image Build
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   workflow_dispatch:
     inputs:
@@ -50,7 +53,7 @@ jobs:
 
       - name: Prepare Container Metadata tags
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}
@@ -78,7 +81,7 @@ jobs:
 
       - name: Build and Push to Container Registry
         id: builder
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./clamav
           push: true

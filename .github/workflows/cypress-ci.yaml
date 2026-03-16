@@ -15,7 +15,10 @@ on:
         required: true
       Password:
         required: true
-  
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04

@@ -43,10 +43,14 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install OpenShift CLI tools
-      uses: redhat-actions/openshift-tools-installer@v1
-      with:
-        oc: "4.14"
+    - name: Install OpenShift CLI (oc)
+      shell: bash
+      run: |
+        OC_VERSION="4.14.62"
+        OC_DIR="${HOME}/oc-bin"
+        mkdir -p "${OC_DIR}"
+        curl -sL "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz" | tar -xzf - -C "${OC_DIR}" oc
+        echo "${OC_DIR}" >> "${GITHUB_PATH}"
     - name: Checkout repository from pull request
       uses: actions/checkout@v4
       with:

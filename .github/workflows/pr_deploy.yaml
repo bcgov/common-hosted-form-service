@@ -3,6 +3,7 @@ run-name: Deploy PR-${{ github.event.inputs.pr-number }}
 
 env:
   ACRONYM: chefs
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 on:
   workflow_dispatch:
