@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onUnmounted } from 'vue';
+import { computed, ref, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -75,6 +75,14 @@ const { mdAndDown } = useDisplay();
 // // We need to handle scroll through an event listener because computed values do not update on a scroll event
 window.addEventListener('scroll', onEventScroll);
 
+watch(
+  () => form.value?.id,
+  async (id) => {
+    if (!id) return;
+    await formStore.getFormPermissionsForUser(id);
+  },
+  { immediate: true }
+);
 onUnmounted(() => {
   window.removeEventListener('scroll', onEventScroll);
 });
