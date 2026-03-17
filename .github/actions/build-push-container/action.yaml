@@ -144,11 +144,7 @@ runs:
         password: ${{ inputs.dockerhub_token }}
 
     - name: Set up Docker Buildx
-<<<<<<< feat/CCP_3145_Fix_tagging_for_docker_builds
-      uses: docker/setup-buildx-action@v3
-=======
       uses: docker/setup-buildx-action@v4
->>>>>>> main
 
     - name: Prepare Container Metadata tags
       id: meta
