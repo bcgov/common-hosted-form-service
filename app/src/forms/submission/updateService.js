@@ -48,7 +48,7 @@ const service = {
       if (!fileStorage.formSubmissionId) {
         await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: id, updatedBy: user.usernameIdp });
         fileService.moveSubmissionFile(id, fileStorage, user.usernameIdp).catch((error) => {
-          log.error('Error moving file', error);
+          log.error('Error moving file', { error, fileId, submissionId: id, userId: user.usernameIdp, originalName: fileStorage.originalName });
         });
       }
     }
@@ -58,8 +58,18 @@ const service = {
     await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.UPDATED, updated.submission, data.draft);
     if (submissionReceived) {
       const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
-      await emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => {});
-      await eventService.formSubmissionEventReceived(submissionMetaData.formId, submissionMetaData.formVersionId, formSubmissionId, data).catch(() => {});
+      await emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch((error) => {
+        log.error('Failed to send submission received confirmation email', { error, formId: submissionMetaData.formId, submissionId: formSubmissionId, referrer });
+      });
+      await eventService.formSubmissionEventReceived(submissionMetaData.formId, submissionMetaData.formVersionId, formSubmissionId, data).catch((error) => {
+        log.error('Failed to publish submission received event', {
+          error,
+          formId: submissionMetaData.formId,
+          formVersionId: submissionMetaData.formVersionId,
+          submissionId: formSubmissionId,
+          referrer,
+        });
+      });
     }
   },
 

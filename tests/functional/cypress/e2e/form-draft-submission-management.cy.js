@@ -37,7 +37,7 @@ it('Verify draft submission', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
+      .trigger('mousemove', coords.x, -1, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
     });
@@ -47,7 +47,7 @@ it('Verify draft submission', () => {
         cy.get('span.btn').contains('Multi-line Text')
         
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mousemove', coords.x, +1, { force: true })
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
