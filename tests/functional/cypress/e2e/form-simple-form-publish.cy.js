@@ -20,11 +20,15 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
+    cy.checkA11yPage();
+  });
+  it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get("button").contains("Advanced Data").click();  
+        
   });
   it("Checks Hidden component", () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
-    cy.get("button").contains("Advanced Data").click();
     cy.wait(2000);
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();

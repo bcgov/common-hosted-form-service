@@ -90,35 +90,38 @@ describe('Form Designer', () => {
     cy.wait(2000);
     cy.get(".mdi-email").click();
     cy.wait(2000);
-    cy.get('input[type="text"]').then(($el) => {
-      const sub = $el[1];
-      const titl = $el[2];
-      //cy.get(sub).click({force: true});
-      cy.get(sub).should("have.value", "{{ form.name }} Accepted");
-      cy.get(titl).should("have.value", "{{ form.name }} Accepted");
-      cy.get(sub).type("{selectall}{backspace}");
-      cy.get("div")
+    cy.contains('label', 'Subject')
+    .invoke('attr', 'for')
+    .then((id) => {
+    cy.get(`#${id}`).should("have.value", "{{ form.name }} Accepted")
+    cy.get(`#${id}`).type("{selectall}{backspace}");
+    cy.get("div")
         .contains("Please enter a Subject line for the email")
-        .should("be.visible");
-      cy.get(titl).type("{selectall}{backspace}");
-      cy.get("div")
+    .should("be.visible");
+    cy.get(`#${id}`).type('Test subject')
+    })
+    cy.contains('label', /^Title$/)
+    .invoke('attr', 'for')
+    .should('exist')
+    .then((id) => {
+    cy.get(`#${id}`).should("have.value", "{{ form.name }} Accepted")
+    cy.get(`#${id}`).should("have.value", "{{ form.name }} Accepted").type("{selectall}{backspace}");
+    cy.get("div")
         .contains("Please enter a Title for the email")
         .should("be.visible");
-      cy.get("textarea").then(($el) => {
-        const body = $el[0];
-        cy.get(body).type("{selectall}{backspace}");
-        cy.get("div")
-          .contains("Please enter a Body for the email")
-          .should("be.visible");
-        cy.get(body).type("Thank you for submission, Click on this link");
-      });
-      cy.get(sub).type("CHEFS submission Subject");
-      cy.get(titl).type("CHEFS submission Title");
-      cy.get(".v-form > .v-btn").should("be.enabled");
-      cy.get(".v-form > .v-btn").click();
+    cy.get(`#${id}`).type('My title')
+    })
+    cy.contains('label', /^Body$/)
+    .invoke('attr', 'for')
+    .should('exist')
+    .then((id) => {
+    cy.get(`#${id}`).type("{selectall}{backspace}");
+    cy.get(`#${id}`).should('be.visible').type('This is the body text')
+    })
+    cy.get(".v-form > .v-btn").should("be.enabled");
+    cy.get(".v-form > .v-btn").click();
     });
-  });
-  it('Checks Advanced Search functionality', () => {
+    it('Checks Advanced Search functionality', () => {
     cy.viewport(1000, 1800);
     cy.waitForLoad();
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
@@ -150,5 +153,5 @@ describe('Form Designer', () => {
     cy.get('.mdi-cog').click();
     cy.get(".mdi-delete").click();
     cy.get('[data-test="continue-btn-continue"]').click();
-  });
+    });
 });

@@ -140,6 +140,7 @@ describe('chefs-form-viewer-embed.js', () => {
       'read-only': 'true',
       token: encodeURIComponent('{"sub":"user123"}'),
       user: encodeURIComponent('{"name":"John"}'),
+      headers: encodeURIComponent('{"X-Custom-Header":"value"}'),
     };
     // Use a mock for setAttribute
     element.setAttribute = vi.fn();
@@ -156,8 +157,121 @@ describe('chefs-form-viewer-embed.js', () => {
     );
     // Should set read-only as boolean attribute
     expect(element.setAttribute).toHaveBeenCalledWith('read-only', '');
-    // Should set token and user as properties
+    // Should set token, user, and headers as properties
     expect(element.token).toEqual({ sub: 'user123' });
     expect(element.user).toEqual({ name: 'John' });
+    expect(element.headers).toEqual({ 'X-Custom-Header': 'value' });
+  });
+
+  it('should pass print button attributes through applyQueryParams', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'print-button-key': 'printCustom',
+      'print-event-name': 'printDocumentCustom',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    expect(element.setAttribute).toHaveBeenCalledWith(
+      'print-button-key',
+      'printCustom'
+    );
+    expect(element.setAttribute).toHaveBeenCalledWith(
+      'print-event-name',
+      'printDocumentCustom'
+    );
+  });
+
+  it('should handle no-shadow as a boolean parameter', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'no-shadow': 'true',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    expect(element.setAttribute).toHaveBeenCalledWith('no-shadow', '');
+  });
+
+  it('should handle host-data as JSON and set as hostData property', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const hostData = { config: { maxItems: 10 }, lookupData: ['a', 'b'] };
+    const params = {
+      'form-id': 'abc',
+      'host-data': encodeURIComponent(JSON.stringify(hostData)),
+    };
+
+    applyQueryParams(element, params, logger);
+
+    // Should set as hostData property (camelCase), not as attribute
+    expect(element.hostData).toEqual(hostData);
+    expect(element.setAttribute).not.toHaveBeenCalledWith(
+      'host-data',
+      expect.anything()
+    );
+  });
+
+  it('should handle submit-mode as a string attribute', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'submit-mode': 'host',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    expect(element.setAttribute).toHaveBeenCalledWith('submit-mode', 'host');
+  });
+
+  it('should handle invalid host-data JSON gracefully', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    };
+    const element = { setAttribute: vi.fn() };
+    const params = {
+      'form-id': 'abc',
+      'host-data': 'invalid-json',
+    };
+
+    applyQueryParams(element, params, logger);
+
+    // Should warn about invalid JSON
+    expect(logger.warn).toHaveBeenCalled();
+    // Should not set hostData property
+    expect(element.hostData).toBeUndefined();
   });
 });

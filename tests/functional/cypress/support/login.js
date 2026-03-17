@@ -17,7 +17,12 @@ export function formsettings(){
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
-    cy.get('.btn').click();
+    cy.origin('https://logontest7.gov.bc.ca', () => {
+    cy.get('.btn')
+    .should('be.visible')
+    .and('not.be.disabled')
+    .click({ force: true });
+    })
     cy.get('[data-cy="help"]')
     .should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs")
     .should("have.text", "Help");

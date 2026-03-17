@@ -486,6 +486,7 @@
    *     language="en"
    *     token='{"sub":"user123","roles":["admin"]}'
    *     user='{"name":"John Doe","email":"john@example.com"}'
+   *     headers='{"X-Custom-Header":"value","Authorization":"Bearer ..."}'
    *     read-only
    *     isolate-styles
    *     debug
@@ -515,6 +516,7 @@
    * - no-icons (boolean): do not load Font Awesome (icons will not render).
    * - token (string): JSON string containing token object for Form.io evalContext.
    * - user (string): JSON string containing user object for Form.io evalContext.
+   * - headers (string): JSON string containing headers object for Form.io evalContext.
    *
    * Notes on boolean attributes
    * - Standard HTML boolean semantics apply: presence, "true", empty string, "1" are treated as true.
@@ -526,8 +528,12 @@
    *   el.authToken = '...';
    *   el.token = { sub: 'user123', roles: ['admin'] };
    *   el.user = { name: 'John Doe', email: 'john@example.com' };
+   *   el.headers = { 'X-Custom-Header': 'value', 'Authorization': 'Bearer ...' };
    *   el.endpoints = { themeCss: 'https://example.com/theme.css' };
    *   el.load();
+   * - User token refresh (for OIDC/OAuth tokens from host application):
+   *   el.refreshUserToken({ token: accessToken }); // Auto-extracts expiry from JWT
+   *   el.refreshUserToken({ token: opaqueToken, expiresAt: 1234567890 }); // Manual expiry
    *
    * Overriding endpoints
    * - Set el.endpoints = { mainCss, formioJs, componentsJs, themeCss, schema, submit, readSubmission, iconsCss }
@@ -535,6 +541,13 @@
    * Core events (CustomEvent)
    * - formio:ready, formio:render, formio:change, formio:submit, formio:submitDone, formio:error
    * - formio:authTokenRefreshed: fired when auth token is refreshed (includes new and old tokens)
+   * - formio:userTokenRefreshed: fired when user token is updated via refreshUserToken()
+   * - formio:userTokenExpiring: fired when user token is about to expire (configurable buffer, default 60s)
+   * - formio:hostSubmit: fired when submitMode is 'host' or 'none' (for both submit and draft).
+   *   Emitted after Form.io validation passes. Detail includes { data, submission, formId,
+   *   formName, timestamp, isDraft }. Host can call event.preventDefault() to prevent auto
+   *   read-only display (in 'host' mode, submissions only). Use event.detail.waitUntil(promise)
+   *   for async operations.
    *
    * Lifecycle overview
    * 1) connectedCallback
@@ -555,12 +568,16 @@
    *       h) _applyPrefill() with single, robust strategy
    *       i) _wireInstanceEvents(); log `ready`
    *    - Emit `formio:ready`
-   * 3) submit()/draft()
+   * 3) User token management (optional, host application responsibility)
+   *    - Call refreshUserToken() when user's OIDC/OAuth token is refreshed
+   *    - Component will emit formio:userTokenExpiring before expiry (default 60s buffer)
+   *    - Host application should refresh token and call refreshUserToken() again
+   * 4) submit()/draft()
    *    - _programmaticSubmit(true|false) sets submitKey and calls _manualSubmit()
    *    - _manualSubmit() emits `formio:beforeSubmit` (waitUntil), POSTs to backend, emits `formio:submitDone` or `formio:error`
-   * 4) reload()
+   * 5) reload()
    *    - destroy() → load()
-   * 5) disconnectedCallback
+   * 6) disconnectedCallback
    *    - destroy()
    *
    * Attribute effects during lifecycle
@@ -577,6 +594,51 @@
     'x-powered-by', // Express header
   ]);
 
+  /**
+   * Headers that browsers forbid from being set via XMLHttpRequest.setRequestHeader().
+   * These headers are automatically set by the browser and cannot be modified by JavaScript.
+   * Filtering these prevents "Refused to set unsafe header" warnings in the console.
+   *
+   * Complete list per W3C specification:
+   * https://fetch.spec.whatwg.org/#forbidden-header-name
+   */
+  const FORBIDDEN_XHR_HEADERS = new Set([
+    'accept-charset', // Automatically set by browser
+    'accept-encoding', // Automatically set by browser
+    'access-control-request-headers', // CORS preflight header
+    'access-control-request-method', // CORS preflight header
+    'connection', // Automatically set by browser
+    'content-length', // Automatically set by browser
+    'cookie', // Automatically set by browser
+    'cookie2', // Automatically set by browser
+    'date', // Automatically set by browser
+    'dnt', // Do Not Track header
+    'expect', // HTTP/1.1 Expect header
+    'host', // Automatically set by browser
+    'keep-alive', // Automatically set by browser
+    'origin', // Automatically set by browser (CORS)
+    'referer', // Automatically set by browser
+    'te', // Transfer-Encoding negotiation
+    'trailer', // HTTP/1.1 Trailer header
+    'transfer-encoding', // Automatically set by browser
+    'upgrade', // Automatically set by browser
+    'user-agent', // Automatically set by browser (some browsers still block this)
+    'via', // Proxy/Via header
+  ]);
+
+  /**
+   * Checks if a header name matches a forbidden pattern (e.g., proxy-*, sec-*).
+   * @param {string} headerName - Header name to check
+   * @returns {boolean} True if header matches a forbidden pattern
+   */
+  function isForbiddenHeaderPattern(headerName) {
+    const lowerName = headerName.toLowerCase();
+    return (
+      lowerName.startsWith('proxy-') || // All proxy-* headers are forbidden
+      lowerName.startsWith('sec-') // All sec-* headers are forbidden
+    );
+  }
+
   class ChefsFormViewer extends HTMLElement {
     static get observedAttributes() {
       return [
@@ -590,12 +652,17 @@
         'debug',
         'no-shadow',
         'submit-button-key',
+        'print-button-key',
+        'print-event-name',
         'theme-css',
         'isolate-styles',
         'no-icons',
         'token',
         'user',
+        'headers',
         'auto-reload-on-submit',
+        'host-data',
+        'submit-mode',
       ];
     }
 
@@ -617,13 +684,18 @@
       this._log = createLogger(false);
       this._isBusy = false; // shared lock for load/submit/draft
       this.submitButtonKey = 'submit';
+      this.printButtonKey = 'print';
+      this.printEventName = 'printDocument';
       this.themeCss = null; // optional theme CSS loaded after main CSS
       this.isolateStyles = false; // optional isolation of inherited outside styles
       this.noIcons = false; // optional flag to disable loading icon CSS
       this.token = null; // optional token object for Form.io evalContext
       this.user = null; // optional user object for Form.io evalContext
+      this.headers = null; // optional headers object for Form.io evalContext
+      this.hostData = null; // arbitrary host application data for Form.io evalContext
       this._prefillData = null; // cached prefill data for submission
       this.autoReloadOnSubmit = true; // auto-reload form as read-only after successful submission
+      this.submitMode = 'chefs'; // 'chefs' (default) | 'host' | 'none'
 
       // Asset loading state machine
       this._assetState = 'IDLE';
@@ -640,6 +712,10 @@
 
       // if using authToken, then we can set an auto-refresh
       this._jwtRefreshTimer = null;
+
+      // User token lifecycle management (mirrors authToken pattern)
+      this.userTokenExpiresAt = null; // Unix timestamp from JWT exp claim
+      this._userTokenRefreshTimer = null; // Timer reference for cleanup
 
       // Track auth plugin registration to avoid re-registration
       this._authPluginRegistered = false;
@@ -680,6 +756,9 @@
      *   host element and re-rendering the shell. In this mode, styles are loaded into document.head and
      *   page/global CSS can affect the component (useful for integration and debugging).
      * - submit-button-key: string; the data key used to distinguish submit vs draft (default: "submit") Name/APiKey of formio Submit Button.
+     * - print-button-key: string; Form.io component key for the print Action button (default: "print").
+     *   The viewer keeps this button enabled even in read-only mode so users can print submitted data.
+     * - print-event-name: string; Form.io Event action name to trigger print (default: "printDocument").
      * - theme-css: string; URL of theme stylesheet to load after base styles.
      * - isolate-styles: boolean; when true and using Shadow DOM, applies minimal isolation CSS to reduce
      *   inheritance from the host page (via :host { all: initial } and a normalized container). Triggers
@@ -690,9 +769,25 @@
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
      * - user: string; JSON string containing a user object that will be available in Form.io's evalContext
      *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
+     * - headers: string; JSON string containing a headers object that will be available in Form.io's evalContext
+     *   for use in custom JavaScript logic, conditional display, calculated values, etc. Must be valid JSON.
+     *   The Authorization header can be updated programmatically via refreshUserToken() for user token management.
      * - auto-reload-on-submit: boolean; when true (default), automatically reloads the form as read-only
      *   after successful submission, showing the submitted data. This provides a CHEFS-like experience
      *   out-of-the-box. Set to "false" to disable this behavior.
+     * - host-data: string; JSON string containing arbitrary host application data that will be available
+     *   in Form.io's evalContext as `host`. Use this to pass datasets, lookup tables, configuration objects,
+     *   or any structured data that form components need to access via custom JavaScript (calculated values,
+     *   conditional logic, default values). Must be valid JSON. Can also be set programmatically via
+     *   setHostData() for dynamic updates after form initialization.
+     * - submit-mode (string): Controls how form submission and draft saves are handled.
+     *   - "chefs" (default): Normal flow - submits/saves to CHEFS backend after validation.
+     *   - "host": After validation, emits formio:hostSubmit event for host to handle data.
+     *     For submissions: automatically displays read-only unless host calls preventDefault().
+     *     For drafts: no auto read-only display (drafts are meant to be edited later).
+     *   - "none": After validation, emits formio:hostSubmit but does NOT auto-display read-only.
+     *     Host is fully responsible for what happens after (both submit and draft).
+     *   Note: Event detail includes isDraft boolean so host can distinguish submit from draft.
      */
     attributeChangedCallback(name, _ov, nv) {
       switch (name) {
@@ -727,6 +822,12 @@
         case 'submit-button-key':
           this.submitButtonKey = nv || 'submit';
           break;
+        case 'print-button-key':
+          this.printButtonKey = nv || 'print';
+          break;
+        case 'print-event-name':
+          this.printEventName = nv || 'printDocument';
+          break;
         case 'theme-css':
           this.themeCss = nv || null;
           break;
@@ -743,8 +844,17 @@
         case 'user':
           this.user = this._parseJsonAttribute(nv, 'user');
           break;
+        case 'headers':
+          this.headers = this._parseJsonAttribute(nv, 'headers');
+          break;
         case 'auto-reload-on-submit':
           this.autoReloadOnSubmit = bool(nv);
+          break;
+        case 'host-data':
+          this.hostData = this._parseJsonAttribute(nv, 'host-data');
+          break;
+        case 'submit-mode':
+          this.submitMode = nv || 'chefs';
           break;
       }
     }
@@ -783,6 +893,16 @@
     }
 
     disconnectedCallback() {
+      // Clean up auth token refresh timer
+      if (this._jwtRefreshTimer) {
+        clearTimeout(this._jwtRefreshTimer);
+        this._jwtRefreshTimer = null;
+      }
+      // Clean up user token refresh timer
+      if (this._userTokenRefreshTimer) {
+        clearTimeout(this._userTokenRefreshTimer);
+        this._userTokenRefreshTimer = null;
+      }
       this.destroy();
     }
 
@@ -930,6 +1050,149 @@
     }
 
     /**
+     * Updates user Authorization header and schedules refresh notification.
+     * Expiry is automatically extracted from the JWT token's exp claim.
+     *
+     * This is for the host application's user token (OIDC/OAuth), which is
+     * separate from the CHEFS API auth token (auth-token attribute).
+     *
+     * @param {Object} options
+     * @param {string} options.token - Bearer token (required)
+     * @param {number} [options.expiresAt] - Override expiry for non-JWT tokens (optional)
+     * @param {number} [options.buffer=60] - Seconds before expiry to notify (optional)
+     *
+     * @fires ChefsFormViewer#formio:userTokenRefreshed - When token is updated
+     * @fires ChefsFormViewer#formio:userTokenExpiring - When token is about to expire
+     *
+     * @example
+     * // Standard JWT - expiry auto-extracted, 60s buffer
+     * viewer.refreshUserToken({ token: accessToken });
+     *
+     * @example
+     * // Custom buffer (e.g., 2 minutes before expiry)
+     * viewer.refreshUserToken({ token: accessToken, buffer: 120 });
+     *
+     * @example
+     * // Opaque token with manual expiry
+     * viewer.refreshUserToken({ token: opaqueToken, expiresAt: 1234567890 });
+     */
+    refreshUserToken({ token, expiresAt, buffer = 60 }) {
+      if (!token || typeof token !== 'string') {
+        this._log.warn('refreshUserToken: invalid token');
+        return;
+      }
+
+      // Auto-extract expiry from JWT, fall back to provided expiresAt
+      const expiry = FormViewerUtils.getJwtExpiry(token) || expiresAt;
+
+      // Update Authorization header in headers property
+      const currentHeaders = this.headers || {};
+      this.headers = { ...currentHeaders, Authorization: `Bearer ${token}` };
+
+      // Update live evalContext if Form.io instance exists
+      if (this.formioInstance?.options?.evalContext) {
+        this.formioInstance.options.evalContext.headers =
+          this._filterForbiddenHeaders(this.headers);
+      }
+
+      // Schedule refresh notification if we have an expiry
+      if (expiry) {
+        this.userTokenExpiresAt = expiry;
+        this._scheduleUserTokenRefresh(buffer);
+        this._log.info('userToken:refreshed', { expiresAt: expiry, buffer });
+      } else {
+        this._log.info('userToken:updated (no expiry, refresh not scheduled)');
+      }
+
+      this._emit('formio:userTokenRefreshed', { expiresAt: expiry || null });
+    }
+
+    /**
+     * Sets arbitrary host application data that will be available in Form.io's evalContext.
+     *
+     * This allows host applications to pass datasets, objects, lookup tables, or any
+     * structured data that form components can read via custom JavaScript (calculated
+     * values, conditional logic, default values, etc.). The data is accessible in
+     * Form.io components as `host` (e.g., `host.myData`, `host.config.setting`).
+     *
+     * By default, data is shallow-merged with existing hostData. Use `{ replace: true }`
+     * to completely replace all existing hostData.
+     *
+     * If the form is already initialized, the evalContext is updated immediately so
+     * components can access the new data without reloading the form.
+     *
+     * @param {Object} data - Arbitrary data object to add to evalContext. Must be a non-null, non-array object.
+     * @param {Object} [options] - Configuration options
+     * @param {boolean} [options.replace=false] - If true, replaces all hostData; if false, shallow merges with existing
+     * @returns {void}
+     *
+     * @fires ChefsFormViewer#formio:hostDataChanged - After data is updated, with { hostData } payload
+     *
+     * @example
+     * // Set initial host data
+     * viewer.setHostData({
+     *   lookupTable: [{ code: 'A', name: 'Alpha' }, { code: 'B', name: 'Beta' }],
+     *   config: { maxItems: 10, enableFeatureX: true }
+     * });
+     *
+     * @example
+     * // Merge additional data (default behavior)
+     * viewer.setHostData({ newDataset: fetchedResults });
+     *
+     * @example
+     * // Replace all hostData
+     * viewer.setHostData({ freshData: newData }, { replace: true });
+     *
+     * @example
+     * // In Form.io calculated value or conditional:
+     * // value = host.lookupTable?.find(x => x.code === data.selectedCode)?.name || '';
+     * // show = host.config?.enableFeatureX === true;
+     */
+    setHostData(data, options = {}) {
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        this._log.warn(
+          'setHostData: data must be a non-null, non-array object'
+        );
+        return;
+      }
+
+      const replace = options.replace === true;
+
+      if (replace) {
+        this.hostData = { ...data };
+      } else {
+        this.hostData = { ...this.hostData, ...data };
+      }
+
+      // Update live evalContext if Form.io instance exists
+      if (this.formioInstance?.options?.evalContext) {
+        this.formioInstance.options.evalContext.host = this.hostData;
+      }
+
+      this._log.info('hostData:updated', {
+        keys: Object.keys(this.hostData),
+        replace,
+      });
+      this._emit('formio:hostDataChanged', { hostData: this.hostData });
+    }
+
+    /**
+     * Gets the current host data object.
+     *
+     * Returns a shallow copy of the hostData to prevent external mutation.
+     * Returns null if no hostData has been set.
+     *
+     * @returns {Object|null} Copy of current hostData or null if not set
+     *
+     * @example
+     * const currentData = viewer.getHostData();
+     * console.log(currentData?.config?.maxItems);
+     */
+    getHostData() {
+      return this.hostData ? { ...this.hostData } : null;
+    }
+
+    /**
      * Programmatically submits the form data to the backend.
      *
      * Sets the submit flag and posts current form data to the submission endpoint.
@@ -985,6 +1248,104 @@
     }
 
     /**
+     * Programmatically trigger print using direct print configuration.
+     * - If submissionId is present, prints the stored submission.
+     * - Otherwise, prints current draft data.
+     *
+     * @param {Object} options - Optional configuration/context
+     * @example
+     * await viewer.print(); // auto-detects submission vs draft
+     */
+    async print(options = {}) {
+      if (!this._acquireBusyLock('print')) return;
+      try {
+        const isSubmissionPrint = !!this.submissionId;
+        const url = isSubmissionPrint
+          ? this._resolveUrl('printSubmission')
+          : this._resolveUrl('printDraft');
+
+        const currentSubmission = this.getSubmission() || {};
+        const submissionData =
+          options.submissionData ||
+          currentSubmission?.data ||
+          currentSubmission?.submission?.data ||
+          {};
+
+        const payload = isSubmissionPrint
+          ? options.payload || {}
+          : options.payload || { submission: { data: submissionData } };
+
+        const proceed = this._emitCancelable('formio:beforePrint', {
+          formId: this.formId,
+          submissionId: this.submissionId,
+          isDraft: !isSubmissionPrint,
+          url,
+          payload,
+          options,
+        });
+        if (!proceed) return;
+        const allowed = await this._waitUntil();
+        if (!allowed) return;
+
+        const headers = this._mergeHeadersWithAuth(
+          payload && Object.keys(payload).length
+            ? { 'Content-Type': 'application/json' }
+            : {},
+          this._buildAuthHeader(url),
+          url
+        );
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers,
+          body:
+            payload && Object.keys(payload).length
+              ? JSON.stringify(payload)
+              : undefined,
+        });
+
+        if (!res.ok) {
+          const msg =
+            (await this._parseError(res, 'Print failed')) || 'Print failed';
+          this._log.error('print:error', { msg, status: res.status });
+          this._emit('formio:error', { error: msg });
+          return;
+        }
+
+        this._log.debug('print:response:headers', {
+          status: res.status,
+          contentType: res.headers.get('content-type'),
+          contentDisposition: res.headers.get('content-disposition'),
+          exposedHeaders: res.headers.get('access-control-expose-headers'),
+        });
+
+        this.downloadFile.data = await res.blob();
+        this.downloadFile.headers = {
+          'content-type':
+            res.headers.get('content-type') || 'application/octet-stream',
+          'content-disposition':
+            res.headers.get('content-disposition') ||
+            'attachment; filename="document.pdf"',
+        };
+        this._triggerFileDownload();
+
+        this._log.info('print:ok', {
+          submissionId: this.submissionId,
+          isDraft: !isSubmissionPrint,
+        });
+        this._emit('formio:printDone', {
+          submissionId: this.submissionId,
+          isDraft: !isSubmissionPrint,
+        });
+      } catch (error) {
+        this._log.error('print:error', { error: error.message });
+        this._emit('formio:error', { error: error.message });
+      } finally {
+        this._releaseBusyLock();
+      }
+    }
+
+    /**
      * Sets the form data programmatically (pre-fills the form).
      *
      * Updates the Form.io instance with the provided data object.
@@ -1025,6 +1386,27 @@
     }
 
     /**
+     * Displays submission data in read-only mode without submitting to CHEFS.
+     *
+     * Used internally by submit-mode="host" to display form data after the host
+     * handles submission. Reloads the form in read-only mode and populates it
+     * with the provided data.
+     *
+     * @param {Object} data - The form data object to display
+     * @returns {Promise<void>} Resolves when the form is reloaded and data is set
+     * @private
+     */
+    async _displayAsReadOnly(data) {
+      this._log.info('_displayAsReadOnly:begin');
+
+      this.readOnly = true;
+      await this.reload();
+      this.setSubmission(data);
+
+      this._log.info('_displayAsReadOnly:done');
+    }
+
+    /**
      * Destroys the Form.io instance and cleans up resources.
      *
      * Safely destroys the current Form.io instance to prevent memory leaks.
@@ -1037,6 +1419,16 @@
      * await viewer.destroy();
      */
     async destroy() {
+      // Clean up auth token refresh timer
+      if (this._jwtRefreshTimer) {
+        clearTimeout(this._jwtRefreshTimer);
+        this._jwtRefreshTimer = null;
+      }
+      // Clean up user token refresh timer
+      if (this._userTokenRefreshTimer) {
+        clearTimeout(this._userTokenRefreshTimer);
+        this._userTokenRefreshTimer = null;
+      }
       if (this.formioInstance?.destroy) this.formioInstance.destroy();
       this.formioInstance = null;
     }
@@ -1096,6 +1488,8 @@
         schema: `${base}/webcomponents/v1/form-viewer/${fid}/schema`,
         submit: `${base}/webcomponents/v1/form-viewer/${fid}/submit`,
         readSubmission: `${base}/webcomponents/v1/form-viewer/${fid}/submission/${sid}`,
+        printSubmission: `${base}/webcomponents/v1/print/${fid}/submission/${sid}/print`,
+        printDraft: `${base}/webcomponents/v1/print/${fid}/print`,
 
         // simplefile component routes
         files: `${base}/webcomponents/v1/files`,
@@ -1172,6 +1566,34 @@
       }
 
       return false;
+    }
+
+    /**
+     * Filters out browser-forbidden headers from a headers object.
+     * Prevents "Refused to set unsafe header" warnings when headers are used
+     * in XMLHttpRequest.setRequestHeader() calls within Form.io custom JavaScript.
+     *
+     * @param {Object} headers - Headers object to filter
+     * @returns {Object} Filtered headers object with forbidden headers removed
+     * @private
+     */
+    _filterForbiddenHeaders(headers) {
+      if (!headers || typeof headers !== 'object') {
+        return headers;
+      }
+
+      const filtered = {};
+      for (const [key, value] of Object.entries(headers)) {
+        const lowerKey = key.toLowerCase();
+        // Skip forbidden headers and forbidden patterns
+        if (
+          !FORBIDDEN_XHR_HEADERS.has(lowerKey) &&
+          !isForbiddenHeaderPattern(key)
+        ) {
+          filtered[key] = value;
+        }
+      }
+      return filtered;
     }
 
     /**
@@ -1480,9 +1902,10 @@
 
     /** Re-emit core Form.io events as component-level CustomEvents */
     _wireInstanceEvents() {
-      this.formioInstance.on('render', () =>
-        this._emit('formio:render', { form: this.form })
-      );
+      this.formioInstance.on('render', () => {
+        this._emit('formio:render', { form: this.form });
+        this._ensurePrintButtonEnabled('render');
+      });
       this.formioInstance.on('change', (evt) =>
         this._emit('formio:change', {
           changed: evt.changed,
@@ -1498,6 +1921,112 @@
       this.formioInstance.on('error', (err) =>
         this._emit('formio:error', { error: err?.message || String(err) })
       );
+
+      // Form.io Event action hook for printing
+      if (this.formioInstance?.on && this.printEventName) {
+        this.formioInstance.on(this.printEventName, async (evt) => {
+          try {
+            await this.print({ trigger: 'formioEvent', event: evt });
+          } catch (error) {
+            this._log.error('print:event:error', { error: error.message });
+            this._emit('formio:error', { error: error.message });
+          }
+        });
+      }
+    }
+
+    /**
+     * Safe component lookup by key without assuming Form.io getComponent signature.
+     */
+    _findComponentByKey(key) {
+      // Try Form.io's getComponent if available (single argument to avoid signature issues)
+      if (typeof this.formioInstance?.getComponent === 'function') {
+        try {
+          const maybe = this.formioInstance.getComponent(key);
+          if (maybe) return maybe;
+        } catch (err) {
+          this._log.debug('print:findComponent:getComponent:error', {
+            key,
+            error: err?.message || String(err),
+          });
+        }
+      }
+
+      // Fallback: walk components
+      if (typeof this.formioInstance?.everyComponent === 'function') {
+        let match = null;
+        this.formioInstance.everyComponent((comp) => {
+          if (!match && comp?.component?.key === key) {
+            match = comp;
+          }
+        });
+        if (match) return match;
+      }
+
+      return null;
+    }
+
+    /**
+     * Enable the print button even when the form is rendered read-only.
+     * This only targets the configured print button key and is invoked after init/render
+     * (including auto-reload) to allow hardcopy printing of submitted data.
+     */
+    _ensurePrintButtonEnabled(source = 'unknown') {
+      const entry = { source, key: this.printButtonKey };
+
+      if (!this.formioInstance || !this.printButtonKey) return;
+
+      const component = this._findComponentByKey(this.printButtonKey);
+      if (!component) {
+        this._log.debug('print:enable:notFound', entry);
+        return;
+      }
+
+      try {
+        // Override shouldDisabled for this component only so Form.io readOnly
+        // does not disable the configured print button.
+        Object.defineProperty(component, 'shouldDisabled', {
+          get: () => false,
+          configurable: true,
+        });
+
+        // Clear disabled flags
+        component.component.disabled = false;
+        component.disabled = false;
+        if (component.options?.disabled) {
+          const key = component.component?.key || this.printButtonKey;
+          component.options.disabled[key] = false;
+        }
+
+        // Apply to DOM if ref exists
+        if (typeof component.setDisabled === 'function') {
+          const targetRef =
+            component.refs?.button ||
+            component.refs?.input ||
+            component.refs?.buttonMessageContainer;
+          component.setDisabled(targetRef, false);
+        }
+
+        // Ensure visible (should already be)
+        component._visible = true;
+        if (typeof component.show === 'function') {
+          component.show();
+        }
+
+        this._log.debug('print:enable:applied', {
+          ...entry,
+          disabled: component.disabled,
+          componentDisabled: component.component?.disabled,
+          optionsDisabled:
+            component.options?.disabled &&
+            component.options.disabled[this.printButtonKey],
+        });
+      } catch (error) {
+        this._log.error('print:enable:error', {
+          ...entry,
+          error: error.message,
+        });
+      }
     }
 
     /** Fetch and parse the form schema from the backend */
@@ -1986,6 +2515,49 @@
       }, secondsUntilRefresh * 1000);
     }
 
+    /**
+     * Schedules the user token expiring notification.
+     * Fires formio:userTokenExpiring (buffer) seconds before expiry.
+     * @param {number} buffer - Seconds before expiry to notify (default: 60)
+     * @private
+     */
+    _scheduleUserTokenRefresh(buffer = 60) {
+      // Clear any existing timer
+      if (this._userTokenRefreshTimer) {
+        clearTimeout(this._userTokenRefreshTimer);
+        this._userTokenRefreshTimer = null;
+      }
+
+      if (!this.userTokenExpiresAt) return;
+
+      const now = Math.floor(Date.now() / 1000);
+      let secondsUntilNotify = this.userTokenExpiresAt - now - buffer;
+
+      // Minimum 10 seconds
+      if (secondsUntilNotify < 10) secondsUntilNotify = 10;
+
+      // Check if already expired
+      if (now >= this.userTokenExpiresAt) {
+        this._emit('formio:userTokenExpiring', {
+          expiresAt: this.userTokenExpiresAt,
+          expired: true,
+        });
+        return;
+      }
+
+      this._userTokenRefreshTimer = setTimeout(() => {
+        this._emit('formio:userTokenExpiring', {
+          expiresAt: this.userTokenExpiresAt,
+          expired: false,
+        });
+      }, secondsUntilNotify * 1000);
+
+      this._log.debug('userToken:refreshScheduled', {
+        notifyIn: secondsUntilNotify,
+        expiresAt: this.userTokenExpiresAt,
+      });
+    }
+
     _buildHooks() {
       return {
         beforeSubmit: async (submission, _next) => {
@@ -2031,6 +2603,12 @@
       });
       if (!allow) return;
 
+      // Handle host-controlled submission modes (both submit and draft)
+      if (this.submitMode === 'host' || this.submitMode === 'none') {
+        await this._handleHostSubmit(submission, isSubmit);
+        return;
+      }
+
       const url = this._resolveUrl('submit');
       // debug: submit post
       this._emit('formio:submit', { submission });
@@ -2059,6 +2637,61 @@
       if (this.autoReloadOnSubmit && isSubmit && submitParsed.submission?.id) {
         await this._handleAutoReload(submitParsed.submission);
       }
+    }
+
+    /**
+     * Handles submission/draft when submitMode is 'host' or 'none'.
+     * Emits formio:hostSubmit for the host application to handle the data,
+     * and optionally displays as read-only (in 'host' mode, for submissions only).
+     *
+     * Note: Form.io validation has already passed before this method is called
+     * (the beforeSubmit hook is only invoked after Form.io's built-in validation).
+     *
+     * @param {Object} submission - The validated submission object with data
+     * @param {boolean} isSubmit - True for final submission, false for draft save
+     * @returns {Promise<void>} Resolves when host submission handling completes
+     * @private
+     *
+     * @fires ChefsFormViewer#formio:hostSubmit - Emitted for host to handle submission/draft.
+     *   Detail includes { data, submission, formId, formName, timestamp, isDraft }.
+     *   Host can call event.preventDefault() to prevent auto read-only display (in 'host' mode).
+     *   Host can call event.detail.waitUntil(promise) for async operations before display.
+     */
+    async _handleHostSubmit(submission, isSubmit = true) {
+      const data = submission?.data || {};
+      const isDraft = !isSubmit;
+
+      this._log.info('hostSubmit:begin', {
+        submitMode: this.submitMode,
+        isDraft,
+      });
+
+      // Emit hostSubmit event for host application to handle
+      // Note: Validation already passed via Form.io's beforeSubmit hook
+      const proceed = this._emitCancelable('formio:hostSubmit', {
+        data,
+        submission,
+        formId: this.formId,
+        formName: this.formName,
+        timestamp: new Date().toISOString(),
+        isDraft,
+      });
+
+      // Wait for any async operations from host
+      const allowed = await this._waitUntil();
+
+      this._log.info('hostSubmit:eventHandled', { proceed, allowed, isDraft });
+
+      // For 'host' mode: auto-display as read-only unless cancelled (submissions only, not drafts)
+      if (this.submitMode === 'host' && proceed && allowed && !isDraft) {
+        await this._displayAsReadOnly(data);
+      }
+
+      // For 'none' mode or drafts: host is fully responsible, we do nothing more
+      this._log.info('hostSubmit:done', {
+        submitMode: this.submitMode,
+        isDraft,
+      });
     }
 
     /**
@@ -2597,9 +3230,18 @@
           ALLOWED_TAGS: ['iframe'],
         },
         hooks: this._buildHooks(),
+        // evalContext: Objects available in Form.io custom JavaScript (calculated values, default values, conditional logic)
+        // - token: Token object passed via 'token' attribute
+        // - user: User object passed via 'user' attribute
+        // - headers: Headers object passed via 'headers' attribute (filtered to remove browser-forbidden headers)
+        // - host: Arbitrary host application data passed via 'host-data' attribute or setHostData() method
         evalContext: {
           ...(this.token && { token: this.token }),
           ...(this.user && { user: this.user }),
+          ...(this.headers && {
+            headers: this._filterForbiddenHeaders(this.headers),
+          }),
+          ...(this.hostData && { host: this.hostData }),
         },
         componentOptions: {
           simplefile: this._getSimpleFileComponentOptions(),
@@ -2832,6 +3474,7 @@
       // Setup instance configuration (simplified - no prefill complexity)
       this._configureInstanceEndpoints();
       this._wireInstanceEvents();
+      this._ensurePrintButtonEnabled('init');
 
       // now Apply prefill in one shot
       await this._applyPrefill();
