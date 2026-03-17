@@ -21,7 +21,6 @@ const properties = defineProps({
 
 const loading = ref(true);
 
-
 const notificationStore = useNotificationStore();
 const recordsManagementStore = useRecordsManagementStore();
 
@@ -41,7 +40,7 @@ onMounted(async () => {
       text: t('trans.baseSecure.401UnAuthorizedErrMsg'),
     });
   }
-  
+
   await recordsManagementStore.getFormRetentionPolicy(properties.f);
 
   if (permissions.value.includes(FormPermissions.DESIGN_READ))
@@ -49,7 +48,6 @@ onMounted(async () => {
 
   loading.value = false;
 });
-
 </script>
 
 <template>
