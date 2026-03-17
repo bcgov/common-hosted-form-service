@@ -162,7 +162,6 @@ const hasFilePermissions = (permissions) => {
     }
 
     // For submitted files, check permissions normally
-    req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
     const subPermCheck = userAccess.hasSubmissionPermissions(permissions);
     return subPermCheck(req, res, next);
   };
