@@ -85,12 +85,9 @@ services:
     ports:
       - "3310:3310"
     environment:
-      CLAMAV_NO_CLAMD: "yes"
+      # Must be "false" so clamd runs and responds to PING/PONG (app connects via TCP).
+      # On Mac Silicon the image is x86_64 and runs under emulation; first startup may be slow.
+      CLAMAV_NO_CLAMD: "false"
       CLAMAV_NO_MILTERD: "true"
-    healthcheck:
-      test: ["CMD", "/opt/app-root/clamdcheck.sh"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
     volumes:
       - ./config/freshclam.conf:/usr/local/etc/freshclam.conf
