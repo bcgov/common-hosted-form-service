@@ -9,7 +9,7 @@ export default {
    */
   listEncryptionAlgorithms(params = {}) {
     return appAxios().get(
-      `${ApiRoutes.FORMS}/${ApiRoutes.ENCRYPTION_KEY}/algorithms`,
+      `${ApiRoutes.FORMS}${ApiRoutes.ENCRYPTION_KEY}/algorithms`,
       { params }
     );
   },

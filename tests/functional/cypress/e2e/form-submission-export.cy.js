@@ -31,6 +31,7 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.visit(`/${depEnv}`); 
+    cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
