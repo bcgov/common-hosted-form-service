@@ -53,8 +53,8 @@ describe('Application About Page', () => {
       //Select tenant and validate CSTAR access
       cy.get('.mdi-home-account').click();
       cy.get('.v-list-item__content').contains('Go to CSTAR (Connected Services, Team Access and Roles)').should('exist');
-      cy.get('.v-list-item__title').contains('Test_eCHEFS').should('be.visible');
-      cy.get('.v-list-item__title').contains('Test_eCHEFS').click();
+      cy.get('.v-list-item__content').contains('Test_eCHEFS').should('be.visible');
+      cy.get('.v-list-item__content').contains('Test_eCHEFS').click({ waitForAnimations: false });
       cy.get('[data-cy="createNewForm"]').should('be.visible');
       cy.get('[data-cy="createNewForm"]').contains('Create a New Form').should('be.visible');
       
