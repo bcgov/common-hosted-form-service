@@ -22,7 +22,7 @@ beforeEach(() => {
 
 describe('Encryption Key Service', () => {
   it('calls get on GET list algorithms endpoint', async () => {
-    const endpoint = `${ApiRoutes.FORMS}/${ApiRoutes.ENCRYPTION_KEY}/algorithms`;
+    const endpoint = `${ApiRoutes.FORMS}${ApiRoutes.ENCRYPTION_KEY}/algorithms`;
     mockAxios.onGet(endpoint).reply(200);
 
     const result = await service.listEncryptionAlgorithms();

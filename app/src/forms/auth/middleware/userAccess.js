@@ -407,17 +407,21 @@ const hasSubmissionPermissions = (permissions) => {
       }
 
       // The request must include a formSubmissionId, either in params or query,
-      // but give precedence to params.
-      const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
+      // but give precedence to params, then query and finally currentFileRecord.
+      const submissionId = req.params.formSubmissionId || req.query.formSubmissionId || req.currentFileRecord?.formSubmissionId;
+      if (!submissionId) {
+        throw new Problem(400, {
+          detail: 'formSubmissionId not found',
+        });
+      }
       if (!uuid.validate(submissionId)) {
         throw new Problem(400, {
-          detail: 'Bad formSubmissionId',
+          detail: 'formSubmissionId must be a valid UUID',
         });
       }
 
       // Get the submission results so we know what form this submission is for.
       const submissionForm = await service.getSubmissionForm(submissionId);
-
       // If the current user has elevated permissions on the form, they may have
       // access to all submissions for the form.
       if (req.currentUser) {
