@@ -13,6 +13,7 @@
  *   globalThis.ChefsViewerConfig = {
  *     token: { roles: ['admin'], sub: 'user123' },
  *     user: { name: 'John Doe', department: 'IT' },
+ *     headers: { 'X-Custom-Header': 'value', 'Authorization': 'Bearer ...' },
  *     // Override endpoints for custom CDN or local assets
  *     endpoints: {
  *       mainCss: 'https://mycdn.com/chefs-styles.css',
@@ -26,6 +27,32 @@
  *     after: function(element, formioInstance) {
  *       // Add event listeners after form loads
  *       element.addEventListener('formio:submitDone', handleSubmit);
+ *       
+ *       // Set up user token refresh (for OIDC/OAuth tokens from host application)
+ *       element.addEventListener('formio:userTokenExpiring', function(e) {
+ *         // Refresh user token before it expires
+ *         refreshUserAccessToken().then(function(newToken) {
+ *           element.refreshUserToken({ token: newToken });
+ *         });
+ *       });
+ *       
+ *       // Initial user token setup
+ *       element.refreshUserToken({ token: getCurrentUserToken() });
+ *       
+ *       // Set host application data for form logic
+ *       element.setHostData({
+ *         config: { maxItems: 10 },
+ *         lookupData: { departments: ['IT', 'HR', 'Finance'] }
+ *       });
+ *       
+ *       // Listen for host-controlled submissions (when submit-mode="host")
+ *       element.addEventListener('formio:hostSubmit', async function(e) {
+ *         const { data, isDraft } = e.detail;
+ *         if (!isDraft) {
+ *           // Handle final submission in host application
+ *           await myApp.saveSubmission(data);
+ *         }
+ *       });
  *     },
  *     onMetadataLoaded: function(metadata) {
  *       // React to form metadata being loaded
@@ -83,6 +110,61 @@
  * };
  * ```
  *
+ * ## User Token Management
+ *
+ * The embed script supports managing user tokens (OIDC/OAuth) from the host application,
+ * separate from the CHEFS API auth token. User tokens are passed via the Authorization header
+ * in the headers parameter or updated programmatically.
+ *
+ * ### Method 1: Initial Setup via Headers Parameter
+ * ```javascript
+ * <script src="/app/embed/chefs-form-viewer-embed.js?form-id=123&auth-token=...&headers=%7B%22Authorization%22%3A%22Bearer%20user-token%22%7D"></script>
+ * ```
+ *
+ * ### Method 2: Programmatic Refresh (Recommended)
+ * ```javascript
+ * const element = document.querySelector('chefs-form-viewer');
+ * 
+ * // Refresh user token when it expires
+ * element.addEventListener('formio:userTokenExpiring', function(e) {
+ *   refreshUserAccessToken().then(function(newToken) {
+ *     element.refreshUserToken({ token: newToken });
+ *   });
+ * });
+ *
+ * // Initial token setup
+ * element.refreshUserToken({ token: getCurrentUserToken() });
+ * ```
+ *
+ * ### Method 3: Global Config Hook
+ * ```javascript
+ * globalThis.ChefsViewerConfig = {
+ *   after: function(element, formioInstance) {
+ *     // Set up user token refresh
+ *     element.addEventListener('formio:userTokenExpiring', function(e) {
+ *       refreshUserAccessToken().then(function(newToken) {
+ *         element.refreshUserToken({ token: newToken });
+ *       });
+ *     });
+ *     element.refreshUserToken({ token: getCurrentUserToken() });
+ *   }
+ * };
+ * ```
+ *
+ * **Events:**
+ * - `formio:userTokenRefreshed`: Fired when user token is updated via refreshUserToken()
+ * - `formio:userTokenExpiring`: Fired when user token is about to expire (default 60s before expiry)
+ * - `formio:hostSubmit`: Fired when submitMode is 'host' or 'none' after validation passes.
+ *   Detail includes { data, submission, formId, formName, timestamp, isDraft }.
+ *   Host can call event.preventDefault() to prevent auto read-only display (in 'host' mode).
+ * - `formio:hostDataChanged`: Fired when host data is updated via setHostData()
+ * - `formio:beforeSubmit`: Cancelable event fired before submission begins
+ * - `formio:beforePrint`: Cancelable event fired before print/PDF generation
+ * - `formio:printDone`: Fired after print/PDF generation completes
+ * - `formio:beforeAutoReload`: Cancelable event fired before auto-reload after submission
+ * - `formio:autoReload`: Fired when auto-reload begins
+ * - `formio:autoReloadComplete`: Fired when auto-reload completes
+ *
  * ## Supported Parameters
  *
  * All chefs-form-viewer attributes can be passed as URL query parameters:
@@ -104,8 +186,30 @@
  * - `no-icons`: Disable Font Awesome icons (true/false)
  * - `theme-css`: Custom theme CSS URL
  * - `auto-reload-on-submit`: Auto-reload form as read-only after submission (true/false, default: true)
+ * - `submit-button-key`: Form.io component key for the submit button (default: submit)
+ * - `print-button-key`: Form.io component key for the print Action button (default: print)
+ * - `print-event-name`: Form.io Event action name that triggers printing (default: printDocument)
+ *   The viewer keeps this button enabled when read-only so users can print submitted data.
  * - `token`: URL-encoded JSON JWT token object
  * - `user`: URL-encoded JSON user object
+ * - `headers`: URL-encoded JSON headers object
+ *   Contains headers available in Form.io's evalContext for custom JavaScript logic.
+ *   The Authorization header can be updated programmatically via refreshUserToken() for user token management.
+ *   Example: `headers=%7B%22Authorization%22%3A%22Bearer%20token%22%2C%22X-Custom%22%3A%22value%22%7D`
+ * - `host-data`: URL-encoded JSON object containing arbitrary host application data
+ *   Available in Form.io's evalContext as `host` for custom JavaScript logic, calculated values,
+ *   conditional display, etc. Can also be updated programmatically via setHostData() after form loads.
+ *   Example: `host-data=%7B%22config%22%3A%7B%22maxItems%22%3A10%7D%7D`
+ * - `submit-mode`: Controls how form submission and draft saves are handled
+ *   - "chefs" (default): Normal flow - submits/saves to CHEFS backend after validation.
+ *   - "host": After validation, emits formio:hostSubmit event for host to handle data.
+ *     For submissions: automatically displays read-only unless host calls preventDefault().
+ *     For drafts: no auto read-only display (drafts are meant to be edited later).
+ *   - "none": After validation, emits formio:hostSubmit but does NOT auto-display read-only.
+ *     Host is fully responsible for what happens after (both submit and draft).
+ * - `no-shadow`: Disable Shadow DOM rendering (true/false)
+ *   When true, renders in light DOM mode. Styles are loaded into document.head and
+ *   page/global CSS can affect the component (useful for integration and debugging).
  *
  * ## Error Handling
  *
@@ -274,15 +378,13 @@
    * @returns {boolean} True if parameter should be skipped
    */
   function shouldSkipParam(param, hasAuthToken) {
-    if (param === 'debug') return true;
-    if (param === 'api-key' && hasAuthToken) return true;
-    return false;
+    return param === 'api-key' && hasAuthToken;
   }
 
   /**
    * Applies URL query parameters to the chefs-form-viewer element.
    * Converts parameter names to proper attribute names and handles special
-   * JSON parameters (token, user) by setting them as element properties.
+   * JSON parameters (token, user, headers, host-data) by setting them as element properties.
    *
    * @param {HTMLElement} element - The chefs-form-viewer element
    * @param {Object} params - Query parameters object from parseQueryParams
@@ -290,22 +392,17 @@
    */
   function applyQueryParams(element, params, logger) {
     const booleanParams = new Set([
+      'debug',
       'read-only',
       'isolate-styles',
       'no-icons',
       'auto-reload-on-submit',
+      'no-shadow',
     ]);
     const paramEntries = Object.entries(params);
     const hasAuthToken = paramEntries.some(
       ([param, value]) => param === 'auth-token' && value
     );
-
-    function handleJsonParam(param, value) {
-      const parsed = parseJsonParam(value, param, logger);
-      if (parsed !== null) {
-        element[param] = parsed;
-      }
-    }
 
     function handleBooleanParam(attrName, value) {
       if (parseBooleanParam(value)) {
@@ -318,8 +415,18 @@
 
       const attrName = paramToAttribute(param);
 
-      if (param === 'token' || param === 'user') {
-        handleJsonParam(param, value);
+      if (
+        param === 'token' ||
+        param === 'user' ||
+        param === 'headers' ||
+        param === 'host-data'
+      ) {
+        // host-data needs to be set as hostData property (camelCase)
+        const propName = param === 'host-data' ? 'hostData' : param;
+        const parsed = parseJsonParam(value, param, logger);
+        if (parsed !== null) {
+          element[propName] = parsed;
+        }
       } else if (booleanParams.has(param)) {
         handleBooleanParam(attrName, value);
       } else {

@@ -25,12 +25,16 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
-  });  
+  }); 
+  it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get('button').contains('Basic Fields').click();  
+        
+  }); 
 // Publish a simple form 
 it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    cy.get('button').contains('Basic Fields').click();
     //Phone Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
@@ -41,7 +45,7 @@ it('Verify draft submission', () => {
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
-    //Multiline Text
+    //Text field
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Text Field')
@@ -50,6 +54,7 @@ it('Verify draft submission', () => {
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
+    cy.wait(1000);
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
@@ -161,7 +166,7 @@ it('Submission revise status Assignment', () => {
     cy.get('.v-chip__content').contains('chefs.testing@gov.bc.ca').should('be.visible');
     cy.get('input[type="text"]').then($el => {
       const text_btn=$el[2];
-    cy.get(text_btn).type('NI');
+    cy.get(text_btn).type('ZX');
     });
     //Verify validation message to add another member for revise status assignment
     cy.contains('No results found. Please add team members in the draft/submission manage page.').should('be.visible');
