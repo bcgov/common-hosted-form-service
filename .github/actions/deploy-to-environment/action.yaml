@@ -43,27 +43,32 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install OpenShift CLI tools
-      uses: redhat-actions/openshift-tools-installer@v1
-      with:
-        oc: "4.14"
+    - name: Install OpenShift CLI (oc)
+      shell: bash
+      run: |
+        OC_VERSION="4.14.62"
+        OC_DIR="${HOME}/oc-bin"
+        mkdir -p "${OC_DIR}"
+        curl -sL "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz" | tar -xzf - -C "${OC_DIR}" oc
+        echo "${OC_DIR}" >> "${GITHUB_PATH}"
     - name: Checkout repository from pull request
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: ${{ inputs.ref }}
       if: ${{ inputs.ref != '' }}
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       if: ${{ inputs.ref == '' }}
 
     - name: Login to OpenShift Cluster
-      uses: redhat-actions/oc-login@v1
-
-      with:
-        openshift_server_url: ${{ inputs.openshift_server }}
-        openshift_token: ${{ inputs.openshift_token }}
-        insecure_skip_tls_verify: true
-        namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+      shell: bash
+      env:
+        OC_TOKEN: ${{ inputs.openshift_token }}
+        OC_SERVER: ${{ inputs.openshift_server }}
+        OC_NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+      run: |
+        oc login --token="${OC_TOKEN}" --server="${OC_SERVER}" --insecure-skip-tls-verify
+        oc project "${OC_NAMESPACE}"
 
     - name: Deploy Patroni Secret
       shell: bash
