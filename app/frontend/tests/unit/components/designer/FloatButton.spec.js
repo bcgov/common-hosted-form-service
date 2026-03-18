@@ -3,6 +3,8 @@ import { mount, RouterLinkStub, shallowMount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
 import { beforeEach, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
+import { useFormStore } from '~/store/form.js';
+import { FormPermissions } from '~/utils/constants';
 
 import FloatButton from '~/components/designer/FloatButton.vue';
 
@@ -401,6 +403,8 @@ describe('FloatButton.vue', () => {
   });
 
   it('Publish button is enabled if it is not a new draft version and there is a form id and draft id', () => {
+    const formStore = useFormStore();
+    formStore.permissions = [FormPermissions.FORM_UPDATE];
     const wrapper = mount(FloatButton, {
       props: {
         newVersion: false,
