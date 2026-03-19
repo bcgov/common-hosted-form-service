@@ -265,6 +265,11 @@ describe('Form Designer', () => {
         cy.get('.choices__inner > .choices__list > .choices__item').contains('hello');
         cy.get('.col-md-9 > a').contains('add1.png');
         cy.get('.ui > .choices__list > .choices__item').contains('THRIFTY FOODS');
+        //Verify uploaded file is downloadable
+        cy.get('.col-md-9 > a').contains('add1.png').click();
+        const path = require("path");
+        const downloadsFolder=Cypress.config("downloadsFolder");
+        cy.readFile(path.join(downloadsFolder,'add1.png')).should('exist');
         //Delete form after test run
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.waitForLoad();
