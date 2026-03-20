@@ -3,6 +3,7 @@ const { ref } = require('objection');
 const uuid = require('uuid');
 const { EmailTypes, ScheduleType } = require('../common/constants');
 const eventService = require('../event/eventService');
+const authService = require('../auth/service');
 const moment = require('moment');
 const {
   FileStorage,
@@ -31,6 +32,7 @@ const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const tenantService = require('../../components/tenantService');
+const log = require('../../components/log')(module.filename);
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -94,12 +96,12 @@ function validateScheduleObject(schedule = {}) {
  * @returns {Boolean} True if late submission config is valid
  */
 function isLateSubmissionConfigValid(schedule) {
-  const lateSubmissionsEnabled = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
+  const lateSubmissionsEnabled = schedule?.allowLateSubmissions?.enabled;
 
   if (lateSubmissionsEnabled) {
-    const hasValidTerm = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
+    const hasValidTerm = schedule?.allowLateSubmissions?.forNext?.term;
 
-    const hasValidInterval = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
+    const hasValidInterval = schedule?.allowLateSubmissions?.forNext?.intervalType;
 
     if (!hasValidTerm || !hasValidInterval) {
       return false;
@@ -170,7 +172,7 @@ const service = {
     }
 
     // Check if schedule exists and is properly configured
-    if (!data.schedule || !data.schedule.enabled || !data.schedule.scheduleType || data.schedule.scheduleType === ScheduleType.MANUAL) {
+    if (!data.schedule?.enabled || !data.schedule?.scheduleType || data.schedule?.scheduleType === ScheduleType.MANUAL) {
       return false;
     }
 
@@ -221,7 +223,7 @@ const service = {
         });
       } else if (typeof currentData === 'object' && currentData !== null) {
         Object.keys(currentData).forEach((key) => {
-          if (key === 'data' && currentData[key] && currentData[key].id) {
+          if (key === 'data' && currentData[key]?.id) {
             // Add the file ID if it exists
             fileIds.push(currentData[key].id);
           } else {
@@ -388,7 +390,7 @@ const service = {
         code: p.code,
         createdBy: currentUser.usernameIdp,
       }));
-      if (fIdps && fIdps.length) await FormIdentityProvider.query(trx).insert(fIdps);
+      if (fIdps?.length) await FormIdentityProvider.query(trx).insert(fIdps);
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
@@ -422,16 +424,30 @@ const service = {
     }
   },
 
-  readForm: (formId, params = {}) => {
+  readForm: async (formId, params = {}, currentUser = null) => {
     params = queryUtils.defaultActiveOnly(params);
-    return Form.query()
+
+    let hasPermissionsForVersions = true;
+    // Making an assumption that user is turned away before this if it's protected and they're not logged in
+    if (currentUser !== null && currentUser !== undefined) {
+      const forms = await authService.getUserForms(currentUser, {
+        ...params,
+        active: true,
+        formId: formId,
+      });
+      hasPermissionsForVersions = forms.some((f) => f.permissions.includes(Permissions.DESIGN_CREATE));
+    }
+
+    const query = Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
       .allowGraph('[formMetadata,identityProviders,versions]')
       .withGraphFetched('formMetadata')
-      .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
-      .throwIfNotFound();
+      .withGraphFetched('identityProviders(orderDefault)');
+    if (hasPermissionsForVersions) {
+      query.withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)');
+    }
+    return query.throwIfNotFound();
   },
 
   readFormOptions: (formId, params = {}) => {
@@ -481,7 +497,7 @@ const service = {
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
     // Only apply assigned user filter if both conditions are true
-    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser?.id) {
       query.where('formSubmissionAssignedToUserId', currentUser.id);
     }
 
@@ -503,7 +519,7 @@ const service = {
       selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
     }
 
-    if (params.fields && params.fields.length) {
+    if (params.fields?.length) {
       fields = Array.isArray(params.fields) ? params.fields.flatMap((f) => f.split(',').map((s) => s.trim())) : params.fields.split(',').map((s) => s.trim());
       if (fields.includes('updatedAt')) selection.push('updatedAt');
       if (fields.includes('updatedBy')) selection.push('updatedBy');
@@ -529,6 +545,8 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params, currentUser) => {
+    log.info('listFormSubmissions service start', { formId, paginationEnabled: params.paginationEnabled });
+
     // First, get form settings to check if assignee data should be included
     const form = await service.readForm(formId);
 
@@ -544,26 +562,54 @@ const service = {
     );
 
     if (params.paginationEnabled) {
-      return await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
+      const result = await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
+      log.info('listFormSubmissions service complete (pagination path)', {
+        formId,
+        resultCount: Array.isArray(result) ? result.length : result?.results?.length ?? 0,
+      });
+      return result;
     }
 
+    log.info('listFormSubmissions service complete (non-pagination path)', { formId });
     return query;
   },
 
   async processPaginationData(query, page, itemsPerPage, search, searchEnabled) {
-    const isSearchEnabled = (x) => (x !== undefined ? JSON.parse(x) : false);
+    const isSearchEnabled = (x) => (x === undefined ? false : JSON.parse(x));
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
 
     if (isSearchAble && search) {
+      log.info('processPaginationData: using search path', { page, itemsPerPage });
       const submissionsData = await query;
-      return this.searchSubmissions(submissionsData, search, page, itemsPerPage);
+      const result = this.searchSubmissions(submissionsData, search, page, itemsPerPage);
+      log.info('processPaginationData: search complete', {
+        inputRows: submissionsData?.length ?? 0,
+        resultCount: result?.results?.length ?? 0,
+        total: result?.total ?? 0,
+      });
+      return result;
     }
 
     if (itemsPerPage && Number.parseInt(itemsPerPage) >= 0 && Number.parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
+      log.info('processPaginationData: using page path', { page, itemsPerPage });
+      const result = await query.page(Number.parseInt(page), Number.parseInt(itemsPerPage));
+      log.info('processPaginationData: page complete', {
+        resultCount: result?.results?.length ?? 0,
+        total: result?.total ?? 0,
+      });
+      return result;
     }
 
-    return await query;
+    log.info('processPaginationData: using full fetch path (itemsPerPage invalid or -1)', {
+      page,
+      itemsPerPage,
+      itemsPerPageParsed: Number.parseInt(itemsPerPage),
+    });
+    const result = await query;
+    log.info('processPaginationData: full fetch complete', {
+      resultCount: Array.isArray(result) ? result.length : 0,
+    });
+    return result;
   },
 
   searchSubmissions(submissionsData, search, page, itemsPerPage) {
@@ -582,7 +628,8 @@ const service = {
 
     const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
 
-    const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+    const isNumberLike = (x, s) =>
+      (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && Number.parseFloat(x) === Number.parseFloat(s);
 
     const isBoolLike = (x, s) => {
       // Only bother if the data value itself is a boolean
@@ -677,12 +724,12 @@ const service = {
     // ---------------------------------------------------------
     // Pagination
     // ---------------------------------------------------------
-    if (itemsPerPage !== -1) {
+    if (itemsPerPage === -1) {
+      result.results = searchedData;
+    } else {
       const start = page * itemsPerPage;
       const end = start + itemsPerPage;
       result.results = searchedData.slice(start, end);
-    } else {
-      result.results = searchedData;
     }
 
     return result;
@@ -865,12 +912,10 @@ const service = {
         const submissionDataArray = data.submission.data;
         const recordWithoutData = data;
         delete recordWithoutData.submission.data;
-        let recordsToInsert = [];
-        let submissionId;
         // let's create multiple submissions with same metadata
-        service.popFormLevelInfo(submissionDataArray).map((singleData) => {
-          submissionId = uuid.v4();
-          recordsToInsert.push({
+        const recordsToInsert = service.popFormLevelInfo(submissionDataArray).map((singleData) => {
+          const submissionId = uuid.v4();
+          return {
             ...recordWithoutData,
             id: submissionId,
             formVersionId: formVersion.id,
@@ -880,7 +925,7 @@ const service = {
               ...recordWithoutData.submission,
               data: singleData,
             },
-          });
+          };
         });
         const result = await FormSubmission.query(trx).insert(recordsToInsert);
         const perms = [Permissions.SUBMISSION_CREATE, Permissions.SUBMISSION_READ];
@@ -1109,7 +1154,7 @@ const service = {
     let result = [];
     result = await FormComponentsProactiveHelp.query().modify('findByComponentId', componentId);
     let item = result.length > 0 ? result[0] : null;
-    let imageUrl = item !== null ? 'data:' + item.imageType + ';' + 'base64' + ',' + item.image : '';
+    let imageUrl = item === null ? '' : 'data:' + item.imageType + ';' + 'base64' + ',' + item.image;
     return { url: imageUrl };
   },
 
@@ -1238,7 +1283,7 @@ const service = {
   // Get all the email templates for a form
   readEmailTemplates: async (formId) => {
     const hasEmailTemplate = (emailTemplates, type) => {
-      return emailTemplates.find((t) => t.type === type) !== undefined;
+      return emailTemplates.some((t) => t.type === type);
     };
 
     let result = await FormEmailTemplate.query().modify('filterFormId', formId);

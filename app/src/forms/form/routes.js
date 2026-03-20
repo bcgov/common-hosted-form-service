@@ -85,8 +85,8 @@ routes.post('/:formId/versions/:formVersionId/multiSubmission', apiAccess, hasFo
   await controller.createMultiSubmission(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
-  controller.listSubmissionFields(req, res, next);
+routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.listSubmissionFields(req, res, next);
 });
 
 routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
