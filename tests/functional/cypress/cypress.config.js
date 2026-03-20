@@ -1,10 +1,11 @@
 const { defineConfig } = require('cypress')
-const fs = require('fs'); // Module for file system
+const fs = require('fs');
+const path = require('path'); // ✅ import path module
 
 module.exports = defineConfig({
   reporter: 'cypress-axe-reporter',
   reporterOptions: {
-    reportDir: 'tests/functional/cypress/axe-reports',
+    reportDir: 'axe-reports',
     outputFormat: 'json',
   },
   env: {
@@ -39,15 +40,29 @@ module.exports = defineConfig({
     numTestsKeptInMemory: 5,
     experimentalMemoryManagement: true,
     setupNodeEvents(on, config) {
-      require('cypress-axe-reporter/plugin')(on);
-
-      on('task', {
-        fileExists(filePath) {
-          return fs.existsSync(filePath);
-        },
-      });
-
-      return config;
+  // Define all tasks
+  on('task', {
+    // Your existing task
+    fileExists(filePath) {
+      return fs.existsSync(filePath);
     },
+
+    // Task to write axe reports
+    writeAxeReport({ results, filePath }) {
+      // Ensure folder exists
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      // Write JSON file
+      fs.writeFileSync(path.resolve(filePath), JSON.stringify(results, null, 2));
+      console.log(`Axe report written to: ${filePath}`);
+      return null; // Cypress requires tasks to return null or a value
+    },
+  });
+
+  return config;
+}
   },
 });
