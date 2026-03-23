@@ -16,14 +16,14 @@ describe("Form Designer", () => {
     console.log(err);
     return false;
   });
-  
+
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
   });
   it('Getting page', () => {
-    
+
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('BC Government').click();
@@ -34,7 +34,7 @@ describe("Form Designer", () => {
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="idirusers"]')
-      
+
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -600, { force: true })
       .trigger('mouseup', { force: true });
@@ -51,7 +51,7 @@ describe("Form Designer", () => {
           //let pathName = fullUrl.pathname
     let arr = search.split('=');
     let arrayValues = arr[1].split('&');
-    cy.log(arrayValues[0]);   
+    cy.log(arrayValues[0]);
     //Go to  Menu
     cy.get('.mdi-dots-vertical').click();
     cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
@@ -71,9 +71,11 @@ describe("Form Designer", () => {
     cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('input[type="radio"][value="default"]').should('be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
-    cy.get('input[type="radio"][aria-label="Direct Print"]').click();
+    cy.wait(1000);
+    cy.get('input[type="radio"][aria-label="Direct Print"]').click({ force: true });
+    cy.wait(1000);
     cy.wait(500);
-    cy.get('.pl-12 > .v-text-field > .v-input__control > .v-field > .v-field__append-inner').click();
+    cy.get('.pl-12 > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
     cy.wait(1000);
     cy.get('div.v-list-item-title').contains('test.docx').click();
     cy.get('input[type="radio"][value="formName"]').should('be.checked');
@@ -119,7 +121,7 @@ describe("Form Designer", () => {
     cy.get('.mdi-printer').should('be.visible').click();
     cy.wait(1000);
     cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
-   }) 
+   })
 });
 
 });

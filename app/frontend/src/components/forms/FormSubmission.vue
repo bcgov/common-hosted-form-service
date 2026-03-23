@@ -13,7 +13,7 @@ import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
 import { checkSubmissionUpdate } from '~/utils/permissionUtils';
 
 import { useFormStore } from '~/store/form';
-import { NotificationTypes } from '~/utils/constants';
+import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
 const { locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
@@ -39,6 +39,9 @@ const formStore = useFormStore();
 const { form, formSubmission, permissions, isRTL } = storeToRefs(formStore);
 
 const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
+const canDeleteSubmission = computed(() =>
+  permissions.value?.includes(FormPermissions.SUBMISSION_DELETE)
+);
 
 onMounted(async () => {
   await formStore.fetchSubmission({ submissionId: properties.submissionId });
@@ -168,7 +171,11 @@ defineExpose({
               </span>
             </v-tooltip>
           </span>
-          <DeleteSubmission :submission-id="submissionId" @deleted="onDelete" />
+          <DeleteSubmission
+            v-if="canDeleteSubmission"
+            :submission-id="submissionId"
+            @deleted="onDelete"
+          />
         </div>
       </div>
     </div>
