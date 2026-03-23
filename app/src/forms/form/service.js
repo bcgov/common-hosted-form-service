@@ -424,17 +424,21 @@ const service = {
     }
   },
 
-  readForm: async (formId, params = {}, currentUser = null) => {
+  readForm: async (formId, params = {}, currentUser = null, headers = null) => {
     params = queryUtils.defaultActiveOnly(params);
 
     let hasPermissionsForVersions = true;
     // Making an assumption that user is turned away before this if it's protected and they're not logged in
     if (currentUser !== null && currentUser !== undefined) {
-      const forms = await authService.getUserForms(currentUser, {
-        ...params,
-        active: true,
-        formId: formId,
-      });
+      const forms = await authService.getUserForms(
+        currentUser,
+        {
+          ...params,
+          active: true,
+          formId: formId,
+        },
+        headers
+      );
       hasPermissionsForVersions = forms.some((f) => f.permissions.includes(Permissions.DESIGN_CREATE));
     }
 
