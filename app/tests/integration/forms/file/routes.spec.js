@@ -2,6 +2,7 @@ const request = require('supertest');
 const uuid = require('uuid');
 const path = require('node:path');
 const fs = require('node:fs');
+const os = require('node:os');
 
 const app = require('../../../../app');
 
@@ -9,7 +10,7 @@ const basePath = '/api/v1/files';
 
 // Helper to create a test file
 function createTestFile(filename, content = 'test file content') {
-  const testDir = path.join(__dirname, '../../fixtures');
+  const testDir = path.join(os.tmpdir(), 'chefs-test-fixtures');
   if (!fs.existsSync(testDir)) {
     fs.mkdirSync(testDir, { recursive: true });
   }
