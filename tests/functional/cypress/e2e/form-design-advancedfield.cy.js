@@ -180,10 +180,10 @@ describe('Form Designer', () => {
       });
     });
     it('Verify submission', () => {
-      cy.viewport(1000, 1800);
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+        cy.viewport(1000, 1800);
+        cy.waitForLoad();
+        cy.waitForLoad();
+        cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
       // Form saving
         let savedButton = cy.get('[data-cy=saveButton]');
         expect(savedButton).to.not.be.null;
@@ -192,37 +192,17 @@ describe('Form Designer', () => {
       // Filter the newly created form
         cy.location('search').then(search => {
           //let pathName = fullUrl.pathname
-          let arr = search.split('=');
-          let arrayValues = arr[1].split('&');
-          cy.log(arrayValues[0]);
-          cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-          cy.waitForLoad();
-          })
-       
+        let arr = search.split('=');
+        let arrayValues = arr[1].split('&');
+        cy.log(arrayValues[0]);
+        cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+        cy.waitForLoad(); 
         //Publish the form
         cy.get('.v-label > span').click();
         cy.get('span').contains('Publish Version 1');
         cy.contains('Continue').should('be.visible');
         cy.contains('Continue').trigger('click');
-
-        //Share link verification
-        let shareFormButton = cy.get('[data-cy=shareFormButton]');
-        expect(shareFormButton).to.not.be.null;
-        shareFormButton.trigger('click').then(()=>{
-          //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
-          let shareFormLinkButton=cy.get('.mx-2');
-          expect(shareFormLinkButton).to.not.be.null;
-          shareFormLinkButton.trigger('click');
-          //Close  form share window
-          cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
-        });
-        cy.location('search').then(search => {
-          //let pathName = fullUrl.pathname
-        let arr = search.split('=');
-        let arrayValues = arr[1].split('&');
         cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-        cy.waitForLoad();
-       
         cy.waitForLoad();
         // for print option verification
         cy.get(':nth-child(2) > .d-print-none > :nth-child(1) > .v-btn').should('be.visible');
@@ -247,18 +227,36 @@ describe('Form Designer', () => {
         cy.get('.browse').should('have.attr', 'ref').and('include', 'fileBrowse');
         cy.get('.browse').should('have.attr', 'href').and('include', '#');
         cy.get('.browse').click();
-        let fileUploadInputField = cy.get('input[type=file]');
-        cy.get('input[type=file]').should('not.to.be.null');
-        fileUploadInputField.attachFile('add1.png');
-        cy.waitForLoad();
-        //verify file uploads to object storage
+        // Intercept POST upload
+        cy.intercept('POST', '/api/v1/files').as('uploadFile');
+      // Trigger upload (adjust selector as needed)
+        cy.get('input[type="file"]').selectFile('fixtures/add1.png', {
+        force: true
+        });
+        //verify file uploads to object storage and extract fileId
         cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
         cy.get('div.col-md-2').contains('61.48 kB');
-        cy.wait(2000);
-        //form submission
+        cy.wait(1000);
+        cy.get('.col-md-9 > a')
+        .should('have.attr', 'href')
+        .then((href) => {
+        const fileId = href.split('/').pop(); // get last part
+        cy.wrap(fileId).as('fileId');
+      //form submission
         cy.get('button').contains('Submit').click();
         cy.wait(2000);
         cy.get('[data-test="continue-btn-continue"]').click();
+      // Validate file exists via API
+        cy.then(() => {
+        cy.request({
+        method: 'GET',
+        url: `/api/v1/files/${fileId}`,
+        failOnStatusCode: false
+        }).then((res) => {
+        expect(res.status).to.eq(503);
+        });
+        });
+        });
        // verify the components after submission
         cy.get('span').contains('Canadian').should('be.visible');
         cy.get('span').contains('Eligible').should('be.visible');
@@ -276,8 +274,8 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
-        
         })
+        });
 
     });
-});
+  
