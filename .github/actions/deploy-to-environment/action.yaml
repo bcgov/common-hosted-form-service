@@ -174,7 +174,7 @@ runs:
       shell: bash
       run: |
         NAMESPACE="${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
-        POD_NAME="${{ steps.pod.outputs.pod_name }}
+        POD_NAME="${{ steps.pod.outputs.pod_name }}"
 
         echo "Running integration tests on pod: $POD_NAME"
         oc exec -n "$NAMESPACE" "$POD_NAME" -- npm run test:integration
