@@ -160,7 +160,7 @@ runs:
         DEPLOYMENT_NAME="${{ inputs.acronym }}-app-${{ inputs.job_name }}"
 
         echo "Looking for pods in deployment: $DEPLOYMENT_NAME"
-        POD_NAME=$(oc get pods -n "$NAMESPACE" -l app="$DEPLOYMENT_NAME" -o jsonpath='{.items[0].metadata.name}')
+        POD_NAME=$(oc get pods -n "$NAMESPACE" -l app="$DEPLOYMENT_NAME",role=app -o jsonpath='{.items[0].metadata.name}')
 
         if [ -z "$POD_NAME" ]; then
           echo "No pods found for deployment: $DEPLOYMENT_NAME"
