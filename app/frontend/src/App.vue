@@ -1,6 +1,7 @@
 <script setup>
 import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
 import GlobalStatusOverlay from '~/components/base/GlobalStatusOverlay.vue';
+import BCGovEnterpriseBanner from '~/components/bcgov/BCGovEnterpriseBanner.vue';
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
 import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
@@ -65,6 +66,7 @@ onMounted(async () => {
       <BaseNotificationContainer />
       <BCGovHeader :app-title="appTitle" :form-submit-mode="isFormSubmitMode" />
       <BCGovNavBar :form-submit-mode="isFormSubmitMode" />
+      <BCGovEnterpriseBanner :form-submit-mode="isFormSubmitMode" />
       <GlobalStatusOverlay :parent-ready="ready" />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
