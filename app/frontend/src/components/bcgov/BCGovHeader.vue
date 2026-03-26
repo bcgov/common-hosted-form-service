@@ -9,7 +9,7 @@ import { useAuthStore } from '~/store/auth';
 import { useTenantStore } from '~/store/tenant';
 import TenantDropdown from '~/components/base/TenantDropdown.vue';
 
-defineProps({
+const props = defineProps({
   formSubmitMode: {
     type: Boolean,
     default: false,
@@ -24,6 +24,19 @@ const route = useRoute();
 const { isRTL } = storeToRefs(useFormStore());
 const { authenticated, ready } = storeToRefs(useAuthStore());
 const tenantStore = useTenantStore();
+const { selectedTenant } = storeToRefs(tenantStore);
+
+// Base title without the mode suffix (e.g. "Common Hosted Forms")
+const appBase = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled) return props.appTitle;
+  return props.appTitle.replace(/\s*\|\s*(Enterprise|Personal)$/, '');
+});
+
+// Mode word shown prominently in the header (ENTERPRISE or PERSONAL), only when logged in
+const appMode = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled || !authenticated.value) return null;
+  return selectedTenant.value ? 'ENTERPRISE' : 'PERSONAL';
+});
 
 // Show tenant dropdown on all authenticated pages EXCEPT:
 // - Admin pages
@@ -98,13 +111,24 @@ const showTenantDropdown = computed(() => {
       <h1
         v-if="!formSubmitMode"
         data-test="btn-header-title"
-        class="font-weight-bold text-h6 d-none d-md-flex pl-4"
+        class="font-weight-bold text-h6 d-none d-md-flex pl-4 header-title"
       >
-        {{ appTitle }}
+        {{ appBase
+        }}<span v-if="appMode" class="mode-divider mx-2" aria-hidden="true"
+          >|</span
+        ><span
+          v-if="appMode"
+          class="mode-text"
+          :class="
+            appMode === 'ENTERPRISE' ? 'enterprise-text' : 'personal-text'
+          "
+          >{{ appMode }}</span
+        >
       </h1>
       <v-spacer />
       <!-- Tenant Dropdown (visible only on Forms list and Create Form pages) -->
       <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper mr-4">
+        <span v-if="selectedTenant" class="tenant-header-label">Tenant:</span>
         <TenantDropdown />
       </div>
       <BaseAuthButton data-test="base-auth-btn" />
@@ -120,6 +144,43 @@ const showTenantDropdown = computed(() => {
   .elevation-20 {
     box-shadow: 0 0 0 0 !important;
   }
+}
+
+.mode-divider {
+  color: #fcba19;
+  font-weight: 400;
+  font-size: 1.4rem;
+  opacity: 0.8;
+  align-self: center;
+}
+
+.mode-text {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  align-self: center;
+
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    font-size: 1.3rem !important;
+  }
+}
+
+.enterprise-text {
+  color: #fcba19;
+}
+
+.personal-text {
+  color: #ffffff;
+}
+
+.tenant-header-label {
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 0.25rem;
 }
 
 .gov-header {

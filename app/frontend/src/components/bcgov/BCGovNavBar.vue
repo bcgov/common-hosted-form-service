@@ -119,6 +119,7 @@ const formsMenuText = computed(() => {
     ul {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
       margin: 0;
       color: #ffffff;
       list-style: none;
