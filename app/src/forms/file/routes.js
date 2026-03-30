@@ -1,6 +1,6 @@
 const routes = require('express').Router();
 
-const apiAccess = require('../public/middleware/apiAccess.checkApiKey');
+const apiAccess = require('../public/middleware/apiAccess');
 const { currentUser } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
