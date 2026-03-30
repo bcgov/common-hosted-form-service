@@ -32,9 +32,9 @@ const appBase = computed(() => {
   return props.appTitle.replace(/\s*\|\s*(Enterprise|Personal)$/, '');
 });
 
-// Mode word shown prominently in the header (ENTERPRISE or PERSONAL)
+// Mode word shown prominently in the header (ENTERPRISE or PERSONAL), only when logged in
 const appMode = computed(() => {
-  if (!tenantStore.isTenantFeatureEnabled) return null;
+  if (!tenantStore.isTenantFeatureEnabled || !authenticated.value) return null;
   return selectedTenant.value ? 'ENTERPRISE' : 'PERSONAL';
 });
 

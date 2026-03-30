@@ -483,6 +483,11 @@ export default function getRouter(basePath = '/') {
     const redirectUri = location.origin + basePath + to.path + location.search;
     authStore.redirectUri = redirectUri;
 
+    // In tenanted (Enterprise CHEFS) mode, let the component render so that
+    // BaseSecure can show the "You must be logged in" prompt in-page.
+    const tenantStore = useTenantStore();
+    if (tenantStore.isTenantFeatureEnabled) return;
+
     const idpStore = useIdpStore();
     const idpHint =
       to.meta.requiresAuth === 'primary'

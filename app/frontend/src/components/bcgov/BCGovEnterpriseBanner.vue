@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useAuthStore } from '~/store/auth';
 import { useTenantStore } from '~/store/tenant';
 
 defineProps({
@@ -10,6 +11,7 @@ defineProps({
   },
 });
 
+const { authenticated } = storeToRefs(useAuthStore());
 const tenantStore = useTenantStore();
 const { selectedTenant } = storeToRefs(tenantStore);
 
@@ -22,7 +24,9 @@ const tenantName = computed(
 
 <template>
   <div
-    v-if="tenantStore.isTenantFeatureEnabled && !formSubmitMode"
+    v-if="
+      authenticated && tenantStore.isTenantFeatureEnabled && !formSubmitMode
+    "
     class="context-banner d-print-none"
     :class="isEnterprise ? 'enterprise-banner' : 'personal-banner'"
     role="status"
