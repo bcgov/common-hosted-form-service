@@ -197,6 +197,8 @@
     "referenceGuideC": "for more details",
     "specificTeamMembers": "Specific Team Members",
     "teamMemberTooltip": "After you create the form you will have access to the Team Management page where you can add users and assign roles. Look for the people icon on the Manage Form page ",
+    "specificGroups": "Specific Groups",
+    "groupAccessTooltip": "Access is controlled by CSTAR groups. After you create the form, go to the Group Management page to associate CSTAR groups with this form. Only users who belong to those groups will be able to access it. To add or remove users from a group, manage the group membership in CSTAR.",
     "formFunctionality": "Form Functionality",
     "formSubmissinScheduleMsg": "The Form Submissions Schedule will be available in the Form Settings after the form is published.",
     "formSubmissionsSchedule": "Form Submissions Schedule",
@@ -751,7 +753,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
-    "shareDraftMessage": "Share draft with form team members only"
+    "shareDraftMessage": "Share draft with form team members only",
+    "shareDraftGroupMessage": "Share draft with form group members only"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
