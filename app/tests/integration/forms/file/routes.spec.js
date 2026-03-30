@@ -26,7 +26,7 @@ function cleanupTestFile(filePath) {
   }
 }
 
-const mockToken = `Bearer token-${uuid.v4()}`;
+const apikey = process.env.APITOKEN;
 
 describe('File Routes Integration Tests', () => {
   // track created file ids for clean up
@@ -43,7 +43,7 @@ describe('File Routes Integration Tests', () => {
 
     it('should return 201 when a file is uploaded with valid path', async () => {
       testFilePath = createTestFile(`test-${uuid.v4()}.txt`, 'test content');
-      const response = await request(app).post(basePath).set('Authorization', mockToken).attach('files', testFilePath);
+      const response = await request(app).post(basePath).set('apikey', apikey).attach('files', testFilePath);
 
       expect([200, 201, 202, 503]).toContain(response.status);
 
@@ -68,7 +68,7 @@ describe('File Routes Integration Tests', () => {
     });
 
     it('should return 400 or 503 when no file is provided', async () => {
-      const response = await request(app).post(basePath).set('Authorization', mockToken).send({});
+      const response = await request(app).post(basePath).set('apikey', apikey).send({});
       expect([400, 503]).toContain(response.status);
     });
 
@@ -76,7 +76,7 @@ describe('File Routes Integration Tests', () => {
       const file1 = createTestFile(`test1-${uuid.v4()}.txt`, 'content 1');
       const file2 = createTestFile(`test2-${uuid.v4()}.txt`, 'content 2');
 
-      const response = await request(app).post(basePath).set('Authorization', mockToken).attach('files', file1).attach('files', file2);
+      const response = await request(app).post(basePath).set('apikey', apikey).attach('files', file1).attach('files', file2);
 
       expect([200, 201, 202, 503]).toContain(response.status);
 
@@ -100,7 +100,7 @@ describe('File Routes Integration Tests', () => {
   describe('GET /files/:fileId', () => {
     it('should handle GET request with created file ID', async () => {
       const fileId = createdFileIds.length > 0 ? createdFileIds[0] : uuid.v4();
-      const response = await request(app).get(`${basePath}/${fileId}`).set('Authorization', mockToken);
+      const response = await request(app).get(`${basePath}/${fileId}`).set('apikey', apikey);
 
       expect([200, 403, 404, 503]).toContain(response.status);
 
@@ -117,7 +117,7 @@ describe('File Routes Integration Tests', () => {
     });
 
     it('should accept valid file UUID format', async () => {
-      const response = await request(app).get(`${basePath}/${uuid.v4()}`).set('Authorization', mockToken);
+      const response = await request(app).get(`${basePath}/${uuid.v4()}`).set('apikey', apikey);
 
       expect(response.status).toBeGreaterThanOrEqual(200);
     });
@@ -126,7 +126,7 @@ describe('File Routes Integration Tests', () => {
   describe('GET /files/:fileId/clone', () => {
     it('should handle cloning an existing file', async () => {
       const fileId = createdFileIds.length > 0 ? createdFileIds[0] : uuid.v4();
-      const response = await request(app).get(`${basePath}/${fileId}/clone`).set('Authorization', mockToken);
+      const response = await request(app).get(`${basePath}/${fileId}/clone`).set('apikey', apikey);
 
       expect([200, 201, 202, 403, 404, 503]).toContain(response.status);
 
@@ -154,7 +154,7 @@ describe('File Routes Integration Tests', () => {
       }
 
       const fileId = createdFileIds.shift();
-      const response = await request(app).delete(`${basePath}/${fileId}`).set('Authorization', mockToken);
+      const response = await request(app).delete(`${basePath}/${fileId}`).set('apikey', apikey);
 
       expect([200, 204, 403, 404, 503]).toContain(response.status);
     });
@@ -167,7 +167,7 @@ describe('File Routes Integration Tests', () => {
     });
 
     it('should accept valid UUID in path', async () => {
-      const response = await request(app).delete(`${basePath}/${uuid.v4()}`).set('Authorization', mockToken);
+      const response = await request(app).delete(`${basePath}/${uuid.v4()}`).set('apikey', apikey);
 
       expect([204, 403, 404, 503]).toContain(response.status);
     });
@@ -181,7 +181,7 @@ describe('File Routes Integration Tests', () => {
 
       const fileIds = createdFileIds.splice(0);
 
-      const response = await request(app).delete(basePath).set('Authorization', mockToken).send({ fileIds });
+      const response = await request(app).delete(basePath).set('apikey', apikey).send({ fileIds });
 
       expect([200, 204, 403, 404, 503]).toContain(response.status);
     });
@@ -195,14 +195,14 @@ describe('File Routes Integration Tests', () => {
     });
 
     it('should return 400 or 503 when fileIds is not an array', async () => {
-      const response = await request(app).delete(basePath).set('Authorization', mockToken).send({ fileIds: 'not-an-array' });
+      const response = await request(app).delete(basePath).set('apikey', apikey).send({ fileIds: 'not-an-array' });
       expect([400, 503]).toContain(response.status);
     });
   });
 
   afterAll(async () => {
     if (createdFileIds.length > 0) {
-      await request(app).delete(basePath).set('Authorization', mockToken).send({ fileIds: createdFileIds });
+      await request(app).delete(basePath).set('apikey', apikey).send({ fileIds: createdFileIds });
     }
   });
 });
