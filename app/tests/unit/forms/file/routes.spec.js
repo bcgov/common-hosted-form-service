@@ -110,7 +110,7 @@ describe(`${basePath}/:id`, () => {
 
     await appRequest.delete(path);
 
-    expect(apiAccess).toBeCalledTimes(0);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(0);
     expect(controller.delete).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
@@ -127,7 +127,7 @@ describe(`${basePath}/:id`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(1);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(1);
     expect(controller.read).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
@@ -149,7 +149,7 @@ describe(`${basePath}/:id/clone`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(1);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(1);
     expect(controller.clone).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
