@@ -105,7 +105,9 @@
     "referenceGuideB": "guia do usuário",
     "referenceGuideC": "para mais detalhes.",
     "specificTeamMembers": "Membros Específicos da Equipe",
+    "specificGroups": "Grupos específicos",
     "teamMemberTooltip": "Após criar o formulário, você terá acesso à página de Gerenciamento de Equipe, onde pode adicionar usuários e atribuir funções. Procure o ícone de pessoas na página Gerenciar Formulário ",
+    "groupAccessTooltip": "O acesso é controlado pelos grupos CSTAR. Após criar o formulário, acesse a página de Gerenciamento de grupos para associar grupos CSTAR a este formulário. Apenas os usuários que pertencem a esses grupos poderão acessá-lo. Para adicionar ou remover usuários de um grupo, gerencie a associação ao grupo no CSTAR.",
     "formFunctionality": "Funcionalidade do formulário",
     "formSubmissinScheduleMsg": "A Agenda de envios de formulários estará disponível nas Configurações de formulários após a publicação do formulário.",
     "formSubmissionsSchedule": "Cronograma de Envios de Formulários",
@@ -1294,7 +1296,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
-    "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário"
+    "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário",
+    "shareDraftGroupMessage": "Compartilhar rascunho apenas com membros do grupo do formulário"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Este serviço está temporariamente indisponível.",

@@ -105,7 +105,9 @@
     "referenceGuideB": "gabay sa gumagamit",
     "referenceGuideC": "para sa higit pang detalye.",
     "specificTeamMembers": "Mga Partikular na Miyembro ng Koponan",
+    "specificGroups": "Mga Partikular na Grupo",
     "teamMemberTooltip": "Pagkatapos mong likhain ang form, magkakaroon ka ng access sa Team Management page kung saan maaari kang magdagdag ng mga user at magtalaga ng mga role. Hanapin ang people icon sa Manage Form page ",
+    "groupAccessTooltip": "Ang access ay kinokontrol ng mga grupo ng CSTAR. Pagkatapos malikha ang form, pumunta sa pahina ng Pamamahala ng Grupo upang iugnay ang mga grupo ng CSTAR sa form na ito. Ang mga gumagamit lamang na kabilang sa mga grupong iyon ang makakaakses nito. Upang magdagdag o mag-alis ng mga gumagamit mula sa isang grupo, pamahalaan ang membership ng grupo sa CSTAR.",
     "formFunctionality": "Pag-andar ng Form",
     "formSubmissinScheduleMsg": "Ang Iskedyul ng Pagsusumite ng Form ay magiging available sa Mga Setting ng Form pagkatapos mailathala ang form.",
     "formSubmissionsSchedule": "Iskedyul ng Pagsusumite ng Form",
@@ -1298,7 +1300,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
-    "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
+    "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang",
+    "shareDraftGroupMessage": "Ibahagi ang draft sa mga miyembro ng grupo ng form lamang"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ang serbisyong ito ay pansamantalang hindi available.",

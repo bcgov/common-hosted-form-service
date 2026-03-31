@@ -105,7 +105,9 @@
     "referenceGuideB": "hướng dẫn sử dụng",
     "referenceGuideC": "để biết thêm chi tiết.",
     "specificTeamMembers": "Thành viên nhóm cụ thể",
+    "specificGroups": "Các nhóm cụ thể",
     "teamMemberTooltip": "Sau khi bạn tạo biểu mẫu, bạn sẽ có quyền truy cập vào trang Quản lý Nhóm, nơi bạn có thể thêm người dùng và gán vai trò. Hãy tìm biểu tượng người trên trang Quản lý Biểu mẫu ",
+    "groupAccessTooltip": "Quyền truy cập được kiểm soát bởi các nhóm CSTAR. Sau khi tạo biểu mẫu, hãy đến trang Quản lý nhóm để liên kết các nhóm CSTAR với biểu mẫu này. Chỉ những người dùng thuộc các nhóm đó mới có thể truy cập vào biểu mẫu. Để thêm hoặc xóa người dùng khỏi nhóm, hãy quản lý thành viên nhóm trong CSTAR.",
     "formFunctionality": "Chức năng biểu mẫu",
     "formSubmissinScheduleMsg": "Lịch gửi biểu mẫu sẽ có sẵn trong Cài đặt biểu mẫu sau khi biểu mẫu được xuất bản.",
     "formSubmissionsSchedule": "Lịch gửi biểu mẫu",
@@ -1298,7 +1300,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
-    "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
+    "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu",
+    "shareDraftGroupMessage": "Chia sẻ bản nháp chỉ với thành viên nhóm biểu mẫu"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Dịch vụ này tạm thời không khả dụng.",

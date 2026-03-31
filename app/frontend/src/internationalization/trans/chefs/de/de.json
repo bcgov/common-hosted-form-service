@@ -105,7 +105,9 @@
     "referenceGuideB": "Benutzerhandbuch",
     "referenceGuideC": "für weitere Details",
     "specificTeamMembers": "Spezifische Teammitglieder",
+    "specificGroups": "Bestimmte Gruppen",
     "teamMemberTooltip": "Nachdem Sie das Formular erstellt haben, haben Sie Zugriff auf die Teamverwaltungsseite, auf der Sie Benutzer hinzufügen und Rollen zuweisen können. Suchen Sie nach dem Personen-Symbol auf der Seite \"Formular verwalten\" ",
+    "groupAccessTooltip": "Der Zugriff wird über CSTAR-Gruppen gesteuert. Nachdem Sie das Formular erstellt haben, gehen Sie zur Gruppenverwaltungsseite, um CSTAR-Gruppen mit diesem Formular zu verknüpfen. Nur Benutzer, die diesen Gruppen angehören, können darauf zugreifen. Um Benutzer zu einer Gruppe hinzuzufügen oder daraus zu entfernen, verwalten Sie die Gruppenmitgliedschaft in CSTAR.",
     "formFunctionality": "Formularfunktionalität",
     "formSubmissinScheduleMsg": "Der Formulareinreichungsplan ist in den Formulareinstellungen verfügbar, nachdem das Formular veröffentlicht wurde.",
     "formSubmissionsSchedule": "Zeitplan für Formulareinreichungen",
@@ -1294,7 +1296,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
-    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
+    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter",
+    "shareDraftGroupMessage": "Entwurf nur mit Formulargruppenmitgliedern teilen"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Dieser Dienst ist vorübergehend nicht verfügbar.",

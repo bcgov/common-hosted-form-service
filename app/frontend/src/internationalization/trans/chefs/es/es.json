@@ -105,7 +105,9 @@
     "referenceGuideB": "guía del usuario",
     "referenceGuideC": "para más detalles",
     "specificTeamMembers": "Miembros del equipo específicos",
+    "specificGroups": "Grupos específicos",
     "teamMemberTooltip": "Después de crear el formulario, tendrás acceso a la página de Gestión de Equipo donde puedes agregar usuarios y asignar roles. Busca el ícono de personas en la página Administrar formulario ",
+    "groupAccessTooltip": "El acceso está controlado por grupos CSTAR. Después de crear el formulario, vaya a la página de Administración de grupos para asociar grupos CSTAR con este formulario. Solo los usuarios que pertenezcan a esos grupos podrán acceder a él. Para agregar o eliminar usuarios de un grupo, administre la membresía del grupo en CSTAR.",
     "formFunctionality": "Funcionalidad de formulario",
     "formSubmissinScheduleMsg": "El programa de envío de formularios estará disponible en la configuración del formulario después de que se publique el formulario.",
     "formSubmissionsSchedule": "Calendario de envío de formularios",
@@ -1294,7 +1296,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "No puedes compartir el borrador con usuarios que no se hayan añadido al formulario. Contacta con el administrador para añadirlos.",
-    "shareDraftMessage": "Compartir borrador solo con miembros del equipo del formulario"
+    "shareDraftMessage": "Compartir borrador solo con miembros del equipo del formulario",
+    "shareDraftGroupMessage": "Compartir borrador solo con miembros del grupo del formulario"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Este servicio no está disponible temporalmente.",
