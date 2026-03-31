@@ -105,7 +105,9 @@
     "referenceGuideB": "用户指南",
     "referenceGuideC": "了解更多详情。",
     "specificTeamMembers": "具体团队成员",
+    "specificGroups": "特定组",
     "teamMemberTooltip": "创建表单后，您将可以访问团队管理页面，在那里可以添加用户并分配角色。请在管理表单页面查找人员图标 ",
+    "groupAccessTooltip": "访问由CSTAR组控制。创建表单后，转到组管理页面将CSTAR组与此表单关联。只有属于这些组的用户才能访问它。要在组中添加或删除用户，请在CSTAR中管理组成员资格。",
     "formFunctionality": "表单功能",
     "formSubmissinScheduleMsg": "表单发布后，表单提交计划将在表单设置中可用。",
     "formSubmissionsSchedule": "表格提交时间表",
@@ -1294,7 +1296,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
-    "shareDraftMessage": "仅与表单团队成员共享草稿"
+    "shareDraftMessage": "仅与表单团队成员共享草稿",
+    "shareDraftGroupMessage": "仅与表单组成员共享草稿"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "此服务暂时不可用。",

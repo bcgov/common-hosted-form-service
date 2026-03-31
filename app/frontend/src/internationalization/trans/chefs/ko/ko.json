@@ -105,7 +105,9 @@
     "referenceGuideB": "사용자 가이드",
     "referenceGuideC": "를 참조하세요.",
     "specificTeamMembers": "특정 팀원",
+    "specificGroups": "특정 그룹",
     "teamMemberTooltip": "양식을 생성한 후에는 팀 관리 페이지에 접근하여 사용자를 추가하고 역할을 할당할 수 있습니다. 관리 양식 페이지에서 사람 아이콘을 찾으세요. ",
+    "groupAccessTooltip": "액세스는 CSTAR 그룹에 의해 제어됩니다. 양식을 만든 후 그룹 관리 페이지로 이동하여 CSTAR 그룹을 이 양식과 연결하세요. 해당 그룹에 속한 사용자만 액세스할 수 있습니다. 그룹에서 사용자를 추가하거나 제거하려면 CSTAR에서 그룹 멤버십을 관리하세요.",
     "formFunctionality": "양식 기능",
     "formSubmissinScheduleMsg": "양식 제출 일정은 양식이 게시된 후 양식 설정에서 사용할 수 있습니다.",
     "formSubmissionsSchedule": "양식 제출 일정",
@@ -1294,7 +1296,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "양식에 추가되지 않은 사용자와 초안을 공유할 수 없습니다. 관리자에게 연락하여 추가하세요.",
-    "shareDraftMessage": "초안을 양식 팀원과만 공유하세요"
+    "shareDraftMessage": "초안을 양식 팀원과만 공유하세요",
+    "shareDraftGroupMessage": "양식 그룹 구성원과만 초안 공유"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "이 서비스는 일시적으로 사용할 수 없습니다.",

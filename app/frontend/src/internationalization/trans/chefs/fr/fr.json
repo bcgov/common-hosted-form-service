@@ -105,8 +105,10 @@
     "referenceGuideA": "Veuillez consulter notre",
     "referenceGuideB": "guide d'utilisateur",
     "referenceGuideC": "pour plus de détails",
-    "specificTeamMembers": "Membres spécifiques de l'équipe",
+    "specificTeamMembers": "Membres spécifiques de l’équipe",
+    "specificGroups": "Groupes spécifiques",
     "teamMemberTooltip": "Après avoir créé le formulaire, vous aurez accès à la page de gestion d’équipe où vous pourrez ajouter des utilisateurs et attribuer des rôles. Recherchez l’icône des personnes sur la page Gérer le formulaire ",
+    "groupAccessTooltip": "L’accès est contrôlé par les groupes CSTAR. Après avoir créé le formulaire, rendez-vous sur la page de gestion des groupes pour associer des groupes CSTAR à ce formulaire. Seuls les utilisateurs appartenant à ces groupes pourront y accéder. Pour ajouter ou supprimer des utilisateurs d’un groupe, gérez les appartenances au groupe dans CSTAR.",
     "formFunctionality": "Fonctionnalité du formulaire",
     "formSubmissinScheduleMsg": "Le calendrier de soumission des formulaires sera disponible dans les paramètres du formulaire après la publication du formulaire.",
     "formSubmissionsSchedule": "Calendrier de soumission des formulaires",
@@ -1325,7 +1327,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
-    "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
+    "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire",
+    "shareDraftGroupMessage": "Partager le brouillon uniquement avec les membres du groupe du formulaire"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ce service est temporairement indisponible.",

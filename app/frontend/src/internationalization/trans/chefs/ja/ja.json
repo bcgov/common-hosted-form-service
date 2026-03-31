@@ -105,7 +105,9 @@
     "referenceGuideB": "ユーザーガイド",
     "referenceGuideC": "をご参照ください",
     "specificTeamMembers": "特定のチームメンバー",
+    "specificGroups": "特定のグループ",
     "teamMemberTooltip": "フォームを作成した後、チーム管理ページにアクセスでき、ユーザーの追加や役割の割り当てができます。「フォーム管理」ページの人物アイコンを探してください ",
+    "groupAccessTooltip": "アクセスはCSTARグループによって制御されます。フォームを作成した後、グループ管理ページに移動してCSTARグループをこのフォームに関連付けてください。そのグループに属するユーザーのみがアクセスできます。グループにユーザーを追加または削除するには、CSTARでグループメンバーシップを管理してください。",
     "formFunctionality": "フォーム機能",
     "formSubmissinScheduleMsg": "フォーム送信スケジュールは、フォームが公開された後、フォーム設定で利用できるようになります。",
     "formSubmissionsSchedule": "フォーム送信スケジュール",
@@ -1294,7 +1296,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
-    "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する"
+    "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する",
+    "shareDraftGroupMessage": "フォームグループメンバーのみと下書きを共有する"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "このサービスは一時的に利用できません。",

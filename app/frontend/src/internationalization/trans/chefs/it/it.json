@@ -105,7 +105,9 @@
     "referenceGuideB": "guida utente",
     "referenceGuideC": "per maggiori dettagli",
     "specificTeamMembers": "Membri specifici del team",
+    "specificGroups": "Gruppi specifici",
     "teamMemberTooltip": "Dopo aver creato il modulo, avrai accesso alla pagina di Gestione del Team dove potrai aggiungere utenti e assegnare ruoli. Cerca l’icona delle persone nella pagina Gestisci modulo ",
+    "groupAccessTooltip": "L’accesso è controllato dai gruppi CSTAR. Dopo aver creato il modulo, vai alla pagina Gestione gruppi per associare i gruppi CSTAR a questo modulo. Solo gli utenti appartenenti a quei gruppi potranno accedervi. Per aggiungere o rimuovere utenti da un gruppo, gestisci l’appartenenza al gruppo in CSTAR.",
     "formFunctionality": "Funzionalità della forma",
     "formSubmissinScheduleMsg": "Il programma di invio del modulo sarà disponibile nelle Impostazioni del modulo dopo la pubblicazione del modulo.",
     "formSubmissionsSchedule": "Programma di invio dei moduli",
@@ -1294,7 +1296,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
-    "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo"
+    "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo",
+    "shareDraftGroupMessage": "Condividi la bozza solo con i membri del gruppo del modulo"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Questo servizio non è temporaneamente disponibile.",
