@@ -31,7 +31,7 @@ routes.get('/:fileId/clone', apiAccess.checkApiKey, currentFileRecord, hasFilePe
   await controller.clone(req, res, next);
 });
 
-routes.delete('/:fileId', currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
+routes.delete('/:fileId', apiAccess.checkApiKey, currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
   await controller.delete(req, res, next);
 });
 
