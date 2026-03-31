@@ -110,7 +110,7 @@ describe(`${basePath}/:id`, () => {
 
     await appRequest.delete(path);
 
-    expect(apiAccess.checkApiKey).toBeCalledTimes(0);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(1);
     expect(controller.delete).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
