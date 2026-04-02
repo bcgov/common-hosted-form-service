@@ -1,3 +1,4 @@
+const config = require('config');
 const Problem = require('api-problem');
 const uuid = require('uuid');
 
@@ -107,7 +108,7 @@ const currentUser = async (req, _res, next) => {
     // is ok if the access token isn't defined: then we'll have a public user.
     const accessToken = await jwtService.getTokenPayload(req);
     req.currentUser = await service.login(accessToken);
-    req.currentUser.tenantId = req.headers['x-tenant-id'];
+    req.currentUser.tenantId = config.get('cstar.tenantFeatureEnabled') ? req.headers['x-tenant-id'] : undefined;
 
     next();
   } catch (error) {

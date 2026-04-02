@@ -89,7 +89,7 @@ const service = {
           ...params,
           active: true,
         },
-        headers // Pass headers to auth service
+        headers
       );
       const filteredForms = authService.filterForms(currentUser, forms, accessLevels);
       return filteredForms;
