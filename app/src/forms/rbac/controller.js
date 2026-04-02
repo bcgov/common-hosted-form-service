@@ -54,7 +54,6 @@ module.exports = {
   },
   getCurrentUserForms: async (req, res, next) => {
     try {
-      // Pass headers for tenant API authentication
       const response = await service.getCurrentUserForms(req.currentUser, req.query, req.headers);
       res.status(200).json(response);
     } catch (error) {
