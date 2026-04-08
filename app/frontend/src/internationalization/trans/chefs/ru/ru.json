@@ -53,6 +53,7 @@
     "emailManagement": "Управление электронной почтой",
     "viewSubmissions": "Просмотр записей",
     "teamManagement": "Управление командой",
+    "groupManagement": "Управление группами",
     "deleteForm": "Удалить форму",
     "confirmDeletion": "Подтвердить удаление",
     "deleteMessageA": "Вы уверены, что хотите удалить",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "Произошла ошибка при попытке обновить роли для пользователя",
     "setUserFormsConsoleErrMsg": "Ошибка при настройке ролей пользователей для формы {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Управление группами",
+    "manageForm": "Управление формой",
+    "search": "Поиск",
+    "loadingText": "Загрузка... Пожалуйста, подождите",
+    "noDataText": "Нет доступных групп для этого арендатора",
+    "noMatchingRecordText": "Совпадающие записи не найдены",
+    "groupName": "Название группы",
+    "description": "Описание",
+    "associated": "Связанная",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirmSave": "Подтвердить изменения",
+    "confirmSaveMsg": "Вы уверены, что хотите обновить связи группы для этой формы?",
+    "saveSuccessMsg": "Связи группы успешно обновлены",
+    "saveErrMsg": "Произошла ошибка при сохранении связей группы",
+    "getGroupsErrMsg": "Произошла ошибка при загрузке групп для этой формы",
+    "missingGroupsWarning": "{count} ранее связанная(ые) группа(ы) больше не существует(ют) в этом арендаторе",
+    "availableGroups": "Доступные группы",
+    "assignedGroups": "Назначенные группы",
+    "searchAvailable": "Поиск доступных групп",
+    "searchAssigned": "Поиск назначенных групп",
+    "noAvailableGroups": "Нет доступных групп в этом арендаторе",
+    "noAssignedGroups": "Этой форме не назначено ни одной группы",
+    "addGroup": "Добавить группу",
+    "removeGroup": "Удалить группу",
+    "deleted": "Удалена",
+    "noTenantAccess": "Управление группами доступно только для форм арендатора. Пожалуйста, выберите арендатора для продолжения."
+  },
   "floatButton": {
     "publish": "Опубликовать",
     "manage": "Управлять",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "Наше краткое руководство познакомит вас с некоторыми основными функциями программы CHEFS.",
     "getStartedToChefs": "Начните использовать CHEFS",
     "createOnlineTitle": "Создавайте онлайн-формы для сбора информации от ваших клиентов и улучшения рабочих процессов.",
-    "getStarted": "Начать"
+    "getStarted": "Начать",
+    "enterpriseSectionTitle": "Откройте для себя новый Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS расширяет возможности классического CHEFS (Common Hosted Forms Service), работая совместно с CSTAR — Connected Services, Team Access и Roles — для создания общего совместного рабочего пространства.",
+    "enterpriseSectionBody2": "С Enterprise CHEFS команды могут безопасно делиться формами, назначать роли и управлять проектами в рамках арендатора своей организации.",
+    "enterpriseSectionWelcome": "Добро пожаловать в Enterprise CHEFS, где команды по всему правительству могут безопасно и эффективно сотрудничать.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Настройка формы",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Арендатор:",
     "infoTooltip": "Enterprise CHEFS — это новая версия CHEFS, которая поддерживает мультитенантный доступ. Выбор вашего арендатора автоматически перенесет вас туда.",
     "selectLabel": "Выберите арендатора (открывается в Enterprise CHEFS)",
     "placeholder": "Выберите из доступных арендаторов",

@@ -53,6 +53,7 @@
     "emailManagement": "电子邮件管理",
     "viewSubmissions": "查看提交内容",
     "teamManagement": "团队管理",
+    "groupManagement": "组管理",
     "deleteForm": "删除表格",
     "confirmDeletion": "确认删除",
     "deleteMessageA": "您确定要删除吗",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "尝试更新用户的角色时发生错误",
     "setUserFormsConsoleErrMsg": "设置表单 {formId} 的用户角色时出错：{error}"
   },
+  "groupManagement": {
+    "groupManagement": "组管理",
+    "manageForm": "管理表单",
+    "search": "搜索",
+    "loadingText": "加载中...请稍候",
+    "noDataText": "此租户没有可用的组",
+    "noMatchingRecordText": "未找到匹配记录",
+    "groupName": "组名",
+    "description": "描述",
+    "associated": "已关联",
+    "save": "保存",
+    "cancel": "取消",
+    "confirmSave": "确认更改",
+    "confirmSaveMsg": "您确定要更新此表单的组关联吗？",
+    "saveSuccessMsg": "组关联已成功更新",
+    "saveErrMsg": "保存组关联时发生错误",
+    "getGroupsErrMsg": "加载此表单的组时发生错误",
+    "missingGroupsWarning": "{count} 个之前关联的组在此租户中不再存在",
+    "availableGroups": "可用组",
+    "assignedGroups": "已分配的组",
+    "searchAvailable": "搜索可用组",
+    "searchAssigned": "搜索已分配的组",
+    "noAvailableGroups": "此租户中没有可用的组",
+    "noAssignedGroups": "此表单没有分配任何组",
+    "addGroup": "添加组",
+    "removeGroup": "删除组",
+    "deleted": "已删除",
+    "noTenantAccess": "组管理仅适用于租户表单。请选择租户以继续。"
+  },
   "floatButton": {
     "publish": "发布",
     "manage": "管理",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "我们的快速入门指南将向您介绍 CHEFS 的一些基本功能。",
     "getStartedToChefs": "开始使用 CHEFS",
     "createOnlineTitle": "创建在线表单以收集客户的信息并改进您的工作流程。",
-    "getStarted": "开始使用"
+    "getStarted": "开始使用",
+    "enterpriseSectionTitle": "体验全新的 Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS 通过与 CSTAR（Connected Services、Team Access 和 Roles）合作，扩展了经典 CHEFS（Common Hosted Forms Service），创建了一个共享的协作工作区。",
+    "enterpriseSectionBody2": "借助 Enterprise CHEFS，团队可以在其组织的租户内安全地共享表单、分配角色和管理项目。",
+    "enterpriseSectionWelcome": "欢迎使用 Enterprise CHEFS，政府各部门的团队可以在这里安全高效地协作。",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "设置表格",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "租户:",
     "infoTooltip": "Enterprise CHEFS 是支持多租户访问的新版本 CHEFS。选择您的租户将自动带您到那里。",
     "selectLabel": "选择租户（在 Enterprise CHEFS 中打开）",
     "placeholder": "从可用租户中选择",

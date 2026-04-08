@@ -53,6 +53,7 @@
     "emailManagement": "電子郵件管理",
     "viewSubmissions": "查看提交內容",
     "teamManagement": "團隊管理",
+    "groupManagement": "群組管理",
     "deleteForm": "刪除表格",
     "confirmDeletion": "確認刪除",
     "deleteMessageA": "您確定要刪除嗎",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "嘗試更新用戶的角色時發生錯誤",
     "setUserFormsConsoleErrMsg": "設置表單 {formId} 的用戶角色時出錯：{error}"
   },
+  "groupManagement": {
+    "groupManagement": "群組管理",
+    "manageForm": "管理表單",
+    "search": "搜尋",
+    "loadingText": "載入中...請稍候",
+    "noDataText": "此租戶沒有可用的群組",
+    "noMatchingRecordText": "未找到符合的記錄",
+    "groupName": "群組名稱",
+    "description": "描述",
+    "associated": "已關聯",
+    "save": "儲存",
+    "cancel": "取消",
+    "confirmSave": "確認變更",
+    "confirmSaveMsg": "您確定要更新此表單的群組關聯嗎？",
+    "saveSuccessMsg": "群組關聯已成功更新",
+    "saveErrMsg": "儲存群組關聯時發生錯誤",
+    "getGroupsErrMsg": "載入此表單的群組時發生錯誤",
+    "missingGroupsWarning": "{count} 個之前關聯的群組在此租戶中不再存在",
+    "availableGroups": "可用群組",
+    "assignedGroups": "已分配的群組",
+    "searchAvailable": "搜尋可用群組",
+    "searchAssigned": "搜尋已分配的群組",
+    "noAvailableGroups": "此租戶中沒有可用的群組",
+    "noAssignedGroups": "此表單沒有分配任何群組",
+    "addGroup": "新增群組",
+    "removeGroup": "移除群組",
+    "deleted": "已刪除",
+    "noTenantAccess": "群組管理僅適用於租戶表單。請選擇租戶以繼續。"
+  },
   "floatButton": {
     "publish": "發布",
     "manage": "管理",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "我們的快速入門指南將向您介紹 CHEFS 的一些基本功能。",
     "getStartedToChefs": "開始使用 CHEFS",
     "createOnlineTitle": "創建在線表單以收集客戶的信息並改進您的工作流程。",
-    "getStarted": "開始使用"
+    "getStarted": "開始使用",
+    "enterpriseSectionTitle": "體驗全新的 Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS 透過與 CSTAR（Connected Services、Team Access 和 Roles）合作，擴展了傳統 CHEFS（Common Hosted Forms Service），創建了一個共享的協作工作區。",
+    "enterpriseSectionBody2": "借助 Enterprise CHEFS，團隊可以在其組織的租戶內安全地共享表單、指派角色並管理專案。",
+    "enterpriseSectionWelcome": "歡迎使用 Enterprise CHEFS，政府各部門的團隊可以在這裡安全高效地協作。",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "設置表格",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "租戶:",
     "infoTooltip": "Enterprise CHEFS 是支持多租戶訪問的新版本 CHEFS。選擇您的租戶將自動帶您到那裡。",
     "selectLabel": "選擇租戶（在 Enterprise CHEFS 中打開）",
     "placeholder": "從可用租戶中選擇",

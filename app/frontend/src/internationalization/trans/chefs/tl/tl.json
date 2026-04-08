@@ -53,6 +53,7 @@
     "emailManagement": "Pamamahala ng Email",
     "viewSubmissions": "Tingnan ang Mga Pagsusumite",
     "teamManagement": "Pamamahala ng Koponan",
+    "groupManagement": "Pamamahala ng grupo",
     "deleteForm": "Tanggalin ang Form",
     "confirmDeletion": "Kumpirmahin ang pagtanggal",
     "deleteMessageA": "Sigurado ka bang gusto mong tanggalin",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "May naganap na error habang sinusubukang i-update ang mga tungkulin para sa isang user",
     "setUserFormsConsoleErrMsg": "Error sa pagtatakda ng mga tungkulin ng user para sa form na {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Pamamahala ng grupo",
+    "manageForm": "Pamahalaan ang form",
+    "search": "Maghanap",
+    "loadingText": "Naglo-load... Mangyaring maghintay",
+    "noDataText": "Walang available na grupo para sa tenant na ito",
+    "noMatchingRecordText": "Walang nahanap na katugmang rekord",
+    "groupName": "Pangalan ng grupo",
+    "description": "Paglalarawan",
+    "associated": "Nauugnay",
+    "save": "I-save",
+    "cancel": "Kanselahin",
+    "confirmSave": "Kumpirmahin ang mga pagbabago",
+    "confirmSaveMsg": "Sigurado ka bang gusto mong i-update ang mga asosasyon ng grupo para sa form na ito?",
+    "saveSuccessMsg": "Matagumpay na na-update ang mga asosasyon ng grupo",
+    "saveErrMsg": "May naganap na error habang nagse-save ng mga asosasyon ng grupo",
+    "getGroupsErrMsg": "May naganap na error habang naglo-load ng mga grupo para sa form na ito",
+    "missingGroupsWarning": "{count} dating nauugnay na grupo ay wala na sa tenant na ito",
+    "availableGroups": "Mga available na grupo",
+    "assignedGroups": "Mga assigned na grupo",
+    "searchAvailable": "Maghanap ng mga available na grupo",
+    "searchAssigned": "Maghanap ng mga assigned na grupo",
+    "noAvailableGroups": "Walang available na grupo sa tenant na ito",
+    "noAssignedGroups": "Walang grupong assigned sa form na ito",
+    "addGroup": "Magdagdag ng grupo",
+    "removeGroup": "Alisin ang grupo",
+    "deleted": "Natanggal",
+    "noTenantAccess": "Ang pamamahala ng grupo ay available lamang para sa mga tenanted na form. Mangyaring pumili ng tenant para magpatuloy."
+  },
   "floatButton": {
     "publish": "I-publish",
     "manage": "Pamahalaan",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS.",
     "getStartedToChefs": "Magsimula sa paggamit ng CHEFS",
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
-    "getStarted": "Magsimula"
+    "getStarted": "Magsimula",
+    "enterpriseSectionTitle": "Maranasan ang bagong Enterprise CHEFS",
+    "enterpriseSectionBody1": "Pinapalawak ng Enterprise CHEFS ang klasikong CHEFS (Common Hosted Forms Service) sa pamamagitan ng pakikipagtulungan sa CSTAR — Connected Services, Team Access, at Roles — upang lumikha ng isang shared, collaborative na workspace.",
+    "enterpriseSectionBody2": "Sa Enterprise CHEFS, ang mga koponan ay maaaring ligtas na magbahagi ng mga form, magtalaga ng mga tungkulin, at pamahalaan ang mga proyekto sa loob ng tenant ng kanilang organisasyon.",
+    "enterpriseSectionWelcome": "Maligayang pagdating sa Enterprise CHEFS, kung saan ang mga koponan sa buong gobyerno ay maaaring makipagtulungan nang ligtas at mahusay.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "I-set up ang Form",
@@ -1423,6 +1459,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Nangungupahan:",
     "infoTooltip": "Ang Enterprise CHEFS ay ang bagong bersyon ng CHEFS na sumusuporta sa multi-tenant access. Ang pagpili ng iyong tenant ay awtomatikong dadalhin ka doon.",
     "selectLabel": "Pumili ng tenant (bubukas sa Enterprise CHEFS)",
     "placeholder": "Pumili mula sa available na mga tenant",

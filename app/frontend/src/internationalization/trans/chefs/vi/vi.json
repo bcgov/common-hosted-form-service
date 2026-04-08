@@ -53,6 +53,7 @@
     "emailManagement": "Quản lý email",
     "viewSubmissions": "Xem bài nộp",
     "teamManagement": "quản lý nhóm",
+    "groupManagement": "Quản lý nhóm",
     "deleteForm": "Xóa biểu mẫu",
     "confirmDeletion": "Xác nhận xóa",
     "deleteMessageA": "Bạn có chắc chắn muốn xóa",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "Đã xảy ra lỗi khi cố cập nhật vai trò cho người dùng",
     "setUserFormsConsoleErrMsg": "Lỗi khi đặt vai trò người dùng cho biểu mẫu {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Quản lý nhóm",
+    "manageForm": "Quản lý biểu mẫu",
+    "search": "Tìm kiếm",
+    "loadingText": "Đang tải... Vui lòng đợi",
+    "noDataText": "Không có nhóm nào khả dụng cho người thuê này",
+    "noMatchingRecordText": "Không tìm thấy bản ghi phù hợp",
+    "groupName": "Tên nhóm",
+    "description": "Mô tả",
+    "associated": "Đã liên kết",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "confirmSave": "Xác nhận thay đổi",
+    "confirmSaveMsg": "Bạn có chắc chắn muốn cập nhật các liên kết nhóm cho biểu mẫu này không?",
+    "saveSuccessMsg": "Các liên kết nhóm đã được cập nhật thành công",
+    "saveErrMsg": "Đã xảy ra lỗi khi lưu các liên kết nhóm",
+    "getGroupsErrMsg": "Đã xảy ra lỗi khi tải các nhóm cho biểu mẫu này",
+    "missingGroupsWarning": "{count} nhóm đã được liên kết trước đó không còn tồn tại trong người thuê này",
+    "availableGroups": "Các nhóm khả dụng",
+    "assignedGroups": "Các nhóm đã gán",
+    "searchAvailable": "Tìm kiếm các nhóm khả dụng",
+    "searchAssigned": "Tìm kiếm các nhóm đã gán",
+    "noAvailableGroups": "Không có nhóm nào khả dụng trong người thuê này",
+    "noAssignedGroups": "Không có nhóm nào được gán cho biểu mẫu này",
+    "addGroup": "Thêm nhóm",
+    "removeGroup": "Xóa nhóm",
+    "deleted": "Đã xóa",
+    "noTenantAccess": "Quản lý nhóm chỉ khả dụng cho các biểu mẫu có người thuê. Vui lòng chọn người thuê để tiếp tục."
+  },
   "floatButton": {
     "publish": "Công bố",
     "manage": "Quản lý",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "Hướng dẫn bắt đầu nhanh của chúng tôi sẽ giới thiệu cho bạn một số chức năng cơ bản của CHEFS.",
     "getStartedToChefs": "Bắt đầu sử dụng CHEFS",
     "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
-    "getStarted": "Bắt đầu"
+    "getStarted": "Bắt đầu",
+    "enterpriseSectionTitle": "Trải nghiệm Enterprise CHEFS mới",
+    "enterpriseSectionBody1": "Enterprise CHEFS mở rộng CHEFS cổ điển (Common Hosted Forms Service) bằng cách hợp tác với CSTAR — Connected Services, Team Access và Roles — để tạo ra một không gian làm việc chung và cộng tác.",
+    "enterpriseSectionBody2": "Với Enterprise CHEFS, các nhóm có thể chia sẻ biểu mẫu một cách an toàn, phân công vai trò và quản lý dự án trong phạm vi người thuê của tổ chức họ.",
+    "enterpriseSectionWelcome": "Chào mừng đến với Enterprise CHEFS, nơi các nhóm trên toàn chính phủ có thể cộng tác một cách an toàn và hiệu quả.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Thiết lập biểu mẫu",
@@ -1423,6 +1459,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Người thuê:",
     "infoTooltip": "Enterprise CHEFS là phiên bản mới của CHEFS hỗ trợ truy cập đa thuê bao. Chọn thuê bao của bạn sẽ tự động đưa bạn đến đó.",
     "selectLabel": "Chọn thuê bao (mở trong Enterprise CHEFS)",
     "placeholder": "Chọn từ các thuê bao có sẵn",

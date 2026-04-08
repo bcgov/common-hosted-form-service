@@ -53,6 +53,7 @@
     "emailManagement": "Управління електронною поштою",
     "viewSubmissions": "Переглянути подання",
     "teamManagement": "Керування командою",
+    "groupManagement": "Управління групами",
     "deleteForm": "Видалити форму",
     "confirmDeletion": "Підтвердити видалення",
     "deleteMessageA": "Ви впевнені, що бажаєте видалити",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "Під час спроби оновити ролі користувача сталася помилка",
     "setUserFormsConsoleErrMsg": "Помилка встановлення ролей користувача для форми {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Управління групами",
+    "manageForm": "Управління формою",
+    "search": "Пошук",
+    "loadingText": "Завантаження... Зачекайте, будь ласка",
+    "noDataText": "Немає доступних груп для цього орендаря",
+    "noMatchingRecordText": "Відповідних записів не знайдено",
+    "groupName": "Назва групи",
+    "description": "Опис",
+    "associated": "Пов'язана",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "confirmSave": "Підтвердити зміни",
+    "confirmSaveMsg": "Ви впевнені, що хочете оновити зв'язки групи для цієї форми?",
+    "saveSuccessMsg": "Зв'язки групи успішно оновлено",
+    "saveErrMsg": "Під час збереження зв'язків групи виникла помилка",
+    "getGroupsErrMsg": "Під час завантаження груп для цієї форми виникла помилка",
+    "missingGroupsWarning": "{count} раніше пов'язана(і) група(и) більше не існує(ють) у цьому орендарі",
+    "availableGroups": "Доступні групи",
+    "assignedGroups": "Призначені групи",
+    "searchAvailable": "Пошук доступних груп",
+    "searchAssigned": "Пошук призначених груп",
+    "noAvailableGroups": "Немає доступних груп у цьому орендарі",
+    "noAssignedGroups": "Жодна група не призначена цій формі",
+    "addGroup": "Додати групу",
+    "removeGroup": "Видалити групу",
+    "deleted": "Видалена",
+    "noTenantAccess": "Управління групами доступне лише для форм орендаря. Будь ласка, виберіть орендаря для продовження."
+  },
   "floatButton": {
     "publish": "Опублікувати",
     "manage": "Керувати",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "Наш короткий посібник познайомить вас із деякими основними функціями CHEFS.",
     "getStartedToChefs": "Почніть використовувати CHEFS",
     "createOnlineTitle": "Створюйте онлайн-форми для збору інформації від своїх клієнтів і вдосконалення робочих процесів.",
-    "getStarted": "Почати"
+    "getStarted": "Почати",
+    "enterpriseSectionTitle": "Відкрийте для себе новий Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS розширює можливості класичного CHEFS (Common Hosted Forms Service), працюючи разом із CSTAR — Connected Services, Team Access та Roles — для створення спільного колаборативного робочого простору.",
+    "enterpriseSectionBody2": "З Enterprise CHEFS команди можуть безпечно ділитися формами, призначати ролі та керувати проектами в рамках орендаря своєї організації.",
+    "enterpriseSectionWelcome": "Ласкаво просимо до Enterprise CHEFS, де команди по всьому уряду можуть безпечно та ефективно співпрацювати.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Налаштувати форму",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Орендар:",
     "infoTooltip": "Enterprise CHEFS — це нова версія CHEFS, яка підтримує багатоорендний доступ. Вибір вашого орендаря автоматично перенесе вас туди.",
     "selectLabel": "Виберіть орендаря (відкривається в Enterprise CHEFS)",
     "placeholder": "Виберіть з доступних орендарів",

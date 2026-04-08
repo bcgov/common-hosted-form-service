@@ -53,6 +53,7 @@
     "emailManagement": "ਈਮੇਲ ਪ੍ਰਬੰਧਨ",
     "viewSubmissions": "ਬੇਨਤੀਆਂ ਦੇਖੋ",
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",
+    "groupManagement": "ਸਮੂਹ ਪ੍ਰਬੰਧਨ",
     "deleteForm": "ਫਾਰਮ ਮਿਟਾਓ",
     "confirmDeletion": "ਮਿਟਾਉਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
     "deleteMessageA": "ਕੀ ਤੁਸੀਂ ਯਕੀਨਨ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "ਇੱਕ ਉਪਭੋਗਤਾ ਲਈ ਰੋਲ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ",
     "setUserFormsConsoleErrMsg": "ਫਾਰਮ {formId} ਲਈ ਉਪਭੋਗਤਾ ਰੋਲ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "ਸਮੂਹ ਪ੍ਰਬੰਧਨ",
+    "manageForm": "ਫਾਰਮ ਪ੍ਰਬੰਧਿਤ ਕਰੋ",
+    "search": "ਖੋਜੋ",
+    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
+    "noDataText": "ਇਸ ਕਿਰਾਏਦਾਰ ਲਈ ਕੋਈ ਸਮੂਹ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦੇ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲੇ",
+    "groupName": "ਸਮੂਹ ਦਾ ਨਾਮ",
+    "description": "ਵੇਰਵਾ",
+    "associated": "ਸੰਬੰਧਿਤ",
+    "save": "ਸੁਰੱਖਿਅਤ ਕਰੋ",
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "confirmSave": "ਬਦਲਾਅ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+    "confirmSaveMsg": "ਕੀ ਤੁਸੀਂ ਸੱਚਮੁੱਚ ਇਸ ਫਾਰਮ ਲਈ ਸਮੂਹ ਸੰਬੰਧਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "saveSuccessMsg": "ਸਮੂਹ ਸੰਬੰਧ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਡੇਟ ਕੀਤੇ ਗਏ",
+    "saveErrMsg": "ਸਮੂਹ ਸੰਬੰਧਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵੇਲੇ ਇੱਕ ਗਲਤੀ ਹੋਈ",
+    "getGroupsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸਮੂਹ ਲੋਡ ਕਰਨ ਵੇਲੇ ਇੱਕ ਗਲਤੀ ਹੋਈ",
+    "missingGroupsWarning": "{count} ਪਹਿਲਾਂ ਸੰਬੰਧਿਤ ਸਮੂਹ ਇਸ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹਨ",
+    "availableGroups": "ਉਪਲਬਧ ਸਮੂਹ",
+    "assignedGroups": "ਨਿਰਧਾਰਤ ਸਮੂਹ",
+    "searchAvailable": "ਉਪਲਬਧ ਸਮੂਹਾਂ ਵਿੱਚ ਖੋਜੋ",
+    "searchAssigned": "ਨਿਰਧਾਰਤ ਸਮੂਹਾਂ ਵਿੱਚ ਖੋਜੋ",
+    "noAvailableGroups": "ਇਸ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਕੋਈ ਉਪਲਬਧ ਸਮੂਹ ਨਹੀਂ ਹੈ",
+    "noAssignedGroups": "ਇਸ ਫਾਰਮ ਨੂੰ ਕੋਈ ਸਮੂਹ ਨਿਰਧਾਰਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ",
+    "addGroup": "ਸਮੂਹ ਜੋੜੋ",
+    "removeGroup": "ਸਮੂਹ ਹਟਾਓ",
+    "deleted": "ਮਿਟਾਇਆ ਗਿਆ",
+    "noTenantAccess": "ਸਮੂਹ ਪ੍ਰਬੰਧਨ ਕੇਵਲ ਕਿਰਾਏਦਾਰ ਫਾਰਮਾਂ ਲਈ ਉਪਲਬਧ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਕਿਰਾਏਦਾਰ ਚੁਣੋ।"
+  },
   "floatButton": {
     "publish": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
     "manage": "ਪ੍ਰਬੰਧ ਕਰਨਾ, ਕਾਬੂ ਕਰਨਾ",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "ਸਾਡੀ ਕਵਿੱਕਸਟਾਰਟ ਗਾਈਡ ਤੁਹਾਨੂੰ CHEFS ਦੇ ਕੁਝ ਬੁਨਿਆਦੀ ਫੰਕਸ਼ਨਾਂ ਤੋਂ ਜਾਣੂ ਕਰਵਾਏਗੀ।",
     "getStartedToChefs": "CHEFS ਦੀ ਵਰਤੋਂ ਸ਼ੁਰੂ ਕਰੋ",
     "createOnlineTitle": "ਆਪਣੇ ਗਾਹਕਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਅਤੇ ਆਪਣੇ ਵਰਕਫਲੋ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਔਨਲਾਈਨ ਫਾਰਮ ਬਣਾਓ।",
-    "getStarted": "ਸ਼ੁਰੂ ਕਰੋ"
+    "getStarted": "ਸ਼ੁਰੂ ਕਰੋ",
+    "enterpriseSectionTitle": "ਨਵਾਂ Enterprise CHEFS ਅਨੁਭਵ ਕਰੋ",
+    "enterpriseSectionBody1": "Enterprise CHEFS, CSTAR ਨਾਲ ਮਿਲ ਕੇ ਕੰਮ ਕਰਕੇ ਕਲਾਸਿਕ CHEFS ਦਾ ਵਿਸਤਾਰ ਕਰਦਾ ਹੈ ਅਤੇ ਇੱਕ ਸਾਂਝੀ ਸਹਿਯੋਗੀ ਕਾਰਜਸਥਾਨ ਬਣਾਉਂਦਾ ਹੈ।",
+    "enterpriseSectionBody2": "Enterprise CHEFS ਨਾਲ, ਟੀਮਾਂ ਆਪਣੇ ਸੰਗਠਨ ਦੇ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਫਾਰਮ ਸਾਂਝੇ ਕਰ ਸਕਦੀਆਂ ਹਨ ਅਤੇ ਪ੍ਰੋਜੈਕਟ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
+    "enterpriseSectionWelcome": "Enterprise CHEFS ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ, ਜਿੱਥੇ ਸਰਕਾਰ ਭਰ ਦੀਆਂ ਟੀਮਾਂ ਸੁਰੱਖਿਅਤ ਅਤੇ ਕੁਸ਼ਲਤਾ ਨਾਲ ਸਹਿਯੋਗ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "ਕਿਰਾਏਦਾਰ:",
     "infoTooltip": "Enterprise CHEFS CHEFS ਦਾ ਨਵਾਂ ਸੰਸਕਰਣ ਹੈ ਜੋ ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪਹੁੰਚ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਕਿਰਾਏਦਾਰ ਦੀ ਚੋਣ ਕਰਨ ਨਾਲ ਤੁਹਾਨੂੰ ਆਪਣੇ ਆਪ ਉੱਥੇ ਲੈ ਜਾਵੇਗਾ।",
     "selectLabel": "ਕਿਰਾਏਦਾਰ ਚੁਣੋ (Enterprise CHEFS ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ)",
     "placeholder": "ਉਪਲਬਧ ਕਿਰਾਏਦਾਰਾਂ ਵਿੱਚੋਂ ਚੁਣੋ",

@@ -1364,6 +1364,7 @@
     "recallConsErrMsg": "Error recalling submission {submissionId}: {error}"
   },
   "tenantDropdown": {
+    "tenantLabel": "Tenant:",
     "infoTooltip": "Enterprise CHEFS is the new version of CHEFS that supports multi-tenant access. Selecting your tenant will take you there automatically.",
     "selectLabel": "Select tenant (opens in Enterprise CHEFS)",
     "placeholder": "Select from available tenants",

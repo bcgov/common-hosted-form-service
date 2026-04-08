@@ -134,7 +134,9 @@ const showTenantDropdown = computed(() => {
       <v-spacer />
       <!-- Tenant Dropdown (visible only on Forms list and Create Form pages) -->
       <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper mr-4">
-        <span v-if="selectedTenant" class="tenant-header-label">Tenant:</span>
+        <span v-if="selectedTenant" class="tenant-header-label">{{
+          $t('trans.tenantDropdown.tenantLabel')
+        }}</span>
         <TenantDropdown />
       </div>
       <BaseAuthButton data-test="base-auth-btn" />

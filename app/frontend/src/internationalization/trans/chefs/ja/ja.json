@@ -53,6 +53,7 @@
     "emailManagement": "電子メール管理",
     "viewSubmissions": "提出物を見る",
     "teamManagement": "チーム管理",
+    "groupManagement": "グループ管理",
     "deleteForm": "フォームの削除",
     "confirmDeletion": "削除の確認",
     "deleteMessageA": "削除してもよろしいですか",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "ユーザーのロールを更新しようとしたときにエラーが発生しました",
     "setUserFormsConsoleErrMsg": "フォーム {formId} のユーザー役割を設定中にエラーが発生しました: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "グループ管理",
+    "manageForm": "フォームを管理する",
+    "search": "検索",
+    "loadingText": "読み込み中...お待ちください",
+    "noDataText": "このテナントに利用可能なグループはありません",
+    "noMatchingRecordText": "一致するレコードが見つかりません",
+    "groupName": "グループ名",
+    "description": "説明",
+    "associated": "関連付け済み",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "confirmSave": "変更を確認",
+    "confirmSaveMsg": "このフォームのグループの関連付けを更新してもよろしいですか？",
+    "saveSuccessMsg": "グループの関連付けが正常に更新されました",
+    "saveErrMsg": "グループの関連付けの保存中にエラーが発生しました",
+    "getGroupsErrMsg": "このフォームのグループの読み込み中にエラーが発生しました",
+    "missingGroupsWarning": "以前に関連付けられた {count} 個のグループはこのテナントに存在しなくなりました",
+    "availableGroups": "利用可能なグループ",
+    "assignedGroups": "割り当てられたグループ",
+    "searchAvailable": "利用可能なグループを検索",
+    "searchAssigned": "割り当てられたグループを検索",
+    "noAvailableGroups": "このテナントに利用可能なグループはありません",
+    "noAssignedGroups": "このフォームに割り当てられたグループはありません",
+    "addGroup": "グループを追加",
+    "removeGroup": "グループを削除",
+    "deleted": "削除済み",
+    "noTenantAccess": "グループ管理はテナントフォームにのみ使用できます。続行するにはテナントを選択してください。"
+  },
   "floatButton": {
     "publish": "公開",
     "manage": "管理",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "クイックスタート ガイドでは、CHEFS の基本機能のいくつかを紹介します。",
     "getStartedToChefs": "CHFS の使用を開始する",
     "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します。",
-    "getStarted": "始めましょう"
+    "getStarted": "始めましょう",
+    "enterpriseSectionTitle": "新しいEnterprise CHEFSを体験する",
+    "enterpriseSectionBody1": "Enterprise CHEFSは、CSTAR（Connected Services、Team Access、Roles）と連携することで、クラシックCHEFS（Common Hosted Forms Service）を拡張し、共有された協調的なワークスペースを作成します。",
+    "enterpriseSectionBody2": "Enterprise CHEFSを使用すると、チームは組織のテナント内でフォームを安全に共有し、役割を割り当て、プロジェクトを管理できます。",
+    "enterpriseSectionWelcome": "Enterprise CHEFSへようこそ。政府全体のチームが安全かつ効率的に協力できる場所です。",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "フォームの設定",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "テナント:",
     "infoTooltip": "Enterprise CHEFS は、マルチテナントアクセスをサポートする CHEFS の新しいバージョンです。テナントを選択すると、自動的にそこに移動します。",
     "selectLabel": "テナントを選択（Enterprise CHEFS で開く）",
     "placeholder": "利用可能なテナントから選択",

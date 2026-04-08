@@ -53,6 +53,7 @@
     "emailManagement": "مدیریت ایمیل",
     "viewSubmissions": "مشاهده موارد ارسالی",
     "teamManagement": "مدیریت تیم",
+    "groupManagement": "مدیریت گروه",
     "deleteForm": "حذف فرم",
     "confirmDeletion": "حذف را تایید کنید",
     "deleteMessageA": "آیا مطمئن هستید که می خواهید حذف کنید؟",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "هنگام تلاش برای به‌روزرسانی نقش‌ها برای یک کاربر، خطایی روی داد",
     "setUserFormsConsoleErrMsg": "خطا در تنظیم نقش‌های کاربر برای فرم {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "مدیریت گروه",
+    "manageForm": "مدیریت فرم",
+    "search": "جستجو",
+    "loadingText": "در حال بارگذاری... لطفاً صبر کنید",
+    "noDataText": "هیچ گروهی برای این مستأجر موجود نیست",
+    "noMatchingRecordText": "هیچ رکورد مطابقی یافت نشد",
+    "groupName": "نام گروه",
+    "description": "توضیحات",
+    "associated": "مرتبط",
+    "save": "ذخیره",
+    "cancel": "لغو",
+    "confirmSave": "تأیید تغییرات",
+    "confirmSaveMsg": "آیا مطمئن هستید که می‌خواهید وابستگی‌های گروه برای این فرم را به‌روز کنید؟",
+    "saveSuccessMsg": "وابستگی‌های گروه با موفقیت به‌روز شد",
+    "saveErrMsg": "خطایی در هنگام ذخیره وابستگی‌های گروه رخ داد",
+    "getGroupsErrMsg": "خطایی در هنگام بارگذاری گروه‌ها برای این فرم رخ داد",
+    "missingGroupsWarning": "{count} گروه(های) که قبلاً مرتبط بودند دیگر در این مستأجر وجود ندارند",
+    "availableGroups": "گروه‌های موجود",
+    "assignedGroups": "گروه‌های اختصاص‌یافته",
+    "searchAvailable": "جستجوی گروه‌های موجود",
+    "searchAssigned": "جستجوی گروه‌های اختصاص‌یافته",
+    "noAvailableGroups": "هیچ گروهی در این مستأجر موجود نیست",
+    "noAssignedGroups": "هیچ گروهی به این فرم اختصاص نیافته است",
+    "addGroup": "افزودن گروه",
+    "removeGroup": "حذف گروه",
+    "deleted": "حذف شده",
+    "noTenantAccess": "مدیریت گروه فقط برای فرم‌های مستأجر در دسترس است. لطفاً یک مستأجر را برای ادامه انتخاب کنید."
+  },
   "floatButton": {
     "publish": "انتشار",
     "manage": "مدیریت کنید",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "راهنمای شروع سریع ما شما را با برخی از عملکردهای اساسی CHEFS آشنا می کند.",
     "getStartedToChefs": "شروع به استفاده از CHEFS کنید",
     "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید.",
-    "getStarted": "شروع کنید"
+    "getStarted": "شروع کنید",
+    "enterpriseSectionTitle": "CHEFS سازمانی جدید را تجربه کنید",
+    "enterpriseSectionBody1": "CHEFS سازمانی با همکاری با CSTAR — خدمات متصل، دسترسی تیم و نقش‌ها — CHEFS کلاسیک را گسترش می‌دهد تا یک فضای کاری مشترک و همکاری‌محور ایجاد کند.",
+    "enterpriseSectionBody2": "با CHEFS سازمانی، تیم‌ها می‌توانند فرم‌ها را به‌طور ایمن به اشتراک بگذارند، نقش‌ها را اختصاص دهند و پروژه‌ها را در مستأجر سازمانشان مدیریت کنند.",
+    "enterpriseSectionWelcome": "به CHEFS سازمانی خوش آمدید، جایی که تیم‌های سراسر دولت می‌توانند به‌طور ایمن و کارآمد همکاری کنند.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "فرم را تنظیم کنید",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "مستأجر:",
     "infoTooltip": "Enterprise CHEFS نسخه جدید CHEFS است که از دسترسی چند مستأجر پشتیبانی می‌کند. انتخاب مستأجر شما به طور خودکار شما را به آنجا می‌برد.",
     "selectLabel": "مستأجر را انتخاب کنید (در Enterprise CHEFS باز می‌شود)",
     "placeholder": "از مستأجران موجود انتخاب کنید",

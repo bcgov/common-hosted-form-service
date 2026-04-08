@@ -53,6 +53,7 @@
     "emailManagement": "إدارة البريد الإلكتروني",
     "viewSubmissions": "مشاهدة عمليات الإرسال",
     "teamManagement": "ادارة فريق",
+    "groupManagement": "إدارة المجموعات",
     "deleteForm": "حذف النموذج",
     "confirmDeletion": "تأكيد الحذف",
     "deleteMessageA": "هل أنت متأكد أنك ترغب في حذف",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "حدث خطأ أثناء محاولة تحديث الأدوار للمستخدم",
     "setUserFormsConsoleErrMsg": "خطأ في تعيين أدوار المستخدم للنموذج {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "إدارة المجموعات",
+    "manageForm": "إدارة النموذج",
+    "search": "بحث",
+    "loadingText": "جارٍ التحميل... يرجى الانتظار",
+    "noDataText": "لا توجد مجموعات متاحة لهذا المستأجر",
+    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
+    "groupName": "اسم المجموعة",
+    "description": "الوصف",
+    "associated": "مرتبط",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirmSave": "تأكيد التغييرات",
+    "confirmSaveMsg": "هل أنت متأكد أنك تريد تحديث ارتباطات المجموعة لهذا النموذج؟",
+    "saveSuccessMsg": "تم تحديث ارتباطات المجموعة بنجاح",
+    "saveErrMsg": "حدث خطأ أثناء حفظ ارتباطات المجموعة",
+    "getGroupsErrMsg": "حدث خطأ أثناء تحميل المجموعات لهذا النموذج",
+    "missingGroupsWarning": "{count} مجموعة (مجموعات) مرتبطة مسبقًا لم تعد موجودة في هذا المستأجر",
+    "availableGroups": "المجموعات المتاحة",
+    "assignedGroups": "المجموعات المعينة",
+    "searchAvailable": "البحث في المجموعات المتاحة",
+    "searchAssigned": "البحث في المجموعات المعينة",
+    "noAvailableGroups": "لا توجد مجموعات متاحة في هذا المستأجر",
+    "noAssignedGroups": "لا توجد مجموعات معينة لهذا النموذج",
+    "addGroup": "إضافة مجموعة",
+    "removeGroup": "إزالة المجموعة",
+    "deleted": "محذوف",
+    "noTenantAccess": "إدارة المجموعات متاحة فقط للنماذج المرتبطة بمستأجر. يرجى تحديد مستأجر للمتابعة."
+  },
   "floatButton": {
     "publish": "ينشر",
     "manage": "يدير",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS.",
     "getStartedToChefs": "ابدأ باستخدام CHEFS",
     "createOnlineTitle": "قم بإنشاء نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير العمل الخاص بك.",
-    "getStarted": "البدء"
+    "getStarted": "البدء",
+    "enterpriseSectionTitle": "اكتشف CHEFS المؤسسي الجديد",
+    "enterpriseSectionBody1": "يعمل CHEFS المؤسسي على توسيع نطاق CHEFS الكلاسيكي (خدمة النماذج المستضافة المشتركة) من خلال العمل مع CSTAR — الخدمات المتصلة والوصول إلى الفريق والأدوار — لإنشاء مساحة عمل مشتركة وتعاونية.",
+    "enterpriseSectionBody2": "مع CHEFS المؤسسي، يمكن للفرق مشاركة النماذج بأمان وتعيين الأدوار وإدارة المشاريع داخل مستأجر مؤسستها — مساحة عمل مخصصة تُبقي مشاريعك وأذوناتك منظمة.",
+    "enterpriseSectionWelcome": "مرحبًا بك في CHEFS المؤسسي، حيث يمكن للفرق عبر الحكومة التعاون بأمان وكفاءة.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "designForm": "نموذج التصميم",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "المستأجر:",
     "infoTooltip": "Enterprise CHEFS هو الإصدار الجديد من CHEFS الذي يدعم الوصول متعدد المستأجرين. سيؤدي تحديد المستأجر الخاص بك إلى نقلك إلى هناك تلقائيًا.",
     "selectLabel": "حدد المستأجر (يفتح في Enterprise CHEFS)",
     "placeholder": "حدد من المستأجرين المتاحين",

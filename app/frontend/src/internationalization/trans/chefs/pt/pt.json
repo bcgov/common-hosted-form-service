@@ -53,6 +53,7 @@
     "emailManagement": "Gerenciamento de e-mail",
     "viewSubmissions": "Ver envios",
     "teamManagement": "Gerenciamento de equipe",
+    "groupManagement": "Gerenciamento de grupos",
     "deleteForm": "Excluir formulário",
     "confirmDeletion": "Confirmar exclusão",
     "deleteMessageA": "Tem certeza que deseja deletar",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "Ocorreu um erro ao tentar atualizar as funções de um usuário",
     "setUserFormsConsoleErrMsg": "Erro ao definir funções de usuário para o formulário {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gerenciamento de grupos",
+    "manageForm": "Gerenciar formulário",
+    "search": "Pesquisar",
+    "loadingText": "Carregando... Por favor, aguarde",
+    "noDataText": "Nenhum grupo disponível para este tenant",
+    "noMatchingRecordText": "Nenhum registro correspondente encontrado",
+    "groupName": "Nome do grupo",
+    "description": "Descrição",
+    "associated": "Associado",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "confirmSave": "Confirmar alterações",
+    "confirmSaveMsg": "Tem certeza de que deseja atualizar as associações de grupo para este formulário?",
+    "saveSuccessMsg": "Associações de grupo atualizadas com sucesso",
+    "saveErrMsg": "Ocorreu um erro ao salvar as associações de grupo",
+    "getGroupsErrMsg": "Ocorreu um erro ao carregar os grupos para este formulário",
+    "missingGroupsWarning": "{count} grupo(s) anteriormente associado(s) não existem mais neste tenant",
+    "availableGroups": "Grupos disponíveis",
+    "assignedGroups": "Grupos atribuídos",
+    "searchAvailable": "Pesquisar grupos disponíveis",
+    "searchAssigned": "Pesquisar grupos atribuídos",
+    "noAvailableGroups": "Nenhum grupo disponível neste tenant",
+    "noAssignedGroups": "Nenhum grupo atribuído a este formulário",
+    "addGroup": "Adicionar grupo",
+    "removeGroup": "Remover grupo",
+    "deleted": "Excluído",
+    "noTenantAccess": "O gerenciamento de grupos está disponível apenas para formulários com tenant. Selecione um tenant para continuar."
+  },
   "floatButton": {
     "publish": "Publicar",
     "manage": "Gerenciar",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "Nosso Guia de início rápido apresentará algumas das funções básicas do CHEFS.",
     "getStartedToChefs": "Comece a usar o CHEFS",
     "createOnlineTitle": "Crie formulários online para coletar informações de seus clientes e melhorar seus fluxos de trabalho.",
-    "getStarted": "iniciar"
+    "getStarted": "iniciar",
+    "enterpriseSectionTitle": "Experiencie o novo Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS expande o CHEFS clássico (Common Hosted Forms Service) trabalhando em conjunto com o CSTAR — Connected Services, Team Access e Roles — para criar um espaço de trabalho compartilhado e colaborativo.",
+    "enterpriseSectionBody2": "Com o Enterprise CHEFS, as equipes podem compartilhar formulários com segurança, atribuir funções e gerenciar projetos dentro do tenant da sua organização.",
+    "enterpriseSectionWelcome": "Bem-vindo ao Enterprise CHEFS, onde equipes de todo o governo podem colaborar de forma segura e eficiente.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Configurar formulário",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Tenant:",
     "infoTooltip": "Enterprise CHEFS é a nova versão do CHEFS que suporta acesso multi-inquilino. Selecionar seu inquilino o levará automaticamente para lá.",
     "selectLabel": "Selecione inquilino (abre no Enterprise CHEFS)",
     "placeholder": "Selecione entre os inquilinos disponíveis",

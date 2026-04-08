@@ -53,6 +53,7 @@
     "emailManagement": "Gestione della posta elettronica",
     "viewSubmissions": "Visualizza invii",
     "teamManagement": "Gestione della squadra",
+    "groupManagement": "Gestione dei gruppi",
     "deleteForm": "Elimina modulo",
     "confirmDeletion": "Confermare la cancellazione",
     "deleteMessageA": "Sei sicuro di voler eliminare",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "Si è verificato un errore durante il tentativo di aggiornare i ruoli per un utente",
     "setUserFormsConsoleErrMsg": "Errore durante l'impostazione dei ruoli utente per il modulo {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gestione dei gruppi",
+    "manageForm": "Gestisci modulo",
+    "search": "Cerca",
+    "loadingText": "Caricamento in corso... Attendere",
+    "noDataText": "Nessun gruppo disponibile per questo tenant",
+    "noMatchingRecordText": "Nessun record corrispondente trovato",
+    "groupName": "Nome del gruppo",
+    "description": "Descrizione",
+    "associated": "Associato",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "confirmSave": "Conferma modifiche",
+    "confirmSaveMsg": "Sei sicuro di voler aggiornare le associazioni di gruppo per questo modulo?",
+    "saveSuccessMsg": "Associazioni di gruppo aggiornate con successo",
+    "saveErrMsg": "Si è verificato un errore durante il salvataggio delle associazioni di gruppo",
+    "getGroupsErrMsg": "Si è verificato un errore durante il caricamento dei gruppi per questo modulo",
+    "missingGroupsWarning": "{count} gruppo/i precedentemente associato/i non esiste/esistono più in questo tenant",
+    "availableGroups": "Gruppi disponibili",
+    "assignedGroups": "Gruppi assegnati",
+    "searchAvailable": "Cerca gruppi disponibili",
+    "searchAssigned": "Cerca gruppi assegnati",
+    "noAvailableGroups": "Nessun gruppo disponibile in questo tenant",
+    "noAssignedGroups": "Nessun gruppo assegnato a questo modulo",
+    "addGroup": "Aggiungi gruppo",
+    "removeGroup": "Rimuovi gruppo",
+    "deleted": "Eliminato",
+    "noTenantAccess": "La gestione dei gruppi è disponibile solo per i moduli con tenant. Seleziona un tenant per continuare."
+  },
   "floatButton": {
     "publish": "Pubblicare",
     "manage": "Maneggio",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "La nostra guida rapida ti introdurrà ad alcune delle funzioni di base di CHEFS.",
     "getStartedToChefs": "Inizia a usare CHEFS",
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
-    "getStarted": "Iniziare"
+    "getStarted": "Iniziare",
+    "enterpriseSectionTitle": "Scopri il nuovo Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS amplia il CHEFS classico (Common Hosted Forms Service) lavorando insieme a CSTAR — Servizi Connessi, Accesso al Team e Ruoli — per creare uno spazio di lavoro condiviso e collaborativo.",
+    "enterpriseSectionBody2": "Con Enterprise CHEFS, i team possono condividere moduli in modo sicuro, assegnare ruoli e gestire progetti all'interno del tenant della propria organizzazione.",
+    "enterpriseSectionWelcome": "Benvenuto in Enterprise CHEFS, dove i team di tutta l'amministrazione pubblica possono collaborare in modo sicuro ed efficiente.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Imposta modulo",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Tenant:",
     "infoTooltip": "Enterprise CHEFS è la nuova versione di CHEFS che supporta l'accesso multi-tenant. Selezionando il tuo tenant verrai portato automaticamente lì.",
     "selectLabel": "Seleziona tenant (si apre in Enterprise CHEFS)",
     "placeholder": "Seleziona tra i tenant disponibili",

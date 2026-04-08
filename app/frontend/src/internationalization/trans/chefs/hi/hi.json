@@ -53,6 +53,7 @@
     "emailManagement": "ईमेल प्रबंधन",
     "viewSubmissions": "सबमिशन देखें",
     "teamManagement": "टीम प्रबंधन",
+    "groupManagement": "समूह प्रबंधन",
     "deleteForm": "फ़ॉर्म हटाएँ",
     "confirmDeletion": "मिटाने की पुष्टि",
     "deleteMessageA": "क्या आप वाकई हटाना चाहते हैं?",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "किसी उपयोगकर्ता के लिए भूमिकाएँ अद्यतन करने का प्रयास करते समय एक त्रुटि उत्पन्न हुई",
     "setUserFormsConsoleErrMsg": "प्रपत्र {formId} के लिए उपयोगकर्ता भूमिकाएँ निर्धारित करने में त्रुटि: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "समूह प्रबंधन",
+    "manageForm": "फ़ॉर्म प्रबंधित करें",
+    "search": "खोजें",
+    "loadingText": "लोड हो रहा है... कृपया प्रतीक्षा करें",
+    "noDataText": "इस किरायेदार के लिए कोई समूह उपलब्ध नहीं है",
+    "noMatchingRecordText": "कोई मिलान रिकॉर्ड नहीं मिला",
+    "groupName": "समूह का नाम",
+    "description": "विवरण",
+    "associated": "संबद्ध",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "confirmSave": "परिवर्तन की पुष्टि करें",
+    "confirmSaveMsg": "क्या आप वाकई इस फ़ॉर्म के लिए समूह संबद्धताओं को अपडेट करना चाहते हैं?",
+    "saveSuccessMsg": "समूह संबद्धताएं सफलतापूर्वक अपडेट की गईं",
+    "saveErrMsg": "समूह संबद्धताएं सहेजते समय एक त्रुटि हुई",
+    "getGroupsErrMsg": "इस फ़ॉर्म के लिए समूह लोड करते समय एक त्रुटि हुई",
+    "missingGroupsWarning": "{count} पहले संबद्ध समूह इस किरायेदार में अब मौजूद नहीं हैं",
+    "availableGroups": "उपलब्ध समूह",
+    "assignedGroups": "असाइन किए गए समूह",
+    "searchAvailable": "उपलब्ध समूहों में खोजें",
+    "searchAssigned": "असाइन किए गए समूहों में खोजें",
+    "noAvailableGroups": "इस किरायेदार में कोई उपलब्ध समूह नहीं है",
+    "noAssignedGroups": "इस फ़ॉर्म को कोई समूह असाइन नहीं किया गया है",
+    "addGroup": "समूह जोड़ें",
+    "removeGroup": "समूह हटाएं",
+    "deleted": "हटाया गया",
+    "noTenantAccess": "समूह प्रबंधन केवल किरायेदार फ़ॉर्म के लिए उपलब्ध है। जारी रखने के लिए कृपया एक किरायेदार चुनें।"
+  },
   "floatButton": {
     "publish": "प्रकाशित करना",
     "manage": "प्रबंधित करना",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "हमारी क्विकस्टार्ट गाइड आपको शेफ के कुछ बुनियादी कार्यों से परिचित कराएगी।",
     "getStartedToChefs": "शेफ्स का उपयोग शुरू करें",
     "createOnlineTitle": "अपने ग्राहकों से जानकारी एकत्र करने और अपने कार्यप्रवाह में सुधार करने के लिए ऑनलाइन फॉर्म बनाएं।",
-    "getStarted": "शुरू हो जाओ"
+    "getStarted": "शुरू हो जाओ",
+    "enterpriseSectionTitle": "नया Enterprise CHEFS अनुभव करें",
+    "enterpriseSectionBody1": "Enterprise CHEFS, CSTAR — कनेक्टेड सेवाएं, टीम एक्सेस और भूमिकाएं — के साथ मिलकर काम करके क्लासिक CHEFS (Common Hosted Forms Service) का विस्तार करता है।",
+    "enterpriseSectionBody2": "Enterprise CHEFS के साथ, टीमें अपने संगठन के किरायेदार के भीतर सुरक्षित रूप से फ़ॉर्म साझा कर सकती हैं, भूमिकाएं असाइन कर सकती हैं और प्रोजेक्ट प्रबंधित कर सकती हैं।",
+    "enterpriseSectionWelcome": "Enterprise CHEFS में आपका स्वागत है, जहाँ सरकार भर की टीमें सुरक्षित और कुशलतापूर्वक सहयोग कर सकती हैं।",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "फॉर्म सेट करें",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "किरायेदार:",
     "infoTooltip": "Enterprise CHEFS, CHEFS का नया संस्करण है जो मल्टी-टेनेंट एक्सेस का समर्थन करता है। अपने टेनेंट का चयन करने से आप स्वचालित रूप से वहां पहुंच जाएंगे।",
     "selectLabel": "टेनेंट चुनें (Enterprise CHEFS में खुलता है)",
     "placeholder": "उपलब्ध टेनेंट में से चुनें",

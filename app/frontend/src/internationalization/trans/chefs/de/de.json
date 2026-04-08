@@ -53,6 +53,7 @@
     "emailManagement": "E-Mail-Management",
     "viewSubmissions": "Einsendungen anzeigen",
     "teamManagement": "Team Management",
+    "groupManagement": "Gruppenverwaltung",
     "deleteForm": "Formular löschen",
     "confirmDeletion": "Löschung bestätigen",
     "deleteMessageA": "Sind Sie sicher, dass Sie löschen möchten?",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "Beim Versuch, Rollen für einen Benutzer zu aktualisieren, ist ein Fehler aufgetreten",
     "setUserFormsConsoleErrMsg": "Fehler beim Festlegen der Benutzerrollen für das Formular {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gruppenverwaltung",
+    "manageForm": "Formular verwalten",
+    "search": "Suchen",
+    "loadingText": "Wird geladen... Bitte warten",
+    "noDataText": "Keine Gruppen für diesen Mandanten verfügbar",
+    "noMatchingRecordText": "Keine übereinstimmenden Datensätze gefunden",
+    "groupName": "Gruppenname",
+    "description": "Beschreibung",
+    "associated": "Zugeordnet",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "confirmSave": "Änderungen bestätigen",
+    "confirmSaveMsg": "Sind Sie sicher, dass Sie die Gruppenzuordnungen für dieses Formular aktualisieren möchten?",
+    "saveSuccessMsg": "Gruppenzuordnungen erfolgreich aktualisiert",
+    "saveErrMsg": "Beim Speichern der Gruppenzuordnungen ist ein Fehler aufgetreten",
+    "getGroupsErrMsg": "Beim Laden der Gruppen für dieses Formular ist ein Fehler aufgetreten",
+    "missingGroupsWarning": "{count} zuvor zugeordnete Gruppe(n) existiert/existieren in diesem Mandanten nicht mehr",
+    "availableGroups": "Verfügbare Gruppen",
+    "assignedGroups": "Zugeordnete Gruppen",
+    "searchAvailable": "Verfügbare Gruppen suchen",
+    "searchAssigned": "Zugeordnete Gruppen suchen",
+    "noAvailableGroups": "Keine verfügbaren Gruppen in diesem Mandanten",
+    "noAssignedGroups": "Diesem Formular sind keine Gruppen zugeordnet",
+    "addGroup": "Gruppe hinzufügen",
+    "removeGroup": "Gruppe entfernen",
+    "deleted": "Gelöscht",
+    "noTenantAccess": "Gruppenverwaltung ist nur für mandantenbezogene Formulare verfügbar. Bitte wählen Sie einen Mandanten aus, um fortzufahren."
+  },
   "floatButton": {
     "publish": "Veröffentlichen",
     "manage": "Verwalten",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "Unser Quickstart Guide führt Sie in einige Grundfunktionen von CHEFS ein.",
     "getStartedToChefs": "Beginnen Sie mit der Nutzung von CHEFS",
     "createOnlineTitle": "Erstellen Sie Online-Formulare, um Informationen von Ihren Kunden zu sammeln und Ihre Arbeitsabläufe zu verbessern.",
-    "getStarted": "Loslegen"
+    "getStarted": "Loslegen",
+    "enterpriseSectionTitle": "Erleben Sie das neue Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS erweitert das klassische CHEFS (Common Hosted Forms Service) durch die Zusammenarbeit mit CSTAR — Connected Services, Team Access und Roles — um einen gemeinsamen, kollaborativen Arbeitsbereich zu schaffen.",
+    "enterpriseSectionBody2": "Mit Enterprise CHEFS können Teams Formulare sicher teilen, Rollen zuweisen und Projekte im Mandanten ihrer Organisation verwalten — ein dedizierter Arbeitsbereich, der Ihre Projekte und Berechtigungen organisiert hält.",
+    "enterpriseSectionWelcome": "Willkommen bei Enterprise CHEFS, wo Teams in der gesamten Regierung sicher und effizient zusammenarbeiten können.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "designForm": "Designform",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Mandant:",
     "infoTooltip": "Enterprise CHEFS ist die neue Version von CHEFS, die Mehrmandantenzugriff unterstützt. Durch Auswahl Ihres Mandanten gelangen Sie automatisch dorthin.",
     "selectLabel": "Mandant auswählen (öffnet in Enterprise CHEFS)",
     "placeholder": "Aus verfügbaren Mandanten auswählen",

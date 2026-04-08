@@ -53,6 +53,7 @@
     "emailManagement": "Gestión de correo electrónico",
     "viewSubmissions": "Ver envíos",
     "teamManagement": "Gestión de equipos",
+    "groupManagement": "Gestión de grupos",
     "deleteForm": "Eliminar formulario",
     "confirmDeletion": "Confirmar la eliminación",
     "deleteMessageA": "¿Está seguro de que desea eliminar",
@@ -866,6 +867,35 @@
     "setUserFormsErrMsg": "Se produjo un error al intentar actualizar los roles de un usuario",
     "setUserFormsConsoleErrMsg": "Error al establecer roles de usuario para el formulario {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gestión de grupos",
+    "manageForm": "Administrar formulario",
+    "search": "Buscar",
+    "loadingText": "Cargando... Por favor espere",
+    "noDataText": "No hay grupos disponibles para este inquilino",
+    "noMatchingRecordText": "No se encontraron registros coincidentes",
+    "groupName": "Nombre del grupo",
+    "description": "Descripción",
+    "associated": "Asociado",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirmSave": "Confirmar cambios",
+    "confirmSaveMsg": "¿Está seguro de que desea actualizar las asociaciones de grupo para este formulario?",
+    "saveSuccessMsg": "Asociaciones de grupo actualizadas correctamente",
+    "saveErrMsg": "Se produjo un error al guardar las asociaciones de grupo",
+    "getGroupsErrMsg": "Se produjo un error al cargar los grupos para este formulario",
+    "missingGroupsWarning": "{count} grupo(s) asociado(s) anteriormente ya no existen en este inquilino",
+    "availableGroups": "Grupos disponibles",
+    "assignedGroups": "Grupos asignados",
+    "searchAvailable": "Buscar grupos disponibles",
+    "searchAssigned": "Buscar grupos asignados",
+    "noAvailableGroups": "No hay grupos disponibles en este inquilino",
+    "noAssignedGroups": "No hay grupos asignados a este formulario",
+    "addGroup": "Agregar grupo",
+    "removeGroup": "Eliminar grupo",
+    "deleted": "Eliminado",
+    "noTenantAccess": "La gestión de grupos solo está disponible para formularios de inquilino. Seleccione un inquilino para continuar."
+  },
   "floatButton": {
     "publish": "Publicar",
     "manage": "Administrar",
@@ -954,7 +984,13 @@
     "chefsHowToSub": "Nuestra Guía de inicio rápido le presentará algunas de las funciones básicas de CHEFS.",
     "getStartedToChefs": "Comience a usar CHEFS",
     "createOnlineTitle": "Cree formularios en línea para recopilar información de sus clientes y mejorar sus flujos de trabajo.",
-    "getStarted": "Empezar"
+    "getStarted": "Empezar",
+    "enterpriseSectionTitle": "Descubre el nuevo Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS amplía el CHEFS clásico (Common Hosted Forms Service) trabajando junto con CSTAR — Servicios Conectados, Acceso de Equipo y Roles — para crear un espacio de trabajo compartido y colaborativo.",
+    "enterpriseSectionBody2": "Con Enterprise CHEFS, los equipos pueden compartir formularios de forma segura, asignar roles y gestionar proyectos dentro del tenant de su organización — un espacio de trabajo dedicado que mantiene sus proyectos y permisos organizados.",
+    "enterpriseSectionWelcome": "Bienvenido a Enterprise CHEFS, donde los equipos de todo el gobierno pueden colaborar de forma segura y eficiente.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Configurar formulario",
@@ -1419,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Inquilino:",
     "infoTooltip": "Enterprise CHEFS es la nueva versión de CHEFS que admite acceso multiinquilino. Seleccionar su inquilino lo llevará allí automáticamente.",
     "selectLabel": "Seleccionar inquilino (se abre en Enterprise CHEFS)",
     "placeholder": "Seleccione entre los inquilinos disponibles",

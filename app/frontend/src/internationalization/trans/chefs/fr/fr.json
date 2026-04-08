@@ -1450,6 +1450,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Locataire :",
     "infoTooltip": "Enterprise CHEFS est la nouvelle version de CHEFS qui prend en charge l'accès multi-locataire. La sélection de votre locataire vous y amènera automatiquement.",
     "selectLabel": "Sélectionnez le locataire (s'ouvre dans Enterprise CHEFS)",
     "placeholder": "Sélectionnez parmi les locataires disponibles",
