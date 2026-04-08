@@ -113,6 +113,7 @@
     "jwtLifetime": "GATEWAY_JWTLIFETIME"
   },
   "cstar": {
+    "tenantFeatureEnabled": "TENANT_FEATURE_ENABLED",
     "endpoint": "CSTAR_ENDPOINT",
     "listUserTenantsPath": "CSTAR_LIST_USER_TENANTS_PATH",
     "listGroupsForUserForTenantPath": "CSTAR_LIST_GROUPS_FOR_USER_FOR_TENANT_PATH",
