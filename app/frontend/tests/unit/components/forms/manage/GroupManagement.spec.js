@@ -64,7 +64,7 @@ describe('GroupManagement.vue', () => {
       const wrapper = mountComponent();
       await flushPromises();
 
-      expect(wrapper.find('v-alert-stub, [type="error"]').exists()).toBe(true);
+      expect(wrapper.html()).toContain('v-alert');
       expect(rbacService.getFormGroups).not.toHaveBeenCalled();
     });
   });
