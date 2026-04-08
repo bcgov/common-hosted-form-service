@@ -29,7 +29,13 @@ const { selectedTenant } = storeToRefs(tenantStore);
 // Base title without the mode suffix (e.g. "Common Hosted Forms")
 const appBase = computed(() => {
   if (!tenantStore.isTenantFeatureEnabled) return props.appTitle;
-  return props.appTitle.replace(/\s*\|\s*(Enterprise|Personal)$/, '');
+  const pipeIdx = props.appTitle.lastIndexOf('|');
+  if (pipeIdx === -1) return props.appTitle;
+  const after = props.appTitle.slice(pipeIdx + 1).trim();
+  if (after === 'Enterprise' || after === 'Personal') {
+    return props.appTitle.slice(0, pipeIdx).trimEnd();
+  }
+  return props.appTitle;
 });
 
 // Mode word shown prominently in the header (ENTERPRISE or PERSONAL), only when logged in
