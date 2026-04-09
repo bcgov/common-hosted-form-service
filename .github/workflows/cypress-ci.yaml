@@ -15,26 +15,29 @@ on:
         required: true
       Password:
         required: true
-  
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
     steps:
      - name: Checkout
-       uses: actions/checkout@v4
+       uses: actions/checkout@v5
        with:
         ref: ${{ inputs.pr_branch }}  # Uses the PR branch from input
         fetch-depth: 0 # Ensures the full history is fetched
         
      - name: Setup Node.js
-       uses: actions/setup-node@v4
+       uses: actions/setup-node@v5
        with:
-         node-version: '20' 
+         node-version: '22' 
          cache: 'npm'
          cache-dependency-path: 'tests/functional/cypress/package-lock.json'
          
      - name: cypress install
-       uses: cypress-io/github-action@v6
+       uses: cypress-io/github-action@82482149c343a5dee155d22104111b9319f9dd45  # SHA for v7
        with:
           working-directory: 'tests/functional/cypress'
           browser:  chrome
@@ -42,15 +45,15 @@ jobs:
           CYPRESS_keycloakUsername: ${{ secrets.Username }}
           CYPRESS_keycloakPassword: ${{ secrets.Password }}
           CYPRESS_depEnv: 'pr-${{ inputs.pr-number }}'
-          
-     - uses: actions/upload-artifact@v4
+
+     - uses: actions/upload-artifact@v6
        if: always()
        with:
           name: cypress-axe-reports
-          run: mkdir -p tests/functional/cypress/axe-reports
           path: '${{ github.workspace }}/tests/functional/cypress/axe-reports'
-          
-     - uses: actions/upload-artifact@v4
+          if-no-files-found: ignore
+ 
+     - uses: actions/upload-artifact@v6
        if: failure()
        with:
           name: cypress-screenshots
