@@ -1,5 +1,5 @@
 const uuid = require('uuid');
-const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
+const { Form, FormGroup, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
 const idpService = require('../../components/idpService');
@@ -111,9 +111,11 @@ const service = {
         .modify('filterActive', params.active)
         .modify('filterTenantId', userInfo.tenantId);
 
-      // For each form, fetch roles from tenantService with headers
+      // For each form, resolve roles scoped to that form's assigned groups
       for (const item of items) {
-        const { roles, permissions } = await tenantService.getUserRolesAndPermissions(userInfo, headers);
+        const formGroups = await FormGroup.query().modify('filterFormId', item.formId);
+        const formGroupIds = formGroups.map((fg) => fg.groupId);
+        const { roles, permissions } = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, formGroupIds);
         item.roles = roles;
         item.permissions = permissions;
       }

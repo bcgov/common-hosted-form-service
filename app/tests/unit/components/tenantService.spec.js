@@ -673,7 +673,7 @@ describe('TenantService', () => {
     });
   });
 
-  describe('getUserRolesAndPermissions', () => {
+  describe('getUserRolesAndPermissionsForForm', () => {
     const userId = 'user-123';
     const tenantId = 'tenant-456';
     const userInfo = {
@@ -716,7 +716,7 @@ describe('TenantService', () => {
         },
       });
 
-      const result = await tenantService.getUserRolesAndPermissions(userInfo, headers);
+      const result = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, ['group-1']);
 
       expect(result.roles).toEqual(['form_admin', 'form_designer']);
       expect(result.permissions).toEqual(expect.arrayContaining(['form_read', 'form_update', 'form_delete']));
@@ -729,26 +729,40 @@ describe('TenantService', () => {
       });
       mockAxios.onGet(apiUrl).reply(200, { data: { groups: [] } });
 
-      const result = await tenantService.getUserRolesAndPermissions(userInfo, headers);
+      const result = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, []);
+
+      expect(result.roles).toEqual([]);
+      expect(result.permissions).toEqual([]);
+    });
+
+    it('should return empty arrays when user groups do not match form groups', async () => {
+      Role.query.mockReturnValue({
+        withGraphFetched: jest.fn().mockResolvedValue([{ code: 'form_admin', permissions: [{ code: 'form_read' }] }]),
+      });
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: { groups: [{ id: 'group-1', name: 'Admin Group', sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }] }] },
+      });
+
+      const result = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, ['different-group-id']);
 
       expect(result.roles).toEqual([]);
       expect(result.permissions).toEqual([]);
     });
 
     it('should throw error if no userInfo', async () => {
-      await expect(tenantService.getUserRolesAndPermissions(null)).rejects.toThrow('TenantService: missing userInfo');
+      await expect(tenantService.getUserRolesAndPermissionsForForm(null)).rejects.toThrow('TenantService: missing userInfo');
     });
 
     it('should throw error if no idpUserId', async () => {
-      await expect(tenantService.getUserRolesAndPermissions({ tenantId })).rejects.toThrow('TenantService: missing userInfo.idpUserId');
+      await expect(tenantService.getUserRolesAndPermissionsForForm({ tenantId })).rejects.toThrow('TenantService: missing userInfo.idpUserId');
     });
 
     it('should throw error if no tenantId', async () => {
-      await expect(tenantService.getUserRolesAndPermissions({ idpUserId: userId })).rejects.toThrow('TenantService: missing userInfo.tenantId');
+      await expect(tenantService.getUserRolesAndPermissionsForForm({ idpUserId: userId })).rejects.toThrow('TenantService: missing userInfo.tenantId');
     });
 
     it('should throw error if headers are missing', async () => {
-      await expect(tenantService.getUserRolesAndPermissions(userInfo)).rejects.toThrow('TenantService: missing headers for tenant API authentication');
+      await expect(tenantService.getUserRolesAndPermissionsForForm(userInfo)).rejects.toThrow('TenantService: missing headers for tenant API authentication');
     });
 
     it('should throw error when Role query fails', async () => {
@@ -756,7 +770,7 @@ describe('TenantService', () => {
         withGraphFetched: jest.fn().mockRejectedValue(new Error('DB error')),
       });
 
-      await expect(tenantService.getUserRolesAndPermissions(userInfo, headers)).rejects.toThrow('DB error');
+      await expect(tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, [])).rejects.toThrow('DB error');
     });
 
     it('should throw error when getUserTenantGroupsAndRoles fails', async () => {
@@ -765,7 +779,7 @@ describe('TenantService', () => {
       });
       mockAxios.onGet(apiUrl).networkError();
 
-      await expect(tenantService.getUserRolesAndPermissions(userInfo, headers)).rejects.toThrow();
+      await expect(tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, [])).rejects.toThrow();
     });
   });
 

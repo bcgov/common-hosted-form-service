@@ -1,7 +1,7 @@
 const service = require('../../../../src/forms/auth/service');
 const idpService = require('../../../../src/components/idpService');
 const tenantService = require('../../../../src/components/tenantService');
-const { UserFormAccess } = require('../../../../src/forms/common/models');
+const { UserFormAccess, FormGroup } = require('../../../../src/forms/common/models');
 const { queryUtils } = require('../../../../src/forms/common/utils');
 
 afterEach(() => {
@@ -93,7 +93,11 @@ describe('getUserForms', () => {
     };
     const querySpy = jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
 
-    const tenantRolesSpy = jest.spyOn(tenantService, 'getUserRolesAndPermissions').mockResolvedValue({ roles: ['form_admin'], permissions: ['form_read'] });
+    const formGroupIds = ['group-1'];
+    const formGroupQueryObj = { modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) };
+    jest.spyOn(FormGroup, 'query').mockReturnValue(formGroupQueryObj);
+
+    const tenantRolesSpy = jest.spyOn(tenantService, 'getUserRolesAndPermissionsForForm').mockResolvedValue({ roles: ['form_admin'], permissions: ['form_read'] });
 
     const filterFormsSpy = jest.spyOn(service, 'filterForms').mockReturnValue(['filtered']);
 
@@ -107,8 +111,8 @@ describe('getUserForms', () => {
     expect(queryObj.modify).toHaveBeenNthCalledWith(4, 'filterTenantId', userInfo.tenantId);
 
     expect(tenantRolesSpy).toHaveBeenCalledTimes(items.length);
-    expect(tenantRolesSpy).toHaveBeenNthCalledWith(1, userInfo, headers);
-    expect(tenantRolesSpy).toHaveBeenNthCalledWith(2, userInfo, headers);
+    expect(tenantRolesSpy).toHaveBeenNthCalledWith(1, userInfo, headers, formGroupIds);
+    expect(tenantRolesSpy).toHaveBeenNthCalledWith(2, userInfo, headers, formGroupIds);
     expect(items[0]).toMatchObject({ roles: ['form_admin'], permissions: ['form_read'] });
     expect(items[1]).toMatchObject({ roles: ['form_admin'], permissions: ['form_read'] });
 

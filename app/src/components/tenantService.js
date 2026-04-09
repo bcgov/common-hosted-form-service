@@ -239,12 +239,15 @@ class TenantService {
 }
 
 /**
- * Get user roles and permissions for a tenant-aware user.
+ * Get user roles and permissions scoped to a specific form's assigned groups.
+ * Filters the user's TMS groups to only those assigned to the form, then
+ * deduplicates roles and resolves permissions from the DB.
  * @param {object} userInfo - User information object
  * @param {object} headers - Request headers for authentication
+ * @param {string[]} formGroupIds - Group IDs assigned to the form (from form_group table)
  * @returns {Promise<{roles: string[], permissions: string[]}>}
  */
-async function getUserRolesAndPermissions(userInfo, headers = null) {
+async function getUserRolesAndPermissionsForForm(userInfo, headers = null, formGroupIds = []) {
   if (!userInfo) {
     throw new TypeError(`${SERVICE}: missing userInfo`);
   }
@@ -263,11 +266,14 @@ async function getUserRolesAndPermissions(userInfo, headers = null) {
 
   // Create request-like object with headers for authentication
   const reqContext = { currentUser: userInfo, headers };
-  const groups = await module.exports.getUserTenantGroupsAndRoles(reqContext);
+  const userGroups = await module.exports.getUserTenantGroupsAndRoles(reqContext);
 
-  const userRoles = Array.isArray(groups) ? groups.flatMap((group) => group.roles) : [];
-  const userRolesSet = new Set(userRoles);
-  const userPermissions = allRoles.filter((role) => userRolesSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+  // Filter to only groups assigned to this form
+  const formGroupIdSet = new Set(formGroupIds);
+  const matchingGroups = Array.isArray(userGroups) ? userGroups.filter((group) => formGroupIdSet.has(group.id)) : [];
+
+  const userRoles = [...new Set(matchingGroups.flatMap((group) => group.roles))];
+  const userPermissions = allRoles.filter((role) => userRoles.includes(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
 
   return {
     roles: userRoles,
@@ -317,7 +323,7 @@ async function isFormInUsersTenant(req, formId) {
 }
 
 module.exports = Object.assign(new TenantService(), {
-  getUserRolesAndPermissions,
+  getUserRolesAndPermissionsForForm,
   canCreateForm,
   isFormInUsersTenant,
 });
