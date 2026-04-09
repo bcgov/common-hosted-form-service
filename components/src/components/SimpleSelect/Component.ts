@@ -4,7 +4,6 @@ const ParentComponent = (Components as any).components.select;
 import editForm from './Component.form';
 
 import { Constants } from '../Common/Constants';
-import autocomplete from 'autocompleter';
 
 const ID = 'simpleselect';
 const DISPLAY = 'Select List';
