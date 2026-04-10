@@ -72,7 +72,7 @@ export default class Component extends (ParentComponent as any) {
         'input[ref=autocompleteInput]'
       );
       if (!autocompleteInputs.length) return;
-      autocompleteInputs.array.forEach((input, index) => {
+      autocompleteInputs.array?.forEach((input, index) => {
         input.setAttribute('autocomplete', 'new-password');
         input.setAttribute('name', `${this.key}-dropdown-${index}`);
       });
