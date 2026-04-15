@@ -26,7 +26,6 @@ describe('Form Designer', () => {
     });
     it('Visits the form settings page', () => {
     
-    
         cy.viewport(1000, 1100);
         cy.waitForLoad();
         formsettings();

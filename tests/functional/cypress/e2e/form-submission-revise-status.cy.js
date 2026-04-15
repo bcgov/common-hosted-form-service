@@ -156,6 +156,8 @@ it('Submission revise status Assignment', () => {
     cy.get('.v-chip__content').contains('chefs.testing@gov.bc.ca').should('be.visible');
     //Add a team member for revise status assignment
     cy.contains('.v-chip__content', 'chefs.testing@gov.bc.ca').closest('.v-field').find('input').click().type('ZX');
+    //Add a team member for revise status assignment
+    cy.contains('.v-chip__content', 'chefs.testing@gov.bc.ca').closest('.v-field').find('input').click().type('ZX');
     //Verify validation message to add another member for revise status assignment
     cy.contains('No results found. Please add team members in the draft/submission manage page.').should('be.visible');
     cy.get('[data-test="showRecipientEmail"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
