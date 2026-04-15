@@ -30,7 +30,8 @@
     "description": "description",
     "Description": "Description:",
     "action": "Actions",
-    "loadingText": "Chargement, veuillez patienter"
+    "loadingText": "Chargement, veuillez patienter",
+    "forms": "Formes"
   },
   "manageLayout": {
     "manageForm": "Gérer le formulaire"
@@ -867,7 +868,6 @@
     "setUserFormsErrMsg": "Une erreur s'est produite lors de la tentative de mise à jour des rôles d'un utilisateur",
     "setUserFormsConsoleErrMsg": "Erreur lors de la définition des rôles utilisateur pour le formulaire {formId} : {error}"
   },
-  
   "groupManagement": {
     "groupManagement": "Gestion des groupes",
     "manageForm": "Gérer le formulaire",
@@ -966,7 +966,8 @@
     "createNewForm": "Créer un nouveau formulaire",
     "help": "Aider",
     "feedback": "Retour",
-    "admin": "Administrateur"
+    "admin": "Administrateur",
+    "forms": "Formes"
   },
   "homePage": {
     "title": "Créez, publiez des formulaires et recevez des soumissions avec le service Common Hosted Forms.",
@@ -1460,5 +1461,18 @@
     "noTenantsAvailable": "Aucun locataire disponible",
     "manageTenantsIn": "Gérer les locataires dans",
     "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Locataire :"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
+    "errorFetchingTenants": "Error fetching tenants"
   }
 }

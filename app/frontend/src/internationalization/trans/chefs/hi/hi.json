@@ -30,7 +30,8 @@
     "description": "विवरण",
     "Description": "विवरण:",
     "action": "कार्रवाई",
-    "loadingText": "लोड हो रहा है कृपया प्रतीक्षा करें"
+    "loadingText": "लोड हो रहा है कृपया प्रतीक्षा करें",
+    "forms": "फार्म"
   },
   "manageLayout": {
     "manageForm": "प्रपत्र प्रबंधित करें"
@@ -965,7 +966,8 @@
     "createNewForm": "एक नया फॉर्म बनाएं",
     "help": "मदद",
     "feedback": "प्रतिक्रिया",
-    "admin": "व्यवस्थापक"
+    "admin": "व्यवस्थापक",
+    "forms": "फार्म"
   },
   "homePage": {
     "title": "कॉमन होस्टेड फॉर्म सर्विस के साथ फॉर्म बनाएं, प्रकाशित करें और सबमिशन प्राप्त करें।",
@@ -1465,5 +1467,18 @@
     "noTenantsAvailable": "कोई टेनेंट उपलब्ध नहीं",
     "manageTenantsIn": "टेनेंट प्रबंधित करें",
     "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "किरायेदार:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
+    "errorFetchingTenants": "Error fetching tenants"
   }
 }
