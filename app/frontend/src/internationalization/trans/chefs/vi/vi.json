@@ -31,7 +31,11 @@
     "Description": "Sự miêu tả:",
     "action": "hành động",
     "loadingText": "Tải vui lòng đợi",
-    "forms": "Các hình thức"
+    "forms": "Biểu mẫu",
+    "deleteForm": "Xóa biểu mẫu",
+    "manageForm": "Quản lý biểu mẫu",
+    "viewSubmissions": "Xem các bài nộp",
+    "noDataText": "Không tìm thấy biểu mẫu"
   },
   "manageLayout": {
     "manageForm": "Quản lý biểu mẫu"
@@ -967,7 +971,7 @@
     "help": "Giúp đỡ",
     "feedback": "Nhận xét",
     "admin": "Quản trị viên",
-    "forms": "Các hình thức"
+    "forms": "Biểu mẫu"
   },
   "homePage": {
     "title": "Tạo, xuất bản biểu mẫu và nhận nội dung gửi bằng Common Hosted Forms Service.",
@@ -1446,7 +1450,7 @@
     "tenantLabel": "Người thuê:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR tạm thời không khả dụng. Lựa chọn người thuê hiện đã bị tắt.",
+    "errorFetchingTenants": "Lỗi khi tải người thuê"
   }
 }

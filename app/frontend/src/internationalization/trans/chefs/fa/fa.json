@@ -31,7 +31,11 @@
     "Description": "شرح:",
     "action": "اقدامات",
     "loadingText": "در حال بارگذاری لطفا صبر کنید",
-    "forms": "تشکیل می دهد"
+    "forms": "تشکیل می دهد",
+    "deleteForm": "حذف فرم",
+    "manageForm": "مدیریت فرم",
+    "viewSubmissions": "مشاهده ارسال‌ها",
+    "noDataText": "هیچ فرمی یافت نشد"
   },
   "manageLayout": {
     "manageForm": "مدیریت فرم"
@@ -1442,7 +1446,7 @@
     "tenantLabel": "مستأجر:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR موقتاً در دسترس نیست. انتخاب مستأجر در حال حاضر غیرفعال است.",
+    "errorFetchingTenants": "خطا در دریافت مستأجران"
   }
 }

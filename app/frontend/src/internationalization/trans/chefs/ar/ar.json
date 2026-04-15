@@ -31,7 +31,11 @@
     "Description": "وصف:",
     "action": "أجراءات",
     "loadingText": "جاري التحميل الرجاءالانتظار",
-    "forms": "نماذج"
+    "forms": "نماذج",
+    "deleteForm": "حذف النموذج",
+    "manageForm": "إدارة النموذج",
+    "viewSubmissions": "عرض التقديمات",
+    "noDataText": "لم يتم العثور على نماذج"
   },
   "manageLayout": {
     "manageForm": "إدارة النموذج"
@@ -1442,7 +1446,7 @@
     "tenantLabel": "المستأجر:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR غير متاح مؤقتاً. تحديد المستأجر معطّل حالياً.",
+    "errorFetchingTenants": "خطأ في جلب المستأجرين"
   }
 }

@@ -31,7 +31,11 @@
     "Description": "Descrizione:",
     "action": "Azioni",
     "loadingText": "Attendere il caricamento prego",
-    "forms": "Forme"
+    "forms": "Moduli",
+    "deleteForm": "Elimina modulo",
+    "manageForm": "Gestisci modulo",
+    "viewSubmissions": "Visualizza invii",
+    "noDataText": "Nessun modulo trovato"
   },
   "manageLayout": {
     "manageForm": "Gestisci modulo"
@@ -967,7 +971,7 @@
     "help": "Aiuto",
     "feedback": "Feedback",
     "admin": "Amministratore",
-    "forms": "Forme"
+    "forms": "Moduli"
   },
   "homePage": {
     "title": "Crea, pubblica moduli e ricevi invii con Common Hosted Forms Service.",
@@ -1442,7 +1446,7 @@
     "tenantLabel": "Tenant:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR è temporaneamente non disponibile. La selezione del tenant è attualmente disabilitata.",
+    "errorFetchingTenants": "Errore nel recupero dei tenant"
   }
 }

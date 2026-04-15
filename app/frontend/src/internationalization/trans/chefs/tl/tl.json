@@ -31,7 +31,11 @@
     "Description": "Paglalarawan:",
     "action": "Mga aksyon",
     "loadingText": "Naglo-load... Mangyaring maghintay",
-    "forms": "Mga porma"
+    "forms": "Mga porma",
+    "deleteForm": "Tanggalin ang Pormularyo",
+    "manageForm": "Pamahalaan ang Pormularyo",
+    "viewSubmissions": "Tingnan ang mga Pagsusumite",
+    "noDataText": "Walang nakitang pormularyo"
   },
   "manageLayout": {
     "manageForm": "Pamahalaan ang Form"
@@ -1446,7 +1450,7 @@
     "tenantLabel": "Nangungupahan:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "Ang CSTAR ay pansamantalang hindi available. Ang pagpili ng nangungupahan ay kasalukuyang hindi pinagana.",
+    "errorFetchingTenants": "Error sa pagkuha ng mga nangungupahan"
   }
 }

@@ -31,7 +31,11 @@
     "Description": "опис:",
     "action": "Дії",
     "loadingText": "Завантаження, будь ласка, зачекайте",
-    "forms": "Форми"
+    "forms": "Форми",
+    "deleteForm": "Видалити форму",
+    "manageForm": "Управляти формою",
+    "viewSubmissions": "Переглянути відправки",
+    "noDataText": "Форми не знайдено"
   },
   "manageLayout": {
     "manageForm": "Керувати формою"
@@ -1442,7 +1446,7 @@
     "tenantLabel": "Орендар:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR тимчасово недоступний. Вибір орендаря наразі вимкнено.",
+    "errorFetchingTenants": "Помилка при отриманні орендарів"
   }
 }

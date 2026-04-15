@@ -31,7 +31,11 @@
     "Description": "Beschreibung:",
     "action": "Aktionen",
     "loadingText": "Laden, bitte warten",
-    "forms": "Formen"
+    "forms": "Formulare",
+    "deleteForm": "Formular löschen",
+    "manageForm": "Formular verwalten",
+    "viewSubmissions": "Einreichungen anzeigen",
+    "noDataText": "Keine Formulare gefunden"
   },
   "preview": {
     "preview": "Vorschau",
@@ -967,7 +971,7 @@
     "help": "Hilfe",
     "feedback": "Rückmeldung",
     "admin": "Administrator",
-    "forms": "Formen"
+    "forms": "Formulare"
   },
   "homePage": {
     "title": "Erstellen, veröffentlichen Sie Formulare und empfangen Sie Übermittlungen mit dem Common Hosted Forms Service.",
@@ -1442,7 +1446,7 @@
     "tenantLabel": "Mandant:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR ist vorübergehend nicht verfügbar. Die Mandantenauswahl ist derzeit deaktiviert.",
+    "errorFetchingTenants": "Fehler beim Abrufen der Mandanten"
   }
 }

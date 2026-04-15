@@ -31,7 +31,11 @@
     "Description": "Description:",
     "action": "Actions",
     "loadingText": "Chargement, veuillez patienter",
-    "forms": "Formes"
+    "forms": "Formulaires",
+    "deleteForm": "Supprimer le formulaire",
+    "manageForm": "Gérer le formulaire",
+    "viewSubmissions": "Voir les soumissions",
+    "noDataText": "Aucun formulaire trouvé"
   },
   "manageLayout": {
     "manageForm": "Gérer le formulaire"
@@ -967,7 +971,7 @@
     "help": "Aider",
     "feedback": "Retour",
     "admin": "Administrateur",
-    "forms": "Formes"
+    "forms": "Formulaires"
   },
   "homePage": {
     "title": "Créez, publiez des formulaires et recevez des soumissions avec le service Common Hosted Forms.",
@@ -1472,7 +1476,7 @@
     "tenantLabel": "Locataire :"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR est temporairement indisponible. La sélection du locataire est actuellement désactivée.",
+    "errorFetchingTenants": "Erreur lors de la récupération des locataires"
   }
 }

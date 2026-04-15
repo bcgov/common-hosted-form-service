@@ -31,7 +31,11 @@
     "Description": "描述：",
     "action": "行動",
     "loadingText": "加載請稍候",
-    "forms": "形式"
+    "forms": "表單",
+    "deleteForm": "刪除表單",
+    "manageForm": "管理表單",
+    "viewSubmissions": "查看提交",
+    "noDataText": "未找到表單"
   },
   "manageLayout": {
     "manageForm": "管理表格"
@@ -967,7 +971,7 @@
     "help": "幫助",
     "feedback": "反饋",
     "admin": "行政",
-    "forms": "形式"
+    "forms": "表單"
   },
   "homePage": {
     "title": "使用通用託管表單服務創建、發布表單並接收提交內容。",
@@ -1442,7 +1446,7 @@
     "tenantLabel": "租戶:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR 暫時無法使用。租戶選擇目前已停用。",
+    "errorFetchingTenants": "獲取租戶時出錯"
   }
 }

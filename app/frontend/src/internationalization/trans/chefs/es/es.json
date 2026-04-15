@@ -31,7 +31,11 @@
     "Description": "Descripción:",
     "action": "Comportamiento",
     "loadingText": "Cargando por favor espere",
-    "forms": "Formularios"
+    "forms": "Formularios",
+    "deleteForm": "Eliminar formulario",
+    "manageForm": "Gestionar formulario",
+    "viewSubmissions": "Ver envíos",
+    "noDataText": "No se encontraron formularios"
   },
   "manageLayout": {
     "manageForm": "Administrar formulario"
@@ -1442,7 +1446,7 @@
     "tenantLabel": "Inquilino:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR no está disponible temporalmente. La selección de inquilino está actualmente deshabilitada.",
+    "errorFetchingTenants": "Error al obtener los inquilinos"
   }
 }

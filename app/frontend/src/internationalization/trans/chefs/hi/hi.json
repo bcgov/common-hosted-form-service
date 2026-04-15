@@ -31,7 +31,11 @@
     "Description": "विवरण:",
     "action": "कार्रवाई",
     "loadingText": "लोड हो रहा है कृपया प्रतीक्षा करें",
-    "forms": "फार्म"
+    "forms": "फार्म",
+    "deleteForm": "फॉर्म हटाएं",
+    "manageForm": "फॉर्म प्रबंधित करें",
+    "viewSubmissions": "सबमिशन देखें",
+    "noDataText": "कोई फॉर्म नहीं मिला"
   },
   "manageLayout": {
     "manageForm": "प्रपत्र प्रबंधित करें"
@@ -1478,7 +1482,7 @@
     "tenantLabel": "किरायेदार:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR अस्थायी रूप से अनुपलब्ध है। किरायेदार चयन वर्तमान में अक्षम है।",
+    "errorFetchingTenants": "किरायेदारों को प्राप्त करने में त्रुटि"
   }
 }

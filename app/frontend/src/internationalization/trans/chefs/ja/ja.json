@@ -31,7 +31,11 @@
     "Description": "説明：",
     "action": "行動",
     "loadingText": "読み込み中。。。待って下さい",
-    "forms": "フォーム"
+    "forms": "フォーム",
+    "deleteForm": "フォームを削除",
+    "manageForm": "フォームを管理",
+    "viewSubmissions": "送信を表示",
+    "noDataText": "フォームが見つかりません"
   },
   "manageLayout": {
     "manageForm": "フォームの管理"
@@ -1442,7 +1446,7 @@
     "tenantLabel": "テナント:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTARは一時的に利用できません。テナント選択は現在無効になっています。",
+    "errorFetchingTenants": "テナントの取得中にエラーが発生しました"
   }
 }

@@ -31,7 +31,11 @@
     "Description": "Описание:",
     "action": "Действия",
     "loadingText": "Загрузка, пожалуйста подождите",
-    "forms": "Формы"
+    "forms": "Формы",
+    "deleteForm": "Удалить форму",
+    "manageForm": "Управление формой",
+    "viewSubmissions": "Просмотр отправок",
+    "noDataText": "Формы не найдены"
   },
   "manageLayout": {
     "manageForm": "Управление формой"
@@ -1442,7 +1446,7 @@
     "tenantLabel": "Арендатор:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR временно недоступен. Выбор арендатора в настоящее время отключён.",
+    "errorFetchingTenants": "Ошибка при получении арендаторов"
   }
 }

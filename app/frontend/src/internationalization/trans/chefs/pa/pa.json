@@ -31,7 +31,11 @@
     "Description": "ਵਰਣਨ:",
     "action": "ਕਾਰਵਾਈਆਂ",
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
-    "forms": "ਫਾਰਮ"
+    "forms": "ਫਾਰਮ",
+    "deleteForm": "ਫਾਰਮ ਮਿਟਾਓ",
+    "manageForm": "ਫਾਰਮ ਪ੍ਰਬੰਧਿਤ ਕਰੋ",
+    "viewSubmissions": "ਜਮ੍ਹਾਂ ਕਰਾਈਆਂ ਵੇਖੋ",
+    "noDataText": "ਕੋਈ ਫਾਰਮ ਨਹੀਂ ਮਿਲਿਆ"
   },
   "preview": {
     "preview": "ਝਲਕ",
@@ -1442,7 +1446,7 @@
     "tenantLabel": "ਕਿਰਾਏਦਾਰ:"
   },
   "tenantStore": {
-    "cstarUnavailable": "CSTAR is temporarily unavailable. Tenant selection is currently disabled.",
-    "errorFetchingTenants": "Error fetching tenants"
+    "cstarUnavailable": "CSTAR ਅਸਥਾਈ ਤੌਰ ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਿਰਾਏਦਾਰ ਚੋਣ ਵਰਤਮਾਨ ਵਿੱਚ ਅਯੋਗ ਹੈ।",
+    "errorFetchingTenants": "ਕਿਰਾਏਦਾਰਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ"
   }
 }
