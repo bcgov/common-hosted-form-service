@@ -74,16 +74,8 @@ it('Verify draft submission', () => {
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
     //Share link verification
-    let shareFormButton = cy.get('[data-cy=shareFormButton]');
-    expect(shareFormButton).to.not.be.null;
-    shareFormButton.trigger('click').then(()=>{
-      //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
-      cy.get('.mx-2 > .v-btn').click();
-    })
-      //Draft submission and verification
+    cy.get('[data-cy=shareFormButton]').should('be.visible').click();
+    //Draft submission and verification
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
