@@ -34,6 +34,7 @@ export function formsettings(){
     cy.get('.v-list-item__content').contains('Go to CSTAR (Connected Services, Team Access and Roles)').should('exist');
     cy.get('.v-list-item__content').contains('Test_eCHEFS').should('be.visible');
     cy.get('.v-list-item__content').contains('Test_eCHEFS').click({ waitForAnimations: false });
+    cy.wait(1000);
     cy.get('[data-cy="createNewForm"]').click();
     cy.get('.v-row > :nth-child(1) > .v-card > .v-card-title > span').contains('Form Title');
     let title="title" + Math.random().toString(16).slice(2);

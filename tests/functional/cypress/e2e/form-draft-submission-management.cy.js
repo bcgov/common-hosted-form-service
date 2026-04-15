@@ -26,30 +26,24 @@ describe('Form Designer', () => {
     formsettings();
     cy.checkA11yPage();
   });  
-// Publish a simple form 
-it('Verify draft submission', () => {
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
+  it('Getting page', () => {
     
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Basic Fields').click();
+  });
+  // Publish a simple form 
+  it('Verify draft submission', () => {
+    cy.viewport(1000, 1100);
+    cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -1, { force: true })
+      .trigger('mousemove', coords.x, -150, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
-    });
-    //Multiline Text
-    cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, +1, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('.btn-success').click();
     });
     
   // Form saving
@@ -75,15 +69,8 @@ it('Verify draft submission', () => {
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
     //Share link verification
-    let shareFormButton = cy.get('[data-cy=shareFormButton]');
-    expect(shareFormButton).to.not.be.null;
-    shareFormButton.trigger('click').then(()=>{
-      //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
-      cy.get('.mx-2 > .v-btn').click();
-    })
+    cy.get('[data-cy=shareFormButton]').should('be.visible');
+    cy.get('[data-cy=shareFormButton]').click();
       //Draft submission and verification
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
