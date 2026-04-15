@@ -30,7 +30,12 @@
     "description": "설명",
     "Description": "설명:",
     "action": "행위",
-    "loadingText": "로딩 중 기다려주세요"
+    "loadingText": "로딩 중 기다려주세요",
+    "forms": "양식",
+    "deleteForm": "양식 삭제",
+    "manageForm": "양식 관리",
+    "viewSubmissions": "제출 보기",
+    "noDataText": "양식을 찾을 수 없습니다"
   },
   "preview": {
     "preview": "시사",
@@ -965,7 +970,8 @@
     "createNewForm": "새 양식 만들기",
     "help": "돕다",
     "feedback": "피드백",
-    "admin": "관리자"
+    "admin": "관리자",
+    "forms": "양식"
   },
   "homePage": {
     "title": "Common Hosted Forms Service를 사용하여 양식을 만들고 게시하고 제출물을 받습니다.",
@@ -989,7 +995,7 @@
     "enterpriseSectionBody1": "Enterprise CHEFS는 CSTAR(Connected Services, Team Access, Roles)와 협력하여 클래식 CHEFS(Common Hosted Forms Service)를 확장하고 공유된 협업 작업 공간을 만듭니다.",
     "enterpriseSectionBody2": "Enterprise CHEFS를 사용하면 팀이 조직의 테넌트 내에서 안전하게 양식을 공유하고 역할을 할당하며 프로젝트를 관리할 수 있습니다.",
     "enterpriseSectionWelcome": "Enterprise CHEFS에 오신 것을 환영합니다. 정부 전체의 팀이 안전하고 효율적으로 협업할 수 있는 곳입니다.",
-    "classicChefsLabel": "Classic CHEFS",
+    "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
@@ -1355,119 +1361,6 @@
   },
   "landingPage": {
     "hero": {
-      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
-      "title": "Introducing Enterprise CHEFS and CSTAR!",
-      "enterpriseTitle": "Experience the new Enterprise CHEFS",
-      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
-      "chefsLink": "CHEFS (Common Hosted Forms Service)",
-      "enterpriseDescription2": "by working together with",
-      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
-      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
-      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
-      "tenant": "tenant",
-      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
-      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
-      "goToChefs": "Go to CHEFS",
-      "cstarTitle": "CSTAR and Access Management",
-      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
-      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
-      "tenants": "tenants",
-      "cstarDescription3": ", assigning",
-      "roles": "roles",
-      "cstarDescription4": ", and connecting",
-      "services": "services",
-      "cstarDescription5": ".",
-      "cstarDescription6": "Access to CSTAR is managed by",
-      "administrators": "administrators within your ministry or organization",
-      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
-      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
-      "goToCstar": "Go To CSTAR",
-      "alertTitle": "ATTENTION BCeID USERS",
-      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
-      "loginToCstar": "Log in to CSTAR"
-    },
-    "gettingStarted": {
-      "title": "New to CHEFS and not sure where to start?",
-      "description1": "Start by exploring our",
-      "techDocsLink": "CHEFS Technical Documentation",
-      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
-      "viewForm": "View Form",
-      "download": "Download",
-      "viewFormTooltip": "View form in fullscreen",
-      "downloadTooltip": "Download form as JSON",
-      "exploreForm": "Explore Example Form →"
-    },
-    "examples": {
-      "demographicSurvey": "Example | Demographic Data Collection Survey",
-      "calculationsGrid": "Example | Calculations in Data Grid",
-      "postCourseSurvey": "Example | POST-COURSE SURVEY",
-      "architectureForum": "Example | CHEFS Architecture Forum Survey",
-      "conditionalLogic": "Example | Conditional Logic",
-      "calculatedValues": "Example | Calculated Values",
-      "teamLunchOrder": "Example | Team Lunch Order",
-      "navigationButtons": "Example | Navigation Buttons",
-      "successStories": "Example | CHEFS Success Stories"
-    },
-    "testimonials": {
-      "title": "Don't take our word for it, hear what our users have to say about us.",
-      "chefsUser": "CHEFS User",
-      "verifiedUser": "Verified User",
-      "viewOnKudos": "View on Kudos Page →"
-    },
-    "testimonialData": {
-      "testimonial1": {
-        "title": "Great communication and collaboration",
-        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
-        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
-        "reviewer": "Leah Macdonald",
-        "role": "External User, CGI",
-        "tagHelpful": "Helpful",
-        "tagGreatSupport": "Great Support"
-      },
-      "testimonial2": {
-        "title": "Accessible yet powerful",
-        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
-        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
-        "reviewer": "Karl Martinson",
-        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
-        "tagHelpful": "Helpful",
-        "tagEasyToUse": "Easy To Use"
-      },
-      "testimonial3": {
-        "title": "Clear documentation and helpful support",
-        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
-        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
-        "reviewer": "Emma Armitage",
-        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
-        "tagHelpful": "Helpful",
-        "tagShared": "Shared With My Team"
-      }
-    },
-    "finalCta": {
-      "title": "Get Started Using Enterprise CHEFS",
-      "description": "Create online forms to collect information from your clients and improve your workflows.",
-      "loginButton": "Login to Get Started"
-    },
-    "formViewer": {
-      "downloadJson": "Download JSON",
-      "close": "Close",
-      "downloadTitle": "Download JSON"
-    }
-  },
-  "tenantDropdown": {
-    "tenantLabel": "테넌트:",
-    "infoTooltip": "Enterprise CHEFS는 다중 테넌트 액세스를 지원하는 CHEFS의 새 버전입니다. 테넌트를 선택하면 자동으로 이동합니다.",
-    "selectLabel": "테넌트 선택 (Enterprise CHEFS에서 열림)",
-    "placeholder": "사용 가능한 테넌트에서 선택",
-    "noDataText": "테넌트를 찾을 수 없음",
-    "switchToClassic": "Classic CHEFS로 전환",
-    "goToCstar": "CSTAR로 이동 (연결된 서비스, 팀 액세스 및 역할)",
-    "noTenantsAvailable": "사용 가능한 테넌트 없음",
-    "manageTenantsIn": "테넌트 관리 위치",
-    "cstar": "CSTAR"
-  },
-  "landingPage": {
-    "hero": {
       "subtitle": "팀과 안전하게 작업하고, 양식을 더 빠르게 제공하고, 정부에서 협업하고 싶으신가요?",
       "title": "Enterprise CHEFS 및 CSTAR 소개!",
       "enterpriseTitle": "새로운 Enterprise CHEFS 경험",
@@ -1478,7 +1371,7 @@
       "description4": " 모드에서 작업 - 각 테넌트에는 격리된 양식, 데이터 및 권한이 있는 자체 보안 공간이 있습니다",
       "description5": "팀 액세스 관리 - 테넌트 내에서 양식을 보고, 편집하거나 관리할 수 있는 사용자를 제어합니다",
       "description6": "데이터 보안 유지 - 각 테넌트의 데이터는 다른 테넌트와 완전히 격리됩니다",
-      "description7": "Enterprise CHEFS에는 드래그 앤 드롭 양식 작성기, 조건부 논리, 암호화된 제출 및 API 통합과 같이 Classic CHEFS에서 알고 있고 좋아하는 모든 강력한 기능도 포함되어 있습니다.",
+      "description7": "Enterprise CHEFS에는 드래그 앤 드롭 양식 작성기, 조건부 논리, 암호화된 제출 및 API 통합과 같이 Personal CHEFS에서 알고 있고 좋아하는 모든 강력한 기능도 포함되어 있습니다.",
       "loginButton": "로그인하여 시작",
       "goToChefs": "CHEFS로 이동",
       "learnMore": "자세히 알아보기"
@@ -1530,5 +1423,30 @@
       "description": "양식 모양 미리보기",
       "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
     }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "테넌트:",
+    "infoTooltip": "Enterprise CHEFS는 다중 테넌트 액세스를 지원하는 CHEFS의 새 버전입니다. 테넌트를 선택하면 자동으로 이동합니다.",
+    "selectLabel": "테넌트 선택 (Enterprise CHEFS에서 열림)",
+    "placeholder": "사용 가능한 테넌트에서 선택",
+    "noDataText": "테넌트를 찾을 수 없음",
+    "switchToClassic": "Personal CHEFS로 전환",
+    "goToCstar": "CSTAR로 이동 (연결된 서비스, 팀 액세스 및 역할)",
+    "noTenantsAvailable": "사용 가능한 테넌트 없음",
+    "manageTenantsIn": "테넌트 관리 위치",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "테넌트:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR를 일시적으로 사용할 수 없습니다. 테넌트 선택이 현재 비활성화되어 있습니다.",
+    "errorFetchingTenants": "테넌트 가져오기 오류"
   }
 }

@@ -4,6 +4,7 @@ import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
 import getRouter from '~/router';
+import { i18n } from '~/internationalization';
 
 export const useTenantStore = defineStore('tenant', {
   state: () => ({
@@ -136,7 +137,7 @@ export const useTenantStore = defineStore('tenant', {
 
         if (this.serviceDegraded) {
           useNotificationStore().addNotification({
-            text: 'CSTAR is temporarily unavailable. Tenant selection is currently disabled.',
+            text: i18n.t('trans.tenantStore.cstarUnavailable'),
             consoleError:
               'X-Tenant-Service-Status: degraded received from /current/tenants',
           });
@@ -151,11 +152,12 @@ export const useTenantStore = defineStore('tenant', {
           this.persistSelectedTenant();
         }
 
-        // Don't auto-select first tenant - keep user in Classic CHEFS mode on login
+        // Don't auto-select first tenant - keep user in Personal CHEFS mode on login
       } catch (error) {
-        this.error = error.message || 'Failed to fetch tenants';
+        this.error =
+          error.message || i18n.t('trans.tenantStore.errorFetchingTenants');
         useNotificationStore().addNotification({
-          text: 'Error fetching tenants',
+          text: i18n.t('trans.tenantStore.errorFetchingTenants'),
           consoleError: error,
         });
       } finally {

@@ -45,7 +45,7 @@ const headers = computed(() => [
 
 const canCreateForm = computed(() => {
   // For Enterprise CHEFS (tenanted): check if user has form_admin role on selected tenant
-  // For Classic CHEFS: use the primary IdP check
+  // For Personal CHEFS: use the primary IdP check
   if (selectedTenant.value) {
     return isFormAdmin.value;
   }
@@ -53,9 +53,11 @@ const canCreateForm = computed(() => {
 });
 
 const pageTitle = computed(() => {
-  // Show "My Forms" for Classic CHEFS (no tenant selected)
+  // Show "My Forms" for Personal CHEFS (no tenant selected)
   // Show "Forms" for Enterprise CHEFS (when tenant is selected)
-  return selectedTenant.value ? 'Forms' : t('trans.formsTable.myForms');
+  return selectedTenant.value
+    ? t('trans.formsTable.forms')
+    : t('trans.formsTable.myForms');
 });
 
 const filteredFormList = computed(() =>

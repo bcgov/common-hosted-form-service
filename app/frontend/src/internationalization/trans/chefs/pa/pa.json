@@ -30,7 +30,12 @@
     "description": "ਵਰਣਨ",
     "Description": "ਵਰਣਨ:",
     "action": "ਕਾਰਵਾਈਆਂ",
-    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ"
+    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
+    "forms": "ਫਾਰਮ",
+    "deleteForm": "ਫਾਰਮ ਮਿਟਾਓ",
+    "manageForm": "ਫਾਰਮ ਪ੍ਰਬੰਧਿਤ ਕਰੋ",
+    "viewSubmissions": "ਜਮ੍ਹਾਂ ਕਰਾਈਆਂ ਵੇਖੋ",
+    "noDataText": "ਕੋਈ ਫਾਰਮ ਨਹੀਂ ਮਿਲਿਆ"
   },
   "preview": {
     "preview": "ਝਲਕ",
@@ -965,7 +970,8 @@
     "createNewForm": "ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
     "help": "ਮਦਦ ਕਰੋ",
     "feedback": "ਸੁਝਾਅ",
-    "admin": "ਐਡਮਿਨ"
+    "admin": "ਐਡਮਿਨ",
+    "forms": "ਫਾਰਮ"
   },
   "homePage": {
     "title": "ਕਾਮਨ ਹੋਸਟਡ ਫਾਰਮ ਸਰਵਿਸ ਨਾਲ ਫਾਰਮ ਬਣਾਓ, ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ ਅਤੇ ਸਬਮਿਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰੋ।",
@@ -989,7 +995,7 @@
     "enterpriseSectionBody1": "Enterprise CHEFS, CSTAR ਨਾਲ ਮਿਲ ਕੇ ਕੰਮ ਕਰਕੇ ਕਲਾਸਿਕ CHEFS ਦਾ ਵਿਸਤਾਰ ਕਰਦਾ ਹੈ ਅਤੇ ਇੱਕ ਸਾਂਝੀ ਸਹਿਯੋਗੀ ਕਾਰਜਸਥਾਨ ਬਣਾਉਂਦਾ ਹੈ।",
     "enterpriseSectionBody2": "Enterprise CHEFS ਨਾਲ, ਟੀਮਾਂ ਆਪਣੇ ਸੰਗਠਨ ਦੇ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਫਾਰਮ ਸਾਂਝੇ ਕਰ ਸਕਦੀਆਂ ਹਨ ਅਤੇ ਪ੍ਰੋਜੈਕਟ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
     "enterpriseSectionWelcome": "Enterprise CHEFS ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ, ਜਿੱਥੇ ਸਰਕਾਰ ਭਰ ਦੀਆਂ ਟੀਮਾਂ ਸੁਰੱਖਿਅਤ ਅਤੇ ਕੁਸ਼ਲਤਾ ਨਾਲ ਸਹਿਯੋਗ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
-    "classicChefsLabel": "Classic CHEFS",
+    "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
@@ -1355,119 +1361,6 @@
   },
   "landingPage": {
     "hero": {
-      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
-      "title": "Introducing Enterprise CHEFS and CSTAR!",
-      "enterpriseTitle": "Experience the new Enterprise CHEFS",
-      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
-      "chefsLink": "CHEFS (Common Hosted Forms Service)",
-      "enterpriseDescription2": "by working together with",
-      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
-      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
-      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
-      "tenant": "tenant",
-      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
-      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
-      "goToChefs": "Go to CHEFS",
-      "cstarTitle": "CSTAR and Access Management",
-      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
-      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
-      "tenants": "tenants",
-      "cstarDescription3": ", assigning",
-      "roles": "roles",
-      "cstarDescription4": ", and connecting",
-      "services": "services",
-      "cstarDescription5": ".",
-      "cstarDescription6": "Access to CSTAR is managed by",
-      "administrators": "administrators within your ministry or organization",
-      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
-      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
-      "goToCstar": "Go To CSTAR",
-      "alertTitle": "ATTENTION BCeID USERS",
-      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
-      "loginToCstar": "Log in to CSTAR"
-    },
-    "gettingStarted": {
-      "title": "New to CHEFS and not sure where to start?",
-      "description1": "Start by exploring our",
-      "techDocsLink": "CHEFS Technical Documentation",
-      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
-      "viewForm": "View Form",
-      "download": "Download",
-      "viewFormTooltip": "View form in fullscreen",
-      "downloadTooltip": "Download form as JSON",
-      "exploreForm": "Explore Example Form →"
-    },
-    "examples": {
-      "demographicSurvey": "Example | Demographic Data Collection Survey",
-      "calculationsGrid": "Example | Calculations in Data Grid",
-      "postCourseSurvey": "Example | POST-COURSE SURVEY",
-      "architectureForum": "Example | CHEFS Architecture Forum Survey",
-      "conditionalLogic": "Example | Conditional Logic",
-      "calculatedValues": "Example | Calculated Values",
-      "teamLunchOrder": "Example | Team Lunch Order",
-      "navigationButtons": "Example | Navigation Buttons",
-      "successStories": "Example | CHEFS Success Stories"
-    },
-    "testimonials": {
-      "title": "Don't take our word for it, hear what our users have to say about us.",
-      "chefsUser": "CHEFS User",
-      "verifiedUser": "Verified User",
-      "viewOnKudos": "View on Kudos Page →"
-    },
-    "testimonialData": {
-      "testimonial1": {
-        "title": "Great communication and collaboration",
-        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
-        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
-        "reviewer": "Leah Macdonald",
-        "role": "External User, CGI",
-        "tagHelpful": "Helpful",
-        "tagGreatSupport": "Great Support"
-      },
-      "testimonial2": {
-        "title": "Accessible yet powerful",
-        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
-        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
-        "reviewer": "Karl Martinson",
-        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
-        "tagHelpful": "Helpful",
-        "tagEasyToUse": "Easy To Use"
-      },
-      "testimonial3": {
-        "title": "Clear documentation and helpful support",
-        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
-        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
-        "reviewer": "Emma Armitage",
-        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
-        "tagHelpful": "Helpful",
-        "tagShared": "Shared With My Team"
-      }
-    },
-    "finalCta": {
-      "title": "Get Started Using Enterprise CHEFS",
-      "description": "Create online forms to collect information from your clients and improve your workflows.",
-      "loginButton": "Login to Get Started"
-    },
-    "formViewer": {
-      "downloadJson": "Download JSON",
-      "close": "Close",
-      "downloadTitle": "Download JSON"
-    }
-  },
-  "tenantDropdown": {
-    "tenantLabel": "ਕਿਰਾਏਦਾਰ:",
-    "infoTooltip": "Enterprise CHEFS CHEFS ਦਾ ਨਵਾਂ ਸੰਸਕਰਣ ਹੈ ਜੋ ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪਹੁੰਚ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਕਿਰਾਏਦਾਰ ਦੀ ਚੋਣ ਕਰਨ ਨਾਲ ਤੁਹਾਨੂੰ ਆਪਣੇ ਆਪ ਉੱਥੇ ਲੈ ਜਾਵੇਗਾ।",
-    "selectLabel": "ਕਿਰਾਏਦਾਰ ਚੁਣੋ (Enterprise CHEFS ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ)",
-    "placeholder": "ਉਪਲਬਧ ਕਿਰਾਏਦਾਰਾਂ ਵਿੱਚੋਂ ਚੁਣੋ",
-    "noDataText": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਨਹੀਂ ਮਿਲਿਆ",
-    "switchToClassic": "Classic CHEFS ਤੇ ਸਵਿੱਚ ਕਰੋ",
-    "goToCstar": "CSTAR ਤੇ ਜਾਓ (ਕਨੈਕਟਡ ਸੇਵਾਵਾਂ, ਟੀਮ ਪਹੁੰਚ ਅਤੇ ਭੂਮਿਕਾਵਾਂ)",
-    "noTenantsAvailable": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਉਪਲਬਧ ਨਹੀਂ",
-    "manageTenantsIn": "ਕਿਰਾਏਦਾਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",
-    "cstar": "CSTAR"
-  },
-  "landingPage": {
-    "hero": {
       "subtitle": "ਕੀ ਤੁਸੀਂ ਆਪਣੀ ਟੀਮ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨਾ, ਫਾਰਮ ਤੇਜ਼ੀ ਨਾਲ ਪ੍ਰਦਾਨ ਕਰਨਾ, ਅਤੇ ਸਰਕਾਰ ਵਿੱਚ ਸਹਿਯੋਗ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
       "title": "Enterprise CHEFS ਅਤੇ CSTAR ਦੀ ਜਾਣ-ਪਛਾਣ!",
       "enterpriseTitle": "ਨਵੇਂ Enterprise CHEFS ਦਾ ਅਨੁਭਵ ਕਰੋ",
@@ -1478,7 +1371,7 @@
       "description4": " ਮੋਡ ਵਿੱਚ ਕੰਮ ਕਰੋ - ਹਰੇਕ ਕਿਰਾਏਦਾਰ ਕੋਲ ਵੱਖ ਫਾਰਮਾਂ, ਡੇਟਾ ਅਤੇ ਅਨੁਮਤੀਆਂ ਦੇ ਨਾਲ ਆਪਣੀ ਸੁਰੱਖਿਅਤ ਥਾਂ ਹੈ",
       "description5": "ਟੀਮ ਪਹੁੰਚ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ - ਨਿਯੰਤਰਿਤ ਕਰੋ ਕਿ ਕੌਣ ਤੁਹਾਡੇ ਕਿਰਾਏਦਾਰ ਦੇ ਅੰਦਰ ਫਾਰਮ ਦੇਖ, ਸੰਪਾਦਿਤ ਜਾਂ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ",
       "description6": "ਡੇਟਾ ਸੁਰੱਖਿਆ ਬਣਾਈ ਰੱਖੋ - ਹਰੇਕ ਕਿਰਾਏਦਾਰ ਦਾ ਡੇਟਾ ਹੋਰ ਕਿਰਾਏਦਾਰਾਂ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖ ਹੈ",
-      "description7": "Enterprise CHEFS ਵਿੱਚ ਉਹ ਸਾਰੀਆਂ ਸ਼ਕਤੀਸ਼ਾਲੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵੀ ਸ਼ਾਮਲ ਹਨ ਜੋ ਤੁਸੀਂ Classic CHEFS ਤੋਂ ਜਾਣਦੇ ਅਤੇ ਪਸੰਦ ਕਰਦੇ ਹੋ, ਜਿਵੇਂ ਕਿ ਡਰੈਗ-ਐਂਡ-ਡਰੌਪ ਫਾਰਮ ਬਿਲਡਰ, ਸ਼ਰਤੀ ਤਰਕ, ਐਨਕ੍ਰਿਪਟਡ ਸਬਮਿਸ਼ਨ ਅਤੇ API ਏਕੀਕਰਣ।",
+      "description7": "Enterprise CHEFS ਵਿੱਚ ਉਹ ਸਾਰੀਆਂ ਸ਼ਕਤੀਸ਼ਾਲੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵੀ ਸ਼ਾਮਲ ਹਨ ਜੋ ਤੁਸੀਂ Personal CHEFS ਤੋਂ ਜਾਣਦੇ ਅਤੇ ਪਸੰਦ ਕਰਦੇ ਹੋ, ਜਿਵੇਂ ਕਿ ਡਰੈਗ-ਐਂਡ-ਡਰੌਪ ਫਾਰਮ ਬਿਲਡਰ, ਸ਼ਰਤੀ ਤਰਕ, ਐਨਕ੍ਰਿਪਟਡ ਸਬਮਿਸ਼ਨ ਅਤੇ API ਏਕੀਕਰਣ।",
       "loginButton": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਲੌਗਇਨ ਕਰੋ",
       "goToChefs": "CHEFS ਤੇ ਜਾਓ",
       "learnMore": "ਹੋਰ ਜਾਣੋ"
@@ -1530,5 +1423,30 @@
       "description": "ਆਪਣੇ ਫਾਰਮ ਦੀ ਝਲਕ ਦੇਖੋ",
       "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
     }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "ਕਿਰਾਏਦਾਰ:",
+    "infoTooltip": "Enterprise CHEFS CHEFS ਦਾ ਨਵਾਂ ਸੰਸਕਰਣ ਹੈ ਜੋ ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪਹੁੰਚ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਕਿਰਾਏਦਾਰ ਦੀ ਚੋਣ ਕਰਨ ਨਾਲ ਤੁਹਾਨੂੰ ਆਪਣੇ ਆਪ ਉੱਥੇ ਲੈ ਜਾਵੇਗਾ।",
+    "selectLabel": "ਕਿਰਾਏਦਾਰ ਚੁਣੋ (Enterprise CHEFS ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ)",
+    "placeholder": "ਉਪਲਬਧ ਕਿਰਾਏਦਾਰਾਂ ਵਿੱਚੋਂ ਚੁਣੋ",
+    "noDataText": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਨਹੀਂ ਮਿਲਿਆ",
+    "switchToClassic": "Personal CHEFS ਤੇ ਸਵਿੱਚ ਕਰੋ",
+    "goToCstar": "CSTAR ਤੇ ਜਾਓ (ਕਨੈਕਟਡ ਸੇਵਾਵਾਂ, ਟੀਮ ਪਹੁੰਚ ਅਤੇ ਭੂਮਿਕਾਵਾਂ)",
+    "noTenantsAvailable": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਉਪਲਬਧ ਨਹੀਂ",
+    "manageTenantsIn": "ਕਿਰਾਏਦਾਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "ਕਿਰਾਏਦਾਰ:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR ਅਸਥਾਈ ਤੌਰ ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਿਰਾਏਦਾਰ ਚੋਣ ਵਰਤਮਾਨ ਵਿੱਚ ਅਯੋਗ ਹੈ।",
+    "errorFetchingTenants": "ਕਿਰਾਏਦਾਰਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ"
   }
 }

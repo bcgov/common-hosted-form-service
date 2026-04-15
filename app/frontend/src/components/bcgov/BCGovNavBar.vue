@@ -26,7 +26,7 @@ const { selectedTenant, isFormAdmin } = storeToRefs(tenantStore);
 
 const hasPrivileges = computed(() => {
   // For Enterprise CHEFS (tenanted): check if user has form_admin role on selected tenant
-  // For Classic CHEFS: use the primary IdP check
+  // For Personal CHEFS: use the primary IdP check
   if (selectedTenant.value) {
     return isFormAdmin.value;
   }
@@ -34,9 +34,11 @@ const hasPrivileges = computed(() => {
 });
 
 const formsMenuText = computed(() => {
-  // Show "My Forms" for Classic CHEFS (no tenant selected)
+  // Show "My Forms" for Personal CHEFS (no tenant selected)
   // Show "Forms" for Enterprise CHEFS (when tenant is selected)
-  return selectedTenant.value ? 'Forms' : t('trans.bCGovNavBar.myForms');
+  return selectedTenant.value
+    ? t('trans.bCGovNavBar.forms')
+    : t('trans.bCGovNavBar.myForms');
 });
 </script>
 
