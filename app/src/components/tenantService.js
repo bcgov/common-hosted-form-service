@@ -203,14 +203,16 @@ class TenantService {
     // 4. Remove existing group assignments for this form
     await FormGroup.query().delete().where({ formId });
 
-    // 5. Insert new group assignments with generated UUIDs
-    const rows = groupIds.map((groupId) => ({
-      id: uuid.v4(),
-      formId,
-      groupId,
-      createdBy: req.currentUser.usernameIdp,
-    }));
-    await FormGroup.query().insert(rows);
+    // 5. Insert new group assignments with generated UUIDs (skip if empty — inserting [] throws "The query is empty")
+    if (groupIds.length > 0) {
+      const rows = groupIds.map((groupId) => ({
+        id: uuid.v4(),
+        formId,
+        groupId,
+        createdBy: req.currentUser.usernameIdp,
+      }));
+      await FormGroup.query().insert(rows);
+    }
 
     return true;
   }
