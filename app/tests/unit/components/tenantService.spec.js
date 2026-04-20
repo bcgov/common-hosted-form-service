@@ -537,6 +537,46 @@ describe('TenantService', () => {
       );
     });
 
+    it('should succeed and skip insert when groupIds is empty (removes all groups)', async () => {
+      Form.query.mockReturnValue({
+        findById: jest.fn().mockResolvedValue({ id: formId }),
+      });
+
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
+        }),
+      });
+
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          groups: [
+            {
+              id: 'group-1',
+              name: 'Admin Group',
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
+            },
+          ],
+        },
+      });
+
+      const mockDelete = jest.fn().mockReturnValue({
+        where: jest.fn().mockResolvedValue(true),
+      });
+      const mockInsert = jest.fn();
+
+      FormGroup.query.mockReturnValue({
+        delete: mockDelete,
+        insert: mockInsert,
+      });
+
+      const result = await tenantService.assignGroupsToForm(req, formId, []);
+
+      expect(result).toBe(true);
+      expect(mockDelete).toHaveBeenCalled();
+      expect(mockInsert).not.toHaveBeenCalled();
+    });
+
     it('should throw error if no currentUser', async () => {
       await expect(tenantService.assignGroupsToForm({}, formId, groupIds)).rejects.toThrow('TenantService: missing currentUser');
     });
