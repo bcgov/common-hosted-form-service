@@ -30,7 +30,12 @@
     "description": "Beschreibung",
     "Description": "Beschreibung:",
     "action": "Aktionen",
-    "loadingText": "Laden, bitte warten"
+    "loadingText": "Laden, bitte warten",
+    "forms": "Formulare",
+    "deleteForm": "Formular löschen",
+    "manageForm": "Formular verwalten",
+    "viewSubmissions": "Einreichungen anzeigen",
+    "noDataText": "Keine Formulare gefunden"
   },
   "preview": {
     "preview": "Vorschau",
@@ -53,6 +58,7 @@
     "emailManagement": "E-Mail-Management",
     "viewSubmissions": "Einsendungen anzeigen",
     "teamManagement": "Team Management",
+    "groupManagement": "Gruppenverwaltung",
     "deleteForm": "Formular löschen",
     "confirmDeletion": "Löschung bestätigen",
     "deleteMessageA": "Sind Sie sicher, dass Sie löschen möchten?",
@@ -105,7 +111,9 @@
     "referenceGuideB": "Benutzerhandbuch",
     "referenceGuideC": "für weitere Details",
     "specificTeamMembers": "Spezifische Teammitglieder",
+    "specificGroups": "Bestimmte Gruppen",
     "teamMemberTooltip": "Nachdem Sie das Formular erstellt haben, haben Sie Zugriff auf die Teamverwaltungsseite, auf der Sie Benutzer hinzufügen und Rollen zuweisen können. Suchen Sie nach dem Personen-Symbol auf der Seite \"Formular verwalten\" ",
+    "groupAccessTooltip": "Der Zugriff wird über CSTAR-Gruppen gesteuert. Nachdem Sie das Formular erstellt haben, gehen Sie zur Gruppenverwaltungsseite, um CSTAR-Gruppen mit diesem Formular zu verknüpfen. Nur Benutzer, die diesen Gruppen angehören, können darauf zugreifen. Um Benutzer zu einer Gruppe hinzuzufügen oder daraus zu entfernen, verwalten Sie die Gruppenmitgliedschaft in CSTAR.",
     "formFunctionality": "Formularfunktionalität",
     "formSubmissinScheduleMsg": "Der Formulareinreichungsplan ist in den Formulareinstellungen verfügbar, nachdem das Formular veröffentlicht wurde.",
     "formSubmissionsSchedule": "Zeitplan für Formulareinreichungen",
@@ -864,6 +872,35 @@
     "setUserFormsErrMsg": "Beim Versuch, Rollen für einen Benutzer zu aktualisieren, ist ein Fehler aufgetreten",
     "setUserFormsConsoleErrMsg": "Fehler beim Festlegen der Benutzerrollen für das Formular {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gruppenverwaltung",
+    "manageForm": "Formular verwalten",
+    "search": "Suchen",
+    "loadingText": "Wird geladen... Bitte warten",
+    "noDataText": "Keine Gruppen für diesen Mandanten verfügbar",
+    "noMatchingRecordText": "Keine übereinstimmenden Datensätze gefunden",
+    "groupName": "Gruppenname",
+    "description": "Beschreibung",
+    "associated": "Zugeordnet",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "confirmSave": "Änderungen bestätigen",
+    "confirmSaveMsg": "Sind Sie sicher, dass Sie die Gruppenzuordnungen für dieses Formular aktualisieren möchten?",
+    "saveSuccessMsg": "Gruppenzuordnungen erfolgreich aktualisiert",
+    "saveErrMsg": "Beim Speichern der Gruppenzuordnungen ist ein Fehler aufgetreten",
+    "getGroupsErrMsg": "Beim Laden der Gruppen für dieses Formular ist ein Fehler aufgetreten",
+    "missingGroupsWarning": "{count} zuvor zugeordnete Gruppe(n) existiert/existieren in diesem Mandanten nicht mehr",
+    "availableGroups": "Verfügbare Gruppen",
+    "assignedGroups": "Zugeordnete Gruppen",
+    "searchAvailable": "Verfügbare Gruppen suchen",
+    "searchAssigned": "Zugeordnete Gruppen suchen",
+    "noAvailableGroups": "Keine verfügbaren Gruppen in diesem Mandanten",
+    "noAssignedGroups": "Diesem Formular sind keine Gruppen zugeordnet",
+    "addGroup": "Gruppe hinzufügen",
+    "removeGroup": "Gruppe entfernen",
+    "deleted": "Gelöscht",
+    "noTenantAccess": "Gruppenverwaltung ist nur für mandantenbezogene Formulare verfügbar. Bitte wählen Sie einen Mandanten aus, um fortzufahren."
+  },
   "floatButton": {
     "publish": "Veröffentlichen",
     "manage": "Verwalten",
@@ -933,7 +970,8 @@
     "createNewForm": "Erstellen Sie ein neues Formular",
     "help": "Hilfe",
     "feedback": "Rückmeldung",
-    "admin": "Administrator"
+    "admin": "Administrator",
+    "forms": "Formulare"
   },
   "homePage": {
     "title": "Erstellen, veröffentlichen Sie Formulare und empfangen Sie Übermittlungen mit dem Common Hosted Forms Service.",
@@ -952,7 +990,13 @@
     "chefsHowToSub": "Unser Quickstart Guide führt Sie in einige Grundfunktionen von CHEFS ein.",
     "getStartedToChefs": "Beginnen Sie mit der Nutzung von CHEFS",
     "createOnlineTitle": "Erstellen Sie Online-Formulare, um Informationen von Ihren Kunden zu sammeln und Ihre Arbeitsabläufe zu verbessern.",
-    "getStarted": "Loslegen"
+    "getStarted": "Loslegen",
+    "enterpriseSectionTitle": "Erleben Sie das neue Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS erweitert das klassische CHEFS (Common Hosted Forms Service) durch die Zusammenarbeit mit CSTAR — Connected Services, Team Access und Roles — um einen gemeinsamen, kollaborativen Arbeitsbereich zu schaffen.",
+    "enterpriseSectionBody2": "Mit Enterprise CHEFS können Teams Formulare sicher teilen, Rollen zuweisen und Projekte im Mandanten ihrer Organisation verwalten — ein dedizierter Arbeitsbereich, der Ihre Projekte und Berechtigungen organisiert hält.",
+    "enterpriseSectionWelcome": "Willkommen bei Enterprise CHEFS, wo Teams in der gesamten Regierung sicher und effizient zusammenarbeiten können.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "designForm": "Designform",
@@ -1294,7 +1338,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
-    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
+    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter",
+    "shareDraftGroupMessage": "Entwurf nur mit Formulargruppenmitgliedern teilen"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Dieser Dienst ist vorübergehend nicht verfügbar.",
@@ -1313,118 +1358,6 @@
     "shuttingDown": "CHEFS wird heruntergefahren.",
     "notReady": "CHEFS kann nicht mit allen erforderlichen Diensten verbinden.",
     "unableToReachBackend": "Backend-Dienst nicht erreichbar."
-  },
-  "landingPage": {
-    "hero": {
-      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
-      "title": "Introducing Enterprise CHEFS and CSTAR!",
-      "enterpriseTitle": "Experience the new Enterprise CHEFS",
-      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
-      "chefsLink": "CHEFS (Common Hosted Forms Service)",
-      "enterpriseDescription2": "by working together with",
-      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
-      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
-      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
-      "tenant": "tenant",
-      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
-      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
-      "goToChefs": "Go to CHEFS",
-      "cstarTitle": "CSTAR and Access Management",
-      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
-      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
-      "tenants": "tenants",
-      "cstarDescription3": ", assigning",
-      "roles": "roles",
-      "cstarDescription4": ", and connecting",
-      "services": "services",
-      "cstarDescription5": ".",
-      "cstarDescription6": "Access to CSTAR is managed by",
-      "administrators": "administrators within your ministry or organization",
-      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
-      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
-      "goToCstar": "Go To CSTAR",
-      "alertTitle": "ATTENTION BCeID USERS",
-      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
-      "loginToCstar": "Log in to CSTAR"
-    },
-    "gettingStarted": {
-      "title": "New to CHEFS and not sure where to start?",
-      "description1": "Start by exploring our",
-      "techDocsLink": "CHEFS Technical Documentation",
-      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
-      "viewForm": "View Form",
-      "download": "Download",
-      "viewFormTooltip": "View form in fullscreen",
-      "downloadTooltip": "Download form as JSON",
-      "exploreForm": "Explore Example Form →"
-    },
-    "examples": {
-      "demographicSurvey": "Example | Demographic Data Collection Survey",
-      "calculationsGrid": "Example | Calculations in Data Grid",
-      "postCourseSurvey": "Example | POST-COURSE SURVEY",
-      "architectureForum": "Example | CHEFS Architecture Forum Survey",
-      "conditionalLogic": "Example | Conditional Logic",
-      "calculatedValues": "Example | Calculated Values",
-      "teamLunchOrder": "Example | Team Lunch Order",
-      "navigationButtons": "Example | Navigation Buttons",
-      "successStories": "Example | CHEFS Success Stories"
-    },
-    "testimonials": {
-      "title": "Don't take our word for it, hear what our users have to say about us.",
-      "chefsUser": "CHEFS User",
-      "verifiedUser": "Verified User",
-      "viewOnKudos": "View on Kudos Page →"
-    },
-    "testimonialData": {
-      "testimonial1": {
-        "title": "Great communication and collaboration",
-        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
-        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
-        "reviewer": "Leah Macdonald",
-        "role": "External User, CGI",
-        "tagHelpful": "Helpful",
-        "tagGreatSupport": "Great Support"
-      },
-      "testimonial2": {
-        "title": "Accessible yet powerful",
-        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
-        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
-        "reviewer": "Karl Martinson",
-        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
-        "tagHelpful": "Helpful",
-        "tagEasyToUse": "Easy To Use"
-      },
-      "testimonial3": {
-        "title": "Clear documentation and helpful support",
-        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
-        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
-        "reviewer": "Emma Armitage",
-        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
-        "tagHelpful": "Helpful",
-        "tagShared": "Shared With My Team"
-      }
-    },
-    "finalCta": {
-      "title": "Get Started Using Enterprise CHEFS",
-      "description": "Create online forms to collect information from your clients and improve your workflows.",
-      "loginButton": "Login to Get Started"
-    },
-    "formViewer": {
-      "downloadJson": "Download JSON",
-      "close": "Close",
-      "downloadTitle": "Download JSON"
-    }
-  },
-  "tenantDropdown": {
-    "infoTooltip": "Enterprise CHEFS ist die neue Version von CHEFS, die Mehrmandantenzugriff unterstützt. Durch Auswahl Ihres Mandanten gelangen Sie automatisch dorthin.",
-    "selectLabel": "Mandant auswählen (öffnet in Enterprise CHEFS)",
-    "placeholder": "Aus verfügbaren Mandanten auswählen",
-    "noDataText": "Keine Mandanten gefunden",
-    "switchToClassic": "Zu Classic CHEFS wechseln",
-    "goToCstar": "Zu CSTAR gehen (Verbundene Dienste, Teamzugriff und Rollen)",
-    "noTenantsAvailable": "Keine Mandanten verfügbar",
-    "manageTenantsIn": "Mandanten verwalten in",
-    "cstar": "CSTAR"
   },
   "landingPage": {
     "hero": {
@@ -1490,5 +1423,30 @@
       "description": "Vorschau, wie Ihr Formular aussehen wird",
       "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
     }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "Mandant:",
+    "infoTooltip": "Enterprise CHEFS ist die neue Version von CHEFS, die Mehrmandantenzugriff unterstützt. Durch Auswahl Ihres Mandanten gelangen Sie automatisch dorthin.",
+    "selectLabel": "Mandant auswählen (öffnet in Enterprise CHEFS)",
+    "placeholder": "Aus verfügbaren Mandanten auswählen",
+    "noDataText": "Keine Mandanten gefunden",
+    "switchToClassic": "Zu Classic CHEFS wechseln",
+    "goToCstar": "Zu CSTAR gehen (Verbundene Dienste, Teamzugriff und Rollen)",
+    "noTenantsAvailable": "Keine Mandanten verfügbar",
+    "manageTenantsIn": "Mandanten verwalten in",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Mandant:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR ist vorübergehend nicht verfügbar. Die Mandantenauswahl ist derzeit deaktiviert.",
+    "errorFetchingTenants": "Fehler beim Abrufen der Mandanten"
   }
 }

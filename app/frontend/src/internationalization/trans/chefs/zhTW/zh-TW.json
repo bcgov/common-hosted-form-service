@@ -30,7 +30,12 @@
     "description": "描述",
     "Description": "描述：",
     "action": "行動",
-    "loadingText": "加載請稍候"
+    "loadingText": "加載請稍候",
+    "forms": "表單",
+    "deleteForm": "刪除表單",
+    "manageForm": "管理表單",
+    "viewSubmissions": "查看提交",
+    "noDataText": "未找到表單"
   },
   "manageLayout": {
     "manageForm": "管理表格"
@@ -53,6 +58,7 @@
     "emailManagement": "電子郵件管理",
     "viewSubmissions": "查看提交內容",
     "teamManagement": "團隊管理",
+    "groupManagement": "群組管理",
     "deleteForm": "刪除表格",
     "confirmDeletion": "確認刪除",
     "deleteMessageA": "您確定要刪除嗎",
@@ -105,7 +111,9 @@
     "referenceGuideB": "使用者指南",
     "referenceGuideC": "以獲取更多詳情。",
     "specificTeamMembers": "具體團隊成員",
+    "specificGroups": "特定群組",
     "teamMemberTooltip": "建立表單後，您將可進入團隊管理頁面，新增使用者並指派角色。請在管理表單頁面尋找人員圖示 ",
+    "groupAccessTooltip": "存取由CSTAR群組控制。建立表單後，前往群組管理頁面將CSTAR群組與此表單關聯。只有屬於這些群組的使用者才能存取它。要在群組中新增或移除使用者，請在CSTAR中管理群組成員資格。",
     "formFunctionality": "表單功能",
     "formSubmissinScheduleMsg": "表單發布後，表單提交計劃將在表單設置中可用。",
     "formSubmissionsSchedule": "表格提交時間表",
@@ -864,6 +872,35 @@
     "setUserFormsErrMsg": "嘗試更新用戶的角色時發生錯誤",
     "setUserFormsConsoleErrMsg": "設置表單 {formId} 的用戶角色時出錯：{error}"
   },
+  "groupManagement": {
+    "groupManagement": "群組管理",
+    "manageForm": "管理表單",
+    "search": "搜尋",
+    "loadingText": "載入中...請稍候",
+    "noDataText": "此租戶沒有可用的群組",
+    "noMatchingRecordText": "未找到符合的記錄",
+    "groupName": "群組名稱",
+    "description": "描述",
+    "associated": "已關聯",
+    "save": "儲存",
+    "cancel": "取消",
+    "confirmSave": "確認變更",
+    "confirmSaveMsg": "您確定要更新此表單的群組關聯嗎？",
+    "saveSuccessMsg": "群組關聯已成功更新",
+    "saveErrMsg": "儲存群組關聯時發生錯誤",
+    "getGroupsErrMsg": "載入此表單的群組時發生錯誤",
+    "missingGroupsWarning": "{count} 個之前關聯的群組在此租戶中不再存在",
+    "availableGroups": "可用群組",
+    "assignedGroups": "已分配的群組",
+    "searchAvailable": "搜尋可用群組",
+    "searchAssigned": "搜尋已分配的群組",
+    "noAvailableGroups": "此租戶中沒有可用的群組",
+    "noAssignedGroups": "此表單沒有分配任何群組",
+    "addGroup": "新增群組",
+    "removeGroup": "移除群組",
+    "deleted": "已刪除",
+    "noTenantAccess": "群組管理僅適用於租戶表單。請選擇租戶以繼續。"
+  },
   "floatButton": {
     "publish": "發布",
     "manage": "管理",
@@ -933,7 +970,8 @@
     "createNewForm": "創建新表單",
     "help": "幫助",
     "feedback": "反饋",
-    "admin": "行政"
+    "admin": "行政",
+    "forms": "表單"
   },
   "homePage": {
     "title": "使用通用託管表單服務創建、發布表單並接收提交內容。",
@@ -952,7 +990,13 @@
     "chefsHowToSub": "我們的快速入門指南將向您介紹 CHEFS 的一些基本功能。",
     "getStartedToChefs": "開始使用 CHEFS",
     "createOnlineTitle": "創建在線表單以收集客戶的信息並改進您的工作流程。",
-    "getStarted": "開始使用"
+    "getStarted": "開始使用",
+    "enterpriseSectionTitle": "體驗全新的 Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS 透過與 CSTAR（Connected Services、Team Access 和 Roles）合作，擴展了傳統 CHEFS（Common Hosted Forms Service），創建了一個共享的協作工作區。",
+    "enterpriseSectionBody2": "借助 Enterprise CHEFS，團隊可以在其組織的租戶內安全地共享表單、指派角色並管理專案。",
+    "enterpriseSectionWelcome": "歡迎使用 Enterprise CHEFS，政府各部門的團隊可以在這裡安全高效地協作。",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "設置表格",
@@ -1294,7 +1338,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "您無法與尚未新增至表單的使用者共用草稿。請聯絡管理員新增它們。",
-    "shareDraftMessage": "僅與表單團隊成員分享草稿"
+    "shareDraftMessage": "僅與表單團隊成員分享草稿",
+    "shareDraftGroupMessage": "僅與表單群組成員共享草稿"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "此服務暫時無法使用。",
@@ -1316,118 +1361,6 @@
   },
   "landingPage": {
     "hero": {
-      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
-      "title": "Introducing Enterprise CHEFS and CSTAR!",
-      "enterpriseTitle": "Experience the new Enterprise CHEFS",
-      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
-      "chefsLink": "CHEFS (Common Hosted Forms Service)",
-      "enterpriseDescription2": "by working together with",
-      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
-      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
-      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
-      "tenant": "tenant",
-      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
-      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
-      "goToChefs": "Go to CHEFS",
-      "cstarTitle": "CSTAR and Access Management",
-      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
-      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
-      "tenants": "tenants",
-      "cstarDescription3": ", assigning",
-      "roles": "roles",
-      "cstarDescription4": ", and connecting",
-      "services": "services",
-      "cstarDescription5": ".",
-      "cstarDescription6": "Access to CSTAR is managed by",
-      "administrators": "administrators within your ministry or organization",
-      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
-      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
-      "goToCstar": "Go To CSTAR",
-      "alertTitle": "ATTENTION BCeID USERS",
-      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
-      "loginToCstar": "Log in to CSTAR"
-    },
-    "gettingStarted": {
-      "title": "New to CHEFS and not sure where to start?",
-      "description1": "Start by exploring our",
-      "techDocsLink": "CHEFS Technical Documentation",
-      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
-      "viewForm": "View Form",
-      "download": "Download",
-      "viewFormTooltip": "View form in fullscreen",
-      "downloadTooltip": "Download form as JSON",
-      "exploreForm": "Explore Example Form →"
-    },
-    "examples": {
-      "demographicSurvey": "Example | Demographic Data Collection Survey",
-      "calculationsGrid": "Example | Calculations in Data Grid",
-      "postCourseSurvey": "Example | POST-COURSE SURVEY",
-      "architectureForum": "Example | CHEFS Architecture Forum Survey",
-      "conditionalLogic": "Example | Conditional Logic",
-      "calculatedValues": "Example | Calculated Values",
-      "teamLunchOrder": "Example | Team Lunch Order",
-      "navigationButtons": "Example | Navigation Buttons",
-      "successStories": "Example | CHEFS Success Stories"
-    },
-    "testimonials": {
-      "title": "Don't take our word for it, hear what our users have to say about us.",
-      "chefsUser": "CHEFS User",
-      "verifiedUser": "Verified User",
-      "viewOnKudos": "View on Kudos Page →"
-    },
-    "testimonialData": {
-      "testimonial1": {
-        "title": "Great communication and collaboration",
-        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
-        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
-        "reviewer": "Leah Macdonald",
-        "role": "External User, CGI",
-        "tagHelpful": "Helpful",
-        "tagGreatSupport": "Great Support"
-      },
-      "testimonial2": {
-        "title": "Accessible yet powerful",
-        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
-        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
-        "reviewer": "Karl Martinson",
-        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
-        "tagHelpful": "Helpful",
-        "tagEasyToUse": "Easy To Use"
-      },
-      "testimonial3": {
-        "title": "Clear documentation and helpful support",
-        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
-        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
-        "reviewer": "Emma Armitage",
-        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
-        "tagHelpful": "Helpful",
-        "tagShared": "Shared With My Team"
-      }
-    },
-    "finalCta": {
-      "title": "Get Started Using Enterprise CHEFS",
-      "description": "Create online forms to collect information from your clients and improve your workflows.",
-      "loginButton": "Login to Get Started"
-    },
-    "formViewer": {
-      "downloadJson": "Download JSON",
-      "close": "Close",
-      "downloadTitle": "Download JSON"
-    }
-  },
-  "tenantDropdown": {
-    "infoTooltip": "Enterprise CHEFS 是支持多租戶訪問的新版本 CHEFS。選擇您的租戶將自動帶您到那裡。",
-    "selectLabel": "選擇租戶（在 Enterprise CHEFS 中打開）",
-    "placeholder": "從可用租戶中選擇",
-    "noDataText": "未找到租戶",
-    "switchToClassic": "切換到 Classic CHEFS",
-    "goToCstar": "轉到 CSTAR（連接服務、團隊訪問和角色）",
-    "noTenantsAvailable": "沒有可用的租戶",
-    "manageTenantsIn": "在以下位置管理租戶",
-    "cstar": "CSTAR"
-  },
-  "landingPage": {
-    "hero": {
       "subtitle": "您是否希望與您的團隊安全地合作、更快地交付表單並在政府中協作？",
       "title": "介紹 Enterprise CHEFS 和 CSTAR！",
       "enterpriseTitle": "體驗新的 Enterprise CHEFS",
@@ -1438,7 +1371,7 @@
       "description4": "模式工作 - 每個租戶都有自己的安全空間，具有隔離的表單、數據和權限",
       "description5": "管理團隊訪問 - 控制誰可以在您的租戶內查看、編輯或管理表單",
       "description6": "維護數據安全 - 每個租戶的數據完全與其他租戶隔離",
-      "description7": "Enterprise CHEFS 還包括您熟悉和喜愛的 Classic CHEFS 的所有強大功能，例如拖放表單生成器、條件邏輯、加密提交和 API 集成。",
+      "description7": "Enterprise CHEFS 還包括您熟悉和喜愛的 Personal CHEFS 的所有強大功能，例如拖放表單生成器、條件邏輯、加密提交和 API 集成。",
       "loginButton": "登入開始",
       "goToChefs": "轉到 CHEFS",
       "learnMore": "了解更多"
@@ -1490,5 +1423,30 @@
       "description": "預覽您的表單外觀",
       "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
     }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "租戶:",
+    "infoTooltip": "Enterprise CHEFS 是支持多租戶訪問的新版本 CHEFS。選擇您的租戶將自動帶您到那裡。",
+    "selectLabel": "選擇租戶（在 Enterprise CHEFS 中打開）",
+    "placeholder": "從可用租戶中選擇",
+    "noDataText": "未找到租戶",
+    "switchToClassic": "切換到 Personal CHEFS",
+    "goToCstar": "轉到 CSTAR（連接服務、團隊訪問和角色）",
+    "noTenantsAvailable": "沒有可用的租戶",
+    "manageTenantsIn": "在以下位置管理租戶",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "租戶:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR 暫時無法使用。租戶選擇目前已停用。",
+    "errorFetchingTenants": "獲取租戶時出錯"
   }
 }

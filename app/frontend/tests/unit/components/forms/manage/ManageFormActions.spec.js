@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 import { FormPermissions } from '~/utils/constants';
 import { ref } from 'vue';
 import { useAppStore } from '~/store/app';
@@ -32,10 +33,12 @@ describe('ManageForm.vue', () => {
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
   const appStore = useAppStore(pinia);
+  const tenantStore = useTenantStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
     appStore.$reset();
+    tenantStore.$reset();
   });
 
   it('renders', async () => {
@@ -264,6 +267,74 @@ describe('ManageForm.vue', () => {
     await flushPromises();
 
     expect(wrapper.vm.isPublished).toBeFalsy();
+  });
+
+  it('canManageTeam is false when tenant is selected even with TEAM_UPDATE permission', async () => {
+    formStore.permissions = [FormPermissions.TEAM_UPDATE];
+    tenantStore.selectedTenant = { id: 't1', roles: ['form_admin'] };
+
+    const wrapper = mount(ManageFormActions, {
+      global: {
+        plugins: [pinia],
+        mocks: { $filters: { formatDate: vi.fn().mockReturnValue('formatted date') } },
+        provide: { formDesigner: false, draftId: '123-456', formId: '123-456' },
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.canManageTeam).toBe(false);
+  });
+
+  it('canManageGroups is true when selectedTenant has form_admin role', async () => {
+    tenantStore.selectedTenant = { id: 't1', roles: ['form_admin'] };
+
+    const wrapper = mount(ManageFormActions, {
+      global: {
+        plugins: [pinia],
+        mocks: { $filters: { formatDate: vi.fn().mockReturnValue('formatted date') } },
+        provide: { formDesigner: false, draftId: '123-456', formId: '123-456' },
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.canManageGroups).toBe(true);
+    expect(wrapper.find('[data-test="canManageGroups"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="canManageTeammembers"]').exists()).toBe(false);
+  });
+
+  it('canManageGroups is false when selectedTenant lacks form_admin role', async () => {
+    tenantStore.selectedTenant = { id: 't1', roles: ['viewer'] };
+
+    const wrapper = mount(ManageFormActions, {
+      global: {
+        plugins: [pinia],
+        mocks: { $filters: { formatDate: vi.fn().mockReturnValue('formatted date') } },
+        provide: { formDesigner: false, draftId: '123-456', formId: '123-456' },
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.canManageGroups).toBe(false);
+    expect(wrapper.find('[data-test="canManageGroups"]').exists()).toBe(false);
+  });
+
+  it('canManageGroups is false when no tenant is selected', async () => {
+    tenantStore.selectedTenant = null;
+
+    const wrapper = mount(ManageFormActions, {
+      global: {
+        plugins: [pinia],
+        mocks: { $filters: { formatDate: vi.fn().mockReturnValue('formatted date') } },
+        provide: { formDesigner: false, draftId: '123-456', formId: '123-456' },
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.canManageGroups).toBe(false);
   });
 
   it('deleteForm should hide the delete dialog, delete the current form, and push to a different page', async () => {

@@ -38,6 +38,13 @@ const canManageTeam = computed(() => {
   return hasPermission && !isTenanted;
 });
 
+// Show Group Management for tenanted forms where user has form_admin CSTAR role
+const canManageGroups = computed(() => {
+  if (selectedTenant.value === null) return false;
+  const roles = selectedTenant.value?.roles || [];
+  return roles.includes('form_admin');
+});
+
 const canViewSubmissions = computed(() => {
   const perms = [
     FormPermissions.SUBMISSION_READ,
@@ -61,6 +68,7 @@ async function deleteForm() {
 defineExpose({
   canDeleteForm,
   canManageEmail,
+  canManageGroups,
   canManageTeam,
   canViewSubmissions,
   isPublished,
@@ -113,6 +121,27 @@ defineExpose({
         </template>
         <span :lang="locale">{{
           $t('trans.manageFormActions.teamManagement')
+        }}</span>
+      </v-tooltip>
+    </span>
+
+    <span v-if="canManageGroups">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-btn
+            class="mx-1"
+            color="primary"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-account-group"
+            data-test="canManageGroups"
+            :to="{ name: 'FormGroups', query: { f: form.id } }"
+            :title="$t('trans.manageFormActions.groupManagement')"
+          />
+        </template>
+        <span :lang="locale">{{
+          $t('trans.manageFormActions.groupManagement')
         }}</span>
       </v-tooltip>
     </span>

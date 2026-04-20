@@ -197,20 +197,22 @@ class TenantService {
 
     // 3. Check user has a group with form_admin role
     const userGroups = await this.getUserTenantGroupsAndRoles(req);
-    const hasFormAdmin = userGroups.some((g) => g.roles.includes('form_admin'));
-    if (!hasFormAdmin) throw new Error(`${SERVICE}: insufficient permissions`);
+    const hasAccess = userGroups.some((g) => g.roles.includes('form_admin'));
+    if (!hasAccess) throw new Error(`${SERVICE}: insufficient permissions`);
 
     // 4. Remove existing group assignments for this form
     await FormGroup.query().delete().where({ formId });
 
-    // 5. Insert new group assignments with generated UUIDs
-    const rows = groupIds.map((groupId) => ({
-      id: uuid.v4(),
-      formId,
-      groupId,
-      createdBy: req.currentUser.usernameIdp,
-    }));
-    await FormGroup.query().insert(rows);
+    // 5. Insert new group assignments with generated UUIDs (skip if empty — inserting [] throws "The query is empty")
+    if (groupIds.length > 0) {
+      const rows = groupIds.map((groupId) => ({
+        id: uuid.v4(),
+        formId,
+        groupId,
+        createdBy: req.currentUser.usernameIdp,
+      }));
+      await FormGroup.query().insert(rows);
+    }
 
     return true;
   }

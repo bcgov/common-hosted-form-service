@@ -30,7 +30,12 @@
     "description": "description",
     "Description": "Description:",
     "action": "Actions",
-    "loadingText": "Chargement, veuillez patienter"
+    "loadingText": "Chargement, veuillez patienter",
+    "forms": "Formulaires",
+    "deleteForm": "Supprimer le formulaire",
+    "manageForm": "Gérer le formulaire",
+    "viewSubmissions": "Voir les soumissions",
+    "noDataText": "Aucun formulaire trouvé"
   },
   "manageLayout": {
     "manageForm": "Gérer le formulaire"
@@ -53,6 +58,7 @@
     "emailManagement": "Gestion des e-mails",
     "viewSubmissions": "Voir les soumissions",
     "teamManagement": "Gestion d'équipe",
+    "groupManagement": "Gestion des groupes",
     "deleteForm": "Supprimer le formulaire",
     "confirmDeletion": "Confirmer la suppression",
     "deleteMessageA": "Êtes-vous sûr de vouloir supprimer",
@@ -104,8 +110,10 @@
     "referenceGuideA": "Veuillez consulter notre",
     "referenceGuideB": "guide d'utilisateur",
     "referenceGuideC": "pour plus de détails",
-    "specificTeamMembers": "Membres spécifiques de l'équipe",
+    "specificTeamMembers": "Membres spécifiques de l’équipe",
+    "specificGroups": "Groupes spécifiques",
     "teamMemberTooltip": "Après avoir créé le formulaire, vous aurez accès à la page de gestion d’équipe où vous pourrez ajouter des utilisateurs et attribuer des rôles. Recherchez l’icône des personnes sur la page Gérer le formulaire ",
+    "groupAccessTooltip": "L’accès est contrôlé par les groupes CSTAR. Après avoir créé le formulaire, rendez-vous sur la page de gestion des groupes pour associer des groupes CSTAR à ce formulaire. Seuls les utilisateurs appartenant à ces groupes pourront y accéder. Pour ajouter ou supprimer des utilisateurs d’un groupe, gérez les appartenances au groupe dans CSTAR.",
     "formFunctionality": "Fonctionnalité du formulaire",
     "formSubmissinScheduleMsg": "Le calendrier de soumission des formulaires sera disponible dans les paramètres du formulaire après la publication du formulaire.",
     "formSubmissionsSchedule": "Calendrier de soumission des formulaires",
@@ -864,6 +872,35 @@
     "setUserFormsErrMsg": "Une erreur s'est produite lors de la tentative de mise à jour des rôles d'un utilisateur",
     "setUserFormsConsoleErrMsg": "Erreur lors de la définition des rôles utilisateur pour le formulaire {formId} : {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gestion des groupes",
+    "manageForm": "Gérer le formulaire",
+    "search": "Recherche",
+    "loadingText": "Chargement... Veuillez patienter",
+    "noDataText": "Aucun groupe disponible pour ce locataire",
+    "noMatchingRecordText": "Aucun enregistrement correspondant trouvé",
+    "groupName": "Nom du groupe",
+    "description": "Description",
+    "associated": "Associé",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirmSave": "Confirmer les modifications",
+    "confirmSaveMsg": "Êtes-vous sûr de vouloir mettre à jour les associations de groupes pour ce formulaire ?",
+    "saveSuccessMsg": "Associations de groupes mises à jour avec succès",
+    "saveErrMsg": "Une erreur s'est produite lors de l'enregistrement des associations de groupes",
+    "getGroupsErrMsg": "Une erreur s'est produite lors du chargement des groupes pour ce formulaire",
+    "missingGroupsWarning": "{count} groupe(s) précédemment associé(s) n'existe(nt) plus dans ce locataire",
+    "availableGroups": "Groupes disponibles",
+    "assignedGroups": "Groupes assignés",
+    "searchAvailable": "Rechercher les groupes disponibles",
+    "searchAssigned": "Rechercher les groupes assignés",
+    "noAvailableGroups": "Aucun groupe disponible dans ce locataire",
+    "noAssignedGroups": "Aucun groupe assigné à ce formulaire",
+    "addGroup": "Ajouter le groupe",
+    "removeGroup": "Supprimer le groupe",
+    "deleted": "Supprimé",
+    "noTenantAccess": "La gestion des groupes est uniquement disponible pour les formulaires liés à un locataire. Veuillez sélectionner un locataire pour continuer."
+  },
   "floatButton": {
     "publish": "Publier",
     "manage": "Gérer",
@@ -933,7 +970,8 @@
     "createNewForm": "Créer un nouveau formulaire",
     "help": "Aider",
     "feedback": "Retour",
-    "admin": "Administrateur"
+    "admin": "Administrateur",
+    "forms": "Formulaires"
   },
   "homePage": {
     "title": "Créez, publiez des formulaires et recevez des soumissions avec le service Common Hosted Forms.",
@@ -1294,7 +1332,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
-    "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
+    "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire",
+    "shareDraftGroupMessage": "Partager le brouillon uniquement avec les membres du groupe du formulaire"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ce service est temporairement indisponible.",
@@ -1416,6 +1455,7 @@
     }
   },
   "tenantDropdown": {
+    "tenantLabel": "Locataire :",
     "infoTooltip": "Enterprise CHEFS est la nouvelle version de CHEFS qui prend en charge l'accès multi-locataire. La sélection de votre locataire vous y amènera automatiquement.",
     "selectLabel": "Sélectionnez le locataire (s'ouvre dans Enterprise CHEFS)",
     "placeholder": "Sélectionnez parmi les locataires disponibles",
@@ -1425,5 +1465,18 @@
     "noTenantsAvailable": "Aucun locataire disponible",
     "manageTenantsIn": "Gérer les locataires dans",
     "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Locataire :"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR est temporairement indisponible. La sélection du locataire est actuellement désactivée.",
+    "errorFetchingTenants": "Erreur lors de la récupération des locataires"
   }
 }

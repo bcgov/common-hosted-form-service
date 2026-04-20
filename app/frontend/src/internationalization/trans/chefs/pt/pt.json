@@ -30,7 +30,12 @@
     "description": "descrição",
     "Description": "Descrição:",
     "action": "Ações",
-    "loadingText": "Carregando, por favor espere"
+    "loadingText": "Carregando, por favor espere",
+    "forms": "Formulários",
+    "deleteForm": "Excluir formulário",
+    "manageForm": "Gerenciar formulário",
+    "viewSubmissions": "Ver envios",
+    "noDataText": "Nenhum formulário encontrado"
   },
   "preview": {
     "preview": "Visualização",
@@ -53,6 +58,7 @@
     "emailManagement": "Gerenciamento de e-mail",
     "viewSubmissions": "Ver envios",
     "teamManagement": "Gerenciamento de equipe",
+    "groupManagement": "Gerenciamento de grupos",
     "deleteForm": "Excluir formulário",
     "confirmDeletion": "Confirmar exclusão",
     "deleteMessageA": "Tem certeza que deseja deletar",
@@ -105,7 +111,9 @@
     "referenceGuideB": "guia do usuário",
     "referenceGuideC": "para mais detalhes.",
     "specificTeamMembers": "Membros Específicos da Equipe",
+    "specificGroups": "Grupos específicos",
     "teamMemberTooltip": "Após criar o formulário, você terá acesso à página de Gerenciamento de Equipe, onde pode adicionar usuários e atribuir funções. Procure o ícone de pessoas na página Gerenciar Formulário ",
+    "groupAccessTooltip": "O acesso é controlado pelos grupos CSTAR. Após criar o formulário, acesse a página de Gerenciamento de grupos para associar grupos CSTAR a este formulário. Apenas os usuários que pertencem a esses grupos poderão acessá-lo. Para adicionar ou remover usuários de um grupo, gerencie a associação ao grupo no CSTAR.",
     "formFunctionality": "Funcionalidade do formulário",
     "formSubmissinScheduleMsg": "A Agenda de envios de formulários estará disponível nas Configurações de formulários após a publicação do formulário.",
     "formSubmissionsSchedule": "Cronograma de Envios de Formulários",
@@ -864,6 +872,35 @@
     "setUserFormsErrMsg": "Ocorreu um erro ao tentar atualizar as funções de um usuário",
     "setUserFormsConsoleErrMsg": "Erro ao definir funções de usuário para o formulário {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gerenciamento de grupos",
+    "manageForm": "Gerenciar formulário",
+    "search": "Pesquisar",
+    "loadingText": "Carregando... Por favor, aguarde",
+    "noDataText": "Nenhum grupo disponível para este tenant",
+    "noMatchingRecordText": "Nenhum registro correspondente encontrado",
+    "groupName": "Nome do grupo",
+    "description": "Descrição",
+    "associated": "Associado",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "confirmSave": "Confirmar alterações",
+    "confirmSaveMsg": "Tem certeza de que deseja atualizar as associações de grupo para este formulário?",
+    "saveSuccessMsg": "Associações de grupo atualizadas com sucesso",
+    "saveErrMsg": "Ocorreu um erro ao salvar as associações de grupo",
+    "getGroupsErrMsg": "Ocorreu um erro ao carregar os grupos para este formulário",
+    "missingGroupsWarning": "{count} grupo(s) anteriormente associado(s) não existem mais neste tenant",
+    "availableGroups": "Grupos disponíveis",
+    "assignedGroups": "Grupos atribuídos",
+    "searchAvailable": "Pesquisar grupos disponíveis",
+    "searchAssigned": "Pesquisar grupos atribuídos",
+    "noAvailableGroups": "Nenhum grupo disponível neste tenant",
+    "noAssignedGroups": "Nenhum grupo atribuído a este formulário",
+    "addGroup": "Adicionar grupo",
+    "removeGroup": "Remover grupo",
+    "deleted": "Excluído",
+    "noTenantAccess": "O gerenciamento de grupos está disponível apenas para formulários com tenant. Selecione um tenant para continuar."
+  },
   "floatButton": {
     "publish": "Publicar",
     "manage": "Gerenciar",
@@ -933,7 +970,8 @@
     "createNewForm": "Criar um novo formulário",
     "help": "Ajuda",
     "feedback": "Opinião",
-    "admin": "Administrador"
+    "admin": "Administrador",
+    "forms": "Formulários"
   },
   "homePage": {
     "title": "Crie, publique formulários e receba envios com o Common Hosted Forms Service.",
@@ -952,7 +990,13 @@
     "chefsHowToSub": "Nosso Guia de início rápido apresentará algumas das funções básicas do CHEFS.",
     "getStartedToChefs": "Comece a usar o CHEFS",
     "createOnlineTitle": "Crie formulários online para coletar informações de seus clientes e melhorar seus fluxos de trabalho.",
-    "getStarted": "iniciar"
+    "getStarted": "iniciar",
+    "enterpriseSectionTitle": "Experiencie o novo Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS expande o CHEFS clássico (Common Hosted Forms Service) trabalhando em conjunto com o CSTAR — Connected Services, Team Access e Roles — para criar um espaço de trabalho compartilhado e colaborativo.",
+    "enterpriseSectionBody2": "Com o Enterprise CHEFS, as equipes podem compartilhar formulários com segurança, atribuir funções e gerenciar projetos dentro do tenant da sua organização.",
+    "enterpriseSectionWelcome": "Bem-vindo ao Enterprise CHEFS, onde equipes de todo o governo podem colaborar de forma segura e eficiente.",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Configurar formulário",
@@ -1294,7 +1338,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
-    "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário"
+    "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário",
+    "shareDraftGroupMessage": "Compartilhar rascunho apenas com membros do grupo do formulário"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Este serviço está temporariamente indisponível.",
@@ -1316,118 +1361,6 @@
   },
   "landingPage": {
     "hero": {
-      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
-      "title": "Introducing Enterprise CHEFS and CSTAR!",
-      "enterpriseTitle": "Experience the new Enterprise CHEFS",
-      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
-      "chefsLink": "CHEFS (Common Hosted Forms Service)",
-      "enterpriseDescription2": "by working together with",
-      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
-      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
-      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
-      "tenant": "tenant",
-      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
-      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
-      "goToChefs": "Go to CHEFS",
-      "cstarTitle": "CSTAR and Access Management",
-      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
-      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
-      "tenants": "tenants",
-      "cstarDescription3": ", assigning",
-      "roles": "roles",
-      "cstarDescription4": ", and connecting",
-      "services": "services",
-      "cstarDescription5": ".",
-      "cstarDescription6": "Access to CSTAR is managed by",
-      "administrators": "administrators within your ministry or organization",
-      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
-      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
-      "goToCstar": "Go To CSTAR",
-      "alertTitle": "ATTENTION BCeID USERS",
-      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
-      "loginToCstar": "Log in to CSTAR"
-    },
-    "gettingStarted": {
-      "title": "New to CHEFS and not sure where to start?",
-      "description1": "Start by exploring our",
-      "techDocsLink": "CHEFS Technical Documentation",
-      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
-      "viewForm": "View Form",
-      "download": "Download",
-      "viewFormTooltip": "View form in fullscreen",
-      "downloadTooltip": "Download form as JSON",
-      "exploreForm": "Explore Example Form →"
-    },
-    "examples": {
-      "demographicSurvey": "Example | Demographic Data Collection Survey",
-      "calculationsGrid": "Example | Calculations in Data Grid",
-      "postCourseSurvey": "Example | POST-COURSE SURVEY",
-      "architectureForum": "Example | CHEFS Architecture Forum Survey",
-      "conditionalLogic": "Example | Conditional Logic",
-      "calculatedValues": "Example | Calculated Values",
-      "teamLunchOrder": "Example | Team Lunch Order",
-      "navigationButtons": "Example | Navigation Buttons",
-      "successStories": "Example | CHEFS Success Stories"
-    },
-    "testimonials": {
-      "title": "Don't take our word for it, hear what our users have to say about us.",
-      "chefsUser": "CHEFS User",
-      "verifiedUser": "Verified User",
-      "viewOnKudos": "View on Kudos Page →"
-    },
-    "testimonialData": {
-      "testimonial1": {
-        "title": "Great communication and collaboration",
-        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
-        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
-        "reviewer": "Leah Macdonald",
-        "role": "External User, CGI",
-        "tagHelpful": "Helpful",
-        "tagGreatSupport": "Great Support"
-      },
-      "testimonial2": {
-        "title": "Accessible yet powerful",
-        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
-        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
-        "reviewer": "Karl Martinson",
-        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
-        "tagHelpful": "Helpful",
-        "tagEasyToUse": "Easy To Use"
-      },
-      "testimonial3": {
-        "title": "Clear documentation and helpful support",
-        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
-        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
-        "reviewer": "Emma Armitage",
-        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
-        "tagHelpful": "Helpful",
-        "tagShared": "Shared With My Team"
-      }
-    },
-    "finalCta": {
-      "title": "Get Started Using Enterprise CHEFS",
-      "description": "Create online forms to collect information from your clients and improve your workflows.",
-      "loginButton": "Login to Get Started"
-    },
-    "formViewer": {
-      "downloadJson": "Download JSON",
-      "close": "Close",
-      "downloadTitle": "Download JSON"
-    }
-  },
-  "tenantDropdown": {
-    "infoTooltip": "Enterprise CHEFS é a nova versão do CHEFS que suporta acesso multi-inquilino. Selecionar seu inquilino o levará automaticamente para lá.",
-    "selectLabel": "Selecione inquilino (abre no Enterprise CHEFS)",
-    "placeholder": "Selecione entre os inquilinos disponíveis",
-    "noDataText": "Nenhum inquilino encontrado",
-    "switchToClassic": "Mudar para Classic CHEFS",
-    "goToCstar": "Ir para CSTAR (Serviços conectados, acesso de equipe e funções)",
-    "noTenantsAvailable": "Nenhum inquilino disponível",
-    "manageTenantsIn": "Gerenciar inquilinos em",
-    "cstar": "CSTAR"
-  },
-  "landingPage": {
-    "hero": {
       "subtitle": "Deseja trabalhar com segurança com sua equipe, entregar formulários mais rapidamente e colaborar no governo?",
       "title": "Apresentando Enterprise CHEFS e CSTAR!",
       "enterpriseTitle": "Experimente o novo Enterprise CHEFS",
@@ -1438,7 +1371,7 @@
       "description4": " - Cada inquilino tem seu próprio espaço seguro com formulários, dados e permissões isolados",
       "description5": "Gerenciar acesso da equipe - Controle quem pode visualizar, editar ou gerenciar formulários dentro do seu inquilino",
       "description6": "Manter a segurança dos dados - Os dados de cada inquilino estão completamente isolados de outros inquilinos",
-      "description7": "O Enterprise CHEFS também inclui todos os recursos poderosos que você conhece e ama do Classic CHEFS, como o construtor de formulários de arrastar e soltar, lógica condicional, envios criptografados e integrações de API.",
+      "description7": "O Enterprise CHEFS também inclui todos os recursos poderosos que você conhece e ama do Personal CHEFS, como o construtor de formulários de arrastar e soltar, lógica condicional, envios criptografados e integrações de API.",
       "loginButton": "Faça login para começar",
       "goToChefs": "Ir para CHEFS",
       "learnMore": "Saiba mais"
@@ -1490,5 +1423,30 @@
       "description": "Visualize como seu formulário ficará",
       "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
     }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "Tenant:",
+    "infoTooltip": "Enterprise CHEFS é a nova versão do CHEFS que suporta acesso multi-inquilino. Selecionar seu inquilino o levará automaticamente para lá.",
+    "selectLabel": "Selecione inquilino (abre no Enterprise CHEFS)",
+    "placeholder": "Selecione entre os inquilinos disponíveis",
+    "noDataText": "Nenhum inquilino encontrado",
+    "switchToClassic": "Mudar para Personal CHEFS",
+    "goToCstar": "Ir para CSTAR (Serviços conectados, acesso de equipe e funções)",
+    "noTenantsAvailable": "Nenhum inquilino disponível",
+    "manageTenantsIn": "Gerenciar inquilinos em",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Tenant:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR está temporariamente indisponível. A seleção de tenant está atualmente desabilitada.",
+    "errorFetchingTenants": "Erro ao buscar tenants"
   }
 }

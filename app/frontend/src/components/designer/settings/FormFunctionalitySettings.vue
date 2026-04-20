@@ -375,9 +375,7 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Share Draft - Hide for tenanted forms -->
     <v-checkbox
-      v-if="!selectedTenant"
       v-model="form.enableTeamMemberDraftShare"
       :disabled="disabledStates.draftShare"
       hide-details="auto"
@@ -389,7 +387,11 @@ defineExpose({
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
-          v-html="$t('trans.canShareDraft.shareDraftMessage')"
+          v-html="
+            selectedTenant
+              ? $t('trans.canShareDraft.shareDraftGroupMessage')
+              : $t('trans.canShareDraft.shareDraftMessage')
+          "
         />
       </template>
     </v-checkbox>

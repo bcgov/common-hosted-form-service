@@ -30,7 +30,12 @@
     "description": "説明",
     "Description": "説明：",
     "action": "行動",
-    "loadingText": "読み込み中。。。待って下さい"
+    "loadingText": "読み込み中。。。待って下さい",
+    "forms": "フォーム",
+    "deleteForm": "フォームを削除",
+    "manageForm": "フォームを管理",
+    "viewSubmissions": "送信を表示",
+    "noDataText": "フォームが見つかりません"
   },
   "manageLayout": {
     "manageForm": "フォームの管理"
@@ -53,6 +58,7 @@
     "emailManagement": "電子メール管理",
     "viewSubmissions": "提出物を見る",
     "teamManagement": "チーム管理",
+    "groupManagement": "グループ管理",
     "deleteForm": "フォームの削除",
     "confirmDeletion": "削除の確認",
     "deleteMessageA": "削除してもよろしいですか",
@@ -105,7 +111,9 @@
     "referenceGuideB": "ユーザーガイド",
     "referenceGuideC": "をご参照ください",
     "specificTeamMembers": "特定のチームメンバー",
+    "specificGroups": "特定のグループ",
     "teamMemberTooltip": "フォームを作成した後、チーム管理ページにアクセスでき、ユーザーの追加や役割の割り当てができます。「フォーム管理」ページの人物アイコンを探してください ",
+    "groupAccessTooltip": "アクセスはCSTARグループによって制御されます。フォームを作成した後、グループ管理ページに移動してCSTARグループをこのフォームに関連付けてください。そのグループに属するユーザーのみがアクセスできます。グループにユーザーを追加または削除するには、CSTARでグループメンバーシップを管理してください。",
     "formFunctionality": "フォーム機能",
     "formSubmissinScheduleMsg": "フォーム送信スケジュールは、フォームが公開された後、フォーム設定で利用できるようになります。",
     "formSubmissionsSchedule": "フォーム送信スケジュール",
@@ -864,6 +872,35 @@
     "setUserFormsErrMsg": "ユーザーのロールを更新しようとしたときにエラーが発生しました",
     "setUserFormsConsoleErrMsg": "フォーム {formId} のユーザー役割を設定中にエラーが発生しました: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "グループ管理",
+    "manageForm": "フォームを管理する",
+    "search": "検索",
+    "loadingText": "読み込み中...お待ちください",
+    "noDataText": "このテナントに利用可能なグループはありません",
+    "noMatchingRecordText": "一致するレコードが見つかりません",
+    "groupName": "グループ名",
+    "description": "説明",
+    "associated": "関連付け済み",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "confirmSave": "変更を確認",
+    "confirmSaveMsg": "このフォームのグループの関連付けを更新してもよろしいですか？",
+    "saveSuccessMsg": "グループの関連付けが正常に更新されました",
+    "saveErrMsg": "グループの関連付けの保存中にエラーが発生しました",
+    "getGroupsErrMsg": "このフォームのグループの読み込み中にエラーが発生しました",
+    "missingGroupsWarning": "以前に関連付けられた {count} 個のグループはこのテナントに存在しなくなりました",
+    "availableGroups": "利用可能なグループ",
+    "assignedGroups": "割り当てられたグループ",
+    "searchAvailable": "利用可能なグループを検索",
+    "searchAssigned": "割り当てられたグループを検索",
+    "noAvailableGroups": "このテナントに利用可能なグループはありません",
+    "noAssignedGroups": "このフォームに割り当てられたグループはありません",
+    "addGroup": "グループを追加",
+    "removeGroup": "グループを削除",
+    "deleted": "削除済み",
+    "noTenantAccess": "グループ管理はテナントフォームにのみ使用できます。続行するにはテナントを選択してください。"
+  },
   "floatButton": {
     "publish": "公開",
     "manage": "管理",
@@ -933,7 +970,8 @@
     "createNewForm": "新しいフォームを作成する",
     "help": "ヘルプ",
     "feedback": "フィードバック",
-    "admin": "管理者"
+    "admin": "管理者",
+    "forms": "フォーム"
   },
   "homePage": {
     "title": "Common Hosted Forms Service を使用して、フォームを作成、公開し、送信を受け取ります。",
@@ -952,7 +990,13 @@
     "chefsHowToSub": "クイックスタート ガイドでは、CHEFS の基本機能のいくつかを紹介します。",
     "getStartedToChefs": "CHFS の使用を開始する",
     "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します。",
-    "getStarted": "始めましょう"
+    "getStarted": "始めましょう",
+    "enterpriseSectionTitle": "新しいEnterprise CHEFSを体験する",
+    "enterpriseSectionBody1": "Enterprise CHEFSは、CSTAR（Connected Services、Team Access、Roles）と連携することで、クラシックCHEFS（Common Hosted Forms Service）を拡張し、共有された協調的なワークスペースを作成します。",
+    "enterpriseSectionBody2": "Enterprise CHEFSを使用すると、チームは組織のテナント内でフォームを安全に共有し、役割を割り当て、プロジェクトを管理できます。",
+    "enterpriseSectionWelcome": "Enterprise CHEFSへようこそ。政府全体のチームが安全かつ効率的に協力できる場所です。",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "フォームの設定",
@@ -1294,7 +1338,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
-    "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する"
+    "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する",
+    "shareDraftGroupMessage": "フォームグループメンバーのみと下書きを共有する"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "このサービスは一時的に利用できません。",
@@ -1316,118 +1361,6 @@
   },
   "landingPage": {
     "hero": {
-      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
-      "title": "Introducing Enterprise CHEFS and CSTAR!",
-      "enterpriseTitle": "Experience the new Enterprise CHEFS",
-      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
-      "chefsLink": "CHEFS (Common Hosted Forms Service)",
-      "enterpriseDescription2": "by working together with",
-      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
-      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
-      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
-      "tenant": "tenant",
-      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
-      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
-      "goToChefs": "Go to CHEFS",
-      "cstarTitle": "CSTAR and Access Management",
-      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
-      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
-      "tenants": "tenants",
-      "cstarDescription3": ", assigning",
-      "roles": "roles",
-      "cstarDescription4": ", and connecting",
-      "services": "services",
-      "cstarDescription5": ".",
-      "cstarDescription6": "Access to CSTAR is managed by",
-      "administrators": "administrators within your ministry or organization",
-      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
-      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
-      "goToCstar": "Go To CSTAR",
-      "alertTitle": "ATTENTION BCeID USERS",
-      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
-      "loginToCstar": "Log in to CSTAR"
-    },
-    "gettingStarted": {
-      "title": "New to CHEFS and not sure where to start?",
-      "description1": "Start by exploring our",
-      "techDocsLink": "CHEFS Technical Documentation",
-      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
-      "viewForm": "View Form",
-      "download": "Download",
-      "viewFormTooltip": "View form in fullscreen",
-      "downloadTooltip": "Download form as JSON",
-      "exploreForm": "Explore Example Form →"
-    },
-    "examples": {
-      "demographicSurvey": "Example | Demographic Data Collection Survey",
-      "calculationsGrid": "Example | Calculations in Data Grid",
-      "postCourseSurvey": "Example | POST-COURSE SURVEY",
-      "architectureForum": "Example | CHEFS Architecture Forum Survey",
-      "conditionalLogic": "Example | Conditional Logic",
-      "calculatedValues": "Example | Calculated Values",
-      "teamLunchOrder": "Example | Team Lunch Order",
-      "navigationButtons": "Example | Navigation Buttons",
-      "successStories": "Example | CHEFS Success Stories"
-    },
-    "testimonials": {
-      "title": "Don't take our word for it, hear what our users have to say about us.",
-      "chefsUser": "CHEFS User",
-      "verifiedUser": "Verified User",
-      "viewOnKudos": "View on Kudos Page →"
-    },
-    "testimonialData": {
-      "testimonial1": {
-        "title": "Great communication and collaboration",
-        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
-        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
-        "reviewer": "Leah Macdonald",
-        "role": "External User, CGI",
-        "tagHelpful": "Helpful",
-        "tagGreatSupport": "Great Support"
-      },
-      "testimonial2": {
-        "title": "Accessible yet powerful",
-        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
-        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
-        "reviewer": "Karl Martinson",
-        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
-        "tagHelpful": "Helpful",
-        "tagEasyToUse": "Easy To Use"
-      },
-      "testimonial3": {
-        "title": "Clear documentation and helpful support",
-        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
-        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
-        "reviewer": "Emma Armitage",
-        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
-        "tagHelpful": "Helpful",
-        "tagShared": "Shared With My Team"
-      }
-    },
-    "finalCta": {
-      "title": "Get Started Using Enterprise CHEFS",
-      "description": "Create online forms to collect information from your clients and improve your workflows.",
-      "loginButton": "Login to Get Started"
-    },
-    "formViewer": {
-      "downloadJson": "Download JSON",
-      "close": "Close",
-      "downloadTitle": "Download JSON"
-    }
-  },
-  "tenantDropdown": {
-    "infoTooltip": "Enterprise CHEFS は、マルチテナントアクセスをサポートする CHEFS の新しいバージョンです。テナントを選択すると、自動的にそこに移動します。",
-    "selectLabel": "テナントを選択（Enterprise CHEFS で開く）",
-    "placeholder": "利用可能なテナントから選択",
-    "noDataText": "テナントが見つかりません",
-    "switchToClassic": "Classic CHEFS に切り替え",
-    "goToCstar": "CSTAR に移動（接続サービス、チームアクセス、役割）",
-    "noTenantsAvailable": "利用可能なテナントがありません",
-    "manageTenantsIn": "テナントを管理",
-    "cstar": "CSTAR"
-  },
-  "landingPage": {
-    "hero": {
       "subtitle": "チームと安全に作業し、フォームをより迅速に配信し、政府内で協力したいですか？",
       "title": "Enterprise CHEFS と CSTAR のご紹介！",
       "enterpriseTitle": "新しい Enterprise CHEFS を体験",
@@ -1438,7 +1371,7 @@
       "description4": "モードで作業 - 各テナントには、分離されたフォーム、データ、権限を持つ独自の安全なスペースがあります",
       "description5": "チームアクセスを管理 - テナント内でフォームを表示、編集、管理できるユーザーを制御します",
       "description6": "データセキュリティを維持 - 各テナントのデータは他のテナントから完全に分離されています",
-      "description7": "Enterprise CHEFS には、ドラッグアンドドロップフォームビルダー、条件付きロジック、暗号化された送信、API 統合など、Classic CHEFS で知っている強力な機能も含まれています。",
+      "description7": "Enterprise CHEFS には、ドラッグアンドドロップフォームビルダー、条件付きロジック、暗号化された送信、API 統合など、Personal CHEFS で知っている強力な機能も含まれています。",
       "loginButton": "ログインして開始",
       "goToChefs": "CHEFS に移動",
       "learnMore": "詳細を見る"
@@ -1490,5 +1423,30 @@
       "description": "フォームの外観をプレビュー",
       "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
     }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "テナント:",
+    "infoTooltip": "Enterprise CHEFS は、マルチテナントアクセスをサポートする CHEFS の新しいバージョンです。テナントを選択すると、自動的にそこに移動します。",
+    "selectLabel": "テナントを選択（Enterprise CHEFS で開く）",
+    "placeholder": "利用可能なテナントから選択",
+    "noDataText": "テナントが見つかりません",
+    "switchToClassic": "Personal CHEFS に切り替え",
+    "goToCstar": "CSTAR に移動（接続サービス、チームアクセス、役割）",
+    "noTenantsAvailable": "利用可能なテナントがありません",
+    "manageTenantsIn": "テナントを管理",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "テナント:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTARは一時的に利用できません。テナント選択は現在無効になっています。",
+    "errorFetchingTenants": "テナントの取得中にエラーが発生しました"
   }
 }

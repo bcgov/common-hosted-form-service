@@ -30,7 +30,12 @@
     "description": "описание",
     "Description": "Описание:",
     "action": "Действия",
-    "loadingText": "Загрузка, пожалуйста подождите"
+    "loadingText": "Загрузка, пожалуйста подождите",
+    "forms": "Формы",
+    "deleteForm": "Удалить форму",
+    "manageForm": "Управление формой",
+    "viewSubmissions": "Просмотр отправок",
+    "noDataText": "Формы не найдены"
   },
   "manageLayout": {
     "manageForm": "Управление формой"
@@ -53,6 +58,7 @@
     "emailManagement": "Управление электронной почтой",
     "viewSubmissions": "Просмотр записей",
     "teamManagement": "Управление командой",
+    "groupManagement": "Управление группами",
     "deleteForm": "Удалить форму",
     "confirmDeletion": "Подтвердить удаление",
     "deleteMessageA": "Вы уверены, что хотите удалить",
@@ -105,7 +111,9 @@
     "referenceGuideB": "руководству пользователя",
     "referenceGuideC": "для получения дополнительной информации.",
     "specificTeamMembers": "Конкретные члены команды",
+    "specificGroups": "Определённые группы",
     "teamMemberTooltip": "После создания формы у вас будет доступ к странице управления командой, где вы сможете добавлять пользователей и назначать роли. Найдите значок людей на странице управления формой ",
+    "groupAccessTooltip": "Доступ контролируется группами CSTAR. После создания формы перейдите на страницу управления группами, чтобы связать группы CSTAR с этой формой. Только пользователи, принадлежащие к этим группам, смогут получить к ней доступ. Для добавления или удаления пользователей из группы управляйте членством в группе в CSTAR.",
     "formFunctionality": "Функциональность формы",
     "formSubmissinScheduleMsg": "Расписание отправки формы будет доступно в настройках формы после публикации формы.",
     "formSubmissionsSchedule": "Расписание отправки формы",
@@ -864,6 +872,35 @@
     "setUserFormsErrMsg": "Произошла ошибка при попытке обновить роли для пользователя",
     "setUserFormsConsoleErrMsg": "Ошибка при настройке ролей пользователей для формы {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Управление группами",
+    "manageForm": "Управление формой",
+    "search": "Поиск",
+    "loadingText": "Загрузка... Пожалуйста, подождите",
+    "noDataText": "Нет доступных групп для этого арендатора",
+    "noMatchingRecordText": "Совпадающие записи не найдены",
+    "groupName": "Название группы",
+    "description": "Описание",
+    "associated": "Связанная",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirmSave": "Подтвердить изменения",
+    "confirmSaveMsg": "Вы уверены, что хотите обновить связи группы для этой формы?",
+    "saveSuccessMsg": "Связи группы успешно обновлены",
+    "saveErrMsg": "Произошла ошибка при сохранении связей группы",
+    "getGroupsErrMsg": "Произошла ошибка при загрузке групп для этой формы",
+    "missingGroupsWarning": "{count} ранее связанная(ые) группа(ы) больше не существует(ют) в этом арендаторе",
+    "availableGroups": "Доступные группы",
+    "assignedGroups": "Назначенные группы",
+    "searchAvailable": "Поиск доступных групп",
+    "searchAssigned": "Поиск назначенных групп",
+    "noAvailableGroups": "Нет доступных групп в этом арендаторе",
+    "noAssignedGroups": "Этой форме не назначено ни одной группы",
+    "addGroup": "Добавить группу",
+    "removeGroup": "Удалить группу",
+    "deleted": "Удалена",
+    "noTenantAccess": "Управление группами доступно только для форм арендатора. Пожалуйста, выберите арендатора для продолжения."
+  },
   "floatButton": {
     "publish": "Опубликовать",
     "manage": "Управлять",
@@ -933,7 +970,8 @@
     "createNewForm": "Создать новую форму",
     "help": "Помощь",
     "feedback": "Обратная связь",
-    "admin": "Админ"
+    "admin": "Админ",
+    "forms": "Формы"
   },
   "homePage": {
     "title": "Создавайте, публикуйте формы и получайте отправления с помощью Common Hosted Forms Service.",
@@ -952,7 +990,13 @@
     "chefsHowToSub": "Наше краткое руководство познакомит вас с некоторыми основными функциями программы CHEFS.",
     "getStartedToChefs": "Начните использовать CHEFS",
     "createOnlineTitle": "Создавайте онлайн-формы для сбора информации от ваших клиентов и улучшения рабочих процессов.",
-    "getStarted": "Начать"
+    "getStarted": "Начать",
+    "enterpriseSectionTitle": "Откройте для себя новый Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS расширяет возможности классического CHEFS (Common Hosted Forms Service), работая совместно с CSTAR — Connected Services, Team Access и Roles — для создания общего совместного рабочего пространства.",
+    "enterpriseSectionBody2": "С Enterprise CHEFS команды могут безопасно делиться формами, назначать роли и управлять проектами в рамках арендатора своей организации.",
+    "enterpriseSectionWelcome": "Добро пожаловать в Enterprise CHEFS, где команды по всему правительству могут безопасно и эффективно сотрудничать.",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Настройка формы",
@@ -1294,7 +1338,8 @@
   },
   "canShareDraft": {
     "canShareMessage": "Вы не можете поделиться черновиком с пользователями, которые не были добавлены в форму. Пожалуйста, свяжитесь с администратором, чтобы добавить их.",
-    "shareDraftMessage": "Поделитесь черновиком только с членами команды по созданию формы"
+    "shareDraftMessage": "Поделитесь черновиком только с членами команды по созданию формы",
+    "shareDraftGroupMessage": "Поделиться черновиком только с членами группы формы"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Эта служба временно недоступна.",
@@ -1316,118 +1361,6 @@
   },
   "landingPage": {
     "hero": {
-      "subtitle": "Want to work securely with your team, deliver forms faster, and collaborate across government?",
-      "title": "Introducing Enterprise CHEFS and CSTAR!",
-      "enterpriseTitle": "Experience the new Enterprise CHEFS",
-      "enterpriseDescription1": "Enterprise CHEFS expands on the classic",
-      "chefsLink": "CHEFS (Common Hosted Forms Service)",
-      "enterpriseDescription2": "by working together with",
-      "cstarLink": "CSTAR — Connected Services, Team Access, and Roles",
-      "enterpriseDescription3": "— to create a shared, collaborative workspace.",
-      "enterpriseDescription4": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's",
-      "tenant": "tenant",
-      "enterpriseDescription5": "— a dedicated workspace that keeps your projects and permissions organized.",
-      "enterpriseDescription6": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
-      "goToChefs": "Go to CHEFS",
-      "cstarTitle": "CSTAR and Access Management",
-      "cstarDescription1": "Enterprise CHEFS works hand-in-hand with",
-      "cstarDescription2": ". CSTAR helps you manage who has access to your forms and guides users into",
-      "tenants": "tenants",
-      "cstarDescription3": ", assigning",
-      "roles": "roles",
-      "cstarDescription4": ", and connecting",
-      "services": "services",
-      "cstarDescription5": ".",
-      "cstarDescription6": "Access to CSTAR is managed by",
-      "administrators": "administrators within your ministry or organization",
-      "cstarDescription7": ", ensuring permissions and memberships are securely controlled.",
-      "cstarDescription8": "You can use CSTAR to review your current tenant memberships or request a new tenant if you're starting from scratch.",
-      "goToCstar": "Go To CSTAR",
-      "alertTitle": "ATTENTION BCeID USERS",
-      "alertDescription": "To ensure your account can be found by your team, please log in to CSTAR before using Enterprise CHEFS. This step allows your team admin to locate and add you to a tenant or group, making your account active and searchable in CSTAR.",
-      "loginToCstar": "Log in to CSTAR"
-    },
-    "gettingStarted": {
-      "title": "New to CHEFS and not sure where to start?",
-      "description1": "Start by exploring our",
-      "techDocsLink": "CHEFS Technical Documentation",
-      "description2": "(Tech Docs) for setup guidance, or browse the example forms below — each one was created by real CHEFS users.",
-      "viewForm": "View Form",
-      "download": "Download",
-      "viewFormTooltip": "View form in fullscreen",
-      "downloadTooltip": "Download form as JSON",
-      "exploreForm": "Explore Example Form →"
-    },
-    "examples": {
-      "demographicSurvey": "Example | Demographic Data Collection Survey",
-      "calculationsGrid": "Example | Calculations in Data Grid",
-      "postCourseSurvey": "Example | POST-COURSE SURVEY",
-      "architectureForum": "Example | CHEFS Architecture Forum Survey",
-      "conditionalLogic": "Example | Conditional Logic",
-      "calculatedValues": "Example | Calculated Values",
-      "teamLunchOrder": "Example | Team Lunch Order",
-      "navigationButtons": "Example | Navigation Buttons",
-      "successStories": "Example | CHEFS Success Stories"
-    },
-    "testimonials": {
-      "title": "Don't take our word for it, hear what our users have to say about us.",
-      "chefsUser": "CHEFS User",
-      "verifiedUser": "Verified User",
-      "viewOnKudos": "View on Kudos Page →"
-    },
-    "testimonialData": {
-      "testimonial1": {
-        "title": "Great communication and collaboration",
-        "date": "Reviewed in Victoria, BC, Canada on May 19, 2024",
-        "content": "\"The Polysomnography team would like to share how appreciative we are of you taking our feedback into consideration during your sprint planning, we are very excited for the opportunity to contribute to improving CHEFS for end users. The collaboration and communication amongst the teams is greatly appreciated by our client!\"",
-        "reviewer": "Leah Macdonald",
-        "role": "External User, CGI",
-        "tagHelpful": "Helpful",
-        "tagGreatSupport": "Great Support"
-      },
-      "testimonial2": {
-        "title": "Accessible yet powerful",
-        "date": "Reviewed in Victoria, BC, Canada on Jun 24, 2023",
-        "content": "\"CHEFS is a very straightforward for non-coders. You can unlock more options if you want, but the basic functionality is very easy to use for the non-super-tech/code-savvy people.\"",
-        "reviewer": "Karl Martinson",
-        "role": "Senior Emergency Planning Analyst, Climate Resilience, Competitiveness and Reconciliation Division, Agriculture and Food",
-        "tagHelpful": "Helpful",
-        "tagEasyToUse": "Easy To Use"
-      },
-      "testimonial3": {
-        "title": "Clear documentation and helpful support",
-        "date": "Reviewed in Victoria, BC, Canada on May 6, 2025",
-        "content": "\"The CHEFS docs are clear and well-structured so understand how to build forms and connect to the add a shout out to the CHEFS Teams channel for timely responses to my remaining questions.\"",
-        "reviewer": "Emma Armitage",
-        "role": "GIS Geospatial Analyst, Natural Resource Information and Digital Services",
-        "tagHelpful": "Helpful",
-        "tagShared": "Shared With My Team"
-      }
-    },
-    "finalCta": {
-      "title": "Get Started Using Enterprise CHEFS",
-      "description": "Create online forms to collect information from your clients and improve your workflows.",
-      "loginButton": "Login to Get Started"
-    },
-    "formViewer": {
-      "downloadJson": "Download JSON",
-      "close": "Close",
-      "downloadTitle": "Download JSON"
-    }
-  },
-  "tenantDropdown": {
-    "infoTooltip": "Enterprise CHEFS — это новая версия CHEFS, которая поддерживает мультитенантный доступ. Выбор вашего арендатора автоматически перенесет вас туда.",
-    "selectLabel": "Выберите арендатора (открывается в Enterprise CHEFS)",
-    "placeholder": "Выберите из доступных арендаторов",
-    "noDataText": "Арендаторы не найдены",
-    "switchToClassic": "Переключиться на Classic CHEFS",
-    "goToCstar": "Перейти в CSTAR (Подключенные службы, доступ команды и роли)",
-    "noTenantsAvailable": "Нет доступных арендаторов",
-    "manageTenantsIn": "Управление арендаторами в",
-    "cstar": "CSTAR"
-  },
-  "landingPage": {
-    "hero": {
       "subtitle": "Хотите безопасно работать со своей командой, быстрее предоставлять формы и сотрудничать в правительстве?",
       "title": "Представляем Enterprise CHEFS и CSTAR!",
       "enterpriseTitle": "Откройте для себя новый Enterprise CHEFS",
@@ -1438,7 +1371,7 @@
       "description4": " - У каждого арендатора есть собственное безопасное пространство с изолированными формами, данными и разрешениями",
       "description5": "Управлять доступом команды - Контролируйте, кто может просматривать, редактировать или управлять формами в вашем арендаторе",
       "description6": "Поддерживать безопасность данных - Данные каждого арендатора полностью изолированы от других арендаторов",
-      "description7": "Enterprise CHEFS также включает все мощные функции, которые вы знаете и любите в Classic CHEFS, такие как конструктор форм с перетаскиванием, условная логика, зашифрованные отправки и интеграции API.",
+      "description7": "Enterprise CHEFS также включает все мощные функции, которые вы знаете и любите в Personal CHEFS, такие как конструктор форм с перетаскиванием, условная логика, зашифрованные отправки и интеграции API.",
       "loginButton": "Войти, чтобы начать",
       "goToChefs": "Перейти к CHEFS",
       "learnMore": "Узнать больше"
@@ -1490,5 +1423,30 @@
       "description": "Предварительный просмотр вашей формы",
       "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
     }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "Арендатор:",
+    "infoTooltip": "Enterprise CHEFS — это новая версия CHEFS, которая поддерживает мультитенантный доступ. Выбор вашего арендатора автоматически перенесет вас туда.",
+    "selectLabel": "Выберите арендатора (открывается в Enterprise CHEFS)",
+    "placeholder": "Выберите из доступных арендаторов",
+    "noDataText": "Арендаторы не найдены",
+    "switchToClassic": "Переключиться на Personal CHEFS",
+    "goToCstar": "Перейти в CSTAR (Подключенные службы, доступ команды и роли)",
+    "noTenantsAvailable": "Нет доступных арендаторов",
+    "manageTenantsIn": "Управление арендаторами в",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Арендатор:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR временно недоступен. Выбор арендатора в настоящее время отключён.",
+    "errorFetchingTenants": "Ошибка при получении арендаторов"
   }
 }
