@@ -68,6 +68,21 @@ it('Verify draft submission', () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
+    //Select specific groups option
+    /*
+    cy.get('.mdi-pencil').click();
+    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('Specific Groups').should('exist');
+    cy.contains('Specific Groups').click();
+    //validate share draft with team is enabled
+    cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
+    //Update form settings
+    cy.get('[data-test="canEditForm"]').click();
+    //Add group mangement and verify
+    cy.get('.mdi-account-group').click();
+    cy.get('.v-col > .v-btn > .v-btn__content').click();
+    cy.get('.text-primary > .v-btn__content').click();
+    */
       //Draft submission and verification
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
