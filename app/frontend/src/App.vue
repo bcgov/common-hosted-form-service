@@ -14,6 +14,17 @@ const ready = ref(false);
 const route = useRoute();
 const tenantStore = useTenantStore();
 
+function hasPendingRestoreToken() {
+  try {
+    return !!(
+      sessionStorage.getItem('tenantSessionRestore') ||
+      localStorage.getItem('tenantLoginRestore')
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
 const appTitle = computed(() => {
   const base =
     route && route.meta && route.meta.title
@@ -21,6 +32,14 @@ const appTitle = computed(() => {
       : import.meta.env.VITE_TITLE || 'Common Hosted Forms';
 
   if (!tenantStore.isTenantFeatureEnabled) return base;
+  // Suppress the suffix only when an actual tenant restore is in flight.
+  // Personal-CHEFS-only users get "Personal" immediately, no flicker.
+  const restoring =
+    tenantStore.isRestoring ||
+    (!tenantStore.selectedTenant &&
+      tenantStore.loading &&
+      hasPendingRestoreToken());
+  if (restoring) return base;
 
   const suffix = tenantStore.selectedTenant ? 'Enterprise' : 'Personal';
   return `${base} | ${suffix}`;

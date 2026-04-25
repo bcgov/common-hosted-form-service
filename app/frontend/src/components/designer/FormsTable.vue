@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
@@ -64,7 +64,46 @@ const filteredFormList = computed(() =>
   )
 );
 
+function hasPendingRestoreToken() {
+  try {
+    return !!(
+      sessionStorage.getItem('tenantSessionRestore') ||
+      localStorage.getItem('tenantLoginRestore')
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
 onMounted(async () => {
+  // Wait for tenant state to settle before fetching forms — but ONLY if
+  // there's actually a tenant restore in progress. For Personal-CHEFS-only
+  // users (no token in storage) we fetch immediately. The wait conditions:
+  //   - explicit restore in flight, OR
+  //   - tenants are loading, no tenant resolved yet, AND a restore token
+  //     is sitting in storage (so a tenant is about to be restored).
+  const needsWait = () =>
+    tenantStore.isRestoring ||
+    (!tenantStore.selectedTenant &&
+      tenantStore.loading &&
+      hasPendingRestoreToken());
+  if (needsWait()) {
+    await new Promise((resolve) => {
+      const stop = watch(
+        () => [
+          tenantStore.isRestoring,
+          tenantStore.loading,
+          tenantStore.selectedTenant,
+        ],
+        () => {
+          if (!needsWait()) {
+            stop();
+            resolve();
+          }
+        }
+      );
+    });
+  }
   await formStore.getFormsForCurrentUser();
   loading.value = false;
 });
