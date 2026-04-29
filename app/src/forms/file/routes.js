@@ -1,6 +1,6 @@
 const routes = require('express').Router();
 
-const apiAccess = require('../public/middleware/apiAccess');
+const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
@@ -23,15 +23,15 @@ routes.delete('/', hasFileDelete, async (req, res, next) => {
   await controller.deleteFiles(req, res, next);
 });
 
-routes.get('/:fileId', apiAccess.checkApiKey, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:fileId', apiAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
-routes.get('/:fileId/clone', apiAccess.checkApiKey, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:fileId/clone', apiAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.clone(req, res, next);
 });
 
-routes.delete('/:fileId', apiAccess.checkApiKey, currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
+routes.delete('/:fileId', currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
   await controller.delete(req, res, next);
 });
 
