@@ -151,3 +151,37 @@ runs:
         ROUTE_PATH: ${{ inputs.route_path }}
       run: |
         oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/app.cronjob.yaml -p JOB_NAME=${JOB_NAME} -p NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -p APP_NAME=${ACRONYM} -p NAMESPACE_ENVIRONMENT=${NAMESPACE_ENVIRONMENT} -p ROUTE_PATH=${ROUTE_PATH} -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+
+    - name: Get first pod from deployment
+      id: pod
+      shell: bash
+      run: |
+        NAMESPACE="${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
+        DEPLOYMENT_NAME="${{ inputs.acronym }}-app-${{ inputs.job_name }}"
+
+        echo "Looking for pods in deployment: $DEPLOYMENT_NAME"
+        POD_NAME=$(oc get pods -n "$NAMESPACE" -l "app.kubernetes.io/name=$DEPLOYMENT_NAME",role=app -o jsonpath='{.items[0].metadata.name}')
+
+        if [ -z "$POD_NAME" ]; then
+          echo "No pods found for deployment: $DEPLOYMENT_NAME"
+          exit 1
+        fi
+
+        echo "Found pod: $POD_NAME"
+        echo "pod_name=$POD_NAME" >> "$GITHUB_OUTPUT"
+
+    - name: Run integration tests on pod
+      shell: bash
+      run: |
+        NAMESPACE="${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
+        POD_NAME="${{ steps.pod.outputs.pod_name }}"
+
+        echo "Running integration tests on pod: $POD_NAME"
+        oc exec -n "$NAMESPACE" "$POD_NAME" -- npm run test:integration
+
+        if [ $? -eq 0 ]; then
+          echo "Integration tests passed successfully"
+        else
+          echo "Integration tests failed"
+          exit 1
+        fi

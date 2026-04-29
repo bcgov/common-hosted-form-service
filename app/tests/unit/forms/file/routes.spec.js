@@ -3,7 +3,7 @@ const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
-const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
+const apiAccess = require('../../../../src/forms/public/middleware/apiAccess');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 const validateParameter = require('../../../../src/forms/common/middleware/validateParameter');
 const controller = require('../../../../src/forms/file/controller');
@@ -15,12 +15,10 @@ const upload = require('../../../../src/forms/file/middleware/upload');
 // correctly, not the functionality of the middleware.
 //
 
-jest.mock('../../../../src/forms/auth/middleware/apiAccess');
-apiAccess.mockImplementation(
-  jest.fn((_req, _res, next) => {
-    next();
-  })
-);
+jest.mock('../../../../src/forms/public/middleware/apiAccess');
+apiAccess.checkApiKey = jest.fn((_req, _res, next) => {
+  next();
+});
 
 filePermissions.currentFileRecord = jest.fn((_req, _res, next) => {
   next();
@@ -73,7 +71,7 @@ describe(`${basePath}`, () => {
 
     await appRequest.post(path);
 
-    expect(apiAccess).toBeCalledTimes(0);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(0);
     expect(controller.create).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(1);
@@ -90,7 +88,7 @@ describe(`${basePath}`, () => {
 
     await appRequest.delete(path);
 
-    expect(apiAccess).toBeCalledTimes(0);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(0);
     expect(controller.deleteFiles).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
     expect(filePermissions.hasFileDelete).toBeCalledTimes(1);
@@ -112,7 +110,7 @@ describe(`${basePath}/:id`, () => {
 
     await appRequest.delete(path);
 
-    expect(apiAccess).toBeCalledTimes(0);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(1);
     expect(controller.delete).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
@@ -129,7 +127,7 @@ describe(`${basePath}/:id`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(1);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(1);
     expect(controller.read).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
@@ -151,7 +149,7 @@ describe(`${basePath}/:id/clone`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(1);
+    expect(apiAccess.checkApiKey).toBeCalledTimes(1);
     expect(controller.clone).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
