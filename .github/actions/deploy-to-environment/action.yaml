@@ -160,7 +160,11 @@ runs:
         DEPLOYMENT_NAME="${{ inputs.acronym }}-app-${{ inputs.job_name }}"
 
         echo "Looking for pods in deployment: $DEPLOYMENT_NAME"
-        POD_NAME=$(oc get pods -n "$NAMESPACE" -l "app.kubernetes.io/name=$DEPLOYMENT_NAME",role=app -o jsonpath='{.items[0].metadata.name}')
+
+        POD_NAME=$(oc get pods \
+          -n "$NAMESPACE" \
+          -l "app.kubernetes.io/name=$DEPLOYMENT_NAME",role=app \
+          -o jsonpath='{.items[0].metadata.name}')
 
         if [ -z "$POD_NAME" ]; then
           echo "No pods found for deployment: $DEPLOYMENT_NAME"
@@ -177,6 +181,7 @@ runs:
         POD_NAME="${{ steps.pod.outputs.pod_name }}"
 
         echo "Running integration tests on pod: $POD_NAME"
+
         oc exec -n "$NAMESPACE" "$POD_NAME" -- npm run test:integration
 
         if [ $? -eq 0 ]; then
@@ -185,3 +190,20 @@ runs:
           echo "Integration tests failed"
           exit 1
         fi
+
+    - name: Run integration tests on deployment
+      shell: bash
+      run: |
+        NAMESPACE="${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
+        DEPLOYMENT_NAME="${{ inputs.acronym }}-app-${{ inputs.job_name }}"
+
+        oc rollout status \
+          -n "$NAMESPACE" \
+          "deployment/$DEPLOYMENT_NAME" \
+          --timeout=5m
+
+        oc exec \
+          -n "$NAMESPACE" \
+          --pod-running-timeout=5m \
+          "deployment/$DEPLOYMENT_NAME" \
+          -- npm run test:integration
