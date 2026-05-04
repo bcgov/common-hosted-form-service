@@ -155,9 +155,11 @@ runs:
     - name: Get first pod from deployment
       id: pod
       shell: bash
+      env:
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        DEPLOYMENT_NAME: ${{ inputs.acronym }}-app-${{ inputs.job_name }}
       run: |
-        NAMESPACE="${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
-        DEPLOYMENT_NAME="${{ inputs.acronym }}-app-${{ inputs.job_name }}"
+
 
         echo "Looking for pods in deployment: $DEPLOYMENT_NAME"
 
@@ -176,10 +178,10 @@ runs:
 
     - name: Run integration tests on pod
       shell: bash
+      env:
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        POD_NAME: ${{ steps.pod.outputs.pod_name }}
       run: |
-        NAMESPACE="${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
-        POD_NAME="${{ steps.pod.outputs.pod_name }}"
-
         echo "Running integration tests on pod: $POD_NAME"
 
         oc exec -n "$NAMESPACE" "$POD_NAME" -- npm run test:integration
@@ -193,9 +195,10 @@ runs:
 
     - name: Run integration tests on deployment
       shell: bash
+      env:
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        DEPLOYMENT_NAME: ${{ inputs.acronym }}-app-${{ inputs.job_name }}
       run: |
-        NAMESPACE="${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}"
-        DEPLOYMENT_NAME="${{ inputs.acronym }}-app-${{ inputs.job_name }}"
 
         oc rollout status \
           -n "$NAMESPACE" \
