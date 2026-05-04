@@ -61,18 +61,18 @@ export function formsettings(){
     cy.contains('Send a notification to your specified email address when any user submits this form').should('be.visible');
     });
     //validate share draft with team is not enabled
-    cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.be.enabled');
+    cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.enabled');
     //Save and edit draft
     cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
     //Upload draft
     cy.get('[data-test="canUploadDraftCheckbox"]').click();
+    cy.wait(1000);
      //validate share draft with team is enabled
-     cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
-    cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.be.enabled');
+    cy.contains('label', 'Share draft with form group members only').parents('.v-selection-control').find('input[type="checkbox"]').should('be.enabled');
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//Update the status of the form
     cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').click();//Copy existing submission
     cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').click();//Wide form Layout
-    //cy.get('[data-test="enableTeamMemberDraftShare"]').click();//share form drafts with team members only
+    cy.get('[data-test="enableTeamMemberDraftShare"]').click();//share form drafts with team members only
     cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').click();//display assignee column for reviewers
     cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').check({force: true});//Submitter revision
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click({force: true});

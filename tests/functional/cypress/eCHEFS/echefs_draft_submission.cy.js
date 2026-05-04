@@ -76,6 +76,7 @@ it('Verify draft submission', () => {
     cy.contains('Specific Groups').click();
     //validate share draft with team is enabled
     cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
+    //cy.get('[data-test="enableTeamMemberDraftShare"]').click();
     //Update form settings
     cy.get('[data-test="canEditForm"]').click();
     //Add group mangement and verify
