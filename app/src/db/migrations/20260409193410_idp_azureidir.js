@@ -13,7 +13,7 @@ exports.up = function (knex) {
         createdBy: CREATED_BY,
         code: 'azureidir',
         display: 'IDIR MFA',
-        active: false,
+        active: true,
         idp: 'azureidir',
         primary: true,
         login: true,
