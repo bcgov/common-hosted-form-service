@@ -20,6 +20,8 @@ const isEnterprise = computed(() => !!selectedTenant.value);
 const tenantName = computed(
   () => selectedTenant.value?.name || selectedTenant.value?.displayName || ''
 );
+
+const { isTenantRestoring: showRestoring } = storeToRefs(tenantStore);
 </script>
 
 <template>
@@ -28,16 +30,28 @@ const tenantName = computed(
       authenticated && tenantStore.isTenantFeatureEnabled && !formSubmitMode
     "
     class="context-banner d-print-none"
-    :class="isEnterprise ? 'enterprise-banner' : 'personal-banner'"
+    :class="
+      showRestoring
+        ? 'restoring-banner'
+        : isEnterprise
+        ? 'enterprise-banner'
+        : 'personal-banner'
+    "
     role="status"
     :aria-label="
-      isEnterprise
+      showRestoring
+        ? 'Restoring tenant context'
+        : isEnterprise
         ? `Enterprise CHEFS - Tenant: ${tenantName}`
         : 'Personal CHEFS'
     "
   >
     <div class="banner-content px-md-16 px-4">
-      <template v-if="isEnterprise">
+      <template v-if="showRestoring">
+        <v-progress-circular indeterminate size="16" width="2" class="mr-2" />
+        <span class="banner-prefix">Restoring your tenant context&hellip;</span>
+      </template>
+      <template v-else-if="isEnterprise">
         <span class="banner-prefix"
           >Enterprise CHEFS &ndash; Tenant:&nbsp;</span
         >
@@ -67,6 +81,14 @@ const tenantName = computed(
 
     .banner-content {
       color: #ffffff;
+    }
+  }
+
+  &.restoring-banner {
+    background-color: #e0e0e0;
+
+    .banner-content {
+      color: #333333;
     }
   }
 

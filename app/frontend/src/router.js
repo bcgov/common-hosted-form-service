@@ -1,4 +1,5 @@
 import NProgress from 'nprogress';
+import { watch } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import { useAuthStore } from '~/store/auth';
@@ -487,6 +488,32 @@ export default function getRouter(basePath = '/') {
     }
   }
 
+  // Wait for an in-flight tenant restore to settle before resolving navigation
+  // to a tenant-scoped route. Only applies when:
+  //   - the tenant feature is enabled
+  //   - the route is NOT a public/submitter route (interceptors.js doesn't send
+  //     x-tenant-id for those, so they don't need to wait)
+  // Without this, components like ManageLayout/SubmissionsTable/FormDesigner
+  // that fetch on mount would race the restore and request data with the wrong
+  // (or missing) tenant context.
+  async function waitForTenantContext(to, tenantStore) {
+    if (!tenantStore.isTenantFeatureEnabled) return;
+    if (to.meta?.formSubmitMode) return;
+    if (!tenantStore.isTenantRestoring) return;
+
+    await new Promise((resolve) => {
+      const stop = watch(
+        () => tenantStore.isTenantRestoring,
+        (restoring) => {
+          if (!restoring) {
+            stop();
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
   function handleAuthRedirect(to, authStore) {
     const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
     if (!requiresAuth || !authStore.ready || authStore.authenticated) return;
@@ -507,7 +534,7 @@ export default function getRouter(basePath = '/') {
     authStore.login(idpHint);
   }
 
-  router.beforeEach((to, _from, next) => {
+  router.beforeEach(async (to, _from, next) => {
     NProgress.start();
 
     const authStore = useAuthStore();
@@ -516,6 +543,10 @@ export default function getRouter(basePath = '/') {
     handleAuthRedirect(to, authStore);
 
     const tenantStore = useTenantStore();
+<<<<<<< feature/chefs-enterprise-mvp
+=======
+    await waitForTenantContext(to, tenantStore);
+>>>>>>> feature/chefs-enterprise
 
     // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
     if (

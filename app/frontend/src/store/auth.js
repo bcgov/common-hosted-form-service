@@ -121,9 +121,8 @@ export const useAuthStore = defineStore('auth', {
           });
       } else {
         this.currentUser = defaultUser;
-        // Reset tenant store on logout
         const tenantStore = useTenantStore();
-        tenantStore.resetTenant();
+        tenantStore.clearTenantState();
       }
     },
     async login(idpHint) {

@@ -130,8 +130,12 @@ describe('App.vue', () => {
 
   it('appTitle appends | Enterprise when a tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
+    const tenant = { id: 't1', name: 'Tenant 1' };
+    // Set both localStorage (read by initializeStore on mount) and the in-memory
+    // store value (read by the appTitle computed before/after mount).
+    localStorage.setItem('selectedTenant', JSON.stringify(tenant));
     const tenantStore = useTenantStore();
-    tenantStore.selectedTenant = { id: 't1', name: 'Tenant 1' };
+    tenantStore.selectedTenant = tenant;
     const wrapper = mountApp({ meta: { title: TITLE } });
     expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Enterprise`);
   });
