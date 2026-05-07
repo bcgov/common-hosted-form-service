@@ -544,7 +544,7 @@ export default function getRouter(basePath = '/') {
 
     const tenantStore = useTenantStore();
     await waitForTenantContext(to, tenantStore);
-    
+
     // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
     if (
       to.name === 'FormCreate' &&
