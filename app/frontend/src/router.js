@@ -543,11 +543,8 @@ export default function getRouter(basePath = '/') {
     handleAuthRedirect(to, authStore);
 
     const tenantStore = useTenantStore();
-<<<<<<< feature/chefs-enterprise-mvp
-=======
     await waitForTenantContext(to, tenantStore);
->>>>>>> feature/chefs-enterprise
-
+    
     // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
     if (
       to.name === 'FormCreate' &&
