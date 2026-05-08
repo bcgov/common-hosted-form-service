@@ -9,7 +9,7 @@ import { useAuthStore } from '~/store/auth';
 import { useTenantStore } from '~/store/tenant';
 import TenantDropdown from '~/components/base/TenantDropdown.vue';
 
-defineProps({
+const props = defineProps({
   formSubmitMode: {
     type: Boolean,
     default: false,
@@ -25,6 +25,25 @@ const { isRTL } = storeToRefs(useFormStore());
 const { authenticated, ready } = storeToRefs(useAuthStore());
 const tenantStore = useTenantStore();
 const { selectedTenant } = storeToRefs(tenantStore);
+
+// Strip the trailing "| Enterprise" / "| Personal" env suffix from the prop
+// so we can render it separately with accent colour.
+const appBase = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled) return props.appTitle;
+  const pipeIdx = props.appTitle.lastIndexOf('|');
+  if (pipeIdx === -1) return props.appTitle;
+  const after = props.appTitle.slice(pipeIdx + 1).trim();
+  if (after === 'Enterprise' || after === 'Personal') {
+    return props.appTitle.slice(0, pipeIdx).trimEnd();
+  }
+  return props.appTitle;
+});
+
+// "ENTERPRISE" or "PERSONAL" — shown only when authenticated and feature is on.
+const appMode = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled || !authenticated.value) return null;
+  return selectedTenant.value ? 'ENTERPRISE' : 'PERSONAL';
+});
 
 // Show tenant dropdown on all authenticated pages EXCEPT:
 // - Admin pages
@@ -99,9 +118,15 @@ const showTenantDropdown = computed(() => {
       <h1
         v-if="!formSubmitMode"
         data-test="btn-header-title"
-        class="font-weight-bold text-h6 pl-4 header-title"
+        :class="[
+          'font-weight-bold text-h6 pl-4 header-title',
+          showTenantDropdown ? 'd-none d-lg-flex' : 'd-none d-md-flex',
+        ]"
       >
-        {{ appTitle }}
+        {{ appBase
+        }}<span v-if="appMode" class="mode-divider" aria-hidden="true"
+          >&nbsp;|&nbsp;</span
+        ><span v-if="appMode" class="mode-label">{{ appMode }}</span>
       </h1>
       <v-spacer />
       <div class="header-actions">
@@ -124,6 +149,19 @@ const showTenantDropdown = computed(() => {
   .elevation-20 {
     box-shadow: 0 0 0 0 !important;
   }
+}
+
+// Mode indicator spans inside the h1 — same font size as the title so the
+// text truncates with ellipsis rather than blowing out the toolbar width.
+.mode-divider {
+  color: #fcba19;
+  opacity: 0.8;
+}
+
+.mode-label {
+  color: #fcba19;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .tenant-header-label {
@@ -152,17 +190,16 @@ const showTenantDropdown = computed(() => {
   .text-h6 {
     font-family: inherit !important;
     color: #ffffff;
+    overflow: hidden;
     margin-bottom: 0;
-    // Allow the title to shrink/wrap inside the flex toolbar so it doesn't
-    // push the right-side cluster (dropdown / logout / EN) off-screen.
+    // Truncate long app titles instead of pushing the right-side controls off-screen.
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    // Allow the flex item to shrink below its natural content width.
     min-width: 0;
-    line-height: 1.2;
+    flex: 0 1 auto;
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
-      font-size: 0.95rem !important;
-      // Mobile: let "Common Hosted Forms | Enterprise" wrap onto two lines
-      // (Figma's mobile frame stacks it).
-      white-space: normal;
-      padding-left: 0.75rem !important;
+      font-size: 1rem !important;
     }
   }
 }
@@ -184,27 +221,38 @@ const showTenantDropdown = computed(() => {
   gap: 0.5rem;
   padding: 0.5rem 0;
   min-width: 0;
-  // Sized in lockstep with TenantDropdown's responsive field widths
-  // (200/180/160/140 across lg/md/sm/xs) plus label + info-icon room on lg.
-  // Wrapper budget = field + (label ~52px on lg) + (info ~24px on lg) + gaps.
-  max-width: 300px;
+  flex-shrink: 0;
 
-  // Tablet (incl. landscape) & below: drop the "Tenant:" label — the
-  // dropdown's home icon and selected text already convey context; saves
-  // horizontal room. Same threshold as the Logout text → icon collapse.
+  // Hide "Tenant:" label at tablet/mobile to save space.
   @media (max-width: 1279px) {
-    max-width: 200px; // 180px field + small slack
     .tenant-header-label {
       display: none;
     }
   }
 
-  @media (max-width: 959px) {
-    max-width: 180px; // 160px field + small slack
+  // Hide info icon at tablet/mobile — only shown on full desktop (lg+).
+  @media (max-width: 1279px) {
+    :deep(.info-icon) {
+      display: none !important;
+    }
   }
 
-  @media (max-width: 599px) {
-    max-width: 160px; // 140px field + small slack
+  // Override the dropdown select width at each breakpoint so it fits
+  // alongside logout + language in the toolbar without overflowing.
+  :deep(.tenant-select) {
+    width: 200px; // lg+ desktop default (narrower than standalone 280px)
+
+    @media (max-width: 1279px) {
+      width: 180px; // tablet landscape
+    }
+
+    @media (max-width: 959px) {
+      width: 160px; // tablet portrait
+    }
+
+    @media (max-width: 599px) {
+      width: 140px; // mobile
+    }
   }
 
   :deep(.tenant-dropdown-container) {
@@ -214,41 +262,6 @@ const showTenantDropdown = computed(() => {
     gap: 0.5rem;
     width: auto;
     min-width: 0;
-
-    .tenant-label-wrapper {
-      display: flex !important;
-      align-items: center;
-      gap: 0.5rem;
-      flex-shrink: 0;
-
-      .tenant-label {
-        color: #ffffff !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: inline-block !important;
-        line-height: 1.4;
-        text-decoration: none;
-
-        .label-suffix {
-          display: none !important; // Hide suffix in header to save space
-        }
-      }
-
-      .info-icon {
-        color: #fcba19 !important;
-      }
-    }
-
-    // Info icon: shown on desktop only (≥1280px = Vuetify lg+). Hidden on
-    // tablet (incl. landscape iPad ~1024px) and mobile, matching the same
-    // threshold the Logout button uses to collapse to icon-only.
-    @media (max-width: 1279px) {
-      :deep(.info-icon) {
-        display: none !important;
-      }
-    }
 
     .tenant-select {
       :deep(.v-field__input) {

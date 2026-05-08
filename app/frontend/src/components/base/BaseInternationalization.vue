@@ -52,32 +52,41 @@ function formatLocaleCode(code) {
 </script>
 
 <template>
-  <div class="text-center language-picker">
-    <v-select
-      v-model="$i18n.locale"
-      class="ml-3 language-select"
-      :items="$i18n.availableLocales"
-      prepend-inner-icon="mdi:mdi-web"
-      variant="outlined"
-      density="compact"
-      hide-details
-      :title="SELECTED_LANGUAGE_TITLE"
-      :menu-props="{ minWidth: 220 }"
-      @update:model-value="languageSelected"
-    >
-      <!-- Collapsed: short locale code (EN, ES, FR, ZH-TW, ...) -->
-      <template #selection="{ item }">
-        <span class="locale-code">{{ formatLocaleCode(item.raw) }}</span>
-      </template>
-      <!-- Open: full localized language name -->
-      <template #item="{ props, item }">
-        <v-list-item
-          v-bind="props"
-          :title="items.find((language) => language.keyword === item.raw).title"
-        ></v-list-item>
-      </template>
-    </v-select>
-  </div>
+  <v-tooltip
+    location="bottom"
+    :text="SELECTED_LANGUAGE_TITLE"
+    :open-delay="400"
+  >
+    <template #activator="{ props: tooltipProps }">
+      <div v-bind="tooltipProps" class="text-center language-picker">
+        <v-select
+          v-model="$i18n.locale"
+          class="ml-3 language-select"
+          :items="$i18n.availableLocales"
+          prepend-inner-icon="mdi:mdi-web"
+          variant="outlined"
+          density="compact"
+          hide-details
+          :menu-props="{ minWidth: 220 }"
+          @update:model-value="languageSelected"
+        >
+          <!-- Collapsed: short locale code (EN, ES, FR, ZH-TW, ...) -->
+          <template #selection="{ item }">
+            <span class="locale-code">{{ formatLocaleCode(item.raw) }}</span>
+          </template>
+          <!-- Open: full localized language name -->
+          <template #item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="
+                items.find((language) => language.keyword === item.raw).title
+              "
+            ></v-list-item>
+          </template>
+        </v-select>
+      </div>
+    </template>
+  </v-tooltip>
 </template>
 
 <style scoped lang="scss">

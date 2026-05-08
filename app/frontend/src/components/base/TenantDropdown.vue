@@ -4,7 +4,6 @@
     v-if="tenantStore.hasTenants || tenantStore.loading"
     class="tenant-dropdown-container"
   >
-    <!-- Dropdown input -->
     <v-select
       id="tenant-select"
       ref="selectRef"
