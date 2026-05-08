@@ -124,9 +124,16 @@ const showTenantDropdown = computed(() => {
         ]"
       >
         {{ appBase
-        }}<span v-if="appMode" class="mode-divider" aria-hidden="true"
-          >&nbsp;|&nbsp;</span
-        ><span v-if="appMode" class="mode-label">{{ appMode }}</span>
+        }}<span v-if="appMode" class="mode-divider mx-2" aria-hidden="true"
+          >|</span
+        ><span
+          v-if="appMode"
+          class="mode-text"
+          :class="
+            appMode === 'ENTERPRISE' ? 'enterprise-text' : 'personal-text'
+          "
+          >{{ appMode }}</span
+        >
       </h1>
       <v-spacer />
       <div class="header-actions">
@@ -151,17 +158,32 @@ const showTenantDropdown = computed(() => {
   }
 }
 
-// Mode indicator spans inside the h1 — same font size as the title so the
-// text truncates with ellipsis rather than blowing out the toolbar width.
 .mode-divider {
   color: #fcba19;
+  font-weight: 400;
+  font-size: 1.4rem;
   opacity: 0.8;
+  align-self: center;
 }
 
-.mode-label {
-  color: #fcba19;
+.mode-text {
+  font-size: 1.8rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+  line-height: 1;
+  align-self: center;
+
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    font-size: 1.3rem !important;
+  }
+}
+
+.enterprise-text {
+  color: #fcba19;
+}
+
+.personal-text {
+  color: #ffffff;
 }
 
 .tenant-header-label {
