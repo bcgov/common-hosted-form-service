@@ -111,8 +111,8 @@ describe('getUserForms', () => {
     expect(queryObj.modify).toHaveBeenNthCalledWith(4, 'filterTenantId', userInfo.tenantId);
 
     expect(tenantRolesSpy).toHaveBeenCalledTimes(items.length);
-    expect(tenantRolesSpy).toHaveBeenNthCalledWith(1, userInfo, headers, formGroupIds);
-    expect(tenantRolesSpy).toHaveBeenNthCalledWith(2, userInfo, headers, formGroupIds);
+    expect(tenantRolesSpy).toHaveBeenNthCalledWith(1, userInfo, headers, formGroupIds, userInfo.tenantId);
+    expect(tenantRolesSpy).toHaveBeenNthCalledWith(2, userInfo, headers, formGroupIds, userInfo.tenantId);
     expect(items[0]).toMatchObject({ roles: ['form_admin'], permissions: ['form_read'] });
     expect(items[1]).toMatchObject({ roles: ['form_admin'], permissions: ['form_read'] });
 

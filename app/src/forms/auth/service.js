@@ -91,9 +91,18 @@ const service = {
     };
   },
 
+  populateItemWithTenantRoles: async (userInfo, item, headers, tenantId) => {
+    const formGroups = await FormGroup.query().modify('filterFormId', item.formId);
+    const formGroupIds = formGroups.map((fg) => fg.groupId);
+    const { roles, permissions } = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, formGroupIds, tenantId);
+    item.roles = roles;
+    item.permissions = permissions;
+  },
+
   getUserForms: async (userInfo, params = {}, headers = null) => {
     params = queryUtils.defaultActiveOnly(params);
     let items = [];
+
     if (userInfo && userInfo.public) {
       // if the user is 'public', then we can only fetch public accessible forms...
       items = await PublicFormAccess.query().modify('filterFormId', params.formId).modify('filterActive', params.active);
@@ -111,19 +120,25 @@ const service = {
         .modify('filterActive', params.active)
         .modify('filterTenantId', userInfo.tenantId);
 
-      // For each form, resolve roles scoped to that form's assigned groups
       for (const item of items) {
-        const formGroups = await FormGroup.query().modify('filterFormId', item.formId);
-        const formGroupIds = formGroups.map((fg) => fg.groupId);
-        const { roles, permissions } = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, formGroupIds);
-        item.roles = roles;
-        item.permissions = permissions;
+        await service.populateItemWithTenantRoles(userInfo, item, headers, userInfo.tenantId);
       }
 
       return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
       items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
+      for (const item of items) {
+        if (item && item.tenantId) {
+          // Tenant users require headers for API authentication
+          if (!headers) {
+            throw new Error('Headers required for tenant user form access');
+          }
+
+          await service.populateItemWithTenantRoles(userInfo, item, headers, item.tenantId);
+        }
+      }
+
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },

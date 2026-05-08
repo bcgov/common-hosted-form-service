@@ -46,7 +46,7 @@ class TenantService {
             headers: req.headers,
           };
 
-          const groups = await this.getUserTenantGroupsAndRoles(reqContext);
+          const groups = await this.getUserTenantGroupsAndRoles(reqContext, tenantId);
           const roles = Array.isArray(groups) ? groups.flatMap((group) => group.roles || []) : [];
           return { ...tenant, roles: [...new Set(roles)] };
         })
@@ -65,19 +65,18 @@ class TenantService {
     }
   }
 
-  async getUserTenantGroupsAndRoles(req) {
+  async getUserTenantGroupsAndRoles(req, tenantId) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.idpUserId) {
       throw new TypeError(`${SERVICE}: missing currentUser.idpUserId`);
     }
-    if (!req.currentUser.tenantId) {
-      throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
+    if (!tenantId) {
+      throw new TypeError(`${SERVICE}: missing tenantId`);
     }
 
     const userId = req.currentUser.idpUserId.toUpperCase();
-    const tenantId = req.currentUser.tenantId;
     const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
     const headers = this._getAuthHeaders(req);
@@ -196,7 +195,7 @@ class TenantService {
     if (!formTenant) throw new Error(`${SERVICE}: form not in tenant`);
 
     // 3. Check user has a group with form_admin role
-    const userGroups = await this.getUserTenantGroupsAndRoles(req);
+    const userGroups = await this.getUserTenantGroupsAndRoles(req, req.currentUser.tenantId);
     const hasAccess = userGroups.some((g) => g.roles.includes('form_admin'));
     if (!hasAccess) throw new Error(`${SERVICE}: insufficient permissions`);
 
@@ -245,20 +244,21 @@ class TenantService {
  * @param {object} userInfo - User information object
  * @param {object} headers - Request headers for authentication
  * @param {string[]} formGroupIds - Group IDs assigned to the form (from form_group table)
+ * @param {string} tenantId - Tenant ID for group lookup
  * @returns {Promise<{roles: string[], permissions: string[]}>}
  */
-async function getUserRolesAndPermissionsForForm(userInfo, headers = null, formGroupIds = []) {
+async function getUserRolesAndPermissionsForForm(userInfo, headers = null, formGroupIds = [], tenantId = null) {
   if (!userInfo) {
     throw new TypeError(`${SERVICE}: missing userInfo`);
   }
   if (!userInfo.idpUserId) {
     throw new TypeError(`${SERVICE}: missing userInfo.idpUserId`);
   }
-  if (!userInfo.tenantId) {
-    throw new TypeError(`${SERVICE}: missing userInfo.tenantId`);
-  }
   if (!headers) {
     throw new TypeError(`${SERVICE}: missing headers for tenant API authentication`);
+  }
+  if (!tenantId) {
+    throw new TypeError(`${SERVICE}: missing tenantId`);
   }
 
   // Fetch all roles with permissions directly from the DB
@@ -266,7 +266,7 @@ async function getUserRolesAndPermissionsForForm(userInfo, headers = null, formG
 
   // Create request-like object with headers for authentication
   const reqContext = { currentUser: userInfo, headers };
-  const userGroups = await module.exports.getUserTenantGroupsAndRoles(reqContext);
+  const userGroups = await module.exports.getUserTenantGroupsAndRoles(reqContext, tenantId);
 
   // Filter to only groups assigned to this form
   const formGroupIdSet = new Set(formGroupIds);
@@ -300,7 +300,7 @@ async function canCreateForm(req) {
   if (idpCode !== 'idir') return false;
   if (!tenantId) return true;
 
-  const groups = await module.exports.getUserTenantGroupsAndRoles(req);
+  const groups = await module.exports.getUserTenantGroupsAndRoles(req, tenantId);
   const hasFormAdmin = Array.isArray(groups) && groups.some((g) => Array.isArray(g.roles) && g.roles.includes('form_admin'));
   return hasFormAdmin;
 }

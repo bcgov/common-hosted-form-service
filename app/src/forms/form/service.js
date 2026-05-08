@@ -141,7 +141,7 @@ async function ensureTenantFormSetup(currentUser, headers, trx, formId) {
   await FormTenant.query(trx).insert(formTenant);
 
   const reqContext = { currentUser, headers };
-  const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext);
+  const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext, currentUser.tenantId);
   const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes('form_admin'));
 
   if (adminGroups.length === 0) {
