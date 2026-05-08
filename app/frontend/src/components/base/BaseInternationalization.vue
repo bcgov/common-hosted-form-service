@@ -41,42 +41,79 @@ function languageSelected(lang) {
 const SELECTED_LANGUAGE_TITLE = computed(
   () => items.value.find((language) => language.keyword === locale.value).title
 );
+
+// Compact display code shown in the collapsed dropdown — uppercased locale
+// keyword. Special-cased zhTW so it renders as ZH-TW instead of ZHTW.
+function formatLocaleCode(code) {
+  if (!code) return '';
+  if (code === 'zhTW') return 'ZH-TW';
+  return String(code).toUpperCase();
+}
 </script>
 
 <template>
-  <div class="text-center">
-    <v-select
-      v-model="$i18n.locale"
-      class="ml-3"
-      :items="$i18n.availableLocales"
-      prepend-inner-icon="mdi:mdi-web"
-      variant="outlined"
-      density="compact"
-      hide-details
-      :title="SELECTED_LANGUAGE_TITLE"
-      @update:model-value="languageSelected"
-    >
-      <template #selection="{ props, item }">
-        <v-list-item
-          v-bind="props"
-          :title="items.find((language) => language.keyword === item.raw).title"
-        ></v-list-item>
-      </template>
-      <template #item="{ props, item }">
-        <v-list-item
-          v-bind="props"
-          :title="items.find((language) => language.keyword === item.raw).title"
-        ></v-list-item>
-      </template>
-    </v-select>
-  </div>
+  <v-tooltip
+    location="bottom"
+    :text="SELECTED_LANGUAGE_TITLE"
+    :open-delay="400"
+  >
+    <template #activator="{ props: tooltipProps }">
+      <div v-bind="tooltipProps" class="text-center language-picker">
+        <v-select
+          v-model="$i18n.locale"
+          class="ml-3 language-select"
+          :items="$i18n.availableLocales"
+          prepend-inner-icon="mdi:mdi-web"
+          variant="outlined"
+          density="compact"
+          hide-details
+          :menu-props="{ minWidth: 220 }"
+          @update:model-value="languageSelected"
+        >
+          <!-- Collapsed: short locale code (EN, ES, FR, ZH-TW, ...) -->
+          <template #selection="{ item }">
+            <span class="locale-code">{{ formatLocaleCode(item.raw) }}</span>
+          </template>
+          <!-- Open: full localized language name -->
+          <template #item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="
+                items.find((language) => language.keyword === item.raw).title
+              "
+            ></v-list-item>
+          </template>
+        </v-select>
+      </div>
+    </template>
+  </v-tooltip>
 </template>
 
-<style scoped>
-:deep(.v-icon) {
-  opacity: 1;
+<style scoped lang="scss">
+.language-picker {
+  display: inline-flex;
 }
-:deep(.v-field__input) {
-  opacity: 1 !important;
+
+.language-select {
+  // Compact width — content is now a 2–5 char code, not a full word.
+  width: 96px;
+  min-width: 96px;
+
+  :deep(.v-field__input) {
+    opacity: 1 !important;
+    padding-inline: 0.5rem;
+    min-height: 40px;
+  }
+
+  :deep(.v-icon) {
+    opacity: 1;
+  }
+}
+
+.locale-code {
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 </style>
