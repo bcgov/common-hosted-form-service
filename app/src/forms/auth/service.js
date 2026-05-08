@@ -129,7 +129,7 @@ const service = {
       // if user has an id, then we fetch whatever forms match the query params
       items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
       for (const item of items) {
-        if (item && item.tenantId) {
+        if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
           // Tenant users require headers for API authentication
           if (!headers) {
             throw new Error('Headers required for tenant user form access');
