@@ -61,7 +61,7 @@ function formatLocaleCode(code) {
       <div v-bind="tooltipProps" class="text-center language-picker">
         <v-select
           v-model="$i18n.locale"
-          class="ml-3 language-select"
+          class="language-select"
           :items="$i18n.availableLocales"
           prepend-inner-icon="mdi:mdi-web"
           variant="outlined"

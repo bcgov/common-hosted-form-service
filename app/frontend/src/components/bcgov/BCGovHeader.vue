@@ -234,6 +234,18 @@ const showTenantDropdown = computed(() => {
   align-items: center;
   gap: 1rem;
   min-width: 0;
+
+  :deep(.v-btn) {
+    // Icon-only on tablet/mobile — keep button compact
+    min-width: 40px !important;
+    padding-inline: 8px !important;
+
+    // Icon + text on lg+ — restore Vuetify's default side padding
+    @media #{map-get($display-breakpoints, 'lg-and-up')} {
+      min-width: 64px !important;
+      padding-inline: 16px !important;
+    }
+  }
 }
 
 .tenant-dropdown-wrapper {
