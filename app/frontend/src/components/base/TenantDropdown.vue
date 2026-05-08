@@ -4,7 +4,6 @@
     v-if="tenantStore.hasTenants || tenantStore.loading"
     class="tenant-dropdown-container"
   >
-    <!-- Dropdown input -->
     <v-select
       id="tenant-select"
       ref="selectRef"
@@ -194,17 +193,43 @@ $mobile-breakpoint: 600px;
   }
 }
 
+// Responsive widths: stay compact on small viewports so the header can fit
+// logo + dropdown + logout + EN without clipping. The ellipsis cap on the
+// inner selected-tenant span steps in lockstep with the field width so the
+// truncation looks intentional at every breakpoint.
+//
+// Vuetify-aligned cuts:
+//   xs  (<600)        : 140px field, 100px text  — phones
+//   sm  (600–959)     : 160px field, 120px text  — small tablets
+//   md  (960–1279)    : 180px field, 140px text  — large tablets / small laptops
+//   lg+ (≥1280)       : 200px field, 160px text  — desktop (a touch wider than
+//                         the 180px Figma minimum so longer names breathe)
 .tenant-select {
-  width: 280px;
+  width: 200px;
+  max-width: 200px;
   flex-shrink: 0;
 
-  @media (max-width: $mobile-breakpoint) {
-    width: 100%;
+  @media (max-width: 1279px) {
+    width: 180px;
+    max-width: 180px;
+  }
+
+  @media (max-width: 959px) {
+    width: 160px;
+    max-width: 160px;
+  }
+
+  @media (max-width: 599px) {
+    width: 140px;
+    max-width: 140px;
   }
 
   :deep(.v-field__input) {
     opacity: 1 !important;
     font-size: 0.95rem;
+    // Allow the input to actually shrink so the inner text can ellipsize.
+    min-width: 0;
+    overflow: hidden;
   }
 
   :deep(.v-icon) {
@@ -218,12 +243,6 @@ $mobile-breakpoint: 600px;
   }
 }
 
-.info-icon {
-  color: #fcba19;
-  flex-shrink: 0;
-  cursor: default;
-}
-
 .selected-tenant {
   font-size: 0.95rem;
   display: block;
@@ -233,5 +252,27 @@ $mobile-breakpoint: 600px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  // Cap text width slightly under the field to leave room for the chevron
+  // and prepend home icon. Steps with the field width above.
+  max-width: 160px;
+
+  @media (max-width: 1279px) {
+    max-width: 140px;
+  }
+
+  @media (max-width: 959px) {
+    max-width: 120px;
+  }
+
+  @media (max-width: 599px) {
+    max-width: 100px;
+  }
+}
+
+.info-icon {
+  color: #fcba19;
+  flex-shrink: 0;
+  cursor: default;
 }
 </style>

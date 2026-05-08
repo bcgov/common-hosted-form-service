@@ -26,7 +26,8 @@ const { authenticated, ready } = storeToRefs(useAuthStore());
 const tenantStore = useTenantStore();
 const { selectedTenant } = storeToRefs(tenantStore);
 
-// Base title without the mode suffix (e.g. "Common Hosted Forms")
+// Strip the trailing "| Enterprise" / "| Personal" env suffix from the prop
+// so we can render it separately with accent colour.
 const appBase = computed(() => {
   if (!tenantStore.isTenantFeatureEnabled) return props.appTitle;
   const pipeIdx = props.appTitle.lastIndexOf('|');
@@ -38,7 +39,7 @@ const appBase = computed(() => {
   return props.appTitle;
 });
 
-// Mode word shown prominently in the header (ENTERPRISE or PERSONAL), only when logged in
+// "ENTERPRISE" or "PERSONAL" — shown only when authenticated and feature is on.
 const appMode = computed(() => {
   if (!tenantStore.isTenantFeatureEnabled || !authenticated.value) return null;
   return selectedTenant.value ? 'ENTERPRISE' : 'PERSONAL';
@@ -117,7 +118,10 @@ const showTenantDropdown = computed(() => {
       <h1
         v-if="!formSubmitMode"
         data-test="btn-header-title"
-        class="font-weight-bold text-h6 d-none d-md-flex pl-4 header-title"
+        :class="[
+          'font-weight-bold text-h6 pl-4 header-title',
+          showTenantDropdown ? 'd-none d-lg-flex' : 'd-none d-md-flex',
+        ]"
       >
         {{ appBase
         }}<span v-if="appMode" class="mode-divider mx-2" aria-hidden="true"
@@ -132,13 +136,15 @@ const showTenantDropdown = computed(() => {
         >
       </h1>
       <v-spacer />
-      <!-- Tenant Dropdown (visible only on Forms list and Create Form pages) -->
-      <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper mr-4">
-        <span v-if="selectedTenant" class="tenant-header-label">Tenant:</span>
-        <TenantDropdown />
+      <div class="header-actions">
+        <!-- Tenant Dropdown (visible only on Forms list and Create Form pages) -->
+        <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper">
+          <span v-if="selectedTenant" class="tenant-header-label">Tenant:</span>
+          <TenantDropdown />
+        </div>
+        <BaseAuthButton data-test="base-auth-btn" />
+        <BaseInternationalization data-test="base-internationalization" />
       </div>
-      <BaseAuthButton data-test="base-auth-btn" />
-      <BaseInternationalization data-test="base-internationalization" />
     </v-toolbar>
   </header>
 </template>
@@ -208,53 +214,66 @@ const showTenantDropdown = computed(() => {
     color: #ffffff;
     overflow: hidden;
     margin-bottom: 0;
+    // Truncate long app titles instead of pushing the right-side controls off-screen.
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    // Allow the flex item to shrink below its natural content width.
+    min-width: 0;
+    flex: 0 1 auto;
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       font-size: 1rem !important;
     }
   }
 }
 
+// Right-side cluster: dropdown + logout + language picker.
+// Guaranteed gap prevents the overlap reported in CCP-3927.
+.header-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
 .tenant-dropdown-wrapper {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   padding: 0.5rem 0;
   min-width: 0;
-  width: auto;
+  flex-shrink: 0;
 
-  // Mobile: stacked layout
-  @media (max-width: 600px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    width: 100%;
-
-    :deep(.tenant-label-wrapper) {
-      display: flex !important;
-    }
-
-    :deep(.tenant-input-wrapper) {
-      width: 100%;
+  // Hide "Tenant:" label at tablet/mobile to save space.
+  @media (max-width: 1279px) {
+    .tenant-header-label {
+      display: none;
     }
   }
 
-  // Tablet and above: horizontal layout (one line)
-  @media (min-width: 601px) {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
+  // Hide info icon at tablet/mobile — only shown on full desktop (lg+).
+  @media (max-width: 1279px) {
+    :deep(.info-icon) {
+      display: none !important;
+    }
+  }
 
-    :deep(.tenant-label-wrapper) {
-      flex-shrink: 0;
-      white-space: nowrap;
-      display: flex !important;
-      align-items: center;
+  // Override the dropdown select width at each breakpoint so it fits
+  // alongside logout + language in the toolbar without overflowing.
+  :deep(.tenant-select) {
+    width: 200px; // lg+ desktop default (narrower than standalone 280px)
+
+    @media (max-width: 1279px) {
+      width: 180px; // tablet landscape
     }
 
-    :deep(.tenant-input-wrapper) {
-      width: 280px !important;
-      flex-shrink: 0;
+    @media (max-width: 959px) {
+      width: 160px; // tablet portrait
+    }
+
+    @media (max-width: 599px) {
+      width: 140px; // mobile
     }
   }
 
@@ -264,43 +283,7 @@ const showTenantDropdown = computed(() => {
     align-items: center;
     gap: 0.5rem;
     width: auto;
-
-    .tenant-label-wrapper {
-      display: flex !important;
-      align-items: center;
-      gap: 0.5rem;
-
-      .tenant-label {
-        color: #ffffff !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: inline-block !important;
-        line-height: 1.4;
-        text-decoration: none;
-
-        .label-suffix {
-          display: none !important; // Hide suffix in header to save space
-        }
-      }
-
-      .info-icon {
-        color: #fcba19 !important;
-      }
-    }
-
-    .tenant-input-wrapper {
-      @media (max-width: 600px) {
-        width: 100% !important;
-        flex: 1 !important;
-      }
-
-      @media (min-width: 601px) {
-        width: 280px !important;
-        flex-shrink: 0 !important;
-      }
-    }
+    min-width: 0;
 
     .tenant-select {
       :deep(.v-field__input) {
