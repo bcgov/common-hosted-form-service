@@ -32,7 +32,6 @@ onMounted(async () => {
   const formStore = useFormStore();
 
   await formStore.fetchForm(properties.f);
-  await formStore.fetchEventStreamConfig(properties.f);
 
   if (formStore.form.versions) {
     await formStore.getFormPermissionsForUser(properties.f);

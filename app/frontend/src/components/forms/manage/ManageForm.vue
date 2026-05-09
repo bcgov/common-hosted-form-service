@@ -96,7 +96,6 @@ onMounted(async () => {
 async function cancelSettingsEdit() {
   formSettingsDisabled.value = true;
   await formStore.fetchForm(form.value.id);
-  await formStore.fetchEventStreamConfig(form.value.id);
 }
 
 function enableSettingsEdit() {
@@ -121,7 +120,6 @@ async function updateSettings() {
         ...NotificationTypes.SUCCESS,
       });
       await formStore.fetchForm(form.value.id);
-      await formStore.fetchEventStreamConfig(form.value.id);
     }
   } catch (error) {
     notificationStore.addNotification({
