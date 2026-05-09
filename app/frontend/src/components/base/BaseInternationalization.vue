@@ -61,7 +61,7 @@ function formatLocaleCode(code) {
       <div v-bind="tooltipProps" class="text-center language-picker">
         <v-select
           v-model="$i18n.locale"
-          class="ml-3 language-select"
+          class="language-select"
           :items="$i18n.availableLocales"
           prepend-inner-icon="mdi:mdi-web"
           variant="outlined"
@@ -91,13 +91,24 @@ function formatLocaleCode(code) {
 
 <style scoped lang="scss">
 .language-picker {
-  display: inline-flex;
+  display: flex;
+  align-items: center;
 }
 
 .language-select {
   // Compact width — content is now a 2–5 char code, not a full word.
   width: 96px;
   min-width: 96px;
+
+  // Compact on xs — globe + EN code + chevron, reduced but not zero padding.
+  @media (max-width: 599px) {
+    width: 88px;
+    min-width: 88px;
+
+    :deep(.v-field__input) {
+      padding-inline: 3px !important;
+    }
+  }
 
   :deep(.v-field__input) {
     opacity: 1 !important;

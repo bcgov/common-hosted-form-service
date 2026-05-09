@@ -102,7 +102,7 @@ const showTenantDropdown = computed(() => {
     <v-toolbar
       color="#003366"
       flat
-      class="px-md-12 d-print-none"
+      class="px-1 px-sm-4 px-md-12 d-print-none"
       :class="{ 'v-locale--is-ltr': isRTL }"
     >
       <!-- Navbar content -->
@@ -234,6 +234,26 @@ const showTenantDropdown = computed(() => {
   align-items: center;
   gap: 1rem;
   min-width: 0;
+
+  @media (max-width: 599px) {
+    gap: 0.25rem;
+  }
+
+  :deep(.v-btn) {
+    // Icon-only on tablet/mobile — keep button compact
+    min-width: 40px !important;
+    padding-inline: 8px !important;
+
+    .v-btn__content {
+      gap: 6px;
+    }
+
+    // Icon + text on lg+ — restore Vuetify's default side padding
+    @media #{map-get($display-breakpoints, 'lg-and-up')} {
+      min-width: 64px !important;
+      padding-inline: 16px !important;
+    }
+  }
 }
 
 .tenant-dropdown-wrapper {
@@ -273,7 +293,11 @@ const showTenantDropdown = computed(() => {
     }
 
     @media (max-width: 599px) {
-      width: 140px; // mobile
+      width: 60px; // icon + chevron on mobile
+
+      .v-field__field {
+        display: none !important;
+      }
     }
   }
 
