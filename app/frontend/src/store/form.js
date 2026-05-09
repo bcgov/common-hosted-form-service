@@ -344,12 +344,16 @@ export const useFormStore = defineStore('form', {
           );
           encKey = resp.data;
         }
-        return {
+        const config = {
           ...evntSrvCfg,
           encryptionKey: {
             ...encKey,
           },
         };
+        if (this.form) {
+          this.form.eventStreamConfig = config;
+        }
+        return config;
       } catch {
         return genInitialEventStreamConfig();
       }
@@ -373,8 +377,9 @@ export const useFormStore = defineStore('form', {
         if (!data.formMetadata) {
           data.formMetadata = genInitialFormMetadata();
         }
-        const evntSrvCfg = await this.fetchEventStreamConfig(formId);
-        data.eventStreamConfig = evntSrvCfg;
+        // eventStreamConfig is fetched separately only in designer/manage pages to avoid
+        // unnecessary 401s for non-owner users (e.g. form_submitter) on submission views.
+        data.eventStreamConfig = genInitialEventStreamConfig();
 
         // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
         data.showAssigneeInSubmissionsTable =

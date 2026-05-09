@@ -92,6 +92,7 @@ watch(locale, (value) => {
 onMounted(async () => {
   if (properties.formId) {
     await formStore.fetchForm(properties.formId);
+    await formStore.fetchEventStreamConfig(properties.formId);
     await getFormSchema();
   }
 
