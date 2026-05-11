@@ -119,11 +119,16 @@ runs:
 
     - name: Deploy CSTAR ConfigMaps
       shell: bash
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        NAMESPACE_PREFIX: ${{ inputs.namespace_prefix }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
+        ACRONYM: ${{ inputs.acronym }}
       run: |
-        if [[ "${{ inputs.job_name }}" == pr-* ]]; then
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/cstar.cm.yaml -p APP_NAME=${{ inputs.acronym }} --param-file=openshift/cstar.dev.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} --param-file=openshift/cstar.dev.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
         else
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/cstar.cm.yaml -p APP_NAME=${{ inputs.acronym }} --param-file=openshift/cstar.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} --param-file=openshift/cstar.${NAMESPACE_ENVIRONMENT}.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
         fi
 
     - name: Delete pre-job if it exists
