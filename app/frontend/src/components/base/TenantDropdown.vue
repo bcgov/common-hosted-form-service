@@ -230,6 +230,7 @@ $mobile-breakpoint: 600px;
     // Allow the input to actually shrink so the inner text can ellipsize.
     min-width: 0;
     overflow: hidden;
+    min-height: 40px;
   }
 
   :deep(.v-icon) {
