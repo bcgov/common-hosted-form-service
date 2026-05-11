@@ -300,6 +300,8 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
                 - configMapRef:
+                    name: "${APP_NAME}-cstar-config"
+                - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
                 - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-clamav"
