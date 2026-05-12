@@ -120,20 +120,30 @@ const showTenantDropdown = computed(() => {
         data-test="btn-header-title"
         :class="[
           'font-weight-bold text-h6 pl-4 header-title',
-          showTenantDropdown ? 'd-none d-lg-flex' : 'd-none d-md-flex',
+          'd-none d-lg-flex',
+          appMode ? 'header-title--with-mode' : '',
         ]"
+        :title="appMode ? `${appBase} | ${appMode}` : undefined"
       >
-        {{ appBase
-        }}<span v-if="appMode" class="mode-divider mx-2" aria-hidden="true"
-          >|</span
-        ><span
+        <!-- Enterprise/tenant mode: base text shrinks+ellipsizes first;
+             the mode badge is a separate flex child that hides below lg
+             (the enterprise banner below the header covers that context). -->
+        <span v-if="appMode" class="title-text">{{ appBase }}</span>
+        <template v-else>{{ appBase }}</template>
+        <span
           v-if="appMode"
-          class="mode-text"
-          :class="
-            appMode === 'ENTERPRISE' ? 'enterprise-text' : 'personal-text'
-          "
-          >{{ appMode }}</span
+          class="mode-badge d-none d-lg-flex"
+          aria-hidden="true"
         >
+          <span class="mode-divider mx-2">|</span>
+          <span
+            class="mode-text"
+            :class="
+              appMode === 'ENTERPRISE' ? 'enterprise-text' : 'personal-text'
+            "
+            >{{ appMode }}</span
+          >
+        </span>
       </h1>
       <v-spacer />
       <div class="header-actions">
@@ -158,12 +168,34 @@ const showTenantDropdown = computed(() => {
   }
 }
 
+// Enterprise/tenant mode only: turns the h1 into a flex row so .title-text
+// can shrink and ellipsize before the mode badge is ever affected.
+.header-title--with-mode {
+  display: flex !important;
+  align-items: center;
+}
+
+// Shrinks first; shows "…" when space is tight.
+.title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+// Wraps "| ENTERPRISE/PERSONAL" — hidden below lg via d-none d-lg-flex.
+// The enterprise banner below the header provides context at smaller sizes.
+.mode-badge {
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .mode-divider {
   color: #fcba19;
   font-weight: 400;
   font-size: 1.4rem;
   opacity: 0.8;
-  align-self: center;
 }
 
 .mode-text {
@@ -171,7 +203,6 @@ const showTenantDropdown = computed(() => {
   font-weight: 800;
   letter-spacing: 0.04em;
   line-height: 1;
-  align-self: center;
 
   @media #{map-get($display-breakpoints, 'sm-and-down')} {
     font-size: 1.3rem !important;
@@ -233,10 +264,10 @@ const showTenantDropdown = computed(() => {
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  min-width: 0;
+  flex-shrink: 0;
 
   @media (max-width: 599px) {
-    gap: 0.25rem;
+    gap: 0.5rem;
   }
 
   :deep(.v-btn) {
@@ -292,7 +323,8 @@ const showTenantDropdown = computed(() => {
     }
 
     @media (max-width: 599px) {
-      width: 60px; // icon + chevron on mobile
+      width: 60px !important;
+      max-width: 60px !important;
 
       .v-field__field {
         display: none !important;
@@ -302,13 +334,18 @@ const showTenantDropdown = computed(() => {
 
   :deep(.tenant-dropdown-container) {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: row !important;
+    align-items: center !important;
     gap: 0.5rem;
-    width: auto;
+    width: auto !important;
     min-width: 0;
 
     .tenant-select {
+      :deep(.v-field) {
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
       :deep(.v-field__input) {
         color: #ffffff !important;
         font-size: 0.9rem !important;
@@ -317,7 +354,8 @@ const showTenantDropdown = computed(() => {
         white-space: nowrap;
         display: flex !important;
         align-items: center !important;
-        padding: 0.5rem 1rem !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
       }
 
       :deep(.v-field__input input) {
