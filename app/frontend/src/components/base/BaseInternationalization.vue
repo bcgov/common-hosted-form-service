@@ -110,10 +110,18 @@ function formatLocaleCode(code) {
     }
   }
 
+  :deep(.v-field) {
+    height: 40px !important;
+    min-height: 40px !important;
+    align-items: center;
+  }
+
   :deep(.v-field__input) {
     opacity: 1 !important;
     padding-inline: 0.5rem;
     min-height: 40px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   :deep(.v-icon) {
