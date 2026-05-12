@@ -238,7 +238,6 @@ onMounted(async () => {
     await getFormSchema();
   }
   window.addEventListener('beforeunload', beforeWindowUnload);
-
   reRenderFormIo.value += 1;
 });
 
@@ -917,7 +916,7 @@ async function uploadFile(file, config = {}) {
         </v-alert>
       </div>
 
-      <div v-else-if="isFormScheduleExpired">
+      <div v-else-if="isFormScheduleExpired && !properties.readOnly">
         <v-alert
           :text="
             isLateSubmissionAllowed
@@ -925,7 +924,7 @@ async function uploadFile(file, config = {}) {
               : formScheduleExpireMessage
           "
           prominent
-          type="error"
+          type="info"
           :class="{ 'dir-rtl': isRTL }"
           :lang="locale"
         >
