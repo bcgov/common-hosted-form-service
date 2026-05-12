@@ -52,13 +52,7 @@ const techDocsUrl =
 const kudosPageUrl =
   'https://citz-do.atlassian.net/wiki/spaces/CCP/pages/338722826/CHEFS+Kudos+Page';
 
-// Get CSTAR URL from config
-const cstarUrl = computed(() => {
-  return (
-    appStore.config?.cstarBaseUrl ||
-    'https://cstar-dev.apps.silver.devops.gov.bc.ca'
-  );
-});
+const cstarUrl = computed(() => appStore.config?.cstarBaseUrl || '');
 
 // Form examples data
 const formExamples = [
@@ -248,6 +242,7 @@ const testimonials = [
                 }}</router-link>
                 {{ $t('trans.landingPage.hero.enterpriseDescription2') }}
                 <a
+                  v-if="cstarUrl"
                   :href="cstarUrl"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -290,11 +285,13 @@ const testimonials = [
               <p class="enterprise-description mb-4" :lang="locale">
                 {{ $t('trans.landingPage.hero.cstarDescription1') }}
                 <a
+                  v-if="cstarUrl"
                   :href="cstarUrl"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-link"
                   >CSTAR</a
+                ><template v-else>CSTAR</template
                 >{{ $t('trans.landingPage.hero.cstarDescription2') }}
                 <strong>{{ $t('trans.landingPage.hero.tenants') }}</strong
                 >{{ $t('trans.landingPage.hero.cstarDescription3') }}
@@ -317,6 +314,7 @@ const testimonials = [
               </p>
 
               <v-btn
+                v-if="cstarUrl"
                 variant="outlined"
                 color="primary"
                 size="large"
@@ -350,6 +348,7 @@ const testimonials = [
                   {{ $t('trans.landingPage.hero.alertDescription') }}
                 </div>
                 <v-btn
+                  v-if="cstarUrl"
                   size="small"
                   color="primary"
                   class="alert-btn"
