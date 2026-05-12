@@ -75,13 +75,17 @@ class TenantService {
     if (!tenantId) {
       throw new TypeError(`${SERVICE}: missing tenantId`);
     }
+    if (typeof tenantId !== 'string' || !uuid.validate(tenantId)) {
+      throw new TypeError(`${SERVICE}: invalid tenantId`);
+    }
 
-    const userId = req.currentUser.idpUserId.toUpperCase();
+    const userId = req.currentUser.idpUserId;
     const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
     const headers = this._getAuthHeaders(req);
     const { data } = await axios.get(url, { headers });
-    return (data?.data?.groups || []).map((group) => ({
+    const groups = Array.isArray(data?.data?.groups) ? data.data.groups : [];
+    return groups.map((group) => ({
       id: group.id,
       name: group.name,
       roles: (group.sharedServiceRoles || []).filter((role) => role.isDeleted !== true).map((role) => role.name),
@@ -101,7 +105,16 @@ class TenantService {
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId)}`;
     const headers = this._getAuthHeaders(req);
     const { data } = await axios.get(url, { headers });
-    return data?.data?.groups || [];
+    return Array.isArray(data?.data?.groups) ? data.data.groups : [];
+  }
+
+  async _getTenantGroupsWithRolesForCurrentTenant(req) {
+    const tenantGroups = await this.getGroupsForCurrentTenant(req);
+    return tenantGroups.map((group) => ({
+      id: group.id,
+      name: group.name,
+      roles: (group.sharedServiceRoles || []).filter((role) => role.isDeleted !== true).map((role) => role.name),
+    }));
   }
 
   /**
@@ -199,19 +212,31 @@ class TenantService {
     const hasAccess = userGroups.some((g) => g.roles.includes('form_admin'));
     if (!hasAccess) throw new Error(`${SERVICE}: insufficient permissions`);
 
-    // 4. Remove existing group assignments for this form
-    await FormGroup.query().delete().where({ formId });
+    // 4. Ensure assigned groups are valid and include at least one form_admin group in this tenant
+    const uniqueGroupIds = [...new Set(groupIds)];
+    const tenantGroupsWithRoles = await this._getTenantGroupsWithRolesForCurrentTenant(req);
+    const tenantGroupsById = new Map(tenantGroupsWithRoles.map((group) => [group.id, group]));
+    const unknownGroupIds = uniqueGroupIds.filter((groupId) => !tenantGroupsById.has(groupId));
+    if (unknownGroupIds.length > 0) {
+      throw new Error(`${SERVICE}: invalid groupIds`);
+    }
 
-    // 5. Insert new group assignments with generated UUIDs (skip if empty — inserting [] throws "The query is empty")
-    if (groupIds.length > 0) {
-      const rows = groupIds.map((groupId) => ({
+    const hasFormAdminGroup = uniqueGroupIds.some((groupId) => (tenantGroupsById.get(groupId)?.roles || []).includes('form_admin'));
+    if (!hasFormAdminGroup) {
+      throw new Error(`${SERVICE}: at least one assigned group must have form_admin role`);
+    }
+
+    // 5. Replace assignments atomically
+    await FormGroup.transaction(async (trx) => {
+      await FormGroup.query(trx).delete().where({ formId });
+      const rows = uniqueGroupIds.map((groupId) => ({
         id: uuid.v4(),
         formId,
         groupId,
         createdBy: req.currentUser.usernameIdp,
       }));
-      await FormGroup.query().insert(rows);
-    }
+      await FormGroup.query(trx).insert(rows);
+    });
 
     return true;
   }
@@ -259,6 +284,9 @@ async function getUserRolesAndPermissionsForForm(userInfo, headers = null, formG
   }
   if (!tenantId) {
     throw new TypeError(`${SERVICE}: missing tenantId`);
+  }
+  if (typeof tenantId !== 'string' || !uuid.validate(tenantId)) {
+    throw new TypeError(`${SERVICE}: invalid tenantId`);
   }
 
   // Fetch all roles with permissions directly from the DB

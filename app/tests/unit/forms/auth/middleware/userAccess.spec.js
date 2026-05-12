@@ -1,4 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
+const config = require('config');
 const uuid = require('uuid');
 
 const {
@@ -46,6 +47,8 @@ afterEach(() => {
 describe('currentUser', () => {
   // Bearer token and its authorization header.
   const bearerToken = Math.random().toString(36).substring(2);
+  const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
+  const otherTenantId = '1d3f5d5f-1a2b-4c3d-9e8f-112233445567';
 
   // Default mock of the token validation.
   jwtService.getBearerToken = jest.fn().mockReturnValue(bearerToken);
@@ -55,6 +58,17 @@ describe('currentUser', () => {
   // Default mock of the service login.
   const mockUser = { user: 'me' };
   service.login = jest.fn().mockReturnValue(mockUser);
+
+  beforeEach(() => {
+    jest.spyOn(config, 'get').mockImplementation((key) => {
+      if (key === 'cstar.tenantFeatureEnabled') {
+        return true;
+      }
+
+      return undefined;
+    });
+    jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([{ id: tenantId }]);
+  });
 
   describe('401 response when', () => {
     const expectedStatus = { status: 401 };
@@ -146,16 +160,55 @@ describe('currentUser', () => {
 
   it('sets tenantId from x-tenant-id header', async () => {
     const req = getMockReq({
-      headers: { 'x-tenant-id': 'tenant-123' },
+      headers: { 'x-tenant-id': tenantId },
     });
     const { res, next } = getMockRes();
 
     await currentUser(req, res, next);
 
     expect(req.currentUser).toBeDefined();
-    expect(req.currentUser.tenantId).toBe('tenant-123');
+    expect(req.currentUser.tenantId).toBe(tenantId);
+    expect(tenantService.getCurrentUserTenants).toHaveBeenCalledWith(req);
     expect(next).toBeCalledTimes(1);
     expect(next).toBeCalledWith();
+  });
+
+  it('rejects an invalid tenantId header', async () => {
+    const req = getMockReq({
+      headers: { 'x-tenant-id': 'not-a-uuid' },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(
+      expect.objectContaining({
+        status: 400,
+        detail: 'Bad tenantId',
+      })
+    );
+  });
+
+  it('rejects a tenantId not owned by the current user', async () => {
+    tenantService.getCurrentUserTenants.mockResolvedValueOnce([{ id: otherTenantId }]);
+    const req = getMockReq({
+      headers: { 'x-tenant-id': tenantId },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(req.currentUser).toEqual(mockUser);
+    expect(req.currentUser.tenantId).toBeUndefined();
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(
+      expect.objectContaining({
+        status: 403,
+        detail: 'Tenant not accessible for current user.',
+      })
+    );
   });
 });
 

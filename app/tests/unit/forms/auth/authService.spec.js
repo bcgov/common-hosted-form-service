@@ -1,7 +1,7 @@
 const service = require('../../../../src/forms/auth/service');
 const idpService = require('../../../../src/components/idpService');
 const tenantService = require('../../../../src/components/tenantService');
-const { UserFormAccess, FormGroup } = require('../../../../src/forms/common/models');
+const { UserFormAccess, FormGroup, Role } = require('../../../../src/forms/common/models');
 const { queryUtils } = require('../../../../src/forms/common/utils');
 
 afterEach(() => {
@@ -93,11 +93,18 @@ describe('getUserForms', () => {
     };
     const querySpy = jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
 
-    const formGroupIds = ['group-1'];
     const formGroupQueryObj = { modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) };
     jest.spyOn(FormGroup, 'query').mockReturnValue(formGroupQueryObj);
 
-    const tenantRolesSpy = jest.spyOn(tenantService, 'getUserRolesAndPermissionsForForm').mockResolvedValue({ roles: ['form_admin'], permissions: ['form_read'] });
+    const userGroupsSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', roles: ['form_admin'] }]);
+    jest.spyOn(Role, 'query').mockReturnValue({
+      withGraphFetched: jest.fn().mockResolvedValue([
+        {
+          code: 'form_admin',
+          permissions: [{ code: 'form_read' }],
+        },
+      ]),
+    });
 
     const filterFormsSpy = jest.spyOn(service, 'filterForms').mockReturnValue(['filtered']);
 
@@ -110,9 +117,8 @@ describe('getUserForms', () => {
     expect(queryObj.modify).toHaveBeenNthCalledWith(3, 'filterActive', normalizedParams.active);
     expect(queryObj.modify).toHaveBeenNthCalledWith(4, 'filterTenantId', userInfo.tenantId);
 
-    expect(tenantRolesSpy).toHaveBeenCalledTimes(items.length);
-    expect(tenantRolesSpy).toHaveBeenNthCalledWith(1, userInfo, headers, formGroupIds, userInfo.tenantId);
-    expect(tenantRolesSpy).toHaveBeenNthCalledWith(2, userInfo, headers, formGroupIds, userInfo.tenantId);
+    expect(userGroupsSpy).toHaveBeenCalledTimes(1);
+    expect(userGroupsSpy).toHaveBeenCalledWith({ currentUser: userInfo, headers }, userInfo.tenantId);
     expect(items[0]).toMatchObject({ roles: ['form_admin'], permissions: ['form_read'] });
     expect(items[1]).toMatchObject({ roles: ['form_admin'], permissions: ['form_read'] });
 

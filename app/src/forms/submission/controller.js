@@ -122,7 +122,9 @@ module.exports = {
       if (req.body?.assignedToUserId) {
         const dbUser = await userService.read(req.body.assignedToUserId).catch(() => null);
         if (!dbUser?.id) {
-          return res.status(400).json({ detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.' });
+          return res
+            .status(400)
+            .json({ detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.', key: 'trans.statusPanel.assignedUserNotLoggedIn' });
         }
       }
 
