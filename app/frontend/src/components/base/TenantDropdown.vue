@@ -224,6 +224,12 @@ $mobile-breakpoint: 600px;
     max-width: 140px;
   }
 
+  :deep(.v-field) {
+    height: 40px !important;
+    min-height: 40px !important;
+    align-items: center;
+  }
+
   :deep(.v-field__input) {
     opacity: 1 !important;
     font-size: 0.95rem;
@@ -231,6 +237,8 @@ $mobile-breakpoint: 600px;
     min-width: 0;
     overflow: hidden;
     min-height: 40px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   :deep(.v-icon) {
