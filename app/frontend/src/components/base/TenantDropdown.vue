@@ -42,7 +42,9 @@
             <template #prepend>
               <v-icon size="small">mdi-open-in-new</v-icon>
             </template>
-            <span :lang="locale">{{ $t('trans.tenantDropdown.goToCstar') }}</span>
+            <span :lang="locale">{{
+              $t('trans.tenantDropdown.goToCstar')
+            }}</span>
           </v-list-item>
         </template>
       </template>
