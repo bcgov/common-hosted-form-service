@@ -99,7 +99,7 @@
   },
   "cstar": {
     "tenantFeatureEnabled": true,
-    "endpoint": "https://cstar-dev.apps.silver.devops.gov.bc.ca/api/v1/",
+    "endpoint": "https://cstar-dev.apps.gold.devops.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
     "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
     "listGroupsForTenant": "tenants/{tenantId}/groups",
