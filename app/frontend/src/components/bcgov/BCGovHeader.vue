@@ -39,9 +39,11 @@ const appBase = computed(() => {
   return props.appTitle;
 });
 
-// "ENTERPRISE" or "PERSONAL" — shown only when authenticated and feature is on.
+// "ENTERPRISE" or "PERSONAL" — hidden during tenant restore to prevent a
+// flash from PERSONAL → ENTERPRISE on login / session-timeout flows.
 const appMode = computed(() => {
   if (!tenantStore.isTenantFeatureEnabled || !authenticated.value) return null;
+  if (tenantStore.isTenantRestoring) return null;
   return selectedTenant.value ? 'ENTERPRISE' : 'PERSONAL';
 });
 
