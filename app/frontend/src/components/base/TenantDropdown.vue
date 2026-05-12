@@ -34,15 +34,17 @@
         <v-divider v-if="item.raw.type === 'divider'" />
         <v-list-item v-else v-bind="props" />
       </template>
-      <!-- CSTAR Link at bottom of dropdown -->
+      <!-- CSTAR Link at bottom of dropdown — only rendered when URL is configured -->
       <template #append-item>
-        <v-divider />
-        <v-list-item class="cstar-link-item" @click="goToCSTAR">
-          <template #prepend>
-            <v-icon size="small">mdi-open-in-new</v-icon>
-          </template>
-          <span :lang="locale">{{ $t('trans.tenantDropdown.goToCstar') }}</span>
-        </v-list-item>
+        <template v-if="cstarBaseUrl">
+          <v-divider />
+          <v-list-item class="cstar-link-item" @click="goToCSTAR">
+            <template #prepend>
+              <v-icon size="small">mdi-open-in-new</v-icon>
+            </template>
+            <span :lang="locale">{{ $t('trans.tenantDropdown.goToCstar') }}</span>
+          </v-list-item>
+        </template>
       </template>
 
       <!-- Custom no-data state with CSTAR link -->
@@ -133,12 +135,11 @@ const handleTenantChange = async (value) => {
   }
 };
 
-// Navigate to CSTAR external system
+const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
+
 const goToCSTAR = () => {
-  const cstarUrl =
-    appStore.config?.cstarBaseUrl ||
-    'https://cstar-dev.apps.silver.devops.gov.bc.ca';
-  window.open(cstarUrl, '_blank', 'noopener,noreferrer');
+  if (!cstarBaseUrl.value) return;
+  window.open(cstarBaseUrl.value, '_blank', 'noopener,noreferrer');
 };
 
 // Lazy load tenants when dropdown is opened (if not already loaded)
