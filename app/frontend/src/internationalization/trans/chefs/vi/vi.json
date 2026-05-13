@@ -899,7 +899,8 @@
     "addGroup": "Thêm nhóm",
     "removeGroup": "Xóa nhóm",
     "deleted": "Đã xóa",
-    "noTenantAccess": "Quản lý nhóm chỉ khả dụng cho các biểu mẫu có người thuê. Vui lòng chọn người thuê để tiếp tục."
+    "noTenantAccess": "Quản lý nhóm chỉ khả dụng cho các biểu mẫu có người thuê. Vui lòng chọn người thuê để tiếp tục.",
+    "unsavedChangesWarning": "Bạn có thay đổi nhóm chưa được lưu. Rời đi mà không lưu?"
   },
   "floatButton": {
     "publish": "Công bố",

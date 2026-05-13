@@ -899,7 +899,8 @@
     "addGroup": "Gruppe hinzufügen",
     "removeGroup": "Gruppe entfernen",
     "deleted": "Gelöscht",
-    "noTenantAccess": "Gruppenverwaltung ist nur für mandantenbezogene Formulare verfügbar. Bitte wählen Sie einen Mandanten aus, um fortzufahren."
+    "noTenantAccess": "Gruppenverwaltung ist nur für mandantenbezogene Formulare verfügbar. Bitte wählen Sie einen Mandanten aus, um fortzufahren.",
+    "unsavedChangesWarning": "Sie haben nicht gespeicherte Gruppenänderungen. Ohne Speichern verlassen?"
   },
   "floatButton": {
     "publish": "Veröffentlichen",

@@ -173,6 +173,11 @@ export const NotificationTypes = Object.freeze({
   },
 });
 
+/** Role codes used for enterprise tenant access control */
+export const TenantRoles = Object.freeze({
+  FORM_ADMIN: 'form_admin',
+});
+
 export const Regex = Object.freeze({
   // From ajv-format
   EMAIL:

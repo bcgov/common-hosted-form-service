@@ -899,7 +899,8 @@
     "addGroup": "グループを追加",
     "removeGroup": "グループを削除",
     "deleted": "削除済み",
-    "noTenantAccess": "グループ管理はテナントフォームにのみ使用できます。続行するにはテナントを選択してください。"
+    "noTenantAccess": "グループ管理はテナントフォームにのみ使用できます。続行するにはテナントを選択してください。",
+    "unsavedChangesWarning": "グループの変更が未保存です。保存せずに移動しますか？"
   },
   "floatButton": {
     "publish": "公開",

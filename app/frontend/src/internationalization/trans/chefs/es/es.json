@@ -899,7 +899,8 @@
     "addGroup": "Agregar grupo",
     "removeGroup": "Eliminar grupo",
     "deleted": "Eliminado",
-    "noTenantAccess": "La gestión de grupos solo está disponible para formularios de inquilino. Seleccione un inquilino para continuar."
+    "noTenantAccess": "La gestión de grupos solo está disponible para formularios de inquilino. Seleccione un inquilino para continuar.",
+    "unsavedChangesWarning": "Tiene cambios de grupo sin guardar. ¿Salir sin guardar?"
   },
   "floatButton": {
     "publish": "Publicar",

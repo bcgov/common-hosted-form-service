@@ -899,7 +899,8 @@
     "addGroup": "新增群組",
     "removeGroup": "移除群組",
     "deleted": "已刪除",
-    "noTenantAccess": "群組管理僅適用於租戶表單。請選擇租戶以繼續。"
+    "noTenantAccess": "群組管理僅適用於租戶表單。請選擇租戶以繼續。",
+    "unsavedChangesWarning": "您有未儲存的群組變更。不儲存就離開？"
   },
   "floatButton": {
     "publish": "發布",

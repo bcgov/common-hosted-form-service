@@ -1,13 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import { rbacService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useTenantStore } from '~/store/tenant';
-import { NotificationTypes } from '~/utils/constants';
+import { TenantRoles, NotificationTypes } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -32,11 +33,12 @@ const missingGroups = ref([]);
 const searchAvailable = ref('');
 const searchAssigned = ref('');
 const showSaveDialog = ref(false);
+const isDirty = ref(false);
 
 // form_admin CSTAR role can manage group associations
 const canManageGroups = computed(() => {
   const roles = tenantStore.selectedTenant?.roles || [];
-  return roles.includes('form_admin');
+  return roles.includes(TenantRoles.FORM_ADMIN);
 });
 
 const filteredAvailable = computed(() => {
@@ -100,6 +102,7 @@ function addGroup(group) {
     (g) => g.id !== group.id
   );
   assignedGroups.value.push({ ...group, isAssociated: true });
+  isDirty.value = true;
 }
 
 function removeGroup(group) {
@@ -108,6 +111,7 @@ function removeGroup(group) {
   if (!group.isDeleted) {
     availableGroups.value.push({ ...group, isAssociated: false });
   }
+  isDirty.value = true;
 }
 
 async function saveGroups() {
@@ -116,6 +120,7 @@ async function saveGroups() {
   try {
     const groupIds = assignedGroups.value.map((g) => g.id);
     await rbacService.assignGroupsToForm(properties.formId, groupIds);
+    isDirty.value = false;
     await loadFormGroups();
     notificationStore.addNotification({
       ...NotificationTypes.SUCCESS,
@@ -132,10 +137,17 @@ async function saveGroups() {
   }
 }
 
+onBeforeRouteLeave(() => {
+  if (isDirty.value) {
+    return window.confirm(t('trans.groupManagement.unsavedChangesWarning'));
+  }
+});
+
 defineExpose({
   assignedGroups,
   availableGroups,
   canManageGroups,
+  isDirty,
   noTenant,
   filteredAvailable,
   filteredAssigned,
