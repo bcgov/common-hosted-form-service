@@ -4,6 +4,7 @@ const jwtService = require('./jwtService');
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
+const { TenantRoles } = require('../forms/common/constants');
 const { Role } = require('../forms/common/models');
 const Form = require('../forms/common/models/tables/form');
 const FormGroup = require('../forms/common/models/tables/formGroup');
@@ -209,7 +210,7 @@ class TenantService {
 
     // 3. Check user has a group with form_admin role
     const userGroups = await this.getUserTenantGroupsAndRoles(req, req.currentUser.tenantId);
-    const hasAccess = userGroups.some((g) => g.roles.includes('form_admin'));
+    const hasAccess = userGroups.some((g) => g.roles.includes(TenantRoles.FORM_ADMIN));
     if (!hasAccess) throw new Error(`${SERVICE}: insufficient permissions`);
 
     // 4. Ensure assigned groups are valid for this tenant
@@ -222,7 +223,7 @@ class TenantService {
     }
 
     // Use user group role data because tenant group listing may not include role details
-    const userFormAdminGroupIds = new Set(userGroups.filter((group) => group.roles.includes('form_admin')).map((group) => group.id));
+    const userFormAdminGroupIds = new Set(userGroups.filter((group) => group.roles.includes(TenantRoles.FORM_ADMIN)).map((group) => group.id));
     const hasFormAdminGroup = uniqueGroupIds.some((groupId) => userFormAdminGroupIds.has(groupId));
     if (!hasFormAdminGroup) {
       throw new Error(`${SERVICE}: at least one assigned group must have form_admin role`);
@@ -331,7 +332,7 @@ async function canCreateForm(req) {
   if (!tenantId) return true;
 
   const groups = await module.exports.getUserTenantGroupsAndRoles(req, tenantId);
-  const hasFormAdmin = Array.isArray(groups) && groups.some((g) => Array.isArray(g.roles) && g.roles.includes('form_admin'));
+  const hasFormAdmin = Array.isArray(groups) && groups.some((g) => Array.isArray(g.roles) && g.roles.includes(TenantRoles.FORM_ADMIN));
   return hasFormAdmin;
 }
 

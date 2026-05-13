@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const uuid = require('uuid');
-const { EmailTypes, ScheduleType } = require('../common/constants');
+const { EmailTypes, ScheduleType, TenantRoles } = require('../common/constants');
 const eventService = require('../event/eventService');
 const authService = require('../auth/service');
 const moment = require('moment');
@@ -142,7 +142,7 @@ async function ensureTenantFormSetup(currentUser, headers, trx, formId) {
 
   const reqContext = { currentUser, headers };
   const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext, currentUser.tenantId);
-  const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes('form_admin'));
+  const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes(TenantRoles.FORM_ADMIN));
 
   if (adminGroups.length === 0) {
     throw new Problem(403, 'User does not belong to any group with form_admin role');
