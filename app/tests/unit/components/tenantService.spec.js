@@ -505,6 +505,7 @@ describe('TenantService', () => {
     const formId = 'form-123';
     const groupIds = ['group-1', 'group-2'];
     const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
+    const tenantGroupsUrl = `${endpoint}${listGroupsForTenant.replace('{tenantId}', tenantId)}`;
 
     beforeEach(() => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
@@ -532,11 +533,14 @@ describe('TenantService', () => {
           ],
         },
       });
-
-      jest.spyOn(tenantService, '_getTenantGroupsWithRolesForCurrentTenant').mockResolvedValue([
-        { id: 'group-1', name: 'Admin Group', roles: ['form_admin'] },
-        { id: 'group-2', name: 'Regular Group', roles: ['form_designer'] },
-      ]);
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [
+            { id: 'group-1', name: 'Admin Group' },
+            { id: 'group-2', name: 'Regular Group' },
+          ],
+        },
+      });
 
       const mockDeleteWhere = jest.fn().mockResolvedValue(true);
       const mockDelete = jest.fn().mockReturnValue({ where: mockDeleteWhere });
@@ -593,8 +597,11 @@ describe('TenantService', () => {
           ],
         },
       });
-
-      jest.spyOn(tenantService, '_getTenantGroupsWithRolesForCurrentTenant').mockResolvedValue([{ id: 'group-1', name: 'Regular Group', roles: ['form_designer'] }]);
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [{ id: 'group-1', name: 'Regular Group' }],
+        },
+      });
 
       await expect(tenantService.assignGroupsToForm(req, formId, [])).rejects.toThrow('TenantService: at least one assigned group must have form_admin role');
     });
@@ -621,8 +628,11 @@ describe('TenantService', () => {
           ],
         },
       });
-
-      jest.spyOn(tenantService, '_getTenantGroupsWithRolesForCurrentTenant').mockResolvedValue([{ id: 'group-3', name: 'Admin Group', roles: ['form_admin'] }]);
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [{ id: 'group-1', name: 'Admin Group' }],
+        },
+      });
 
       await expect(tenantService.assignGroupsToForm(req, formId, groupIds)).rejects.toThrow('TenantService: invalid groupIds');
     });
@@ -649,8 +659,11 @@ describe('TenantService', () => {
           ],
         },
       });
-
-      jest.spyOn(tenantService, '_getTenantGroupsWithRolesForCurrentTenant').mockResolvedValue([{ id: 'group-1', name: 'Admin Group', roles: ['form_admin'] }]);
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [{ id: 'group-1', name: 'Admin Group' }],
+        },
+      });
 
       await expect(tenantService.assignGroupsToForm(req, formId, ['group-1', 'group-unknown'])).rejects.toThrow('TenantService: invalid groupIds');
     });
@@ -677,11 +690,14 @@ describe('TenantService', () => {
           ],
         },
       });
-
-      jest.spyOn(tenantService, '_getTenantGroupsWithRolesForCurrentTenant').mockResolvedValue([
-        { id: 'group-1', name: 'Admin Group', roles: ['form_admin'] },
-        { id: 'group-2', name: 'Regular Group', roles: ['form_designer'] },
-      ]);
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [
+            { id: 'group-1', name: 'Admin Group' },
+            { id: 'group-2', name: 'Regular Group' },
+          ],
+        },
+      });
 
       const mockDelete = jest.fn().mockReturnValue({ where: jest.fn().mockResolvedValue(true) });
       const mockInsert = jest.fn().mockResolvedValue(true);
@@ -724,11 +740,14 @@ describe('TenantService', () => {
           ],
         },
       });
-
-      jest.spyOn(tenantService, '_getTenantGroupsWithRolesForCurrentTenant').mockResolvedValue([
-        { id: 'group-1', name: 'Admin Group', roles: ['form_admin'] },
-        { id: 'group-2', name: 'Regular Group', roles: ['form_designer'] },
-      ]);
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [
+            { id: 'group-1', name: 'Admin Group' },
+            { id: 'group-2', name: 'Regular Group' },
+          ],
+        },
+      });
 
       const mockDelete = jest.fn().mockReturnValue({
         where: jest.fn().mockRejectedValue(new Error('DB delete error')),
