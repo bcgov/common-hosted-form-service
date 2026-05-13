@@ -899,7 +899,10 @@
     "addGroup": "Magdagdag ng grupo",
     "removeGroup": "Alisin ang grupo",
     "deleted": "Natanggal",
-    "noTenantAccess": "Ang pamamahala ng grupo ay available lamang para sa mga tenanted na form. Mangyaring pumili ng tenant para magpatuloy."
+    "noTenantAccess": "Ang pamamahala ng grupo ay available lamang para sa mga tenanted na form. Mangyaring pumili ng tenant para magpatuloy.",
+    "unsavedChangesWarning": "Mayroon kang hindi na-save na mga pagbabago sa grupo. Umalis nang hindi nag-se-save?",
+    "unsavedChangesTitle": "Hindi pa nai-save na mga pagbabago",
+    "leave": "Umalis"
   },
   "floatButton": {
     "publish": "I-publish",

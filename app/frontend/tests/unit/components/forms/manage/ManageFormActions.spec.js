@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
 import { useTenantStore } from '~/store/tenant';
-import { FormPermissions } from '~/utils/constants';
+import { TenantRoles, FormPermissions } from '~/utils/constants';
 import { ref } from 'vue';
 import { useAppStore } from '~/store/app';
 
@@ -271,7 +271,7 @@ describe('ManageForm.vue', () => {
 
   it('canManageTeam is false when tenant is selected even with TEAM_UPDATE permission', async () => {
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
-    tenantStore.selectedTenant = { id: 't1', roles: ['form_admin'] };
+    tenantStore.selectedTenant = { id: 't1', roles: [TenantRoles.FORM_ADMIN] };
 
     const wrapper = mount(ManageFormActions, {
       global: {
@@ -287,7 +287,7 @@ describe('ManageForm.vue', () => {
   });
 
   it('canManageGroups is true when selectedTenant has form_admin role', async () => {
-    tenantStore.selectedTenant = { id: 't1', roles: ['form_admin'] };
+    tenantStore.selectedTenant = { id: 't1', roles: [TenantRoles.FORM_ADMIN] };
 
     const wrapper = mount(ManageFormActions, {
       global: {

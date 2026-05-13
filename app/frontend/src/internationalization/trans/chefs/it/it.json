@@ -899,7 +899,10 @@
     "addGroup": "Aggiungi gruppo",
     "removeGroup": "Rimuovi gruppo",
     "deleted": "Eliminato",
-    "noTenantAccess": "La gestione dei gruppi è disponibile solo per i moduli con tenant. Seleziona un tenant per continuare."
+    "noTenantAccess": "La gestione dei gruppi è disponibile solo per i moduli con tenant. Seleziona un tenant per continuare.",
+    "unsavedChangesWarning": "Hai modifiche al gruppo non salvate. Uscire senza salvare?",
+    "unsavedChangesTitle": "Modifiche non salvate",
+    "leave": "Lascia"
   },
   "floatButton": {
     "publish": "Pubblicare",

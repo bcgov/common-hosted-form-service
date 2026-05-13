@@ -1,10 +1,17 @@
 import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useRouter } from 'vue-router';
 
 import { useTenantStore } from '~/store/tenant';
 import Groups from '~/views/form/Groups.vue';
+
+vi.mock('vue-router', () => ({
+  useRouter: vi.fn(() => ({
+    replace: vi.fn(),
+  })),
+}));
 
 const STUBS = {
   GroupManagement: true,
@@ -24,7 +31,9 @@ describe('Groups.vue', () => {
     tenantStore.$reset();
   });
 
-  it('renders GroupManagement directly when tenant feature is disabled', () => {
+  it('redirects to UserForms and hides content when tenant feature is disabled', async () => {
+    const replace = vi.fn();
+    useRouter.mockImplementationOnce(() => ({ replace }));
     tenantStore.isTenantFeatureEnabled = false;
 
     const wrapper = mount(Groups, {
@@ -35,11 +44,13 @@ describe('Groups.vue', () => {
       },
     });
 
-    expect(wrapper.html()).toMatch('group-management');
+    await flushPromises();
+
+    expect(replace).toHaveBeenCalledWith({ name: 'UserForms' });
     expect(wrapper.find('.base-secure-stub').exists()).toBe(false);
   });
 
-  it('wraps GroupManagement in BaseSecure when tenant feature is enabled', () => {
+  it('wraps GroupManagement in BaseSecure when tenant feature is enabled', async () => {
     tenantStore.isTenantFeatureEnabled = true;
 
     const wrapper = mount(Groups, {
@@ -50,7 +61,8 @@ describe('Groups.vue', () => {
       },
     });
 
+    await flushPromises();
+
     expect(wrapper.find('.base-secure-stub').exists()).toBe(true);
-    expect(wrapper.html()).toMatch('group-management');
   });
 });

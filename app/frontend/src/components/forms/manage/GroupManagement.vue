@@ -1,13 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import { rbacService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useTenantStore } from '~/store/tenant';
-import { NotificationTypes } from '~/utils/constants';
+import { TenantRoles, NotificationTypes } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -32,11 +33,14 @@ const missingGroups = ref([]);
 const searchAvailable = ref('');
 const searchAssigned = ref('');
 const showSaveDialog = ref(false);
+const showUnsavedDialog = ref(false);
+const isDirty = ref(false);
+const leaveResolve = ref(null);
 
 // form_admin CSTAR role can manage group associations
 const canManageGroups = computed(() => {
   const roles = tenantStore.selectedTenant?.roles || [];
-  return roles.includes('form_admin');
+  return roles.includes(TenantRoles.FORM_ADMIN);
 });
 
 const filteredAvailable = computed(() => {
@@ -100,6 +104,7 @@ function addGroup(group) {
     (g) => g.id !== group.id
   );
   assignedGroups.value.push({ ...group, isAssociated: true });
+  isDirty.value = true;
 }
 
 function removeGroup(group) {
@@ -108,6 +113,7 @@ function removeGroup(group) {
   if (!group.isDeleted) {
     availableGroups.value.push({ ...group, isAssociated: false });
   }
+  isDirty.value = true;
 }
 
 async function saveGroups() {
@@ -116,6 +122,7 @@ async function saveGroups() {
   try {
     const groupIds = assignedGroups.value.map((g) => g.id);
     await rbacService.assignGroupsToForm(properties.formId, groupIds);
+    isDirty.value = false;
     await loadFormGroups();
     notificationStore.addNotification({
       ...NotificationTypes.SUCCESS,
@@ -132,10 +139,34 @@ async function saveGroups() {
   }
 }
 
+onBeforeRouteLeave(() => {
+  if (isDirty.value) {
+    return new Promise((resolve) => {
+      leaveResolve.value = resolve;
+      showUnsavedDialog.value = true;
+    });
+  }
+});
+
+function confirmLeave() {
+  showUnsavedDialog.value = false;
+  leaveResolve.value?.(true);
+  leaveResolve.value = null;
+}
+
+function cancelLeave() {
+  showUnsavedDialog.value = false;
+  leaveResolve.value?.(false);
+  leaveResolve.value = null;
+}
+
 defineExpose({
   assignedGroups,
   availableGroups,
   canManageGroups,
+  cancelLeave,
+  confirmLeave,
+  isDirty,
   noTenant,
   filteredAvailable,
   filteredAssigned,
@@ -147,6 +178,7 @@ defineExpose({
   searchAvailable,
   searchAssigned,
   showSaveDialog,
+  showUnsavedDialog,
   addGroup,
   removeGroup,
 });
@@ -429,6 +461,26 @@ defineExpose({
           </v-btn>
           <v-btn color="primary" :lang="locale" @click="saveGroups">
             {{ $t('trans.groupManagement.save') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showUnsavedDialog" width="500" persistent>
+      <v-card>
+        <v-card-title :lang="locale">
+          {{ $t('trans.groupManagement.unsavedChangesTitle') }}
+        </v-card-title>
+        <v-card-text :lang="locale">
+          {{ $t('trans.groupManagement.unsavedChangesWarning') }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn :lang="locale" @click="cancelLeave">
+            {{ $t('trans.groupManagement.cancel') }}
+          </v-btn>
+          <v-btn color="primary" :lang="locale" @click="confirmLeave">
+            {{ $t('trans.groupManagement.leave') }}
           </v-btn>
         </v-card-actions>
       </v-card>

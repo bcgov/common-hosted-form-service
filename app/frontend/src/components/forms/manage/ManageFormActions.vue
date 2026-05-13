@@ -9,7 +9,7 @@ import ShareForm from '~/components/forms/manage/ShareForm.vue';
 import { useFormStore } from '~/store/form';
 import { useTenantStore } from '~/store/tenant';
 
-import { FormPermissions } from '~/utils/constants';
+import { TenantRoles, FormPermissions } from '~/utils/constants';
 
 const { locale } = useI18n({ useScope: 'global' });
 
@@ -42,7 +42,7 @@ const canManageTeam = computed(() => {
 const canManageGroups = computed(() => {
   if (selectedTenant.value === null) return false;
   const roles = selectedTenant.value?.roles || [];
-  return roles.includes('form_admin');
+  return roles.includes(TenantRoles.FORM_ADMIN);
 });
 
 const canViewSubmissions = computed(() => {

@@ -899,7 +899,10 @@
     "addGroup": "添加组",
     "removeGroup": "删除组",
     "deleted": "已删除",
-    "noTenantAccess": "组管理仅适用于租户表单。请选择租户以继续。"
+    "noTenantAccess": "组管理仅适用于租户表单。请选择租户以继续。",
+    "unsavedChangesWarning": "您有未保存的群组更改。不保存就离开？",
+    "unsavedChangesTitle": "未保存的更改",
+    "leave": "离开"
   },
   "floatButton": {
     "publish": "发布",

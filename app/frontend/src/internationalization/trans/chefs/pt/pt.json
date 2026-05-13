@@ -899,7 +899,10 @@
     "addGroup": "Adicionar grupo",
     "removeGroup": "Remover grupo",
     "deleted": "Excluído",
-    "noTenantAccess": "O gerenciamento de grupos está disponível apenas para formulários com tenant. Selecione um tenant para continuar."
+    "noTenantAccess": "O gerenciamento de grupos está disponível apenas para formulários com tenant. Selecione um tenant para continuar.",
+    "unsavedChangesWarning": "Você tem alterações de grupo não salvas. Sair sem salvar?",
+    "unsavedChangesTitle": "Alterações não salvas",
+    "leave": "Sair"
   },
   "floatButton": {
     "publish": "Publicar",
