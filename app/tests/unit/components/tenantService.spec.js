@@ -175,7 +175,7 @@ describe('TenantService', () => {
 
   describe('getUserTenantGroupsAndRoles', () => {
     const userId = 'user-123';
-    const tenantId = 'tenant-456';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const req = {
       currentUser: {
         idpUserId: userId,
@@ -183,7 +183,7 @@ describe('TenantService', () => {
       },
       headers: { authorization: 'Bearer testtoken' },
     };
-    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId.toUpperCase())}`;
+    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
 
     it('should return groups with roles on success', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
@@ -207,7 +207,7 @@ describe('TenantService', () => {
         },
       });
 
-      const groups = await tenantService.getUserTenantGroupsAndRoles(req);
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
 
       expect(groups).toEqual([
         { id: 'group-1', name: 'Group 1', roles: ['form_admin', 'form_designer'] },
@@ -233,7 +233,7 @@ describe('TenantService', () => {
         },
       });
 
-      const groups = await tenantService.getUserTenantGroupsAndRoles(req);
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
 
       expect(groups).toEqual([{ id: 'group-1', name: 'Group 1', roles: ['form_admin'] }]);
     });
@@ -242,7 +242,7 @@ describe('TenantService', () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       mockAxios.onGet(apiUrl).reply(200, { data: {} });
 
-      const groups = await tenantService.getUserTenantGroupsAndRoles(req);
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
 
       expect(groups).toEqual([]);
     });
@@ -255,7 +255,7 @@ describe('TenantService', () => {
         },
       });
 
-      const groups = await tenantService.getUserTenantGroupsAndRoles(req);
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
 
       expect(groups).toEqual([{ id: 'group-1', name: 'Group 1', roles: [] }]);
     });
@@ -264,26 +264,29 @@ describe('TenantService', () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       mockAxios.onGet(apiUrl).networkError();
 
-      await expect(tenantService.getUserTenantGroupsAndRoles(req)).rejects.toThrow();
+      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId)).rejects.toThrow();
     });
 
     it('should throw error on 401 unauthorized', async () => {
       jwtService.getBearerToken.mockReturnValue('invalid-token');
       mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
 
-      await expect(tenantService.getUserTenantGroupsAndRoles(req)).rejects.toThrow();
+      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId)).rejects.toThrow();
     });
 
     it('should throw error if no currentUser', async () => {
-      await expect(tenantService.getUserTenantGroupsAndRoles({})).rejects.toThrow('TenantService: missing currentUser');
+      await expect(tenantService.getUserTenantGroupsAndRoles({}, tenantId)).rejects.toThrow('TenantService: missing currentUser');
       expect(jwtService.getBearerToken).not.toHaveBeenCalled();
     });
 
     it('should throw error if no idpUserId', async () => {
       await expect(
-        tenantService.getUserTenantGroupsAndRoles({
-          currentUser: { tenantId: 'tenant-456' },
-        })
+        tenantService.getUserTenantGroupsAndRoles(
+          {
+            currentUser: { tenantId: '0d3f5d5f-1a2b-4c3d-9e8f-112233445566' },
+          },
+          tenantId
+        )
       ).rejects.toThrow('TenantService: missing currentUser.idpUserId');
       expect(jwtService.getBearerToken).not.toHaveBeenCalled();
     });
@@ -293,13 +296,27 @@ describe('TenantService', () => {
         tenantService.getUserTenantGroupsAndRoles({
           currentUser: { idpUserId: 'user-123' },
         })
-      ).rejects.toThrow('TenantService: missing currentUser.tenantId');
+      ).rejects.toThrow('TenantService: missing tenantId');
       expect(jwtService.getBearerToken).not.toHaveBeenCalled();
+    });
+
+    it('should throw error if tenantId is not a valid UUID', async () => {
+      await expect(tenantService.getUserTenantGroupsAndRoles(req, 'not-a-uuid')).rejects.toThrow('TenantService: invalid tenantId');
+      expect(jwtService.getBearerToken).not.toHaveBeenCalled();
+    });
+
+    it('should return empty array when groups is not an array', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(200, { data: { groups: { id: 'group-1' } } });
+
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
+
+      expect(groups).toEqual([]);
     });
   });
 
   describe('getGroupsForCurrentTenant', () => {
-    const tenantId = 'tenant-456';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const req = {
       currentUser: { tenantId: tenantId },
       headers: { authorization: 'Bearer testtoken' },
@@ -335,6 +352,15 @@ describe('TenantService', () => {
       expect(groups).toEqual([]);
     });
 
+    it('should return empty array when groups is not an array', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(200, { data: { groups: { id: 'group-1' } } });
+
+      const groups = await tenantService.getGroupsForCurrentTenant(req);
+
+      expect(groups).toEqual([]);
+    });
+
     it('should throw error on axios network error', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       mockAxios.onGet(apiUrl).networkError();
@@ -361,7 +387,7 @@ describe('TenantService', () => {
   });
 
   describe('getFormGroups', () => {
-    const tenantId = 'tenant-456';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const req = {
       currentUser: { tenantId: tenantId },
       headers: { authorization: 'Bearer testtoken' },
@@ -467,7 +493,7 @@ describe('TenantService', () => {
 
   describe('assignGroupsToForm', () => {
     const userId = 'user-123';
-    const tenantId = 'tenant-456';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const req = {
       currentUser: {
         tenantId: tenantId,
@@ -478,7 +504,8 @@ describe('TenantService', () => {
     };
     const formId = 'form-123';
     const groupIds = ['group-1', 'group-2'];
-    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId.toUpperCase())}`;
+    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
+    const tenantGroupsUrl = `${endpoint}${listGroupsForTenant.replace('{tenantId}', tenantId)}`;
 
     beforeEach(() => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
@@ -506,20 +533,31 @@ describe('TenantService', () => {
           ],
         },
       });
-
-      const mockDelete = jest.fn().mockReturnValue({
-        where: jest.fn().mockResolvedValue(true),
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [
+            { id: 'group-1', name: 'Admin Group' },
+            { id: 'group-2', name: 'Regular Group' },
+          ],
+        },
       });
+
+      const mockDeleteWhere = jest.fn().mockResolvedValue(true);
+      const mockDelete = jest.fn().mockReturnValue({ where: mockDeleteWhere });
       const mockInsert = jest.fn().mockResolvedValue(true);
 
-      FormGroup.query.mockReturnValue({
+      FormGroup.query.mockImplementation(() => ({
         delete: mockDelete,
         insert: mockInsert,
+      }));
+      FormGroup.transaction = jest.fn(async (callback) => {
+        await callback({});
       });
 
       const result = await tenantService.assignGroupsToForm(req, formId, groupIds);
 
       expect(result).toBe(true);
+      expect(FormGroup.transaction).toHaveBeenCalled();
       expect(mockDelete).toHaveBeenCalled();
       expect(mockInsert).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -535,6 +573,195 @@ describe('TenantService', () => {
           }),
         ])
       );
+    });
+
+    it('should throw error when no assigned group has form_admin role', async () => {
+      Form.query.mockReturnValue({
+        findById: jest.fn().mockResolvedValue({ id: formId }),
+      });
+
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
+        }),
+      });
+
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          groups: [
+            {
+              id: 'group-1',
+              name: 'Admin Group',
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
+            },
+          ],
+        },
+      });
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [{ id: 'group-1', name: 'Regular Group' }],
+        },
+      });
+
+      await expect(tenantService.assignGroupsToForm(req, formId, [])).rejects.toThrow('TenantService: at least one assigned group must have form_admin role');
+    });
+
+    it('should throw error when assigned groups do not include a tenant form_admin group', async () => {
+      Form.query.mockReturnValue({
+        findById: jest.fn().mockResolvedValue({ id: formId }),
+      });
+
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
+        }),
+      });
+
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          groups: [
+            {
+              id: 'group-1',
+              name: 'Admin Group',
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
+            },
+          ],
+        },
+      });
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [{ id: 'group-1', name: 'Admin Group' }],
+        },
+      });
+
+      await expect(tenantService.assignGroupsToForm(req, formId, groupIds)).rejects.toThrow('TenantService: invalid groupIds');
+    });
+
+    it('should throw error when any assigned group is not in the tenant', async () => {
+      Form.query.mockReturnValue({
+        findById: jest.fn().mockResolvedValue({ id: formId }),
+      });
+
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
+        }),
+      });
+
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          groups: [
+            {
+              id: 'group-1',
+              name: 'Admin Group',
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
+            },
+          ],
+        },
+      });
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [{ id: 'group-1', name: 'Admin Group' }],
+        },
+      });
+
+      await expect(tenantService.assignGroupsToForm(req, formId, ['group-1', 'group-unknown'])).rejects.toThrow('TenantService: invalid groupIds');
+    });
+
+    it('should deduplicate groupIds before insert', async () => {
+      Form.query.mockReturnValue({
+        findById: jest.fn().mockResolvedValue({ id: formId }),
+      });
+
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
+        }),
+      });
+
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          groups: [
+            {
+              id: 'group-1',
+              name: 'Admin Group',
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
+            },
+          ],
+        },
+      });
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [
+            { id: 'group-1', name: 'Admin Group' },
+            { id: 'group-2', name: 'Regular Group' },
+          ],
+        },
+      });
+
+      const mockDelete = jest.fn().mockReturnValue({ where: jest.fn().mockResolvedValue(true) });
+      const mockInsert = jest.fn().mockResolvedValue(true);
+
+      FormGroup.query.mockImplementation(() => ({
+        delete: mockDelete,
+        insert: mockInsert,
+      }));
+      FormGroup.transaction = jest.fn(async (callback) => {
+        await callback({});
+      });
+
+      const duplicateGroupIds = ['group-1', 'group-1', 'group-2'];
+      const result = await tenantService.assignGroupsToForm(req, formId, duplicateGroupIds);
+
+      expect(result).toBe(true);
+      expect(mockInsert).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ groupId: 'group-1' }), expect.objectContaining({ groupId: 'group-2' })]));
+      expect(mockInsert.mock.calls[0][0]).toHaveLength(2);
+    });
+
+    it('should throw error on database failure during delete', async () => {
+      Form.query.mockReturnValue({
+        findById: jest.fn().mockResolvedValue({ id: formId }),
+      });
+
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
+        }),
+      });
+
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          groups: [
+            {
+              id: 'group-1',
+              name: 'Admin Group',
+              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
+            },
+          ],
+        },
+      });
+      mockAxios.onGet(tenantGroupsUrl).reply(200, {
+        data: {
+          groups: [
+            { id: 'group-1', name: 'Admin Group' },
+            { id: 'group-2', name: 'Regular Group' },
+          ],
+        },
+      });
+
+      const mockDelete = jest.fn().mockReturnValue({
+        where: jest.fn().mockRejectedValue(new Error('DB delete error')),
+      });
+
+      FormGroup.query.mockImplementation(() => ({
+        delete: mockDelete,
+        insert: jest.fn(),
+      }));
+      FormGroup.transaction = jest.fn(async (callback) => {
+        await callback({});
+      });
+
+      await expect(tenantService.assignGroupsToForm(req, formId, groupIds)).rejects.toThrow('DB delete error');
     });
 
     it('should throw error if no currentUser', async () => {
@@ -597,51 +824,17 @@ describe('TenantService', () => {
 
       await expect(tenantService.assignGroupsToForm(req, formId, groupIds)).rejects.toThrow('TenantService: insufficient permissions');
     });
-
-    it('should throw error on database failure during delete', async () => {
-      Form.query.mockReturnValue({
-        findById: jest.fn().mockResolvedValue({ id: formId }),
-      });
-
-      FormTenant.query.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
-        }),
-      });
-
-      mockAxios.onGet(apiUrl).reply(200, {
-        data: {
-          groups: [
-            {
-              id: 'group-1',
-              name: 'Admin Group',
-              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
-            },
-          ],
-        },
-      });
-
-      const mockDelete = jest.fn().mockReturnValue({
-        where: jest.fn().mockRejectedValue(new Error('DB delete error')),
-      });
-
-      FormGroup.query.mockReturnValue({
-        delete: mockDelete,
-      });
-
-      await expect(tenantService.assignGroupsToForm(req, formId, groupIds)).rejects.toThrow('DB delete error');
-    });
   });
 
-  describe('getUserRolesAndPermissions', () => {
+  describe('getUserRolesAndPermissionsForForm', () => {
     const userId = 'user-123';
-    const tenantId = 'tenant-456';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const userInfo = {
       idpUserId: userId,
       tenantId: tenantId,
     };
     const headers = { authorization: 'Bearer testtoken' };
-    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId.toUpperCase())}`;
+    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
 
     beforeEach(() => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
@@ -676,7 +869,7 @@ describe('TenantService', () => {
         },
       });
 
-      const result = await tenantService.getUserRolesAndPermissions(userInfo, headers);
+      const result = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, ['group-1'], tenantId);
 
       expect(result.roles).toEqual(['form_admin', 'form_designer']);
       expect(result.permissions).toEqual(expect.arrayContaining(['form_read', 'form_update', 'form_delete']));
@@ -689,26 +882,44 @@ describe('TenantService', () => {
       });
       mockAxios.onGet(apiUrl).reply(200, { data: { groups: [] } });
 
-      const result = await tenantService.getUserRolesAndPermissions(userInfo, headers);
+      const result = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, [], tenantId);
+
+      expect(result.roles).toEqual([]);
+      expect(result.permissions).toEqual([]);
+    });
+
+    it('should return empty arrays when user groups do not match form groups', async () => {
+      Role.query.mockReturnValue({
+        withGraphFetched: jest.fn().mockResolvedValue([{ code: 'form_admin', permissions: [{ code: 'form_read' }] }]),
+      });
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: { groups: [{ id: 'group-1', name: 'Admin Group', sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }] }] },
+      });
+
+      const result = await tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, ['different-group-id'], tenantId);
 
       expect(result.roles).toEqual([]);
       expect(result.permissions).toEqual([]);
     });
 
     it('should throw error if no userInfo', async () => {
-      await expect(tenantService.getUserRolesAndPermissions(null)).rejects.toThrow('TenantService: missing userInfo');
+      await expect(tenantService.getUserRolesAndPermissionsForForm(null)).rejects.toThrow('TenantService: missing userInfo');
     });
 
     it('should throw error if no idpUserId', async () => {
-      await expect(tenantService.getUserRolesAndPermissions({ tenantId })).rejects.toThrow('TenantService: missing userInfo.idpUserId');
+      await expect(tenantService.getUserRolesAndPermissionsForForm({ tenantId }, headers, [], tenantId)).rejects.toThrow('TenantService: missing userInfo.idpUserId');
     });
 
     it('should throw error if no tenantId', async () => {
-      await expect(tenantService.getUserRolesAndPermissions({ idpUserId: userId })).rejects.toThrow('TenantService: missing userInfo.tenantId');
+      await expect(tenantService.getUserRolesAndPermissionsForForm({ idpUserId: userId }, headers, [])).rejects.toThrow('TenantService: missing tenantId');
+    });
+
+    it('should throw error if tenantId is not a valid UUID', async () => {
+      await expect(tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, [], 'not-a-uuid')).rejects.toThrow('TenantService: invalid tenantId');
     });
 
     it('should throw error if headers are missing', async () => {
-      await expect(tenantService.getUserRolesAndPermissions(userInfo)).rejects.toThrow('TenantService: missing headers for tenant API authentication');
+      await expect(tenantService.getUserRolesAndPermissionsForForm(userInfo, null, [], tenantId)).rejects.toThrow('TenantService: missing headers for tenant API authentication');
     });
 
     it('should throw error when Role query fails', async () => {
@@ -716,7 +927,7 @@ describe('TenantService', () => {
         withGraphFetched: jest.fn().mockRejectedValue(new Error('DB error')),
       });
 
-      await expect(tenantService.getUserRolesAndPermissions(userInfo, headers)).rejects.toThrow('DB error');
+      await expect(tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, [], tenantId)).rejects.toThrow('DB error');
     });
 
     it('should throw error when getUserTenantGroupsAndRoles fails', async () => {
@@ -725,14 +936,14 @@ describe('TenantService', () => {
       });
       mockAxios.onGet(apiUrl).networkError();
 
-      await expect(tenantService.getUserRolesAndPermissions(userInfo, headers)).rejects.toThrow();
+      await expect(tenantService.getUserRolesAndPermissionsForForm(userInfo, headers, [], tenantId)).rejects.toThrow();
     });
   });
 
   describe('canCreateForm', () => {
     const userId = 'user-123';
-    const tenantId = 'tenant-456';
-    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId.toUpperCase())}`;
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
+    const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
 
     beforeEach(() => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
@@ -842,11 +1053,11 @@ describe('TenantService', () => {
     });
 
     it('should return true when form belongs to user tenant', async () => {
-      const req = { currentUser: { tenantId: 'tenant-456' } };
+      const req = { currentUser: { tenantId: '0d3f5d5f-1a2b-4c3d-9e8f-112233445566' } };
 
       FormTenant.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue({ formId: formId, tenantId: 'tenant-456' }),
+          first: jest.fn().mockResolvedValue({ formId: formId, tenantId: '0d3f5d5f-1a2b-4c3d-9e8f-112233445566' }),
         }),
       });
 
@@ -855,7 +1066,7 @@ describe('TenantService', () => {
     });
 
     it('should return false when form does not belong to user tenant', async () => {
-      const req = { currentUser: { tenantId: 'tenant-456' } };
+      const req = { currentUser: { tenantId: '0d3f5d5f-1a2b-4c3d-9e8f-112233445566' } };
 
       FormTenant.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
@@ -868,7 +1079,7 @@ describe('TenantService', () => {
     });
 
     it('should return false for invalid formId', async () => {
-      const req = { currentUser: { tenantId: 'tenant-456' } };
+      const req = { currentUser: { tenantId: '0d3f5d5f-1a2b-4c3d-9e8f-112233445566' } };
 
       const result = await tenantService.isFormInUsersTenant(req, 'invalid-uuid');
       expect(result).toBe(false);
@@ -879,7 +1090,7 @@ describe('TenantService', () => {
     });
 
     it('should throw error on database error', async () => {
-      const req = { currentUser: { tenantId: 'tenant-456' } };
+      const req = { currentUser: { tenantId: '0d3f5d5f-1a2b-4c3d-9e8f-112233445566' } };
 
       FormTenant.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
@@ -892,7 +1103,7 @@ describe('TenantService', () => {
   });
 
   describe('getTenantUsers', () => {
-    const tenantId = 'tenant-456';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
     const req = {
       currentUser: { tenantId },

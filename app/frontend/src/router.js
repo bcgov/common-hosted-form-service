@@ -238,6 +238,17 @@ export default function getRouter(basePath = '/') {
             props: createProps,
           },
           {
+            path: 'groups',
+            name: 'FormGroups',
+            component: () => import('~/views/form/Groups.vue'),
+            meta: {
+              breadcrumbTitle: 'Group Management',
+              requiresAuth: 'primary',
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'view',
             name: 'FormView',
             component: () => import('~/views/form/View.vue'),
@@ -543,6 +554,15 @@ export default function getRouter(basePath = '/') {
       !tenantStore.isFormAdmin
     ) {
       return next({ name: 'UserForms' });
+    }
+
+    // Group Management is only for tenanted forms — redirect non-tenanted users to FormManage
+    if (
+      to.name === 'FormGroups' &&
+      authStore.authenticated &&
+      !tenantStore.selectedTenant
+    ) {
+      return next({ name: 'FormManage', query: { f: to.query.f } });
     }
 
     // Update document title if applicable

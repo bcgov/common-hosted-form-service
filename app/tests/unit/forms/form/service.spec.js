@@ -1193,10 +1193,13 @@ describe('createForm', () => {
 
     await service.createForm({ name: 'Tenant Form', schema: { components: [] } }, tenantUser, headers);
 
-    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({
-      currentUser: tenantUser,
-      headers,
-    });
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith(
+      {
+        currentUser: tenantUser,
+        headers,
+      },
+      tenantUser.tenantId
+    );
     expect(FormTenant.insert).toHaveBeenCalledTimes(1);
     expect(FormGroup.insert).toHaveBeenCalledTimes(1);
     expect(FormRoleUser.insert).toHaveBeenCalledTimes(0);

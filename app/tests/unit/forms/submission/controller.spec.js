@@ -112,7 +112,10 @@ describe('addStatus', () => {
     expect(userService.read).toBeCalledWith('6a5ec46a-c5e1-436e-9db5-a798cc96e851');
     expect(service.changeStatusState).not.toBeCalled();
     expect(res.status).toBeCalledWith(400);
-    expect(res.json).toBeCalledWith({ detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.' });
+    expect(res.json).toBeCalledWith({
+      detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.',
+      key: 'trans.statusPanel.assignedUserNotLoggedIn',
+    });
     expect(next).not.toBeCalled();
   });
 });

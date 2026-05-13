@@ -25,7 +25,12 @@ const loginRequiredRules = ref([
 
 const idpType = ref([]);
 const IdpTypeList = computed(() => {
-  const items = [
+  const tenantStore = useTenantStore();
+  const isEnterprise = !!tenantStore.selectedTenant;
+
+  // if we want it sorted...
+  // return items.sort((a, b) => a.text.localeCompare(b.text));
+  return [
     {
       id: ID_MODE.value.PUBLIC,
       text: t('trans.formSettings.public'),
@@ -36,19 +41,12 @@ const IdpTypeList = computed(() => {
     },
     {
       id: ID_MODE.value.TEAM,
-      text: t('trans.formSettings.specificTeamMembers'),
+      // Enterprise CHEFS: group-based access via CSTAR
+      text: isEnterprise
+        ? t('trans.formSettings.specificGroups')
+        : t('trans.formSettings.specificTeamMembers'),
     },
   ];
-
-  // Filter out TEAM option if tenant is selected
-  const tenantStore = useTenantStore();
-  if (tenantStore.selectedTenant) {
-    return items.filter((item) => item.id !== ID_MODE.value.TEAM);
-  }
-
-  // if we want it sorted...
-  // return items.sort((a, b) => a.text.localeCompare(b.text));
-  return items;
 });
 const userTypeRef = ref(null); // use this to trigger validation on the v-autocomplete
 
@@ -199,8 +197,14 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
           :class="{ 'dir-rtl': isRTL }"
         >
           <p class="mt-2 mb-0" :lang="locale">
-            {{ $t('trans.formSettings.teamMemberTooltip')
-            }}<v-icon icon="mdi:mdi-account-multiple" />
+            <template v-if="useTenantStore().selectedTenant">
+              {{ $t('trans.formSettings.groupAccessTooltip')
+              }}<v-icon icon="mdi:mdi-account-group" />
+            </template>
+            <template v-else>
+              {{ $t('trans.formSettings.teamMemberTooltip')
+              }}<v-icon icon="mdi:mdi-account-multiple" />
+            </template>
           </p>
         </BaseInfoCard>
       </v-expand-transition>
