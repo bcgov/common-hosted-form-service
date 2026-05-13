@@ -75,6 +75,10 @@ describe('Form Designer', () => {
     cy.get('.mdi-dots-vertical').click();
     //Preview button disabled before form saving
     cy.get('[data-cy="previewRouterLink"] > .v-btn').should('have.attr', 'disabled');
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Save a version of the form to preview').should('exist');
+    cy.get('[data-cy="publishRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Insufficient permissions to publish form').should('exist');
     cy.get('[data-cy="undoButton"] > .v-btn').should('not.have.attr', 'disabled');
     cy.get('[data-cy="redoButton"] > .v-btn').should('have.attr', 'disabled');
     cy.get('.mdi-undo').click();
@@ -92,6 +96,7 @@ describe('Form Designer', () => {
      cy.get('.mdi-dots-vertical').click();
     //Preview button enabled
     cy.get('[data-cy="previewRouterLink"] > .v-btn').should('not.have.attr', 'disabled');
+    cy.get('.v-overlay__content').contains('Click to Preview Form').should('exist');
     // Filter the newly created form
     cy.location('search').then(search => {
     let arr = search.split('=');
