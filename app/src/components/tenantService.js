@@ -212,31 +212,19 @@ class TenantService {
     const hasAccess = userGroups.some((g) => g.roles.includes('form_admin'));
     if (!hasAccess) throw new Error(`${SERVICE}: insufficient permissions`);
 
-    // 4. Ensure assigned groups are valid and include at least one form_admin group in this tenant
-    const uniqueGroupIds = [...new Set(groupIds)];
-    const tenantGroupsWithRoles = await this._getTenantGroupsWithRolesForCurrentTenant(req);
-    const tenantGroupsById = new Map(tenantGroupsWithRoles.map((group) => [group.id, group]));
-    const unknownGroupIds = uniqueGroupIds.filter((groupId) => !tenantGroupsById.has(groupId));
-    if (unknownGroupIds.length > 0) {
-      throw new Error(`${SERVICE}: invalid groupIds`);
-    }
+    // 4. Remove existing group assignments for this form
+    await FormGroup.query().delete().where({ formId });
 
-    const hasFormAdminGroup = uniqueGroupIds.some((groupId) => (tenantGroupsById.get(groupId)?.roles || []).includes('form_admin'));
-    if (!hasFormAdminGroup) {
-      throw new Error(`${SERVICE}: at least one assigned group must have form_admin role`);
-    }
-
-    // 5. Replace assignments atomically
-    await FormGroup.transaction(async (trx) => {
-      await FormGroup.query(trx).delete().where({ formId });
-      const rows = uniqueGroupIds.map((groupId) => ({
+    // 5. Insert new group assignments with generated UUIDs (skip if empty — inserting [] throws "The query is empty")
+    if (groupIds.length > 0) {
+      const rows = groupIds.map((groupId) => ({
         id: uuid.v4(),
         formId,
         groupId,
         createdBy: req.currentUser.usernameIdp,
       }));
-      await FormGroup.query(trx).insert(rows);
-    });
+      await FormGroup.query().insert(rows);
+    }
 
     return true;
   }
