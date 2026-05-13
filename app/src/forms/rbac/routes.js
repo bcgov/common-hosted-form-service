@@ -7,6 +7,10 @@ const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
 const controller = require('./controller');
 
+routes.get('/idps', async (req, res, next) => {
+  await controller.getIdentityProviders(req, res, next);
+});
+
 routes.use(currentUser);
 
 routes.get('/current', jwtService.protect(), async (req, res, next) => {
@@ -19,10 +23,6 @@ routes.get('/current/forms', jwtService.protect(), async (req, res, next) => {
 
 routes.get('/current/submissions', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUserSubmissions(req, res, next);
-});
-
-routes.get('/idps', async (req, res, next) => {
-  await controller.getIdentityProviders(req, res, next);
 });
 
 routes.get('/forms', hasFormPermissions([P.TEAM_READ]), async (req, res, next) => {
