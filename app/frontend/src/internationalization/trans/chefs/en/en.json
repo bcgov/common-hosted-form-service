@@ -1025,7 +1025,9 @@
     "removeGroup": "Remove group",
     "deleted": "Deleted",
     "noTenantAccess": "Group management is only available for tenanted forms. Please select a tenant to continue.",
-    "unsavedChangesWarning": "You have unsaved group changes. Leave without saving?"
+    "unsavedChangesWarning": "You have unsaved group changes. Leave without saving?",
+    "unsavedChangesTitle": "Unsaved Changes",
+    "leave": "Leave"
   },
   "floatButton": {
     "publish": "Publish",

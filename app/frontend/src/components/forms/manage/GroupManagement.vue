@@ -33,7 +33,9 @@ const missingGroups = ref([]);
 const searchAvailable = ref('');
 const searchAssigned = ref('');
 const showSaveDialog = ref(false);
+const showUnsavedDialog = ref(false);
 const isDirty = ref(false);
+const leaveResolve = ref(null);
 
 // form_admin CSTAR role can manage group associations
 const canManageGroups = computed(() => {
@@ -139,14 +141,31 @@ async function saveGroups() {
 
 onBeforeRouteLeave(() => {
   if (isDirty.value) {
-    return window.confirm(t('trans.groupManagement.unsavedChangesWarning'));
+    return new Promise((resolve) => {
+      leaveResolve.value = resolve;
+      showUnsavedDialog.value = true;
+    });
   }
 });
+
+function confirmLeave() {
+  showUnsavedDialog.value = false;
+  leaveResolve.value?.(true);
+  leaveResolve.value = null;
+}
+
+function cancelLeave() {
+  showUnsavedDialog.value = false;
+  leaveResolve.value?.(false);
+  leaveResolve.value = null;
+}
 
 defineExpose({
   assignedGroups,
   availableGroups,
   canManageGroups,
+  cancelLeave,
+  confirmLeave,
   isDirty,
   noTenant,
   filteredAvailable,
@@ -159,6 +178,7 @@ defineExpose({
   searchAvailable,
   searchAssigned,
   showSaveDialog,
+  showUnsavedDialog,
   addGroup,
   removeGroup,
 });
@@ -441,6 +461,26 @@ defineExpose({
           </v-btn>
           <v-btn color="primary" :lang="locale" @click="saveGroups">
             {{ $t('trans.groupManagement.save') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showUnsavedDialog" width="500" persistent>
+      <v-card>
+        <v-card-title :lang="locale">
+          {{ $t('trans.groupManagement.unsavedChangesTitle') }}
+        </v-card-title>
+        <v-card-text :lang="locale">
+          {{ $t('trans.groupManagement.unsavedChangesWarning') }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn :lang="locale" @click="cancelLeave">
+            {{ $t('trans.groupManagement.cancel') }}
+          </v-btn>
+          <v-btn color="primary" :lang="locale" @click="confirmLeave">
+            {{ $t('trans.groupManagement.leave') }}
           </v-btn>
         </v-card-actions>
       </v-card>

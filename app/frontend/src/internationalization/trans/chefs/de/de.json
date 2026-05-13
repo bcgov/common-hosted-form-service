@@ -900,7 +900,9 @@
     "removeGroup": "Gruppe entfernen",
     "deleted": "Gelöscht",
     "noTenantAccess": "Gruppenverwaltung ist nur für mandantenbezogene Formulare verfügbar. Bitte wählen Sie einen Mandanten aus, um fortzufahren.",
-    "unsavedChangesWarning": "Sie haben nicht gespeicherte Gruppenänderungen. Ohne Speichern verlassen?"
+    "unsavedChangesWarning": "Sie haben nicht gespeicherte Gruppenänderungen. Ohne Speichern verlassen?",
+    "unsavedChangesTitle": "Nicht gespeicherte Änderungen",
+    "leave": "Verlassen"
   },
   "floatButton": {
     "publish": "Veröffentlichen",

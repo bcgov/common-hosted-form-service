@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import GroupManagement from '~/components/forms/manage/GroupManagement.vue';
 import { useTenantStore } from '~/store/tenant';
 
-const props = defineProps({
+defineProps({
   f: {
     type: String,
     required: true,
