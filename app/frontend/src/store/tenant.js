@@ -328,6 +328,7 @@ export const useTenantStore = defineStore('tenant', {
       this.selectedTenant = null;
       this.persistSelectedTenant();
       this.clearLoginRestore();
+      this.clearSessionRestore();
     },
 
     /**
