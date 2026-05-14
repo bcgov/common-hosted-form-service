@@ -178,7 +178,7 @@ describe(`${basePath}/idps`, () => {
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(0);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
   });

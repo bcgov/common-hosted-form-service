@@ -9,7 +9,7 @@ import ShareForm from '~/components/forms/manage/ShareForm.vue';
 import { useFormStore } from '~/store/form';
 import { useTenantStore } from '~/store/tenant';
 
-import { FormPermissions } from '~/utils/constants';
+import { TenantRoles, FormPermissions } from '~/utils/constants';
 
 const { locale } = useI18n({ useScope: 'global' });
 
@@ -38,6 +38,13 @@ const canManageTeam = computed(() => {
   return hasPermission && !isTenanted;
 });
 
+// Show Group Management for tenanted forms where user has form_admin CSTAR role
+const canManageGroups = computed(() => {
+  if (selectedTenant.value === null) return false;
+  const roles = selectedTenant.value?.roles || [];
+  return roles.includes(TenantRoles.FORM_ADMIN);
+});
+
 const canViewSubmissions = computed(() => {
   const perms = [
     FormPermissions.SUBMISSION_READ,
@@ -61,6 +68,7 @@ async function deleteForm() {
 defineExpose({
   canDeleteForm,
   canManageEmail,
+  canManageGroups,
   canManageTeam,
   canViewSubmissions,
   isPublished,
@@ -113,6 +121,27 @@ defineExpose({
         </template>
         <span :lang="locale">{{
           $t('trans.manageFormActions.teamManagement')
+        }}</span>
+      </v-tooltip>
+    </span>
+
+    <span v-if="canManageGroups">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-btn
+            class="mx-1"
+            color="primary"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-account-group"
+            data-test="canManageGroups"
+            :to="{ name: 'FormGroups', query: { f: form.id } }"
+            :title="$t('trans.manageFormActions.groupManagement')"
+          />
+        </template>
+        <span :lang="locale">{{
+          $t('trans.manageFormActions.groupManagement')
         }}</span>
       </v-tooltip>
     </span>

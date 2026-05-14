@@ -107,8 +107,31 @@ const currentUser = async (req, _res, next) => {
     // Add the request element that contains the current user's parsed info. It
     // is ok if the access token isn't defined: then we'll have a public user.
     const accessToken = await jwtService.getTokenPayload(req);
-    req.currentUser = await service.login(accessToken);
-    req.currentUser.tenantId = config.get('cstar.tenantFeatureEnabled') ? req.headers['x-tenant-id'] : undefined;
+    req.currentUser = { ...(await service.login(accessToken)) };
+    const tenantId = config.get('cstar.tenantFeatureEnabled') ? req.headers?.['x-tenant-id'] : undefined;
+    if (tenantId && !uuid.validate(tenantId)) {
+      throw new Problem(400, {
+        detail: 'Bad tenantId',
+      });
+    }
+
+    if (tenantId) {
+      const userTenants = await tenantService.getCurrentUserTenants(req);
+      if (req._tenantServiceDegraded) {
+        throw new Problem(503, {
+          detail: 'Tenant service unavailable.',
+        });
+      }
+
+      const tenantBelongsToUser = Array.isArray(userTenants) && userTenants.some((tenant) => tenant?.id === tenantId);
+      if (!tenantBelongsToUser) {
+        throw new Problem(403, {
+          detail: 'Tenant not accessible for current user.',
+        });
+      }
+    }
+
+    req.currentUser.tenantId = tenantId;
 
     next();
   } catch (error) {
