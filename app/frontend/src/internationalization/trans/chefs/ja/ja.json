@@ -902,7 +902,13 @@
     "noTenantAccess": "グループ管理はテナントフォームにのみ使用できます。続行するにはテナントを選択してください。",
     "unsavedChangesWarning": "グループの変更が未保存です。保存せずに移動しますか？",
     "unsavedChangesTitle": "未保存の変更",
-    "leave": "離れる"
+    "leave": "離れる",
+    "selectAll": "すべて選択",
+    "addSelected": "選択した項目を追加",
+    "removeSelected": "選択した項目を削除",
+    "formAdminGroupRequired": "割り当てられたグループの少なくとも1つにform_adminロールが必要です。",
+    "invalidGroupIds": "選択されたグループの1つ以上がこのテナントには無効です。",
+    "insufficientPermissions": "グループの関連付けを管理する権限がありません。"
   },
   "floatButton": {
     "publish": "公開",

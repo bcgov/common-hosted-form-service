@@ -902,7 +902,13 @@
     "noTenantAccess": "Gruppenverwaltung ist nur für mandantenbezogene Formulare verfügbar. Bitte wählen Sie einen Mandanten aus, um fortzufahren.",
     "unsavedChangesWarning": "Sie haben nicht gespeicherte Gruppenänderungen. Ohne Speichern verlassen?",
     "unsavedChangesTitle": "Nicht gespeicherte Änderungen",
-    "leave": "Verlassen"
+    "leave": "Verlassen",
+    "selectAll": "Alle auswählen",
+    "addSelected": "Ausgewählte hinzufügen",
+    "removeSelected": "Ausgewählte entfernen",
+    "formAdminGroupRequired": "Mindestens eine zugewiesene Gruppe muss die Rolle form_admin haben.",
+    "invalidGroupIds": "Eine oder mehrere ausgewählte Gruppen sind für diesen Mandanten ungültig.",
+    "insufficientPermissions": "Sie haben keine Berechtigung, Gruppenzuordnungen zu verwalten."
   },
   "floatButton": {
     "publish": "Veröffentlichen",

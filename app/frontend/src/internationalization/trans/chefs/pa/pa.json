@@ -902,7 +902,13 @@
     "noTenantAccess": "ਸਮੂਹ ਪ੍ਰਬੰਧਨ ਕੇਵਲ ਕਿਰਾਏਦਾਰ ਫਾਰਮਾਂ ਲਈ ਉਪਲਬਧ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਕਿਰਾਏਦਾਰ ਚੁਣੋ।",
     "unsavedChangesWarning": "ਤੁਹਾਡੇ ਕੋਲ ਅਣਸੇਵਡ ਗਰੁੱਪ ਬਦਲਾਅ ਹਨ। ਬਿਨਾਂ ਸੇਵ ਕੀਤੇ ਛੱਡੋ?",
     "unsavedChangesTitle": "ਸੁਰੱਖਿਅਤ ਨਾ ਕੀਤੇ ਬਦਲਾਅ",
-    "leave": "ਛੱਡੋ"
+    "leave": "ਛੱਡੋ",
+    "selectAll": "ਸਾਰੇ ਚੁਣੋ",
+    "addSelected": "ਚੁਣੇ ਜੋੜੋ",
+    "removeSelected": "ਚੁਣੇ ਹਟਾਓ",
+    "formAdminGroupRequired": "ਘੱਟੋ ਘੱਟ ਇੱਕ ਅਸਾਈਨ ਕੀਤੇ ਗਰੁੱਪ ਕੋਲ form_admin ਭੂਮਿਕਾ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।",
+    "invalidGroupIds": "ਇੱਕ ਜਾਂ ਵਧੇਰੇ ਚੁਣੇ ਗਏ ਗਰੁੱਪ ਇਸ ਕਿਰਾਏਦਾਰ ਲਈ ਵੈਧ ਨਹੀਂ ਹਨ।",
+    "insufficientPermissions": "ਤੁਹਾਡੇ ਕੋਲ ਗਰੁੱਪ ਸੰਘਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।"
   },
   "floatButton": {
     "publish": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",

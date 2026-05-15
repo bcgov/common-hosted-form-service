@@ -902,7 +902,13 @@
     "noTenantAccess": "群組管理僅適用於租戶表單。請選擇租戶以繼續。",
     "unsavedChangesWarning": "您有未儲存的群組變更。不儲存就離開？",
     "unsavedChangesTitle": "未儲存的變更",
-    "leave": "離開"
+    "leave": "離開",
+    "selectAll": "全選",
+    "addSelected": "新增所選",
+    "removeSelected": "移除所選",
+    "formAdminGroupRequired": "至少一個已指派的群組必須具有 form_admin 角色。",
+    "invalidGroupIds": "一個或多個選取的群組對此租戶無效。",
+    "insufficientPermissions": "您沒有管理群組關聯的權限。"
   },
   "floatButton": {
     "publish": "發布",
