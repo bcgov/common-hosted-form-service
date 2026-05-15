@@ -902,7 +902,13 @@
     "noTenantAccess": "组管理仅适用于租户表单。请选择租户以继续。",
     "unsavedChangesWarning": "您有未保存的群组更改。不保存就离开？",
     "unsavedChangesTitle": "未保存的更改",
-    "leave": "离开"
+    "leave": "离开",
+    "selectAll": "全选",
+    "addSelected": "添加所选",
+    "removeSelected": "移除所选",
+    "formAdminGroupRequired": "至少一个分配的组必须具有 form_admin 角色。",
+    "invalidGroupIds": "一个或多个选定的组对此租户无效。",
+    "insufficientPermissions": "您没有管理组关联的权限。"
   },
   "floatButton": {
     "publish": "发布",

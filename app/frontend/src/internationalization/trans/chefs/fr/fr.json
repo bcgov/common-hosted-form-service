@@ -902,7 +902,13 @@
     "noTenantAccess": "La gestion des groupes est uniquement disponible pour les formulaires liés à un locataire. Veuillez sélectionner un locataire pour continuer.",
     "unsavedChangesWarning": "Vous avez des modifications de groupe non enregistrées. Quitter sans enregistrer?",
     "unsavedChangesTitle": "Modifications non enregistrées",
-    "leave": "Quitter"
+    "leave": "Quitter",
+    "selectAll": "Tout sélectionner",
+    "addSelected": "Ajouter la sélection",
+    "removeSelected": "Supprimer la sélection",
+    "formAdminGroupRequired": "Au moins un groupe assigné doit avoir le rôle form_admin.",
+    "invalidGroupIds": "Un ou plusieurs groupes sélectionnés ne sont pas valides pour ce locataire.",
+    "insufficientPermissions": "Vous n'avez pas la permission de gérer les associations de groupes."
   },
   "floatButton": {
     "publish": "Publier",

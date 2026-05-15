@@ -20,7 +20,10 @@ const isTenantRestoring = computed(() => tenantStore.isTenantRestoring);
 // routes don't carry tenant context (interceptors.js excludes them) and
 // shouldn't be blocked by a restore happening in another tab.
 const showTenantRestoreLoader = computed(
-  () => isTenantRestoring.value && !route?.meta?.formSubmitMode
+  () =>
+    isTenantRestoring.value &&
+    !route?.meta?.formSubmitMode &&
+    !route?.meta?.hideTenantUI
 );
 
 const appTitle = computed(() => {
@@ -76,7 +79,10 @@ onMounted(async () => {
       <BaseNotificationContainer />
       <BCGovHeader :app-title="appTitle" :form-submit-mode="isFormSubmitMode" />
       <BCGovNavBar :form-submit-mode="isFormSubmitMode" />
-      <BCGovEnterpriseBanner :form-submit-mode="isFormSubmitMode" />
+      <BCGovEnterpriseBanner
+        :form-submit-mode="isFormSubmitMode"
+        :hide-tenant-ui="!!route?.meta?.hideTenantUI"
+      />
       <GlobalStatusOverlay :parent-ready="ready" />
       <output
         v-if="showTenantRestoreLoader"

@@ -902,7 +902,13 @@
     "noTenantAccess": "Ang pamamahala ng grupo ay available lamang para sa mga tenanted na form. Mangyaring pumili ng tenant para magpatuloy.",
     "unsavedChangesWarning": "Mayroon kang hindi na-save na mga pagbabago sa grupo. Umalis nang hindi nag-se-save?",
     "unsavedChangesTitle": "Hindi pa nai-save na mga pagbabago",
-    "leave": "Umalis"
+    "leave": "Umalis",
+    "selectAll": "Piliin lahat",
+    "addSelected": "Idagdag ang napili",
+    "removeSelected": "Alisin ang napili",
+    "formAdminGroupRequired": "Hindi bababa sa isang nakatalagang grupo ang dapat may form_admin na papel.",
+    "invalidGroupIds": "Isa o higit pang napiling grupo ay hindi wasto para sa tenant na ito.",
+    "insufficientPermissions": "Wala kang pahintulot na pamahalaan ang mga asosasyon ng grupo."
   },
   "floatButton": {
     "publish": "I-publish",

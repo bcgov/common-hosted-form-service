@@ -902,7 +902,13 @@
     "noTenantAccess": "إدارة المجموعات متاحة فقط للنماذج المرتبطة بمستأجر. يرجى تحديد مستأجر للمتابعة.",
     "unsavedChangesWarning": "لديك تغييرات مجموعة غير محفوظة. هل تريد المغادرة بدون حفظ؟",
     "unsavedChangesTitle": "تغييرات غير محفوظة",
-    "leave": "مغادرة"
+    "leave": "مغادرة",
+    "selectAll": "تحديد الكل",
+    "addSelected": "إضافة المحدد",
+    "removeSelected": "إزالة المحدد",
+    "formAdminGroupRequired": "يجب أن تمتلك مجموعة واحدة على الأقل دور form_admin.",
+    "invalidGroupIds": "واحدة أو أكثر من المجموعات المحددة غير صالحة لهذا المستأجر.",
+    "insufficientPermissions": "ليس لديك الإذن لإدارة ارتباطات المجموعة."
   },
   "floatButton": {
     "publish": "ينشر",

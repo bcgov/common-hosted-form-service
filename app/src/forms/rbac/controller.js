@@ -236,6 +236,15 @@ module.exports = {
       const result = await tenantService.assignGroupsToForm(req, formId, groupIds);
       res.status(200).json({ success: result });
     } catch (error) {
+      if (error.message?.includes('at least one assigned group must have form_admin role')) {
+        return res.status(422).json({ detail: error.message, code: 'FORM_ADMIN_GROUP_REQUIRED' });
+      }
+      if (error.message?.includes('invalid groupIds')) {
+        return res.status(422).json({ detail: error.message, code: 'INVALID_GROUP_IDS' });
+      }
+      if (error.message?.includes('insufficient permissions')) {
+        return res.status(403).json({ detail: error.message, code: 'INSUFFICIENT_PERMISSIONS' });
+      }
       next(error);
     }
   },

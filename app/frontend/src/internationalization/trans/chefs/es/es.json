@@ -902,7 +902,13 @@
     "noTenantAccess": "La gestión de grupos solo está disponible para formularios de inquilino. Seleccione un inquilino para continuar.",
     "unsavedChangesWarning": "Tiene cambios de grupo sin guardar. ¿Salir sin guardar?",
     "unsavedChangesTitle": "Cambios no guardados",
-    "leave": "Salir"
+    "leave": "Salir",
+    "selectAll": "Seleccionar todo",
+    "addSelected": "Agregar seleccionados",
+    "removeSelected": "Eliminar seleccionados",
+    "formAdminGroupRequired": "Al menos un grupo asignado debe tener el rol form_admin.",
+    "invalidGroupIds": "Uno o más grupos seleccionados no son válidos para este inquilino.",
+    "insufficientPermissions": "No tiene permiso para gestionar las asociaciones de grupos."
   },
   "floatButton": {
     "publish": "Publicar",
