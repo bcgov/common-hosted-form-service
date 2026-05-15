@@ -902,7 +902,13 @@
     "noTenantAccess": "La gestione dei gruppi è disponibile solo per i moduli con tenant. Seleziona un tenant per continuare.",
     "unsavedChangesWarning": "Hai modifiche al gruppo non salvate. Uscire senza salvare?",
     "unsavedChangesTitle": "Modifiche non salvate",
-    "leave": "Lascia"
+    "leave": "Lascia",
+    "selectAll": "Seleziona tutto",
+    "addSelected": "Aggiungi selezionati",
+    "removeSelected": "Rimuovi selezionati",
+    "formAdminGroupRequired": "Almeno un gruppo assegnato deve avere il ruolo form_admin.",
+    "invalidGroupIds": "Uno o più gruppi selezionati non sono validi per questo tenant.",
+    "insufficientPermissions": "Non hai il permesso di gestire le associazioni di gruppi."
   },
   "floatButton": {
     "publish": "Pubblicare",

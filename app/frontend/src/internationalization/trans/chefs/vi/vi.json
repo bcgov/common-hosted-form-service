@@ -902,7 +902,13 @@
     "noTenantAccess": "Quản lý nhóm chỉ khả dụng cho các biểu mẫu có người thuê. Vui lòng chọn người thuê để tiếp tục.",
     "unsavedChangesWarning": "Bạn có thay đổi nhóm chưa được lưu. Rời đi mà không lưu?",
     "unsavedChangesTitle": "Thay đổi chưa lưu",
-    "leave": "Rời khỏi"
+    "leave": "Rời khỏi",
+    "selectAll": "Chọn tất cả",
+    "addSelected": "Thêm đã chọn",
+    "removeSelected": "Xóa đã chọn",
+    "formAdminGroupRequired": "Ít nhất một nhóm được giao phải có vai trò form_admin.",
+    "invalidGroupIds": "Một hoặc nhiều nhóm được chọn không hợp lệ cho tenant này.",
+    "insufficientPermissions": "Bạn không có quyền quản lý các liên kết nhóm."
   },
   "floatButton": {
     "publish": "Công bố",

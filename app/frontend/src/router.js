@@ -76,6 +76,7 @@ export default function getRouter(basePath = '/') {
         meta: {
           requiresAuth: true,
           hasLogin: true,
+          hideTenantUI: true,
         },
       },
       {
@@ -414,6 +415,7 @@ export default function getRouter(basePath = '/') {
             meta: {
               requiresAuth: true,
               hasLogin: true,
+              hideTenantUI: true,
             },
             props: createProps,
           },
@@ -424,6 +426,9 @@ export default function getRouter(basePath = '/') {
         name: 'Login',
         component: () => import('~/views/Login.vue'),
         props: createProps,
+        meta: {
+          hideTenantUI: true,
+        },
         beforeEnter(to, from, next) {
           // Block navigation to login page if already authenticated
           NProgress.done();
@@ -454,6 +459,7 @@ export default function getRouter(basePath = '/') {
         component: () => import('~/views/NotFound.vue'),
         meta: {
           hasLogin: true,
+          hideTenantUI: true,
         },
       },
     ],
@@ -499,6 +505,7 @@ export default function getRouter(basePath = '/') {
   async function waitForTenantContext(to, tenantStore) {
     if (!tenantStore.isTenantFeatureEnabled) return;
     if (to.meta?.formSubmitMode) return;
+    if (to.meta?.hideTenantUI) return;
     if (!tenantStore.isTenantRestoring) return;
 
     await new Promise((resolve) => {

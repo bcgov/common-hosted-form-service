@@ -902,7 +902,13 @@
     "noTenantAccess": "O gerenciamento de grupos está disponível apenas para formulários com tenant. Selecione um tenant para continuar.",
     "unsavedChangesWarning": "Você tem alterações de grupo não salvas. Sair sem salvar?",
     "unsavedChangesTitle": "Alterações não salvas",
-    "leave": "Sair"
+    "leave": "Sair",
+    "selectAll": "Selecionar tudo",
+    "addSelected": "Adicionar selecionados",
+    "removeSelected": "Remover selecionados",
+    "formAdminGroupRequired": "Pelo menos um grupo atribuído deve ter o papel form_admin.",
+    "invalidGroupIds": "Um ou mais grupos selecionados não são válidos para este inquilino.",
+    "insufficientPermissions": "Você não tem permissão para gerenciar associações de grupos."
   },
   "floatButton": {
     "publish": "Publicar",

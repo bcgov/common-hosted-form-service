@@ -1027,7 +1027,13 @@
     "noTenantAccess": "Group management is only available for tenanted forms. Please select a tenant to continue.",
     "unsavedChangesWarning": "You have unsaved group changes. Leave without saving?",
     "unsavedChangesTitle": "Unsaved Changes",
-    "leave": "Leave"
+    "leave": "Leave",
+    "selectAll": "Select all",
+    "addSelected": "Add selected",
+    "removeSelected": "Remove selected",
+    "formAdminGroupRequired": "At least one assigned group must have the form_admin role.",
+    "invalidGroupIds": "One or more selected groups are not valid for this tenant.",
+    "insufficientPermissions": "You do not have permission to manage group associations."
   },
   "floatButton": {
     "publish": "Publish",

@@ -902,7 +902,13 @@
     "noTenantAccess": "समूह प्रबंधन केवल किरायेदार फ़ॉर्म के लिए उपलब्ध है। जारी रखने के लिए कृपया एक किरायेदार चुनें।",
     "unsavedChangesWarning": "आपके पास सहेजे न गए समूह परिवर्तन हैं। बिना सहेजे जाएं?",
     "unsavedChangesTitle": "अनसेव किए गए बदलाव",
-    "leave": "छोड़ें"
+    "leave": "छोड़ें",
+    "selectAll": "सभी चुनें",
+    "addSelected": "चयनित जोड़ें",
+    "removeSelected": "चयनित हटाएं",
+    "formAdminGroupRequired": "कम से कम एक असाइन किए गए समूह में form_admin भूमिका होनी चाहिए।",
+    "invalidGroupIds": "एक या अधिक चयनित समूह इस किरायेदार के लिए मान्य नहीं हैं।",
+    "insufficientPermissions": "आपको समूह संघों को प्रबंधित करने की अनुमति नहीं है।"
   },
   "floatButton": {
     "publish": "प्रकाशित करना",

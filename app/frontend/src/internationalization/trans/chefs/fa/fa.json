@@ -902,7 +902,13 @@
     "noTenantAccess": "مدیریت گروه فقط برای فرم‌های مستأجر در دسترس است. لطفاً یک مستأجر را برای ادامه انتخاب کنید.",
     "unsavedChangesWarning": "تغییرات گروه ذخیره نشده دارید. بدون ذخیره خارج شوید؟",
     "unsavedChangesTitle": "تغییرات ذخیره‌نشده",
-    "leave": "خروج"
+    "leave": "خروج",
+    "selectAll": "انتخاب همه",
+    "addSelected": "افزودن انتخاب‌شده‌ها",
+    "removeSelected": "حذف انتخاب‌شده‌ها",
+    "formAdminGroupRequired": "حداقل یک گروه اختصاص‌یافته باید نقش form_admin داشته باشد.",
+    "invalidGroupIds": "یک یا چند گروه انتخاب‌شده برای این مستأجر معتبر نیستند.",
+    "insufficientPermissions": "شما مجوز مدیریت ارتباطات گروه را ندارید."
   },
   "floatButton": {
     "publish": "انتشار",

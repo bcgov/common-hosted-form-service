@@ -32,6 +32,8 @@ const availableGroups = ref([]);
 const missingGroups = ref([]);
 const searchAvailable = ref('');
 const searchAssigned = ref('');
+const selectedAvailable = ref([]); // IDs of checked items in available panel
+const selectedAssigned = ref([]); // IDs of checked items in assigned panel
 const showSaveDialog = ref(false);
 const showUnsavedDialog = ref(false);
 const isDirty = ref(false);
@@ -63,6 +65,25 @@ const filteredAssigned = computed(() => {
   );
 });
 
+// Select-all states for each panel (based on currently visible/filtered items)
+const allAvailableSelected = computed(
+  () =>
+    filteredAvailable.value.length > 0 &&
+    filteredAvailable.value.every((g) => selectedAvailable.value.includes(g.id))
+);
+const someAvailableSelected = computed(() =>
+  filteredAvailable.value.some((g) => selectedAvailable.value.includes(g.id))
+);
+
+const allAssignedSelected = computed(
+  () =>
+    filteredAssigned.value.length > 0 &&
+    filteredAssigned.value.every((g) => selectedAssigned.value.includes(g.id))
+);
+const someAssignedSelected = computed(() =>
+  filteredAssigned.value.some((g) => selectedAssigned.value.includes(g.id))
+);
+
 // True when the component is loaded without a tenant context (direct URL access, degraded state)
 const noTenant = computed(() => !tenantStore.selectedTenant);
 
@@ -87,6 +108,8 @@ async function loadFormGroups() {
     assignedGroups.value = data.associatedGroups || [];
     availableGroups.value = data.availableGroups || [];
     missingGroups.value = data.missingGroups || [];
+    selectedAvailable.value = [];
+    selectedAssigned.value = [];
   } catch (error) {
     notificationStore.addNotification({
       ...NotificationTypes.ERROR,
@@ -99,9 +122,50 @@ async function loadFormGroups() {
   }
 }
 
+function toggleAvailableSelection(id) {
+  const idx = selectedAvailable.value.indexOf(id);
+  if (idx === -1) selectedAvailable.value.push(id);
+  else selectedAvailable.value.splice(idx, 1);
+}
+
+function toggleAssignedSelection(id) {
+  const idx = selectedAssigned.value.indexOf(id);
+  if (idx === -1) selectedAssigned.value.push(id);
+  else selectedAssigned.value.splice(idx, 1);
+}
+
+function toggleSelectAllAvailable() {
+  const filteredIds = filteredAvailable.value.map((g) => g.id);
+  if (allAvailableSelected.value) {
+    selectedAvailable.value = selectedAvailable.value.filter(
+      (id) => !filteredIds.includes(id)
+    );
+  } else {
+    selectedAvailable.value = [
+      ...new Set([...selectedAvailable.value, ...filteredIds]),
+    ];
+  }
+}
+
+function toggleSelectAllAssigned() {
+  const filteredIds = filteredAssigned.value.map((g) => g.id);
+  if (allAssignedSelected.value) {
+    selectedAssigned.value = selectedAssigned.value.filter(
+      (id) => !filteredIds.includes(id)
+    );
+  } else {
+    selectedAssigned.value = [
+      ...new Set([...selectedAssigned.value, ...filteredIds]),
+    ];
+  }
+}
+
 function addGroup(group) {
   availableGroups.value = availableGroups.value.filter(
     (g) => g.id !== group.id
+  );
+  selectedAvailable.value = selectedAvailable.value.filter(
+    (id) => id !== group.id
   );
   assignedGroups.value.push({ ...group, isAssociated: true });
   isDirty.value = true;
@@ -109,10 +173,37 @@ function addGroup(group) {
 
 function removeGroup(group) {
   assignedGroups.value = assignedGroups.value.filter((g) => g.id !== group.id);
+  selectedAssigned.value = selectedAssigned.value.filter(
+    (id) => id !== group.id
+  );
   // Missing groups (deleted from tenant) are not returned to the available list
   if (!group.isDeleted) {
     availableGroups.value.push({ ...group, isAssociated: false });
   }
+  isDirty.value = true;
+}
+
+function addSelectedGroups() {
+  const ids = new Set(selectedAvailable.value);
+  const toAdd = availableGroups.value.filter((g) => ids.has(g.id));
+  availableGroups.value = availableGroups.value.filter((g) => !ids.has(g.id));
+  assignedGroups.value.push(
+    ...toAdd.map((g) => ({ ...g, isAssociated: true }))
+  );
+  selectedAvailable.value = [];
+  isDirty.value = true;
+}
+
+function removeSelectedGroups() {
+  const ids = new Set(selectedAssigned.value);
+  const toRemove = assignedGroups.value.filter((g) => ids.has(g.id));
+  assignedGroups.value = assignedGroups.value.filter((g) => !ids.has(g.id));
+  availableGroups.value.push(
+    ...toRemove
+      .filter((g) => !g.isDeleted)
+      .map((g) => ({ ...g, isAssociated: false }))
+  );
+  selectedAssigned.value = [];
   isDirty.value = true;
 }
 
@@ -129,9 +220,18 @@ async function saveGroups() {
       text: t('trans.groupManagement.saveSuccessMsg'),
     });
   } catch (error) {
+    const code = error.response?.data?.code;
+    let text = t('trans.groupManagement.saveErrMsg');
+    if (code === 'FORM_ADMIN_GROUP_REQUIRED') {
+      text = t('trans.groupManagement.formAdminGroupRequired');
+    } else if (code === 'INVALID_GROUP_IDS') {
+      text = t('trans.groupManagement.invalidGroupIds');
+    } else if (code === 'INSUFFICIENT_PERMISSIONS') {
+      text = t('trans.groupManagement.insufficientPermissions');
+    }
     notificationStore.addNotification({
       ...NotificationTypes.ERROR,
-      text: t('trans.groupManagement.saveErrMsg'),
+      text,
       consoleError: `Error saving group associations: ${error}`,
     });
   } finally {
@@ -161,26 +261,38 @@ function cancelLeave() {
 }
 
 defineExpose({
+  addGroup,
+  addSelectedGroups,
+  allAvailableSelected,
+  allAssignedSelected,
   assignedGroups,
   availableGroups,
   canManageGroups,
   cancelLeave,
   confirmLeave,
-  isDirty,
-  noTenant,
   filteredAvailable,
   filteredAssigned,
+  isDirty,
   loading,
   loadFormGroups,
   missingGroups,
+  noTenant,
+  removeGroup,
+  removeSelectedGroups,
   saveGroups,
   saving,
   searchAvailable,
   searchAssigned,
+  selectedAssigned,
+  selectedAvailable,
   showSaveDialog,
   showUnsavedDialog,
-  addGroup,
-  removeGroup,
+  someAvailableSelected,
+  someAssignedSelected,
+  toggleAssignedSelection,
+  toggleAvailableSelection,
+  toggleSelectAllAssigned,
+  toggleSelectAllAvailable,
 });
 </script>
 
@@ -248,6 +360,16 @@ defineExpose({
       <v-col cols="12" md="5">
         <v-card variant="outlined" height="100%">
           <v-card-title class="panel-title bg-grey-lighten-4" :lang="locale">
+            <v-checkbox-btn
+              :model-value="allAvailableSelected"
+              :indeterminate="someAvailableSelected && !allAvailableSelected"
+              :disabled="
+                !canManageGroups || saving || filteredAvailable.length === 0
+              "
+              class="flex-grow-0 mr-1"
+              :title="$t('trans.groupManagement.selectAll')"
+              @click.stop="toggleSelectAllAvailable"
+            />
             <v-icon icon="mdi:mdi-account-group-outline" class="mr-2" />
             {{ $t('trans.groupManagement.availableGroups') }}
             <v-chip size="small" class="ml-2" color="primary" variant="tonal">
@@ -289,11 +411,11 @@ defineExpose({
                   rounded="sm"
                 >
                   <template #prepend>
-                    <v-icon
-                      icon="mdi:mdi-account-group"
-                      size="small"
-                      color="grey"
-                      class="mr-2"
+                    <v-checkbox-btn
+                      :model-value="selectedAvailable.includes(group.id)"
+                      :disabled="!canManageGroups || saving"
+                      class="flex-grow-0 mr-1"
+                      @click.stop="toggleAvailableSelection(group.id)"
                     />
                   </template>
                   <v-list-item-title class="text-body-2 font-weight-medium">
@@ -321,6 +443,29 @@ defineExpose({
                 </v-list-item>
               </v-list>
             </div>
+
+            <div
+              v-if="selectedAvailable.length > 0"
+              class="d-flex justify-end mt-2"
+            >
+              <v-btn
+                size="small"
+                color="primary"
+                :disabled="!canManageGroups || saving"
+                :lang="locale"
+                @click="addSelectedGroups"
+              >
+                {{ $t('trans.groupManagement.addSelected') }}
+                <v-chip
+                  size="x-small"
+                  class="ml-1"
+                  color="white"
+                  variant="tonal"
+                >
+                  {{ selectedAvailable.length }}
+                </v-chip>
+              </v-btn>
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -339,6 +484,16 @@ defineExpose({
       <v-col cols="12" md="5">
         <v-card variant="outlined" height="100%">
           <v-card-title class="panel-title bg-primary-lighten-5" :lang="locale">
+            <v-checkbox-btn
+              :model-value="allAssignedSelected"
+              :indeterminate="someAssignedSelected && !allAssignedSelected"
+              :disabled="
+                !canManageGroups || saving || filteredAssigned.length === 0
+              "
+              class="flex-grow-0 mr-1"
+              :title="$t('trans.groupManagement.selectAll')"
+              @click.stop="toggleSelectAllAssigned"
+            />
             <v-icon icon="mdi:mdi-account-check" class="mr-2" color="primary" />
             {{ $t('trans.groupManagement.assignedGroups') }}
             <v-chip size="small" class="ml-2" color="success" variant="tonal">
@@ -381,15 +536,11 @@ defineExpose({
                   rounded="sm"
                 >
                   <template #prepend>
-                    <v-icon
-                      :icon="
-                        group.isDeleted
-                          ? 'mdi:mdi-account-group-outline'
-                          : 'mdi:mdi-account-group'
-                      "
-                      size="small"
-                      :color="group.isDeleted ? 'warning' : 'primary'"
-                      class="mr-2"
+                    <v-checkbox-btn
+                      :model-value="selectedAssigned.includes(group.id)"
+                      :disabled="!canManageGroups || saving"
+                      class="flex-grow-0 mr-1"
+                      @click.stop="toggleAssignedSelection(group.id)"
                     />
                   </template>
                   <v-list-item-title class="text-body-2 font-weight-medium">
@@ -426,6 +577,30 @@ defineExpose({
                   </template>
                 </v-list-item>
               </v-list>
+            </div>
+
+            <div
+              v-if="selectedAssigned.length > 0"
+              class="d-flex justify-end mt-2"
+            >
+              <v-btn
+                size="small"
+                color="error"
+                variant="tonal"
+                :disabled="!canManageGroups || saving"
+                :lang="locale"
+                @click="removeSelectedGroups"
+              >
+                {{ $t('trans.groupManagement.removeSelected') }}
+                <v-chip
+                  size="x-small"
+                  class="ml-1"
+                  color="error"
+                  variant="tonal"
+                >
+                  {{ selectedAssigned.length }}
+                </v-chip>
+              </v-btn>
             </div>
           </v-card-text>
         </v-card>

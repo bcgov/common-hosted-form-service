@@ -9,6 +9,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  hideTenantUI: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const { authenticated } = storeToRefs(useAuthStore());
@@ -27,7 +31,10 @@ const { isTenantRestoring: showRestoring } = storeToRefs(tenantStore);
 <template>
   <div
     v-if="
-      authenticated && tenantStore.isTenantFeatureEnabled && !formSubmitMode
+      authenticated &&
+      tenantStore.isTenantFeatureEnabled &&
+      !formSubmitMode &&
+      !hideTenantUI
     "
     class="context-banner d-print-none"
     :class="
