@@ -269,7 +269,7 @@ module.exports = {
             id: dbUser?.id || null,
             idpCode: 'idir',
           };
-        }),
+        })
       );
       res.status(200).json({ hasGroups, members: enriched });
     } catch (error) {

@@ -24,6 +24,8 @@ describe('ManageSubmissionUsers.vue', () => {
     'setSubmissionUserPermissions'
   );
   const getUsersSpy = vi.spyOn(userService, 'getUsers');
+  const getFormGroupMembersSpy = vi.spyOn(rbacService, 'getFormGroupMembers');
+  const isUserAssignedToFormTeamsSpy = vi.spyOn(rbacService, 'isUserAssignedToFormTeams');
   const router = createRouter({
     history: createWebHistory(),
     routes: getRouter().getRoutes(),
@@ -36,9 +38,13 @@ describe('ManageSubmissionUsers.vue', () => {
     getSubmissionUsersSpy.mockReset();
     setSubmissionUserPermissionsSpy.mockReset();
     getUsersSpy.mockReset();
+    getFormGroupMembersSpy.mockReset();
+    isUserAssignedToFormTeamsSpy.mockReset();
     getSubmissionUsersSpy.mockImplementation(() => ({ data: [] }));
     setSubmissionUserPermissionsSpy.mockImplementation(() => ({ data: [] }));
     getUsersSpy.mockImplementation(() => ({ data: [] }));
+    getFormGroupMembersSpy.mockImplementation(() => ({ data: { hasGroups: false, members: [] } }));
+    isUserAssignedToFormTeamsSpy.mockImplementation(() => ({ data: true }));
   });
 
   afterAll(() => {
@@ -46,6 +52,8 @@ describe('ManageSubmissionUsers.vue', () => {
     getSubmissionUsersSpy.mockRestore();
     setSubmissionUserPermissionsSpy.mockRestore();
     getUsersSpy.mockRestore();
+    getFormGroupMembersSpy.mockRestore();
+    isUserAssignedToFormTeamsSpy.mockRestore();
   });
 
   it('renders', () => {
@@ -317,6 +325,119 @@ describe('ManageSubmissionUsers.vue', () => {
       text: 'trans.manageSubmissionUsers.sentInviteEmailTo john@email.com',
       type: 'success',
     });
+  });
+
+  it('loadFormGroupMembers sets isTenantedForm true and isGroupRestricted from response', async () => {
+    const wrapper = shallowMount(ManageSubmissionUsers, {
+      props: { isDraft: true, submissionId: SUBMISSION_ID, formId: '123' },
+      global: { plugins: [router] },
+    });
+
+    getFormGroupMembersSpy.mockResolvedValueOnce({ data: { hasGroups: true, members: [{ email: 'a@a.com' }] } });
+
+    await wrapper.vm.loadFormGroupMembers();
+    await flushPromises();
+
+    expect(wrapper.vm.isTenantedForm).toBe(true);
+    expect(wrapper.vm.isGroupRestricted).toBe(true);
+    expect(wrapper.vm.formGroupMembers).toEqual({ hasGroups: true, members: [{ email: 'a@a.com' }] });
+  });
+
+  it('loadFormGroupMembers sets isTenantedForm false on error (classic CHEFS 404)', async () => {
+    const wrapper = shallowMount(ManageSubmissionUsers, {
+      props: { isDraft: true, submissionId: SUBMISSION_ID, formId: '123' },
+      global: { plugins: [router] },
+    });
+
+    getFormGroupMembersSpy.mockRejectedValueOnce({ response: { status: 404 } });
+
+    await wrapper.vm.loadFormGroupMembers();
+    await flushPromises();
+
+    expect(wrapper.vm.isTenantedForm).toBe(false);
+    expect(wrapper.vm.isGroupRestricted).toBe(false);
+  });
+
+  it('loadFormGroupMembers sets isTenantedForm true and isGroupRestricted false when form has no groups', async () => {
+    const wrapper = shallowMount(ManageSubmissionUsers, {
+      props: { isDraft: true, submissionId: SUBMISSION_ID, formId: '123' },
+      global: { plugins: [router] },
+    });
+
+    getFormGroupMembersSpy.mockResolvedValueOnce({ data: { hasGroups: false, members: [] } });
+
+    await wrapper.vm.loadFormGroupMembers();
+    await flushPromises();
+
+    expect(wrapper.vm.isTenantedForm).toBe(true);
+    expect(wrapper.vm.isGroupRestricted).toBe(false);
+  });
+
+  it('onChangeUserSearchInput filters locally when isGroupRestricted is true', async () => {
+    const wrapper = shallowMount(ManageSubmissionUsers, {
+      props: { isDraft: true, submissionId: SUBMISSION_ID, formId: '123' },
+      global: { plugins: [router] },
+    });
+
+    wrapper.vm.formGroupMembers = {
+      hasGroups: true,
+      members: [
+        { fullName: 'Alice Smith', email: 'alice@example.com', username: 'asmith' },
+        { fullName: 'Bob Jones', email: 'bob@example.com', username: 'bjones' },
+      ],
+    };
+    wrapper.vm.isGroupRestricted = true;
+
+    await wrapper.vm.onChangeUserSearchInput('alice');
+    expect(getUsersSpy).not.toHaveBeenCalled();
+    expect(wrapper.vm.userSearchResults).toHaveLength(1);
+    expect(wrapper.vm.userSearchResults[0].email).toBe('alice@example.com');
+  });
+
+  it('addUser blocks non-group member when isGroupRestricted and enableTeamMemberDraftShare are true', async () => {
+    const pinia = createTestingPinia({ stubActions: false });
+    const notificationStore = useNotificationStore(pinia);
+    const formStore = useFormStore(pinia);
+    setActivePinia(pinia);
+    formStore.form.enableTeamMemberDraftShare = true;
+    const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification').mockImplementation(() => {});
+
+    const wrapper = shallowMount(ManageSubmissionUsers, {
+      props: { isDraft: true, submissionId: SUBMISSION_ID, formId: '123' },
+      global: { plugins: [router, pinia] },
+    });
+
+    wrapper.vm.formGroupMembers = { hasGroups: true, members: [{ email: 'allowed@example.com' }] };
+    wrapper.vm.isGroupRestricted = true;
+    wrapper.vm.userSearchSelection = { id: 'u1', email: 'notallowed@example.com' };
+
+    await wrapper.vm.addUser();
+
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+    expect(setSubmissionUserPermissionsSpy).not.toHaveBeenCalled();
+  });
+
+  it('addUser skips isUserAssignedToFormTeams check when isTenantedForm is true and no group restriction', async () => {
+    const pinia = createTestingPinia({ stubActions: false });
+    const formStore = useFormStore(pinia);
+    setActivePinia(pinia);
+    formStore.form.enableTeamMemberDraftShare = true;
+
+    const wrapper = shallowMount(ManageSubmissionUsers, {
+      props: { isDraft: true, submissionId: SUBMISSION_ID, formId: '123' },
+      global: { plugins: [router, pinia] },
+    });
+
+    wrapper.vm.isTenantedForm = true;
+    wrapper.vm.isGroupRestricted = false;
+    wrapper.vm.formGroupMembers = { hasGroups: false, members: [] };
+    wrapper.vm.userSearchSelection = { id: 'u99', email: 'anyone@example.com' };
+    wrapper.vm.formSubmissionUsers = [];
+
+    await wrapper.vm.addUser();
+
+    expect(rbacService.isUserAssignedToFormTeams).not.toHaveBeenCalled();
+    expect(setSubmissionUserPermissionsSpy).toHaveBeenCalledTimes(1);
   });
 
   it('removeUser should set userToDelete to the selected user and show the delete dialog', () => {

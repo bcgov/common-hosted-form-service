@@ -1102,6 +1102,117 @@ describe('TenantService', () => {
     });
   });
 
+  describe('getFormGroupMembers', () => {
+    const formId = 'form-uuid-1111';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-aabbccddeeff';
+    const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
+    const apiUrl = `${endpoint}${listTenantUsersPath.replace('{tenantId}', tenantId)}`;
+
+    // req has no tenantId — simulates a draft page where x-tenant-id header is absent
+    const req = {
+      currentUser: { idpUserId: 'caller-user' },
+      headers: { authorization: 'Bearer testtoken' },
+    };
+
+    beforeEach(() => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+    });
+
+    it('should return hasGroups false when no FormGroups exist for the form', async () => {
+      FormGroup.query.mockReturnValue({ where: jest.fn().mockResolvedValue([]) });
+
+      const result = await tenantService.getFormGroupMembers(req, formId);
+
+      expect(result).toEqual({ hasGroups: false, members: [] });
+    });
+
+    it('should return hasGroups true with empty members when FormTenant not found', async () => {
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockResolvedValue([{ groupId: 'g1' }]),
+      });
+      FormTenant.query.mockReturnValue({ findOne: jest.fn().mockResolvedValue(null) });
+
+      const result = await tenantService.getFormGroupMembers(req, formId);
+
+      expect(result).toEqual({ hasGroups: true, members: [] });
+    });
+
+    it('should return only users whose CSTAR groups intersect the form groups', async () => {
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockResolvedValue([{ groupId: 'g1' }, { groupId: 'g2' }]),
+      });
+      FormTenant.query.mockReturnValue({
+        findOne: jest.fn().mockResolvedValue({ tenantId }),
+      });
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          users: [
+            { ssoUser: { ssoUserId: 'kc-a', userName: 'usera', displayName: 'User A', email: 'a@example.com', firstName: 'User', lastName: 'A' } },
+            { ssoUser: { ssoUserId: 'kc-b', userName: 'userb', displayName: 'User B', email: 'b@example.com', firstName: 'User', lastName: 'B' } },
+          ],
+        },
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockImplementation(async ({ currentUser }) => {
+        if (currentUser.idpUserId === 'kc-a') return [{ id: 'g1' }]; // in form group
+        return [{ id: 'g99' }]; // not in form group
+      });
+
+      const result = await tenantService.getFormGroupMembers(req, formId);
+
+      expect(result.hasGroups).toBe(true);
+      expect(result.members).toHaveLength(1);
+      expect(result.members[0]).toMatchObject({ idpUserId: 'kc-a', email: 'a@example.com' });
+    });
+
+    it('should skip users whose CSTAR group lookup throws', async () => {
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockResolvedValue([{ groupId: 'g1' }]),
+      });
+      FormTenant.query.mockReturnValue({
+        findOne: jest.fn().mockResolvedValue({ tenantId }),
+      });
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: {
+          users: [
+            { ssoUser: { ssoUserId: 'kc-err', userName: 'erru', displayName: 'Err User', email: 'err@example.com' } },
+          ],
+        },
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(new Error('CSTAR down'));
+
+      const result = await tenantService.getFormGroupMembers(req, formId);
+
+      expect(result.hasGroups).toBe(true);
+      expect(result.members).toHaveLength(0);
+    });
+
+    it('should skip users with no ssoUserId', async () => {
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockResolvedValue([{ groupId: 'g1' }]),
+      });
+      FormTenant.query.mockReturnValue({
+        findOne: jest.fn().mockResolvedValue({ tenantId }),
+      });
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: { users: [{ ssoUser: null }, { ssoUser: {} }] },
+      });
+
+      const result = await tenantService.getFormGroupMembers(req, formId);
+
+      expect(result.hasGroups).toBe(true);
+      expect(result.members).toHaveLength(0);
+    });
+
+    it('should throw when req or currentUser is missing', async () => {
+      await expect(tenantService.getFormGroupMembers(null, formId)).rejects.toThrow('TenantService: missing currentUser');
+      await expect(tenantService.getFormGroupMembers({}, formId)).rejects.toThrow('TenantService: missing currentUser');
+    });
+
+    it('should throw when formId is missing', async () => {
+      await expect(tenantService.getFormGroupMembers(req, null)).rejects.toThrow('TenantService: missing formId');
+    });
+  });
+
   describe('getTenantUsers', () => {
     const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const listTenantUsersPath = config.get('cstar.listTenantUsersPath');

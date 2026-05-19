@@ -365,6 +365,75 @@ describe('assignGroupsToForm', () => {
   });
 });
 
+describe('getFormGroupMembers', () => {
+  const req = { params: { formId: 'form-1' } };
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+  const next = jest.fn();
+
+  beforeEach(() => {
+    res.status.mockClear();
+    res.json.mockClear();
+    next.mockClear();
+  });
+
+  it('should return enriched group members with CHEFS DB ids', async () => {
+    tenantService.getFormGroupMembers = jest.fn().mockResolvedValue({
+      hasGroups: true,
+      members: [{ idpUserId: 'kc-123', username: 'jdoe', fullName: 'John Doe', email: 'j@example.com' }],
+    });
+    userService.readByKeycloakId = jest.fn().mockResolvedValue({ id: 'db-uuid' });
+
+    await controller.getFormGroupMembers(req, res, next);
+
+    expect(tenantService.getFormGroupMembers).toHaveBeenCalledWith(req, 'form-1');
+    expect(userService.readByKeycloakId).toHaveBeenCalledWith('kc-123');
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      hasGroups: true,
+      members: [{ idpUserId: 'kc-123', username: 'jdoe', fullName: 'John Doe', email: 'j@example.com', id: 'db-uuid', idpCode: 'idir' }],
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should use null id when user not found in CHEFS DB', async () => {
+    tenantService.getFormGroupMembers = jest.fn().mockResolvedValue({
+      hasGroups: true,
+      members: [{ idpUserId: 'kc-new', username: 'newuser', fullName: 'New User', email: 'new@example.com' }],
+    });
+    userService.readByKeycloakId = jest.fn().mockResolvedValue(null);
+
+    await controller.getFormGroupMembers(req, res, next);
+
+    expect(res.json).toHaveBeenCalledWith({
+      hasGroups: true,
+      members: [{ idpUserId: 'kc-new', username: 'newuser', fullName: 'New User', email: 'new@example.com', id: null, idpCode: 'idir' }],
+    });
+  });
+
+  it('should return hasGroups false with empty members when no groups assigned', async () => {
+    tenantService.getFormGroupMembers = jest.fn().mockResolvedValue({ hasGroups: false, members: [] });
+    userService.readByKeycloakId = jest.fn();
+
+    await controller.getFormGroupMembers(req, res, next);
+
+    expect(userService.readByKeycloakId).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ hasGroups: false, members: [] });
+  });
+
+  it('should forward errors to next', async () => {
+    const error = new Error('service fail');
+    tenantService.getFormGroupMembers = jest.fn().mockRejectedValue(error);
+
+    await controller.getFormGroupMembers(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+  });
+});
+
 describe('getFormGroups', () => {
   it('should return form groups from tenantService', async () => {
     const req = { params: { formId: 'form-1' } };
