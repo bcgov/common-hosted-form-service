@@ -246,14 +246,25 @@ class TenantService {
 
   async getFormGroupMembers(req, formId) {
     if (!req || !req.currentUser) throw new TypeError(`${SERVICE}: missing currentUser`);
-    if (!req.currentUser.tenantId) throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
     if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
 
+    // Step 1: pure DB check — no tenant context needed
     const formGroups = await FormGroup.query().where({ formId });
     if (formGroups.length === 0) return { hasGroups: false, members: [] };
 
+    // Step 2: derive tenantId from the form record — x-tenant-id header is
+    // intentionally absent on draft/submission pages so we cannot use req.currentUser.tenantId
+    const formTenant = await FormTenant.query().findOne({ formId });
+    if (!formTenant?.tenantId) return { hasGroups: true, members: [] };
+
+    // Step 3: build a request context with the derived tenantId for CSTAR calls
+    const reqWithTenant = {
+      ...req,
+      currentUser: { ...req.currentUser, tenantId: formTenant.tenantId },
+    };
+
     const formGroupIds = new Set(formGroups.map((fg) => fg.groupId));
-    const tenantUsers = await this.getTenantUsers(req);
+    const tenantUsers = await this.getTenantUsers(reqWithTenant);
     const members = [];
 
     for (const user of tenantUsers) {
@@ -261,10 +272,10 @@ class TenantService {
       if (!ssoUserId) continue;
       try {
         const userReq = {
-          currentUser: { ...req.currentUser, idpUserId: ssoUserId },
+          currentUser: { ...reqWithTenant.currentUser, idpUserId: ssoUserId },
           headers: req.headers,
         };
-        const userGroups = await this.getUserTenantGroupsAndRoles(userReq, req.currentUser.tenantId);
+        const userGroups = await this.getUserTenantGroupsAndRoles(userReq, formTenant.tenantId);
         if (userGroups.some((g) => formGroupIds.has(g.id))) {
           members.push({
             idpUserId: ssoUserId,

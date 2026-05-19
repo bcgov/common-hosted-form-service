@@ -8,7 +8,6 @@ import { rbacService, userService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useIdpStore } from '~/store/identityProviders';
-import { useTenantStore } from '~/store/tenant';
 import { FormPermissions, NotificationTypes, Regex } from '~/utils/constants';
 import { filterObject } from '~/utils/transformUtils';
 
@@ -33,6 +32,7 @@ const dialog = ref(false);
 const formSubmissionUsers = ref([]);
 const formGroupMembers = ref(null); // null = not yet fetched; { hasGroups, members } once fetched
 const isGroupRestricted = ref(false);
+const isTenantedForm = ref(false); // true once backend confirms tenant feature is active for this form
 const isLoadingDropdown = ref(false);
 const isLoadingTable = ref(true);
 const selectedIdp = ref(null);
@@ -45,7 +45,6 @@ const userToDelete = ref({});
 const formStore = useFormStore();
 const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
-const tenantStore = useTenantStore();
 
 const { isRTL, form } = storeToRefs(formStore);
 
@@ -65,9 +64,9 @@ watch(userSearchInput, async (input) => {
 
 initializeSelectedIdp();
 
-// Pre-load group members when the dialog opens on a tenanted form
+// Pre-load group members when the dialog opens — backend determines if form is tenanted
 watch(dialog, async (isOpen) => {
-  if (isOpen && tenantStore.selectedTenant && formGroupMembers.value === null) {
+  if (isOpen && formGroupMembers.value === null) {
     await loadFormGroupMembers();
   }
 });
@@ -94,9 +93,12 @@ async function loadFormGroupMembers() {
     const response = await rbacService.getFormGroupMembers(properties.formId);
     formGroupMembers.value = response.data;
     isGroupRestricted.value = response.data?.hasGroups ?? false;
+    isTenantedForm.value = true;
   } catch {
+    // 404 = tenant feature not enabled (classic CHEFS); any other error → treat as classic
     formGroupMembers.value = { hasGroups: false, members: [] };
     isGroupRestricted.value = false;
+    isTenantedForm.value = false;
   } finally {
     isLoadingDropdown.value = false;
   }
@@ -167,8 +169,8 @@ async function addUser() {
           });
           return;
         }
-      } else if (!tenantStore.selectedTenant) {
-        // Classic CHEFS (Personal): check explicit form team membership
+      } else if (!isTenantedForm.value) {
+        // Classic CHEFS: check explicit form team membership
         const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
           formId: properties.formId,
           email: userSearchSelection.value.email,
@@ -295,6 +297,7 @@ defineExpose({
   formGroupMembers,
   formSubmissionUsers,
   isGroupRestricted,
+  isTenantedForm,
   loadFormGroupMembers,
   modifyPermissions,
   onChangeSelectedIdp,
