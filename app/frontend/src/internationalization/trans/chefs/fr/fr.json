@@ -1342,7 +1342,8 @@
   "canShareDraft": {
     "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
     "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire",
-    "shareDraftGroupMessage": "Partager le brouillon uniquement avec les membres du groupe du formulaire"
+    "shareDraftGroupMessage": "Partager le brouillon uniquement avec les membres du groupe du formulaire",
+    "canShareGroupMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui ne font pas partie des groupes associés à ce formulaire."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ce service est temporairement indisponible.",

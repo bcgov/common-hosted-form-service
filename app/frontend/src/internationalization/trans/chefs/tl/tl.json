@@ -1352,7 +1352,8 @@
   "canShareDraft": {
     "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
     "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang",
-    "shareDraftGroupMessage": "Ibahagi ang draft sa mga miyembro ng grupo ng form lamang"
+    "shareDraftGroupMessage": "Ibahagi ang draft sa mga miyembro ng grupo ng form lamang",
+    "canShareGroupMessage": "Hindi mo maaaring ibahagi ang draft sa mga gumagamit na wala sa mga grupong nauugnay sa form na ito."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ang serbisyong ito ay pansamantalang hindi available.",

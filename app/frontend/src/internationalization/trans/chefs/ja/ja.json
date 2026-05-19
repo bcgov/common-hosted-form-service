@@ -1348,7 +1348,8 @@
   "canShareDraft": {
     "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
     "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する",
-    "shareDraftGroupMessage": "フォームグループメンバーのみと下書きを共有する"
+    "shareDraftGroupMessage": "フォームグループメンバーのみと下書きを共有する",
+    "canShareGroupMessage": "このフォームに関連付けられたグループに属していないユーザーとは下書きを共有できません。"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "このサービスは一時的に利用できません。",

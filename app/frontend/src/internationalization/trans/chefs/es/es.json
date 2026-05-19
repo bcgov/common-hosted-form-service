@@ -1348,7 +1348,8 @@
   "canShareDraft": {
     "canShareMessage": "No puedes compartir el borrador con usuarios que no se hayan añadido al formulario. Contacta con el administrador para añadirlos.",
     "shareDraftMessage": "Compartir borrador solo con miembros del equipo del formulario",
-    "shareDraftGroupMessage": "Compartir borrador solo con miembros del grupo del formulario"
+    "shareDraftGroupMessage": "Compartir borrador solo con miembros del grupo del formulario",
+    "canShareGroupMessage": "No puedes compartir el borrador con usuarios que no pertenecen a los grupos asociados con este formulario."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Este servicio no está disponible temporalmente.",

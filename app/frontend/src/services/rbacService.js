@@ -74,6 +74,12 @@ export default {
     });
   },
 
+  getFormGroupMembers(formId, params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/forms/${formId}/group-members`, {
+      params,
+    });
+  },
+
   /**
    * @function assignGroupsToForm
    * Assign groups to a form

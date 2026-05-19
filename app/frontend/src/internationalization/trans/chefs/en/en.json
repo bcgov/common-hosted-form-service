@@ -759,7 +759,8 @@
   "canShareDraft": {
     "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
     "shareDraftMessage": "Share draft with form team members only",
-    "shareDraftGroupMessage": "Share draft with form group members only"
+    "shareDraftGroupMessage": "Share draft with form group members only",
+    "canShareGroupMessage": "You can't share the draft with users who are not in the groups associated with this form."
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",

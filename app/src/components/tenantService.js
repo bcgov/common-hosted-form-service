@@ -244,6 +244,45 @@ class TenantService {
     return true;
   }
 
+  async getFormGroupMembers(req, formId) {
+    if (!req || !req.currentUser) throw new TypeError(`${SERVICE}: missing currentUser`);
+    if (!req.currentUser.tenantId) throw new TypeError(`${SERVICE}: missing currentUser.tenantId`);
+    if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
+
+    const formGroups = await FormGroup.query().where({ formId });
+    if (formGroups.length === 0) return { hasGroups: false, members: [] };
+
+    const formGroupIds = new Set(formGroups.map((fg) => fg.groupId));
+    const tenantUsers = await this.getTenantUsers(req);
+    const members = [];
+
+    for (const user of tenantUsers) {
+      const ssoUserId = user?.ssoUser?.ssoUserId;
+      if (!ssoUserId) continue;
+      try {
+        const userReq = {
+          currentUser: { ...req.currentUser, idpUserId: ssoUserId },
+          headers: req.headers,
+        };
+        const userGroups = await this.getUserTenantGroupsAndRoles(userReq, req.currentUser.tenantId);
+        if (userGroups.some((g) => formGroupIds.has(g.id))) {
+          members.push({
+            idpUserId: ssoUserId,
+            username: user?.ssoUser?.userName || null,
+            fullName: user?.ssoUser?.displayName || null,
+            email: user?.ssoUser?.email || null,
+            firstName: user?.ssoUser?.firstName || null,
+            lastName: user?.ssoUser?.lastName || null,
+          });
+        }
+      } catch {
+        // skip users whose CSTAR groups can't be fetched
+      }
+    }
+
+    return { hasGroups: true, members };
+  }
+
   /**
    * Get users for a specific tenant from CSTAR
    * @param {object} req - Express request object with currentUser and headers

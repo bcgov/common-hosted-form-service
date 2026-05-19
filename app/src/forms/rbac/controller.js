@@ -257,4 +257,23 @@ module.exports = {
       next(error);
     }
   },
+  getFormGroupMembers: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const { hasGroups, members } = await tenantService.getFormGroupMembers(req, formId);
+      const enriched = await Promise.all(
+        members.map(async (member) => {
+          const dbUser = await userService.readByKeycloakId(member.idpUserId);
+          return {
+            ...member,
+            id: dbUser?.id || null,
+            idpCode: 'idir',
+          };
+        }),
+      );
+      res.status(200).json({ hasGroups, members: enriched });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

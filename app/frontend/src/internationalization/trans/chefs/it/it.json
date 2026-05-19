@@ -1348,7 +1348,8 @@
   "canShareDraft": {
     "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
     "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo",
-    "shareDraftGroupMessage": "Condividi la bozza solo con i membri del gruppo del modulo"
+    "shareDraftGroupMessage": "Condividi la bozza solo con i membri del gruppo del modulo",
+    "canShareGroupMessage": "Non puoi condividere la bozza con utenti che non appartengono ai gruppi associati a questo modulo."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Questo servizio non è temporaneamente disponibile.",

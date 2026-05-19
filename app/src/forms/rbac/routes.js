@@ -80,4 +80,8 @@ routes.get('/forms/:formId/groups', requireTenantFeature, jwtService.protect(), 
   await controller.getFormGroups(req, res, next);
 });
 
+routes.get('/forms/:formId/group-members', requireTenantFeature, jwtService.protect(), async (req, res, next) => {
+  await controller.getFormGroupMembers(req, res, next);
+});
+
 module.exports = routes;

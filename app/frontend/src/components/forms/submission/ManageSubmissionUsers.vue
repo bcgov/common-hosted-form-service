@@ -8,6 +8,7 @@ import { rbacService, userService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 import { FormPermissions, NotificationTypes, Regex } from '~/utils/constants';
 import { filterObject } from '~/utils/transformUtils';
 
@@ -29,7 +30,9 @@ const properties = defineProps({
 });
 
 const dialog = ref(false);
-const formSubmissionUsers = ref([]); // the users added to the team for this submission
+const formSubmissionUsers = ref([]);
+const formGroupMembers = ref(null); // null = not yet fetched; { hasGroups, members } once fetched
+const isGroupRestricted = ref(false);
 const isLoadingDropdown = ref(false);
 const isLoadingTable = ref(true);
 const selectedIdp = ref(null);
@@ -42,6 +45,7 @@ const userToDelete = ref({});
 const formStore = useFormStore();
 const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
+const tenantStore = useTenantStore();
 
 const { isRTL, form } = storeToRefs(formStore);
 
@@ -61,6 +65,13 @@ watch(userSearchInput, async (input) => {
 
 initializeSelectedIdp();
 
+// Pre-load group members when the dialog opens on a tenanted form
+watch(dialog, async (isOpen) => {
+  if (isOpen && tenantStore.selectedTenant && formGroupMembers.value === null) {
+    await loadFormGroupMembers();
+  }
+});
+
 watch(
   () => properties.isDraft,
   (newValue) => {
@@ -77,8 +88,35 @@ function onChangeSelectedIdp(newIdp, oldIdp) {
   }
 }
 
+async function loadFormGroupMembers() {
+  isLoadingDropdown.value = true;
+  try {
+    const response = await rbacService.getFormGroupMembers(properties.formId);
+    formGroupMembers.value = response.data;
+    isGroupRestricted.value = response.data?.hasGroups ?? false;
+  } catch {
+    formGroupMembers.value = { hasGroups: false, members: [] };
+    isGroupRestricted.value = false;
+  } finally {
+    isLoadingDropdown.value = false;
+  }
+}
+
 async function onChangeUserSearchInput(input) {
   if (!input) return;
+
+  // Tenanted + group-restricted: filter pre-loaded members locally, no API call
+  if (isGroupRestricted.value && formGroupMembers.value !== null) {
+    const lower = input.toLowerCase();
+    userSearchResults.value = (formGroupMembers.value.members || []).filter(
+      (u) =>
+        u.fullName?.toLowerCase().includes(lower) ||
+        u.email?.toLowerCase().includes(lower) ||
+        u.username?.toLowerCase().includes(lower)
+    );
+    return;
+  }
+
   isLoadingDropdown.value = true;
   try {
     // The form's IDP (only support 1 at a time right now), blank is 'team' and should be Primary
@@ -117,18 +155,34 @@ async function addUser() {
   // If the end user selected a user
   if (userSearchSelection.value) {
     if (form.value.enableTeamMemberDraftShare) {
-      const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
-        formId: properties.formId,
-        email: userSearchSelection.value.email,
-        roles: '*',
-      });
-      if (formUsersResponse && !formUsersResponse.data) {
-        notificationStore.addNotification({
-          ...NotificationTypes.ERROR,
-          text: t('trans.canShareDraft.canShareMessage'),
+      if (isGroupRestricted.value && formGroupMembers.value !== null) {
+        // Tenanted + group-restricted: validate locally from pre-loaded group members
+        const eligible = formGroupMembers.value.members.some(
+          (m) => m.email === userSearchSelection.value.email
+        );
+        if (!eligible) {
+          notificationStore.addNotification({
+            ...NotificationTypes.ERROR,
+            text: t('trans.canShareDraft.canShareGroupMessage'),
+          });
+          return;
+        }
+      } else if (!tenantStore.selectedTenant) {
+        // Classic CHEFS (Personal): check explicit form team membership
+        const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
+          formId: properties.formId,
+          email: userSearchSelection.value.email,
+          roles: '*',
         });
-        return;
+        if (formUsersResponse && !formUsersResponse.data) {
+          notificationStore.addNotification({
+            ...NotificationTypes.ERROR,
+            text: t('trans.canShareDraft.canShareMessage'),
+          });
+          return;
+        }
       }
+      // Tenanted + no group restriction: any tenant user is allowed, fall through
     }
     const id = userSearchSelection.value.id;
     // If a selected user is already on the team
@@ -238,7 +292,10 @@ function transformResponseToTable(responseData) {
 defineExpose({
   addUser,
   autocompleteLabel,
+  formGroupMembers,
   formSubmissionUsers,
+  isGroupRestricted,
+  loadFormGroupMembers,
   modifyPermissions,
   onChangeSelectedIdp,
   onChangeUserSearchInput,
