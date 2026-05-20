@@ -1351,10 +1351,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
-    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
+    "canShareGroupMessage": "Hindi mo maaaring ibahagi ang draft sa user na ito. Dapat silang miyembro ng isa sa mga awtorisadong grupo ng form na ito.",
     "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang",
     "shareDraftGroupMessage": "Ibahagi ang draft sa mga miyembro ng grupo ng form lamang",
-    "groupShareHint": "Only members of this form's authorized groups can be added."
+    "groupShareHint": "Ang mga miyembro lamang ng mga awtorisadong grupo ng form na ito ang maaaring idagdag."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ang serbisyong ito ay pansamantalang hindi available.",

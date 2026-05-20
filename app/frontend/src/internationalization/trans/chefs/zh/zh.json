@@ -1347,10 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
-    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
+    "canShareGroupMessage": "您无法与此用户共享草稿。他们必须是此表单授权组之一的成员。",
     "shareDraftMessage": "仅与表单团队成员共享草稿",
     "shareDraftGroupMessage": "仅与表单组成员共享草稿",
-    "groupShareHint": "Only members of this form's authorized groups can be added."
+    "groupShareHint": "只能添加此表单授权组的成员。"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "此服务暂时不可用。",

@@ -151,7 +151,9 @@ async function onChangeUserSearchInput(input) {
 async function loadGroupEligibleUsers() {
   isLoadingGroupUsers.value = true;
   try {
-    const response = await rbacService.getFormUsers({ formId: properties.formId });
+    const response = await rbacService.getFormUsers({
+      formId: properties.formId,
+    });
     // Normalize userId → id so the shape matches what addUser() expects from userService results.
     groupEligibleUsers.value = (response.data || []).map((u) => ({
       ...u,
@@ -348,7 +350,11 @@ defineExpose({
         <v-card-subtitle>
           <!-- Hide IDP selector for group-restricted forms: eligible users are
                sourced from CSTAR (IDIR only) and filtered client-side. -->
-          <v-radio-group v-if="isDraft && !isGroupRestricted" v-model="selectedIdp" inline>
+          <v-radio-group
+            v-if="isDraft && !isGroupRestricted"
+            v-model="selectedIdp"
+            inline
+          >
             <v-radio
               v-for="button in idpStore.loginButtons"
               :key="button.code"
@@ -376,7 +382,9 @@ defineExpose({
                   :custom-filter="filterObject"
                   hide-details
                   :label="autocompleteLabel"
-                  :loading="isGroupRestricted ? isLoadingGroupUsers : isLoadingDropdown"
+                  :loading="
+                    isGroupRestricted ? isLoadingGroupUsers : isLoadingDropdown
+                  "
                   return-object
                 >
                   <!-- no data -->
