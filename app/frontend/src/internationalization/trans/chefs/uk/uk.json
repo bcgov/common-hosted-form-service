@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Ви не можете поділитися чернеткою з користувачами, які не були додані до форми. Щоб додати їх, зверніться до адміністратора.",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "Діліться чернеткою лише з членами команди форми",
-    "shareDraftGroupMessage": "Поділитися чернеткою лише з членами групи форми"
+    "shareDraftGroupMessage": "Поділитися чернеткою лише з членами групи форми",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ця служба тимчасово недоступна.",

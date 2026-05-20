@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "شما نمی توانید پیش نویس را با کاربرانی که به فرم اضافه نشده اند به اشتراک بگذارید. لطفا با ادمین تماس بگیرید تا آنها را اضافه کنید.",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "پیش نویس را فقط با اعضای تیم فرم به اشتراک بگذارید",
-    "shareDraftGroupMessage": "اشتراک‌گذاری پیش‌نویس فقط با اعضای گروه فرم"
+    "shareDraftGroupMessage": "اشتراک‌گذاری پیش‌نویس فقط با اعضای گروه فرم",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "این سرویس موقتاً در دسترس نیست.",

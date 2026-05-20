@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "لا يُمكنك مشاركة المسودة مع المستخدمين الذين لم تتم إضافتهم إلى النموذج. يُرجى التواصل مع المشرف لإضافتهم.",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "مشاركة المسودة مع أعضاء فريق النموذج فقط",
-    "shareDraftGroupMessage": "مشاركة المسودة مع أعضاء مجموعة النموذج فقط"
+    "shareDraftGroupMessage": "مشاركة المسودة مع أعضاء مجموعة النموذج فقط",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "هذه الخدمة غير متاحة مؤقتاً.",

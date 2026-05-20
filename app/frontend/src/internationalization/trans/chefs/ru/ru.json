@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Вы не можете поделиться черновиком с пользователями, которые не были добавлены в форму. Пожалуйста, свяжитесь с администратором, чтобы добавить их.",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "Поделитесь черновиком только с членами команды по созданию формы",
-    "shareDraftGroupMessage": "Поделиться черновиком только с членами группы формы"
+    "shareDraftGroupMessage": "Поделиться черновиком только с членами группы формы",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Эта служба временно недоступна.",

@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 
 const { Statuses } = require('../common/constants');
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUser, FileStorage, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
+const { Form, FormGroup, FormVersion, FormSubmission, FormSubmissionStatus, FormSubmissionUser, FileStorage, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
@@ -26,12 +26,16 @@ const service = {
         .withGraphFetched('formMetadata')
         .withGraphFetched('identityProviders(orderDefault)')
         .throwIfNotFound(),
+      FormGroup.query().where('formId', meta.formId).select('groupId'),
     ]).then((data) => {
       const form = data[2];
       // Process schedule status same way readPublishedForm does
       if (form.schedule) {
         form.schedule = checkIsFormExpired(form.schedule);
       }
+      // Expose whether this form uses CSTAR group-based access control so the
+      // submit view can drive appropriate UI without a separate API call.
+      form.hasGroups = data[3].length > 0;
       return {
         submission: data[0],
         version: data[1],

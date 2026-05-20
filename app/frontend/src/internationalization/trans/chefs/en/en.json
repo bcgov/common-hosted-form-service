@@ -758,8 +758,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "Share draft with form team members only",
-    "shareDraftGroupMessage": "Share draft with form group members only"
+    "shareDraftGroupMessage": "Share draft with form group members only",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",

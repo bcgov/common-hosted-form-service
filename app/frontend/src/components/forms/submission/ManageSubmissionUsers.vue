@@ -31,6 +31,7 @@ const properties = defineProps({
 const dialog = ref(false);
 const formSubmissionUsers = ref([]); // the users added to the team for this submission
 const isLoadingDropdown = ref(false);
+const isLoadingGroupUsers = ref(false);
 const isLoadingTable = ref(true);
 const selectedIdp = ref(null);
 const showDeleteDialog = ref(false);
@@ -38,6 +39,7 @@ const userSearchInput = ref(null); // the search filter
 const userSearchResults = ref([]);
 const userSearchSelection = ref(null); // the selected user
 const userToDelete = ref({});
+const groupEligibleUsers = ref([]); // pre-populated for group-restricted forms
 
 const formStore = useFormStore();
 const idpStore = useIdpStore();
@@ -45,7 +47,34 @@ const notificationStore = useNotificationStore();
 
 const { isRTL, form } = storeToRefs(formStore);
 
+// True when this form uses CSTAR group-based access and draft sharing is restricted to those groups.
+// form.hasGroups is set by the backend _fetchSubmissionData so it's available without an
+// extra API call even though the submit view has no selectedTenant.
+const isGroupRestricted = computed(
+  () => !!(form.value.hasGroups && form.value.enableTeamMemberDraftShare)
+);
+
+// Items shown in the autocomplete.
+// Group-restricted: filter the pre-loaded list client-side as the user types.
+// Regular: use the server-side search results.
+const autocompleteItems = computed(() => {
+  if (isGroupRestricted.value) {
+    const q = (userSearchInput.value || '').toLowerCase();
+    if (!q) return groupEligibleUsers.value;
+    return groupEligibleUsers.value.filter(
+      (u) =>
+        u.fullName?.toLowerCase().includes(q) ||
+        u.email?.toLowerCase().includes(q) ||
+        u.username?.toLowerCase().includes(q)
+    );
+  }
+  return userSearchResults.value;
+});
+
 const autocompleteLabel = computed(() => {
+  if (isGroupRestricted.value) {
+    return t('trans.canShareDraft.groupShareHint');
+  }
   return idpStore.isPrimary(selectedIdp.value)
     ? t('trans.manageSubmissionUsers.requiredField')
     : t('trans.manageSubmissionUsers.exactEmailOrUsername');
@@ -71,6 +100,16 @@ watch(
   { immediate: true }
 );
 
+// Load the pre-populated eligible-user list as soon as both isDraft and
+// isGroupRestricted are truthy.  isGroupRestricted can flip from false to true
+// after the form store resolves (form.hasGroups arrives via fetchSubmission),
+// so we watch it separately rather than relying on the isDraft watcher above.
+watch(isGroupRestricted, (newValue) => {
+  if (newValue && properties.isDraft) {
+    loadGroupEligibleUsers();
+  }
+});
+
 function onChangeSelectedIdp(newIdp, oldIdp) {
   if (newIdp !== oldIdp) {
     userSearchResults.value = [];
@@ -79,6 +118,8 @@ function onChangeSelectedIdp(newIdp, oldIdp) {
 
 async function onChangeUserSearchInput(input) {
   if (!input) return;
+  // Group-restricted: autocompleteItems filters groupEligibleUsers client-side — no API call needed.
+  if (isGroupRestricted.value) return;
   isLoadingDropdown.value = true;
   try {
     // The form's IDP (only support 1 at a time right now), blank is 'team' and should be Primary
@@ -107,6 +148,22 @@ async function onChangeUserSearchInput(input) {
   }
 }
 
+async function loadGroupEligibleUsers() {
+  isLoadingGroupUsers.value = true;
+  try {
+    const response = await rbacService.getFormUsers({ formId: properties.formId });
+    // Normalize userId → id so the shape matches what addUser() expects from userService results.
+    groupEligibleUsers.value = (response.data || []).map((u) => ({
+      ...u,
+      id: u.userId || u.id,
+    }));
+  } catch {
+    groupEligibleUsers.value = [];
+  } finally {
+    isLoadingGroupUsers.value = false;
+  }
+}
+
 // workaround so we can use computed value (primaryIdp) in created()
 function initializeSelectedIdp() {
   selectedIdp.value = idpStore.primaryIdp?.code;
@@ -125,7 +182,9 @@ async function addUser() {
       if (formUsersResponse && !formUsersResponse.data) {
         notificationStore.addNotification({
           ...NotificationTypes.ERROR,
-          text: t('trans.canShareDraft.canShareMessage'),
+          text: isGroupRestricted.value
+            ? t('trans.canShareDraft.canShareGroupMessage')
+            : t('trans.canShareDraft.canShareMessage'),
         });
         return;
       }
@@ -238,7 +297,12 @@ function transformResponseToTable(responseData) {
 defineExpose({
   addUser,
   autocompleteLabel,
+  autocompleteItems,
   formSubmissionUsers,
+  groupEligibleUsers,
+  isGroupRestricted,
+  isLoadingGroupUsers,
+  loadGroupEligibleUsers,
   modifyPermissions,
   onChangeSelectedIdp,
   onChangeUserSearchInput,
@@ -282,7 +346,9 @@ defineExpose({
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
         </v-card-title>
         <v-card-subtitle>
-          <v-radio-group v-if="isDraft" v-model="selectedIdp" inline>
+          <!-- Hide IDP selector for group-restricted forms: eligible users are
+               sourced from CSTAR (IDIR only) and filtered client-side. -->
+          <v-radio-group v-if="isDraft && !isGroupRestricted" v-model="selectedIdp" inline>
             <v-radio
               v-for="button in idpStore.loginButtons"
               :key="button.code"
@@ -301,7 +367,7 @@ defineExpose({
                   v-model:search="userSearchInput"
                   :class="{ label: isRTL }"
                   autocomplete="autocomplete_off"
-                  :items="userSearchResults"
+                  :items="autocompleteItems"
                   chips
                   closable-chips
                   clearable
@@ -310,7 +376,7 @@ defineExpose({
                   :custom-filter="filterObject"
                   hide-details
                   :label="autocompleteLabel"
-                  :loading="isLoadingDropdown"
+                  :loading="isGroupRestricted ? isLoadingGroupUsers : isLoadingDropdown"
                   return-object
                 >
                   <!-- no data -->

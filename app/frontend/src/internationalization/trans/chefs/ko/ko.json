@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "양식에 추가되지 않은 사용자와 초안을 공유할 수 없습니다. 관리자에게 연락하여 추가하세요.",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "초안을 양식 팀원과만 공유하세요",
-    "shareDraftGroupMessage": "양식 그룹 구성원과만 초안 공유"
+    "shareDraftGroupMessage": "양식 그룹 구성원과만 초안 공유",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "이 서비스는 일시적으로 사용할 수 없습니다.",

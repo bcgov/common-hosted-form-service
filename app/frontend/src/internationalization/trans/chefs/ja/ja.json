@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する",
-    "shareDraftGroupMessage": "フォームグループメンバーのみと下書きを共有する"
+    "shareDraftGroupMessage": "フォームグループメンバーのみと下書きを共有する",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "このサービスは一時的に利用できません。",

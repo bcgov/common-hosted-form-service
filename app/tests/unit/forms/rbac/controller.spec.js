@@ -161,6 +161,64 @@ describe('getFormUsers', () => {
     expect(next).toHaveBeenCalledWith(error);
     expect(res.status).not.toHaveBeenCalled();
   });
+
+  it('should use form tenant users when no currentUser tenantId but form is group-restricted', async () => {
+    const req = {
+      query: { formId: 'form-1' },
+      currentUser: {},
+      headers: { authorization: 'Bearer testtoken' },
+    };
+    const tenantUsers = [
+      {
+        id: 'tenant-user-id',
+        isDeleted: false,
+        ssoUser: {
+          ssoUserId: 'kc-1',
+          idpType: 'idir',
+          userName: 'idir\\jane',
+          displayName: 'Jane Smith',
+          firstName: 'Jane',
+          lastName: 'Smith',
+          email: 'jane@example.com',
+        },
+      },
+    ];
+    tenantService.getUsersForForm = jest.fn().mockResolvedValue(tenantUsers);
+    userService.readByKeycloakId = jest.fn().mockResolvedValue({ id: 'db-user-id' });
+
+    await controller.getFormUsers(req, res, next);
+
+    expect(tenantService.getUsersForForm).toHaveBeenCalledWith(req, 'form-1');
+    expect(service.getFormUsers).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([
+      expect.objectContaining({
+        userId: 'db-user-id',
+        idpUserId: 'kc-1',
+        email: 'jane@example.com',
+        active: true,
+      }),
+    ]);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should fall back to local service when no tenantId and form is not group-restricted', async () => {
+    const req = {
+      query: { formId: 'form-1' },
+      currentUser: {},
+    };
+    const users = [{ userId: 'user-2' }];
+    tenantService.getUsersForForm = jest.fn().mockResolvedValue(null);
+    service.getFormUsers = jest.fn().mockResolvedValue(users);
+
+    await controller.getFormUsers(req, res, next);
+
+    expect(tenantService.getUsersForForm).toHaveBeenCalledWith(req, 'form-1');
+    expect(service.getFormUsers).toHaveBeenCalledWith(req.query);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(users);
+    expect(next).not.toHaveBeenCalled();
+  });
 });
 
 describe('controller.isUserPartOfFormTeams', () => {
@@ -182,21 +240,78 @@ describe('controller.isUserPartOfFormTeams', () => {
     };
 
     next = jest.fn();
+
+    // Default: form has no group assignments — fall through to CHEFS team check
+    tenantService.isUserInFormGroups = jest.fn().mockResolvedValue(null);
   });
 
   it('responds with 200 and the service result', async () => {
-    const mockResult = true;
-    service.getFormUsers.mockResolvedValue(mockResult);
+    service.getFormUsers.mockResolvedValue([{ userId: 'u1' }]);
 
     await controller.isUserPartOfFormTeams(req, res, next);
 
+    expect(tenantService.isUserInFormGroups).toHaveBeenCalledWith(req, req.query.formId, req.query.email);
     expect(service.getFormUsers).toHaveBeenCalledWith(req.query);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockResult);
+    expect(res.json).toHaveBeenCalledWith(true);
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('calls next with error on failure', async () => {
+  it('responds with false when CHEFS team is empty', async () => {
+    service.getFormUsers.mockResolvedValue([]);
+
+    await controller.isUserPartOfFormTeams(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(false);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('returns true directly when isUserInFormGroups returns true (group-restricted form)', async () => {
+    tenantService.isUserInFormGroups = jest.fn().mockResolvedValue(true);
+
+    await controller.isUserPartOfFormTeams(req, res, next);
+
+    expect(tenantService.isUserInFormGroups).toHaveBeenCalled();
+    expect(service.getFormUsers).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(true);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('returns false directly when isUserInFormGroups returns false (group-restricted form, user not in group)', async () => {
+    tenantService.isUserInFormGroups = jest.fn().mockResolvedValue(false);
+
+    await controller.isUserPartOfFormTeams(req, res, next);
+
+    expect(tenantService.isUserInFormGroups).toHaveBeenCalled();
+    expect(service.getFormUsers).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(false);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('skips group check when formId or email is missing', async () => {
+    req.query = { roles: '*' };
+    service.getFormUsers.mockResolvedValue([{ userId: 'u1' }]);
+
+    await controller.isUserPartOfFormTeams(req, res, next);
+
+    expect(tenantService.isUserInFormGroups).not.toHaveBeenCalled();
+    expect(service.getFormUsers).toHaveBeenCalledWith(req.query);
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('calls next with error when isUserInFormGroups throws', async () => {
+    tenantService.isUserInFormGroups = jest.fn().mockRejectedValue(new Error('CSTAR down'));
+
+    await controller.isUserPartOfFormTeams(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(res.status).not.toHaveBeenCalled();
+  });
+
+  it('calls next with error on service failure', async () => {
     const error = new Error('Oops');
     service.getFormUsers.mockRejectedValue(error);
 

@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਉਪਭੋਗਤਾਵਾਂ ਨਾਲ ਡਰਾਫਟ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਿਨ੍ਹਾਂ ਨੂੰ ਫਾਰਮ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।",
+    "canShareGroupMessage": "You can't share the draft with this user. They must be a member of one of this form's authorized groups.",
     "shareDraftMessage": "ਡਰਾਫਟ ਸਿਰਫ਼ ਫਾਰਮ ਟੀਮ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ",
-    "shareDraftGroupMessage": "ਕੇਵਲ ਫਾਰਮ ਸਮੂਹ ਮੈਂਬਰਾਂ ਨਾਲ ਡ੍ਰਾਫਟ ਸਾਂਝਾ ਕਰੋ"
+    "shareDraftGroupMessage": "ਕੇਵਲ ਫਾਰਮ ਸਮੂਹ ਮੈਂਬਰਾਂ ਨਾਲ ਡ੍ਰਾਫਟ ਸਾਂਝਾ ਕਰੋ",
+    "groupShareHint": "Only members of this form's authorized groups can be added."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "ਇਹ ਸੇਵਾ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
