@@ -1173,9 +1173,7 @@ describe('TenantService', () => {
       });
       mockAxios.onGet(apiUrl).reply(200, {
         data: {
-          users: [
-            { ssoUser: { ssoUserId: 'kc-err', userName: 'erru', displayName: 'Err User', email: 'err@example.com' } },
-          ],
+          users: [{ ssoUser: { ssoUserId: 'kc-err', userName: 'erru', displayName: 'Err User', email: 'err@example.com' } }],
         },
       });
       jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(new Error('CSTAR down'));
