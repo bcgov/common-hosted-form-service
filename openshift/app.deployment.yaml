@@ -296,7 +296,7 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
                 - configMapRef:
-                    name: "${APP_NAME}-oidc-config"
+                    name: "${APP_NAME}-${JOB_NAME}-oidc-config"
                 - configMapRef:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
                 - configMapRef:
