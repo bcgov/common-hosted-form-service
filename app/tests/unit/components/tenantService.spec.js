@@ -1171,9 +1171,6 @@ describe('TenantService', () => {
     const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const targetEmail = 'target@example.com';
     const req = { headers: { authorization: 'Bearer testtoken' }, currentUser: {} };
-    const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
-    const apiUrl = `${endpoint}${listTenantUsersPath.replace('{tenantId}', tenantId)}`;
-
     beforeEach(() => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
     });
@@ -1267,7 +1264,10 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
         }),
       });
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Group 1', roles: [] }, { id: 'group-3', name: 'Group 3', roles: [] }]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
+        { id: 'group-1', name: 'Group 1', roles: [] },
+        { id: 'group-3', name: 'Group 3', roles: [] },
+      ]);
 
       const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
