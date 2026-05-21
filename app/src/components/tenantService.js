@@ -5,7 +5,7 @@ const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
 const { TenantRoles } = require('../forms/common/constants');
-const { Role, User } = require('../forms/common/models');
+const { Role } = require('../forms/common/models');
 const Form = require('../forms/common/models/tables/form');
 const FormGroup = require('../forms/common/models/tables/formGroup');
 const FormTenant = require('../forms/common/models/tables/formTenant');
@@ -245,16 +245,20 @@ class TenantService {
   }
 
   /**
-   * Check whether a target user (looked up by email) belongs to any group
-   * assigned to the given form.
+   * Check whether a target user (looked up by email) belongs to the tenant
+   * that owns the given form.
    *
    * Returns null  → form has no group assignments; caller should fall back to
    *                 the CHEFS team-membership check.
-   * Returns true  → user is in at least one of the form's groups.
-   * Returns false → user is not in any of the form's groups (or is unknown).
+   * Returns true  → user is a member of the form's tenant.
+   * Returns false → user is not in the tenant (or lookup failed).
    *
-   * @param {object} req       - Express request (headers used for CSTAR auth)
-   * @param {string} formId    - UUID of the form
+   * Uses the current user's Bearer token to call getTenantUsers rather than
+   * looking up the target user's own groups, which would require the target
+   * user's token and is rejected by CSTAR for cross-user lookups.
+   *
+   * @param {object} req         - Express request (headers used for CSTAR auth)
+   * @param {string} formId      - UUID of the form
    * @param {string} targetEmail - Email address of the user to check
    */
   async isUserInFormGroups(req, formId, targetEmail) {
@@ -264,17 +268,13 @@ class TenantService {
     const formTenant = await FormTenant.query().where('formId', formId).first();
     if (!formTenant) return null;
 
-    const targetUser = await User.query().modify('filterEmail', targetEmail, true, false).first();
-    if (!targetUser?.idpUserId) return false;
-
-    const reqContext = {
-      currentUser: { idpUserId: targetUser.idpUserId },
-      headers: req.headers,
-    };
     try {
-      const userGroups = await this.getUserTenantGroupsAndRoles(reqContext, formTenant.tenantId);
-      const formGroupIds = new Set(formGroups.map((fg) => fg.groupId));
-      return userGroups.some((g) => formGroupIds.has(g.id));
+      const reqForTenant = {
+        ...req,
+        currentUser: { ...req.currentUser, tenantId: formTenant.tenantId },
+      };
+      const tenantUsers = await this.getTenantUsers(reqForTenant);
+      return tenantUsers.some((u) => u?.ssoUser?.email?.toLowerCase() === targetEmail?.toLowerCase());
     } catch {
       return false;
     }
