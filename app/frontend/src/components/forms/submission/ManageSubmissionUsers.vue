@@ -101,14 +101,20 @@ watch(
 );
 
 // Load the pre-populated eligible-user list as soon as both isDraft and
-// isGroupRestricted are truthy.  isGroupRestricted can flip from false to true
-// after the form store resolves (form.hasGroups arrives via fetchSubmission),
-// so we watch it separately rather than relying on the isDraft watcher above.
-watch(isGroupRestricted, (newValue) => {
-  if (newValue && properties.isDraft) {
-    loadGroupEligibleUsers();
-  }
-});
+// isGroupRestricted are truthy.  Because the skeleton loader in UserSubmission
+// ensures fetchSubmission finishes before this component mounts, form.hasGroups
+// is already set at mount time — isGroupRestricted never *changes*, so a plain
+// watch would never fire.  Watching both with { immediate: true } covers both
+// the "already true at mount" case and the "late flip" edge case.
+watch(
+  [isGroupRestricted, () => properties.isDraft],
+  ([groupRestricted, isDraft]) => {
+    if (groupRestricted && isDraft) {
+      loadGroupEligibleUsers();
+    }
+  },
+  { immediate: true }
+);
 
 function onChangeSelectedIdp(newIdp, oldIdp) {
   if (newIdp !== oldIdp) {
@@ -149,6 +155,7 @@ async function onChangeUserSearchInput(input) {
 }
 
 async function loadGroupEligibleUsers() {
+  if (isLoadingGroupUsers.value) return;
   isLoadingGroupUsers.value = true;
   try {
     const response = await rbacService.getFormUsers({
