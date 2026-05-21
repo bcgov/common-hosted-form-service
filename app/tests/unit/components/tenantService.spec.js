@@ -1220,10 +1220,7 @@ describe('TenantService', () => {
       });
       mockAxios.onGet(apiUrl).reply(200, {
         data: {
-          users: [
-            { ssoUser: { email: 'other@example.com', ssoUserId: 'u1' } },
-            { ssoUser: { email: 'target@example.com', ssoUserId: 'u2' } },
-          ],
+          users: [{ ssoUser: { email: 'other@example.com', ssoUserId: 'u1' } }, { ssoUser: { email: 'target@example.com', ssoUserId: 'u2' } }],
         },
       });
 
