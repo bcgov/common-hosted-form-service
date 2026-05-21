@@ -5,7 +5,7 @@ const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
 const { TenantRoles } = require('../forms/common/constants');
-const { Role } = require('../forms/common/models');
+const { Role, User } = require('../forms/common/models');
 const Form = require('../forms/common/models/tables/form');
 const FormGroup = require('../forms/common/models/tables/formGroup');
 const FormTenant = require('../forms/common/models/tables/formTenant');
@@ -245,36 +245,51 @@ class TenantService {
   }
 
   /**
-   * Check whether a target user (looked up by email) belongs to the tenant
-   * that owns the given form.
+   * Check whether a target user belongs to one of the CSTAR groups assigned to
+   * the given form.
    *
-   * Returns null  → form has no group assignments; caller should fall back to
-   *                 the CHEFS team-membership check.
-   * Returns true  → user is a member of the form's tenant.
-   * Returns false → user is not in the tenant (or lookup failed).
+   * Returns null  → classic CHEFS form (no FormTenant record); caller should
+   *                 fall back to the CHEFS team-membership check.
+   * Returns true  → user is in at least one of the form's assigned groups, OR
+   *                 the form is tenanted but has no specific group restrictions
+   *                 (any tenant user is allowed).
+   * Returns false → user is not in any of the form's groups (or lookup failed).
    *
-   * Uses the current user's Bearer token to call getTenantUsers rather than
-   * looking up the target user's own groups, which would require the target
-   * user's token and is rejected by CSTAR for cross-user lookups.
+   * Looks up the target user's idpUserId from the CHEFS DB and then queries
+   * CSTAR for their group memberships in the form's tenant using the caller's
+   * Bearer token. The caller holds FORM_READ so is at minimum a form admin.
    *
    * @param {object} req         - Express request (headers used for CSTAR auth)
    * @param {string} formId      - UUID of the form
    * @param {string} targetEmail - Email address of the user to check
    */
   async isUserInFormGroups(req, formId, targetEmail) {
-    const formGroups = await FormGroup.query().where('formId', formId).select('groupId');
-    if (!formGroups.length) return null;
+    const [formGroups, formTenant] = await Promise.all([FormGroup.query().where('formId', formId).select('groupId'), FormTenant.query().where('formId', formId).first()]);
 
-    const formTenant = await FormTenant.query().where('formId', formId).first();
+    if (!formGroups.length) {
+      // Classic CHEFS form (no tenant record) → caller falls back to team-membership check.
+      if (!formTenant) return null;
+      // Tenanted form with no specific group restrictions → any tenant user is allowed.
+      return true;
+    }
+
     if (!formTenant) return null;
 
     try {
-      const reqForTenant = {
+      // Resolve the target user's SSO ID from CHEFS DB — more reliable than matching
+      // raw email strings against CSTAR's ssoUser data.
+      const targetUser = await User.query().where('email', targetEmail).first();
+      if (!targetUser?.idpUserId) return false;
+
+      // Check which CSTAR groups the target user belongs to within the form's tenant.
+      const reqForCheck = {
         ...req,
-        currentUser: { ...req.currentUser, tenantId: formTenant.tenantId },
+        currentUser: { ...req.currentUser, idpUserId: targetUser.idpUserId, tenantId: formTenant.tenantId },
       };
-      const tenantUsers = await this.getTenantUsers(reqForTenant);
-      return tenantUsers.some((u) => u?.ssoUser?.email?.toLowerCase() === targetEmail?.toLowerCase());
+      const userGroups = await this.getUserTenantGroupsAndRoles(reqForCheck, formTenant.tenantId);
+
+      const formGroupIdSet = new Set(formGroups.map((fg) => fg.groupId));
+      return userGroups.some((g) => formGroupIdSet.has(g.id));
     } catch {
       return false;
     }
@@ -285,17 +300,19 @@ class TenantService {
    * Uses the form's tenantId from form_tenant, so no currentUser.tenantId is
    * required — this works from the submit view where tenant context is absent.
    *
-   * Returns null when the form has no group assignments or no tenant record
-   * (caller should fall back to the regular getFormUsers path).
+   * Returns null for classic CHEFS forms (no FormTenant record); caller should
+   * fall back to the regular getFormUsers path. Tenanted forms — with or without
+   * specific group assignments — return all tenant users.
    *
    * @param {object} req    - Express request (headers used for CSTAR auth)
    * @param {string} formId - UUID of the form
    */
   async getUsersForForm(req, formId) {
-    const formGroups = await FormGroup.query().where('formId', formId).select('groupId');
-    if (!formGroups.length) return null;
+    const [formGroups, formTenant] = await Promise.all([FormGroup.query().where('formId', formId).select('groupId'), FormTenant.query().where('formId', formId).first()]);
 
-    const formTenant = await FormTenant.query().where('formId', formId).first();
+    // Classic CHEFS form (no tenant record) → caller falls back to standard getFormUsers.
+    if (!formGroups.length && !formTenant) return null;
+    // No tenant record despite having groups — data inconsistency; skip CSTAR.
     if (!formTenant) return null;
 
     const reqForTenant = {

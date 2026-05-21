@@ -5,7 +5,7 @@ const config = require('config');
 const jwtService = require('../../../src/components/jwtService');
 jest.mock('../../../src/components/jwtService');
 
-const { Role } = require('../../../src/forms/common/models');
+const { Role, User } = require('../../../src/forms/common/models');
 const Form = require('../../../src/forms/common/models/tables/form');
 const FormGroup = require('../../../src/forms/common/models/tables/formGroup');
 const FormTenant = require('../../../src/forms/common/models/tables/formTenant');
@@ -1178,16 +1178,38 @@ describe('TenantService', () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
     });
 
-    it('should return null when form has no group assignments', async () => {
+    it('should return null when classic CHEFS form has no group assignments and no tenant record', async () => {
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
           select: jest.fn().mockResolvedValue([]),
+        }),
+      });
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue(null),
         }),
       });
 
       const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
       expect(result).toBeNull();
+    });
+
+    it('should return true when tenanted form has no group assignments (no group restriction)', async () => {
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          select: jest.fn().mockResolvedValue([]),
+        }),
+      });
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId }),
+        }),
+      });
+
+      const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
+
+      expect(result).toBe(true);
     });
 
     it('should return null when form has no tenant record', async () => {
@@ -1207,7 +1229,7 @@ describe('TenantService', () => {
       expect(result).toBeNull();
     });
 
-    it('should return true when target email matches a tenant user', async () => {
+    it('should return false when target user is not found in CHEFS DB', async () => {
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
           select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
@@ -1218,54 +1240,10 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ formId, tenantId }),
         }),
       });
-      mockAxios.onGet(apiUrl).reply(200, {
-        data: {
-          users: [{ ssoUser: { email: 'other@example.com', ssoUserId: 'u1' } }, { ssoUser: { email: 'target@example.com', ssoUserId: 'u2' } }],
-        },
-      });
-
-      const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
-
-      expect(result).toBe(true);
-    });
-
-    it('should be case-insensitive when matching email', async () => {
-      FormGroup.query.mockReturnValue({
+      User.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
-          select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
+          first: jest.fn().mockResolvedValue(null),
         }),
-      });
-      FormTenant.query.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue({ formId, tenantId }),
-        }),
-      });
-      mockAxios.onGet(apiUrl).reply(200, {
-        data: {
-          users: [{ ssoUser: { email: 'TARGET@EXAMPLE.COM', ssoUserId: 'u1' } }],
-        },
-      });
-
-      const result = await tenantService.isUserInFormGroups(req, formId, 'target@example.com');
-
-      expect(result).toBe(true);
-    });
-
-    it('should return false when target email is not in tenant users', async () => {
-      FormGroup.query.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
-        }),
-      });
-      FormTenant.query.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue({ formId, tenantId }),
-        }),
-      });
-      mockAxios.onGet(apiUrl).reply(200, {
-        data: {
-          users: [{ ssoUser: { email: 'other@example.com', ssoUserId: 'u1' } }],
-        },
       });
 
       const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
@@ -1273,10 +1251,10 @@ describe('TenantService', () => {
       expect(result).toBe(false);
     });
 
-    it('should return false when getTenantUsers throws', async () => {
+    it('should return true when target user is in one of the form groups', async () => {
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
-          select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
+          select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }, { groupId: 'group-2' }]),
         }),
       });
       FormTenant.query.mockReturnValue({
@@ -1284,14 +1262,42 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ formId, tenantId }),
         }),
       });
-      mockAxios.onGet(apiUrl).networkError();
+      User.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
+        }),
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Group 1', roles: [] }, { id: 'group-3', name: 'Group 3', roles: [] }]);
+
+      const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when target user is not in any form group', async () => {
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }, { groupId: 'group-2' }]),
+        }),
+      });
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId }),
+        }),
+      });
+      User.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
+        }),
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-3', name: 'Group 3', roles: [] }]);
 
       const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
       expect(result).toBe(false);
     });
 
-    it('should call getTenantUsers with the form tenantId injected into req', async () => {
+    it('should return false when getUserTenantGroupsAndRoles throws', async () => {
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
           select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
@@ -1302,14 +1308,43 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ formId, tenantId }),
         }),
       });
-      jest.spyOn(tenantService, 'getTenantUsers').mockResolvedValue([]);
+      User.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
+        }),
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(new Error('CSTAR error'));
+
+      const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
+
+      expect(result).toBe(false);
+    });
+
+    it('should call getUserTenantGroupsAndRoles with target user idpUserId and form tenantId', async () => {
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
+        }),
+      });
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId }),
+        }),
+      });
+      User.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
+        }),
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([]);
 
       await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
-      expect(tenantService.getTenantUsers).toHaveBeenCalledWith(
+      expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith(
         expect.objectContaining({
-          currentUser: expect.objectContaining({ tenantId }),
-        })
+          currentUser: expect.objectContaining({ idpUserId: 'target-sso-id', tenantId }),
+        }),
+        tenantId
       );
     });
   });
@@ -1326,16 +1361,45 @@ describe('TenantService', () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
     });
 
-    it('should return null when form has no group assignments', async () => {
+    it('should return null when classic CHEFS form has no group assignments and no tenant record', async () => {
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
           select: jest.fn().mockResolvedValue([]),
+        }),
+      });
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue(null),
         }),
       });
 
       const result = await tenantService.getUsersForForm(req, formId);
 
       expect(result).toBeNull();
+    });
+
+    it('should call getTenantUsers when tenanted form has no group assignments', async () => {
+      const users = [{ id: 'u1' }];
+      FormGroup.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          select: jest.fn().mockResolvedValue([]),
+        }),
+      });
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId }),
+        }),
+      });
+      jest.spyOn(tenantService, 'getTenantUsers').mockResolvedValue(users);
+
+      const result = await tenantService.getUsersForForm(req, formId);
+
+      expect(tenantService.getTenantUsers).toHaveBeenCalledWith(
+        expect.objectContaining({
+          currentUser: expect.objectContaining({ tenantId }),
+        })
+      );
+      expect(result).toEqual(users);
     });
 
     it('should return null when form has no tenant record', async () => {
