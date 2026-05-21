@@ -1171,6 +1171,8 @@ describe('TenantService', () => {
     const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const targetEmail = 'target@example.com';
     const req = { headers: { authorization: 'Bearer testtoken' }, currentUser: {} };
+    const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
+    const apiUrl = `${endpoint}${listTenantUsersPath.replace('{tenantId}', tenantId)}`;
     beforeEach(() => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
     });
@@ -1264,10 +1266,9 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
         }),
       });
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
-        { id: 'group-1', name: 'Group 1', roles: [] },
-        { id: 'group-3', name: 'Group 3', roles: [] },
-      ]);
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: { users: [{ ssoUser: { ssoUserId: 'target-sso-id' } }, { ssoUser: { ssoUserId: 'other-sso-id' } }] },
+      });
 
       const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
@@ -1290,14 +1291,16 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
         }),
       });
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-3', name: 'Group 3', roles: [] }]);
+      mockAxios.onGet(apiUrl).reply(200, {
+        data: { users: [{ ssoUser: { ssoUserId: 'other-sso-id' } }] },
+      });
 
       const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
       expect(result).toBe(false);
     });
 
-    it('should return false when getUserTenantGroupsAndRoles throws', async () => {
+    it('should return false when CSTAR API throws', async () => {
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
           select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
@@ -1313,14 +1316,14 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
         }),
       });
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(new Error('CSTAR error'));
+      mockAxios.onGet(apiUrl).reply(500, { error: 'Internal Server Error' });
 
       const result = await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
       expect(result).toBe(false);
     });
 
-    it('should call getUserTenantGroupsAndRoles with target user idpUserId and form tenantId', async () => {
+    it('should call CSTAR users endpoint with form groupIds as query param', async () => {
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
           select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
@@ -1336,16 +1339,13 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue({ idpUserId: 'target-sso-id' }),
         }),
       });
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([]);
+      mockAxios.onGet(apiUrl).reply(200, { data: { users: [] } });
 
       await tenantService.isUserInFormGroups(req, formId, targetEmail);
 
-      expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith(
-        expect.objectContaining({
-          currentUser: expect.objectContaining({ idpUserId: 'target-sso-id', tenantId }),
-        }),
-        tenantId
-      );
+      expect(mockAxios.history.get).toHaveLength(1);
+      expect(mockAxios.history.get[0].url).toBe(apiUrl);
+      expect(mockAxios.history.get[0].params).toEqual({ groupIds: 'group-1' });
     });
   });
 

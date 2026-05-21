@@ -276,20 +276,18 @@ class TenantService {
     if (!formTenant) return null;
 
     try {
-      // Resolve the target user's SSO ID from CHEFS DB — more reliable than matching
-      // raw email strings against CSTAR's ssoUser data.
       const targetUser = await User.query().where('email', targetEmail).first();
       if (!targetUser?.idpUserId) return false;
 
-      // Check which CSTAR groups the target user belongs to within the form's tenant.
-      const reqForCheck = {
-        ...req,
-        currentUser: { ...req.currentUser, idpUserId: targetUser.idpUserId, tenantId: formTenant.tenantId },
-      };
-      const userGroups = await this.getUserTenantGroupsAndRoles(reqForCheck, formTenant.tenantId);
-
-      const formGroupIdSet = new Set(formGroups.map((fg) => fg.groupId));
-      return userGroups.some((g) => formGroupIdSet.has(g.id));
+      // GET /tenants/:tenantId/users?groupIds=<csv> — no :ssoUserId in URL,
+      // so CSTAR's cross-user enforcement does not apply. Returns only users
+      // that are members of the specified groups.
+      const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
+      const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', formTenant.tenantId)}`;
+      const groupIdsCsv = formGroups.map((fg) => fg.groupId).join(',');
+      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req), params: { groupIds: groupIdsCsv } });
+      const usersInGroups = data?.data?.users || data?.users || [];
+      return usersInGroups.some((u) => u?.ssoUser?.ssoUserId === targetUser.idpUserId);
     } catch {
       return false;
     }
