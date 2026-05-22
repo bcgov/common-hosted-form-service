@@ -70,7 +70,7 @@ it('Verify draft submission', () => {
     cy.contains('Continue').trigger('click');
     //Select specific groups option
     
-    cy.get('.mdi-pencil').click();
+    cy.get('[data-test="canAllowEditFormSettings"]').click();
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Specific Groups').should('exist');
     cy.contains('Specific Groups').click();
