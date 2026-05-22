@@ -1351,8 +1351,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
+    "canShareGroupMessage": "Bạn không thể chia sẻ bản nháp với người dùng này. Họ phải là thành viên của một trong các nhóm được ủy quyền của biểu mẫu này.",
     "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu",
-    "shareDraftGroupMessage": "Chia sẻ bản nháp chỉ với thành viên nhóm biểu mẫu"
+    "shareDraftGroupMessage": "Chia sẻ bản nháp chỉ với thành viên nhóm biểu mẫu",
+    "groupShareHint": "Chỉ những thành viên của các nhóm được ủy quyền của biểu mẫu này mới có thể được thêm vào."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Dịch vụ này tạm thời không khả dụng.",

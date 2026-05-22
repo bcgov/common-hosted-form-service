@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
+    "canShareGroupMessage": "Você não pode compartilhar o rascunho com este usuário. Ele deve ser membro de um dos grupos autorizados deste formulário.",
     "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário",
-    "shareDraftGroupMessage": "Compartilhar rascunho apenas com membros do grupo do formulário"
+    "shareDraftGroupMessage": "Compartilhar rascunho apenas com membros do grupo do formulário",
+    "groupShareHint": "Apenas membros dos grupos autorizados deste formulário podem ser adicionados."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Este serviço está temporariamente indisponível.",

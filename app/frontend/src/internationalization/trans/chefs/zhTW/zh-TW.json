@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "您無法與尚未新增至表單的使用者共用草稿。請聯絡管理員新增它們。",
+    "canShareGroupMessage": "您無法與此使用者共享草稿。他們必須是此表單授權群組之一的成員。",
     "shareDraftMessage": "僅與表單團隊成員分享草稿",
-    "shareDraftGroupMessage": "僅與表單群組成員共享草稿"
+    "shareDraftGroupMessage": "僅與表單群組成員共享草稿",
+    "groupShareHint": "只能新增此表單授權群組的成員。"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "此服務暫時無法使用。",

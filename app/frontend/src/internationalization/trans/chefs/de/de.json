@@ -1347,8 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
+    "canShareGroupMessage": "Sie können den Entwurf nicht mit diesem Benutzer teilen. Er muss Mitglied einer der autorisierten Gruppen dieses Formulars sein.",
     "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter",
-    "shareDraftGroupMessage": "Entwurf nur mit Formulargruppenmitgliedern teilen"
+    "shareDraftGroupMessage": "Entwurf nur mit Formulargruppenmitgliedern teilen",
+    "groupShareHint": "Nur Mitglieder der autorisierten Gruppen dieses Formulars können hinzugefügt werden."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Dieser Dienst ist vorübergehend nicht verfügbar.",

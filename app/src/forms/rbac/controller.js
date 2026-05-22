@@ -3,6 +3,45 @@ const formService = require('../submission/service');
 const service = require('./service');
 const tenantService = require('../../components/tenantService');
 const userService = require('../user/service');
+
+// Shared mapping for a raw CSTAR user object → RBAC response shape.
+async function _mapCstarUser(user) {
+  const ssoUser = user?.ssoUser || {};
+  const idpType = ssoUser?.idpType || null;
+  const identityProviders = idpType ? [idpType] : [];
+  let resolvedUserId = user?.id || null;
+
+  if (ssoUser?.ssoUserId) {
+    const dbUser = await userService.readByKeycloakId(ssoUser.ssoUserId);
+    if (dbUser?.id) resolvedUserId = dbUser.id;
+  }
+
+  return {
+    userId: resolvedUserId,
+    idpUserId: ssoUser?.ssoUserId || null,
+    username: ssoUser?.userName || null,
+    fullName: ssoUser?.displayName || null,
+    firstName: ssoUser?.firstName || null,
+    lastName: ssoUser?.lastName || null,
+    email: ssoUser?.email || null,
+    formId: null,
+    formName: null,
+    labels: [],
+    user_idpCode: idpType,
+    identityProviders,
+    form_login_required: identityProviders,
+    idps: identityProviders,
+    active: user?.isDeleted === false,
+    formVersionId: null,
+    version: null,
+    roles: [],
+    permissions: [],
+    published: null,
+    versionUpdatedAt: null,
+    formDescription: null,
+  };
+}
+
 module.exports = {
   list: async (req, res, next) => {
     try {
@@ -72,50 +111,20 @@ module.exports = {
     try {
       let response;
       if (req.currentUser && req.currentUser.tenantId) {
-        // If user has tenantId, get users for that tenant from CSTAR
+        // Tenant context present (admin/manage view): fetch all users for this tenant from CSTAR.
         const tenantUsers = await tenantService.getTenantUsers(req);
-        response = await Promise.all(
-          tenantUsers.map(async (user) => {
-            const ssoUser = user?.ssoUser || {};
-            const idpType = ssoUser?.idpType || null;
-            const identityProviders = idpType ? [idpType] : [];
-            let resolvedUserId = user?.id || null;
-
-            if (ssoUser?.ssoUserId) {
-              const dbUser = await userService.readByKeycloakId(ssoUser.ssoUserId);
-              if (dbUser?.id) {
-                resolvedUserId = dbUser.id;
-              }
-            }
-
-            return {
-              userId: resolvedUserId,
-              idpUserId: ssoUser?.ssoUserId || null,
-              username: ssoUser?.userName || null,
-              fullName: ssoUser?.displayName || null,
-              firstName: ssoUser?.firstName || null,
-              lastName: ssoUser?.lastName || null,
-              email: ssoUser?.email || null,
-              formId: null,
-              formName: null,
-              labels: [],
-              user_idpCode: idpType,
-              identityProviders,
-              form_login_required: identityProviders,
-              idps: identityProviders,
-              active: user?.isDeleted === false,
-              formVersionId: null,
-              version: null,
-              roles: [],
-              permissions: [],
-              published: null,
-              versionUpdatedAt: null,
-              formDescription: null,
-            };
-          })
-        );
+        response = await Promise.all(tenantUsers.map(_mapCstarUser));
+      } else if (req.query.formId) {
+        // No tenant context (submit view): check whether the form is group-restricted and, if so,
+        // fetch users using the form's own tenant rather than the current user's tenant.
+        const formTenantUsers = await tenantService.getUsersForForm(req, req.query.formId);
+        if (formTenantUsers) {
+          response = await Promise.all(formTenantUsers.map(_mapCstarUser));
+        } else {
+          response = await service.getFormUsers(req.query);
+        }
       } else {
-        // Otherwise get form users from local service
+        // Personal/classic CHEFS: look up form team members from local DB.
         response = await service.getFormUsers(req.query);
       }
       res.status(200).json(response);
@@ -192,6 +201,18 @@ module.exports = {
   isUserPartOfFormTeams: async (req, res, next) => {
     let result = true;
     try {
+      const { formId, email } = req.query;
+
+      // For tenanted forms with group assignments, validate against CSTAR groups.
+      // Returns null when the form has no groups → fall through to CHEFS team check.
+      if (formId && email) {
+        const groupCheck = await tenantService.isUserInFormGroups(req, formId, email);
+        if (groupCheck !== null) {
+          return res.status(200).json(groupCheck);
+        }
+      }
+
+      // Personal / classic CHEFS: check whether the user is a form team member.
       const response = await service.getFormUsers(req.query);
       if (Array.isArray(response) && response.length === 0) {
         result = false;
