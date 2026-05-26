@@ -48,6 +48,9 @@ class Role extends Timestamps(Model) {
       orderDefault(builder) {
         builder.orderByRaw('lower("display")');
       },
+      classicOnly(builder) {
+        builder.where('type', 'classic');
+      },
     };
   }
 
