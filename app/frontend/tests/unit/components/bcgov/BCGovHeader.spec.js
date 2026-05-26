@@ -1,6 +1,6 @@
 import { setActivePinia, createPinia } from 'pinia';
 import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { useRoute } from 'vue-router';
 
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
@@ -12,6 +12,7 @@ vi.mock('vue-router');
 describe('BCGovHeader.vue', () => {
   let pinia;
   let authStore;
+  let wrappers = [];
 
   beforeEach(() => {
     pinia = createPinia();
@@ -24,9 +25,18 @@ describe('BCGovHeader.vue', () => {
     useRoute.mockReturnValue({ name: null });
   });
 
+  afterEach(() => {
+    wrappers.forEach((w) => {
+      if (w && typeof w.unmount === 'function') {
+        w.unmount();
+      }
+    });
+    wrappers = [];
+  });
+
   const mountHeader = (props = {}, routeName = null) => {
     useRoute.mockReturnValue({ name: routeName });
-    return mount(BCGovHeader, {
+    const wrapper = mount(BCGovHeader, {
       props: { formSubmitMode: false, appTitle: 'Test App', ...props },
       global: {
         plugins: [pinia],
@@ -37,24 +47,13 @@ describe('BCGovHeader.vue', () => {
         },
       },
     });
+    wrappers.push(wrapper);
+    return wrapper;
   };
 
   it('if formSubmitMode is false then show the app title', () => {
     const APP_TITLE = 'This is an app title';
-    const wrapper = mount(BCGovHeader, {
-      props: {
-        formSubmitMode: false,
-        appTitle: APP_TITLE,
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseAuthButton: true,
-          BaseInternationalization: true,
-          TenantDropdown: true,
-        },
-      },
-    });
+    const wrapper = mountHeader({ formSubmitMode: false, appTitle: APP_TITLE });
 
     const btnHeaderTitle = wrapper.find('[data-test="btn-header-title"]');
     expect(btnHeaderTitle.exists()).toBeTruthy();
@@ -67,20 +66,7 @@ describe('BCGovHeader.vue', () => {
 
   it('if formSubmitMode is true then do not show the app title', () => {
     const APP_TITLE = 'This is an app title';
-    const wrapper = mount(BCGovHeader, {
-      props: {
-        formSubmitMode: true,
-        appTitle: APP_TITLE,
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseAuthButton: true,
-          BaseInternationalization: true,
-          TenantDropdown: true,
-        },
-      },
-    });
+    const wrapper = mountHeader({ formSubmitMode: true, appTitle: APP_TITLE });
 
     const btnHeaderTitle = wrapper.find('[data-test="btn-header-title"]');
     expect(btnHeaderTitle.exists()).toBeFalsy();
