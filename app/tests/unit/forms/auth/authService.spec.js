@@ -67,4 +67,36 @@ describe('login', () => {
     const result = await service.login(token);
     expect(result).toEqual(resultSample);
   });
+
+  it('uses canonicalCode for usernameIdp when IDP has extra.canonicalCode', async () => {
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'azureidir' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'azureidir', code: 'azureidir', extra: { canonicalCode: 'idir' } });
+    service.getUserId = jest.fn().mockReturnValue({ username: 'testuser', idpCode: 'azureidir' });
+
+    const result = await service.login('token');
+
+    expect(result.usernameIdp).toEqual('testuser@idir');
+    expect(result.idpHint).toEqual('azureidir');
+  });
+
+  it('uses code for usernameIdp when no canonicalCode', async () => {
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'idir' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'idir', code: 'idir', extra: { sortOrder: 10 } });
+    service.getUserId = jest.fn().mockReturnValue({ username: 'testuser', idpCode: 'idir' });
+
+    const result = await service.login('token');
+
+    expect(result.usernameIdp).toEqual('testuser@idir');
+    expect(result.idpHint).toEqual('idir');
+  });
+
+  it('omits usernameIdp when user has no idpCode', async () => {
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'public' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'public', code: 'public', extra: {} });
+    service.getUserId = jest.fn().mockReturnValue({ username: 'public', idpCode: null });
+
+    const result = await service.login('token');
+
+    expect(result.usernameIdp).toEqual('public');
+  });
 });
