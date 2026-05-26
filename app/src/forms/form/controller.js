@@ -40,7 +40,12 @@ module.exports = {
   },
   createForm: async (req, res, next) => {
     try {
-      const response = await service.createForm(req.body, req.currentUser);
+      // Extract only what the service needs - following existing pattern
+      const response = await service.createForm(
+        req.body,
+        req.currentUser,
+        req.headers // Pass headers for tenant API authentication
+      );
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -48,7 +53,7 @@ module.exports = {
   },
   readForm: async (req, res, next) => {
     try {
-      const response = await service.readForm(req.params.formId, req.query, req.currentUser);
+      const response = await service.readForm(req.params.formId, req.query, req.currentUser, req.headers);
       res.status(200).json(response);
     } catch (error) {
       next(error);

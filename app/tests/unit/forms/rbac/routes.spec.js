@@ -178,7 +178,7 @@ describe(`${basePath}/idps`, () => {
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(0);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
   });
@@ -292,5 +292,85 @@ describe(`${basePath}/form/user`, () => {
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
+  });
+});
+
+describe('/rbac/current/tenants', () => {
+  const path = '/rbac/current/tenants';
+
+  it('should have correct middleware for GET', async () => {
+    controller.getCurrentUserTenants = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(controller.getCurrentUserTenants).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(0);
+    expect(hasFormRolesMock).toBeCalledTimes(0);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
+    expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
+  });
+});
+
+describe('/rbac/current/groups', () => {
+  const path = '/rbac/current/groups';
+
+  it('should have correct middleware for GET', async () => {
+    controller.getGroupsForCurrentTenant = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(controller.getGroupsForCurrentTenant).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(0);
+    expect(hasFormRolesMock).toBeCalledTimes(0);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
+    expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
+  });
+});
+
+describe('/rbac/forms/:formId/groups', () => {
+  const path = '/rbac/forms/form-1/groups';
+
+  it('should have correct middleware for GET', async () => {
+    controller.getFormGroups = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(controller.getFormGroups).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(0);
+    expect(hasFormRolesMock).toBeCalledTimes(0);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
+    expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
+  });
+
+  it('should have correct middleware for PUT', async () => {
+    controller.assignGroupsToForm = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.put(path);
+
+    expect(controller.assignGroupsToForm).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(0);
+    expect(hasFormRolesMock).toBeCalledTimes(0);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
+    expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
   });
 });

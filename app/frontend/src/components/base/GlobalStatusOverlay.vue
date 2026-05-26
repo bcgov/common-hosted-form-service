@@ -46,14 +46,20 @@
           <p class="moreinfo-outro">
             <i18n-t keypath="trans.statusOverlay.moreInfoOutro">
               <template #linkOne>
-                <a :href="msTeamsUrl" target="_blank">{{
-                  t('trans.statusOverlay.msTeamsChannel')
-                }}</a>
+                <a
+                  :href="msTeamsUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ t('trans.statusOverlay.msTeamsChannel') }}</a
+                >
               </template>
               <template #linkTwo>
-                <a :href="rocketChatUrl" target="_blank">{{
-                  t('trans.statusOverlay.rocketChatChannel')
-                }}</a>
+                <a
+                  :href="rocketChatUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ t('trans.statusOverlay.rocketChatChannel') }}</a
+                >
               </template>
             </i18n-t>
           </p>

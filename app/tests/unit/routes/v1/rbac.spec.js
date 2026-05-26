@@ -47,6 +47,7 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/rbac/service');
+const tenantService = require('../../../../src/components/tenantService');
 
 const emailService = require('../../../../src/forms/email/emailService');
 const submissionService = require('../../../../src/forms/submission/service');
@@ -445,6 +446,59 @@ describe(`${basePath}/users`, () => {
       });
 
       const response = await appRequest.put(path);
+
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toBeTruthy();
+    });
+  });
+});
+
+describe(`${basePath}/current/tenants`, () => {
+  const path = `${basePath}/current/tenants`;
+
+  describe('GET', () => {
+    it('should return 200', async () => {
+      userAccess.currentUser.mockImplementation((req, _res, next) => {
+        req.currentUser = { idpUserId: 'user-123' };
+        next();
+      });
+      // mock a success return value...
+      tenantService.getCurrentUserTenants = jest.fn().mockReturnValue([{ id: 'tenant1', name: 'Tenant 1' }]);
+
+      const response = await appRequest.get(path);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toBeTruthy();
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    it('should handle 401', async () => {
+      userAccess.currentUser.mockImplementation((req, _res, next) => {
+        req.currentUser = { idpUserId: 'user-123' };
+        next();
+      });
+      // mock an authentication/permission issue...
+      tenantService.getCurrentUserTenants = jest.fn(() => {
+        throw new Problem(401);
+      });
+
+      const response = await appRequest.get(path);
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toBeTruthy();
+    });
+
+    it('should handle 500', async () => {
+      userAccess.currentUser.mockImplementation((req, _res, next) => {
+        req.currentUser = { idpUserId: 'user-123' };
+        next();
+      });
+      // mock an unexpected error...
+      tenantService.getCurrentUserTenants = jest.fn(() => {
+        throw new Error();
+      });
+
+      const response = await appRequest.get(path);
 
       expect(response.statusCode).toBe(500);
       expect(response.body).toBeTruthy();

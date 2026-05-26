@@ -49,4 +49,8 @@ const vuetify = createVuetify({
   directives,
 });
 
+config.global.stubs = {
+  'v-img': true,
+};
+
 config.global.plugins = [...config.global.plugins, vuetify];

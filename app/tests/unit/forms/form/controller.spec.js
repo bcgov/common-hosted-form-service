@@ -77,6 +77,47 @@ describe('form controller', () => {
   });
 });
 
+describe('createForm', () => {
+  it('should call service.createForm with body, currentUser, and headers and return 201', async () => {
+    // Arrange
+    const mockResponse = { id: uuid.v4(), formName: 'Test Form' };
+    service.createForm = jest.fn().mockResolvedValue(mockResponse);
+    const req = getMockReq({
+      body: { formName: 'Test Form' },
+      currentUser: { sub: 'test-user' },
+      headers: { authorization: 'Bearer token' },
+    });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.createForm(req, res, next);
+
+    // Assert
+    expect(service.createForm).toBeCalledWith(req.body, req.currentUser, req.headers);
+    expect(res.status).toBeCalledWith(201);
+    expect(res.json).toBeCalledWith(mockResponse);
+  });
+
+  it('should forward service errors for handling elsewhere', async () => {
+    // Arrange
+    const error = new Error('create form failed');
+    service.createForm = jest.fn().mockRejectedValue(error);
+    const req = getMockReq({
+      body: { formName: 'Test Form' },
+      currentUser: { sub: 'test-user' },
+      headers: { authorization: 'Bearer token' },
+    });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.createForm(req, res, next);
+
+    // Assert
+    expect(service.createForm).toBeCalledWith(req.body, req.currentUser, req.headers);
+    expect(next).toBeCalledWith(error);
+  });
+});
+
 describe('listFormSubmissions', () => {
   const formId = uuid.v4();
   const mockResponse = {
