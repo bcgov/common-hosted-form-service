@@ -103,6 +103,7 @@ export const useAuthStore = defineStore('auth', {
             const user = response.data;
             const idpStore = useIdpStore();
             const idpObject = idpStore.findByCode(user.idp);
+            const isIdirBased = user.idp === 'idir' || user.idp === 'azureidir';
             // only populate these specific attributes.
             this.currentUser = {
               idpUserId: user.idpUserId,
@@ -111,7 +112,11 @@ export const useAuthStore = defineStore('auth', {
               lastName: user.lastName,
               fullName: user.fullName,
               email: user.email,
-              idp: idpObject,
+              idp: {
+                ...idpObject,
+                code: isIdirBased ? 'idir' : idpObject?.code,
+                idpCode: user.idp,
+              },
               public: user.public,
             };
           })
