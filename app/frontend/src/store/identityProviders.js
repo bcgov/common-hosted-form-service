@@ -135,7 +135,7 @@ export const useIdpStore = defineStore('idps', {
         const idp = this.providers.find((x) => x.code === code);
         if (idp) {
           return {
-            code: idp.code,
+            code: idp.extra?.canonicalCode || idp.code,
             display: idp.display,
             hint: idp.idp,
             order: getOrder(idp),

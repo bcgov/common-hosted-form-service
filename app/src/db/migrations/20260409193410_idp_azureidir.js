@@ -41,7 +41,7 @@ exports.up = function (knex) {
           email: 'email',
           idp: 'identity_provider',
         },
-        extra: { sortOrder: 10 },
+        extra: { sortOrder: 10, canonicalCode: 'idir' },
       },
     ]);
   });
