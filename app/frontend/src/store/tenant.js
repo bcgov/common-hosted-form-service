@@ -128,6 +128,15 @@ export const useTenantStore = defineStore('tenant', {
     isTenantRestoring: (state) => {
       if (state.selectedTenant) return false;
       if (!state.isRestoring) return false;
+      const appStore = useAppStore();
+      const val = appStore.config?.tenantFeatureEnabled;
+      const featureEnabled =
+        val === undefined || val === null
+          ? true
+          : typeof val === 'string'
+          ? val.toLowerCase() !== 'false'
+          : Boolean(val);
+      if (!featureEnabled) return false;
       const authStore = useAuthStore();
       if (!authStore.ready || !authStore.authenticated) return false;
       return true;

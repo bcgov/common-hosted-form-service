@@ -118,6 +118,51 @@ describe('tenant store', () => {
     });
   });
 
+  // ---- isTenantRestoring getter ----
+
+  describe('isTenantRestoring', () => {
+    beforeEach(() => {
+      authStore.ready = true;
+      authStore.authenticated = true;
+      tenantStore.isRestoring = true;
+      tenantStore.selectedTenant = null;
+    });
+
+    it('returns true when all conditions are met', () => {
+      expect(tenantStore.isTenantRestoring).toBe(true);
+    });
+
+    it('returns false when feature flag is disabled', () => {
+      appStore.config = { tenantFeatureEnabled: false };
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when feature flag is string "false"', () => {
+      appStore.config = { tenantFeatureEnabled: 'false' };
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when selectedTenant is set', () => {
+      tenantStore.selectedTenant = { id: 't1' };
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when isRestoring is false', () => {
+      tenantStore.isRestoring = false;
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when auth is not ready', () => {
+      authStore.ready = false;
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when not authenticated', () => {
+      authStore.authenticated = false;
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+  });
+
   // ---- isBCServicesCardUser getter ----
 
   describe('isBCServicesCardUser', () => {
