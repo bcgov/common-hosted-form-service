@@ -105,7 +105,8 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     //Verify status option is not available for this
     cy.get('.status-heading > .mdi-chevron-right').should('not.exist');
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
+
 
     });
       

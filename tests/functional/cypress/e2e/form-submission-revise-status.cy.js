@@ -172,7 +172,7 @@ it('Submission revise status Assignment', () => {
     cy.waitForLoad();
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
     
     });
 });

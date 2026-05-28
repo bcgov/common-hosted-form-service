@@ -1,5 +1,5 @@
 import 'cypress-keycloak-commands';
-
+import { formsettings } from '../support/echefs_login.js';
 const depEnv = Cypress.env('depEnv');
 const username=Cypress.env('keycloakUsername');
 const password=Cypress.env('keycloakPassword');

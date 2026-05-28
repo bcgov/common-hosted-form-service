@@ -255,8 +255,6 @@ it('Checks the Button', () => {
     cy.get('[value="dashboard"] > .v-btn__content').should("exist");
     cy.wait(2000);
     //Logout after test run
-    cy.get("#logoutButton > .v-btn__content > span")
-      .should("be.visible")
-      .click();
+            cy.get('.mdi-logout').click();
   });
 });

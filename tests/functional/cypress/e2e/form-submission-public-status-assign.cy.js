@@ -154,7 +154,8 @@ describe('Form Designer', () => {
     cy.get('.v-data-table__tr> :nth-child(1)').contains('CHEFSTST@idir').should('be.visible');
     cy.get('span').contains('Close').click();
     cy.waitForLoad();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
+
   });
     
 });

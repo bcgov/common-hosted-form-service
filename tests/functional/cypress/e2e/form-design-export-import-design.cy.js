@@ -138,7 +138,7 @@ describe('Form Designer', () => {
     //Delete form after test run
     cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
     
        
 });
