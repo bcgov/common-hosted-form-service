@@ -132,7 +132,7 @@ export const useTenantStore = defineStore('tenant', {
       const val = appStore.config?.tenantFeatureEnabled;
       let featureEnabled;
       if (val === undefined || val === null) {
-        featureEnabled = true;
+        featureEnabled = false;
       } else if (typeof val === 'string') {
         featureEnabled = val.toLowerCase() !== 'false';
       } else {
