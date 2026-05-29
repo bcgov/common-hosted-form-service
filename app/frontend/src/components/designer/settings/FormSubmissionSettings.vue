@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 import { Regex } from '~/utils/constants';
+import DocumentTemplate from '../../forms/manage/DocumentTemplate.vue';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -100,35 +101,75 @@ const emailArrayRules = ref([
         </div>
       </template>
     </v-checkbox>
+    <div v-if="form.sendSubmissionReceivedEmail">
+      <v-combobox
+        v-model="form.submissionReceivedEmails"
+        :hide-no-data="false"
+        :rules="emailArrayRules"
+        solid
+        variant="outlined"
+        hide-selected
+        clearable
+        :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
+        :label="$t('trans.formSettings.notificationEmailAddrs')"
+        multiple
+        chips
+        closable-chips
+        :delimiters="[' ', ',']"
+        append-icon=""
+        :lang="locale"
+      >
+        <template #no-data>
+          <v-list-item>
+            <v-list-item-title>
+              <span
+                :lang="locale"
+                v-html="$t('trans.formSettings.pressToAddMultiEmail')"
+              />
+            </v-list-item-title>
+          </v-list-item>
+        </template>
+      </v-combobox>
 
-    <v-combobox
-      v-if="form.sendSubmissionReceivedEmail"
-      v-model="form.submissionReceivedEmails"
-      :hide-no-data="false"
-      :rules="emailArrayRules"
-      solid
-      variant="outlined"
-      hide-selected
-      clearable
-      :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
-      :label="$t('trans.formSettings.notificationEmailAddrs')"
-      multiple
-      chips
-      closable-chips
-      :delimiters="[' ', ',']"
-      append-icon=""
-      :lang="locale"
-    >
-      <template #no-data>
-        <v-list-item>
-          <v-list-item-title>
-            <span
-              :lang="locale"
-              v-html="$t('trans.formSettings.pressToAddMultiEmail')"
-            />
-          </v-list-item-title>
-        </v-list-item>
-      </template>
-    </v-combobox>
+      <v-divider class="my-6" />
+
+      <v-checkbox
+        v-model="form.enableSubmissionPackageEmail"
+        hide-details="auto"
+        class="my-0"
+        data-test="submission-package-email-test"
+      >
+        <template #label>
+          <div :class="{ 'mr-2': isRTL }">
+            <span :lang="locale">
+              Email submission package with document template
+            </span>
+
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-icon
+                  color="primary"
+                  class="ml-3"
+                  :class="{ 'mr-2': isRTL }"
+                  v-bind="props"
+                  icon="mdi:mdi-help-circle-outline"
+                />
+              </template>
+              <span :lang="locale">
+                Upload a document template to include a generated submission
+                package in the completion email.
+              </span>
+            </v-tooltip>
+          </div>
+        </template>
+      </v-checkbox>
+
+      <div v-if="form.enableSubmissionPackageEmail" class="mt-4">
+        <DocumentTemplate
+          form-settings-mode
+          v-model:selected-template-id="form.submissionCompletionTemplateId"
+        />
+      </div>
+    </div>
   </BasePanel>
 </template>
