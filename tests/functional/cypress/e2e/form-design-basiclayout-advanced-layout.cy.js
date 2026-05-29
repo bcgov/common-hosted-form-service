@@ -30,6 +30,7 @@ it('Getting page', () => {
     cy.intercept('POST', '**/forms/*', (req) => {
       console.log(req);
     }).as('formCreate');
+    cy.wait(2000);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Advanced Layout').click();
 });

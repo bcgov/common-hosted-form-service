@@ -23,6 +23,11 @@ describe('Form Designer', () => {
     cy.window().then((win) => {
       win.sessionStorage.clear();
     });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
   });
   it('Visits the form settings page', () => {
     
@@ -35,7 +40,14 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Basic Fields').click();
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Basic Fields').click();
   });
+  // Publish a simple form 
+  it('Verify Data Retention Settings', () => {
+    cy.viewport(1000, 1100);
+    cy.wait(2000);
   // Publish a simple form 
   it('Verify Data Retention Settings', () => {
     cy.viewport(1000, 1100);
@@ -43,7 +55,10 @@ describe('Form Designer', () => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
       
+      cy.get('span.btn').contains('Text Field')
+      
       .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -150, { force: true })
       .trigger('mousemove', coords.x, -150, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
@@ -62,11 +77,21 @@ describe('Form Designer', () => {
     cy.log(arrayValues[0]);
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
+    // Filter the newly created form
+    cy.location('search').then(search => {
+      //let pathName = fullUrl.pathname
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
     //Publish the form
+    cy.get('.v-label > span').click();
     cy.get('.v-label > span').click();
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
+    });
     });
     //Update form design version
     cy.get('.mdi-plus').click();
@@ -155,6 +180,7 @@ describe('Form Designer', () => {
     cy.contains('label', 'Custom Retention Period (days)').next('input[type="number"]').clear().type('60');
     cy.contains('label', 'Classification Notes').next('textarea').type('some privacy issues');
     cy.get('.v-alert__content > span').contains('WARNING: After 60 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('exist');
+    cy.contains('.v-select__selection-text', 'Custom period').click();
     cy.contains('.v-select__selection-text', 'Custom period').click();
     cy.contains('90 days').should('exist');
     cy.contains('180 days').should('exist');

@@ -30,6 +30,7 @@ describe('Form Designer', () => {
   it('Getting page', () => {
     
     cy.viewport(1000, 1100);
+    cy.wait(2000);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Basic Fields').click();
   });  
