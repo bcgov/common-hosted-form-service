@@ -134,12 +134,18 @@ describe('BCGovHeader.vue', () => {
     });
 
     it('shows dropdown for an allowed route', () => {
+      const appStore = useAppStore();
+      appStore.config = { tenantFeatureEnabled: true };
+
       const wrapper = mountHeader({}, 'UserForms');
 
       expect(wrapper.find('.tenant-dropdown-wrapper').exists()).toBe(true);
     });
 
     it('shows dropdown for CreateForm route', () => {
+      const appStore = useAppStore();
+      appStore.config = { tenantFeatureEnabled: true };
+
       const wrapper = mountHeader({}, 'CreateForm');
 
       expect(wrapper.find('.tenant-dropdown-wrapper').exists()).toBe(true);
