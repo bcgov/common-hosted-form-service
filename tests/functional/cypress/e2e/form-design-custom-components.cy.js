@@ -16,14 +16,14 @@ describe("Form Designer", () => {
     console.log(err);
     return false;
   });
-  
+
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
   });
   it('Getting page', () => {
-    
+
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('BC Government').click();
@@ -34,7 +34,7 @@ describe("Form Designer", () => {
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="idirusers"]')
-      
+
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -600, { force: true })
       .trigger('mouseup', { force: true });

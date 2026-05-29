@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('node:path');
 const Problem = require('api-problem');
 const querystring = require('node:querystring');
+const qs = require('qs');
 const clsRtracer = require('cls-rtracer');
 
 const log = require('./src/components/log')(module.filename);
@@ -28,6 +29,10 @@ const apiRouter = express.Router();
 
 let probeId;
 const app = express();
+
+// Configure query parser to use qs for nested query parameters
+app.set('query parser', qs.parse);
+
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));

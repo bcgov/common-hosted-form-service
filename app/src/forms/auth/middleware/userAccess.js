@@ -1,3 +1,4 @@
+const config = require('config');
 const Problem = require('api-problem');
 const uuid = require('uuid');
 
@@ -6,6 +7,7 @@ const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
+const tenantService = require('../../../components/tenantService');
 
 /**
  * Gets the form metadata for the given formId from the forms available to the
@@ -13,28 +15,20 @@ const rbacService = require('../../rbac/service');
  *
  * @param {*} currentUser the user that is currently logged in; may be public.
  * @param {uuid} formId the ID of the form to retrieve for the current user.
- * @param {boolean} includeDeleted if active form not found, look for a deleted
- *   form.
+ * @param {boolean} includeDeleted if active form not found, look for a deleted form.
+ * @param {Object|null} headers request headers (needed for tenant user role/permission lookups).
  * @returns the form metadata if the currentUser has access, or undefined.
  */
-const _getForm = async (currentUser, formId, includeDeleted) => {
+const _getForm = async (currentUser, formId, includeDeleted, headers = null) => {
   if (!uuid.validate(formId)) {
-    throw new Problem(400, {
-      detail: 'Bad formId',
-    });
+    throw new Problem(400, { detail: 'Bad formId' });
   }
 
-  const forms = await service.getUserForms(currentUser, {
-    active: true,
-    formId: formId,
-  });
+  const forms = await service.getUserForms(currentUser, { active: true, formId }, headers);
   let form = forms.find((f) => f.formId === formId);
 
   if (!form && includeDeleted) {
-    const deletedForms = await service.getUserForms(currentUser, {
-      active: false,
-      formId: formId,
-    });
+    const deletedForms = await service.getUserForms(currentUser, { active: false, formId }, headers);
     form = deletedForms.find((f) => f.formId === formId);
   }
 
@@ -113,7 +107,31 @@ const currentUser = async (req, _res, next) => {
     // Add the request element that contains the current user's parsed info. It
     // is ok if the access token isn't defined: then we'll have a public user.
     const accessToken = await jwtService.getTokenPayload(req);
-    req.currentUser = await service.login(accessToken);
+    req.currentUser = { ...(await service.login(accessToken)) };
+    const tenantId = config.get('cstar.tenantFeatureEnabled') ? req.headers?.['x-tenant-id'] : undefined;
+    if (tenantId && !uuid.validate(tenantId)) {
+      throw new Problem(400, {
+        detail: 'Bad tenantId',
+      });
+    }
+
+    if (tenantId) {
+      const userTenants = await tenantService.getCurrentUserTenants(req);
+      if (req._tenantServiceDegraded) {
+        throw new Problem(503, {
+          detail: 'Tenant service unavailable.',
+        });
+      }
+
+      const tenantBelongsToUser = Array.isArray(userTenants) && userTenants.some((tenant) => tenant?.id === tenantId);
+      if (!tenantBelongsToUser) {
+        throw new Problem(403, {
+          detail: 'Tenant not accessible for current user.',
+        });
+      }
+    }
+
+    req.currentUser.tenantId = tenantId;
 
     next();
   } catch (error) {
@@ -140,7 +158,7 @@ const filterMultipleSubmissions = async (req, _res, next) => {
   try {
     // The request must include a formId, either in params or query, but give
     // precedence to params.
-    const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
+    const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true, req.headers);
 
     // Get the array of submission IDs from the request body.
     const submissionIds = req.body && req.body.submissionIds;
@@ -209,7 +227,7 @@ const hasFormPermissions = (permissions) => {
 
       // The request must include a formId, either in params or query, but give
       // precedence to params.
-      const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
+      const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true, req.headers);
 
       // If the form doesn't exist, or its permissions don't exist, then access
       // will be denied - otherwise check to see if permissions is a subset.
@@ -240,7 +258,7 @@ const hasFormRoles = (roles) => {
     try {
       // The request must include a formId, either in params or query, but give
       // precedence to params.
-      const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, false);
+      const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, false, req.headers);
 
       if (!_hasAnyPermission(form?.roles, roles)) {
         throw new Problem(401, {
@@ -272,7 +290,7 @@ const hasRoleDeletePermissions = async (req, _res, next) => {
 
     // The request must include a formId, either in params or query, but give
     // precedence to params.
-    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
+    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false, req.headers);
 
     const userIds = req.body;
     if (userIds.includes(currentUser.id)) {
@@ -332,7 +350,7 @@ const hasRoleModifyPermissions = async (req, _res, next) => {
 
     // The request must include a formId, either in params or query, but give
     // precedence to params.
-    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
+    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false, req.headers);
 
     const userId = req.params.userId || req.query.userId;
     if (!uuid.validate(userId)) {
@@ -407,21 +425,25 @@ const hasSubmissionPermissions = (permissions) => {
       }
 
       // The request must include a formSubmissionId, either in params or query,
-      // but give precedence to params.
-      const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
+      // but give precedence to params, then query and finally currentFileRecord.
+      const submissionId = req.params.formSubmissionId || req.query.formSubmissionId || req.currentFileRecord?.formSubmissionId;
+      if (!submissionId) {
+        throw new Problem(400, {
+          detail: 'formSubmissionId not found',
+        });
+      }
       if (!uuid.validate(submissionId)) {
         throw new Problem(400, {
-          detail: 'Bad formSubmissionId',
+          detail: 'formSubmissionId must be a valid UUID',
         });
       }
 
       // Get the submission results so we know what form this submission is for.
       const submissionForm = await service.getSubmissionForm(submissionId);
-
       // If the current user has elevated permissions on the form, they may have
       // access to all submissions for the form.
       if (req.currentUser) {
-        const formFromCurrentUser = await _getForm(req.currentUser, submissionForm.form.id, false);
+        const formFromCurrentUser = await _getForm(req.currentUser, submissionForm.form.id, false, req.headers);
 
         // Do they have the submission permissions requested on this form?
         if (_hasAllPermissions(formFromCurrentUser?.permissions, permissions)) {
@@ -463,6 +485,47 @@ const hasSubmissionPermissions = (permissions) => {
   };
 };
 
+/**
+ * Middleware to enforce create-form rules using tenantService.canCreateForm
+ */
+const requireCreateFormPermission = async (req, _res, next) => {
+  try {
+    const allowed = await tenantService.canCreateForm(req);
+    if (!allowed) {
+      throw new Problem(403, { detail: 'You do not have permission to create a form.' });
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
+/**
+ * If user has a tenantId, ensure the form belongs to the user's tenant.
+ * Otherwise, allow access (non-tenant/public).
+ */
+const requireFormTenantAssociation = async (req, _res, next) => {
+  try {
+    const formId = req.params.formId || req.query.formId;
+
+    // If no tenantId, allow (other guards handle non-tenant access)
+    if (!req.currentUser?.tenantId) return next();
+
+    if (!uuid.validate(formId)) {
+      throw new Problem(400, { detail: 'Bad formId' });
+    }
+
+    const ok = await tenantService.isFormInUsersTenant(req, formId);
+    if (!ok) {
+      throw new Problem(403, { detail: 'Form not accessible for your tenant.' });
+    }
+
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   currentUser,
   filterMultipleSubmissions,
@@ -471,4 +534,6 @@ module.exports = {
   hasRoleDeletePermissions,
   hasRoleModifyPermissions,
   hasSubmissionPermissions,
+  requireCreateFormPermission,
+  requireFormTenantAssociation,
 };

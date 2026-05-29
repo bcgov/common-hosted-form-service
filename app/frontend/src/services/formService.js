@@ -21,6 +21,7 @@ export default {
    * Create a new Form
    * @param {Object} formData An object containing the form details
    * @returns {Promise} An axios response
+   * @note Tenant ID is automatically included via x-tenant-id header when tenant is selected
    */
   createForm(formData) {
     return appAxios().post(`${ApiRoutes.FORMS}`, formData);
@@ -32,6 +33,7 @@ export default {
    * @param {string} formId The form uuid
    * @param {Object} formData An object containing the form details
    * @returns {Promise} An axios response
+   * @note Tenant ID is automatically included via x-tenant-id header when tenant is selected
    */
   updateForm(formId, formData) {
     return appAxios().put(`${ApiRoutes.FORMS}/${formId}`, formData);

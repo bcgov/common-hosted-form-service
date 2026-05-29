@@ -3,17 +3,54 @@ const falsey = require('falsey');
 const clone = require('lodash/clone');
 const _ = require('lodash');
 
-const setupMount = (type, app, routes) => {
-  const p = `/${type}`;
-  if (Array.isArray(routes)) {
-    for (let r of routes) {
-      app.use(p, r);
+const setupMount = (type, app, routeConfig) => {
+  const basePath = `/${type}`;
+
+  if (routeConfig && typeof routeConfig === 'object' && routeConfig.mainRouter) {
+    const { mainRouter, subRouters } = routeConfig;
+
+    const dispatcherRouter = require('express').Router();
+
+    // mount sub-routers with specific path patterns first
+    // this ensures that they intercept requests before mainRouter's generic /:formId pattern
+    if (subRouters && Array.isArray(subRouters)) {
+      for (const { router, patterns } of subRouters) {
+        // only passes through to this router if path matches patterns
+        dispatcherRouter.use((req, res, next) => {
+          // extract the next path segment
+          const remainingPath = req.path; // relative to basePath
+
+          // check if any pattern matches the next path segment or standalone routes
+          const matchesPattern = patterns.some((pattern) => remainingPath.includes(`/${pattern}`) || remainingPath.includes(pattern));
+
+          if (matchesPattern) {
+            // request should go to this sub-router
+            return router(req, res, next);
+          }
+
+          // continue checking other sub-routers or eventually the main router
+          next();
+        });
+      }
     }
-  } else {
-    app.use(p, routes);
+
+    dispatcherRouter.use(mainRouter);
+
+    app.use(basePath, dispatcherRouter);
+
+    return basePath;
   }
 
-  return p;
+  // array of routers for non-form modules
+  if (Array.isArray(routeConfig)) {
+    for (let r of routeConfig) {
+      app.use(basePath, r);
+    }
+  } else {
+    app.use(basePath, routeConfig);
+  }
+
+  return basePath;
 };
 
 /**

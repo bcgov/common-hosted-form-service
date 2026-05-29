@@ -3,6 +3,7 @@ run-name: Deploy PR-${{ github.event.inputs.pr-number }}
 
 env:
   ACRONYM: chefs
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 on:
   workflow_dispatch:
@@ -58,7 +59,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout repository from pull request
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Build & Push
@@ -84,7 +85,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout repository from pull request
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Deploy to environment
@@ -103,7 +104,7 @@ jobs:
           route_prefix: ${{ vars.ROUTE_PREFIX }}
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Release Comment on PR
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@70d2764d1a7d5d9560b100cbea0077fc8f633987  # SHA for v3
         if: success()
         with:
           header: release

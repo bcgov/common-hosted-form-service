@@ -97,6 +97,14 @@
       }
     }
   },
+  "cstar": {
+    "tenantFeatureEnabled": true,
+    "endpoint": "https://cstar-dev.apps.gold.devops.gov.bc.ca/api/v1/",
+    "listUserTenantsPath": "users/{userId}/tenants",
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
+    "listGroupsForTenant": "tenants/{tenantId}/groups",
+    "listTenantUsersPath": "tenants/{tenantId}/users"
+  },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",
     "bcAddressURL": "https://geocoder.api.gov.bc.ca/addresses.json",

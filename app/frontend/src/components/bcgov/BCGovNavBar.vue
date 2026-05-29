@@ -4,9 +4,10 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
+import { useTenantStore } from '~/store/tenant';
 import { useIdpStore } from '~/store/identityProviders';
 
-const { locale } = useI18n({ useScope: 'global' });
+const { locale, t } = useI18n({ useScope: 'global' });
 
 defineProps({
   formSubmitMode: {
@@ -16,13 +17,28 @@ defineProps({
 });
 
 const idpStore = useIdpStore();
+const tenantStore = useTenantStore();
 
 const { authenticated, isAdmin, identityProvider } = storeToRefs(
   useAuthStore()
 );
+const { selectedTenant, isFormAdmin } = storeToRefs(tenantStore);
 
 const hasPrivileges = computed(() => {
+  // For Enterprise CHEFS (tenanted): check if user has form_admin role on selected tenant
+  // For Personal CHEFS: use the primary IdP check
+  if (selectedTenant.value) {
+    return isFormAdmin.value;
+  }
   return idpStore.isPrimary(identityProvider?.value?.code);
+});
+
+const formsMenuText = computed(() => {
+  // Show "My Forms" for Personal CHEFS (no tenant selected)
+  // Show "Forms" for Enterprise CHEFS (when tenant is selected)
+  return selectedTenant.value
+    ? t('trans.bCGovNavBar.forms')
+    : t('trans.bCGovNavBar.myForms');
 });
 </script>
 
@@ -46,7 +62,7 @@ const hasPrivileges = computed(() => {
             data-cy="userFormsLinks"
             :to="{ name: 'UserForms' }"
             :lang="locale"
-            >{{ $t('trans.bCGovNavBar.myForms') }}</router-link
+            >{{ formsMenuText }}</router-link
           >
         </li>
         <li v-if="hasPrivileges">
@@ -62,6 +78,7 @@ const hasPrivileges = computed(() => {
             data-cy="help"
             href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs"
             target="_blank"
+            rel="noopener noreferrer"
             :lang="locale"
             >{{ $t('trans.bCGovNavBar.help') }}</a
           >
@@ -71,6 +88,7 @@ const hasPrivileges = computed(() => {
             data-cy="feedback"
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
+            rel="noopener noreferrer"
             :lang="locale"
             >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >
@@ -103,6 +121,7 @@ const hasPrivileges = computed(() => {
     ul {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
       margin: 0;
       color: #ffffff;
       list-style: none;

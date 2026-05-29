@@ -6,6 +6,7 @@ jest.mock('../../../../src/forms/common/models/tables/formSubmission', () => Moc
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/form', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formVersion', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/formGroup', () => MockModel);
 
 const service = require('../../../../src/forms/submission/service');
 
@@ -16,6 +17,95 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.restoreAllMocks();
+});
+
+describe('_fetchSubmissionData', () => {
+  const formSubmissionId = 'submission-abc';
+  const meta = { submissionId: 'sub-1', formVersionId: 'ver-1', formId: 'form-1' };
+  const submission = { id: 'sub-1', data: { field: 'value' } };
+  const version = { id: 'ver-1', formId: 'form-1' };
+  const form = { id: 'form-1', name: 'Test Form' };
+
+  function setupQueryMocks(formGroupRows) {
+    const mockMetaQuery = {
+      where: jest.fn().mockReturnValue({
+        first: jest.fn().mockReturnValue({
+          throwIfNotFound: jest.fn().mockResolvedValue(meta),
+        }),
+      }),
+    };
+    const mockSubmissionQuery = {
+      findById: jest.fn().mockReturnValue({
+        throwIfNotFound: jest.fn().mockResolvedValue(submission),
+      }),
+    };
+    const mockVersionQuery = {
+      findById: jest.fn().mockReturnValue({
+        throwIfNotFound: jest.fn().mockResolvedValue(version),
+      }),
+    };
+    const mockFormQuery = {
+      findById: jest.fn().mockReturnThis(),
+      allowGraph: jest.fn().mockReturnThis(),
+      withGraphFetched: jest.fn().mockReturnThis(),
+      throwIfNotFound: jest.fn().mockResolvedValue({ ...form }),
+    };
+    const mockFormGroupQuery = {
+      where: jest.fn().mockReturnValue({
+        select: jest.fn().mockResolvedValue(formGroupRows),
+      }),
+    };
+    MockModel.query
+      .mockReturnValueOnce(mockMetaQuery) // SubmissionMetadata
+      .mockReturnValueOnce(mockSubmissionQuery) // FormSubmission (Promise.all[0])
+      .mockReturnValueOnce(mockVersionQuery) // FormVersion    (Promise.all[1])
+      .mockReturnValueOnce(mockFormQuery) // Form           (Promise.all[2])
+      .mockReturnValueOnce(mockFormGroupQuery); // FormGroup      (Promise.all[3])
+  }
+
+  it('should set form.hasGroups to true when form has group assignments', async () => {
+    setupQueryMocks([{ groupId: 'group-1' }, { groupId: 'group-2' }]);
+
+    const result = await service._fetchSubmissionData(formSubmissionId);
+
+    expect(result.form.hasGroups).toBe(true);
+    expect(result.submission).toEqual(submission);
+    expect(result.version).toEqual(version);
+    expect(result.form.id).toBe(form.id);
+  });
+
+  it('should set form.hasGroups to false when form has no group assignments', async () => {
+    setupQueryMocks([]);
+
+    const result = await service._fetchSubmissionData(formSubmissionId);
+
+    expect(result.form.hasGroups).toBe(false);
+  });
+
+  it('should include formGroup query targeting the correct formId', async () => {
+    const mockFormGroupQuery = {
+      where: jest.fn().mockReturnValue({
+        select: jest.fn().mockResolvedValue([]),
+      }),
+    };
+    MockModel.query
+      .mockReturnValueOnce({
+        where: jest.fn().mockReturnValue({ first: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue(meta) }) }),
+      })
+      .mockReturnValueOnce({ findById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue(submission) }) })
+      .mockReturnValueOnce({ findById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue(version) }) })
+      .mockReturnValueOnce({
+        findById: jest.fn().mockReturnThis(),
+        allowGraph: jest.fn().mockReturnThis(),
+        withGraphFetched: jest.fn().mockReturnThis(),
+        throwIfNotFound: jest.fn().mockResolvedValue({ ...form }),
+      })
+      .mockReturnValueOnce(mockFormGroupQuery);
+
+    await service._fetchSubmissionData(formSubmissionId);
+
+    expect(mockFormGroupQuery.where).toHaveBeenCalledWith('formId', meta.formId);
+  });
 });
 
 describe('read', () => {
