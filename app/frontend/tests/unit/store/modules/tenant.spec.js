@@ -82,14 +82,14 @@ describe('tenant store', () => {
   // ---- isTenantFeatureEnabled getter ----
 
   describe('isTenantFeatureEnabled', () => {
-    it('returns true when config is not set (default)', () => {
+    it('returns false when config is not set (default)', () => {
       appStore.config = {};
-      expect(tenantStore.isTenantFeatureEnabled).toBe(true);
+      expect(tenantStore.isTenantFeatureEnabled).toBe(false);
     });
 
-    it('returns true when config is null', () => {
+    it('returns false when config is null', () => {
       appStore.config = null;
-      expect(tenantStore.isTenantFeatureEnabled).toBe(true);
+      expect(tenantStore.isTenantFeatureEnabled).toBe(false);
     });
 
     it('returns true when tenantFeatureEnabled is true', () => {
