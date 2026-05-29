@@ -38,7 +38,7 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.visit(`/${depEnv}`); 
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+    cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
@@ -73,10 +73,9 @@ describe('Form Designer', () => {
     cy.get('[data-test="canEditForm"]').click();
     
     //Logout to submit the public form
-    cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
+    cy.get('#logoutButton').click({ force: true });
     cy.log('Page visited, checking for logout button');
-    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span', { timeout: 15000 }).should('be.visible').click();
+    cy.get('#logoutButton').should('not.exist');
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     cy.waitForLoad();
@@ -105,7 +104,8 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     //Verify status option is not available for this
     cy.get('.status-heading > .mdi-chevron-right').should('not.exist');
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
+
 
     });
       

@@ -12,14 +12,17 @@ Cypress.Commands.add('waitForLoad', () => {
 describe('Form Designer', () => {
 
     beforeEach(()=>{
-      
-      
       cy.on('uncaught:exception', (err, runnable) => {
         // Form.io throws an uncaught exception for missing projectid
         // Cypress catches it as undefined: undefined so we can't get the text
         console.log(err);
         return false;
       });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+    win.sessionStorage.clear();
+    });
     });
     it('Visits the form settings page', () => {
     
@@ -33,13 +36,10 @@ describe('Form Designer', () => {
     
         cy.viewport(1000, 1100);
         cy.get('button').contains('Advanced Fields').click();  
-        
     }); 
     it('Checks the simpleradioadvanced', () => {
-
     cy.viewport(1000, 1800);
-    cy.waitForLoad();
-    
+    cy.wait(2000);
  // Form design page with advanced Fields components
     cy.get('button').contains('Advanced Fields').click();
     cy.waitForLoad();
@@ -202,9 +202,10 @@ describe('Form Designer', () => {
         cy.get('span').contains('Publish Version 1');
         cy.contains('Continue').should('be.visible');
         cy.contains('Continue').trigger('click');
-
         //Share link verification
-        cy.get('[data-cy=shareFormButton]').should('be.visible').click();
+        cy.get('[data-cy=shareFormButton]').should('be.visible');
+        cy.get('[data-cy=shareFormButton]').click();
+        //Close  form share window
         cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
         cy.location('search').then(search => {
           //let pathName = fullUrl.pathname

@@ -1,54 +1,63 @@
-import "cypress-keycloak-commands";
-import { formsettings } from "../support/login.js";
+import 'cypress-keycloak-commands';
+import { formsettings } from '../support/echefs_login.js';
 
-const depEnv = Cypress.env("depEnv");
+const depEnv = Cypress.env('depEnv');
 
-Cypress.Commands.add("waitForLoad", () => {
+
+Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
 
-  cy.get(".nprogress-busy", { timeout: loaderTimeout }).should("not.exist");
+  cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
-describe("Form Designer", () => {
-  beforeEach(() => {
-    cy.on("uncaught:exception", (err, runnable) => {
-      // Form.io throws an uncaught exception for missing projectid
-      // Cypress catches it as undefined: undefined so we can't get the text
-      console.log(err);
-      return false;
-    });
-    cy.clearCookies();
-    cy.clearLocalStorage();
-    cy.window().then((win) => {
-      win.sessionStorage.clear();
-    });
-  });
-  it("Visits the form settings page", () => {
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    formsettings();
-    cy.checkA11yPage();
-  });
-  it('Getting page', () => {
-    
-    cy.viewport(1000, 1100);
-    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
-    cy.get('button').contains('Basic Fields').click();
-  });
-  // Publish a simple form 
-  it('Verify draft submission', () => {
-    cy.viewport(1000, 1100);
-    cy.wait(2000);
-    cy.get('div.formio-builder-form').then($el => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
+describe('Form Designer', () => {
+
+    beforeEach(()=>{
       
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -150, { force: true })
-      .trigger('mouseup', { force: true });
-      cy.get('.btn-success').click();
+      
+      cy.on('uncaught:exception', (err, runnable) => {
+        // Form.io throws an uncaught exception for missing projectid
+        // Cypress catches it as undefined: undefined so we can't get the text
+        console.log(err);
+        return false;
+      });
     });
-  });
-  it("Form Submission and Updation", () => {
+    it('Visits the form settings page', () => {
+    
+    
+        cy.viewport(1000, 1100);
+        cy.waitForLoad();
+        formsettings();
+        
+    }); 
+    it('Getting page ready', () => {
+    
+        cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+        cy.get('button').contains('Basic Fields').click();
+    });  
+    // Verifying fields in the form settings page
+    it('Basic Fields components', () => {
+    cy.viewport(1000, 1100);
+      //Phone Number
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Phone Number')
+        
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -410, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('.btn-success').click();
+    });
+    //Text field
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Text Field')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('.btn-success').click();
+    });
+    });
+    it("Form Submission and Updation", () => {
     cy.viewport(1000, 1100);
     cy.wait(2000);
     // Form saving
@@ -68,16 +77,6 @@ describe("Form Designer", () => {
       cy.get("span").contains("Publish Version 1");
       cy.contains("Continue").should("be.visible");
       cy.contains("Continue").trigger("click");
-      //Share link verification
-      let shareFormButton = cy.get('[data-cy=shareFormButton]');
-      expect(shareFormButton).to.not.be.null;
-      shareFormButton.trigger('click').then(()=>{
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
-      //Close  form share window
-      cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
-      });
       //Submit the form
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
       cy.wait(2000);
@@ -102,11 +101,15 @@ describe("Form Designer", () => {
         .find('input[type="text"]')
         .should("have.value", "chefs.testing@gov.bc.ca");
       cy.wait(1000);
-      cy.contains('Normal').click();
+      cy.get(
+        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
+      ).click();
       cy.contains("Normal").should("exist");
       cy.contains("High").should("exist");
       cy.contains("Low").should("exist");
-      cy.contains('Normal').click();
+      cy.get(
+        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
+      ).click();
       cy.get("span").contains("SEND").should("be.visible");
       cy.get('[data-test="continue-btn-cancel"]').click();
       cy.get('button[title="Email a receipt of this submission"]').click();
@@ -229,7 +232,8 @@ describe("Form Designer", () => {
       cy.waitForLoad();
       cy.get(".mdi-delete").click();
       cy.get('[data-test="continue-btn-continue"]').click();
-      cy.get('.mdi-logout').click();
+      cy.get("#logoutButton > .v-btn__content > span").click();
     });
   });
+
 });

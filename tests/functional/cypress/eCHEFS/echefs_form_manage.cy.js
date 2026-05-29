@@ -1,10 +1,11 @@
+import 'cypress-keycloak-commands';
+import { formsettings } from '../support/echefs_login.js';
 const depEnv = Cypress.env('depEnv');
 const username=Cypress.env('keycloakUsername');
 const password=Cypress.env('keycloakPassword');
 
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
@@ -30,6 +31,13 @@ describe('Form Designer', () => {
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
+    cy.wait(1000);
+    //Select tenant to create form under that
+    cy.get('.mdi-home-account').click();
+    cy.get('.v-list-item__content').contains('Go to CSTAR (Connected Services, Team Access and Roles)').should('exist');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').should('be.visible');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').click({ waitForAnimations: false });
+    cy.wait(1000);
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.wait(2000);
