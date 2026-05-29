@@ -32,7 +32,7 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.visit(`/${depEnv}`); 
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+    cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
@@ -68,9 +68,9 @@ describe('Form Designer', () => {
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
       //Logout to submit the public form
-    cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
+    cy.get('#logoutButton').click({ force: true });
     cy.log('Page visited, checking for logout button');
-    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    cy.get('#logoutButton').should('not.exist');
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     cy.waitForLoad();

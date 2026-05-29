@@ -35,7 +35,7 @@ describe('Form Designer', () => {
     }); 
     it('Form Submission and Updation', () => {
     cy.viewport(1000, 1800);
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')

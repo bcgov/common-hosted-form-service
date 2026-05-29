@@ -16,6 +16,11 @@ describe("Form Designer", () => {
       console.log(err);
       return false;
     });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
   });
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
@@ -87,15 +92,11 @@ describe("Form Designer", () => {
         .find('input[type="text"]')
         .should("have.value", "chefs.testing@gov.bc.ca");
       cy.wait(1000);
-      cy.get(
-        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
-      ).click();
+      cy.contains('Normal').click();
       cy.contains("Normal").should("exist");
       cy.contains("High").should("exist");
       cy.contains("Low").should("exist");
-      cy.get(
-        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
-      ).click();
+      cy.contains('Normal').click();
       cy.get("span").contains("SEND").should("be.visible");
       cy.get('[data-test="continue-btn-cancel"]').click();
       cy.get('button[title="Email a receipt of this submission"]').click();

@@ -114,7 +114,7 @@ describe('Form Designer', () => {
     cy.contains('label', 'Custom Retention Period (days)').next('input[type="number"]').clear().type('60');
     cy.contains('label', 'Classification Notes').next('textarea').type('some privacy issues');
     cy.get('.v-alert__content > span').contains('WARNING: After 60 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('exist');
-    cy.get('.v-card-text > :nth-child(2) > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.contains('.v-select__selection-text', 'Custom period').click();
     cy.contains('90 days').should('exist');
     cy.contains('180 days').should('exist');
     cy.contains('1 year (365 days)').should('exist');
