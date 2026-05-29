@@ -88,7 +88,7 @@ export const useTenantStore = defineStore('tenant', {
     isTenantFeatureEnabled: () => {
       const appStore = useAppStore();
       const val = appStore.config?.tenantFeatureEnabled;
-      if (val === undefined || val === null) return true;
+      if (val === undefined || val === null) return false;
       if (typeof val === 'string') return val.toLowerCase() !== 'false';
       return Boolean(val);
     },
