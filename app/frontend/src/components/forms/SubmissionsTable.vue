@@ -10,6 +10,7 @@ import AdvancedSubmissionSearch from './submission/AdvancedSubmissionSearch.vue'
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { FormPermissions } from '~/utils/constants';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -97,6 +98,9 @@ const multiRestoreMessage = computed(() =>
 );
 const singleRestoreMessage = computed(() =>
   t('trans.submissionsTable.singleRestoreWarning')
+);
+const canDeleteSubmissions = computed(() =>
+  permissions.value?.includes(FormPermissions.SUBMISSION_DELETE)
 );
 const showFormManage = computed(() => checkFormManage(permissions.value));
 const showSelectColumns = computed(
@@ -294,15 +298,17 @@ const HEADERS = computed(() => {
     width: '40px',
   });
 
-  // Actions column at the end
-  headers.push({
-    title: t('trans.submissionsTable.event'),
-    align: 'end',
-    key: 'event',
-    filterable: false,
-    sortable: false,
-    width: '40px',
-  });
+  if (canDeleteSubmissions.value) {
+    // Actions column at the end
+    headers.push({
+      title: t('trans.submissionsTable.event'),
+      align: 'end',
+      key: 'event',
+      filterable: false,
+      sortable: false,
+      width: '40px',
+    });
+  }
   return headers;
 });
 
@@ -694,6 +700,7 @@ async function handleSearch(value) {
 defineExpose({
   BASE_FILTER_HEADERS,
   BASE_HEADERS,
+  canDeleteSubmissions,
   debounceInput,
   debounceTime,
   delSub,
@@ -906,7 +913,7 @@ defineExpose({
         return-object
         @update:options="updateTableOptions"
       >
-        <template #header.event>
+        <template v-if="canDeleteSubmissions" #header.event>
           <span v-if="!deletedOnly">
             <v-btn
               color="red"
@@ -1001,7 +1008,7 @@ defineExpose({
             }}</span>
           </v-tooltip>
         </template>
-        <template #item.event="{ item }">
+        <template v-if="canDeleteSubmissions" #item.event="{ item }">
           <span>
             <v-tooltip v-if="!item.deleted" location="bottom">
               <template #activator="{ props }">

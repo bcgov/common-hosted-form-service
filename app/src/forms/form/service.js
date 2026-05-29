@@ -1,8 +1,9 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const uuid = require('uuid');
-const { EmailTypes, ScheduleType } = require('../common/constants');
+const { EmailTypes, ScheduleType, TenantRoles } = require('../common/constants');
 const eventService = require('../event/eventService');
+const authService = require('../auth/service');
 const moment = require('moment');
 const {
   FileStorage,
@@ -21,6 +22,8 @@ const {
   SubmissionMetadata,
   FormComponentsProactiveHelp,
   FormSubscription,
+  FormTenant,
+  FormGroup,
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
@@ -28,6 +31,7 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
+const tenantService = require('../../components/tenantService');
 const log = require('../../components/log')(module.filename);
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
@@ -117,6 +121,40 @@ function isClosingMessageValid(schedule) {
     return !!schedule.closingMessage;
   }
   return true;
+}
+
+async function ensureTenantFormSetup(currentUser, headers, trx, formId) {
+  if (!currentUser.tenantId) {
+    return;
+  }
+
+  if (!headers) {
+    throw new Problem(500, 'Request headers required for tenant form creation');
+  }
+
+  const formTenant = {
+    id: uuid.v4(),
+    formId,
+    tenantId: currentUser.tenantId,
+    createdBy: currentUser.usernameIdp,
+  };
+  await FormTenant.query(trx).insert(formTenant);
+
+  const reqContext = { currentUser, headers };
+  const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext, currentUser.tenantId);
+  const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes(TenantRoles.FORM_ADMIN));
+
+  if (adminGroups.length === 0) {
+    throw new Problem(403, 'User does not belong to any group with form_admin role');
+  }
+
+  const formGroups = adminGroups.map((group) => ({
+    id: uuid.v4(),
+    formId,
+    groupId: group.id,
+    createdBy: currentUser.usernameIdp,
+  }));
+  await FormGroup.query(trx).insert(formGroups);
 }
 
 const service = {
@@ -211,7 +249,7 @@ const service = {
       .modify('orderNameAscending');
   },
 
-  createForm: async (data, currentUser) => {
+  createForm: async (data, currentUser, headers = null) => {
     let trx;
     const scheduleData = service.validateScheduleObject(data.schedule);
     if (scheduleData.status !== 'success') {
@@ -246,6 +284,7 @@ const service = {
       obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
 
       await Form.query(trx).insert(obj);
+
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
         const fips = [];
         for (const p of data.identityProviders) {
@@ -257,11 +296,14 @@ const service = {
         }
         await FormIdentityProvider.query(trx).insert(fips);
       }
+
       // make this user have ALL the roles...
-      const userRoles = Rolenames.map((r) => {
-        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
-      });
-      await FormRoleUser.query(trx).insert(userRoles);
+      if (!currentUser.tenantId) {
+        const userRoles = Rolenames.map((r) => {
+          return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
+        });
+        await FormRoleUser.query(trx).insert(userRoles);
+      }
 
       // create a unpublished draft
       const draft = {
@@ -283,6 +325,8 @@ const service = {
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+
+      await ensureTenantFormSetup(currentUser, headers, trx, obj.id);
 
       await trx.commit();
       const result = await service.readForm(obj.id);
@@ -380,16 +424,34 @@ const service = {
     }
   },
 
-  readForm: (formId, params = {}) => {
+  readForm: async (formId, params = {}, currentUser = null, headers = null) => {
     params = queryUtils.defaultActiveOnly(params);
-    return Form.query()
+
+    let hasPermissionsForVersions = true;
+    // Making an assumption that user is turned away before this if it's protected and they're not logged in
+    if (currentUser !== null && currentUser !== undefined) {
+      const forms = await authService.getUserForms(
+        currentUser,
+        {
+          ...params,
+          active: true,
+          formId: formId,
+        },
+        headers
+      );
+      hasPermissionsForVersions = forms.some((f) => f.permissions.includes(Permissions.DESIGN_CREATE));
+    }
+
+    const query = Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
       .allowGraph('[formMetadata,identityProviders,versions]')
       .withGraphFetched('formMetadata')
-      .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
-      .throwIfNotFound();
+      .withGraphFetched('identityProviders(orderDefault)');
+    if (hasPermissionsForVersions) {
+      query.withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)');
+    }
+    return query.throwIfNotFound();
   },
 
   readFormOptions: (formId, params = {}) => {

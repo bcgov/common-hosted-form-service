@@ -40,7 +40,12 @@ module.exports = {
   },
   createForm: async (req, res, next) => {
     try {
-      const response = await service.createForm(req.body, req.currentUser);
+      // Extract only what the service needs - following existing pattern
+      const response = await service.createForm(
+        req.body,
+        req.currentUser,
+        req.headers // Pass headers for tenant API authentication
+      );
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -48,7 +53,7 @@ module.exports = {
   },
   readForm: async (req, res, next) => {
     try {
-      const response = await service.readForm(req.params.formId, req.query);
+      const response = await service.readForm(req.params.formId, req.query, req.currentUser, req.headers);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -169,10 +174,14 @@ module.exports = {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
       if (!req.body.draft) {
-        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch(() => {});
+        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch((error) => {
+          log.error('Failed to send submission received email', { error, submissionId: response.id, userId: req.currentUser.id });
+        });
       }
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
-      fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => {});
+      fileService.moveSubmissionFiles(response.id, req.currentUser).catch((error) => {
+        log.error('Failed to move submission files', { error, submissionId: response.id, userId: req.currentUser.id });
+      });
       res.status(201).json(response);
     } catch (error) {
       next(error);

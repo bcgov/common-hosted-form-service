@@ -542,10 +542,11 @@ describe(`${basePath}/:formSubmissionId/status`, () => {
     it('should return 200', async () => {
       const statRes = { code: 'SUBMITTED', user: {} };
       // mock a success return value...
-      service.changeStatusState = jest.fn().mockReturnValue(statRes);
+      service.changeStatusState = jest.fn().mockResolvedValue(statRes);
+      service.read = jest.fn().mockResolvedValue({ form: { id: 'formId' } });
       emailService.statusAssigned = jest.fn().mockReturnValue(true);
 
-      const response = await appRequest.post(path, { code: 'SUBMITTED', user: {} });
+      const response = await appRequest.post(path).send({ code: 'SUBMITTED', user: {} }).set('Authorization', bearerAuth);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeTruthy();

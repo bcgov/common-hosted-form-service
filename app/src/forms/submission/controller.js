@@ -3,6 +3,8 @@ const cdogsService = require('../../components/cdogsService');
 const { Statuses } = require('../common/constants');
 const emailService = require('../email/emailService');
 const documentTemplateService = require('../form/documentTemplate/service');
+const log = require('../../components/log')(module.filename);
+const userService = require('../user/service');
 
 const service = require('./service');
 
@@ -116,19 +118,37 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
+      // Validate assignee before writing status to avoid DB FK constraint errors.
+      if (req.body?.assignedToUserId) {
+        const dbUser = await userService.read(req.body.assignedToUserId).catch(() => null);
+        if (!dbUser?.id) {
+          return res
+            .status(400)
+            .json({ detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.', key: 'trans.statusPanel.assignedUserNotLoggedIn' });
+        }
+      }
+
       const tasks = [service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser), service.read(req.params.formSubmissionId)];
       const [response, submission] = await Promise.all(tasks);
       // send an email (async in the background)
       if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
         emailService
           .statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer)
-          .catch(() => {});
+          .catch((error) => {
+            log.error('Failed to send status assigned email', { error, submissionId: submission.id, userId: req.currentUser.id });
+          });
       } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmails) {
         emailService
           .statusCompleted(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer)
-          .catch(() => {});
+          .catch((error) => {
+            log.error('Failed to send status completed email', { error, submissionId: submission.id, userId: req.currentUser.id });
+          });
       } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmails) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
+        emailService
+          .statusRevising(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer)
+          .catch((error) => {
+            log.error('Failed to send status revising email', { error, submissionId: submission.id, userId: req.currentUser.id });
+          });
       }
       res.status(200).json(response);
     } catch (error) {

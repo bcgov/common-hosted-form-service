@@ -31,11 +31,17 @@ jwtService.protect = jest.fn(() => {
 const hasFormPermissionsMock = jest.fn((_req, _res, next) => {
   next();
 });
+const requireCreateFormPermissionMock = jest.fn((_req, _res, next) => {
+  next();
+});
 userAccess.currentUser = jest.fn((_req, _res, next) => {
   next();
 });
 userAccess.hasFormPermissions = jest.fn(() => {
   return hasFormPermissionsMock;
+});
+userAccess.requireCreateFormPermission = jest.fn((_req, _res, next) => {
+  return requireCreateFormPermissionMock(_req, _res, next);
 });
 
 validateParameter.validateFormId = jest.fn((_req, _res, next) => {
@@ -91,6 +97,7 @@ describe(`${basePath}`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.createForm).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
+    expect(requireCreateFormPermissionMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);

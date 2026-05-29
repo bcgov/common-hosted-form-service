@@ -25,6 +25,16 @@ jest.mock('../../../../src/forms/file/service', () => ({
   moveSubmissionFile: jest.fn(),
 }));
 jest.mock('../../../../src/forms/submission/service');
+jest.mock('../../../../src/forms/recordsManagement/localService', () => ({
+  listRetentionClassifications: jest.fn(),
+  getRetentionPolicy: jest.fn(),
+  configureRetentionPolicy: jest.fn(),
+  deleteRetentionPolicy: jest.fn(),
+  scheduleDeletion: jest.fn(),
+  cancelDeletion: jest.fn(),
+  processDeletions: jest.fn(),
+  hardDeleteSubmissions: jest.fn(),
+}));
 
 const service = require('../../../../src/forms/recordsManagement/service');
 const localService = require('../../../../src/forms/recordsManagement/localService');

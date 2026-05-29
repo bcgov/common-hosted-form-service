@@ -2,7 +2,7 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const apiAccess = require('../auth/middleware/apiAccess');
-const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, requireCreateFormPermission } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
@@ -17,7 +17,7 @@ routes.get('/', jwtService.protect('admin'), async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
 
-routes.post('/', async (req, res, next) => {
+routes.post('/', requireCreateFormPermission, async (req, res, next) => {
   await controller.createForm(req, res, next);
 });
 
@@ -85,8 +85,8 @@ routes.post('/:formId/versions/:formVersionId/multiSubmission', apiAccess, hasFo
   await controller.createMultiSubmission(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
-  controller.listSubmissionFields(req, res, next);
+routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.listSubmissionFields(req, res, next);
 });
 
 routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
