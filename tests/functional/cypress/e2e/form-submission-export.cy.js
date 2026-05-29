@@ -33,6 +33,7 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}`); 
     cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    cy.wait(2000);
     cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);

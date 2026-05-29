@@ -163,8 +163,6 @@ it('Submission revise status Assignment', () => {
     cy.get('[data-test="canAttachCommentToEmail"] > .v-input__control > .v-selection-control > .v-label').click();
     cy.get('textarea[rows="1"]').type('some comments');
     cy.get('button').contains('REVISE').click();
-    cy.wait(1000);
-    cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
     cy.wait(2000);
     //Verify Edit submission button is disabled
     cy.get('button[title="Edit This Submission"]').should('be.disabled');

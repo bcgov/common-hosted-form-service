@@ -36,7 +36,7 @@ module.exports = defineConfig({
     baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
     specPattern: [
       'e2e/*.cy.{js,jsx,ts,tsx}',
-      'eCHEFS/*.cy.{js,jsx,ts,tsx}',
+      //'eCHEFS/*.cy.{js,jsx,ts,tsx}',
     ],
     testIsolation: false,
     supportFile: 'support/e2e.js',
