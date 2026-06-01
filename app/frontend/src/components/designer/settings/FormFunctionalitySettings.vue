@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 import { IdentityMode } from '~/utils/constants';
 
 const props = defineProps({
@@ -33,9 +34,11 @@ const githubLinkWideFormLayout = ref(
 const authStore = useAuthStore();
 const formStore = useFormStore();
 const idpStore = useIdpStore();
+const tenantStore = useTenantStore();
 
 const { identityProvider } = storeToRefs(authStore);
 const { form, isRTL } = storeToRefs(formStore);
+const { selectedTenant } = storeToRefs(tenantStore);
 
 const primaryIdpUser = computed(() =>
   idpStore.isPrimary(identityProvider?.value?.code)
@@ -182,6 +185,7 @@ defineExpose({
                 :href="githubLinkBulkUpload"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -230,6 +234,7 @@ defineExpose({
                 :href="githubLinkScheduleAndReminderFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -272,6 +277,7 @@ defineExpose({
                 :href="githubLinkCopyFromExistingFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -314,6 +320,7 @@ defineExpose({
                 :href="githubLinkEventSubscriptionFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -356,6 +363,7 @@ defineExpose({
                 :href="githubLinkWideFormLayout"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -367,7 +375,6 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Share Draft -->
     <v-checkbox
       v-model="form.enableTeamMemberDraftShare"
       :disabled="disabledStates.draftShare"
@@ -380,7 +387,11 @@ defineExpose({
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
-          v-html="$t('trans.canShareDraft.shareDraftMessage')"
+          v-html="
+            selectedTenant
+              ? $t('trans.canShareDraft.shareDraftGroupMessage')
+              : $t('trans.canShareDraft.shareDraftMessage')
+          "
         />
       </template>
     </v-checkbox>

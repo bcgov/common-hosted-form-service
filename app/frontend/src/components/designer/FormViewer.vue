@@ -511,7 +511,11 @@ async function saveDraft() {
     saving.value = true;
 
     const response = await sendSubmission(true, submission.value);
-    if (properties.submissionId && properties.submissionId !== null) {
+    if (
+      properties.submissionId &&
+      properties.submissionId !== null &&
+      !properties.isDuplicate
+    ) {
       // Editing an existing draft
       // Update this route with saved flag
       if (!properties.saved) {
@@ -522,8 +526,8 @@ async function saveDraft() {
       }
       saving.value = false;
     } else {
-      // Creating a new submission in draft state
-      // Go to the user form draft page
+      // Creating a new submission in draft state (fresh form or copied submission)
+      // Go to the user form draft page with the new draft's ID
       await router.push({
         name: 'UserFormDraftEdit',
         query: {

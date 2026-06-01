@@ -11,7 +11,7 @@ on:
         type: string
 
   secrets:
-      Username: 
+      Username:
         required: true
       Password:
         required: true
@@ -28,14 +28,14 @@ jobs:
        with:
         ref: ${{ inputs.pr_branch }}  # Uses the PR branch from input
         fetch-depth: 0 # Ensures the full history is fetched
-        
+
      - name: Setup Node.js
        uses: actions/setup-node@v5
        with:
-         node-version: '22' 
+         node-version: '22'
          cache: 'npm'
          cache-dependency-path: 'tests/functional/cypress/package-lock.json'
-         
+
      - name: cypress install
        uses: cypress-io/github-action@82482149c343a5dee155d22104111b9319f9dd45  # SHA for v7
        with:

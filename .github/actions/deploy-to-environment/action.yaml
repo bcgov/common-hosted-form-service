@@ -117,6 +117,20 @@ runs:
           oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/clamav.cm.yaml -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} --param-file=openshift/clamav.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
         fi
 
+    - name: Deploy CSTAR ConfigMaps
+      shell: bash
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        NAMESPACE_PREFIX: ${{ inputs.namespace_prefix }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
+        ACRONYM: ${{ inputs.acronym }}
+      run: |
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/cstar.pr.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+        else
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/cstar.${NAMESPACE_ENVIRONMENT}.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+        fi
+
     - name: Delete pre-job if it exists
       shell: bash
       run: |

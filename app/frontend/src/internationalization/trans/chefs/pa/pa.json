@@ -30,7 +30,12 @@
     "description": "ਵਰਣਨ",
     "Description": "ਵਰਣਨ:",
     "action": "ਕਾਰਵਾਈਆਂ",
-    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ"
+    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
+    "forms": "ਫਾਰਮ",
+    "deleteForm": "ਫਾਰਮ ਮਿਟਾਓ",
+    "manageForm": "ਫਾਰਮ ਪ੍ਰਬੰਧਿਤ ਕਰੋ",
+    "viewSubmissions": "ਜਮ੍ਹਾਂ ਕਰਾਈਆਂ ਵੇਖੋ",
+    "noDataText": "ਕੋਈ ਫਾਰਮ ਨਹੀਂ ਮਿਲਿਆ"
   },
   "preview": {
     "preview": "ਝਲਕ",
@@ -53,6 +58,7 @@
     "emailManagement": "ਈਮੇਲ ਪ੍ਰਬੰਧਨ",
     "viewSubmissions": "ਬੇਨਤੀਆਂ ਦੇਖੋ",
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",
+    "groupManagement": "ਸਮੂਹ ਪ੍ਰਬੰਧਨ",
     "deleteForm": "ਫਾਰਮ ਮਿਟਾਓ",
     "confirmDeletion": "ਮਿਟਾਉਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
     "deleteMessageA": "ਕੀ ਤੁਸੀਂ ਯਕੀਨਨ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ",
@@ -105,7 +111,9 @@
     "referenceGuideB": "ਉਪਭੋਗਤਾ ਗਾਈਡ",
     "referenceGuideC": "ਜਾਣਨ ਲਈ ਪੜ੍ਹੋ।",
     "specificTeamMembers": "ਖਾਸ ਟੀਮ ਦੇ ਮੈਂਬਰ",
+    "specificGroups": "ਖਾਸ ਸਮੂਹ",
     "teamMemberTooltip": "ਫਾਰਮ ਬਣਾਉਣ ਤੋਂ ਬਾਅਦ ਤੁਹਾਨੂੰ ਟੀਮ ਪ੍ਰਬੰਧਨ ਪੰਨੇ ਤੱਕ ਪਹੁੰਚ ਮਿਲੇਗੀ ਜਿੱਥੇ ਤੁਸੀਂ ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਜੋੜ ਸਕਦੇ ਹੋ ਅਤੇ ਭੂਮਿਕਾਵਾਂ ਨਿਰਧਾਰਤ ਕਰ ਸਕਦੇ ਹੋ। ਫਾਰਮ ਪ੍ਰਬੰਧਨ ਪੰਨੇ 'ਤੇ ਲੋਕਾਂ ਦੇ ਆਈਕਨ ਨੂੰ ਲੱਭੋ। ",
+    "groupAccessTooltip": "ਪਹੁੰਚ CSTAR ਸਮੂਹਾਂ ਦੁਆਰਾ ਨਿਯੰਤਰਿਤ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਫਾਰਮ ਬਣਾਉਣ ਤੋਂ ਬਾਅਦ, CSTAR ਸਮੂਹਾਂ ਨੂੰ ਇਸ ਫਾਰਮ ਨਾਲ ਜੋੜਨ ਲਈ ਸਮੂਹ ਪ੍ਰਬੰਧਨ ਪੰਨੇ 'ਤੇ ਜਾਓ। ਕੇਵਲ ਉਹ ਉਪਭੋਗਤਾ ਜੋ ਉਹਨਾਂ ਸਮੂਹਾਂ ਨਾਲ ਸੰਬੰਧਿਤ ਹਨ, ਇਸਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹਨ। ਕਿਸੇ ਸਮੂਹ ਵਿੱਚ ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਜੋੜਨ ਜਾਂ ਹਟਾਉਣ ਲਈ, CSTAR ਵਿੱਚ ਸਮੂਹ ਮੈਂਬਰਸ਼ਿਪ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।",
     "formFunctionality": "ਫਾਰਮ ਕਾਰਜਕੁਸ਼ਲਤਾ",
     "formSubmissinScheduleMsg": "ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਹੋਣ ਤੋਂ ਬਾਅਦ ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਅਨੁਸੂਚੀ ਫਾਰਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਉਪਲਬਧ ਹੋਵੇਗੀ।",
     "formSubmissionsSchedule": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਅਨੁਸੂਚੀ",
@@ -720,10 +728,12 @@
     "fetchSubmissionUsersErr": "ਇਸ ਸਬਮਿਸ਼ਨ ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
     "fetchSubmissionUsersConsErr": "ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਦੀਆਂ ਈਮੇਲਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ",
     "assignSubmissnToFormReviewer": "ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਫਾਰਮ ਸਮੀਖਿਅਕਾਂ ਨੂੰ ਸੌਂਪਿਆ ਜਾ ਸਕਦਾ ਹੈ।<br /> ਫਾਰਮ ਸਮੀਖਿਅਕਾਂ ਵਜੋਂ ਟੀਮ ਦੇ ਹੋਰ ਮੈਂਬਰਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਇਸ ਫਾਰਮ ਦੇ ਪ੍ਰਬੰਧਨ ਪੰਨੇ 'ਤੇ ਜਾਓ।",
+    "assignSubmissnToFormReviewerTenanted": "ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਫਾਰਮ ਸਮੀਖਿਅਕਾਂ ਨੂੰ ਸੌਂਪਿਆ ਜਾ ਸਕਦਾ ਹੈ। <br />ਫਾਰਮ ਸਮੀਖਿਅਕਾਂ ਵਜੋਂ ਮੈਂਬਰਾਂ ਨੂੰ ਜੋੜਨ ਜਾਂ ਅਪਡੇਟ ਕਰਨ ਲਈ, CSTAR 'ਤੇ ਜਾਓ ਅਤੇ ਉਚਿਤ ਗਰੁੱਪ ਨੂੰ ਅਪਡੇਟ ਕਰੋ।",
     "update": "ਅੱਪਡੇਟ ਕਰੋ",
     "revise": "ਸੰਸ਼ੋਧਨ ਕਰੋ",
     "complete": "ਸੰਪੂਰਨ",
-    "assign": "ਅਸਾਈਨ ਕਰੋ"
+    "assign": "ਅਸਾਈਨ ਕਰੋ",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
@@ -862,6 +872,44 @@
     "setUserFormsErrMsg": "ਇੱਕ ਉਪਭੋਗਤਾ ਲਈ ਰੋਲ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ",
     "setUserFormsConsoleErrMsg": "ਫਾਰਮ {formId} ਲਈ ਉਪਭੋਗਤਾ ਰੋਲ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "ਸਮੂਹ ਪ੍ਰਬੰਧਨ",
+    "manageForm": "ਫਾਰਮ ਪ੍ਰਬੰਧਿਤ ਕਰੋ",
+    "search": "ਖੋਜੋ",
+    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
+    "noDataText": "ਇਸ ਕਿਰਾਏਦਾਰ ਲਈ ਕੋਈ ਸਮੂਹ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦੇ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲੇ",
+    "groupName": "ਸਮੂਹ ਦਾ ਨਾਮ",
+    "description": "ਵੇਰਵਾ",
+    "associated": "ਸੰਬੰਧਿਤ",
+    "save": "ਸੁਰੱਖਿਅਤ ਕਰੋ",
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "confirmSave": "ਬਦਲਾਅ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+    "confirmSaveMsg": "ਕੀ ਤੁਸੀਂ ਸੱਚਮੁੱਚ ਇਸ ਫਾਰਮ ਲਈ ਸਮੂਹ ਸੰਬੰਧਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "saveSuccessMsg": "ਸਮੂਹ ਸੰਬੰਧ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਡੇਟ ਕੀਤੇ ਗਏ",
+    "saveErrMsg": "ਸਮੂਹ ਸੰਬੰਧਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵੇਲੇ ਇੱਕ ਗਲਤੀ ਹੋਈ",
+    "getGroupsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸਮੂਹ ਲੋਡ ਕਰਨ ਵੇਲੇ ਇੱਕ ਗਲਤੀ ਹੋਈ",
+    "missingGroupsWarning": "{count} ਪਹਿਲਾਂ ਸੰਬੰਧਿਤ ਸਮੂਹ ਇਸ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹਨ",
+    "availableGroups": "ਉਪਲਬਧ ਸਮੂਹ",
+    "assignedGroups": "ਨਿਰਧਾਰਤ ਸਮੂਹ",
+    "searchAvailable": "ਉਪਲਬਧ ਸਮੂਹਾਂ ਵਿੱਚ ਖੋਜੋ",
+    "searchAssigned": "ਨਿਰਧਾਰਤ ਸਮੂਹਾਂ ਵਿੱਚ ਖੋਜੋ",
+    "noAvailableGroups": "ਇਸ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਕੋਈ ਉਪਲਬਧ ਸਮੂਹ ਨਹੀਂ ਹੈ",
+    "noAssignedGroups": "ਇਸ ਫਾਰਮ ਨੂੰ ਕੋਈ ਸਮੂਹ ਨਿਰਧਾਰਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ",
+    "addGroup": "ਸਮੂਹ ਜੋੜੋ",
+    "removeGroup": "ਸਮੂਹ ਹਟਾਓ",
+    "deleted": "ਮਿਟਾਇਆ ਗਿਆ",
+    "noTenantAccess": "ਸਮੂਹ ਪ੍ਰਬੰਧਨ ਕੇਵਲ ਕਿਰਾਏਦਾਰ ਫਾਰਮਾਂ ਲਈ ਉਪਲਬਧ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਕਿਰਾਏਦਾਰ ਚੁਣੋ।",
+    "unsavedChangesWarning": "ਤੁਹਾਡੇ ਕੋਲ ਅਣਸੇਵਡ ਗਰੁੱਪ ਬਦਲਾਅ ਹਨ। ਬਿਨਾਂ ਸੇਵ ਕੀਤੇ ਛੱਡੋ?",
+    "unsavedChangesTitle": "ਸੁਰੱਖਿਅਤ ਨਾ ਕੀਤੇ ਬਦਲਾਅ",
+    "leave": "ਛੱਡੋ",
+    "selectAll": "ਸਾਰੇ ਚੁਣੋ",
+    "addSelected": "ਚੁਣੇ ਜੋੜੋ",
+    "removeSelected": "ਚੁਣੇ ਹਟਾਓ",
+    "formAdminGroupRequired": "ਘੱਟੋ ਘੱਟ ਇੱਕ ਅਸਾਈਨ ਕੀਤੇ ਗਰੁੱਪ ਕੋਲ form_admin ਭੂਮਿਕਾ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।",
+    "invalidGroupIds": "ਇੱਕ ਜਾਂ ਵਧੇਰੇ ਚੁਣੇ ਗਏ ਗਰੁੱਪ ਇਸ ਕਿਰਾਏਦਾਰ ਲਈ ਵੈਧ ਨਹੀਂ ਹਨ।",
+    "insufficientPermissions": "ਤੁਹਾਡੇ ਕੋਲ ਗਰੁੱਪ ਸੰਘਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।"
+  },
   "floatButton": {
     "publish": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
     "manage": "ਪ੍ਰਬੰਧ ਕਰਨਾ, ਕਾਬੂ ਕਰਨਾ",
@@ -931,7 +979,8 @@
     "createNewForm": "ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
     "help": "ਮਦਦ ਕਰੋ",
     "feedback": "ਸੁਝਾਅ",
-    "admin": "ਐਡਮਿਨ"
+    "admin": "ਐਡਮਿਨ",
+    "forms": "ਫਾਰਮ"
   },
   "homePage": {
     "title": "ਕਾਮਨ ਹੋਸਟਡ ਫਾਰਮ ਸਰਵਿਸ ਨਾਲ ਫਾਰਮ ਬਣਾਓ, ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ ਅਤੇ ਸਬਮਿਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰੋ।",
@@ -950,7 +999,13 @@
     "chefsHowToSub": "ਸਾਡੀ ਕਵਿੱਕਸਟਾਰਟ ਗਾਈਡ ਤੁਹਾਨੂੰ CHEFS ਦੇ ਕੁਝ ਬੁਨਿਆਦੀ ਫੰਕਸ਼ਨਾਂ ਤੋਂ ਜਾਣੂ ਕਰਵਾਏਗੀ।",
     "getStartedToChefs": "CHEFS ਦੀ ਵਰਤੋਂ ਸ਼ੁਰੂ ਕਰੋ",
     "createOnlineTitle": "ਆਪਣੇ ਗਾਹਕਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਅਤੇ ਆਪਣੇ ਵਰਕਫਲੋ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਔਨਲਾਈਨ ਫਾਰਮ ਬਣਾਓ।",
-    "getStarted": "ਸ਼ੁਰੂ ਕਰੋ"
+    "getStarted": "ਸ਼ੁਰੂ ਕਰੋ",
+    "enterpriseSectionTitle": "ਨਵਾਂ Enterprise CHEFS ਅਨੁਭਵ ਕਰੋ",
+    "enterpriseSectionBody1": "Enterprise CHEFS, CSTAR ਨਾਲ ਮਿਲ ਕੇ ਕੰਮ ਕਰਕੇ ਕਲਾਸਿਕ CHEFS ਦਾ ਵਿਸਤਾਰ ਕਰਦਾ ਹੈ ਅਤੇ ਇੱਕ ਸਾਂਝੀ ਸਹਿਯੋਗੀ ਕਾਰਜਸਥਾਨ ਬਣਾਉਂਦਾ ਹੈ।",
+    "enterpriseSectionBody2": "Enterprise CHEFS ਨਾਲ, ਟੀਮਾਂ ਆਪਣੇ ਸੰਗਠਨ ਦੇ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਫਾਰਮ ਸਾਂਝੇ ਕਰ ਸਕਦੀਆਂ ਹਨ ਅਤੇ ਪ੍ਰੋਜੈਕਟ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
+    "enterpriseSectionWelcome": "Enterprise CHEFS ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ, ਜਿੱਥੇ ਸਰਕਾਰ ਭਰ ਦੀਆਂ ਟੀਮਾਂ ਸੁਰੱਖਿਅਤ ਅਤੇ ਕੁਸ਼ਲਤਾ ਨਾਲ ਸਹਿਯੋਗ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
@@ -1292,7 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਉਪਭੋਗਤਾਵਾਂ ਨਾਲ ਡਰਾਫਟ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਿਨ੍ਹਾਂ ਨੂੰ ਫਾਰਮ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।",
-    "shareDraftMessage": "ਡਰਾਫਟ ਸਿਰਫ਼ ਫਾਰਮ ਟੀਮ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ"
+    "canShareGroupMessage": "ਤੁਸੀਂ ਇਸ ਉਪਭੋਗਤਾ ਨਾਲ ਡ੍ਰਾਫਟ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ। ਉਹ ਇਸ ਫਾਰਮ ਦੇ ਕਿਸੇ ਅਧਿਕਾਰਤ ਸਮੂਹ ਦੇ ਮੈਂਬਰ ਹੋਣੇ ਚਾਹੀਦੇ ਹਨ।",
+    "shareDraftMessage": "ਡਰਾਫਟ ਸਿਰਫ਼ ਫਾਰਮ ਟੀਮ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ",
+    "shareDraftGroupMessage": "ਕੇਵਲ ਫਾਰਮ ਸਮੂਹ ਮੈਂਬਰਾਂ ਨਾਲ ਡ੍ਰਾਫਟ ਸਾਂਝਾ ਕਰੋ",
+    "groupShareHint": "ਕੇਵਲ ਇਸ ਫਾਰਮ ਦੇ ਅਧਿਕਾਰਤ ਸਮੂਹਾਂ ਦੇ ਮੈਂਬਰਾਂ ਨੂੰ ਜੋੜਿਆ ਜਾ ਸਕਦਾ ਹੈ।"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "ਇਹ ਸੇਵਾ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
@@ -1311,5 +1369,95 @@
     "shuttingDown": "CHEFS ਬੰਦ ਹੋ ਰਿਹਾ ਹੈ।",
     "notReady": "CHEFS ਸਾਰੀਆਂ ਲੋੜੀਂਦੀਆਂ ਸੇਵਾਵਾਂ ਨਾਲ ਜੁੜ ਨਹੀਂ ਸਕਦਾ।",
     "unableToReachBackend": "ਬੈਕਐਂਡ ਸੇਵਾ ਤੱਕ ਪਹੁੰਚਣ ਵਿੱਚ ਅਸਮਰੱਥ।"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "ਕੀ ਤੁਸੀਂ ਆਪਣੀ ਟੀਮ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨਾ, ਫਾਰਮ ਤੇਜ਼ੀ ਨਾਲ ਪ੍ਰਦਾਨ ਕਰਨਾ, ਅਤੇ ਸਰਕਾਰ ਵਿੱਚ ਸਹਿਯੋਗ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+      "title": "Enterprise CHEFS ਅਤੇ CSTAR ਦੀ ਜਾਣ-ਪਛਾਣ!",
+      "enterpriseTitle": "ਨਵੇਂ Enterprise CHEFS ਦਾ ਅਨੁਭਵ ਕਰੋ",
+      "tenant": "ਕਿਰਾਏਦਾਰ",
+      "description1": "Enterprise CHEFS CHEFS ਦਾ ਨਵਾਂ ਸੰਸਕਰਣ ਹੈ ਜੋ CSTAR (ਕਨੈਕਟਡ ਸੇਵਾਵਾਂ, ਟੀਮ ਪਹੁੰਚ ਅਤੇ ਭੂਮਿਕਾਵਾਂ) ਰਾਹੀਂ ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪਹੁੰਚ ਅਤੇ ਟੀਮ ਪ੍ਰਬੰਧਨ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ।",
+      "description2": "Enterprise CHEFS ਨਾਲ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਕਰ ਸਕਦੀ ਹੈ:",
+      "description3": "",
+      "description4": " ਮੋਡ ਵਿੱਚ ਕੰਮ ਕਰੋ - ਹਰੇਕ ਕਿਰਾਏਦਾਰ ਕੋਲ ਵੱਖ ਫਾਰਮਾਂ, ਡੇਟਾ ਅਤੇ ਅਨੁਮਤੀਆਂ ਦੇ ਨਾਲ ਆਪਣੀ ਸੁਰੱਖਿਅਤ ਥਾਂ ਹੈ",
+      "description5": "ਟੀਮ ਪਹੁੰਚ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ - ਨਿਯੰਤਰਿਤ ਕਰੋ ਕਿ ਕੌਣ ਤੁਹਾਡੇ ਕਿਰਾਏਦਾਰ ਦੇ ਅੰਦਰ ਫਾਰਮ ਦੇਖ, ਸੰਪਾਦਿਤ ਜਾਂ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ",
+      "description6": "ਡੇਟਾ ਸੁਰੱਖਿਆ ਬਣਾਈ ਰੱਖੋ - ਹਰੇਕ ਕਿਰਾਏਦਾਰ ਦਾ ਡੇਟਾ ਹੋਰ ਕਿਰਾਏਦਾਰਾਂ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖ ਹੈ",
+      "description7": "Enterprise CHEFS ਵਿੱਚ ਉਹ ਸਾਰੀਆਂ ਸ਼ਕਤੀਸ਼ਾਲੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵੀ ਸ਼ਾਮਲ ਹਨ ਜੋ ਤੁਸੀਂ Personal CHEFS ਤੋਂ ਜਾਣਦੇ ਅਤੇ ਪਸੰਦ ਕਰਦੇ ਹੋ, ਜਿਵੇਂ ਕਿ ਡਰੈਗ-ਐਂਡ-ਡਰੌਪ ਫਾਰਮ ਬਿਲਡਰ, ਸ਼ਰਤੀ ਤਰਕ, ਐਨਕ੍ਰਿਪਟਡ ਸਬਮਿਸ਼ਨ ਅਤੇ API ਏਕੀਕਰਣ।",
+      "loginButton": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਲੌਗਇਨ ਕਰੋ",
+      "goToChefs": "CHEFS ਤੇ ਜਾਓ",
+      "learnMore": "ਹੋਰ ਜਾਣੋ"
+    },
+    "gettingStarted": {
+      "title": "CHEFS ਵਿੱਚ ਨਵੇਂ ਹੋ ਅਤੇ ਨਹੀਂ ਜਾਣਦੇ ਕਿ ਕਿੱਥੋਂ ਸ਼ੁਰੂ ਕਰਨਾ ਹੈ?",
+      "description": "ਤੁਸੀਂ ਕੁਝ ਸਧਾਰਨ ਕਦਮਾਂ ਨਾਲ ਫਾਰਮ ਬਣਾਉਣਾ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ:",
+      "step1Title": "1. ਆਪਣੇ IDIR ਜਾਂ BCeID ਖਾਤੇ ਨਾਲ ਲੌਗਇਨ ਕਰੋ",
+      "step2Title": "2. ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ ਜਾਂ ਇੱਕ ਟੈਂਪਲੇਟ ਵਰਤੋ",
+      "step3Title": "3. ਸਾਡੇ ਡਰੈਗ-ਐਂਡ-ਡਰੌਪ ਬਿਲਡਰ ਨਾਲ ਆਪਣਾ ਫਾਰਮ ਡਿਜ਼ਾਈਨ ਕਰੋ",
+      "step4Title": "4. ਆਪਣੇ ਫਾਰਮ ਨੂੰ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ ਅਤੇ ਆਪਣੀ ਟੀਮ ਜਾਂ ਜਨਤਾ ਨਾਲ ਸਾਂਝਾ ਕਰੋ",
+      "loginButton": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਲੌਗਇਨ ਕਰੋ",
+      "learnMore": "ਹੋਰ ਜਾਣੋ"
+    },
+    "examples": {
+      "demographicSurvey": "ਉਦਾਹਰਨ | ਜਨਸੰਖਿਆ ਡੇਟਾ ਸੰਗ੍ਰਹਿ ਸਰਵੇਖਣ",
+      "projectRequest": "ਉਦਾਹਰਨ | ਪ੍ਰੋਜੈਕਟ ਬੇਨਤੀ",
+      "permitApplication": "ਉਦਾਹਰਨ | ਪਰਮਿਟ ਅਰਜ਼ੀ"
+    },
+    "testimonials": {
+      "title": "ਸਿਰਫ਼ ਸਾਡੇ ਸ਼ਬਦਾਂ 'ਤੇ ਭਰੋਸਾ ਨਾ ਕਰੋ, ਸੁਣੋ ਕਿ ਸਾਡੇ ਉਪਭੋਗਤਾ ਸਾਡੇ ਬਾਰੇ ਕੀ ਕਹਿੰਦੇ ਹਨ।",
+      "author": "ਲੇਖਕ",
+      "role": "ਭੂਮਿਕਾ"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS ਉਪਭੋਗਤਾ 1",
+        "role": "ਪ੍ਰੋਗਰਾਮ ਵਿਸ਼ਲੇਸ਼ਕ",
+        "quote": "\"CHEFS ਨੇ ਸਾਡੇ ਡੇਟਾ ਇਕੱਠਾ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਹੈ। ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪ੍ਰਣਾਲੀ ਸਾਨੂੰ ਪ੍ਰੋਜੈਕਟਾਂ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦੀ ਹੈ ਜਦੋਂ ਕਿ ਸਾਡੇ ਪੂਰੇ ਵਿਭਾਗ ਵਿੱਚ ਸਰਵੋਤਮ ਅਭਿਆਸ ਸਾਂਝੇ ਕਰਦੇ ਹੋ।\""
+      },
+      "testimonial2": {
+        "author": "CHEFS ਉਪਭੋਗਤਾ 2",
+        "role": "ਪ੍ਰੋਜੈਕਟ ਮੈਨੇਜਰ",
+        "quote": "\"CSTAR ਨਾਲ ਏਕੀਕਰਣ ਟੀਮ ਪਹੁੰਚ ਪ੍ਰਬੰਧਨ ਨੂੰ ਬਹੁਤ ਆਸਾਨ ਬਣਾਉਂਦਾ ਹੈ। ਮੈਂ ਤੇਜ਼ੀ ਨਾਲ ਨਵੇਂ ਟੀਮ ਮੈਂਬਰਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰ ਸਕਦਾ ਹਾਂ ਅਤੇ ਸਟੀਕ ਰੂਪ ਵਿੱਚ ਨਿਯੰਤਰਿਤ ਕਰ ਸਕਦਾ ਹਾਂ ਕਿ ਉਹ ਕੀ ਕਰ ਸਕਦੇ ਹਨ।\""
+      },
+      "testimonial3": {
+        "author": "CHEFS ਉਪਭੋਗਤਾ 3",
+        "role": "IT ਪ੍ਰਸ਼ਾਸਕ",
+        "quote": "\"ਅਸੀਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆ ਅਤੇ ਡੇਟਾ ਵੱਖਰੇਕਰਨ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਕਦਰ ਕਰਦੇ ਹਾਂ। ਹਰੇਕ ਕਿਰਾਏਦਾਰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖ ਹੈ, ਜੋ ਸਾਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡੇਟਾ ਨਾਲ ਕੰਮ ਕਰਦੇ ਸਮੇਂ ਮਨ ਦੀ ਸ਼ਾਂਤੀ ਦਿੰਦਾ ਹੈ।\""
+      }
+    },
+    "finalCta": {
+      "title": "Enterprise CHEFS ਵਰਤਣਾ ਸ਼ੁਰੂ ਕਰੋ",
+      "description": "ਆਪਣੇ ਗਾਹਕਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਅਤੇ ਆਪਣੀ ਵਰਕਫਲੋ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਔਨਲਾਈਨ ਫਾਰਮ ਬਣਾਓ।",
+      "loginButton": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਲੌਗਇਨ ਕਰੋ"
+    },
+    "formViewer": {
+      "title": "ਫਾਰਮ ਦਰਸ਼ਕ",
+      "description": "ਆਪਣੇ ਫਾਰਮ ਦੀ ਝਲਕ ਦੇਖੋ",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "ਕਿਰਾਏਦਾਰ:",
+    "infoTooltip": "Enterprise CHEFS CHEFS ਦਾ ਨਵਾਂ ਸੰਸਕਰਣ ਹੈ ਜੋ ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪਹੁੰਚ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਕਿਰਾਏਦਾਰ ਦੀ ਚੋਣ ਕਰਨ ਨਾਲ ਤੁਹਾਨੂੰ ਆਪਣੇ ਆਪ ਉੱਥੇ ਲੈ ਜਾਵੇਗਾ।",
+    "selectLabel": "ਕਿਰਾਏਦਾਰ ਚੁਣੋ (Enterprise CHEFS ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ)",
+    "placeholder": "ਉਪਲਬਧ ਕਿਰਾਏਦਾਰਾਂ ਵਿੱਚੋਂ ਚੁਣੋ",
+    "noDataText": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਨਹੀਂ ਮਿਲਿਆ",
+    "switchToClassic": "Personal CHEFS ਤੇ ਸਵਿੱਚ ਕਰੋ",
+    "goToCstar": "CSTAR ਤੇ ਜਾਓ (ਕਨੈਕਟਡ ਸੇਵਾਵਾਂ, ਟੀਮ ਪਹੁੰਚ ਅਤੇ ਭੂਮਿਕਾਵਾਂ)",
+    "noTenantsAvailable": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਉਪਲਬਧ ਨਹੀਂ",
+    "manageTenantsIn": "ਕਿਰਾਏਦਾਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "ਕਿਰਾਏਦਾਰ:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR ਅਸਥਾਈ ਤੌਰ ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਿਰਾਏਦਾਰ ਚੋਣ ਵਰਤਮਾਨ ਵਿੱਚ ਅਯੋਗ ਹੈ।",
+    "errorFetchingTenants": "ਕਿਰਾਏਦਾਰਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ"
   }
 }
