@@ -221,8 +221,13 @@ const service = {
     const idp = await idpService.findByIdp(userInfo.idp);
     userInfo.idp = idp.code;
     const user = await service.getUserId(userInfo);
+    const canonicalCode = idp.extra?.canonicalCode || idp.code;
 
-    return { ...user, idpHint: idp.idp };
+    return {
+      ...user,
+      usernameIdp: user.idpCode ? `${user.username}@${canonicalCode}` : user.username,
+      idpHint: idp.idp,
+    };
   },
 
   // -------------------------------------------------------------------------------------------------------------
