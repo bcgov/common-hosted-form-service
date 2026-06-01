@@ -1,10 +1,15 @@
 <script setup>
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 import BCLogo from '~/assets/images/bc_logo.svg';
 import PrintLogo from '~/assets/images/bc_logo_print.svg';
 import { useFormStore } from '~/store/form';
+import { useAuthStore } from '~/store/auth';
+import { useTenantStore } from '~/store/tenant';
+import TenantDropdown from '~/components/base/TenantDropdown.vue';
 
-defineProps({
+const props = defineProps({
   formSubmitMode: {
     type: Boolean,
     default: false,
@@ -15,7 +20,60 @@ defineProps({
   },
 });
 
+const route = useRoute();
 const { isRTL } = storeToRefs(useFormStore());
+const { authenticated, ready } = storeToRefs(useAuthStore());
+const tenantStore = useTenantStore();
+const { selectedTenant } = storeToRefs(tenantStore);
+
+// Strip the trailing "| Enterprise" / "| Personal" env suffix from the prop
+// so we can render it separately with accent colour.
+const appBase = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled) return props.appTitle;
+  const pipeIdx = props.appTitle.lastIndexOf('|');
+  if (pipeIdx === -1) return props.appTitle;
+  const after = props.appTitle.slice(pipeIdx + 1).trim();
+  if (after === 'Enterprise' || after === 'Personal') {
+    return props.appTitle.slice(0, pipeIdx).trimEnd();
+  }
+  return props.appTitle;
+});
+
+// "ENTERPRISE" or "PERSONAL" — hidden during tenant restore to prevent a
+// flash from PERSONAL → ENTERPRISE on login / session-timeout flows.
+const appMode = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled || !authenticated.value) return null;
+  if (tenantStore.isTenantRestoring) return null;
+  return selectedTenant.value ? 'ENTERPRISE' : 'PERSONAL';
+});
+
+// Show tenant dropdown on all authenticated pages EXCEPT:
+// - Admin pages
+// - Submission viewing/submission pages (formSubmitMode routes)
+const showTenantDropdown = computed(() => {
+  if (!tenantStore.isTenantFeatureEnabled || tenantStore.isBCServicesCardUser)
+    return false;
+  if (!ready.value || !authenticated.value || !route.name) {
+    return false;
+  }
+
+  // Exclude these routes from showing tenant dropdown
+  const excludedRoutes = [
+    'Admin', // Admin panel
+    'AdministerForm', // Admin form management
+    'AdministerUser', // Admin user management
+    'FormSubmit', // Public form submission
+    'FormSuccess', // Submission success page
+    'UserSubmissions', // User's submissions
+    'UserFormView', // User viewing their submission
+    'UserFormDraftEdit', // User editing draft
+    'UserFormDuplicate', // User duplicating submission
+  ];
+
+  const shouldShow = !excludedRoutes.includes(route.name);
+
+  return shouldShow;
+});
 </script>
 
 <template>
@@ -46,7 +104,7 @@ const { isRTL } = storeToRefs(useFormStore());
     <v-toolbar
       color="#003366"
       flat
-      class="px-md-12 d-print-none"
+      class="px-1 px-sm-4 px-md-12 d-print-none"
       :class="{ 'v-locale--is-ltr': isRTL }"
     >
       <!-- Navbar content -->
@@ -62,13 +120,43 @@ const { isRTL } = storeToRefs(useFormStore());
       <h1
         v-if="!formSubmitMode"
         data-test="btn-header-title"
-        class="font-weight-bold text-h6 d-none d-md-flex pl-4"
+        :class="[
+          'font-weight-bold text-h6 pl-4 header-title',
+          'd-none d-lg-flex',
+          appMode ? 'header-title--with-mode' : '',
+        ]"
+        :title="appMode ? `${appBase} | ${appMode}` : undefined"
       >
-        {{ appTitle }}
+        <!-- Enterprise/tenant mode: base text shrinks+ellipsizes first;
+             the mode badge is a separate flex child that hides below lg
+             (the enterprise banner below the header covers that context). -->
+        <span v-if="appMode" class="title-text">{{ appBase }}</span>
+        <template v-else>{{ appBase }}</template>
+        <span
+          v-if="appMode"
+          class="mode-badge d-none d-lg-flex"
+          aria-hidden="true"
+        >
+          <span class="mode-divider mx-2">|</span>
+          <span
+            class="mode-text"
+            :class="
+              appMode === 'ENTERPRISE' ? 'enterprise-text' : 'personal-text'
+            "
+            >{{ appMode }}</span
+          >
+        </span>
       </h1>
       <v-spacer />
-      <BaseAuthButton data-test="base-auth-btn" />
-      <BaseInternationalization data-test="base-internationalization" />
+      <div class="header-actions">
+        <!-- Tenant Dropdown (visible only on Forms list and Create Form pages) -->
+        <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper">
+          <span v-if="selectedTenant" class="tenant-header-label">Tenant:</span>
+          <TenantDropdown />
+        </div>
+        <BaseAuthButton data-test="base-auth-btn" />
+        <BaseInternationalization data-test="base-internationalization" />
+      </div>
     </v-toolbar>
   </header>
 </template>
@@ -80,6 +168,64 @@ const { isRTL } = storeToRefs(useFormStore());
   .elevation-20 {
     box-shadow: 0 0 0 0 !important;
   }
+}
+
+// Enterprise/tenant mode only: turns the h1 into a flex row so .title-text
+// can shrink and ellipsize before the mode badge is ever affected.
+.header-title--with-mode {
+  display: flex !important;
+  align-items: center;
+}
+
+// Shrinks first; shows "…" when space is tight.
+.title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+// Wraps "| ENTERPRISE/PERSONAL" — hidden below lg via d-none d-lg-flex.
+// The enterprise banner below the header provides context at smaller sizes.
+.mode-badge {
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mode-divider {
+  color: #fcba19;
+  font-weight: 400;
+  font-size: 1.4rem;
+  opacity: 0.8;
+}
+
+.mode-text {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    font-size: 1.3rem !important;
+  }
+}
+
+.enterprise-text {
+  color: #fcba19;
+}
+
+.personal-text {
+  color: #ffffff;
+}
+
+.tenant-header-label {
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 0.25rem;
 }
 
 .gov-header {
@@ -101,8 +247,240 @@ const { isRTL } = storeToRefs(useFormStore());
     color: #ffffff;
     overflow: hidden;
     margin-bottom: 0;
+    // Truncate long app titles instead of pushing the right-side controls off-screen.
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    // Allow the flex item to shrink below its natural content width.
+    min-width: 0;
+    flex: 0 1 auto;
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       font-size: 1rem !important;
+    }
+  }
+}
+
+// Right-side cluster: dropdown + logout + language picker.
+// Guaranteed gap prevents the overlap reported in CCP-3927.
+.header-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+
+  @media (max-width: 599px) {
+    gap: 0.5rem;
+  }
+
+  :deep(.v-btn) {
+    // Icon-only on tablet/mobile — keep button compact
+    min-width: 40px !important;
+    padding-inline: 8px !important;
+
+    .v-btn__content {
+      gap: 6px;
+    }
+
+    // Icon + text on lg+ — restore Vuetify's default side padding
+    @media #{map-get($display-breakpoints, 'lg-and-up')} {
+      min-width: 64px !important;
+      padding-inline: 16px !important;
+    }
+  }
+}
+
+.tenant-dropdown-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex-shrink: 0;
+
+  // Hide "Tenant:" label at tablet/mobile to save space.
+  @media (max-width: 1279px) {
+    .tenant-header-label {
+      display: none;
+    }
+  }
+
+  // Hide info icon at tablet/mobile — only shown on full desktop (lg+).
+  @media (max-width: 1279px) {
+    :deep(.info-icon) {
+      display: none !important;
+    }
+  }
+
+  // Override the dropdown select width at each breakpoint so it fits
+  // alongside logout + language in the toolbar without overflowing.
+  :deep(.tenant-select) {
+    width: 200px; // lg+ desktop default (narrower than standalone 280px)
+
+    @media (max-width: 1279px) {
+      width: 180px; // tablet landscape
+    }
+
+    @media (max-width: 959px) {
+      width: 160px; // tablet portrait
+    }
+
+    @media (max-width: 599px) {
+      width: 60px !important;
+      max-width: 60px !important;
+
+      .v-field__field {
+        display: none !important;
+      }
+    }
+  }
+
+  :deep(.tenant-dropdown-container) {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.5rem;
+    width: auto !important;
+    min-width: 0;
+
+    .tenant-select {
+      :deep(.v-field) {
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
+      :deep(.v-field__input) {
+        color: #ffffff !important;
+        font-size: 0.9rem !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: flex !important;
+        align-items: center !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+      }
+
+      :deep(.v-field__input input) {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        color: #ffffff !important;
+        flex: 1;
+      }
+
+      :deep(.v-select__content) {
+        padding: 0 !important;
+      }
+
+      :deep(.v-field__outline__start),
+      :deep(.v-field__outline__end) {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+      }
+
+      &:hover:not(:disabled) {
+        :deep(.v-field__outline__start),
+        :deep(.v-field__outline__end) {
+          border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+      }
+
+      &:focus-within {
+        :deep(.v-field__outline__start),
+        :deep(.v-field__outline__end) {
+          border-color: #fcba19 !important;
+        }
+      }
+
+      // Dropdown menu styling in header
+      :deep(.v-list) {
+        padding: 0 !important;
+      }
+
+      :deep(.v-list-item) {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+        &:last-of-type:not(.cstar-link-item) {
+          border-bottom: none;
+        }
+      }
+
+      :deep(.v-list-item__prepend) {
+        margin-right: 1rem !important;
+        margin-left: 0 !important;
+      }
+
+      :deep(.v-list-item--title) {
+        white-space: normal !important;
+        word-break: break-word !important;
+      }
+
+      :deep(.classic-chefs-link-item) {
+        color: var(--v-primary) !important;
+        border-bottom: none !important;
+        border-top: none !important;
+        min-height: auto !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+
+        :deep(.v-icon) {
+          margin-right: 1rem !important;
+        }
+
+        span {
+          white-space: normal !important;
+          word-break: break-word !important;
+          line-height: 1.4;
+          display: block;
+        }
+      }
+
+      :deep(.cstar-link-item) {
+        color: var(--v-primary) !important;
+        border-bottom: none !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+        min-height: auto !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+
+        :deep(.v-icon) {
+          margin-right: 1rem !important;
+        }
+
+        span {
+          white-space: normal !important;
+          word-break: break-word !important;
+          line-height: 1.4;
+          display: block;
+        }
+      }
+
+      :deep(.v-divider) {
+        display: none !important;
+      }
+
+      :deep(.cstar-link) {
+        color: var(--v-primary) !important;
+      }
+    }
+
+    .helper-link {
+      color: #fcba19 !important;
+
+      &:hover {
+        color: #ffffff !important;
+      }
+    }
+
+    .tenant-helper-text {
+      display: none; // Hide in header, only show in standalone context
     }
   }
 }

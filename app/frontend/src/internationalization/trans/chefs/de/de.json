@@ -30,7 +30,12 @@
     "description": "Beschreibung",
     "Description": "Beschreibung:",
     "action": "Aktionen",
-    "loadingText": "Laden, bitte warten"
+    "loadingText": "Laden, bitte warten",
+    "forms": "Formulare",
+    "deleteForm": "Formular löschen",
+    "manageForm": "Formular verwalten",
+    "viewSubmissions": "Einreichungen anzeigen",
+    "noDataText": "Keine Formulare gefunden"
   },
   "preview": {
     "preview": "Vorschau",
@@ -53,6 +58,7 @@
     "emailManagement": "E-Mail-Management",
     "viewSubmissions": "Einsendungen anzeigen",
     "teamManagement": "Team Management",
+    "groupManagement": "Gruppenverwaltung",
     "deleteForm": "Formular löschen",
     "confirmDeletion": "Löschung bestätigen",
     "deleteMessageA": "Sind Sie sicher, dass Sie löschen möchten?",
@@ -105,7 +111,9 @@
     "referenceGuideB": "Benutzerhandbuch",
     "referenceGuideC": "für weitere Details",
     "specificTeamMembers": "Spezifische Teammitglieder",
+    "specificGroups": "Bestimmte Gruppen",
     "teamMemberTooltip": "Nachdem Sie das Formular erstellt haben, haben Sie Zugriff auf die Teamverwaltungsseite, auf der Sie Benutzer hinzufügen und Rollen zuweisen können. Suchen Sie nach dem Personen-Symbol auf der Seite \"Formular verwalten\" ",
+    "groupAccessTooltip": "Der Zugriff wird über CSTAR-Gruppen gesteuert. Nachdem Sie das Formular erstellt haben, gehen Sie zur Gruppenverwaltungsseite, um CSTAR-Gruppen mit diesem Formular zu verknüpfen. Nur Benutzer, die diesen Gruppen angehören, können darauf zugreifen. Um Benutzer zu einer Gruppe hinzuzufügen oder daraus zu entfernen, verwalten Sie die Gruppenmitgliedschaft in CSTAR.",
     "formFunctionality": "Formularfunktionalität",
     "formSubmissinScheduleMsg": "Der Formulareinreichungsplan ist in den Formulareinstellungen verfügbar, nachdem das Formular veröffentlicht wurde.",
     "formSubmissionsSchedule": "Zeitplan für Formulareinreichungen",
@@ -719,11 +727,13 @@
     "notifyConsoleErrorCode": "Fehler beim Abrufen der Status:",
     "fetchSubmissionUsersErr": "Beim Versuch, die Empfänger-E-Mails für diese Übermittlung abzurufen, ist ein Fehler aufgetreten.",
     "fetchSubmissionUsersConsErr": "Fehler beim Abrufen der Empfänger-E-Mails für",
-    "assignSubmissnToFormReviewer": "Einreichungen können Formularprüfern zugewiesen werden.<br /> Um weitere Teammitglieder als Formularprüfer hinzuzufügen, gehen Sie zur Seite „Verwalten“ für dieses Formular.",
+    "assignSubmissnToFormReviewer": "Einreichungen können Formularprüfern zugewiesen werden.<br /> Um weitere Teammitglieder als Formularprüfer hinzuzufügen, gehen Sie zur Seite „Verwalten” für dieses Formular.",
+    "assignSubmissnToFormReviewerTenanted": "Einreichungen können Formularprüfern zugewiesen werden. <br />Um Mitglieder als Formularprüfer hinzuzufügen oder zu aktualisieren, gehen Sie zu CSTAR und aktualisieren Sie die entsprechende Gruppe.",
     "update": "AKTUALISIEREN",
     "revise": "ÜBERARBEITEN",
     "complete": "VOLLSTÄNDIG",
-    "assign": "ZUORDNEN"
+    "assign": "ZUORDNEN",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Laden, bitte warten",
@@ -862,6 +872,44 @@
     "setUserFormsErrMsg": "Beim Versuch, Rollen für einen Benutzer zu aktualisieren, ist ein Fehler aufgetreten",
     "setUserFormsConsoleErrMsg": "Fehler beim Festlegen der Benutzerrollen für das Formular {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gruppenverwaltung",
+    "manageForm": "Formular verwalten",
+    "search": "Suchen",
+    "loadingText": "Wird geladen... Bitte warten",
+    "noDataText": "Keine Gruppen für diesen Mandanten verfügbar",
+    "noMatchingRecordText": "Keine übereinstimmenden Datensätze gefunden",
+    "groupName": "Gruppenname",
+    "description": "Beschreibung",
+    "associated": "Zugeordnet",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "confirmSave": "Änderungen bestätigen",
+    "confirmSaveMsg": "Sind Sie sicher, dass Sie die Gruppenzuordnungen für dieses Formular aktualisieren möchten?",
+    "saveSuccessMsg": "Gruppenzuordnungen erfolgreich aktualisiert",
+    "saveErrMsg": "Beim Speichern der Gruppenzuordnungen ist ein Fehler aufgetreten",
+    "getGroupsErrMsg": "Beim Laden der Gruppen für dieses Formular ist ein Fehler aufgetreten",
+    "missingGroupsWarning": "{count} zuvor zugeordnete Gruppe(n) existiert/existieren in diesem Mandanten nicht mehr",
+    "availableGroups": "Verfügbare Gruppen",
+    "assignedGroups": "Zugeordnete Gruppen",
+    "searchAvailable": "Verfügbare Gruppen suchen",
+    "searchAssigned": "Zugeordnete Gruppen suchen",
+    "noAvailableGroups": "Keine verfügbaren Gruppen in diesem Mandanten",
+    "noAssignedGroups": "Diesem Formular sind keine Gruppen zugeordnet",
+    "addGroup": "Gruppe hinzufügen",
+    "removeGroup": "Gruppe entfernen",
+    "deleted": "Gelöscht",
+    "noTenantAccess": "Gruppenverwaltung ist nur für mandantenbezogene Formulare verfügbar. Bitte wählen Sie einen Mandanten aus, um fortzufahren.",
+    "unsavedChangesWarning": "Sie haben nicht gespeicherte Gruppenänderungen. Ohne Speichern verlassen?",
+    "unsavedChangesTitle": "Nicht gespeicherte Änderungen",
+    "leave": "Verlassen",
+    "selectAll": "Alle auswählen",
+    "addSelected": "Ausgewählte hinzufügen",
+    "removeSelected": "Ausgewählte entfernen",
+    "formAdminGroupRequired": "Mindestens eine zugewiesene Gruppe muss die Rolle form_admin haben.",
+    "invalidGroupIds": "Eine oder mehrere ausgewählte Gruppen sind für diesen Mandanten ungültig.",
+    "insufficientPermissions": "Sie haben keine Berechtigung, Gruppenzuordnungen zu verwalten."
+  },
   "floatButton": {
     "publish": "Veröffentlichen",
     "manage": "Verwalten",
@@ -931,7 +979,8 @@
     "createNewForm": "Erstellen Sie ein neues Formular",
     "help": "Hilfe",
     "feedback": "Rückmeldung",
-    "admin": "Administrator"
+    "admin": "Administrator",
+    "forms": "Formulare"
   },
   "homePage": {
     "title": "Erstellen, veröffentlichen Sie Formulare und empfangen Sie Übermittlungen mit dem Common Hosted Forms Service.",
@@ -950,7 +999,13 @@
     "chefsHowToSub": "Unser Quickstart Guide führt Sie in einige Grundfunktionen von CHEFS ein.",
     "getStartedToChefs": "Beginnen Sie mit der Nutzung von CHEFS",
     "createOnlineTitle": "Erstellen Sie Online-Formulare, um Informationen von Ihren Kunden zu sammeln und Ihre Arbeitsabläufe zu verbessern.",
-    "getStarted": "Loslegen"
+    "getStarted": "Loslegen",
+    "enterpriseSectionTitle": "Erleben Sie das neue Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS erweitert das klassische CHEFS (Common Hosted Forms Service) durch die Zusammenarbeit mit CSTAR — Connected Services, Team Access und Roles — um einen gemeinsamen, kollaborativen Arbeitsbereich zu schaffen.",
+    "enterpriseSectionBody2": "Mit Enterprise CHEFS können Teams Formulare sicher teilen, Rollen zuweisen und Projekte im Mandanten ihrer Organisation verwalten — ein dedizierter Arbeitsbereich, der Ihre Projekte und Berechtigungen organisiert hält.",
+    "enterpriseSectionWelcome": "Willkommen bei Enterprise CHEFS, wo Teams in der gesamten Regierung sicher und effizient zusammenarbeiten können.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "designForm": "Designform",
@@ -1292,7 +1347,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
-    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
+    "canShareGroupMessage": "Sie können den Entwurf nicht mit diesem Benutzer teilen. Er muss Mitglied einer der autorisierten Gruppen dieses Formulars sein.",
+    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter",
+    "shareDraftGroupMessage": "Entwurf nur mit Formulargruppenmitgliedern teilen",
+    "groupShareHint": "Nur Mitglieder der autorisierten Gruppen dieses Formulars können hinzugefügt werden."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Dieser Dienst ist vorübergehend nicht verfügbar.",
@@ -1311,5 +1369,95 @@
     "shuttingDown": "CHEFS wird heruntergefahren.",
     "notReady": "CHEFS kann nicht mit allen erforderlichen Diensten verbinden.",
     "unableToReachBackend": "Backend-Dienst nicht erreichbar."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Möchten Sie sicher mit Ihrem Team arbeiten, Formulare schneller bereitstellen und in der Regierung zusammenarbeiten?",
+      "title": "Wir stellen vor: Enterprise CHEFS und CSTAR!",
+      "enterpriseTitle": "Erleben Sie das neue Enterprise CHEFS",
+      "tenant": "Mandant",
+      "description1": "Enterprise CHEFS ist die neue Version von CHEFS, die Mehrfachmandantenzugriff und Teamverwaltung über CSTAR (Connected Services, Team Access and Roles) unterstützt.",
+      "description2": "Mit Enterprise CHEFS kann Ihre Organisation:",
+      "description3": "Im ",
+      "description4": "-Modus arbeiten - Jeder Mandant hat seinen eigenen sicheren Bereich mit isolierten Formularen, Daten und Berechtigungen",
+      "description5": "Teamzugriff verwalten - Steuern Sie, wer Formulare in Ihrem Mandanten anzeigen, bearbeiten oder verwalten kann",
+      "description6": "Datensicherheit aufrechterhalten - Die Daten jedes Mandanten sind vollständig von anderen Mandanten isoliert",
+      "description7": "Enterprise CHEFS umfasst auch alle leistungsstarken Funktionen, die Sie von Classic CHEFS kennen und lieben, wie den Drag-and-Drop-Formular-Builder, bedingte Logik, verschlüsselte Übermittlungen und API-Integrationen.",
+      "loginButton": "Anmelden, um zu beginnen",
+      "goToChefs": "Zu CHEFS gehen",
+      "learnMore": "Mehr erfahren"
+    },
+    "gettingStarted": {
+      "title": "Neu bei CHEFS und wissen nicht, wo Sie anfangen sollen?",
+      "description": "Sie können mit ein paar einfachen Schritten mit der Erstellung von Formularen beginnen:",
+      "step1Title": "1. Melden Sie sich mit Ihrem IDIR- oder BCeID-Konto an",
+      "step2Title": "2. Erstellen Sie ein neues Formular oder verwenden Sie eine Vorlage",
+      "step3Title": "3. Gestalten Sie Ihr Formular mit unserem Drag-and-Drop-Builder",
+      "step4Title": "4. Veröffentlichen und teilen Sie Ihr Formular mit Ihrem Team oder der Öffentlichkeit",
+      "loginButton": "Anmelden, um zu beginnen",
+      "learnMore": "Mehr erfahren"
+    },
+    "examples": {
+      "demographicSurvey": "Beispiel | Umfrage zur Erfassung demografischer Daten",
+      "projectRequest": "Beispiel | Projektanfrage",
+      "permitApplication": "Beispiel | Genehmigungsantrag"
+    },
+    "testimonials": {
+      "title": "Vertrauen Sie nicht nur unserem Wort, hören Sie, was unsere Benutzer über uns zu sagen haben.",
+      "author": "Autor",
+      "role": "Rolle"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS-Benutzer 1",
+        "role": "Programmanalyst",
+        "quote": "\"CHEFS hat die Art und Weise verändert, wie wir Daten sammeln. Das Mehrfachmandantensystem ermöglicht es uns, Projekte getrennt zu halten und gleichzeitig Best Practices in unserer gesamten Abteilung zu teilen.\""
+      },
+      "testimonial2": {
+        "author": "CHEFS-Benutzer 2",
+        "role": "Projektmanager",
+        "quote": "\"Die Integration mit CSTAR macht die Verwaltung des Teamzugriffs so viel einfacher. Ich kann neue Teammitglieder schnell einbinden und genau kontrollieren, was sie tun können.\""
+      },
+      "testimonial3": {
+        "author": "CHEFS-Benutzer 3",
+        "role": "IT-Administrator",
+        "quote": "\"Wir schätzen die robusten Sicherheits- und Datenisolierungsfunktionen. Jeder Mandant ist vollständig getrennt, was uns Sicherheit bei der Arbeit mit sensiblen Daten gibt.\""
+      }
+    },
+    "finalCta": {
+      "title": "Beginnen Sie mit Enterprise CHEFS",
+      "description": "Erstellen Sie Online-Formulare, um Informationen von Ihren Kunden zu sammeln und Ihren Workflow zu verbessern.",
+      "loginButton": "Anmelden, um zu beginnen"
+    },
+    "formViewer": {
+      "title": "Formularanzeige",
+      "description": "Vorschau, wie Ihr Formular aussehen wird",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "Mandant:",
+    "infoTooltip": "Enterprise CHEFS ist die neue Version von CHEFS, die Mehrmandantenzugriff unterstützt. Durch Auswahl Ihres Mandanten gelangen Sie automatisch dorthin.",
+    "selectLabel": "Mandant auswählen (öffnet in Enterprise CHEFS)",
+    "placeholder": "Aus verfügbaren Mandanten auswählen",
+    "noDataText": "Keine Mandanten gefunden",
+    "switchToClassic": "Zu Classic CHEFS wechseln",
+    "goToCstar": "Zu CSTAR gehen (Verbundene Dienste, Teamzugriff und Rollen)",
+    "noTenantsAvailable": "Keine Mandanten verfügbar",
+    "manageTenantsIn": "Mandanten verwalten in",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Mandant:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR ist vorübergehend nicht verfügbar. Die Mandantenauswahl ist derzeit deaktiviert.",
+    "errorFetchingTenants": "Fehler beim Abrufen der Mandanten"
   }
 }

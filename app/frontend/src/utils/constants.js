@@ -83,6 +83,7 @@ export const AppPermissions = Object.freeze({
   VIEWS_FORM_PREVIEW: 'views_form_preview',
   VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
   VIEWS_FORM_TEAMS: 'views_form_teams',
+  VIEWS_FORM_GROUPS: 'views_form_groups',
   VIEWS_FORM_VIEW: 'views_form_view',
   VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
 });
@@ -170,6 +171,11 @@ export const NotificationTypes = Object.freeze({
     type: 'warning',
     icon: '$warning',
   },
+});
+
+/** Role codes used for enterprise tenant access control */
+export const TenantRoles = Object.freeze({
+  FORM_ADMIN: 'form_admin',
 });
 
 export const Regex = Object.freeze({
