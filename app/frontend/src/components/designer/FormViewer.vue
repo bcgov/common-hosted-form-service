@@ -238,7 +238,6 @@ onMounted(async () => {
     await getFormSchema();
   }
   window.addEventListener('beforeunload', beforeWindowUnload);
-
   reRenderFormIo.value += 1;
 });
 
@@ -876,25 +875,11 @@ async function deleteFile(file) {
 
 async function getFile(fileId, options = {}) {
   await formStore.downloadFile(fileId, options);
-  if (downloadedFile.value && downloadedFile.value.headers) {
-    let data;
 
-    if (
-      downloadedFile.value.headers['content-type'].includes('application/json')
-    ) {
-      data = JSON.stringify(downloadedFile.value.data);
-    } else {
-      data = downloadedFile.value.data;
-    }
+  if (downloadedFile.value?.data && downloadedFile.value?.headers) {
+    const blob = downloadedFile.value.data;
+    const url = window.URL.createObjectURL(blob);
 
-    if (typeof data === 'string') {
-      data = new Blob([data], {
-        type: downloadedFile.value.headers['content-type'],
-      });
-    }
-
-    // don't need to blob because it's already a blob
-    const url = window.URL.createObjectURL(data);
     const a = document.createElement('a');
     a.href = url;
     a.download = getDisposition(
@@ -904,9 +889,10 @@ async function getFile(fileId, options = {}) {
     a.classList.add('hiddenDownloadTextElement');
     document.body.appendChild(a);
     a.click();
+
     downloadTimeout.value = setTimeout(() => {
       document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
+      URL.revokeObjectURL(url);
     });
   }
 }
@@ -934,7 +920,7 @@ async function uploadFile(file, config = {}) {
         </v-alert>
       </div>
 
-      <div v-else-if="isFormScheduleExpired">
+      <div v-else-if="isFormScheduleExpired && !properties.readOnly">
         <v-alert
           :text="
             isLateSubmissionAllowed
@@ -942,7 +928,7 @@ async function uploadFile(file, config = {}) {
               : formScheduleExpireMessage
           "
           prominent
-          type="error"
+          type="info"
           :class="{ 'dir-rtl': isRTL }"
           :lang="locale"
         >
