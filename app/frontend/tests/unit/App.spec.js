@@ -123,14 +123,15 @@ describe('App.vue', () => {
 
   it('appTitle appends | Personal when tenant feature is enabled and no tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
+    useAppStore().config = { tenantFeatureEnabled: true };
     const wrapper = mountApp({ meta: { title: TITLE } });
-    // isTenantFeatureEnabled defaults to true; no tenant selected → Personal
     expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Personal`);
   });
 
   it('appTitle appends | Enterprise when a tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
     const tenant = { id: 't1', name: 'Tenant 1' };
+    useAppStore().config = { tenantFeatureEnabled: true };
     // Set both localStorage (read by initializeStore on mount) and the in-memory
     // store value (read by the appTitle computed before/after mount).
     localStorage.setItem('selectedTenant', JSON.stringify(tenant));

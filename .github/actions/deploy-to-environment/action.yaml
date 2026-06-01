@@ -126,9 +126,9 @@ runs:
         ACRONYM: ${{ inputs.acronym }}
       run: |
         if [[ "${JOB_NAME}" == pr-* ]]; then
-          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} --param-file=openshift/cstar.dev.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/cstar.pr.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
         else
-          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} --param-file=openshift/cstar.${NAMESPACE_ENVIRONMENT}.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/cstar.${NAMESPACE_ENVIRONMENT}.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
         fi
 
     - name: Delete pre-job if it exists

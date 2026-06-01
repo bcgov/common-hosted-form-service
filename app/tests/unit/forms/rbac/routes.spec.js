@@ -1,4 +1,5 @@
 const request = require('supertest');
+const config = require('config');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -57,6 +58,13 @@ const router = require('../../../../src/forms/rbac/routes');
 const basePath = '/rbac';
 const app = expressHelper(basePath, router);
 const appRequest = request(app);
+
+beforeEach(() => {
+  jest.spyOn(config, 'get').mockImplementation((key) => {
+    if (key === 'cstar.tenantFeatureEnabled') return true;
+    return undefined;
+  });
+});
 
 afterEach(() => {
   jest.clearAllMocks();

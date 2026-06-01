@@ -12,7 +12,7 @@ objects:
   - apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: "${APP_NAME}-cstar-config"
+      name: "${APP_NAME}-${JOB_NAME}-cstar-config"
     data:
       TENANT_FEATURE_ENABLED: ${TENANT_FEATURE_ENABLED}
       CSTAR_BASE_URL: ${CSTAR_BASE_URL}
@@ -25,6 +25,10 @@ parameters:
   - name: APP_NAME
     description: Application name
     displayName: Application name
+    required: true
+  - name: JOB_NAME
+    description: Job/Instance name
+    displayName: Job Name
     required: true
   - name: TENANT_FEATURE_ENABLED
     description: Enable or disable the multitenancy feature
