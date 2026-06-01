@@ -7,7 +7,7 @@ const apiAccess = require('../../../forms/auth/middleware/apiAccess');
 const controller = require('./controller');
 
 // Issue a new token for a specific form
-router.post('/token/forms/:formId', apiAccess, controller.issueFormToken);
+router.post('/token/forms/:formId', apiAccess({ required: true }), controller.issueFormToken);
 
 // Refresh an existing token
 router.post('/refresh', controller.refreshToken);

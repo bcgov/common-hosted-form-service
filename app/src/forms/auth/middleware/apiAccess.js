@@ -75,10 +75,20 @@ const _getFormIdFromSubmissionId = async (formSubmissionId) => {
   return result?.form?.id;
 };
 
-module.exports = async (req, res, next) => {
-  try {
-    // Check if authorization header is basic auth
-    if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Basic ')) {
+module.exports = (options = {}) => {
+  const { required = false } = options;
+  return async (req, res, next) => {
+    try {
+      // Check if authorization header is basic auth
+      const hasBasicAuth = req.headers && req.headers.authorization && req.headers.authorization.startsWith('Basic ');
+
+      //validate that API Access is mandatory
+      if (required && !hasBasicAuth) {
+        throw new Problem(401, {
+          detail: HTTP_401_DETAIL,
+        });
+      }
+      if (!hasBasicAuth) return next();
       // URL params should override query string params of the same attribute
       const params = { ...req.query, ...req.params };
 
@@ -115,10 +125,8 @@ module.exports = async (req, res, next) => {
       });
 
       return checkCredentials(req, res, next);
-    } else {
-      next();
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
+  };
 };
