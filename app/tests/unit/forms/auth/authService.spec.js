@@ -102,8 +102,6 @@ describe('login', () => {
 
     expect(result.usernameIdp).toEqual('public');
   });
-
-
 });
 
 describe('recordLoginHistory', () => {
