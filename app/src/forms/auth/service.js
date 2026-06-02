@@ -1,5 +1,6 @@
 const uuid = require('uuid');
-const { Form, FormGroup, FormSubmissionUserPermissions, PublicFormAccess, Role, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
+const { Form, FormGroup, FormSubmissionUserPermissions, PublicFormAccess, Role, SubmissionMetadata, User, UserFormAccess, UserLoginHistory } = require('../common/models');
+const log = require('../../components/log')(module.filename);
 const { queryUtils } = require('../common/utils');
 
 const idpService = require('../../components/idpService');
@@ -216,12 +217,24 @@ const service = {
     };
   },
 
+  recordLoginHistory: async (userId, idpCode) => {
+    if (idpCode !== 'public') {
+      try {
+        await UserLoginHistory.query().insert({ userId, idpCode, lastLoginAt: new Date().toISOString() }).onConflict(['userId', 'idpCode']).merge(['lastLoginAt']);
+      } catch (err) {
+        log.error('Failed to record login history', err.message);
+      }
+    }
+  },
+
   login: async (token) => {
     const userInfo = await idpService.parseToken(token);
     const idp = await idpService.findByIdp(userInfo.idp);
     userInfo.idp = idp.code;
     const user = await service.getUserId(userInfo);
     const canonicalCode = idp.extra?.canonicalCode || idp.code;
+
+    await service.recordLoginHistory(user.id, idp.code);
 
     return {
       ...user,

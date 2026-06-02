@@ -1,7 +1,7 @@
 const service = require('../../../../src/forms/auth/service');
 const idpService = require('../../../../src/components/idpService');
 const tenantService = require('../../../../src/components/tenantService');
-const { UserFormAccess, FormGroup, Role } = require('../../../../src/forms/common/models');
+const { UserFormAccess, FormGroup, Role, UserLoginHistory } = require('../../../../src/forms/common/models');
 const { queryUtils } = require('../../../../src/forms/common/utils');
 
 afterEach(() => {
@@ -101,6 +101,38 @@ describe('login', () => {
     const result = await service.login('token');
 
     expect(result.usernameIdp).toEqual('public');
+  });
+
+
+});
+
+describe('recordLoginHistory', () => {
+  it('inserts a record for an authenticated user', async () => {
+    const mergeMock = jest.fn().mockResolvedValue({});
+    const onConflictMock = jest.fn().mockReturnValue({ merge: mergeMock });
+    const insertMock = jest.fn().mockReturnValue({ onConflict: onConflictMock });
+    jest.spyOn(UserLoginHistory, 'query').mockReturnValue({ insert: insertMock });
+
+    await service.recordLoginHistory('user-uuid', 'idir');
+
+    expect(insertMock).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-uuid', idpCode: 'idir' }));
+    expect(onConflictMock).toHaveBeenCalledWith(['userId', 'idpCode']);
+    expect(mergeMock).toHaveBeenCalledWith(['lastLoginAt']);
+  });
+
+  it('skips insert for public idpCode', async () => {
+    const querySpy = jest.spyOn(UserLoginHistory, 'query');
+
+    await service.recordLoginHistory('user-uuid', 'public');
+
+    expect(querySpy).not.toHaveBeenCalled();
+  });
+
+  it('does not throw when upsert fails', async () => {
+    const insertMock = jest.fn().mockReturnValue({ onConflict: jest.fn().mockReturnValue({ merge: jest.fn().mockRejectedValue(new Error('db error')) }) });
+    jest.spyOn(UserLoginHistory, 'query').mockReturnValue({ insert: insertMock });
+
+    await expect(service.recordLoginHistory('user-uuid', 'idir')).resolves.not.toThrow();
   });
 });
 
