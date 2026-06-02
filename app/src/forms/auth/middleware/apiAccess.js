@@ -116,7 +116,7 @@ module.exports = (options = {}) => {
           const userMatch = formId && basicAuth.safeCompare(username, formId);
           const pwMatch = secret && basicAuth.safeCompare(password, secret);
 
-          req.apiUser = userMatch & pwMatch; // Flag current request as an API entity
+          req.apiUser = userMatch && pwMatch; // Flag current request as an API entity
           return req.apiUser;
         },
         unauthorizedResponse: () => {

@@ -34,7 +34,7 @@ describe('apiAccess', () => {
       const req = getMockReq({ headers: {} });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess()(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -47,7 +47,7 @@ describe('apiAccess', () => {
       const req = getMockReq({ headers: { authorization: 'Bearer JWT' } });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess()(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -60,7 +60,7 @@ describe('apiAccess', () => {
       const req = getMockReq({ headers: { authorization: authHeader } });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -78,7 +78,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -95,7 +95,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -112,7 +112,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -129,7 +129,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -145,7 +145,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeTruthy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -163,7 +163,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -180,7 +180,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -197,7 +197,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -214,7 +214,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -232,7 +232,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -249,7 +249,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeTruthy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -267,7 +267,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -284,7 +284,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -301,7 +301,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -318,7 +318,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -336,7 +336,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -354,7 +354,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -372,7 +372,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(0);
@@ -391,7 +391,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -409,7 +409,7 @@ describe('apiAccess', () => {
       });
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(req.apiUser).toBeTruthy();
       expect(mockReadApiKey).toBeCalledTimes(1);
@@ -428,7 +428,7 @@ describe('apiAccess', () => {
       };
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith(expect.objectContaining({ status: 403 }));
@@ -445,7 +445,7 @@ describe('apiAccess', () => {
       };
       const { res, next } = getMockRes();
 
-      await apiAccess(req, res, next);
+      await apiAccess({ required: true })(req, res, next);
 
       expect(next).toBeCalledTimes(1);
       expect(mockReadApiKey).toBeCalledTimes(1);
