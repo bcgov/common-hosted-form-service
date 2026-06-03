@@ -82,14 +82,14 @@ describe('tenant store', () => {
   // ---- isTenantFeatureEnabled getter ----
 
   describe('isTenantFeatureEnabled', () => {
-    it('returns true when config is not set (default)', () => {
+    it('returns false when config is not set (default)', () => {
       appStore.config = {};
-      expect(tenantStore.isTenantFeatureEnabled).toBe(true);
+      expect(tenantStore.isTenantFeatureEnabled).toBe(false);
     });
 
-    it('returns true when config is null', () => {
+    it('returns false when config is null', () => {
       appStore.config = null;
-      expect(tenantStore.isTenantFeatureEnabled).toBe(true);
+      expect(tenantStore.isTenantFeatureEnabled).toBe(false);
     });
 
     it('returns true when tenantFeatureEnabled is true', () => {
@@ -115,6 +115,51 @@ describe('tenant store', () => {
     it('returns false when tenantFeatureEnabled is string "FALSE"', () => {
       appStore.config = { tenantFeatureEnabled: 'FALSE' };
       expect(tenantStore.isTenantFeatureEnabled).toBe(false);
+    });
+  });
+
+  // ---- isTenantRestoring getter ----
+
+  describe('isTenantRestoring', () => {
+    beforeEach(() => {
+      authStore.ready = true;
+      authStore.authenticated = true;
+      tenantStore.isRestoring = true;
+      tenantStore.selectedTenant = null;
+    });
+
+    it('returns true when all conditions are met', () => {
+      expect(tenantStore.isTenantRestoring).toBe(true);
+    });
+
+    it('returns false when feature flag is disabled', () => {
+      appStore.config = { tenantFeatureEnabled: false };
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when feature flag is string "false"', () => {
+      appStore.config = { tenantFeatureEnabled: 'false' };
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when selectedTenant is set', () => {
+      tenantStore.selectedTenant = { id: 't1' };
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when isRestoring is false', () => {
+      tenantStore.isRestoring = false;
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when auth is not ready', () => {
+      authStore.ready = false;
+      expect(tenantStore.isTenantRestoring).toBe(false);
+    });
+
+    it('returns false when not authenticated', () => {
+      authStore.authenticated = false;
+      expect(tenantStore.isTenantRestoring).toBe(false);
     });
   });
 
