@@ -32,7 +32,7 @@ describe('Form Designer', () => {
   });
   it('checks Data Retention Settings', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-key="simplebcaddress"]')
@@ -49,12 +49,20 @@ describe('Form Designer', () => {
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
+    // Filter the newly created form
+    cy.location('search').then(search => {
+      //let pathName = fullUrl.pathname
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
     //Publish the form
-    cy.get('.mdi-dots-vertical').click();
-    cy.get('[data-cy="publishRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.get('.v-label > span').click();
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
+    });
     //Update form design version
     cy.get('.mdi-plus').click();
     //Add new component to version 1

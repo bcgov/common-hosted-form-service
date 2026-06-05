@@ -22,7 +22,8 @@ describe('Application About Page', () => {
       cy.get('.alert-content-wrapper > .v-btn > .v-btn__content').contains('Log in to CSTAR').should('be.visible');
       cy.get('.v-col-md-8 > .v-btn > .v-btn__content').contains('Login to Get Started').should('be.visible');
       //Login to application
-      cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+      cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+      cy.get('#loginButton').click();
       cy.get('[data-test="idir"]').click();
       cy.get('#user').type(username);
       cy.get('#password').type(password);

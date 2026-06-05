@@ -54,7 +54,8 @@ export function formsettings(){
     cy.get('label').contains('Basic BCeID').should('exist');
     cy.get('label').contains('Business BCeID').should('exist');
     cy.contains('Please select at least one identity provider.').should('be.visible');
-    cy.get('label').contains('IDIR').click();
+    cy.wait(1000);
+    cy.get('label').contains('IDIR').click(0, 0, { force: true })
     cy.get('.v-label > div > .mdi-help-circle-outline').then($el => {
     const email_notify=$el[1];
     cy.get(email_notify).click({force: true});

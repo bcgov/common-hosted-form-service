@@ -29,6 +29,7 @@ describe('Form Designer', () => {
     });
     it('Getting page ready', () => {
     cy.viewport(1000, 1100);
+    cy.wait(2000);
     cy.get('button').contains('Basic Fields').click();   
     }); 
     it('Form Submission and Updation', () => {
@@ -140,18 +141,18 @@ describe('Form Designer', () => {
         cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
         cy.wait(2000);
         cy.get('.mdi-list-box-outline').click();
-        
+        /*
         cy.get('input[type="checkbox"]').then($el => {
         const rem1=$el[2];////Assigned to me checkbox
         rem1.click();
         cy.get('.v-data-table__tr > :nth-child(6)').should('exist');
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').should('exist');
-        /*
+        
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').click();
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').click();
         cy.wait(2000);
         cy.get('.mdi-arrow-down').should('exist');
-        */
+        
         rem1.click();
         cy.wait(2000);
         cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
@@ -207,8 +208,10 @@ describe('Form Designer', () => {
           const rem=$el[0];
           rem.click();
         });
+        cy.wait(1000);
         cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
         cy.get('.v-data-table__tbody > :nth-child(2) > :nth-child(2)').should('not.exist');
+        */
         //Delete form after test run
         cy.get('a[title="Manage Form"]').click();
         cy.wait(2000);

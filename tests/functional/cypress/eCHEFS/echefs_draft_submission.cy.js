@@ -85,8 +85,10 @@ it('Verify draft submission', () => {
     cy.get('div.v-list-item-title').contains('tests').should('exist');
     cy.get('div.v-list-item-title').contains('test_reviewer').should('exist');
     cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item').contains('admin').should('exist');
+    cy.wait(1000);
     //Removing default one and save
     cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item > .v-list-item__append > .v-btn').click();
+    
     //Save Group lists afterremoving default one
     cy.get('.v-col > .v-btn > .v-btn__content').click();
     //validate error message

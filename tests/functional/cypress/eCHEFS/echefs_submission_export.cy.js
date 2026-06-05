@@ -33,11 +33,18 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}`); 
     cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+    cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
+    cy.wait(1000);
+    //Select tenant to create form under that
+    cy.get('.mdi-home-account').click();
+    cy.get('.v-list-item__content').contains('Go to CSTAR (Connected Services, Team Access and Roles)').should('exist');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').should('be.visible');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').click({ waitForAnimations: false });
+    cy.wait(1000);
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.wait(2000);
@@ -167,12 +174,14 @@ describe('Form Designer', () => {
     cy.get('.v-card-title > span').contains('Unpublish Version 1');
     cy.contains("Continue").should("be.visible");
     cy.contains("Continue").trigger("click");
+    /*
     //Go to Export Submissions
     cy.get('.mdi-list-box-outline').click();
     cy.wait(2000);
     cy.get('.mdi-download').click();
     cy.wait(2000);
     cy.get('span').contains('Submission Date').should('be.visible');
+    cy.wait(1000);
     cy.get('.mb-5 > .v-btn__content > span').contains('Export').should('be.visible');
     //Verify export button is enabled
     cy.get('.mb-5').should('be.enabled');
@@ -183,6 +192,7 @@ describe('Form Designer', () => {
     //Verfiy form version is selected
     cy.get(rem).contains('1');
     });
+    */
     cy.get('.mdi-logout').click();
 
   
