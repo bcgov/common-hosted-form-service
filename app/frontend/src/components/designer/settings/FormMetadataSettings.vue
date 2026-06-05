@@ -85,6 +85,7 @@ defineExpose({ jsonStr, updateMetadata, formatJSON });
             :href="techdocsLink"
             class="preview_info_link_field_white"
             target="_blank"
+            rel="noopener noreferrer"
             :hreflang="locale"
           >
             {{ $t('trans.formSettings.learnMore') }}

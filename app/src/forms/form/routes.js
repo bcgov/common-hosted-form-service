@@ -2,7 +2,7 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const apiAccess = require('../auth/middleware/apiAccess');
-const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, requireCreateFormPermission } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
@@ -17,7 +17,7 @@ routes.get('/', jwtService.protect('admin'), async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
 
-routes.post('/', async (req, res, next) => {
+routes.post('/', requireCreateFormPermission, async (req, res, next) => {
   await controller.createForm(req, res, next);
 });
 

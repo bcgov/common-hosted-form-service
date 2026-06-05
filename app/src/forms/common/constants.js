@@ -50,6 +50,9 @@ module.exports = Object.freeze({
     SUBMISSION_REVIEWER: 'submission_reviewer',
     TEAM_MANAGER: 'team_manager',
   },
+  TenantRoles: {
+    FORM_ADMIN: 'form_admin',
+  },
   Regex: {
     CONFIRMATION_ID: '^[0-9A-Fa-f]{8}$',
     UUID: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$',

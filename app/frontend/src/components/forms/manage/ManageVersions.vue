@@ -278,6 +278,7 @@ defineExpose({
           "
           class="mx-5"
           target="_blank"
+          rel="noopener noreferrer"
         >
           <v-tooltip location="bottom">
             <template #activator="{ props }">

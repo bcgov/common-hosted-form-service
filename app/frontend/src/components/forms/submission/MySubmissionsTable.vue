@@ -197,14 +197,14 @@ const USER_PREFERENCES = computed(() => {
 });
 
 onBeforeMount(async () => {
-  await Promise.all([
-    await formStore.fetchForm(properties.formId),
+  await formStore.fetchForm(properties.formId);
+  if (form.value.versions?.length > 0) {
     await formStore.fetchFormFields({
       formId: properties.formId,
       formVersionId: form.value.versions[0].id,
-    }),
-    await populateSubmissionsTable(),
-  ]);
+    });
+  }
+  await populateSubmissionsTable();
 });
 
 function onShowColumnDialog() {

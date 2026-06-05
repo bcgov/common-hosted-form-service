@@ -405,6 +405,7 @@ defineExpose({
                 <a
                   href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Printing-from-a-browser/"
                   target="_blank"
+                  rel="noopener noreferrer"
                   class="more-info-link"
                   :lang="locale"
                 >
@@ -537,6 +538,7 @@ defineExpose({
                       <a
                         href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/"
                         target="_blank"
+                        rel="noopener noreferrer"
                         class="more-info-link"
                         :lang="locale"
                         :title="$t('trans.printOptions.moreInfo')"
