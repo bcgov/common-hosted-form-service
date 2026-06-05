@@ -47,9 +47,14 @@ const service = {
       const fileStorage = await fileService.read(fileId);
       if (!fileStorage.formSubmissionId) {
         await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: id, updatedBy: user.usernameIdp });
-        fileService.moveSubmissionFile(id, fileStorage, user.usernameIdp).catch((error) => {
+
+        // move file and update storage/path atomically to ensure we don't swallow errors
+        try {
+          await fileService.moveSubmissionFile(id, fileStorage, user.usernameIdp);
+        } catch (error) {
           log.error('Error moving file', { error, fileId, submissionId: id, userId: user.usernameIdp, originalName: fileStorage.originalName });
-        });
+          throw error;
+        }
       }
     }
   },
