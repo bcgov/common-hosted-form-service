@@ -39,7 +39,6 @@ describe('Form Designer', () => {
     }); 
     it('Checks the simpleradioadvanced', () => {
     cy.viewport(1000, 1800);
-    cy.wait(2000);
  // Form design page with advanced Fields components
     cy.get('button').contains('Advanced Fields').click();
     cy.waitForLoad();

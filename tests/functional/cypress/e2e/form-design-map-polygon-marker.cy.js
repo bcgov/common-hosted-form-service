@@ -31,7 +31,6 @@ describe('Form Designer', () => {
 // Checks Map component functionalities
   it('Checks Map component for Polygon marker', () => {
       cy.viewport(1000, 1100);
-      cy.wait(2000);
       cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="map"]')

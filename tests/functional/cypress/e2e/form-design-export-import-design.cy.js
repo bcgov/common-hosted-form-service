@@ -35,7 +35,6 @@ describe('Form Designer', () => {
 // Publish a simple form with Simplebc Address component
  it('Checks Export/Import design functionality', () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-key="simplebcaddress"]')

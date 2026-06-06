@@ -30,7 +30,6 @@ describe("Form Designer", () => {
   });
   it("Add IDIR User Component", () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="idirusers"]')

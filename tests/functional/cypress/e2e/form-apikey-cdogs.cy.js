@@ -33,14 +33,12 @@ describe('Form Designer', () => {
   });
   it('Getting page ready', () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Basic Fields').click();
   });
   // Publish a simple form 
   it('Verify Data Retention Settings', () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
