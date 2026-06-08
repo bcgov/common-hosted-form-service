@@ -12,7 +12,8 @@ describe('Application About Page', () => {
     else
     {
       cy.visit(`${depEnv}`);
-      cy.wait(2000); // Adjust the wait time as necessary
+      cy.wait(500); // Wait for 5 seconds to allow the page to load completely
     }
+    cy.checkA11yPage();
   });
 });

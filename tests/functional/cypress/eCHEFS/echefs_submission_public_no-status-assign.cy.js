@@ -103,9 +103,9 @@ describe('Form Designer', () => {
     })//Login to view submissions
     cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
-    //cy.get('#user').type(username);
-    //cy.get('#password').type(password);
-    //cy.get('.btn').click();
+    cy.get('#user').type(username);
+    cy.get('#password').type(password);
+    cy.get('.btn').click();
     cy.get('.mdi-list-box-outline').click();
     cy.wait(2000);
     cy.contains('Assigned to me').should('not.exist');//Assigned to me checkbox

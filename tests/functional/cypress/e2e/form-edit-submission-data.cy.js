@@ -69,15 +69,10 @@ describe("Form Designer", () => {
       cy.contains("Continue").should("be.visible");
       cy.contains("Continue").trigger("click");
       //Share link verification
-      let shareFormButton = cy.get('[data-cy=shareFormButton]');
-      expect(shareFormButton).to.not.be.null;
-      shareFormButton.trigger('click').then(()=>{
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
+      cy.get('[data-cy=shareFormButton]').should('be.visible');
+      cy.get('[data-cy=shareFormButton]').click();
       //Close  form share window
       cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
-      });
       //Submit the form
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
       cy.wait(2000);
