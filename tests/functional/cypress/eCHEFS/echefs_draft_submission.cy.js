@@ -1,5 +1,5 @@
 import 'cypress-keycloak-commands';
-import { formsettings } from '../support/login.js';
+import { formsettings } from '../support/echefs_login.js';
 
 const depEnv = Cypress.env('depEnv');
 
@@ -32,8 +32,8 @@ describe('Form Designer', () => {
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Basic Fields').click();
   });
-  // Publish a simple form 
-  it('Verify draft submission', () => {
+// Publish a simple form 
+it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
     cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
@@ -68,9 +68,37 @@ describe('Form Designer', () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
-    //Share link verification
-    cy.get('[data-cy=shareFormButton]').should('be.visible');
-    cy.get('[data-cy=shareFormButton]').click();
+    //Select specific groups option
+    cy.get('[data-test="canAllowEditFormSettings"]').click();
+    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('Specific Groups').should('exist');
+    cy.contains('Specific Groups').click();
+    //validate share draft with team is enabled
+    cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
+    cy.get('[data-test="enableTeamMemberDraftShare"]').click();
+    //Update form settings
+    cy.get('[data-test="canEditForm"]').click();
+    //Add group mangement and verify
+    cy.get('[data-test="canManageGroups"]').click();
+    cy.get('div.v-list-item-title').contains('admin').should('exist');
+    cy.get('div.v-list-item-title').contains('test').should('exist');
+    cy.get('div.v-list-item-title').contains('tests').should('exist');
+    cy.get('div.v-list-item-title').contains('test_reviewer').should('exist');
+    cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item').contains('admin').should('exist');
+    cy.wait(1000);
+    //Removing default one and save
+    cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item > .v-list-item__append > .v-btn').click();
+    
+    //Save Group lists afterremoving default one
+    cy.get('.v-col > .v-btn > .v-btn__content').click();
+    //validate error message
+    cy.get('.v-card-actions > .text-primary > .v-btn__content').click();
+    cy.get('.v-alert__content').contains('At least one assigned group must have the form_admin role.').should('be.visible');
+    //Add form_admin group back and save
+    cy.get(':nth-child(4) > .v-list-item__append > .v-btn').click();
+    cy.get('.v-col > .v-btn > .v-btn__content').click();
+    cy.get('.v-card-actions > .text-primary > .v-btn__content').click();
+    cy.waitForLoad();
       //Draft submission and verification
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);

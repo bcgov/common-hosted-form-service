@@ -1,19 +1,17 @@
 import 'cypress-keycloak-commands';
-
+import { formsettings } from '../support/echefs_login.js';
 const depEnv = Cypress.env('depEnv');
 const username=Cypress.env('keycloakUsername');
 const password=Cypress.env('keycloakPassword');
 
-
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
 describe('Form Designer', () => {
 
-  beforeEach(()=>{
+    beforeEach(()=>{
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
@@ -25,27 +23,32 @@ describe('Form Designer', () => {
     cy.window().then((win) => {
       win.sessionStorage.clear();
     });
-  });
-  it('Visits the form settings page', () => {
-    
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    
-  });  
-// Publish a simple form with Simplebc Address component
- it('Verify public form submission', () => {
+    }); 
+// Update manage form settings
+    it('Login and call the existing form', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.visit(`/${depEnv}`); 
+    cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
+    
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
+    cy.wait(1000);
+    //Select tenant to create form under that
+    cy.get('.mdi-home-account').click();
+    cy.get('.v-list-item__content').contains('Go to CSTAR (Connected Services, Team Access and Roles)').should('exist');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').should('be.visible');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').click({ waitForAnimations: false });
+    cy.wait(1000);
+    
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.wait(2000);
+    })
     //Publish the form
     cy.get('[data-cy="formPublishedSwitch"]').click();
     cy.get('span').contains('Publish Version 1');
@@ -77,6 +80,7 @@ describe('Form Designer', () => {
     cy.log('Page visited, checking for logout button');
     cy.get('#logoutButton').should('not.exist');
     //Form submission and verification for public forms
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
@@ -96,6 +100,12 @@ describe('Form Designer', () => {
     cy.contains('h1', 'Your form has been submitted successfully');
     //view submission
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    })//Login to view submissions
+    cy.get('#loginButton').click();
+    cy.get('[data-test="idir"]').click();
+    //cy.get('#user').type(username);
+    //cy.get('#password').type(password);
+    //cy.get('.btn').click();
     cy.get('.mdi-list-box-outline').click();
     cy.wait(2000);
     cy.contains('Assigned to me').should('not.exist');//Assigned to me checkbox
@@ -110,5 +120,3 @@ describe('Form Designer', () => {
     });
       
   });
-
-});

@@ -29,6 +29,12 @@ export function formsettings(){
     cy.get('[data-cy="feedback"]')
     .should("have.attr", "href", "https://chefs-fider.apps.silver.devops.gov.bc.ca/")
     .should("have.text", "Feedback");
+    //Select tenant to create form under that
+    cy.get('.mdi-home-account').click();
+    cy.get('.v-list-item__content').contains('Go to CSTAR (Connected Services, Team Access and Roles)').should('exist');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').should('be.visible');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').click({ waitForAnimations: false });
+    cy.wait(1000);
     cy.get('[data-cy="createNewForm"]').click();
     cy.get('.v-row > :nth-child(1) > .v-card > .v-card-title > span').contains('Form Title');
     let title="title" + Math.random().toString(16).slice(2);
@@ -48,23 +54,22 @@ export function formsettings(){
     cy.get('label').contains('Basic BCeID').should('exist');
     cy.get('label').contains('Business BCeID').should('exist');
     cy.contains('Please select at least one identity provider.').should('be.visible');
-   //Option to select Specific team members
-   cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-    cy.contains('Specific Team Members').click();
-    cy.contains('After you create the form you will have access to the Team Management page where you can add users and assign roles. Look for the people icon on the Manage Form page ').should('be.visible');
+    cy.wait(1000);
+    cy.get('label').contains('IDIR').click(0, 0, { force: true })
     cy.get('.v-label > div > .mdi-help-circle-outline').then($el => {
     const email_notify=$el[1];
     cy.get(email_notify).click({force: true});
     cy.contains('Send a notification to your specified email address when any user submits this form').should('be.visible');
     });
     //validate share draft with team is not enabled
-    cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.be.enabled');
+    cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.enabled');
     //Save and edit draft
     cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
     //Upload draft
     cy.get('[data-test="canUploadDraftCheckbox"]').click();
+    cy.wait(1000);
      //validate share draft with team is enabled
-    cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
+    cy.contains('label', 'Share draft with form group members only').parents('.v-selection-control').find('input[type="checkbox"]').should('be.enabled');
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//Update the status of the form
     cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').click();//Copy existing submission
     cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').click();//Wide form Layout
