@@ -238,8 +238,8 @@ const service = {
 
     return {
       ...user,
-      usernameIdp: user.idpCode ? `${user.username}@${canonicalCode}` : user.username,
-      idpHint: idp.idp,
+      usernameIdp: `${user.username}@${canonicalCode}`,
+      idpHint: canonicalCode, // collapsed to canonical (e.g. 'idir' for both idir and azureidir users)
     };
   },
 

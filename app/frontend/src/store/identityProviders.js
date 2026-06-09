@@ -23,6 +23,22 @@ export const useIdpStore = defineStore('idps', {
       }
       return result.sort((a, b) => a.order - b.order);
     },
+    formAccessButtons: (state) => {
+      const result = [];
+      if (state.providers) {
+        for (const p of state.providers) {
+          if (p.login && !p.extra?.canonicalCode) {
+            result.push({
+              code: p.code,
+              display: p.display,
+              hint: p.idp,
+              order: getOrder(p),
+            });
+          }
+        }
+      }
+      return result.sort((a, b) => a.order - b.order);
+    },
     loginIdpHints: (state) => {
       const result = [];
       if (state.providers) {
@@ -45,7 +61,11 @@ export const useIdpStore = defineStore('idps', {
       const result = [];
       if (state.providers) {
         for (const p of state.providers) {
-          if (p.login && (p.primary || p.extra?.addTeamMemberSearch)) {
+          if (
+            p.login &&
+            !p.extra?.canonicalCode &&
+            (p.primary || p.extra?.addTeamMemberSearch)
+          ) {
             result.push({
               code: p.code,
               display: p.display,
@@ -149,9 +169,9 @@ export const useIdpStore = defineStore('idps', {
         const idp = this.providers.find((x) => x.idp === hint);
         if (idp) {
           return {
-            code: idp.code,
+            code: idp.extra?.canonicalCode || idp.code,
             display: idp.display,
-            hint: idp.idp,
+            hint: idp.extra?.canonicalCode || idp.idp,
             order: getOrder(idp),
           };
         }
