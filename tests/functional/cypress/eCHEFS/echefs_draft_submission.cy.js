@@ -80,22 +80,19 @@ it('Verify draft submission', () => {
     cy.get('[data-test="canEditForm"]').click();
     //Add group mangement and verify
     cy.get('[data-test="canManageGroups"]').click();
-    cy.get('div.v-list-item-title').contains('admin').should('exist');
-    cy.get('div.v-list-item-title').contains('test').should('exist');
-    cy.get('div.v-list-item-title').contains('tests').should('exist');
-    cy.get('div.v-list-item-title').contains('test_reviewer').should('exist');
-    cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item').contains('admin').should('exist');
+    cy.get('div.v-list-item-title').contains('Test_admin').should('exist');
+    cy.get('div.v-list-item-title').contains('Test_reviewer').should('exist');
+    cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item > .v-list-item__content > .v-list-item-title').contains('Test_admin').should('exist');
     cy.wait(1000);
     //Removing default one and save
     cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item > .v-list-item__append > .v-btn').click();
-    
     //Save Group lists afterremoving default one
     cy.get('.v-col > .v-btn > .v-btn__content').click();
     //validate error message
     cy.get('.v-card-actions > .text-primary > .v-btn__content').click();
     cy.get('.v-alert__content').contains('At least one assigned group must have the form_admin role.').should('be.visible');
     //Add form_admin group back and save
-    cy.get(':nth-child(4) > .v-list-item__append > .v-btn').click();
+    cy.get(':nth-child(2) > .v-list-item__append > .v-btn > .v-btn__content > .mdi-chevron-right').click();
     cy.get('.v-col > .v-btn > .v-btn__content').click();
     cy.get('.v-card-actions > .text-primary > .v-btn__content').click();
     cy.waitForLoad();
