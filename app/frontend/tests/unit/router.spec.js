@@ -12,7 +12,7 @@ describe('router', () => {
     expect(router.hasRoute('Login')).toBeTruthy();
     expect(router.hasRoute('NotFound')).toBeTruthy();
 
-    expect(router.getRoutes().length).toBe(34);
+    expect(router.getRoutes().length).toBe(35);
   });
 
   describe('Admin Routes', () => {

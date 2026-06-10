@@ -16,6 +16,7 @@ const { FormTenant, FormSubmissionUser } = require('../../../../src/forms/common
 
 afterEach(() => {
   jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('getSubmissionUsers', () => {
@@ -585,9 +586,7 @@ describe('getMigrationPreview', () => {
       }),
     });
     tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
-    service.getFormUsers = jest.fn().mockResolvedValue([
-      { email: 'b@b.com', fullName: 'Bob', roles: [] },
-    ]);
+    service.getFormUsers = jest.fn().mockResolvedValue([{ email: 'b@b.com', fullName: 'Bob', roles: [] }]);
     FormSubmissionUser.knex.mockReturnValue({
       raw: jest.fn().mockResolvedValue({ rows: [{ count: '0' }] }),
     });
