@@ -7,7 +7,7 @@ const { validateApiKey } = require('../../../../runtime-auth/security/auth/utils
 
 const HTTP_401_DETAIL = 'Invalid authorization credentials.';
 
-module.exports = async (req, res, next) => {
+const requireApiKeyBasic = async (req, res, next) => {
   try {
     const authz = req.headers?.authorization || '';
     if (!/^Basic\s+/i.test(authz)) {
@@ -43,3 +43,5 @@ module.exports = async (req, res, next) => {
     next(new Problem(401, { detail: HTTP_401_DETAIL }));
   }
 };
+
+module.exports = requireApiKeyBasic;
