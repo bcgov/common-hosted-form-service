@@ -52,11 +52,8 @@ export function formsettings(){
    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Specific Team Members').click();
     cy.contains('After you create the form you will have access to the Team Management page where you can add users and assign roles. Look for the people icon on the Manage Form page ').should('be.visible');
-    cy.get('.v-label > div > .mdi-help-circle-outline').then($el => {
-    const email_notify=$el[1];
-    cy.get(email_notify).click({force: true});
+    cy.contains('span', 'Send my team a notification email').parent().find('.mdi-help-circle-outline').trigger('mouseenter');
     cy.contains('Send a notification to your specified email address when any user submits this form').should('be.visible');
-    });
     //validate share draft with team is not enabled
     cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.be.enabled');
     //Save and edit draft
@@ -72,8 +69,9 @@ export function formsettings(){
     cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').click();//display assignee column for reviewers
     cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').check({force: true});//Submitter revision
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click({force: true});
-    cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
-    cy.get(':nth-child(4) > .v-card > .v-card-text > .v-text-field > .v-input__control > .v-field > .v-field__field > .v-field__input').type('abc@gmail.com');
+    //cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
+    cy.contains('label', 'Notification Email Addresses').click({ force: true });
+    cy.contains('label', 'Notification Email Addresses').invoke('attr', 'for').then(id => {cy.get(`#${id}`).type('test@example.com');});
     cy.get('.mb-6 > .mdi-help-circle-outline').should('exist');
     cy.get('a.preview_info_link_field_white').then($el => {
     const drftupload=$el[0];
