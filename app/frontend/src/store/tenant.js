@@ -88,7 +88,7 @@ export const useTenantStore = defineStore('tenant', {
     isTenantFeatureEnabled: () => {
       const appStore = useAppStore();
       const val = appStore.config?.tenantFeatureEnabled;
-      if (val === undefined || val === null) return true;
+      if (val === undefined || val === null) return false;
       if (typeof val === 'string') return val.toLowerCase() !== 'false';
       return Boolean(val);
     },
@@ -128,6 +128,17 @@ export const useTenantStore = defineStore('tenant', {
     isTenantRestoring: (state) => {
       if (state.selectedTenant) return false;
       if (!state.isRestoring) return false;
+      const appStore = useAppStore();
+      const val = appStore.config?.tenantFeatureEnabled;
+      let featureEnabled;
+      if (val === undefined || val === null) {
+        featureEnabled = false;
+      } else if (typeof val === 'string') {
+        featureEnabled = val.toLowerCase() !== 'false';
+      } else {
+        featureEnabled = Boolean(val);
+      }
+      if (!featureEnabled) return false;
       const authStore = useAuthStore();
       if (!authStore.ready || !authStore.authenticated) return false;
       return true;
