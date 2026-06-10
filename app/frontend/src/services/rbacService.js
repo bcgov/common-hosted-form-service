@@ -90,6 +90,16 @@ export default {
     );
   },
 
+  getMigrationPreview(formId) {
+    return appAxios().get(
+      `${ApiRoutes.RBAC}/forms/${formId}/migration/preview`
+    );
+  },
+
+  executeMigration(formId, body) {
+    return appAxios().post(`${ApiRoutes.RBAC}/forms/${formId}/migration`, body);
+  },
+
   //
   // Form Management calls
   //

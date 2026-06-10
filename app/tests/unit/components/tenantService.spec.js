@@ -137,11 +137,15 @@ describe('TenantService', () => {
       expect(req._tenantServiceDegraded).toBe(true);
     });
 
-    it('should throw error on 401 unauthorized when token is invalid', async () => {
+    it('should return empty array on 401 when CSTAR does not recognise the token', async () => {
       jwtService.getBearerToken.mockReturnValue('invalid-token');
       mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
+      const freshReq = { currentUser: { idpUserId: userId }, headers: { authorization: 'Bearer invalid-token' } };
 
-      await expect(tenantService.getCurrentUserTenants(req)).rejects.toThrow();
+      const tenants = await tenantService.getCurrentUserTenants(freshReq);
+
+      expect(tenants).toEqual([]);
+      expect(freshReq._tenantServiceDegraded).toBeUndefined();
     });
 
     it('should throw error on 403 forbidden when user lacks permissions', async () => {
@@ -267,11 +271,36 @@ describe('TenantService', () => {
       await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId)).rejects.toThrow();
     });
 
-    it('should throw error on 401 unauthorized', async () => {
+    it('should return empty array on 401 when token is expired or unrecognised', async () => {
       jwtService.getBearerToken.mockReturnValue('invalid-token');
       mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
 
-      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId)).rejects.toThrow();
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
+
+      expect(groups).toEqual([]);
+    });
+
+    it('should return empty array on 403 when user does not match token', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(403, { error: 'Forbidden' });
+
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
+
+      expect(groups).toEqual([]);
+    });
+
+    it('should rethrow on 401 when rethrowOnAuthError is true', async () => {
+      jwtService.getBearerToken.mockReturnValue('invalid-token');
+      mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
+
+      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId, { rethrowOnAuthError: true })).rejects.toMatchObject({ response: { status: 401 } });
+    });
+
+    it('should rethrow on 403 when rethrowOnAuthError is true', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(403, { error: 'Forbidden' });
+
+      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId, { rethrowOnAuthError: true })).rejects.toMatchObject({ response: { status: 403 } });
     });
 
     it('should throw error if no currentUser', async () => {

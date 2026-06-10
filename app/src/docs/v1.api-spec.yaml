@@ -3096,6 +3096,84 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rbac/forms/{formId}/migration/preview:
+    get:
+      summary: Get migration eligibility and impact preview for a form
+      description: >
+        Returns the list of tenants where the current user has form_admin access
+        (eligible targets for migration) and an impact summary showing current
+        team members and active draft share count. No database writes occur.
+        Requires the caller to be the form OWNER. Returns 400 if the form is
+        already migrated to a tenant.
+      operationId: getMigrationPreview
+      tags:
+        - RBAC
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationPrepareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rbac/forms/{formId}/migration:
+    post:
+      summary: Migrate a personal form to a tenant
+      description: >
+        Atomically migrates a personal CHEFS form to the specified tenant by
+        inserting form_tenant, form_group, and form_migration_log records in a
+        single database transaction. All form_admin groups the caller holds in
+        the target tenant are auto-assigned — no explicit group selection is
+        required. Re-validates eligibility server-side regardless of the preview
+        response. Returns 401 if the session has expired since the preview was
+        loaded. This action cannot be undone.
+      operationId: migrateForm
+      tags:
+        - RBAC
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationExecuteRequest'
+      responses:
+        '200':
+          description: Form migrated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationExecuteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /users:
     get:
       summary: Get a list of users and their roles
@@ -5599,6 +5677,103 @@ components:
         success:
           type: boolean
           example: true
+    MigrationGroup:
+      type: object
+      description: A CSTAR group that carries form_admin, eligible for assignment during migration.
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d6c1ec98-6ea6-4ab5-bca8-7b4a9e016062
+        name:
+          type: string
+          example: Form Admins
+        roles:
+          type: array
+          items:
+            type: string
+          example:
+            - form_admin
+    MigrationEligibleTenant:
+      type: object
+      description: A tenant where the current user holds form_admin in at least one group.
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        name:
+          type: string
+          example: FLNR Ministry
+        groups:
+          type: array
+          description: Groups in this tenant that carry the form_admin role.
+          items:
+            $ref: '#/components/schemas/MigrationGroup'
+    MigrationTeamMember:
+      type: object
+      description: A current CHEFS team member on the form being migrated.
+      properties:
+        email:
+          type: string
+          format: email
+          example: alice@gov.bc.ca
+        fullName:
+          type: string
+          example: Alice Smith
+        role:
+          type: string
+          description: Primary role this user holds on the form.
+          example: TEAM_MANAGER
+    MigrationImpact:
+      type: object
+      description: Impact summary showing what will change when the form is migrated.
+      properties:
+        teamMembers:
+          type: array
+          description: Current CHEFS team members on this form. Their access via user_form_access is preserved after migration but new access will be group-based.
+          items:
+            $ref: '#/components/schemas/MigrationTeamMember'
+        draftShareAffectedCount:
+          type: integer
+          description: Number of submissions with active draft share assignments that may be affected after migration.
+          example: 2
+    MigrationPrepareResponse:
+      type: object
+      properties:
+        eligibleTenants:
+          type: array
+          description: Tenants the current user can migrate this form into (user has form_admin in at least one group).
+          items:
+            $ref: '#/components/schemas/MigrationEligibleTenant'
+        impact:
+          $ref: '#/components/schemas/MigrationImpact'
+    MigrationExecuteRequest:
+      type: object
+      required:
+        - tenantId
+        - groupIds
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+          description: UUID of the target tenant to migrate the form into.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        groupIds:
+          type: array
+          description: CSTAR group UUIDs to assign to the form. At least one must have form_admin role.
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          example:
+            - d6c1ec98-6ea6-4ab5-bca8-7b4a9e016062
+    MigrationExecuteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Form migrated successfully.
     Label:
       type: array
       example:

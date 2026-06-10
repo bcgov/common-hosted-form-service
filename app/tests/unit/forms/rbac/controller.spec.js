@@ -8,6 +8,11 @@ const userService = require('../../../../src/forms/user/service');
 jest.mock('../../../../src/forms/rbac/service');
 jest.mock('../../../../src/components/tenantService');
 jest.mock('../../../../src/forms/user/service');
+jest.mock('../../../../src/forms/common/models', () => ({
+  FormTenant: { query: jest.fn() },
+  FormSubmissionUser: { knex: jest.fn() },
+}));
+const { FormTenant, FormSubmissionUser } = require('../../../../src/forms/common/models');
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -512,5 +517,199 @@ describe('getFormGroups', () => {
     await controller.getFormGroups(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
+  });
+});
+
+describe('getMigrationPreview', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      params: { formId: 'form-1' },
+      currentUser: { idpUserId: 'user-1' },
+    };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    next = jest.fn();
+  });
+
+  it('should return 400 if form is already migrated', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        first: jest.fn().mockResolvedValue({ id: 'existing-record' }),
+      }),
+    });
+
+    await controller.getMigrationPreview(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'Form is already migrated to a tenant.' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return prepare data with eligible tenants and impact', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        first: jest.fn().mockResolvedValue(null),
+      }),
+    });
+    const eligibleTenants = [{ id: 'tenant-1', name: 'Tenant 1', groups: [] }];
+    const teamMembers = [{ email: 'a@a.com', fullName: 'Alice', roles: ['owner'] }];
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue(eligibleTenants);
+    service.getFormUsers = jest.fn().mockResolvedValue(teamMembers);
+    FormSubmissionUser.knex.mockReturnValue({
+      raw: jest.fn().mockResolvedValue({ rows: [{ count: '3' }] }),
+    });
+
+    await controller.getMigrationPreview(req, res, next);
+
+    expect(tenantService.getEligibleTenantsForMigration).toHaveBeenCalledWith(req);
+    expect(service.getFormUsers).toHaveBeenCalledWith({ formId: 'form-1' });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      eligibleTenants,
+      impact: {
+        teamMembers: [{ email: 'a@a.com', fullName: 'Alice', role: 'owner' }],
+        draftShareAffectedCount: 3,
+      },
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should map team member role to null when roles array is empty', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        first: jest.fn().mockResolvedValue(null),
+      }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    service.getFormUsers = jest.fn().mockResolvedValue([
+      { email: 'b@b.com', fullName: 'Bob', roles: [] },
+    ]);
+    FormSubmissionUser.knex.mockReturnValue({
+      raw: jest.fn().mockResolvedValue({ rows: [{ count: '0' }] }),
+    });
+
+    await controller.getMigrationPreview(req, res, next);
+
+    const response = res.json.mock.calls[0][0];
+    expect(response.impact.teamMembers[0].role).toBeNull();
+  });
+
+  it('should default draftShareAffectedCount to 0 when count is missing', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        first: jest.fn().mockResolvedValue(null),
+      }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    service.getFormUsers = jest.fn().mockResolvedValue([]);
+    FormSubmissionUser.knex.mockReturnValue({
+      raw: jest.fn().mockResolvedValue({ rows: [] }),
+    });
+
+    await controller.getMigrationPreview(req, res, next);
+
+    const response = res.json.mock.calls[0][0];
+    expect(response.impact.draftShareAffectedCount).toBe(0);
+  });
+
+  it('should call next on unexpected error', async () => {
+    const error = new Error('DB failure');
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        first: jest.fn().mockRejectedValue(error),
+      }),
+    });
+
+    await controller.getMigrationPreview(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    expect(res.status).not.toHaveBeenCalled();
+  });
+});
+
+describe('migrateForm', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      params: { formId: 'form-1' },
+      body: { tenantId: 'tenant-1' },
+      currentUser: { idpUserId: 'user-1' },
+    };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    next = jest.fn();
+  });
+
+  it('should return 400 when tenantId is missing', async () => {
+    req.body = {};
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'tenantId is required.' });
+    expect(tenantService.migrateFormToTenant).not.toHaveBeenCalled();
+  });
+
+  it('should call migrateFormToTenant and return 200 on success', async () => {
+    tenantService.migrateFormToTenant = jest.fn().mockResolvedValue(undefined);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(tenantService.migrateFormToTenant).toHaveBeenCalledWith(req, 'form-1', 'tenant-1');
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Form migrated successfully.' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return 400 for ALREADY_MIGRATED error code', async () => {
+    const err = Object.assign(new Error('already migrated'), { code: 'ALREADY_MIGRATED' });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'Form is already migrated to a tenant.' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return 400 for FORM_ADMIN_GROUP_REQUIRED error code', async () => {
+    const err = Object.assign(new Error('at least one assigned group must have form_admin role'), {
+      code: 'FORM_ADMIN_GROUP_REQUIRED',
+    });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ detail: err.message, code: 'FORM_ADMIN_GROUP_REQUIRED' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return 401 when CSTAR rejects the token during migration (session expired)', async () => {
+    const err = Object.assign(new Error('Request failed with status code 403'), { response: { status: 403 } });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'Your session has expired. Please refresh the page and try again.' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should call next for unknown errors', async () => {
+    const err = new Error('unexpected DB error');
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(err);
+    expect(res.status).not.toHaveBeenCalled();
   });
 });

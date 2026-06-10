@@ -3,6 +3,7 @@ const formService = require('../submission/service');
 const service = require('./service');
 const tenantService = require('../../components/tenantService');
 const userService = require('../user/service');
+const { FormTenant, FormSubmissionUser } = require('../common/models');
 
 // Shared mapping for a raw CSTAR user object → RBAC response shape.
 async function _mapCstarUser(user) {
@@ -275,6 +276,72 @@ module.exports = {
       const groups = await tenantService.getFormGroups(req, formId);
       res.status(200).json(groups);
     } catch (error) {
+      next(error);
+    }
+  },
+
+  getMigrationPreview: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+
+      const existing = await FormTenant.query().where({ formId }).first();
+      if (existing) {
+        return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+      }
+
+      const [eligibleTenants, teamMembers, draftResult] = await Promise.all([
+        tenantService.getEligibleTenantsForMigration(req),
+        service.getFormUsers({ formId }),
+        FormSubmissionUser.knex().raw(
+          `SELECT COUNT(DISTINCT fsu."formSubmissionId") AS count
+           FROM form_submission_user fsu
+           JOIN form_submission fs ON fs.id = fsu."formSubmissionId"
+           JOIN form_version fv ON fv.id = fs."formVersionId"
+           WHERE fv."formId" = ?`,
+          [formId]
+        ),
+      ]);
+
+      const draftShareAffectedCount = parseInt(draftResult.rows[0]?.count || '0', 10);
+
+      res.status(200).json({
+        eligibleTenants,
+        impact: {
+          teamMembers: teamMembers.map((m) => ({
+            email: m.email,
+            fullName: m.fullName,
+            role: Array.isArray(m.roles) && m.roles.length > 0 ? m.roles[0] : null,
+          })),
+          draftShareAffectedCount,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  migrateForm: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const { tenantId } = req.body;
+
+      if (!tenantId) {
+        return res.status(400).json({ detail: 'tenantId is required.' });
+      }
+
+      await tenantService.migrateFormToTenant(req, formId, tenantId);
+      res.status(200).json({ message: 'Form migrated successfully.' });
+    } catch (error) {
+      if (error.code === 'ALREADY_MIGRATED') {
+        return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+      }
+      if (error.code === 'FORM_ADMIN_GROUP_REQUIRED') {
+        return res.status(400).json({ detail: error.message, code: error.code });
+      }
+      const cstarStatus = error?.response?.status;
+      if (cstarStatus === 401 || cstarStatus === 403) {
+        return res.status(401).json({ detail: 'Your session has expired. Please refresh the page and try again.' });
+      }
       next(error);
     }
   },
