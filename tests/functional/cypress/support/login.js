@@ -54,6 +54,7 @@ export function formsettings(){
     cy.contains('After you create the form you will have access to the Team Management page where you can add users and assign roles. Look for the people icon on the Manage Form page ').should('be.visible');
     cy.contains('span', 'Send my team a notification email').parent().find('.mdi-help-circle-outline').trigger('mouseenter');
     cy.contains('Send a notification to your specified email address when any user submits this form').should('be.visible');
+    cy.contains('span', 'Send my team a notification email').parent().find('.mdi-help-circle-outline').trigger('mouseleave');
     //validate share draft with team is not enabled
     cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.be.enabled');
     //Save and edit draft
