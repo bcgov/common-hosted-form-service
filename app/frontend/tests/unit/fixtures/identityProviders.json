@@ -19,7 +19,7 @@
       "views_form_manage",
       "views_form_preview",
       "views_form_submissions",
-      "views_form_teamS",
+      "views_form_teams",
       "views_form_view",
       "views_user_submissions"
     ],
@@ -62,7 +62,7 @@
       "views_form_manage",
       "views_form_preview",
       "views_form_submissions",
-      "views_form_teamS",
+      "views_form_teams",
       "views_form_view",
       "views_user_submissions"
     ],
@@ -138,7 +138,7 @@
       "views_form_export",
       "views_form_manage",
       "views_form_submissions",
-      "views_form_teamS",
+      "views_form_teams",
       "views_form_view",
       "views_user_submissions"
     ],

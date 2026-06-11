@@ -222,7 +222,7 @@ const service = {
       try {
         await UserLoginHistory.query().insert({ userId, idpCode, lastLoginAt: new Date().toISOString() }).onConflict(['userId', 'idpCode']).merge(['lastLoginAt']);
       } catch (err) {
-        log.error('Failed to record login history', err.message);
+        log.error('Failed to record login history', err);
       }
     }
   },
