@@ -48,7 +48,7 @@ module.exports = function gatewayBearerFactory({ deps }) {
       const apiKeyRecord = await formService?.readApiKey?.(formId);
 
       // Form must still have API access, regardless of whether the token carries the key
-      if (!apiKeyRecord || !apiKeyRecord.secret) {
+      if (!apiKeyRecord?.secret) {
         const err = new Error(ERRORS.FORM_OR_API_KEY_NOT_FOUND);
         err.status = 401;
         throw err;
