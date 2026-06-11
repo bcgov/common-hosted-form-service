@@ -210,6 +210,22 @@ describe('currentUser', () => {
       })
     );
   });
+
+  it('returns 503 when tenant service is degraded', async () => {
+    tenantService.getCurrentUserTenants.mockImplementationOnce((req) => {
+      req._tenantServiceDegraded = true;
+      return Promise.resolve([]);
+    });
+    const req = getMockReq({
+      headers: { 'x-tenant-id': tenantId },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(expect.objectContaining({ status: 503 }));
+  });
 });
 
 // External dependencies used by the implementation are:
