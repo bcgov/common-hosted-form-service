@@ -56,7 +56,7 @@ class TenantService {
       return tenantsWithRoles;
     } catch (error) {
       const status = error?.response?.status;
-      const isUnavailable = [502, 503, 504].includes(status);
+      const isUnavailable = [500, 502, 503, 504].includes(status);
       const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error?.code);
       if (isUnavailable || isNetworkError) {
         req._tenantServiceDegraded = true;

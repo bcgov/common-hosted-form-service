@@ -135,24 +135,7 @@ const service = {
       return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
-      const userGroupsByTenant = new Map();
-      const allRoles = await Role.query().withGraphFetched('permissions');
-      for (const item of items) {
-        if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
-          // Tenant users require headers for API authentication
-          if (!headers) {
-            throw new Error('Headers required for tenant user form access');
-          }
-
-          if (!userGroupsByTenant.has(item.tenantId)) {
-            const userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);
-            userGroupsByTenant.set(item.tenantId, userGroups);
-          }
-
-          await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
-        }
-      }
+      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active).whereNull('tenantId');
 
       return service.filterForms(userInfo, items, params.accessLevels);
     }

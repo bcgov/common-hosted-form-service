@@ -73,6 +73,25 @@ describe('login', () => {
 });
 
 describe('getUserForms', () => {
+  it('personal path queries only non-tenant forms using whereNull', async () => {
+    const userInfo = { id: 'user-1' };
+    const items = [{ formId: 'personal-form', tenantId: null, idps: ['idir'], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ active: true });
+    const queryObj = {
+      modify: jest.fn().mockImplementation(function () { return this; }),
+      whereNull: jest.fn().mockResolvedValue(items),
+    };
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    const filterFormsSpy = jest.spyOn(service, 'filterForms').mockReturnValue(['personal-form']);
+
+    const result = await service.getUserForms(userInfo, {});
+
+    expect(queryObj.whereNull).toHaveBeenCalledWith('tenantId');
+    expect(result).toEqual(['personal-form']);
+    expect(filterFormsSpy).toHaveBeenCalledWith(userInfo, items, undefined);
+  });
+
   it('returns filtered tenant forms and enriches with tenant roles/permissions when headers are provided', async () => {
     const userInfo = { id: 'user-1', tenantId: 'tenant-1' };
     const headers = { authorization: 'Bearer token' };
