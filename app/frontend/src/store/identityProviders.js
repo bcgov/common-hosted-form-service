@@ -57,6 +57,20 @@ export const useIdpStore = defineStore('idps', {
       }
       return result;
     },
+    primaryIdpLoginHints: (state) => {
+      if (!state.providers) return [];
+      const primary = state.providers.find((x) => x.primary);
+      if (!primary) return [];
+      const canonicalCode = primary.extra?.canonicalCode || primary.code;
+      return state.providers
+        .filter(
+          (p) =>
+            p.login &&
+            (p.code === canonicalCode ||
+              p.extra?.canonicalCode === canonicalCode)
+        )
+        .map((p) => p.idp);
+    },
     addTeamMemberButtons: (state) => {
       const result = [];
       if (state.providers) {
