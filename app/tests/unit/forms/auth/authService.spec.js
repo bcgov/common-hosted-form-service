@@ -79,7 +79,9 @@ describe('getUserForms', () => {
 
     jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ active: true });
     const queryObj = {
-      modify: jest.fn().mockImplementation(function () { return this; }),
+      modify: jest.fn().mockImplementation(function () {
+        return this;
+      }),
       whereNull: jest.fn().mockResolvedValue(items),
     };
     jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
