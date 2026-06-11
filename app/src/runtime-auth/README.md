@@ -161,6 +161,15 @@ Different authentication strategies use different HTTP headers:
 - **gatewayBearer**: Uses `X-Chefs-Gateway-Token: <token>` (for webcomponent routes only)
   - This custom header allows host applications to use `Authorization: Bearer` for their own authentication
 
+### Gateway token issuance
+
+Webcomponent embeds obtain a short-lived JWT from the gateway auth endpoint before making API calls:
+
+- **Endpoint**: `POST /gateway/v1/auth/token/forms/:formId`
+- **Authentication**: `apiKeyBasic`-style `Authorization: Basic base64(formId:apiKey)` (required; the URL `formId` must match the Basic auth `formId`)
+- **Response**: `201 { "token": "<jwt>" }` with a server-signed payload containing `formId` only
+- **Consumption**: The returned token is sent on webcomponent API requests via `X-Chefs-Gateway-Token`, validated by the `gatewayBearer` strategy
+
 ## Resource Specs
 
 Resources tell the middleware what entity the request is operating on. The middleware uses this to fetch permissions from RBAC.

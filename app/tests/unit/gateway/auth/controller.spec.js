@@ -27,9 +27,16 @@ describe('gateway/v1/auth/controller', () => {
     req.body = { userId: 'u1' };
     req.params.formId = 'abc';
     await controller.issueFormToken(req, res, next);
-    expect(tokenService.createToken).toHaveBeenCalledWith({ userId: 'u1', formId: 'abc' });
+    expect(tokenService.createToken).toHaveBeenCalledWith({ formId: 'abc' });
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith({ token: 'mocked-token' });
+  });
+
+  test('issueFormToken does not forward request body fields into token payload', async () => {
+    req.body = { userId: 'u1', role: 'admin', formId: 'other' };
+    req.params.formId = 'abc';
+    await controller.issueFormToken(req, res, next);
+    expect(tokenService.createToken).toHaveBeenCalledWith({ formId: 'abc' });
   });
 
   test('issueFormToken calls next on error', async () => {
