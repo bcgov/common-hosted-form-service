@@ -1,0 +1,45 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  template: "chefs-app-cstar-template"
+metadata:
+  name: "chefs-app-cstar"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-${JOB_NAME}-cstar-config"
+    data:
+      TENANT_FEATURE_ENABLED: ${TENANT_FEATURE_ENABLED}
+      CSTAR_BASE_URL: ${CSTAR_BASE_URL}
+      CSTAR_ENDPOINT: ${CSTAR_ENDPOINT}
+      CSTAR_LIST_USER_TENANTS_PATH: "users/{userId}/tenants"
+      CSTAR_LIST_GROUPS_FOR_USER_FOR_TENANT_PATH: "tenants/{tenantId}/users/{userId}/groups/shared-service-roles"
+      CSTAR_LIST_GROUPS_FOR_TENANT: "tenants/{tenantId}/groups"
+      CSTAR_LIST_TENANT_USERS_PATH: "tenants/{tenantId}/users"
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: JOB_NAME
+    description: Job/Instance name
+    displayName: Job Name
+    required: true
+  - name: TENANT_FEATURE_ENABLED
+    description: Enable or disable the multitenancy feature
+    displayName: Tenant Feature Enabled
+    required: true
+    value: "true"
+  - name: CSTAR_BASE_URL
+    description: CSTAR web application base URL shown to users (environment-specific)
+    displayName: CSTAR Base URL
+    required: true
+  - name: CSTAR_ENDPOINT
+    description: CSTAR API base URL used by the backend (environment-specific)
+    displayName: CSTAR API Endpoint
+    required: true

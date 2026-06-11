@@ -512,7 +512,11 @@ async function saveDraft() {
     saving.value = true;
 
     const response = await sendSubmission(true, submission.value);
-    if (properties.submissionId && properties.submissionId !== null) {
+    if (
+      properties.submissionId &&
+      properties.submissionId !== null &&
+      !properties.isDuplicate
+    ) {
       // Editing an existing draft
       // Update this route with saved flag
       if (!properties.saved) {
@@ -523,8 +527,8 @@ async function saveDraft() {
       }
       saving.value = false;
     } else {
-      // Creating a new submission in draft state
-      // Go to the user form draft page
+      // Creating a new submission in draft state (fresh form or copied submission)
+      // Go to the user form draft page with the new draft's ID
       await router.push({
         name: 'UserFormDraftEdit',
         query: {
@@ -872,25 +876,11 @@ async function deleteFile(file) {
 
 async function getFile(fileId, options = {}) {
   await formStore.downloadFile(fileId, options);
-  if (downloadedFile.value && downloadedFile.value.headers) {
-    let data;
 
-    if (
-      downloadedFile.value.headers['content-type'].includes('application/json')
-    ) {
-      data = JSON.stringify(downloadedFile.value.data);
-    } else {
-      data = downloadedFile.value.data;
-    }
+  if (downloadedFile.value?.data && downloadedFile.value?.headers) {
+    const blob = downloadedFile.value.data;
+    const url = window.URL.createObjectURL(blob);
 
-    if (typeof data === 'string') {
-      data = new Blob([data], {
-        type: downloadedFile.value.headers['content-type'],
-      });
-    }
-
-    // don't need to blob because it's already a blob
-    const url = window.URL.createObjectURL(data);
     const a = document.createElement('a');
     a.href = url;
     a.download = getDisposition(
@@ -900,9 +890,10 @@ async function getFile(fileId, options = {}) {
     a.classList.add('hiddenDownloadTextElement');
     document.body.appendChild(a);
     a.click();
+
     downloadTimeout.value = setTimeout(() => {
       document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
+      URL.revokeObjectURL(url);
     });
   }
 }

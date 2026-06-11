@@ -27,11 +27,11 @@ describe('Form Designer', () => {
     cy.checkA11yPage();
   });
   it('Getting page ready', () => {
-    cy.viewport(1000, 1100);
+    cy.viewport(1000, 1800);
     cy.get('button').contains('BC Government').click();   
   });
   it('checks Data Retention Settings', () => {
-    cy.viewport(1000, 1100);
+    cy.viewport(1000, 1800);
     cy.waitForLoad();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
@@ -68,13 +68,41 @@ describe('Form Designer', () => {
     });
      // Form saving
     cy.wait(1000); 
+    cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Save a version of the form to preview').should('exist');
+    cy.get('[data-cy="publishRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Publish form').should('exist');
     cy.get('[data-cy=saveButton]').click();
     cy.wait(2000);
     cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="publishRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Please save a new version to publish').should('exist');
     cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
     cy.get('span').contains('Please publish or delete your latest draft version before starting a new version.').should('exist');
     cy.get('.mdi-plus').should('not.be.enabled');
     cy.get('button[title="Delete Version"]').should('be.visible');
+    cy.get('button[title="Edit Version"]').click();
+    cy.wait(1000);
+    //Add new component to version 1
+    cy.get('div.formio-builder-form').then($el => {
+    const coords = $el[0].getBoundingClientRect();
+    cy.get('span.btn').contains('Text/Images')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.waitForLoad();
+    cy.get('.btn-success').click();
+    });
+    cy.wait(1000);
+    cy.get('.mdi-dots-vertical').click();
+    //Tooiltip message for preview button for new version
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Save to preview updated form version').should('exist');
+    //Delete old version
+    cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.wait(1000);
     cy.get('button[title="Delete Version"]').click();
     cy.get('span').contains('Are you sure you wish to delete this Version?').should('be.visible');
     cy.get('button').contains('Delete').should('be.visible').click();

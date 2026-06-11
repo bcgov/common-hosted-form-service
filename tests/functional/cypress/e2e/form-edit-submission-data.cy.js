@@ -23,29 +23,26 @@ describe("Form Designer", () => {
     formsettings();
     cy.checkA11yPage();
   });
-  it("Add some fields for submission", () => {
-    cy.viewport(1000, 1800);
-    cy.waitForLoad();
-    cy.get("button").contains("Basic Fields").click();
-    cy.get("div.formio-builder-form").then(($el) => {
+  it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Basic Fields').click();
+  });
+  // Publish a simple form 
+  it('Verify draft submission', () => {
+    cy.viewport(1000, 1100);
+    cy.wait(2000);
+    cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -1, { force: true })
+      .trigger('mousemove', coords.x, -150, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
     });
-    //Multiline Text
-    cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, +1, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('.btn-success').click();
-    });
+    
     // Form saving
   });
   it("Form Submission and Updation", () => {

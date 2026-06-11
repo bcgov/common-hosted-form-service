@@ -202,6 +202,14 @@ describe('Form Designer', () => {
         cy.get('span').contains('Publish Version 1');
         cy.contains('Continue').should('be.visible');
         cy.contains('Continue').trigger('click');
+
+        //Share link verification
+        cy.get('[data-cy=shareFormButton]').should('be.visible').click();
+        cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
+        cy.location('search').then(search => {
+          //let pathName = fullUrl.pathname
+        let arr = search.split('=');
+        let arrayValues = arr[1].split('&');
         cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
         cy.waitForLoad();
         // for print option verification
@@ -278,4 +286,4 @@ describe('Form Designer', () => {
         });
 
     });
-  
+});

@@ -34,6 +34,8 @@
     "adminDashboardUrl": "",
     "apiPath": "api",
     "basePath": "/app",
+    "cstarBaseUrl": "https://cstar-dev.apps.gold.devops.gov.bc.ca",
+    "tenantFeatureEnabled": false,
     "oidc": {
       "clientId": "chefs-frontend-localhost-5300",
       "realm": "standard",
@@ -108,6 +110,14 @@
       "apiKey": "SC_CARBONE_APIKEY",
       "endpoint": "SC_CARBONE_ENDPOINT"
     }
+  },
+  "cstar": {
+    "tenantFeatureEnabled": false,
+    "endpoint": "https://cstar-dev.apps.gold.devops.gov.bc.ca/api/v1/",
+    "listUserTenantsPath": "users/{userId}/tenants",
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
+    "listGroupsForTenant": "tenants/{tenantId}/groups",
+    "listTenantUsersPath": "tenants/{tenantId}/users"
   },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",

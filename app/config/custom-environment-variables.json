@@ -36,6 +36,8 @@
     "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
+    "cstarBaseUrl": "CSTAR_BASE_URL",
+    "tenantFeatureEnabled": "TENANT_FEATURE_ENABLED",
     "oidc": {
       "clientId": "OIDC_CLIENTID",
       "realm": "OIDC_REALM",
@@ -113,5 +115,13 @@
   "gateway": {
     "jwtSecret": "GATEWAY_JWTSECRET",
     "jwtLifetime": "GATEWAY_JWTLIFETIME"
+  },
+  "cstar": {
+    "tenantFeatureEnabled": "TENANT_FEATURE_ENABLED",
+    "endpoint": "CSTAR_ENDPOINT",
+    "listUserTenantsPath": "CSTAR_LIST_USER_TENANTS_PATH",
+    "listGroupsForUserForTenantPath": "CSTAR_LIST_GROUPS_FOR_USER_FOR_TENANT_PATH",
+    "listGroupsForTenant": "CSTAR_LIST_GROUPS_FOR_TENANT",
+    "listTenantUsersPath": "CSTAR_LIST_TENANT_USERS_PATH"
   }
 }
