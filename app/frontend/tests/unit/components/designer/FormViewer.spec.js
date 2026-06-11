@@ -2966,6 +2966,62 @@ describe('FormViewer.vue', () => {
     expect(getDispositionSpy).toBeCalledTimes(1);
   });
 
+  it('getFile will download json file as blob', async () => {
+    const jsonBlob = new Blob([JSON.stringify({ testKey: 'testValue' })], {
+      type: 'application/json',
+    });
+
+    const createObjectURLSpy = vi
+      .spyOn(window.URL, 'createObjectURL')
+      .mockReturnValue('blob:test-url');
+
+    const revokeObjectURLSpy = vi
+      .spyOn(window.URL, 'revokeObjectURL')
+      .mockImplementation(() => {});
+
+    downloadFileSpy.mockImplementationOnce(() => {
+      formStore.downloadedFile = {
+        headers: {
+          'content-type': 'application/json',
+          'content-disposition': 'attachment; filename="test.json"',
+        },
+        data: jsonBlob,
+      };
+    });
+
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.getFile('asdf');
+
+    expect(downloadFileSpy).toBeCalledTimes(1);
+    expect(downloadFileSpy).toHaveBeenCalledWith('asdf', expect.anything());
+
+    expect(createObjectURLSpy).toHaveBeenCalledTimes(1);
+    expect(createObjectURLSpy).toHaveBeenCalledWith(jsonBlob);
+
+    expect(getDispositionSpy).toBeCalledTimes(1);
+    expect(getDispositionSpy).toHaveBeenCalledWith(
+      'attachment; filename="test.json"'
+    );
+
+    createObjectURLSpy.mockRestore();
+    revokeObjectURLSpy.mockRestore();
+  });
+
   it('uploadFile will call fileServices uploadFile', async () => {
     const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
     uploadFileSpy.mockImplementation(() => {});

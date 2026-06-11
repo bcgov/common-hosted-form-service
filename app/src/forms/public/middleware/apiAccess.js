@@ -11,6 +11,10 @@ const Problem = require('api-problem');
 const checkApiKey = async (req, _res, next) => {
   try {
     const requestApikey = req.headers.apikey;
+    const requestToken = req.headers.authorization;
+    if (requestToken) {
+      return next();
+    }
     if (requestApikey === undefined || requestApikey === '') {
       throw new Problem(401, {
         detail: 'No API key provided',
