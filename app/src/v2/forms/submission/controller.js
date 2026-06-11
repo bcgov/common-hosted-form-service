@@ -3,6 +3,7 @@ const cdogsService = require('../../../components/cdogsService');
 const documentTemplateService = require('../../../forms/form/documentTemplate/service');
 
 const submissionService = require('../../../forms/submission/service');
+const cdogsV3Service = cdogsService.v3;
 
 const chefsTemplate = (submission) => {
   /*
@@ -23,8 +24,6 @@ const chefsTemplate = (submission) => {
     },
   };
 };
-
-cdogsService.version = 'v3';
 
 module.exports = {
   /**
@@ -57,7 +56,7 @@ module.exports = {
         },
       };
 
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
 
       res
@@ -89,7 +88,7 @@ module.exports = {
         data: chefsTemplate(submission),
       };
 
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
       res
         .status(status)
@@ -114,7 +113,7 @@ module.exports = {
   draftTemplateUploadAndRender: async (req, res, next) => {
     try {
       const templateBody = { ...req.body.template, data: req.body.submission.data };
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
 
       const contentDisposition = headers['content-disposition'];
 
