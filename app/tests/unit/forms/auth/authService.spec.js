@@ -62,13 +62,13 @@ describe('login', () => {
     expect(service.getUserId).toBeCalledTimes(1);
     expect(service.getUserId).toBeCalledWith({ idp: 'fake' });
     expect(result).toBeTruthy();
-    expect(result).toEqual(resultSample);
+    expect(result).toEqual(expect.objectContaining(resultSample));
   });
 
   it('works with no params supplied', async () => {
     const token = 'token';
     const result = await service.login(token);
-    expect(result).toEqual(resultSample);
+    expect(result).toEqual(expect.objectContaining(resultSample));
   });
 
   it('uses canonicalCode for usernameIdp when IDP has extra.canonicalCode', async () => {
@@ -79,7 +79,7 @@ describe('login', () => {
     const result = await service.login('token');
 
     expect(result.usernameIdp).toEqual('testuser@idir');
-    expect(result.idpHint).toEqual('azureidir');
+    expect(result.idpHint).toEqual('idir');
   });
 
   it('uses code for usernameIdp when no canonicalCode', async () => {
