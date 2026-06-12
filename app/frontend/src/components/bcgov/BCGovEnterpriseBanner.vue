@@ -26,6 +26,8 @@ const tenantName = computed(
 );
 
 const { isTenantRestoring: showRestoring } = storeToRefs(tenantStore);
+
+const showBanner = computed(() => isEnterprise.value || showRestoring.value);
 </script>
 
 <template>
@@ -34,23 +36,16 @@ const { isTenantRestoring: showRestoring } = storeToRefs(tenantStore);
       authenticated &&
       tenantStore.isTenantFeatureEnabled &&
       !formSubmitMode &&
-      !hideTenantUI
+      !hideTenantUI &&
+      showBanner
     "
     class="context-banner d-print-none"
-    :class="
-      showRestoring
-        ? 'restoring-banner'
-        : isEnterprise
-        ? 'enterprise-banner'
-        : 'personal-banner'
-    "
+    :class="showRestoring ? 'restoring-banner' : 'enterprise-banner'"
     role="status"
     :aria-label="
       showRestoring
         ? 'Restoring tenant context'
-        : isEnterprise
-        ? `Enterprise CHEFS - Tenant: ${tenantName}`
-        : 'Personal CHEFS'
+        : `Enterprise CHEFS - Tenant: ${tenantName}`
     "
   >
     <div class="banner-content px-md-16 px-4">
@@ -58,14 +53,11 @@ const { isTenantRestoring: showRestoring } = storeToRefs(tenantStore);
         <v-progress-circular indeterminate size="16" width="2" class="mr-2" />
         <span class="banner-prefix">Restoring your tenant context&hellip;</span>
       </template>
-      <template v-else-if="isEnterprise">
+      <template v-else>
         <span class="banner-prefix"
           >Enterprise CHEFS &ndash; Tenant:&nbsp;</span
         >
         <span class="banner-tenant">{{ tenantName }}</span>
-      </template>
-      <template v-else>
-        <span class="banner-prefix">Personal CHEFS</span>
       </template>
     </div>
   </div>
@@ -80,14 +72,6 @@ const { isTenantRestoring: showRestoring } = storeToRefs(tenantStore);
 
     .banner-content {
       color: #003366;
-    }
-  }
-
-  &.personal-banner {
-    background-color: #898785;
-
-    .banner-content {
-      color: #ffffff;
     }
   }
 

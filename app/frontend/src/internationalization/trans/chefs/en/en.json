@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "My Forms",
+    "groupForms": "Group Forms",
     "createNewForm": "Create a New Form",
     "search": "Search",
     "manage": "Manage",
@@ -1112,6 +1113,7 @@
   "bCGovNavBar": {
     "about": "About",
     "myForms": "My Forms",
+    "groupForms": "Group Forms",
     "forms": "Forms",
     "createNewForm": "Create a New Form",
     "help": "Help",
@@ -1145,7 +1147,17 @@
     "enterpriseSectionBody2": "With Enterprise CHEFS, teams can securely share forms, assign roles, and manage projects within their organization's tenant — a dedicated workspace that keeps your projects and permissions organized.",
     "enterpriseSectionWelcome": "Welcome to Enterprise CHEFS, where teams across government can collaborate safely and efficiently.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "designForm": "Design Form",
@@ -1394,12 +1406,13 @@
     "recallConsErrMsg": "Error recalling submission {submissionId}: {error}"
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "Tenant:",
     "infoTooltip": "Enterprise CHEFS is the new version of CHEFS that supports multi-tenant access. Selecting your tenant will take you there automatically.",
     "selectLabel": "Select tenant (opens in Enterprise CHEFS)",
     "placeholder": "Select from available tenants",
     "noDataText": "No tenants found",
-    "switchToClassic": "Switch to Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Go to CSTAR (Connected Services, Team Access and Roles)",
     "noTenantsAvailable": "No tenants available",
     "manageTenantsIn": "Manage tenants in",

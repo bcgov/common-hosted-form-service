@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "نماذجي",
+    "groupForms": "Group Forms",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "search": "يبحث",
     "manage": "يدير",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "عن",
     "myForms": "نماذجي",
+    "groupForms": "Group Forms",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "help": "يساعد",
     "feedback": "تعليق",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "مع CHEFS المؤسسي، يمكن للفرق مشاركة النماذج بأمان وتعيين الأدوار وإدارة المشاريع داخل مستأجر مؤسستها — مساحة عمل مخصصة تُبقي مشاريعك وأذوناتك منظمة.",
     "enterpriseSectionWelcome": "مرحبًا بك في CHEFS المؤسسي، حيث يمكن للفرق عبر الحكومة التعاون بأمان وكفاءة.",
     "classicChefsLabel": "Classic CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "designForm": "نموذج التصميم",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "المستأجر:",
     "infoTooltip": "Enterprise CHEFS هو الإصدار الجديد من CHEFS الذي يدعم الوصول متعدد المستأجرين. سيؤدي تحديد المستأجر الخاص بك إلى نقلك إلى هناك تلقائيًا.",
     "selectLabel": "حدد المستأجر (يفتح في Enterprise CHEFS)",
     "placeholder": "حدد من المستأجرين المتاحين",
     "noDataText": "لم يتم العثور على مستأجرين",
-    "switchToClassic": "التبديل إلى Classic CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "انتقل إلى CSTAR (الخدمات المتصلة والوصول الجماعي والأدوار)",
     "noTenantsAvailable": "لا توجد مستأجرين متاحين",
     "manageTenantsIn": "إدارة المستأجرين في",

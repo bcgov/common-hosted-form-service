@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Mes formulaires",
+    "groupForms": "Group Forms",
     "createNewForm": "Créer un nouveau formulaire",
     "search": "Recherche",
     "manage": "Gérer",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "À propos",
     "myForms": "Mes formulaires",
+    "groupForms": "Group Forms",
     "createNewForm": "Créer un nouveau formulaire",
     "help": "Aider",
     "feedback": "Retour",
@@ -999,7 +1001,17 @@
     "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS.",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
-    "getStarted": "Commencer"
+    "getStarted": "Commencer",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "setUpForm": "Configurer le formulaire",
@@ -1466,12 +1478,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "Locataire :",
     "infoTooltip": "Enterprise CHEFS est la nouvelle version de CHEFS qui prend en charge l'accès multi-locataire. La sélection de votre locataire vous y amènera automatiquement.",
     "selectLabel": "Sélectionnez le locataire (s'ouvre dans Enterprise CHEFS)",
     "placeholder": "Sélectionnez parmi les locataires disponibles",
     "noDataText": "Aucun locataire trouvé",
-    "switchToClassic": "Passer à Classic CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Aller à CSTAR (Services connectés, accès d'équipe et rôles)",
     "noTenantsAvailable": "Aucun locataire disponible",
     "manageTenantsIn": "Gérer les locataires dans",

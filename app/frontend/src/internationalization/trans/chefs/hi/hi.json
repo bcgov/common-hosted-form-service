@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "मेरे प्रपत्र",
+    "groupForms": "Group Forms",
     "createNewForm": "एक नया फॉर्म बनाएं",
     "search": "खोज",
     "manage": "प्रबंधित करना",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "के बारे में",
     "myForms": "मेरे प्रपत्र",
+    "groupForms": "Group Forms",
     "createNewForm": "एक नया फॉर्म बनाएं",
     "help": "मदद",
     "feedback": "प्रतिक्रिया",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Enterprise CHEFS के साथ, टीमें अपने संगठन के किरायेदार के भीतर सुरक्षित रूप से फ़ॉर्म साझा कर सकती हैं, भूमिकाएं असाइन कर सकती हैं और प्रोजेक्ट प्रबंधित कर सकती हैं।",
     "enterpriseSectionWelcome": "Enterprise CHEFS में आपका स्वागत है, जहाँ सरकार भर की टीमें सुरक्षित और कुशलतापूर्वक सहयोग कर सकती हैं।",
     "classicChefsLabel": "Classic CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "setUpForm": "फॉर्म सेट करें",
@@ -1472,12 +1484,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "किरायेदार:",
     "infoTooltip": "Enterprise CHEFS, CHEFS का नया संस्करण है जो मल्टी-टेनेंट एक्सेस का समर्थन करता है। अपने टेनेंट का चयन करने से आप स्वचालित रूप से वहां पहुंच जाएंगे।",
     "selectLabel": "टेनेंट चुनें (Enterprise CHEFS में खुलता है)",
     "placeholder": "उपलब्ध टेनेंट में से चुनें",
     "noDataText": "कोई टेनेंट नहीं मिला",
-    "switchToClassic": "Classic CHEFS पर स्विच करें",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "CSTAR पर जाएं (कनेक्टेड सेवाएं, टीम एक्सेस और भूमिकाएं)",
     "noTenantsAvailable": "कोई टेनेंट उपलब्ध नहीं",
     "manageTenantsIn": "टेनेंट प्रबंधित करें",

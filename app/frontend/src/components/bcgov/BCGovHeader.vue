@@ -24,28 +24,8 @@ const route = useRoute();
 const { isRTL } = storeToRefs(useFormStore());
 const { authenticated, ready } = storeToRefs(useAuthStore());
 const tenantStore = useTenantStore();
-const { selectedTenant } = storeToRefs(tenantStore);
 
-// Strip the trailing "| Enterprise" / "| Personal" env suffix from the prop
-// so we can render it separately with accent colour.
-const appBase = computed(() => {
-  if (!tenantStore.isTenantFeatureEnabled) return props.appTitle;
-  const pipeIdx = props.appTitle.lastIndexOf('|');
-  if (pipeIdx === -1) return props.appTitle;
-  const after = props.appTitle.slice(pipeIdx + 1).trim();
-  if (after === 'Enterprise' || after === 'Personal') {
-    return props.appTitle.slice(0, pipeIdx).trimEnd();
-  }
-  return props.appTitle;
-});
-
-// "ENTERPRISE" or "PERSONAL" — hidden during tenant restore to prevent a
-// flash from PERSONAL → ENTERPRISE on login / session-timeout flows.
-const appMode = computed(() => {
-  if (!tenantStore.isTenantFeatureEnabled || !authenticated.value) return null;
-  if (tenantStore.isTenantRestoring) return null;
-  return selectedTenant.value ? 'ENTERPRISE' : 'PERSONAL';
-});
+const appBase = computed(() => props.appTitle);
 
 // Show tenant dropdown on all authenticated pages EXCEPT:
 // - Admin pages
@@ -120,38 +100,14 @@ const showTenantDropdown = computed(() => {
       <h1
         v-if="!formSubmitMode"
         data-test="btn-header-title"
-        :class="[
-          'font-weight-bold text-h6 pl-4 header-title',
-          'd-none d-lg-flex',
-          appMode ? 'header-title--with-mode' : '',
-        ]"
-        :title="appMode ? `${appBase} | ${appMode}` : undefined"
+        class="font-weight-bold text-h6 pl-4 header-title d-none d-lg-flex"
       >
-        <!-- Enterprise/tenant mode: base text shrinks+ellipsizes first;
-             the mode badge is a separate flex child that hides below lg
-             (the enterprise banner below the header covers that context). -->
-        <span v-if="appMode" class="title-text">{{ appBase }}</span>
-        <template v-else>{{ appBase }}</template>
-        <span
-          v-if="appMode"
-          class="mode-badge d-none d-lg-flex"
-          aria-hidden="true"
-        >
-          <span class="mode-divider mx-2">|</span>
-          <span
-            class="mode-text"
-            :class="
-              appMode === 'ENTERPRISE' ? 'enterprise-text' : 'personal-text'
-            "
-            >{{ appMode }}</span
-          >
-        </span>
+        {{ appBase }}
       </h1>
       <v-spacer />
       <div class="header-actions">
         <!-- Tenant Dropdown (visible only on Forms list and Create Form pages) -->
         <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper">
-          <span v-if="selectedTenant" class="tenant-header-label">Tenant:</span>
           <TenantDropdown />
         </div>
         <BaseAuthButton data-test="base-auth-btn" />
@@ -168,64 +124,6 @@ const showTenantDropdown = computed(() => {
   .elevation-20 {
     box-shadow: 0 0 0 0 !important;
   }
-}
-
-// Enterprise/tenant mode only: turns the h1 into a flex row so .title-text
-// can shrink and ellipsize before the mode badge is ever affected.
-.header-title--with-mode {
-  display: flex !important;
-  align-items: center;
-}
-
-// Shrinks first; shows "…" when space is tight.
-.title-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
-  flex: 0 1 auto;
-}
-
-// Wraps "| ENTERPRISE/PERSONAL" — hidden below lg via d-none d-lg-flex.
-// The enterprise banner below the header provides context at smaller sizes.
-.mode-badge {
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.mode-divider {
-  color: #fcba19;
-  font-weight: 400;
-  font-size: 1.4rem;
-  opacity: 0.8;
-}
-
-.mode-text {
-  font-size: 1.8rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1;
-
-  @media #{map-get($display-breakpoints, 'sm-and-down')} {
-    font-size: 1.3rem !important;
-  }
-}
-
-.enterprise-text {
-  color: #fcba19;
-}
-
-.personal-text {
-  color: #ffffff;
-}
-
-.tenant-header-label {
-  color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 600;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-right: 0.25rem;
 }
 
 .gov-header {
@@ -296,13 +194,6 @@ const showTenantDropdown = computed(() => {
   gap: 0.5rem;
   min-width: 0;
   flex-shrink: 0;
-
-  // Hide "Tenant:" label at tablet/mobile to save space.
-  @media (max-width: 1279px) {
-    .tenant-header-label {
-      display: none;
-    }
-  }
 
   // Hide info icon at tablet/mobile — only shown on full desktop (lg+).
   @media (max-width: 1279px) {

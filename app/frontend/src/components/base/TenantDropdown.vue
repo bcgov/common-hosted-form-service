@@ -29,7 +29,7 @@
       <template #selection="{ item }">
         <span class="selected-tenant">{{ item.title }}</span>
       </template>
-      <!-- Render divider between Personal CHEFS and tenant options -->
+      <!-- Render divider between My Forms and tenant options -->
       <template #item="{ props, item }">
         <v-divider v-if="item.raw.type === 'divider'" />
         <v-list-item v-else v-bind="props" />
@@ -90,7 +90,7 @@ import { useTenantStore } from '~/store/tenant';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-const { locale } = useI18n({ useScope: 'global' });
+const { locale, t } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -100,9 +100,9 @@ const notificationStore = useNotificationStore();
 const selectedValue = ref(null);
 const selectRef = ref(null);
 
-// Build dropdown items: Personal CHEFS (value=null) is always the first entry
+// Build dropdown items: My Forms (value=null) is always the first entry
 const allTenantOptions = computed(() => [
-  { id: null, name: 'Personal CHEFS', value: null },
+  { id: null, name: t('trans.tenantDropdown.myForms'), value: null },
   { type: 'divider' },
   ...tenantStore.tenantsList,
 ]);
@@ -121,7 +121,7 @@ const handleTenantChange = async (value) => {
       selectedValue.value = null;
     }
 
-    // Fetch forms for the selected tenant (or Personal CHEFS if no tenant)
+    // Fetch forms for the selected tenant (or My Forms if no tenant)
     // Form store will automatically handle errors and show notifications
     await formStore.getFormsForCurrentUser();
 
