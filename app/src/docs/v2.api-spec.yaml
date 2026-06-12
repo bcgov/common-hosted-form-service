@@ -19,7 +19,7 @@ externalDocs:
   description: Project Readmes
   url: https://github.com/bcgov/common-hosted-form-service
 servers:
-  - url: /api/v1
+  - url: /api/v2
     description: This Server
 security:
   - BearerAuth: []
