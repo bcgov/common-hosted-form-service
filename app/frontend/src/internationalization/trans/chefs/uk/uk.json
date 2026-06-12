@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "ВІДЧИНЕНО",
   "date": {
     "date": "рррр-мм-дд"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "Мої форми",
-    "groupForms": "Group Forms",
+    "groupForms": "Групові форми",
     "createNewForm": "Створіть нову форму",
     "search": "Пошук",
     "manage": "Керувати",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "О нас",
     "myForms": "Мої форми",
-    "groupForms": "Group Forms",
+    "groupForms": "Групові форми",
     "createNewForm": "Створіть нову форму",
     "help": "Довідка",
     "feedback": "Зворотній зв'язок",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Орендар:",
-    "infoTooltip": "Enterprise CHEFS — це нова версія CHEFS, яка підтримує багатоорендний доступ. Вибір вашого орендаря автоматично перенесе вас туди.",
+    "infoTooltip": "Виберіть орендаря для доступу до Групових форм. Повертайтесь до 'Мої форми' будь-коли.",
     "selectLabel": "Виберіть орендаря (відкривається в Enterprise CHEFS)",
     "placeholder": "Виберіть з доступних орендарів",
     "noDataText": "Орендарів не знайдено",

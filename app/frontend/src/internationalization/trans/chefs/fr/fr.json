@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Ouvrir",
   "date": {
     "date": "aaaa-mm-jj"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "Mes formulaires",
-    "groupForms": "Group Forms",
+    "groupForms": "Formulaires de Groupe",
     "createNewForm": "Créer un nouveau formulaire",
     "search": "Recherche",
     "manage": "Gérer",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "À propos",
     "myForms": "Mes formulaires",
-    "groupForms": "Group Forms",
+    "groupForms": "Formulaires de Groupe",
     "createNewForm": "Créer un nouveau formulaire",
     "help": "Aider",
     "feedback": "Retour",
@@ -1480,7 +1480,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Locataire :",
-    "infoTooltip": "Enterprise CHEFS est la nouvelle version de CHEFS qui prend en charge l'accès multi-locataire. La sélection de votre locataire vous y amènera automatiquement.",
+    "infoTooltip": "Sélectionnez votre locataire pour accéder aux Formulaires de Groupe. Revenez à 'Mes formulaires' à tout moment.",
     "selectLabel": "Sélectionnez le locataire (s'ouvre dans Enterprise CHEFS)",
     "placeholder": "Sélectionnez parmi les locataires disponibles",
     "noDataText": "Aucun locataire trouvé",

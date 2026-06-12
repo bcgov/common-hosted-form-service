@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Aprire",
   "date": {
     "date": "aaaa-mm-gg"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "Le mie Forme",
-    "groupForms": "Group Forms",
+    "groupForms": "Moduli di Gruppo",
     "createNewForm": "Crea un nuovo modulo",
     "search": "Ricerca",
     "manage": "Maneggio",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "Di",
     "myForms": "Le mie Forme",
-    "groupForms": "Group Forms",
+    "groupForms": "Moduli di Gruppo",
     "createNewForm": "Crea un nuovo modulo",
     "help": "Aiuto",
     "feedback": "Feedback",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Tenant:",
-    "infoTooltip": "Enterprise CHEFS è la nuova versione di CHEFS che supporta l'accesso multi-tenant. Selezionando il tuo tenant verrai portato automaticamente lì.",
+    "infoTooltip": "Seleziona il tuo tenant per accedere ai Moduli di Gruppo. Torna a 'Le mie Forme' in qualsiasi momento.",
     "selectLabel": "Seleziona tenant (si apre in Enterprise CHEFS)",
     "placeholder": "Seleziona tra i tenant disponibili",
     "noDataText": "Nessun tenant trovato",

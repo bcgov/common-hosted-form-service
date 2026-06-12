@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "ਖੁੱਲਾ",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "ਮੇਰੇ ਫਾਰਮ",
-    "groupForms": "Group Forms",
+    "groupForms": "ਗਰੁੱਪ ਫਾਰਮ",
     "createNewForm": "ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
     "search": "ਖੋਜ",
     "manage": "ਪ੍ਰਬੰਧ ਕਰਨਾ, ਕਾਬੂ ਕਰਨਾ",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "ਬਾਰੇ",
     "myForms": "ਮੇਰੇ ਫਾਰਮ",
-    "groupForms": "Group Forms",
+    "groupForms": "ਗਰੁੱਪ ਫਾਰਮ",
     "createNewForm": "ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
     "help": "ਮਦਦ ਕਰੋ",
     "feedback": "ਸੁਝਾਅ",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "ਕਿਰਾਏਦਾਰ:",
-    "infoTooltip": "Enterprise CHEFS CHEFS ਦਾ ਨਵਾਂ ਸੰਸਕਰਣ ਹੈ ਜੋ ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪਹੁੰਚ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਕਿਰਾਏਦਾਰ ਦੀ ਚੋਣ ਕਰਨ ਨਾਲ ਤੁਹਾਨੂੰ ਆਪਣੇ ਆਪ ਉੱਥੇ ਲੈ ਜਾਵੇਗਾ।",
+    "infoTooltip": "ਗਰੁੱਪ ਫਾਰਮਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਆਪਣਾ ਟੈਨੇਂਟ ਚੁਣੋ। ਕਿਸੇ ਵੀ ਸਮੇਂ 'ਮੇਰੇ ਫਾਰਮ' 'ਤੇ ਵਾਪਸ ਜਾਓ।",
     "selectLabel": "ਕਿਰਾਏਦਾਰ ਚੁਣੋ (Enterprise CHEFS ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ)",
     "placeholder": "ਉਪਲਬਧ ਕਿਰਾਏਦਾਰਾਂ ਵਿੱਚੋਂ ਚੁਣੋ",
     "noDataText": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਨਹੀਂ ਮਿਲਿਆ",

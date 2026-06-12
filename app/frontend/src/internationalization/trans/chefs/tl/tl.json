@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Bukas",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "Aking Mga Form",
-    "groupForms": "Group Forms",
+    "groupForms": "Mga Group Form",
     "createNewForm": "Gumawa ng Bagong Form",
     "search": "Maghanap",
     "manage": "Pamahalaan",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "Tungkol sa",
     "myForms": "Aking Mga Form",
-    "groupForms": "Group Forms",
+    "groupForms": "Mga Group Form",
     "createNewForm": "Gumawa ng Bagong Form",
     "help": "Tulong",
     "feedback": "Feedback",
@@ -1454,7 +1454,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Nangungupahan:",
-    "infoTooltip": "Ang Enterprise CHEFS ay ang bagong bersyon ng CHEFS na sumusuporta sa multi-tenant access. Ang pagpili ng iyong tenant ay awtomatikong dadalhin ka doon.",
+    "infoTooltip": "Piliin ang iyong tenant upang ma-access ang Mga Group Form. Bumalik sa 'Aking Mga Form' anumang oras.",
     "selectLabel": "Pumili ng tenant (bubukas sa Enterprise CHEFS)",
     "placeholder": "Pumili mula sa available na mga tenant",
     "noDataText": "Walang nahanap na tenant",

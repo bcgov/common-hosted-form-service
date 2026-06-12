@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "открыть",
   "date": {
     "date": "гггг-мм-дд"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "Мои формы",
-    "groupForms": "Group Forms",
+    "groupForms": "Групповые формы",
     "createNewForm": "Создать новую форму",
     "search": "Поиск",
     "manage": "Управление",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "О",
     "myForms": "Мои формы",
-    "groupForms": "Group Forms",
+    "groupForms": "Групповые формы",
     "createNewForm": "Создать новую форму",
     "help": "Помощь",
     "feedback": "Обратная связь",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Арендатор:",
-    "infoTooltip": "Enterprise CHEFS — это новая версия CHEFS, которая поддерживает мультитенантный доступ. Выбор вашего арендатора автоматически перенесет вас туда.",
+    "infoTooltip": "Выберите арендатора для доступа к Групповым формам. Вернитесь к 'Мои формы' в любое время.",
     "selectLabel": "Выберите арендатора (открывается в Enterprise CHEFS)",
     "placeholder": "Выберите из доступных арендаторов",
     "noDataText": "Арендаторы не найдены",

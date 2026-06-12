@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "打開",
   "date": {
     "date": "年-月-日"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "我的表格",
-    "groupForms": "Group Forms",
+    "groupForms": "群組表單",
     "createNewForm": "創建新表單",
     "search": "搜索",
     "manage": "管理",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "關於",
     "myForms": "我的表格",
-    "groupForms": "Group Forms",
+    "groupForms": "群組表單",
     "createNewForm": "創建新表單",
     "help": "幫助",
     "feedback": "反饋",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "租戶:",
-    "infoTooltip": "Enterprise CHEFS 是支持多租戶訪問的新版本 CHEFS。選擇您的租戶將自動帶您到那裡。",
+    "infoTooltip": "選擇您的租戶以存取群組表單。隨時切換回「我的表格」。",
     "selectLabel": "選擇租戶（在 Enterprise CHEFS 中打開）",
     "placeholder": "從可用租戶中選擇",
     "noDataText": "未找到租戶",

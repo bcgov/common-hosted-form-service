@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "खुला",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "मेरे प्रपत्र",
-    "groupForms": "Group Forms",
+    "groupForms": "समूह फ़ॉर्म",
     "createNewForm": "एक नया फॉर्म बनाएं",
     "search": "खोज",
     "manage": "प्रबंधित करना",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "के बारे में",
     "myForms": "मेरे प्रपत्र",
-    "groupForms": "Group Forms",
+    "groupForms": "समूह फ़ॉर्म",
     "createNewForm": "एक नया फॉर्म बनाएं",
     "help": "मदद",
     "feedback": "प्रतिक्रिया",
@@ -1486,7 +1486,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "किरायेदार:",
-    "infoTooltip": "Enterprise CHEFS, CHEFS का नया संस्करण है जो मल्टी-टेनेंट एक्सेस का समर्थन करता है। अपने टेनेंट का चयन करने से आप स्वचालित रूप से वहां पहुंच जाएंगे।",
+    "infoTooltip": "समूह फ़ॉर्म तक पहुँचने के लिए अपना टेनेंट चुनें। कभी भी 'मेरे प्रपत्र' पर वापस स्विच करें।",
     "selectLabel": "टेनेंट चुनें (Enterprise CHEFS में खुलता है)",
     "placeholder": "उपलब्ध टेनेंट में से चुनें",
     "noDataText": "कोई टेनेंट नहीं मिला",

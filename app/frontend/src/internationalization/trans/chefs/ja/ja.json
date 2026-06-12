@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "開ける",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "私のフォーム",
-    "groupForms": "Group Forms",
+    "groupForms": "グループフォーム",
     "createNewForm": "新しいフォームを作成する",
     "search": "検索",
     "manage": "管理",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "だいたい",
     "myForms": "私のフォーム",
-    "groupForms": "Group Forms",
+    "groupForms": "グループフォーム",
     "createNewForm": "新しいフォームを作成する",
     "help": "ヘルプ",
     "feedback": "フィードバック",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "テナント:",
-    "infoTooltip": "Enterprise CHEFS は、マルチテナントアクセスをサポートする CHEFS の新しいバージョンです。テナントを選択すると、自動的にそこに移動します。",
+    "infoTooltip": "グループフォームにアクセスするにはテナントを選択してください。いつでも「私のフォーム」に切り替えられます。",
     "selectLabel": "テナントを選択（Enterprise CHEFS で開く）",
     "placeholder": "利用可能なテナントから選択",
     "noDataText": "テナントが見つかりません",

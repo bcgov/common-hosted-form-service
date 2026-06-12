@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Abierto",
   "date": {
     "date": "aaaa-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "Mis formularios",
-    "groupForms": "Group Forms",
+    "groupForms": "Formularios de Grupo",
     "createNewForm": "Crear un nuevo formulario",
     "search": "Buscar",
     "manage": "Administrar",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "Acerca de",
     "myForms": "Mis formularios",
-    "groupForms": "Group Forms",
+    "groupForms": "Formularios de Grupo",
     "createNewForm": "Crear un nuevo formulario",
     "help": "Ayuda",
     "feedback": "Comentario",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Inquilino:",
-    "infoTooltip": "Enterprise CHEFS es la nueva versión de CHEFS que admite acceso multiinquilino. Seleccionar su inquilino lo llevará allí automáticamente.",
+    "infoTooltip": "Seleccione su tenant para acceder a los Formularios de Grupo. Vuelva a 'Mis formularios' en cualquier momento.",
     "selectLabel": "Seleccionar inquilino (se abre en Enterprise CHEFS)",
     "placeholder": "Seleccione entre los inquilinos disponibles",
     "noDataText": "No se encontraron inquilinos",

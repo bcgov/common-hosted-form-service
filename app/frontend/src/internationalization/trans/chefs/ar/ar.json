@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "يفتح",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "نماذجي",
-    "groupForms": "Group Forms",
+    "groupForms": "نماذج المجموعة",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "search": "يبحث",
     "manage": "يدير",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "عن",
     "myForms": "نماذجي",
-    "groupForms": "Group Forms",
+    "groupForms": "نماذج المجموعة",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "help": "يساعد",
     "feedback": "تعليق",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "المستأجر:",
-    "infoTooltip": "Enterprise CHEFS هو الإصدار الجديد من CHEFS الذي يدعم الوصول متعدد المستأجرين. سيؤدي تحديد المستأجر الخاص بك إلى نقلك إلى هناك تلقائيًا.",
+    "infoTooltip": "حدد المستأجر الخاص بك للوصول إلى نماذج المجموعة. العودة إلى 'نماذجي' في أي وقت.",
     "selectLabel": "حدد المستأجر (يفتح في Enterprise CHEFS)",
     "placeholder": "حدد من المستأجرين المتاحين",
     "noDataText": "لم يتم العثور على مستأجرين",

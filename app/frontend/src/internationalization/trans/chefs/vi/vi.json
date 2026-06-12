@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "mở",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "biểu mẫu của tôi",
-    "groupForms": "Group Forms",
+    "groupForms": "Biểu mẫu nhóm",
     "createNewForm": "Tạo một biểu mẫu mới",
     "search": "Tìm kiếm",
     "manage": "Quản lý",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "Về",
     "myForms": "biểu mẫu của tôi",
-    "groupForms": "Group Forms",
+    "groupForms": "Biểu mẫu nhóm",
     "createNewForm": "Tạo một biểu mẫu mới",
     "help": "Giúp đỡ",
     "feedback": "Nhận xét",
@@ -1454,7 +1454,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Người thuê:",
-    "infoTooltip": "Enterprise CHEFS là phiên bản mới của CHEFS hỗ trợ truy cập đa thuê bao. Chọn thuê bao của bạn sẽ tự động đưa bạn đến đó.",
+    "infoTooltip": "Chọn tenant của bạn để truy cập Biểu mẫu nhóm. Chuyển lại 'biểu mẫu của tôi' bất cứ lúc nào.",
     "selectLabel": "Chọn thuê bao (mở trong Enterprise CHEFS)",
     "placeholder": "Chọn từ các thuê bao có sẵn",
     "noDataText": "Không tìm thấy thuê bao",

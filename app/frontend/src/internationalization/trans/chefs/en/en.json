@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Open",
   "date": {
     "date": "yyyy-mm-dd"
@@ -1408,7 +1408,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "Tenant:",
-    "infoTooltip": "Enterprise CHEFS is the new version of CHEFS that supports multi-tenant access. Selecting your tenant will take you there automatically.",
+    "infoTooltip": "Select your tenant to access Group Forms. Switch back to 'My Forms' at any time.",
     "selectLabel": "Select tenant (opens in Enterprise CHEFS)",
     "placeholder": "Select from available tenants",
     "noDataText": "No tenants found",

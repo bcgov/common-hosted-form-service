@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "열려 있는",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,7 +21,7 @@
   },
   "formsTable": {
     "myForms": "내 양식",
-    "groupForms": "Group Forms",
+    "groupForms": "그룹 양식",
     "createNewForm": "새 양식 만들기",
     "search": "찾다",
     "manage": "관리하다",
@@ -977,7 +977,7 @@
   "bCGovNavBar": {
     "about": "에 대한",
     "myForms": "내 양식",
-    "groupForms": "Group Forms",
+    "groupForms": "그룹 양식",
     "createNewForm": "새 양식 만들기",
     "help": "돕다",
     "feedback": "피드백",
@@ -1450,7 +1450,7 @@
   "tenantDropdown": {
     "myForms": "My Forms",
     "tenantLabel": "테넌트:",
-    "infoTooltip": "Enterprise CHEFS는 다중 테넌트 액세스를 지원하는 CHEFS의 새 버전입니다. 테넌트를 선택하면 자동으로 이동합니다.",
+    "infoTooltip": "그룹 양식에 액세스하려면 테넌트를 선택하세요. 언제든지 '내 양식'으로 다시 전환하세요.",
     "selectLabel": "테넌트 선택 (Enterprise CHEFS에서 열림)",
     "placeholder": "사용 가능한 테넌트에서 선택",
     "noDataText": "테넌트를 찾을 수 없음",
