@@ -26,6 +26,11 @@ const service = {
     return User.query().modify('safeSelect').findById(userId).throwIfNotFound();
   },
 
+  readByKeycloakId: (keycloakId) => {
+    if (!keycloakId) return null;
+    return User.query().modify('filterKeycloakId', keycloakId).first();
+  },
+
   //
   // User Labels
   //

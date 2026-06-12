@@ -30,7 +30,12 @@
     "description": "Sự miêu tả",
     "Description": "Sự miêu tả:",
     "action": "hành động",
-    "loadingText": "Tải vui lòng đợi"
+    "loadingText": "Tải vui lòng đợi",
+    "forms": "Biểu mẫu",
+    "deleteForm": "Xóa biểu mẫu",
+    "manageForm": "Quản lý biểu mẫu",
+    "viewSubmissions": "Xem các bài nộp",
+    "noDataText": "Không tìm thấy biểu mẫu"
   },
   "manageLayout": {
     "manageForm": "Quản lý biểu mẫu"
@@ -53,6 +58,7 @@
     "emailManagement": "Quản lý email",
     "viewSubmissions": "Xem bài nộp",
     "teamManagement": "quản lý nhóm",
+    "groupManagement": "Quản lý nhóm",
     "deleteForm": "Xóa biểu mẫu",
     "confirmDeletion": "Xác nhận xóa",
     "deleteMessageA": "Bạn có chắc chắn muốn xóa",
@@ -105,7 +111,9 @@
     "referenceGuideB": "hướng dẫn sử dụng",
     "referenceGuideC": "để biết thêm chi tiết.",
     "specificTeamMembers": "Thành viên nhóm cụ thể",
+    "specificGroups": "Các nhóm cụ thể",
     "teamMemberTooltip": "Sau khi bạn tạo biểu mẫu, bạn sẽ có quyền truy cập vào trang Quản lý Nhóm, nơi bạn có thể thêm người dùng và gán vai trò. Hãy tìm biểu tượng người trên trang Quản lý Biểu mẫu ",
+    "groupAccessTooltip": "Quyền truy cập được kiểm soát bởi các nhóm CSTAR. Sau khi tạo biểu mẫu, hãy đến trang Quản lý nhóm để liên kết các nhóm CSTAR với biểu mẫu này. Chỉ những người dùng thuộc các nhóm đó mới có thể truy cập vào biểu mẫu. Để thêm hoặc xóa người dùng khỏi nhóm, hãy quản lý thành viên nhóm trong CSTAR.",
     "formFunctionality": "Chức năng biểu mẫu",
     "formSubmissinScheduleMsg": "Lịch gửi biểu mẫu sẽ có sẵn trong Cài đặt biểu mẫu sau khi biểu mẫu được xuất bản.",
     "formSubmissionsSchedule": "Lịch gửi biểu mẫu",
@@ -720,10 +728,12 @@
     "fetchSubmissionUsersErr": "Đã xảy ra lỗi khi cố gắng tìm nạp email của người nhận cho nội dung gửi này.",
     "fetchSubmissionUsersConsErr": "Lỗi nhận email người nhận cho",
     "assignSubmissnToFormReviewer": "Nội dung gửi có thể được chỉ định cho Người đánh giá biểu mẫu.<br /> Để thêm nhiều thành viên nhóm làm Người đánh giá biểu mẫu, hãy chuyển đến trang Quản lý cho biểu mẫu này.",
+    "assignSubmissnToFormReviewerTenanted": "Nội dung gửi có thể được chỉ định cho Người đánh giá biểu mẫu. <br />Để thêm hoặc cập nhật thành viên làm Người đánh giá biểu mẫu, hãy truy cập CSTAR và cập nhật nhóm phù hợp.",
     "update": "CẬP NHẬT",
     "revise": "ÔN LẠI",
     "complete": "HOÀN THÀNH",
-    "assign": "GIAO PHÓ"
+    "assign": "GIAO PHÓ",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Tải vui lòng đợi",
@@ -862,6 +872,44 @@
     "setUserFormsErrMsg": "Đã xảy ra lỗi khi cố cập nhật vai trò cho người dùng",
     "setUserFormsConsoleErrMsg": "Lỗi khi đặt vai trò người dùng cho biểu mẫu {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Quản lý nhóm",
+    "manageForm": "Quản lý biểu mẫu",
+    "search": "Tìm kiếm",
+    "loadingText": "Đang tải... Vui lòng đợi",
+    "noDataText": "Không có nhóm nào khả dụng cho người thuê này",
+    "noMatchingRecordText": "Không tìm thấy bản ghi phù hợp",
+    "groupName": "Tên nhóm",
+    "description": "Mô tả",
+    "associated": "Đã liên kết",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "confirmSave": "Xác nhận thay đổi",
+    "confirmSaveMsg": "Bạn có chắc chắn muốn cập nhật các liên kết nhóm cho biểu mẫu này không?",
+    "saveSuccessMsg": "Các liên kết nhóm đã được cập nhật thành công",
+    "saveErrMsg": "Đã xảy ra lỗi khi lưu các liên kết nhóm",
+    "getGroupsErrMsg": "Đã xảy ra lỗi khi tải các nhóm cho biểu mẫu này",
+    "missingGroupsWarning": "{count} nhóm đã được liên kết trước đó không còn tồn tại trong người thuê này",
+    "availableGroups": "Các nhóm khả dụng",
+    "assignedGroups": "Các nhóm đã gán",
+    "searchAvailable": "Tìm kiếm các nhóm khả dụng",
+    "searchAssigned": "Tìm kiếm các nhóm đã gán",
+    "noAvailableGroups": "Không có nhóm nào khả dụng trong người thuê này",
+    "noAssignedGroups": "Không có nhóm nào được gán cho biểu mẫu này",
+    "addGroup": "Thêm nhóm",
+    "removeGroup": "Xóa nhóm",
+    "deleted": "Đã xóa",
+    "noTenantAccess": "Quản lý nhóm chỉ khả dụng cho các biểu mẫu có người thuê. Vui lòng chọn người thuê để tiếp tục.",
+    "unsavedChangesWarning": "Bạn có thay đổi nhóm chưa được lưu. Rời đi mà không lưu?",
+    "unsavedChangesTitle": "Thay đổi chưa lưu",
+    "leave": "Rời khỏi",
+    "selectAll": "Chọn tất cả",
+    "addSelected": "Thêm đã chọn",
+    "removeSelected": "Xóa đã chọn",
+    "formAdminGroupRequired": "Ít nhất một nhóm được giao phải có vai trò form_admin.",
+    "invalidGroupIds": "Một hoặc nhiều nhóm được chọn không hợp lệ cho tenant này.",
+    "insufficientPermissions": "Bạn không có quyền quản lý các liên kết nhóm."
+  },
   "floatButton": {
     "publish": "Công bố",
     "manage": "Quản lý",
@@ -931,7 +979,8 @@
     "createNewForm": "Tạo một biểu mẫu mới",
     "help": "Giúp đỡ",
     "feedback": "Nhận xét",
-    "admin": "Quản trị viên"
+    "admin": "Quản trị viên",
+    "forms": "Biểu mẫu"
   },
   "homePage": {
     "title": "Tạo, xuất bản biểu mẫu và nhận nội dung gửi bằng Common Hosted Forms Service.",
@@ -950,7 +999,13 @@
     "chefsHowToSub": "Hướng dẫn bắt đầu nhanh của chúng tôi sẽ giới thiệu cho bạn một số chức năng cơ bản của CHEFS.",
     "getStartedToChefs": "Bắt đầu sử dụng CHEFS",
     "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
-    "getStarted": "Bắt đầu"
+    "getStarted": "Bắt đầu",
+    "enterpriseSectionTitle": "Trải nghiệm Enterprise CHEFS mới",
+    "enterpriseSectionBody1": "Enterprise CHEFS mở rộng CHEFS cổ điển (Common Hosted Forms Service) bằng cách hợp tác với CSTAR — Connected Services, Team Access và Roles — để tạo ra một không gian làm việc chung và cộng tác.",
+    "enterpriseSectionBody2": "Với Enterprise CHEFS, các nhóm có thể chia sẻ biểu mẫu một cách an toàn, phân công vai trò và quản lý dự án trong phạm vi người thuê của tổ chức họ.",
+    "enterpriseSectionWelcome": "Chào mừng đến với Enterprise CHEFS, nơi các nhóm trên toàn chính phủ có thể cộng tác một cách an toàn và hiệu quả.",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS"
   },
   "baseStepper": {
     "setUpForm": "Thiết lập biểu mẫu",
@@ -1296,7 +1351,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
-    "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
+    "canShareGroupMessage": "Bạn không thể chia sẻ bản nháp với người dùng này. Họ phải là thành viên của một trong các nhóm được ủy quyền của biểu mẫu này.",
+    "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu",
+    "shareDraftGroupMessage": "Chia sẻ bản nháp chỉ với thành viên nhóm biểu mẫu",
+    "groupShareHint": "Chỉ những thành viên của các nhóm được ủy quyền của biểu mẫu này mới có thể được thêm vào."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Dịch vụ này tạm thời không khả dụng.",
@@ -1315,5 +1373,95 @@
     "shuttingDown": "CHEFS đang tắt.",
     "notReady": "CHEFS không thể kết nối với tất cả các dịch vụ cần thiết.",
     "unableToReachBackend": "Không thể truy cập dịch vụ backend."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Bạn có muốn làm việc an toàn với nhóm của mình, cung cấp biểu mẫu nhanh hơn và hợp tác trong chính phủ không?",
+      "title": "Giới thiệu Enterprise CHEFS và CSTAR!",
+      "enterpriseTitle": "Trải nghiệm Enterprise CHEFS mới",
+      "tenant": "thuê bao",
+      "description1": "Enterprise CHEFS là phiên bản mới của CHEFS hỗ trợ truy cập đa thuê bao và quản lý nhóm thông qua CSTAR (Dịch vụ kết nối, quyền truy cập nhóm và vai trò).",
+      "description2": "Với Enterprise CHEFS, tổ chức của bạn có thể:",
+      "description3": "Làm việc trong chế độ ",
+      "description4": " - Mỗi thuê bao có không gian an toàn riêng với các biểu mẫu, dữ liệu và quyền riêng biệt",
+      "description5": "Quản lý quyền truy cập nhóm - Kiểm soát ai có thể xem, chỉnh sửa hoặc quản lý biểu mẫu trong thuê bao của bạn",
+      "description6": "Duy trì bảo mật dữ liệu - Dữ liệu của mỗi thuê bao được cách ly hoàn toàn với các thuê bao khác",
+      "description7": "Enterprise CHEFS cũng bao gồm tất cả các tính năng mạnh mẽ mà bạn biết và yêu thích từ Personal CHEFS, như trình tạo biểu mẫu kéo và thả, logic có điều kiện, gửi được mã hóa và tích hợp API.",
+      "loginButton": "Đăng nhập để bắt đầu",
+      "goToChefs": "Đi đến CHEFS",
+      "learnMore": "Tìm hiểu thêm"
+    },
+    "gettingStarted": {
+      "title": "Mới sử dụng CHEFS và không biết bắt đầu từ đâu?",
+      "description": "Bạn có thể bắt đầu tạo biểu mẫu với một vài bước đơn giản:",
+      "step1Title": "1. Đăng nhập bằng tài khoản IDIR hoặc BCeID của bạn",
+      "step2Title": "2. Tạo biểu mẫu mới hoặc sử dụng mẫu",
+      "step3Title": "3. Thiết kế biểu mẫu của bạn với trình tạo kéo và thả của chúng tôi",
+      "step4Title": "4. Xuất bản và chia sẻ biểu mẫu của bạn với nhóm hoặc công chúng",
+      "loginButton": "Đăng nhập để bắt đầu",
+      "learnMore": "Tìm hiểu thêm"
+    },
+    "examples": {
+      "demographicSurvey": "Ví dụ | Khảo sát thu thập dữ liệu nhân khẩu học",
+      "projectRequest": "Ví dụ | Yêu cầu dự án",
+      "permitApplication": "Ví dụ | Đơn xin giấy phép"
+    },
+    "testimonials": {
+      "title": "Đừng chỉ tin lời chúng tôi, hãy nghe những gì người dùng của chúng tôi nói về chúng tôi.",
+      "author": "Tác giả",
+      "role": "Vai trò"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Người dùng CHEFS 1",
+        "role": "Nhà phân tích chương trình",
+        "quote": "\"CHEFS đã thay đổi cách chúng tôi thu thập dữ liệu. Hệ thống đa thuê bao cho phép chúng tôi giữ các dự án riêng biệt trong khi chia sẻ các thực hành tốt nhất trong toàn bộ phòng ban.\""
+      },
+      "testimonial2": {
+        "author": "Người dùng CHEFS 2",
+        "role": "Quản lý dự án",
+        "quote": "\"Tích hợp với CSTAR làm cho việc quản lý quyền truy cập nhóm dễ dàng hơn rất nhiều. Tôi có thể nhanh chóng đưa các thành viên mới vào nhóm và kiểm soát chính xác những gì họ có thể làm.\""
+      },
+      "testimonial3": {
+        "author": "Người dùng CHEFS 3",
+        "role": "Quản trị viên CNTT",
+        "quote": "\"Chúng tôi đánh giá cao các tính năng bảo mật và cách ly dữ liệu mạnh mẽ. Mỗi thuê bao được tách biệt hoàn toàn, mang lại cho chúng tôi sự an tâm khi làm việc với dữ liệu nhạy cảm.\""
+      }
+    },
+    "finalCta": {
+      "title": "Bắt đầu sử dụng Enterprise CHEFS",
+      "description": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
+      "loginButton": "Đăng nhập để bắt đầu"
+    },
+    "formViewer": {
+      "title": "Trình xem biểu mẫu",
+      "description": "Xem trước biểu mẫu của bạn sẽ trông như thế nào",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "tenantLabel": "Người thuê:",
+    "infoTooltip": "Enterprise CHEFS là phiên bản mới của CHEFS hỗ trợ truy cập đa thuê bao. Chọn thuê bao của bạn sẽ tự động đưa bạn đến đó.",
+    "selectLabel": "Chọn thuê bao (mở trong Enterprise CHEFS)",
+    "placeholder": "Chọn từ các thuê bao có sẵn",
+    "noDataText": "Không tìm thấy thuê bao",
+    "switchToClassic": "Chuyển sang Personal CHEFS",
+    "goToCstar": "Đi đến CSTAR (Dịch vụ kết nối, quyền truy cập nhóm và vai trò)",
+    "noTenantsAvailable": "Không có thuê bao nào",
+    "manageTenantsIn": "Quản lý thuê bao trong",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Người thuê:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR tạm thời không khả dụng. Lựa chọn người thuê hiện đã bị tắt.",
+    "errorFetchingTenants": "Lỗi khi tải người thuê"
   }
 }

@@ -35,7 +35,8 @@ module.exports = {
   ScheduledSubmissionDeletion: require('./tables/scheduledSubmissionDeletion'),
   FormPrintConfig: require('./tables/formPrintConfig'),
   FormPrintConfigTypeCode: require('./tables/formPrintConfigTypeCode'),
-
+  FormTenant: require('./tables/formTenant'),
+  FormGroup: require('./tables/formGroup'),
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
   PublicFormAccess: require('./views/publicFormAccess'),

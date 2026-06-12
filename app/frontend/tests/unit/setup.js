@@ -1,5 +1,13 @@
 import { vi } from 'vitest';
+import { config } from '@vue/test-utils';
 import 'vitest-canvas-mock';
+
+config.global.stubs = {
+  ...config.global.stubs,
+  VImg: true,
+  'v-img': true,
+};
+
 
 class ResizeObserverStub {
   observe() {}
