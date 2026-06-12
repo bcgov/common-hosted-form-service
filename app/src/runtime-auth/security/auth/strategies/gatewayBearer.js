@@ -47,6 +47,12 @@ module.exports = function gatewayBearerFactory({ deps }) {
       // Use CHEFS formService to read API key
       const apiKeyRecord = await formService?.readApiKey?.(formId);
 
+      // Form must still have API access, regardless of whether the token carries the key
+      if (!apiKeyRecord?.secret) {
+        const err = new Error(ERRORS.FORM_OR_API_KEY_NOT_FOUND);
+        err.status = 401;
+        throw err;
+      }
       // Validate credentials if apiKey is in payload (throws 401 on failure)
       if (apiKey !== undefined) {
         validateApiKey(apiKey, apiKeyRecord);
