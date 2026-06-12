@@ -32,6 +32,27 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
             {{ $t('trans.homePage.title') }}
           </h1>
 
+          <p :lang="locale">{{ $t('trans.homePage.subTitle') }}<br /></p>
+
+          <v-btn
+            :to="{ name: 'FormCreate' }"
+            class="mb-5"
+            color="primary"
+            data-test="create-or-login-btn"
+            :title="
+              authenticated
+                ? $t('trans.homePage.loginToStart')
+                : $t('trans.homePage.createFormLabel')
+            "
+          >
+            <span v-if="!authenticated" :lang="locale">{{
+              $t('trans.homePage.loginToStart')
+            }}</span>
+            <span v-else :lang="locale">{{
+              $t('trans.homePage.createFormLabel')
+            }}</span>
+          </v-btn>
+
           <div
             v-if="tenantStore.isTenantFeatureEnabled"
             class="multitenancy-card mb-6 text-left"
@@ -58,7 +79,7 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
             </p>
             <v-btn
               v-if="cstarBaseUrl"
-              variant="outlined"
+              variant="flat"
               color="white"
               :href="cstarBaseUrl"
               target="_blank"
@@ -68,27 +89,6 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
               {{ $t('trans.homePage.multiTenancyBtnLabel') }}
             </v-btn>
           </div>
-
-          <p :lang="locale">{{ $t('trans.homePage.subTitle') }}<br /></p>
-
-          <v-btn
-            :to="{ name: 'FormCreate' }"
-            class="mb-5"
-            color="primary"
-            data-test="create-or-login-btn"
-            :title="
-              authenticated
-                ? $t('trans.homePage.loginToStart')
-                : $t('trans.homePage.createFormLabel')
-            "
-          >
-            <span v-if="!authenticated" :lang="locale">{{
-              $t('trans.homePage.loginToStart')
-            }}</span>
-            <span v-else :lang="locale">{{
-              $t('trans.homePage.createFormLabel')
-            }}</span>
-          </v-btn>
 
           <h2 id="video" class="pt-5" :lang="locale">
             {{ $t('trans.homePage.takeATourOfChefs') }}
@@ -232,7 +232,8 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
 
 .multitenancy-card {
   background-color: #003366;
-  border: 3px solid #fcba19;
+  border: 1px solid #fcba19;
+  border-left: 5px solid #fcba19;
   border-radius: 4px;
   color: #ffffff;
   padding: 1.5rem 1.75rem;
@@ -252,8 +253,8 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
   }
 
   .multitenancy-btn {
-    border-color: #ffffff !important;
-    color: #ffffff !important;
+    color: #003366 !important;
+    font-weight: 700;
   }
 
   p,

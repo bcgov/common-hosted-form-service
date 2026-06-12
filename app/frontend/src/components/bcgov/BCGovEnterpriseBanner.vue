@@ -42,11 +42,7 @@ const showBanner = computed(() => isEnterprise.value || showRestoring.value);
     class="context-banner d-print-none"
     :class="showRestoring ? 'restoring-banner' : 'enterprise-banner'"
     role="status"
-    :aria-label="
-      showRestoring
-        ? 'Restoring tenant context'
-        : `Enterprise CHEFS - Tenant: ${tenantName}`
-    "
+    :aria-label="showRestoring ? 'Restoring tenant context' : tenantName"
   >
     <div class="banner-content px-md-16 px-4">
       <template v-if="showRestoring">
@@ -54,9 +50,6 @@ const showBanner = computed(() => isEnterprise.value || showRestoring.value);
         <span class="banner-prefix">Restoring your tenant context&hellip;</span>
       </template>
       <template v-else>
-        <span class="banner-prefix"
-          >Enterprise CHEFS &ndash; Tenant:&nbsp;</span
-        >
         <span class="banner-tenant">{{ tenantName }}</span>
       </template>
     </div>
@@ -72,6 +65,7 @@ const showBanner = computed(() => isEnterprise.value || showRestoring.value);
 
     .banner-content {
       color: #003366;
+      font-size: 1rem;
     }
   }
 

@@ -29,9 +29,15 @@
       <template #selection="{ item }">
         <span class="selected-tenant">{{ item.title }}</span>
       </template>
-      <!-- Render divider between My Forms and tenant options -->
+      <!-- Render divider, section header, or tenant option -->
       <template #item="{ props, item }">
         <v-divider v-if="item.raw.type === 'divider'" />
+        <v-list-subheader
+          v-else-if="item.raw.type === 'header'"
+          class="group-forms-header"
+        >
+          {{ item.raw.name }}
+        </v-list-subheader>
         <v-list-item v-else v-bind="props" />
       </template>
       <!-- CSTAR Link at bottom of dropdown — only rendered when URL is configured -->
@@ -100,10 +106,12 @@ const notificationStore = useNotificationStore();
 const selectedValue = ref(null);
 const selectRef = ref(null);
 
-// Build dropdown items: My Forms (value=null) is always the first entry
+// Build dropdown items: My Forms (value=null) is always the first entry,
+// followed by a non-selectable "Group Forms" section header, then tenants.
 const allTenantOptions = computed(() => [
   { id: null, name: t('trans.tenantDropdown.myForms'), value: null },
   { type: 'divider' },
+  { type: 'header', name: t('trans.bCGovNavBar.groupForms') },
   ...tenantStore.tenantsList,
 ]);
 
@@ -286,5 +294,16 @@ $mobile-breakpoint: 600px;
   color: #fcba19;
   flex-shrink: 0;
   cursor: default;
+}
+
+.group-forms-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  padding-top: 0.5rem;
+  padding-bottom: 0.25rem;
 }
 </style>
