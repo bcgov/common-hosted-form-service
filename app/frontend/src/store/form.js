@@ -98,6 +98,8 @@ const genInitialForm = () => ({
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
+  enableSubmissionPackageEmail: false,
+  submissionCompletionTemplateId: null,
 });
 
 export const useFormStore = defineStore('form', {
@@ -503,6 +505,8 @@ export const useFormStore = defineStore('form', {
             : false,
           formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
+          submissionCompletionTemplateId: this.submissionCompletionTemplateId,
+          enableSubmissionPackageEmail: this.enableSubmissionPackageEmail,
         });
 
         // update user labels with any new added labels

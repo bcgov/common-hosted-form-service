@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
   return knex.schema.alterTable('form', (table) => {
-    table.boolean('enableSubmissionCompletionEmail').notNullable().defaultTo(false);
+    table.boolean('enableSubmissionPackageEmail').notNullable().defaultTo(false);
 
     table.uuid('submissionCompletionTemplateId').nullable();
 
@@ -23,6 +23,6 @@ exports.down = function (knex) {
 
     table.dropColumn('submissionCompletionTemplateId');
 
-    table.dropColumn('enableSubmissionCompletionEmail');
+    table.dropColumn('enableSubmissionPackageEmail');
   });
 };
