@@ -6,8 +6,7 @@ module.exports = {
    */
   issueFormToken: async (req, res, next) => {
     try {
-      // You may want to validate input here
-      const payload = { ...req.body, formId: req.params.formId };
+      const payload = { formId: req.params.formId };
       const token = await tokenService.createToken(payload);
       res.status(201).json({ token });
     } catch (error) {

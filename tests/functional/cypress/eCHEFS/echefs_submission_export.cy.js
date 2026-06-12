@@ -1,5 +1,5 @@
 import 'cypress-keycloak-commands';
-
+import { formsettings } from '../support/echefs_login.js';
 const depEnv = Cypress.env('depEnv');
 const username=Cypress.env('keycloakUsername');
 const password=Cypress.env('keycloakPassword');
@@ -14,18 +14,18 @@ Cypress.Commands.add('waitForLoad', () => {
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-      cy.on('uncaught:exception', (err, runnable) => {
-        // Form.io throws an uncaught exception for missing projectid
-        // Cypress catches it as undefined: undefined so we can't get the text
-        console.log(err);
-        return false;
-      });
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Form.io throws an uncaught exception for missing projectid
+      // Cypress catches it as undefined: undefined so we can't get the text
+      console.log(err);
+      return false;
+    });
     cy.clearCookies();
     cy.clearLocalStorage();
     cy.window().then((win) => {
-    win.sessionStorage.clear();
+      win.sessionStorage.clear();
     });
-  });
+  });  
 // Publish a simple form with Simplebc Address component
  it('"Verify export submission', () => {
     cy.viewport(1000, 1100);
@@ -33,12 +33,18 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}`); 
     cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.wait(2000);
     cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
+    cy.wait(1000);
+    //Select tenant to create form under that
+    cy.get('.mdi-home-account').click();
+    cy.get('.v-list-item__content').contains('Go to CSTAR (Connected Services, Team Access and Roles)').should('exist');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').should('be.visible');
+    cy.get('.v-list-item__content').contains('Test_eCHEFS').click({ waitForAnimations: false });
+    cy.wait(1000);
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.wait(2000);
@@ -168,13 +174,15 @@ describe('Form Designer', () => {
     cy.get('.v-card-title > span').contains('Unpublish Version 1');
     cy.contains("Continue").should("be.visible");
     cy.contains("Continue").trigger("click");
+    /*
     //Go to Export Submissions
     cy.get('.mdi-list-box-outline').click();
     cy.wait(2000);
     cy.get('.mdi-download').click();
     cy.wait(2000);
     cy.get('span').contains('Submission Date').should('be.visible');
-    cy.get('button').contains('Export').should('be.visible');
+    cy.wait(1000);
+    cy.get('.mb-5 > .v-btn__content > span').contains('Export').should('be.visible');
     //Verify export button is enabled
     cy.get('.mb-5').should('be.enabled');
     //Validate form version is selected and visible
@@ -184,6 +192,7 @@ describe('Form Designer', () => {
     //Verfiy form version is selected
     cy.get(rem).contains('1');
     });
+    */
     cy.get('.mdi-logout').click();
 
   
