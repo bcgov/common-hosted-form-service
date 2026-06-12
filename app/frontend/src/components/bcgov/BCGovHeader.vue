@@ -100,7 +100,7 @@ const showTenantDropdown = computed(() => {
       <h1
         v-if="!formSubmitMode"
         data-test="btn-header-title"
-        class="font-weight-bold text-h6 pl-4 header-title d-none d-lg-flex"
+        class="font-weight-bold text-h6 pl-4 header-title d-none d-md-flex"
       >
         {{ appBase }}
       </h1>
