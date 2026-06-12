@@ -499,7 +499,7 @@
    * Configuration via attributes
    * - form-id (string): required. The CHEFS/Form.io form identifier.
    * - auth-token (string): JWT authentication token (preferred).
-   *   - The auth-token should be fetched by your backend server using the protected api-key and form-id via POST /app/gateway/v1/auth/token/forms/<form-id>.
+   *   - The auth-token should be fetched by your backend server via POST /app/gateway/v1/auth/token/forms/<form-id> with required Authorization: Basic base64(formId:apiKey).
    *   - The backend should return the short-lived, refreshable token to the frontend for embedding and authenticating form access.
    *   - Enables automatic token refresh based on expiry time. Refreshed 60 seconds before expiry.
    * - api-key (string): API access key (fallback, only if auth-token is not available).
