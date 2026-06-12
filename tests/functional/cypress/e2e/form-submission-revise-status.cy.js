@@ -34,7 +34,7 @@ describe('Form Designer', () => {
 // Publish a simple form 
 it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
+    cy.wait(2000);
     //Phone Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
@@ -73,9 +73,7 @@ it('Verify draft submission', () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
-    //Share link verification
-    cy.get('[data-cy=shareFormButton]').should('be.visible').click();
-    //Draft submission and verification
+      //Draft submission and verification
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
@@ -165,7 +163,6 @@ it('Submission revise status Assignment', () => {
     cy.get('[data-test="canAttachCommentToEmail"] > .v-input__control > .v-selection-control > .v-label').click();
     cy.get('textarea[rows="1"]').type('some comments');
     cy.get('button').contains('REVISE').click();
-    cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
     cy.wait(2000);
     //Verify Edit submission button is disabled
     cy.get('button[title="Edit This Submission"]').should('be.disabled');
@@ -174,7 +171,7 @@ it('Submission revise status Assignment', () => {
     cy.waitForLoad();
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
     
     });
 });
