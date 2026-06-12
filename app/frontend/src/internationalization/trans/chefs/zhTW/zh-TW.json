@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "打開",
   "date": {
     "date": "年-月-日"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "我的表格",
+    "groupForms": "群組表單",
     "createNewForm": "創建新表單",
     "search": "搜索",
     "manage": "管理",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "關於",
     "myForms": "我的表格",
+    "groupForms": "群組表單",
     "createNewForm": "創建新表單",
     "help": "幫助",
     "feedback": "反饋",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "借助 Enterprise CHEFS，團隊可以在其組織的租戶內安全地共享表單、指派角色並管理專案。",
     "enterpriseSectionWelcome": "歡迎使用 Enterprise CHEFS，政府各部門的團隊可以在這裡安全高效地協作。",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "setUpForm": "設置表格",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "租戶:",
-    "infoTooltip": "Enterprise CHEFS 是支持多租戶訪問的新版本 CHEFS。選擇您的租戶將自動帶您到那裡。",
+    "infoTooltip": "選擇您的租戶以存取群組表單。隨時切換回「我的表格」。",
     "selectLabel": "選擇租戶（在 Enterprise CHEFS 中打開）",
     "placeholder": "從可用租戶中選擇",
     "noDataText": "未找到租戶",
-    "switchToClassic": "切換到 Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "轉到 CSTAR（連接服務、團隊訪問和角色）",
     "noTenantsAvailable": "沒有可用的租戶",
     "manageTenantsIn": "在以下位置管理租戶",

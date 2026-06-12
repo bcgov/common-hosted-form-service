@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "ਖੁੱਲਾ",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "ਮੇਰੇ ਫਾਰਮ",
+    "groupForms": "ਗਰੁੱਪ ਫਾਰਮ",
     "createNewForm": "ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
     "search": "ਖੋਜ",
     "manage": "ਪ੍ਰਬੰਧ ਕਰਨਾ, ਕਾਬੂ ਕਰਨਾ",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "ਬਾਰੇ",
     "myForms": "ਮੇਰੇ ਫਾਰਮ",
+    "groupForms": "ਗਰੁੱਪ ਫਾਰਮ",
     "createNewForm": "ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
     "help": "ਮਦਦ ਕਰੋ",
     "feedback": "ਸੁਝਾਅ",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Enterprise CHEFS ਨਾਲ, ਟੀਮਾਂ ਆਪਣੇ ਸੰਗਠਨ ਦੇ ਕਿਰਾਏਦਾਰ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਫਾਰਮ ਸਾਂਝੇ ਕਰ ਸਕਦੀਆਂ ਹਨ ਅਤੇ ਪ੍ਰੋਜੈਕਟ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
     "enterpriseSectionWelcome": "Enterprise CHEFS ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ, ਜਿੱਥੇ ਸਰਕਾਰ ਭਰ ਦੀਆਂ ਟੀਮਾਂ ਸੁਰੱਖਿਅਤ ਅਤੇ ਕੁਸ਼ਲਤਾ ਨਾਲ ਸਹਿਯੋਗ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "ਕਿਰਾਏਦਾਰ:",
-    "infoTooltip": "Enterprise CHEFS CHEFS ਦਾ ਨਵਾਂ ਸੰਸਕਰਣ ਹੈ ਜੋ ਬਹੁ-ਕਿਰਾਏਦਾਰ ਪਹੁੰਚ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਕਿਰਾਏਦਾਰ ਦੀ ਚੋਣ ਕਰਨ ਨਾਲ ਤੁਹਾਨੂੰ ਆਪਣੇ ਆਪ ਉੱਥੇ ਲੈ ਜਾਵੇਗਾ।",
+    "infoTooltip": "ਗਰੁੱਪ ਫਾਰਮਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਆਪਣਾ ਟੈਨੇਂਟ ਚੁਣੋ। ਕਿਸੇ ਵੀ ਸਮੇਂ 'ਮੇਰੇ ਫਾਰਮ' 'ਤੇ ਵਾਪਸ ਜਾਓ।",
     "selectLabel": "ਕਿਰਾਏਦਾਰ ਚੁਣੋ (Enterprise CHEFS ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ)",
     "placeholder": "ਉਪਲਬਧ ਕਿਰਾਏਦਾਰਾਂ ਵਿੱਚੋਂ ਚੁਣੋ",
     "noDataText": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਨਹੀਂ ਮਿਲਿਆ",
-    "switchToClassic": "Personal CHEFS ਤੇ ਸਵਿੱਚ ਕਰੋ",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "CSTAR ਤੇ ਜਾਓ (ਕਨੈਕਟਡ ਸੇਵਾਵਾਂ, ਟੀਮ ਪਹੁੰਚ ਅਤੇ ਭੂਮਿਕਾਵਾਂ)",
     "noTenantsAvailable": "ਕੋਈ ਕਿਰਾਏਦਾਰ ਉਪਲਬਧ ਨਹੀਂ",
     "manageTenantsIn": "ਕਿਰਾਏਦਾਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",

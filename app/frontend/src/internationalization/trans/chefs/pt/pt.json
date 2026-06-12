@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Abrir",
   "date": {
     "date": "aaaa-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Meus formulários",
+    "groupForms": "Formulários de Grupo",
     "createNewForm": "Criar um novo formulário",
     "search": "Procurar",
     "manage": "Gerenciar",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "Sobre",
     "myForms": "Meus formulários",
+    "groupForms": "Formulários de Grupo",
     "createNewForm": "Criar um novo formulário",
     "help": "Ajuda",
     "feedback": "Opinião",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Com o Enterprise CHEFS, as equipes podem compartilhar formulários com segurança, atribuir funções e gerenciar projetos dentro do tenant da sua organização.",
     "enterpriseSectionWelcome": "Bem-vindo ao Enterprise CHEFS, onde equipes de todo o governo podem colaborar de forma segura e eficiente.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "setUpForm": "Configurar formulário",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "Tenant:",
-    "infoTooltip": "Enterprise CHEFS é a nova versão do CHEFS que suporta acesso multi-inquilino. Selecionar seu inquilino o levará automaticamente para lá.",
+    "infoTooltip": "Selecione seu tenant para acessar os Formulários de Grupo. Volte para 'Meus formulários' a qualquer momento.",
     "selectLabel": "Selecione inquilino (abre no Enterprise CHEFS)",
     "placeholder": "Selecione entre os inquilinos disponíveis",
     "noDataText": "Nenhum inquilino encontrado",
-    "switchToClassic": "Mudar para Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Ir para CSTAR (Serviços conectados, acesso de equipe e funções)",
     "noTenantsAvailable": "Nenhum inquilino disponível",
     "manageTenantsIn": "Gerenciar inquilinos em",

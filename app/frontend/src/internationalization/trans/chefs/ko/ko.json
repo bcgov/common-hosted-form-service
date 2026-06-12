@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "열려 있는",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "내 양식",
+    "groupForms": "그룹 양식",
     "createNewForm": "새 양식 만들기",
     "search": "찾다",
     "manage": "관리하다",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "에 대한",
     "myForms": "내 양식",
+    "groupForms": "그룹 양식",
     "createNewForm": "새 양식 만들기",
     "help": "돕다",
     "feedback": "피드백",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Enterprise CHEFS를 사용하면 팀이 조직의 테넌트 내에서 안전하게 양식을 공유하고 역할을 할당하며 프로젝트를 관리할 수 있습니다.",
     "enterpriseSectionWelcome": "Enterprise CHEFS에 오신 것을 환영합니다. 정부 전체의 팀이 안전하고 효율적으로 협업할 수 있는 곳입니다.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "setUpForm": "양식 설정",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "테넌트:",
-    "infoTooltip": "Enterprise CHEFS는 다중 테넌트 액세스를 지원하는 CHEFS의 새 버전입니다. 테넌트를 선택하면 자동으로 이동합니다.",
+    "infoTooltip": "그룹 양식에 액세스하려면 테넌트를 선택하세요. 언제든지 '내 양식'으로 다시 전환하세요.",
     "selectLabel": "테넌트 선택 (Enterprise CHEFS에서 열림)",
     "placeholder": "사용 가능한 테넌트에서 선택",
     "noDataText": "테넌트를 찾을 수 없음",
-    "switchToClassic": "Personal CHEFS로 전환",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "CSTAR로 이동 (연결된 서비스, 팀 액세스 및 역할)",
     "noTenantsAvailable": "사용 가능한 테넌트 없음",
     "manageTenantsIn": "테넌트 관리 위치",

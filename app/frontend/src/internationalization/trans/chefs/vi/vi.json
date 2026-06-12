@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "mở",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "biểu mẫu của tôi",
+    "groupForms": "Biểu mẫu nhóm",
     "createNewForm": "Tạo một biểu mẫu mới",
     "search": "Tìm kiếm",
     "manage": "Quản lý",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "Về",
     "myForms": "biểu mẫu của tôi",
+    "groupForms": "Biểu mẫu nhóm",
     "createNewForm": "Tạo một biểu mẫu mới",
     "help": "Giúp đỡ",
     "feedback": "Nhận xét",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Với Enterprise CHEFS, các nhóm có thể chia sẻ biểu mẫu một cách an toàn, phân công vai trò và quản lý dự án trong phạm vi người thuê của tổ chức họ.",
     "enterpriseSectionWelcome": "Chào mừng đến với Enterprise CHEFS, nơi các nhóm trên toàn chính phủ có thể cộng tác một cách an toàn và hiệu quả.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
+    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
+    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
+    "multiTenancyBullet1": "manage many forms across programs or environments",
+    "multiTenancyBullet2": "have multiple administrators or reviewers",
+    "multiTenancyBullet3": "experience frequent staffing changes",
+    "multiTenancyBullet4": "want centralized access management",
+    "multiTenancyBullet5": "are adopting other connected services such as Notify",
+    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
+    "multiTenancyBtnLabel": "Login to CSTAR to get started"
   },
   "baseStepper": {
     "setUpForm": "Thiết lập biểu mẫu",
@@ -1440,12 +1452,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "My Forms",
     "tenantLabel": "Người thuê:",
-    "infoTooltip": "Enterprise CHEFS là phiên bản mới của CHEFS hỗ trợ truy cập đa thuê bao. Chọn thuê bao của bạn sẽ tự động đưa bạn đến đó.",
+    "infoTooltip": "Chọn tenant của bạn để truy cập Biểu mẫu nhóm. Chuyển lại 'biểu mẫu của tôi' bất cứ lúc nào.",
     "selectLabel": "Chọn thuê bao (mở trong Enterprise CHEFS)",
     "placeholder": "Chọn từ các thuê bao có sẵn",
     "noDataText": "Không tìm thấy thuê bao",
-    "switchToClassic": "Chuyển sang Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Đi đến CSTAR (Dịch vụ kết nối, quyền truy cập nhóm và vai trò)",
     "noTenantsAvailable": "Không có thuê bao nào",
     "manageTenantsIn": "Quản lý thuê bao trong",
