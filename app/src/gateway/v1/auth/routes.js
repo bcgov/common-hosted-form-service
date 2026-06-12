@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-// just reusing this for now...
-const apiAccess = require('../../../forms/auth/middleware/apiAccess');
+const requireApiKeyBasic = require('./middleware/requireApiKeyBasic');
 
 const controller = require('./controller');
 
 // Issue a new token for a specific form
-router.post('/token/forms/:formId', apiAccess, controller.issueFormToken);
+router.post('/token/forms/:formId', requireApiKeyBasic, controller.issueFormToken);
 
 // Refresh an existing token
 router.post('/refresh', controller.refreshToken);
