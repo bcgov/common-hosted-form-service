@@ -1,8 +1,5 @@
-
 const depEnv = Cypress.env('depEnv');
 const baseUrl = Cypress.env('baseUrl');
-
-
 
 describe('Application About Page', () => {
   it('Visits the app about page', () => {
@@ -14,12 +11,9 @@ describe('Application About Page', () => {
     }
     else
     {
-      
-      cy.visit(`/${depEnv}`);
-      //cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
-      cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+      cy.visit(`${depEnv}`);
+      cy.wait(500); // Wait for 5 seconds to allow the page to load completely
     }
-    
     cy.checkA11yPage();
   });
 });
