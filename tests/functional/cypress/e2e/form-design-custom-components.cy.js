@@ -30,7 +30,6 @@ describe("Form Designer", () => {
   });
   it("Add IDIR User Component", () => {
     cy.viewport(1000, 1100);
-    cy.wait(1000);
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="idirusers"]')
@@ -47,20 +46,21 @@ describe("Form Designer", () => {
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(1000);
+    // Filter the newly created form
     cy.location('search').then(search => {
-          //let pathName = fullUrl.pathname
+      //let pathName = fullUrl.pathname
     let arr = search.split('=');
     let arrayValues = arr[1].split('&');
     cy.log(arrayValues[0]);
-    //Go to  Menu
-    cy.get('.mdi-dots-vertical').click();
-    cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
-    cy.wait(1000);
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
     //Publish the form
-    cy.get(".v-label > span").click();
-    cy.get("span").contains("Publish Version 1");
-    cy.contains("Continue").should("be.visible");
-    cy.contains("Continue").trigger("click");
+    cy.get('.v-label > span').click();
+    cy.get('span').contains('Publish Version 1');
+    cy.contains('Continue').should('be.visible');
+    cy.contains('Continue').trigger('click');
+    
+    
     //codogs file upload
     cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     let fileUploadInputField = cy.get('input[type=file]');
@@ -71,11 +71,9 @@ describe("Form Designer", () => {
     cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('input[type="radio"][value="default"]').should('be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
-    cy.wait(1000);
-    cy.get('input[type="radio"][aria-label="Direct Print"]').click({ force: true });
-    cy.wait(1000);
+    cy.get('input[type="radio"][aria-label="Direct Print"]').click();
     cy.wait(500);
-    cy.get('.pl-12 > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.get('.pl-12 > .v-text-field > .v-input__control > .v-field > .v-field__append-inner').click();
     cy.wait(1000);
     cy.get('div.v-list-item-title').contains('test.docx').click();
     cy.get('input[type="radio"][value="formName"]').should('be.checked');
@@ -94,6 +92,7 @@ describe("Form Designer", () => {
     //Submit the form
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.wait(1000);
+    });
     cy.get('input[placeholder="Search by first name"]').type("CHEFS");
     cy.get('input[placeholder="Search by email"]').type("chefs.testing@gov.bc.ca");
     //Search button
@@ -121,7 +120,6 @@ describe("Form Designer", () => {
     cy.get('.mdi-printer').should('be.visible').click();
     cy.wait(1000);
     cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
-   })
-});
+   });
 
 });

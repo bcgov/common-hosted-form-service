@@ -12,13 +12,20 @@ Cypress.Commands.add('waitForLoad', () => {
 
 describe('Form Designer', () => {
 
-    cy.on('uncaught:exception', (err, runnable) => {
-      // Form.io throws an uncaught exception for missing projectid
-      // Cypress catches it as undefined: undefined so we can't get the text
-      console.log(err);
-      return false;
+    beforeEach(()=>{
+      cy.on('uncaught:exception', (err, runnable) => {
+        // Form.io throws an uncaught exception for missing projectid
+        // Cypress catches it as undefined: undefined so we can't get the text
+        console.log(err);
+        return false;
+      });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+    win.sessionStorage.clear();
     });
-it('Form Settings page', () => {
+    });
+    it('Form Settings page', () => {
     
     cy.viewport(1000, 1100);
     formsettings();
@@ -33,7 +40,6 @@ it('Getting page', () => {
 // Checks the Container component
 it('Checks the Container component', () => {
     cy.viewport(1000, 1100); 
-    
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Container')
@@ -150,7 +156,7 @@ it('Checks the Container component', () => {
       //cy.get('.mdi-delete').click();
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
-      cy.get('#logoutButton > .v-btn__content > span').click();
+      cy.get('.mdi-logout').click();
      
    })
     
