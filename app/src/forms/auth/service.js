@@ -220,7 +220,13 @@ const service = {
   recordLoginHistory: async (userId, idpCode) => {
     if (idpCode !== 'public') {
       try {
-        await UserLoginHistory.query().insert({ userId, idpCode, lastLoginAt: new Date().toISOString() }).onConflict(['userId', 'idpCode']).merge(['lastLoginAt']);
+        const throttleMs = 5 * 60 * 1000;
+        const threshold = new Date(Date.now() - throttleMs).toISOString();
+        await UserLoginHistory.query()
+          .insert({ userId, idpCode, lastLoginAt: new Date().toISOString() })
+          .onConflict(['userId', 'idpCode'])
+          .merge(['lastLoginAt'])
+          .where('user_login_history.last_login_at', '<', threshold);
       } catch (err) {
         log.error('Failed to record login history', err);
       }
