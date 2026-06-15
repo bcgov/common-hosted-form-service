@@ -141,10 +141,8 @@ const service = {
       const allRoles = await Role.query().withGraphFetched('permissions');
       for (const item of items) {
         if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
-          // Tenant users require headers for API authentication
-          if (!headers) {
-            throw new Error('Headers required for tenant user form access');
-          }
+          // Group-only tenanted forms need tenant context to look up roles; skip if no headers
+          if (!headers) continue;
 
           if (!userGroupsByTenant.has(item.tenantId)) {
             const userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);

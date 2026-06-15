@@ -113,11 +113,15 @@ describe('TenantService', () => {
       await expect(tenantService.getCurrentUserTenants(req)).rejects.toThrow();
     });
 
-    it('should throw error on axios 500 response', async () => {
+    it('should return empty array and mark degraded on 500', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
+      const reqMutable = { currentUser: { idpUserId: userId }, headers: { authorization: 'Bearer testtoken' } };
       mockAxios.onGet(apiUrl).reply(500, { error: 'Internal Server Error' });
 
-      await expect(tenantService.getCurrentUserTenants(req)).rejects.toThrow();
+      const tenants = await tenantService.getCurrentUserTenants(reqMutable);
+
+      expect(tenants).toEqual([]);
+      expect(reqMutable._tenantServiceDegraded).toBe(true);
     });
 
     it('should return empty array and mark degraded on 503', async () => {

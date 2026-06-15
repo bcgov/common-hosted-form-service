@@ -138,6 +138,87 @@ describe('recordLoginHistory', () => {
 });
 
 describe('getUserForms', () => {
+  // Helper: creates a thenable query builder whose modify() returns itself
+  const makeQueryObj = (resolvedItems) => {
+    const queryObj = {
+      modify: jest.fn().mockReturnThis(),
+    };
+    queryObj.then = (resolve, reject) => Promise.resolve(resolvedItems).then(resolve, reject);
+    return queryObj;
+  };
+
+  it('personal path returns all forms without a whereNull filter', async () => {
+    const userInfo = { id: 'user-1' };
+    const items = [{ formId: 'personal-form', tenantId: null, idps: ['idir'], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ active: true });
+    const queryObj = makeQueryObj(items);
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    const filterFormsSpy = jest.spyOn(service, 'filterForms').mockReturnValue(['personal-form']);
+
+    const result = await service.getUserForms(userInfo, {});
+
+    expect(queryObj.modify).toHaveBeenCalledWith('filterUserId', userInfo.id);
+    expect(queryObj.modify).not.toHaveBeenCalledWith('whereNull', 'tenantId');
+    expect(filterFormsSpy).toHaveBeenCalledWith(userInfo, items, undefined);
+    expect(result).toEqual(['personal-form']);
+  });
+
+  it('personal path: tenanted form with IDIR IDP is included in query results when no tenant header', async () => {
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const items = [{ formId: 'tenanted-form', tenantId: 'tenant-1', idps: ['idir'], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ active: true });
+    const queryObj = makeQueryObj(items);
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    const filterFormsSpy = jest.spyOn(service, 'filterForms').mockReturnValue(['tenanted-form']);
+
+    // No headers — simulates submitter on /form/submit where x-tenant-id is stripped
+    const result = await service.getUserForms(userInfo, { formId: 'tenanted-form' });
+
+    expect(filterFormsSpy).toHaveBeenCalledWith(userInfo, items, undefined);
+    expect(result).toEqual(['tenanted-form']);
+  });
+
+  it('personal path: tenanted group-only form is skipped gracefully when no headers (no throw, no tenant service call)', async () => {
+    const userInfo = { id: 'user-1' };
+    const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ active: true });
+    const queryObj = makeQueryObj(items);
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    const tenantSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles');
+    jest.spyOn(service, 'filterForms').mockReturnValue([]);
+
+    // Should not throw and should not attempt to fetch tenant groups
+    await expect(service.getUserForms(userInfo, {})).resolves.toEqual([]);
+    expect(tenantSpy).not.toHaveBeenCalled();
+  });
+
+  it('personal path: tenanted group-only form populates tenant roles when headers are present', async () => {
+    const userInfo = { id: 'user-1' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ active: true });
+    const queryObj = makeQueryObj(items);
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    jest.spyOn(Role, 'query').mockReturnValue({
+      withGraphFetched: jest.fn().mockResolvedValue([{ code: 'submission_reviewer', permissions: [{ code: 'submission_read' }] }]),
+    });
+    jest.spyOn(FormGroup, 'query').mockReturnValue({ modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', roles: ['submission_reviewer'] }]);
+    jest.spyOn(service, 'filterForms').mockReturnValue(['group-form']);
+
+    const result = await service.getUserForms(userInfo, {}, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-1');
+    expect(result).toEqual(['group-form']);
+  });
+
   it('returns filtered tenant forms and enriches with tenant roles/permissions when headers are provided', async () => {
     const userInfo = { id: 'user-1', tenantId: 'tenant-1' };
     const headers = { authorization: 'Bearer token' };

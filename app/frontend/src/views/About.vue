@@ -4,8 +4,10 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
+import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 import { useIdpStore } from '~/store/identityProviders';
 
 const { locale } = useI18n({ useScope: 'global' });
@@ -13,6 +15,8 @@ const { locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const tenantStore = useTenantStore();
+const appStore = useAppStore();
 const idpStore = useIdpStore();
 
 const { authenticated } = storeToRefs(authStore);
@@ -21,6 +25,7 @@ const { primaryIdpLoginHints } = storeToRefs(idpStore);
 
 const howToVideoUrl = computed(() => import.meta.env.VITE_HOWTOURL);
 const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
+const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
 
 function handleCreateOrLogin() {
   if (authenticated.value) {
@@ -44,6 +49,7 @@ function handleCreateOrLogin() {
           <h1 class="my-5 d-block" :lang="locale">
             {{ $t('trans.homePage.title') }}
           </h1>
+
           <p :lang="locale">{{ $t('trans.homePage.subTitle') }}<br /></p>
 
           <v-btn
@@ -64,6 +70,43 @@ function handleCreateOrLogin() {
               $t('trans.homePage.createFormLabel')
             }}</span>
           </v-btn>
+
+          <div
+            v-if="tenantStore.isTenantFeatureEnabled"
+            class="multitenancy-card mb-6 text-left"
+            :lang="locale"
+          >
+            <p class="multitenancy-card-title mb-2">
+              {{ $t('trans.homePage.multiTenancyTitle') }}
+            </p>
+            <p class="mb-3">
+              {{ $t('trans.homePage.multiTenancySubTitle') }}
+            </p>
+            <p class="font-weight-bold mb-2">
+              {{ $t('trans.homePage.multiTenancyFitHeading') }}
+            </p>
+            <ul class="multitenancy-list mb-3">
+              <li>{{ $t('trans.homePage.multiTenancyBullet1') }}</li>
+              <li>{{ $t('trans.homePage.multiTenancyBullet2') }}</li>
+              <li>{{ $t('trans.homePage.multiTenancyBullet3') }}</li>
+              <li>{{ $t('trans.homePage.multiTenancyBullet4') }}</li>
+              <li>{{ $t('trans.homePage.multiTenancyBullet5') }}</li>
+            </ul>
+            <p class="mb-4">
+              {{ $t('trans.homePage.multiTenancyFooter') }}
+            </p>
+            <v-btn
+              v-if="cstarBaseUrl"
+              variant="flat"
+              color="white"
+              :href="cstarBaseUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="multitenancy-btn"
+            >
+              {{ $t('trans.homePage.multiTenancyBtnLabel') }}
+            </v-btn>
+          </div>
 
           <h2 id="video" class="pt-5" :lang="locale">
             {{ $t('trans.homePage.takeATourOfChefs') }}
@@ -202,6 +245,39 @@ function handleCreateOrLogin() {
   .main-video {
     margin-top: 40px;
     margin-bottom: 20px;
+  }
+}
+
+.multitenancy-card {
+  background-color: #003366;
+  border: 1px solid #fcba19;
+  border-left: 5px solid #fcba19;
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 1.5rem 1.75rem;
+
+  .multitenancy-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .multitenancy-list {
+    padding-left: 1.5rem;
+
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .multitenancy-btn {
+    color: #003366 !important;
+    font-weight: 700;
+  }
+
+  p,
+  li {
+    color: #ffffff;
   }
 }
 </style>
