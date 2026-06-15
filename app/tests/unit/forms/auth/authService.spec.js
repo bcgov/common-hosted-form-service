@@ -1,7 +1,7 @@
 const service = require('../../../../src/forms/auth/service');
 const idpService = require('../../../../src/components/idpService');
 const tenantService = require('../../../../src/components/tenantService');
-const { UserFormAccess, FormGroup, Role } = require('../../../../src/forms/common/models');
+const { UserFormAccess, FormGroup, Role, UserLoginHistory } = require('../../../../src/forms/common/models');
 const { queryUtils } = require('../../../../src/forms/common/utils');
 
 afterEach(() => {
@@ -62,13 +62,78 @@ describe('login', () => {
     expect(service.getUserId).toBeCalledTimes(1);
     expect(service.getUserId).toBeCalledWith({ idp: 'fake' });
     expect(result).toBeTruthy();
-    expect(result).toEqual(resultSample);
+    expect(result).toEqual(expect.objectContaining(resultSample));
   });
 
   it('works with no params supplied', async () => {
     const token = 'token';
     const result = await service.login(token);
-    expect(result).toEqual(resultSample);
+    expect(result).toEqual(expect.objectContaining(resultSample));
+  });
+
+  it('uses canonicalCode for usernameIdp when IDP has extra.canonicalCode', async () => {
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'azureidir' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'azureidir', code: 'azureidir', extra: { canonicalCode: 'idir' } });
+    service.getUserId = jest.fn().mockReturnValue({ username: 'testuser', idpCode: 'azureidir' });
+
+    const result = await service.login('token');
+
+    expect(result.usernameIdp).toEqual('testuser@idir');
+    expect(result.idpHint).toEqual('idir');
+  });
+
+  it('uses code for usernameIdp when no canonicalCode', async () => {
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'idir' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'idir', code: 'idir', extra: { sortOrder: 10 } });
+    service.getUserId = jest.fn().mockReturnValue({ username: 'testuser', idpCode: 'idir' });
+
+    const result = await service.login('token');
+
+    expect(result.usernameIdp).toEqual('testuser@idir');
+    expect(result.idpHint).toEqual('idir');
+  });
+
+  it('omits usernameIdp when user has no idpCode', async () => {
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'public' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'public', code: 'public', extra: {} });
+    service.getUserId = jest.fn().mockReturnValue({ username: 'public', idpCode: null });
+
+    const result = await service.login('token');
+
+    expect(result.usernameIdp).toEqual('public');
+  });
+});
+
+describe('recordLoginHistory', () => {
+  it('inserts a record for an authenticated user', async () => {
+    const whereRawMock = jest.fn().mockResolvedValue({});
+    const mergeMock = jest.fn().mockReturnValue({ whereRaw: whereRawMock });
+    const onConflictMock = jest.fn().mockReturnValue({ merge: mergeMock });
+    const insertMock = jest.fn().mockReturnValue({ onConflict: onConflictMock });
+    jest.spyOn(UserLoginHistory, 'query').mockReturnValue({ insert: insertMock });
+
+    await service.recordLoginHistory('user-uuid', 'idir');
+
+    expect(insertMock).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-uuid', idpCode: 'idir' }));
+    expect(onConflictMock).toHaveBeenCalledWith(['userId', 'idpCode']);
+    expect(mergeMock).toHaveBeenCalledWith(['lastLoginAt']);
+  });
+
+  it('skips insert for public idpCode', async () => {
+    const querySpy = jest.spyOn(UserLoginHistory, 'query');
+
+    await service.recordLoginHistory('user-uuid', 'public');
+
+    expect(querySpy).not.toHaveBeenCalled();
+  });
+
+  it('does not throw when upsert fails', async () => {
+    const insertMock = jest
+      .fn()
+      .mockReturnValue({ onConflict: jest.fn().mockReturnValue({ merge: jest.fn().mockReturnValue({ whereRaw: jest.fn().mockRejectedValue(new Error('db error')) }) }) });
+    jest.spyOn(UserLoginHistory, 'query').mockReturnValue({ insert: insertMock });
+
+    await expect(service.recordLoginHistory('user-uuid', 'idir')).resolves.not.toThrow();
   });
 });
 

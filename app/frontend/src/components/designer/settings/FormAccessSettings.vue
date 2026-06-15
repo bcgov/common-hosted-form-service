@@ -53,7 +53,7 @@ const userTypeRef = ref(null); // use this to trigger validation on the v-autoco
 const idpStore = useIdpStore();
 
 const { form, isRTL } = storeToRefs(useFormStore());
-const { loginButtons } = storeToRefs(idpStore);
+const { formAccessButtons } = storeToRefs(idpStore);
 
 const ID_MODE = computed(() => IdentityMode);
 
@@ -146,7 +146,7 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
         <div v-if="form.userType === ID_MODE.LOGIN" class="pl-6">
           <div>
             <v-checkbox
-              v-for="btn in loginButtons"
+              v-for="btn in formAccessButtons"
               :key="btn.code"
               v-model="idpType"
               :label="btn.display"
