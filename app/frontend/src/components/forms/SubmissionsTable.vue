@@ -413,6 +413,7 @@ function onShowColumnDialog() {
 }
 
 async function updateTableOptions({ page, itemsPerPage, sortBy }) {
+  if (loading.value && !firstDataLoad.value) return;
   if (page) {
     currentPage.value = page;
   }
