@@ -135,7 +135,22 @@ const service = {
       return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active).whereNull('tenantId');
+      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
+      const userGroupsByTenant = new Map();
+      const allRoles = await Role.query().withGraphFetched('permissions');
+      for (const item of items) {
+        if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
+          // Group-only tenanted forms need tenant context to look up roles; skip if no headers
+          if (!headers) continue;
+
+          if (!userGroupsByTenant.has(item.tenantId)) {
+            const userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);
+            userGroupsByTenant.set(item.tenantId, userGroups);
+          }
+
+          await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
+        }
+      }
 
       return service.filterForms(userInfo, items, params.accessLevels);
     }
