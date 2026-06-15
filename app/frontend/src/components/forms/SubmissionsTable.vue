@@ -61,6 +61,7 @@ const singleSubmissionDelete = ref(false);
 const singleSubmissionRestore = ref(false);
 const sort = ref({});
 const firstDataLoad = ref(true);
+const isFetching = ref(false);
 const drawerOpen = ref(false);
 
 // When filtering, this data will not be preselected when clicking reset
@@ -505,6 +506,8 @@ async function populateSubmissionsTable() {
 }
 
 async function refreshSubmissions() {
+  if (isFetching.value) return;
+  isFetching.value = true;
   loading.value = true;
   Promise.all([
     formStore.getFormRolesForUser(properties.formId),
@@ -523,6 +526,7 @@ async function refreshSubmissions() {
       loading.value = false;
     })
     .finally(() => {
+      isFetching.value = false;
       selectedSubmissions.value = [];
     });
 }
