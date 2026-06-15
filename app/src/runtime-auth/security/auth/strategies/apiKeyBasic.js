@@ -4,24 +4,13 @@
  */
 
 const ERRORS = require('../../errorMessages');
+const { parseBasicPair } = require('../utils/basicAuth');
 const { validateApiKey } = require('../utils/apiKeyValidation');
 const { createApiKeyAuthResult } = require('../utils/authResult');
 
 function canHandle(req) {
   const h = req.headers?.authorization || '';
   return /^Basic\s+/i.test(h);
-}
-
-function parseBasicPair(header) {
-  try {
-    const base64 = header.replace(/^Basic\s+/i, '');
-    const decoded = Buffer.from(base64, 'base64').toString('utf8');
-    const idx = decoded.indexOf(':');
-    if (idx === -1) return null;
-    return { formId: decoded.slice(0, idx), apiKey: decoded.slice(idx + 1) };
-  } catch {
-    return null;
-  }
 }
 
 module.exports = function apiKeyBasicFactory({ deps }) {

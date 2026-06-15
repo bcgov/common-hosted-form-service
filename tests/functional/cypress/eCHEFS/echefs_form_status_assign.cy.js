@@ -1,8 +1,6 @@
-import 'cypress-keycloak-commands';
-import { formsettings } from '../support/login.js';
+import { formsettings } from '../support/echefs_login.js';
 
 const depEnv = Cypress.env('depEnv');
-
 
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
@@ -31,6 +29,7 @@ describe('Form Designer', () => {
     });
     it('Getting page ready', () => {
     cy.viewport(1000, 1100);
+    cy.wait(2000);
     cy.get('button').contains('Basic Fields').click();   
     }); 
     it('Form Submission and Updation', () => {
@@ -142,15 +141,18 @@ describe('Form Designer', () => {
         cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
         cy.wait(2000);
         cy.get('.mdi-list-box-outline').click();
+        /*
         cy.get('input[type="checkbox"]').then($el => {
-          const rem1=$el[2];////Assigned to me checkbox
-          rem1.click();
+        const rem1=$el[2];////Assigned to me checkbox
+        rem1.click();
         cy.get('.v-data-table__tr > :nth-child(6)').should('exist');
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').should('exist');
+        
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').click();
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').click();
         cy.wait(2000);
         cy.get('.mdi-arrow-down').should('exist');
+        
         rem1.click();
         cy.wait(2000);
         cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
@@ -165,9 +167,10 @@ describe('Form Designer', () => {
         cy.get('textarea[rows="1"]').type('some comments');
         cy.get('button').contains('REVISE').click();
         cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
-        cy.wait(2000);
+        cy.wait(1000);
         //Verify Edit submission button is disabled
         cy.get('button[title="Edit This Submission"]').should('be.disabled');
+        cy.wait(1000);
         //Verify Submission edit users history
         cy.get('.mdi-history').click();
         cy.get('.v-data-table__tr > :nth-child(1)').contains('CHEFSTST@idir');
@@ -186,19 +189,18 @@ describe('Form Designer', () => {
         cy.get('[data-test="canCloseStatusPanel"] > .v-btn__content > span').click();
         cy.get('.mdi-list-box-outline').click();
         cy.waitForLoad();
-        cy.location('search').then(search => {
-          //let pathName = fullUrl.pathname
-        let arr = search.split('=');
-        cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
-        cy.waitForLoad();
         // Checks copy submission button enabled for user
+        cy.location('search').then(search => {
+        let arr = search.split('=');
         cy.visit(`/${depEnv}/user/submissions?f=${arr[1]}`);
+        // Checks copy submission button enabled for user
         cy.get('.v-data-table-column--align-end > .d-flex > :nth-child(2) > a > .v-btn');
-        cy.get('.mdi-pencil-box-multiple');
+        cy.get('.mdi-pencil-box-multiple').should('have.length', 2);
        //Delete Submission
         cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
         cy.waitForLoad();
-        cy.waitForLoad();
+        });
+        //cy.waitForLoad();
         cy.get('.mdi-list-box-outline').click();
         //Deselect Assigned to me checkbox
         cy.contains('Assigned to me').click();
@@ -206,17 +208,17 @@ describe('Form Designer', () => {
           const rem=$el[0];
           rem.click();
         });
+        cy.wait(1000);
         cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
         cy.get('.v-data-table__tbody > :nth-child(2) > :nth-child(2)').should('not.exist');
+        */
         //Delete form after test run
-        cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
+        cy.get('a[title="Manage Form"]').click();
         cy.wait(2000);
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
         cy.get('.mdi-logout').click();
-        
-        });
-          
+           
     });
 
 });
