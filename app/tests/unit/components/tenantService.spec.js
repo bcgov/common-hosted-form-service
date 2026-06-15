@@ -5,6 +5,9 @@ const config = require('config');
 const jwtService = require('../../../src/components/jwtService');
 jest.mock('../../../src/components/jwtService');
 
+const idpService = require('../../../src/components/idpService');
+jest.mock('../../../src/components/idpService');
+
 const { Role, User } = require('../../../src/forms/common/models');
 const Form = require('../../../src/forms/common/models/tables/form');
 const FormGroup = require('../../../src/forms/common/models/tables/formGroup');
@@ -949,40 +952,36 @@ describe('TenantService', () => {
     const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
     const apiUrl = `${endpoint}${listGroupsForUserForTenantPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
 
+    const primaryProviders = [
+      { code: 'idir', primary: true, extra: { sortOrder: 10 } },
+      { code: 'azureidir', primary: true, extra: { canonicalCode: 'idir', sortOrder: 10 } },
+    ];
+
     beforeEach(() => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
+      idpService.getIdentityProviders = jest.fn().mockResolvedValue(primaryProviders);
     });
 
     it('should return true for IDIR user without tenantId', async () => {
-      const req = {
-        currentUser: {
-          idp: 'idir',
-          idpUserId: userId,
-        },
-      };
+      const req = { currentUser: { idpHint: 'idir', idpUserId: userId } };
+
+      const result = await tenantService.canCreateForm(req);
+      expect(result).toBe(true);
+    });
+
+    it('should return true for IDIR MFA (azureidir) user without tenantId', async () => {
+      const req = { currentUser: { idpHint: 'idir', idpUserId: userId } };
 
       const result = await tenantService.canCreateForm(req);
       expect(result).toBe(true);
     });
 
     it('should return true for IDIR user with tenantId and form_admin role', async () => {
-      const req = {
-        currentUser: {
-          idp: 'idir',
-          idpUserId: userId,
-          tenantId: tenantId,
-        },
-      };
+      const req = { currentUser: { idpHint: 'idir', idpUserId: userId, tenantId } };
 
       mockAxios.onGet(apiUrl).reply(200, {
         data: {
-          groups: [
-            {
-              id: 'group-1',
-              name: 'Admin Group',
-              sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }],
-            },
-          ],
+          groups: [{ id: 'group-1', name: 'Admin Group', sharedServiceRoles: [{ name: 'form_admin', isDeleted: false }] }],
         },
       });
 
@@ -991,23 +990,11 @@ describe('TenantService', () => {
     });
 
     it('should return false for IDIR user with tenantId but no form_admin role', async () => {
-      const req = {
-        currentUser: {
-          idp: 'idir',
-          idpUserId: userId,
-          tenantId: tenantId,
-        },
-      };
+      const req = { currentUser: { idpHint: 'idir', idpUserId: userId, tenantId } };
 
       mockAxios.onGet(apiUrl).reply(200, {
         data: {
-          groups: [
-            {
-              id: 'group-1',
-              name: 'Regular Group',
-              sharedServiceRoles: [{ name: 'form_designer', isDeleted: false }],
-            },
-          ],
+          groups: [{ id: 'group-1', name: 'Regular Group', sharedServiceRoles: [{ name: 'form_designer', isDeleted: false }] }],
         },
       });
 
@@ -1016,12 +1003,7 @@ describe('TenantService', () => {
     });
 
     it('should return false for non-IDIR user', async () => {
-      const req = {
-        currentUser: {
-          idp: 'bceid',
-          idpUserId: userId,
-        },
-      };
+      const req = { currentUser: { idpHint: 'bceid', idpUserId: userId } };
 
       const result = await tenantService.canCreateForm(req);
       expect(result).toBe(false);
@@ -1032,13 +1014,7 @@ describe('TenantService', () => {
     });
 
     it('should throw error when getUserTenantGroupsAndRoles fails', async () => {
-      const req = {
-        currentUser: {
-          idp: 'idir',
-          idpUserId: userId,
-          tenantId: tenantId,
-        },
-      };
+      const req = { currentUser: { idpHint: 'idir', idpUserId: userId, tenantId } };
 
       mockAxios.onGet(apiUrl).networkError();
 

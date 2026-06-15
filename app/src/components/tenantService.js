@@ -1,6 +1,7 @@
 const config = require('config');
 const axios = require('axios');
 const jwtService = require('./jwtService');
+const idpService = require('./idpService');
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
@@ -401,10 +402,12 @@ async function canCreateForm(req) {
     throw new TypeError(`${SERVICE}: missing currentUser`);
   }
 
-  const idpCode = req.currentUser?.idp?.toLowerCase();
+  const idpHint = req.currentUser?.idpHint?.toLowerCase();
   const tenantId = req.currentUser?.tenantId;
 
-  if (idpCode !== 'idir') return false;
+  const providers = await idpService.getIdentityProviders(true);
+  const primaryCanonicalCodes = new Set(providers.filter((p) => p.primary).map((p) => p.extra?.canonicalCode || p.code));
+  if (!primaryCanonicalCodes.has(idpHint)) return false;
   if (!tenantId) return true;
 
   const groups = await module.exports.getUserTenantGroupsAndRoles(req, tenantId);

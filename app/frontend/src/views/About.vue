@@ -2,25 +2,43 @@
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useTenantStore } from '~/store/tenant';
+import { useIdpStore } from '~/store/identityProviders';
 
 const { locale } = useI18n({ useScope: 'global' });
 
+const router = useRouter();
 const authStore = useAuthStore();
 const formStore = useFormStore();
 const tenantStore = useTenantStore();
 const appStore = useAppStore();
+const idpStore = useIdpStore();
 
 const { authenticated } = storeToRefs(authStore);
 const { isRTL } = storeToRefs(formStore);
+const { primaryIdpLoginHints } = storeToRefs(idpStore);
 
 const howToVideoUrl = computed(() => import.meta.env.VITE_HOWTOURL);
 const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
 const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
+
+function handleCreateOrLogin() {
+  if (authenticated.value) {
+    router.push({ name: 'FormCreate' });
+  } else {
+    authStore.redirectUri =
+      location.origin + router.resolve({ name: 'FormCreate' }).href;
+    router.push({
+      name: 'Login',
+      query: { idpHint: primaryIdpLoginHints.value },
+    });
+  }
+}
 </script>
 
 <template>
@@ -35,7 +53,6 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
           <p :lang="locale">{{ $t('trans.homePage.subTitle') }}<br /></p>
 
           <v-btn
-            :to="{ name: 'FormCreate' }"
             class="mb-5"
             color="primary"
             data-test="create-or-login-btn"
@@ -44,6 +61,7 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
                 ? $t('trans.homePage.loginToStart')
                 : $t('trans.homePage.createFormLabel')
             "
+            @click="handleCreateOrLogin"
           >
             <span v-if="!authenticated" :lang="locale">{{
               $t('trans.homePage.loginToStart')
@@ -185,7 +203,6 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
             {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
           <v-btn
-            :to="{ name: 'FormCreate' }"
             class="mb-5"
             color="primary"
             :title="
@@ -193,6 +210,7 @@ const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
                 ? $t('trans.shareForm.shareForm')
                 : $t('trans.homePage.createFormLabel')
             "
+            @click="handleCreateOrLogin"
           >
             <span v-if="!authenticated" :lang="locale">{{
               $t('trans.homePage.logInToGetStarted')

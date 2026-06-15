@@ -100,9 +100,11 @@ function resetModels() {
   // IdentityProvider model setup
   IdentityProvider.query = jest.fn().mockReturnThis();
   IdentityProvider.where = jest.fn().mockReturnThis();
+  IdentityProvider.whereRaw = jest.fn().mockReturnThis();
   IdentityProvider.modify = jest.fn().mockReturnThis();
   IdentityProvider.first = jest.fn().mockResolvedValue({ code: 'idir', active: true });
   IdentityProvider.insert = jest.fn().mockReturnThis();
+  IdentityProvider.select = jest.fn().mockResolvedValue([]);
 
   // FormIdentityProvider model setup
   FormIdentityProvider.query = jest.fn().mockReturnThis();
