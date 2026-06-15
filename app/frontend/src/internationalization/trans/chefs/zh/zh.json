@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "欢迎使用 Enterprise CHEFS，政府各部门的团队可以在这里安全高效地协作。",
     "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS 现在支持多租户！",
+    "multiTenancySubTitle": "为您的项目或团队创建一个群组，并在一个地方管理整个群组的共享表单访问权限。",
+    "multiTenancyFitHeading": "如果您符合以下情况，这可能非常适合您的团队：",
+    "multiTenancyBullet1": "跨程序或环境管理许多表单",
+    "multiTenancyBullet2": "拥有多个管理员或审核员",
+    "multiTenancyBullet3": "经历频繁的人员变动",
+    "multiTenancyBullet4": "希望集中管理访问权限",
+    "multiTenancyBullet5": "正在采用 Notify 等其他连接服务",
+    "multiTenancyFooter": "团队负责人和管理员可以使用 CSTAR 创建租户并管理其团队的访问权限。",
+    "multiTenancyBtnLabel": "登录 CSTAR 开始使用"
   },
   "baseStepper": {
     "setUpForm": "设置表格",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "我的表格",
     "tenantLabel": "租户:",
     "infoTooltip": "选择您的租户以访问群组表单。随时切换回'我的表格'。",
     "selectLabel": "选择租户（在 Enterprise CHEFS 中打开）",

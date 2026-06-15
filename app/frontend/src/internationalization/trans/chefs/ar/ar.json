@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "مرحبًا بك في CHEFS المؤسسي، حيث يمكن للفرق عبر الحكومة التعاون بأمان وكفاءة.",
     "classicChefsLabel": "Classic CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "يدعم CHEFS الآن تعدد المستأجرين!",
+    "multiTenancySubTitle": "أنشئ مجموعة لمشروعك أو فريقك وأدر الوصول إلى النماذج المشتركة للمجموعة بأكملها في مكان واحد.",
+    "multiTenancyFitHeading": "قد يكون هذا مناسبًا لفريقك إذا كنت:",
+    "multiTenancyBullet1": "تدير العديد من النماذج عبر البرامج أو البيئات",
+    "multiTenancyBullet2": "لديك مسؤولون أو مراجعون متعددون",
+    "multiTenancyBullet3": "تواجه تغييرات متكررة في الموظفين",
+    "multiTenancyBullet4": "تريد إدارة مركزية للوصول",
+    "multiTenancyBullet5": "تتبنى خدمات متصلة أخرى مثل Notify",
+    "multiTenancyFooter": "يمكن لقادة الفريق والمسؤولين استخدام CSTAR لإنشاء مستأجر وإدارة الوصول لفريقهم.",
+    "multiTenancyBtnLabel": "تسجيل الدخول إلى CSTAR للبدء"
   },
   "baseStepper": {
     "designForm": "نموذج التصميم",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "نماذجي",
     "tenantLabel": "المستأجر:",
     "infoTooltip": "حدد المستأجر الخاص بك للوصول إلى نماذج المجموعة. العودة إلى 'نماذجي' في أي وقت.",
     "selectLabel": "حدد المستأجر (يفتح في Enterprise CHEFS)",

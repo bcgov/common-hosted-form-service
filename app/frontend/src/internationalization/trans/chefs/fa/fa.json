@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "به CHEFS سازمانی خوش آمدید، جایی که تیم‌های سراسر دولت می‌توانند به‌طور ایمن و کارآمد همکاری کنند.",
     "classicChefsLabel": "Classic CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS اکنون از چند مستأجری پشتیبانی می‌کند!",
+    "multiTenancySubTitle": "یک گروه برای پروژه یا تیم خود ایجاد کنید و دسترسی به فرم‌های مشترک را برای کل گروه در یک مکان مدیریت کنید.",
+    "multiTenancyFitHeading": "این ممکن است برای تیم شما مناسب باشد اگر:",
+    "multiTenancyBullet1": "فرم‌های زیادی را در برنامه‌ها یا محیط‌های مختلف مدیریت می‌کنید",
+    "multiTenancyBullet2": "چندین مدیر یا بازبین دارید",
+    "multiTenancyBullet3": "تغییرات مکرر کارکنان را تجربه می‌کنید",
+    "multiTenancyBullet4": "مدیریت دسترسی متمرکز می‌خواهید",
+    "multiTenancyBullet5": "خدمات متصل دیگری مانند Notify را پذیرفته‌اید",
+    "multiTenancyFooter": "سرپرستان تیم و مدیران می‌توانند از CSTAR برای ایجاد مستأجر و مدیریت دسترسی تیم خود استفاده کنند.",
+    "multiTenancyBtnLabel": "برای شروع وارد CSTAR شوید"
   },
   "baseStepper": {
     "setUpForm": "فرم را تنظیم کنید",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "فرم های من",
     "tenantLabel": "مستأجر:",
     "infoTooltip": "برای دسترسی به فرم‌های گروهی مستأجر خود را انتخاب کنید. هر زمان به 'فرم های من' بازگردید.",
     "selectLabel": "مستأجر را انتخاب کنید (در Enterprise CHEFS باز می‌شود)",

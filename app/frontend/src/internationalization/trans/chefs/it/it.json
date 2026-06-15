@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Benvenuto in Enterprise CHEFS, dove i team di tutta l'amministrazione pubblica possono collaborare in modo sicuro ed efficiente.",
     "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS ora supporta il multi-tenancy!",
+    "multiTenancySubTitle": "Crea un gruppo per il tuo progetto o team e gestisci l'accesso ai moduli condivisi per l'intero gruppo in un unico posto.",
+    "multiTenancyFitHeading": "Questa potrebbe essere una buona soluzione per il tuo team se:",
+    "multiTenancyBullet1": "gestisci molti moduli in diversi programmi o ambienti",
+    "multiTenancyBullet2": "hai più amministratori o revisori",
+    "multiTenancyBullet3": "affronti frequenti cambiamenti del personale",
+    "multiTenancyBullet4": "desideri una gestione centralizzata degli accessi",
+    "multiTenancyBullet5": "stai adottando altri servizi connessi come Notify",
+    "multiTenancyFooter": "I responsabili del team e gli amministratori possono usare CSTAR per creare un tenant e gestire l'accesso per il loro team.",
+    "multiTenancyBtnLabel": "Accedi a CSTAR per iniziare"
   },
   "baseStepper": {
     "setUpForm": "Imposta modulo",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "Le mie Forme",
     "tenantLabel": "Tenant:",
     "infoTooltip": "Seleziona il tuo tenant per accedere ai Moduli di Gruppo. Torna a 'Le mie Forme' in qualsiasi momento.",
     "selectLabel": "Seleziona tenant (si apre in Enterprise CHEFS)",

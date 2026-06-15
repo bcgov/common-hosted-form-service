@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Bienvenido a Enterprise CHEFS, donde los equipos de todo el gobierno pueden colaborar de forma segura y eficiente.",
     "classicChefsLabel": "Classic CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "¡CHEFS ahora admite multi-tenancy!",
+    "multiTenancySubTitle": "Crea un grupo para tu proyecto o equipo y gestiona el acceso a formularios compartidos para todo el grupo en un solo lugar.",
+    "multiTenancyFitHeading": "Esto podría ser una buena opción para tu equipo si:",
+    "multiTenancyBullet1": "gestionas muchos formularios en diferentes programas o entornos",
+    "multiTenancyBullet2": "tienes múltiples administradores o revisores",
+    "multiTenancyBullet3": "experimentas cambios frecuentes de personal",
+    "multiTenancyBullet4": "deseas una gestión de acceso centralizada",
+    "multiTenancyBullet5": "estás adoptando otros servicios conectados como Notify",
+    "multiTenancyFooter": "Los líderes de equipo y administradores pueden usar CSTAR para crear un tenant y gestionar el acceso para su equipo.",
+    "multiTenancyBtnLabel": "Iniciar sesión en CSTAR para comenzar"
   },
   "baseStepper": {
     "setUpForm": "Configurar formulario",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "Mis formularios",
     "tenantLabel": "Inquilino:",
     "infoTooltip": "Seleccione su tenant para acceder a los Formularios de Grupo. Vuelva a 'Mis formularios' en cualquier momento.",
     "selectLabel": "Seleccionar inquilino (se abre en Enterprise CHEFS)",

@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Enterprise CHEFS ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ, ਜਿੱਥੇ ਸਰਕਾਰ ਭਰ ਦੀਆਂ ਟੀਮਾਂ ਸੁਰੱਖਿਅਤ ਅਤੇ ਕੁਸ਼ਲਤਾ ਨਾਲ ਸਹਿਯੋਗ ਕਰ ਸਕਦੀਆਂ ਹਨ।",
     "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS ਹੁਣ ਮਲਟੀ-ਟੈਨੈਂਸੀ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ!",
+    "multiTenancySubTitle": "ਆਪਣੇ ਪ੍ਰੋਜੈਕਟ ਜਾਂ ਟੀਮ ਲਈ ਇੱਕ ਗਰੁੱਪ ਬਣਾਓ ਅਤੇ ਪੂਰੇ ਗਰੁੱਪ ਲਈ ਸਾਂਝੇ ਫਾਰਮਾਂ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਇੱਕ ਜਗ੍ਹਾ ਪ੍ਰਬੰਧਿਤ ਕਰੋ।",
+    "multiTenancyFitHeading": "ਇਹ ਤੁਹਾਡੀ ਟੀਮ ਲਈ ਉਚਿਤ ਹੋ ਸਕਦਾ ਹੈ ਜੇ ਤੁਸੀਂ:",
+    "multiTenancyBullet1": "ਵੱਖ-ਵੱਖ ਪ੍ਰੋਗਰਾਮਾਂ ਜਾਂ ਵਾਤਾਵਰਣਾਂ ਵਿੱਚ ਬਹੁਤ ਸਾਰੇ ਫਾਰਮ ਪ੍ਰਬੰਧਿਤ ਕਰਦੇ ਹੋ",
+    "multiTenancyBullet2": "ਕਈ ਪ੍ਰਸ਼ਾਸਕ ਜਾਂ ਸਮੀਖਿਅਕ ਹਨ",
+    "multiTenancyBullet3": "ਅਕਸਰ ਸਟਾਫਿੰਗ ਬਦਲਾਅ ਦਾ ਅਨੁਭਵ ਕਰਦੇ ਹੋ",
+    "multiTenancyBullet4": "ਕੇਂਦਰੀਕ੍ਰਿਤ ਐਕਸੈੱਸ ਪ੍ਰਬੰਧਨ ਚਾਹੁੰਦੇ ਹੋ",
+    "multiTenancyBullet5": "Notify ਵਰਗੀਆਂ ਹੋਰ ਕਨੈਕਟਡ ਸੇਵਾਵਾਂ ਅਪਣਾ ਰਹੇ ਹੋ",
+    "multiTenancyFooter": "ਟੀਮ ਲੀਡ ਅਤੇ ਪ੍ਰਸ਼ਾਸਕ CSTAR ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਇੱਕ ਟੈਨੈਂਟ ਬਣਾ ਸਕਦੇ ਹਨ ਅਤੇ ਆਪਣੀ ਟੀਮ ਲਈ ਐਕਸੈੱਸ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦੇ ਹਨ।",
+    "multiTenancyBtnLabel": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ CSTAR ਵਿੱਚ ਲੌਗਇਨ ਕਰੋ"
   },
   "baseStepper": {
     "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "ਮੇਰੇ ਫਾਰਮ",
     "tenantLabel": "ਕਿਰਾਏਦਾਰ:",
     "infoTooltip": "ਗਰੁੱਪ ਫਾਰਮਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਆਪਣਾ ਟੈਨੇਂਟ ਚੁਣੋ। ਕਿਸੇ ਵੀ ਸਮੇਂ 'ਮੇਰੇ ਫਾਰਮ' 'ਤੇ ਵਾਪਸ ਜਾਓ।",
     "selectLabel": "ਕਿਰਾਏਦਾਰ ਚੁਣੋ (Enterprise CHEFS ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ)",
