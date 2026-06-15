@@ -1002,16 +1002,16 @@
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
     "getStarted": "Commencer",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS prend maintenant en charge la multi-location !",
+    "multiTenancySubTitle": "Créez un groupe pour votre projet ou votre équipe et gérez l'accès aux formulaires partagés pour l'ensemble du groupe en un seul endroit.",
+    "multiTenancyFitHeading": "Cela pourrait convenir à votre équipe si vous :",
+    "multiTenancyBullet1": "gérez de nombreux formulaires dans différents programmes ou environnements",
+    "multiTenancyBullet2": "avez plusieurs administrateurs ou réviseurs",
+    "multiTenancyBullet3": "faites face à des changements fréquents de personnel",
+    "multiTenancyBullet4": "souhaitez une gestion centralisée des accès",
+    "multiTenancyBullet5": "adoptez d'autres services connectés comme Notify",
+    "multiTenancyFooter": "Les responsables d'équipe et les administrateurs peuvent utiliser CSTAR pour créer un locataire et gérer l'accès pour leur équipe.",
+    "multiTenancyBtnLabel": "Se connecter à CSTAR pour commencer"
   },
   "baseStepper": {
     "setUpForm": "Configurer le formulaire",
@@ -1478,7 +1478,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "Mes formulaires",
     "tenantLabel": "Locataire :",
     "infoTooltip": "Sélectionnez votre locataire pour accéder aux Formulaires de Groupe. Revenez à 'Mes formulaires' à tout moment.",
     "selectLabel": "Sélectionnez le locataire (s'ouvre dans Enterprise CHEFS)",

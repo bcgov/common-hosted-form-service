@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Willkommen bei Enterprise CHEFS, wo Teams in der gesamten Regierung sicher und effizient zusammenarbeiten können.",
     "classicChefsLabel": "Classic CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS unterstützt jetzt Multi-Tenancy!",
+    "multiTenancySubTitle": "Erstellen Sie eine Gruppe für Ihr Projekt oder Team und verwalten Sie den Zugriff auf gemeinsame Formulare für die gesamte Gruppe an einem Ort.",
+    "multiTenancyFitHeading": "Dies könnte für Ihr Team geeignet sein, wenn Sie:",
+    "multiTenancyBullet1": "viele Formulare über Programme oder Umgebungen hinweg verwalten",
+    "multiTenancyBullet2": "mehrere Administratoren oder Prüfer haben",
+    "multiTenancyBullet3": "häufige Personalwechsel erleben",
+    "multiTenancyBullet4": "zentralisiertes Zugriffsmanagement wünschen",
+    "multiTenancyBullet5": "andere verbundene Dienste wie Notify einführen",
+    "multiTenancyFooter": "Teamleiter und Administratoren können CSTAR verwenden, um einen Mandanten zu erstellen und den Zugriff für ihr Team zu verwalten.",
+    "multiTenancyBtnLabel": "Bei CSTAR anmelden, um zu beginnen"
   },
   "baseStepper": {
     "designForm": "Designform",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "Meine Formulare",
     "tenantLabel": "Mandant:",
     "infoTooltip": "Wählen Sie Ihren Mandanten aus, um auf Gruppenformulare zuzugreifen. Wechseln Sie jederzeit zurück zu 'Meine Formulare'.",
     "selectLabel": "Mandant auswählen (öffnet in Enterprise CHEFS)",

@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Chào mừng đến với Enterprise CHEFS, nơi các nhóm trên toàn chính phủ có thể cộng tác một cách an toàn và hiệu quả.",
     "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS hiện hỗ trợ đa người thuê!",
+    "multiTenancySubTitle": "Tạo một nhóm cho dự án hoặc nhóm của bạn và quản lý quyền truy cập vào các biểu mẫu được chia sẻ cho toàn bộ nhóm ở một nơi.",
+    "multiTenancyFitHeading": "Điều này có thể phù hợp với nhóm của bạn nếu bạn:",
+    "multiTenancyBullet1": "quản lý nhiều biểu mẫu trên các chương trình hoặc môi trường",
+    "multiTenancyBullet2": "có nhiều quản trị viên hoặc người xem xét",
+    "multiTenancyBullet3": "thường xuyên thay đổi nhân sự",
+    "multiTenancyBullet4": "muốn quản lý quyền truy cập tập trung",
+    "multiTenancyBullet5": "đang áp dụng các dịch vụ kết nối khác như Notify",
+    "multiTenancyFooter": "Trưởng nhóm và quản trị viên có thể sử dụng CSTAR để tạo tenant và quản lý quyền truy cập cho nhóm của họ.",
+    "multiTenancyBtnLabel": "Đăng nhập vào CSTAR để bắt đầu"
   },
   "baseStepper": {
     "setUpForm": "Thiết lập biểu mẫu",
@@ -1452,7 +1452,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "biểu mẫu của tôi",
     "tenantLabel": "Người thuê:",
     "infoTooltip": "Chọn tenant của bạn để truy cập Biểu mẫu nhóm. Chuyển lại 'biểu mẫu của tôi' bất cứ lúc nào.",
     "selectLabel": "Chọn thuê bao (mở trong Enterprise CHEFS)",

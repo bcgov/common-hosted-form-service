@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Enterprise CHEFS में आपका स्वागत है, जहाँ सरकार भर की टीमें सुरक्षित और कुशलतापूर्वक सहयोग कर सकती हैं।",
     "classicChefsLabel": "Classic CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS अब मल्टी-टेनेंसी को सपोर्ट करता है!",
+    "multiTenancySubTitle": "अपने प्रोजेक्ट या टीम के लिए एक ग्रुप बनाएं और पूरे ग्रुप के लिए साझा फ़ॉर्म तक पहुंच को एक जगह प्रबंधित करें।",
+    "multiTenancyFitHeading": "यह आपकी टीम के लिए उपयुक्त हो सकता है यदि आप:",
+    "multiTenancyBullet1": "विभिन्न कार्यक्रमों या परिवेशों में कई फ़ॉर्म प्रबंधित करते हैं",
+    "multiTenancyBullet2": "कई प्रशासक या समीक्षक हैं",
+    "multiTenancyBullet3": "अक्सर स्टाफिंग बदलाव का अनुभव करते हैं",
+    "multiTenancyBullet4": "केंद्रीकृत एक्सेस प्रबंधन चाहते हैं",
+    "multiTenancyBullet5": "Notify जैसी अन्य कनेक्टेड सेवाओं को अपना रहे हैं",
+    "multiTenancyFooter": "टीम लीड और प्रशासक CSTAR का उपयोग करके एक टेनेंट बना सकते हैं और अपनी टीम के लिए एक्सेस प्रबंधित कर सकते हैं।",
+    "multiTenancyBtnLabel": "शुरुआत करने के लिए CSTAR में लॉगिन करें"
   },
   "baseStepper": {
     "setUpForm": "फॉर्म सेट करें",
@@ -1484,7 +1484,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "मेरे प्रपत्र",
     "tenantLabel": "किरायेदार:",
     "infoTooltip": "समूह फ़ॉर्म तक पहुँचने के लिए अपना टेनेंट चुनें। कभी भी 'मेरे प्रपत्र' पर वापस स्विच करें।",
     "selectLabel": "टेनेंट चुनें (Enterprise CHEFS में खुलता है)",

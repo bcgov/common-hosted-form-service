@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Enterprise CHEFSへようこそ。政府全体のチームが安全かつ効率的に協力できる場所です。",
     "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFSがマルチテナントに対応しました！",
+    "multiTenancySubTitle": "プロジェクトやチームのグループを作成し、グループ全体の共有フォームへのアクセスを一か所で管理できます。",
+    "multiTenancyFitHeading": "次のような場合、あなたのチームに適しているかもしれません：",
+    "multiTenancyBullet1": "プログラムや環境をまたいで多くのフォームを管理している",
+    "multiTenancyBullet2": "複数の管理者やレビュアーがいる",
+    "multiTenancyBullet3": "頻繁な人員変更がある",
+    "multiTenancyBullet4": "アクセス管理を一元化したい",
+    "multiTenancyBullet5": "Notifyなど他の連携サービスを導入している",
+    "multiTenancyFooter": "チームリーダーや管理者はCSTARを使用してテナントを作成し、チームのアクセス管理ができます。",
+    "multiTenancyBtnLabel": "CSTARにログインして始める"
   },
   "baseStepper": {
     "setUpForm": "フォームの設定",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "私のフォーム",
     "tenantLabel": "テナント:",
     "infoTooltip": "グループフォームにアクセスするにはテナントを選択してください。いつでも「私のフォーム」に切り替えられます。",
     "selectLabel": "テナントを選択（Enterprise CHEFS で開く）",

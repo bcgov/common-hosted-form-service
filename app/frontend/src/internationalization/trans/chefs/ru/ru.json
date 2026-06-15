@@ -1008,16 +1008,16 @@
     "enterpriseSectionWelcome": "Добро пожаловать в Enterprise CHEFS, где команды по всему правительству могут безопасно и эффективно сотрудничать.",
     "classicChefsLabel": "Personal CHEFS",
     "enterpriseChefsLabel": "Enterprise CHEFS",
-    "multiTenancyTitle": "CHEFS now supports multi-tenancy!",
-    "multiTenancySubTitle": "Create a group for your project or team and manage access to shared forms for the entire group in one place.",
-    "multiTenancyFitHeading": "This might be a good fit for your team if you:",
-    "multiTenancyBullet1": "manage many forms across programs or environments",
-    "multiTenancyBullet2": "have multiple administrators or reviewers",
-    "multiTenancyBullet3": "experience frequent staffing changes",
-    "multiTenancyBullet4": "want centralized access management",
-    "multiTenancyBullet5": "are adopting other connected services such as Notify",
-    "multiTenancyFooter": "Team leads and administrators can use CSTAR to create a tenant and manage access for their team.",
-    "multiTenancyBtnLabel": "Login to CSTAR to get started"
+    "multiTenancyTitle": "CHEFS теперь поддерживает мультиарендность!",
+    "multiTenancySubTitle": "Создайте группу для своего проекта или команды и управляйте доступом к общим формам для всей группы в одном месте.",
+    "multiTenancyFitHeading": "Это может подойти вашей команде, если вы:",
+    "multiTenancyBullet1": "управляете множеством форм в разных программах или средах",
+    "multiTenancyBullet2": "имеете несколько администраторов или рецензентов",
+    "multiTenancyBullet3": "часто меняете состав сотрудников",
+    "multiTenancyBullet4": "хотите централизованного управления доступом",
+    "multiTenancyBullet5": "внедряете другие подключённые сервисы, такие как Notify",
+    "multiTenancyFooter": "Руководители команд и администраторы могут использовать CSTAR для создания арендатора и управления доступом для своей команды.",
+    "multiTenancyBtnLabel": "Войти в CSTAR, чтобы начать"
   },
   "baseStepper": {
     "setUpForm": "Настройка формы",
@@ -1448,7 +1448,7 @@
     }
   },
   "tenantDropdown": {
-    "myForms": "My Forms",
+    "myForms": "Мои формы",
     "tenantLabel": "Арендатор:",
     "infoTooltip": "Выберите арендатора для доступа к Групповым формам. Вернитесь к 'Мои формы' в любое время.",
     "selectLabel": "Выберите арендатора (открывается в Enterprise CHEFS)",
