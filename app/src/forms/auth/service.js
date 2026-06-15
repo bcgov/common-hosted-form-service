@@ -226,7 +226,7 @@ const service = {
           .insert({ userId, idpCode, lastLoginAt: new Date().toISOString() })
           .onConflict(['userId', 'idpCode'])
           .merge(['lastLoginAt'])
-          .where('user_login_history.last_login_at', '<', threshold);
+          .whereRaw('"user_login_history"."lastLoginAt" < ?', [threshold]);
       } catch (err) {
         log.error('Failed to record login history', err);
       }
