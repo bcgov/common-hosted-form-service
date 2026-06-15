@@ -128,7 +128,9 @@ describe('recordLoginHistory', () => {
   });
 
   it('does not throw when upsert fails', async () => {
-    const insertMock = jest.fn().mockReturnValue({ onConflict: jest.fn().mockReturnValue({ merge: jest.fn().mockReturnValue({ whereRaw: jest.fn().mockRejectedValue(new Error('db error')) }) }) });
+    const insertMock = jest
+      .fn()
+      .mockReturnValue({ onConflict: jest.fn().mockReturnValue({ merge: jest.fn().mockReturnValue({ whereRaw: jest.fn().mockRejectedValue(new Error('db error')) }) }) });
     jest.spyOn(UserLoginHistory, 'query').mockReturnValue({ insert: insertMock });
 
     await expect(service.recordLoginHistory('user-uuid', 'idir')).resolves.not.toThrow();
