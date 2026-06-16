@@ -198,7 +198,7 @@ describe('getUserForms', () => {
     expect(tenantSpy).not.toHaveBeenCalled();
   });
 
-  it('personal path: tenanted group-only form does not resolve tenant roles even when headers are present', async () => {
+  it('personal path: group-only form without formId param does not resolve tenant roles (list-all / My Forms case)', async () => {
     const userInfo = { id: 'user-1' };
     const headers = { authorization: 'Bearer token' };
     const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
@@ -209,12 +209,36 @@ describe('getUserForms', () => {
     const tenantSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles');
     jest.spyOn(service, 'filterForms').mockReturnValue([]);
 
-    // Outside of an actively selected tenant, group-only forms must stay unresolved
-    // (and therefore excluded) regardless of whether headers happen to be present.
+    // No formId in params → list-all path (My Forms). Group-only forms must stay
+    // unresolved so they are excluded outside of an actively selected tenant context.
     const result = await service.getUserForms(userInfo, {}, headers);
 
     expect(tenantSpy).not.toHaveBeenCalled();
     expect(result).toEqual([]);
+  });
+
+  it('personal path: group-only form WITH formId param resolves tenant roles via form own tenantId (single-form permission check)', async () => {
+    const userInfo = { id: 'user-1' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'group-form', active: true });
+    const queryObj = makeQueryObj(items);
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    jest.spyOn(Role, 'query').mockReturnValue({
+      withGraphFetched: jest.fn().mockResolvedValue([{ code: 'submission_reviewer', permissions: [{ code: 'submission_read' }] }]),
+    });
+    jest.spyOn(FormGroup, 'query').mockReturnValue({ modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', roles: ['submission_reviewer'] }]);
+    jest.spyOn(service, 'filterForms').mockReturnValue(['group-form']);
+
+    // formId in params → single-form permission check (e.g. hasFormPermissions on
+    // /form/submit or /user/draft which never send x-tenant-id). Roles must be
+    // resolved using the form's own tenantId so legitimate group members get access.
+    const result = await service.getUserForms(userInfo, { formId: 'group-form' }, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-1');
+    expect(result).toEqual(['group-form']);
   });
 
   it('returns filtered tenant forms and enriches with tenant roles/permissions when headers are provided', async () => {

@@ -142,10 +142,34 @@ const service = {
     } else {
       // if user has an id, then we fetch whatever forms match the query params
       items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
-      // Group-only tenanted forms (no idps) are only visible/resolvable while
-      // the user is actively in that tenant's context. Outside of that
-      // context they must not appear, even if the user happens to belong to
-      // a matching group, so we leave their roles unresolved (empty) here.
+
+      // For single-form permission checks (params.formId set, e.g. hasFormPermissions
+      // middleware on /form/submit, /user/draft, /user/view), resolve group-based roles
+      // using the form's own tenantId from form_tenant — not from the request header,
+      // since those routes never send x-tenant-id by design. This lets legitimate group
+      // members access the form regardless of which tenant is currently selected in the UI.
+      //
+      // For list-all calls (no formId, e.g. "My Forms"), skip resolution: group-only
+      // forms must only appear when that tenant is actively selected (branch above).
+      if (params.formId && headers) {
+        const userGroupsByTenant = new Map();
+        const allRoles = await Role.query().withGraphFetched('permissions');
+        for (const item of items) {
+          if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
+            if (!userGroupsByTenant.has(item.tenantId)) {
+              let userGroups = [];
+              try {
+                userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);
+              } catch (err) {
+                log.error(`Failed to fetch tenant groups/roles for form ${item.formId} (tenant ${item.tenantId})`, err);
+              }
+              userGroupsByTenant.set(item.tenantId, userGroups);
+            }
+            await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
+          }
+        }
+      }
+
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },
