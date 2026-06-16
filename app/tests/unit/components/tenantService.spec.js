@@ -479,7 +479,7 @@ describe('TenantService', () => {
       await expect(tenantService.getFormGroups(req, formId)).rejects.toThrow('DB error');
     });
 
-    it('should throw error when getGroupsForCurrentTenant fails', async () => {
+    it('should degrade gracefully when getGroupsForCurrentTenant fails (CSTAR unavailable)', async () => {
       FormTenant.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
           first: jest.fn().mockResolvedValue({ formId, tenantId: tenantId }),
@@ -488,13 +488,24 @@ describe('TenantService', () => {
 
       FormGroup.query.mockReturnValue({
         where: jest.fn().mockReturnValue({
-          select: jest.fn().mockResolvedValue([]),
+          select: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]),
         }),
       });
 
       mockAxios.onGet(apiUrl).networkError();
 
-      await expect(tenantService.getFormGroups(req, formId)).rejects.toThrow();
+      const result = await tenantService.getFormGroups(req, formId);
+      expect(result.associatedGroups).toEqual([]);
+      expect(result.availableGroups).toEqual([]);
+      expect(result.missingGroups).toEqual([
+        {
+          id: 'group-1',
+          name: 'Group no longer available',
+          description: 'This group may have been deleted from the tenant',
+          isAssociated: true,
+          isDeleted: true,
+        },
+      ]);
     });
   });
 
