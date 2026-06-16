@@ -51,19 +51,16 @@ describe('BCGovEnterpriseBanner.vue', () => {
     expect(wrapper.find('.context-banner').exists()).toBe(false);
   });
 
-  it('shows personal banner when authenticated, feature enabled, no tenant selected', () => {
+  it('does not render when authenticated, feature enabled, but no tenant selected', () => {
     authStore.authenticated = true;
     tenantStore.isTenantFeatureEnabled = true;
     tenantStore.selectedTenant = null;
 
     const wrapper = mountBanner();
-    expect(wrapper.find('.context-banner').exists()).toBe(true);
-    expect(wrapper.find('.personal-banner').exists()).toBe(true);
-    expect(wrapper.find('.enterprise-banner').exists()).toBe(false);
-    expect(wrapper.text()).toContain('Personal CHEFS');
+    expect(wrapper.find('.context-banner').exists()).toBe(false);
   });
 
-  it('shows enterprise banner when authenticated, feature enabled, tenant selected', () => {
+  it('shows tenant name only in banner when tenant is selected', () => {
     authStore.authenticated = true;
     tenantStore.isTenantFeatureEnabled = true;
     tenantStore.selectedTenant = { name: 'Ministry of Test', roles: [] };
@@ -71,9 +68,8 @@ describe('BCGovEnterpriseBanner.vue', () => {
     const wrapper = mountBanner();
     expect(wrapper.find('.context-banner').exists()).toBe(true);
     expect(wrapper.find('.enterprise-banner').exists()).toBe(true);
-    expect(wrapper.find('.personal-banner').exists()).toBe(false);
-    expect(wrapper.text()).toContain('Enterprise CHEFS');
-    expect(wrapper.text()).toContain('Ministry of Test');
+    expect(wrapper.find('.banner-tenant').text()).toBe('Ministry of Test');
+    expect(wrapper.text()).not.toContain('Enterprise CHEFS');
   });
 
   it('uses displayName as fallback when tenant has no name', () => {

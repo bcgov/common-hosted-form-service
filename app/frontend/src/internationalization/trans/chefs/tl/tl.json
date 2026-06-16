@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Bukas",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Aking Mga Form",
+    "groupForms": "Mga Group Form",
     "createNewForm": "Gumawa ng Bagong Form",
     "search": "Maghanap",
     "manage": "Pamahalaan",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "Tungkol sa",
     "myForms": "Aking Mga Form",
+    "groupForms": "Mga Group Form",
     "createNewForm": "Gumawa ng Bagong Form",
     "help": "Tulong",
     "feedback": "Feedback",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Sa Enterprise CHEFS, ang mga koponan ay maaaring ligtas na magbahagi ng mga form, magtalaga ng mga tungkulin, at pamahalaan ang mga proyekto sa loob ng tenant ng kanilang organisasyon.",
     "enterpriseSectionWelcome": "Maligayang pagdating sa Enterprise CHEFS, kung saan ang mga koponan sa buong gobyerno ay maaaring makipagtulungan nang ligtas at mahusay.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "Sinusuportahan na ng CHEFS ang multi-tenancy!",
+    "multiTenancySubTitle": "Lumikha ng grupo para sa iyong proyekto o koponan at pamahalaan ang access sa mga shared na form para sa buong grupo sa isang lugar.",
+    "multiTenancyFitHeading": "Maaari itong maging angkop para sa iyong koponan kung kayo ay:",
+    "multiTenancyBullet1": "namamahala ng maraming form sa iba't ibang programa o kapaligiran",
+    "multiTenancyBullet2": "may maraming tagapangasiwa o tagasuri",
+    "multiTenancyBullet3": "nakakaranas ng madalas na pagbabago ng kawani",
+    "multiTenancyBullet4": "nagnanais ng sentralisadong pamamahala ng access",
+    "multiTenancyBullet5": "nag-aadopt ng iba pang konektadong serbisyo tulad ng Notify",
+    "multiTenancyFooter": "Ang mga lider ng koponan at tagapangasiwa ay maaaring gumamit ng CSTAR para lumikha ng tenant at pamahalaan ang access para sa kanilang koponan.",
+    "multiTenancyBtnLabel": "Mag-login sa CSTAR para magsimula"
   },
   "baseStepper": {
     "setUpForm": "I-set up ang Form",
@@ -1440,12 +1452,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "Aking Mga Form",
     "tenantLabel": "Nangungupahan:",
-    "infoTooltip": "Ang Enterprise CHEFS ay ang bagong bersyon ng CHEFS na sumusuporta sa multi-tenant access. Ang pagpili ng iyong tenant ay awtomatikong dadalhin ka doon.",
+    "infoTooltip": "Piliin ang iyong tenant upang ma-access ang Mga Group Form. Bumalik sa 'Aking Mga Form' anumang oras.",
     "selectLabel": "Pumili ng tenant (bubukas sa Enterprise CHEFS)",
     "placeholder": "Pumili mula sa available na mga tenant",
     "noDataText": "Walang nahanap na tenant",
-    "switchToClassic": "Lumipat sa Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Pumunta sa CSTAR (Konektadong Serbisyo, Team Access at Roles)",
     "noTenantsAvailable": "Walang available na tenant",
     "manageTenantsIn": "Pamahalaan ang mga tenant sa",
