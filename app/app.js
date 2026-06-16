@@ -61,11 +61,12 @@ if (process.env.NODE_ENV !== 'test') {
 
 const v1StatusPath = `${config.get('server.basePath')}${config.get('server.apiPath')}/v1/status`;
 const v2StatusPath = `${config.get('server.basePath')}${config.get('server.apiPath')}/v2/status`;
+const configPath = `${config.get('server.basePath')}/config`;
 
 // Block requests until service is ready, except for /config and /status
 app.use((req, res, next) => {
   // Only skip for exact /config or /status
-  if (req.path === '/config' || req.path === v1StatusPath || req.path === v2StatusPath) {
+  if (req.path === configPath || req.path === v1StatusPath || req.path === v2StatusPath) {
     return next();
   }
   const status = statusService.getStatus();

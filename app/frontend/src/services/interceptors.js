@@ -6,15 +6,21 @@ import { useTenantStore } from '~/store/tenant';
 /**
  * @function appAxios
  * Returns an Axios instance with auth header and preconfiguration
- * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
+ * @param {string} [version='v1'] The API version to use (v1, v2, etc.)
+ * @param {integer} [timeout=60000] Number of milliseconds before timing out the request
  * @returns {object} An axios instance
  */
-export function appAxios(timeout = 60000) {
+export function appAxios(version = 'v1', timeout = 60000) {
+  // Handle case where first argument is a number (backward compatibility for timeout-only calls)
+  if (typeof version === 'number') {
+    timeout = version;
+    version = 'v1';
+  }
   // 2024-01-12 Urgent timeout increase from 10000 to help with performance.
   const appStore = useAppStore();
   const axiosOptions = { timeout: timeout };
   if (appStore.config) {
-    axiosOptions.baseURL = `${appStore.config.basePath}/${appStore.config.apiPath}`;
+    axiosOptions.baseURL = `${appStore.config.basePath}/${appStore.config.apiPath}/${version}`;
   }
 
   const instance = axios.create(axiosOptions);
