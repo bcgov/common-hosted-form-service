@@ -43,7 +43,7 @@ export REPO_NAME=common-hosted-form-service
 export STORAGE_BUCKET=<yourstoragebucket>
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
-  --from-literal=FRONTEND_APIPATH=api/v1 \
+  --from-literal=FRONTEND_APIPATH=api \
   --from-literal=VITE_FRONTEND_BASEPATH=/app \
   --from-literal=FRONTEND_ENV=dev
 ```
@@ -61,7 +61,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-sc-config \
 
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-server-config \
-  --from-literal=SERVER_APIPATH=/api/v1 \
+  --from-literal=SERVER_APIPATH=/api \
   --from-literal=SERVER_BASEPATH=/app \
   --from-literal=SERVER_BODYLIMIT=30mb \
   --from-literal=SERVER_LOGLEVEL=http \

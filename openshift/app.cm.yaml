@@ -18,6 +18,24 @@ objects:
       name: "${APP_NAME}-service-config"
     data:
       SERVER_HOST: ${SERVER_HOST}
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}${CONFIGMAP_SUFFIX}-frontend-config"
+    data:
+      FRONTEND_APIPATH: ${FRONTEND_APIPATH}
+      VITE_FRONTEND_BASEPATH: ${VITE_FRONTEND_BASEPATH}
+      FRONTEND_ENV: ${FRONTEND_ENV}
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}${CONFIGMAP_SUFFIX}-server-config"
+    data:
+      SERVER_APIPATH: ${SERVER_APIPATH}
+      SERVER_BASEPATH: ${SERVER_BASEPATH}
+      SERVER_BODYLIMIT: ${SERVER_BODYLIMIT}
+      SERVER_LOGLEVEL: ${SERVER_LOGLEVEL}
+      SERVER_PORT: ${SERVER_PORT}
 parameters:
   - name: APP_NAME
     description: Application name
@@ -31,6 +49,42 @@ parameters:
     description: Server domain to be used by end users
     displayName: Application name
     required: true
+  - name: CONFIGMAP_SUFFIX
+    description: Optional configmap name suffix (i.e. '-pr-1234' or empty)
+    displayName: ConfigMap Suffix
+    value: ""
+  - name: FRONTEND_APIPATH
+    description: Frontend API path segment
+    displayName: Frontend API Path
+    value: api
+  - name: VITE_FRONTEND_BASEPATH
+    description: Frontend base path
+    displayName: Frontend Base Path
+    value: /app
+  - name: FRONTEND_ENV
+    description: Frontend environment label
+    displayName: Frontend Environment
+    value: dev
+  - name: SERVER_APIPATH
+    description: Backend API base path
+    displayName: Server API Path
+    value: /api
+  - name: SERVER_BASEPATH
+    description: Backend server base path
+    displayName: Server Base Path
+    value: /app
+  - name: SERVER_BODYLIMIT
+    description: Backend request body limit
+    displayName: Server Body Limit
+    value: 30mb
+  - name: SERVER_LOGLEVEL
+    description: Backend log level
+    displayName: Server Log Level
+    value: http
+  - name: SERVER_PORT
+    description: Backend server port
+    displayName: Server Port
+    value: "8080"
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
