@@ -288,7 +288,7 @@ objects:
                 #   value: "/var/log/app.log"
               envFrom:
                 - configMapRef:
-                    name: "${APP_NAME}-frontend-config"
+                    name: "${APP_NAME}${FRONTEND_CONFIGMAP_SUFFIX}-frontend-config"
                 - configMapRef:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
@@ -361,6 +361,10 @@ parameters:
     description: Job identifier (i.e. 'pr-5' OR 'master')
     displayName: Job Branch Name
     required: true
+  - name: FRONTEND_CONFIGMAP_SUFFIX
+    description: Optional suffix for frontend ConfigMap naming (i.e. '-pr-5' or empty)
+    displayName: Frontend ConfigMap Suffix
+    value: ""
   - name: IMAGE_REGISTRY
     description: The container registry
     displayName: Docker Image Registry
