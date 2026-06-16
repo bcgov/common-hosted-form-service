@@ -2,6 +2,7 @@ const config = require('config');
 const axios = require('axios');
 const jwtService = require('./jwtService');
 const idpService = require('./idpService');
+const log = require('./log')(module.filename);
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
@@ -144,8 +145,14 @@ class TenantService {
     const formGroups = await FormGroup.query().where({ formId }).select('groupId');
     const associatedGroupIds = formGroups.map((fg) => fg.groupId);
 
-    // Source of truth
-    const allTenantGroups = await this.getGroupsForCurrentTenant(req);
+    // Source of truth — degrade gracefully if CSTAR is unavailable so a
+    // transient outage doesn't produce an error alert that persists across navigation.
+    let allTenantGroups = [];
+    try {
+      allTenantGroups = await this.getGroupsForCurrentTenant(req);
+    } catch (err) {
+      log.error(`${SERVICE}: failed to fetch tenant groups for ${req.currentUser.tenantId}, degrading to empty group list`, err);
+    }
 
     // Associated and present
     const associatedGroups = allTenantGroups

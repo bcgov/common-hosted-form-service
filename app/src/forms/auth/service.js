@@ -126,7 +126,12 @@ const service = {
         .modify('filterActive', params.active)
         .modify('filterTenantId', userInfo.tenantId);
 
-      const userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, userInfo.tenantId);
+      let userGroups = [];
+      try {
+        userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, userInfo.tenantId);
+      } catch (err) {
+        log.error(`Failed to fetch tenant groups/roles for tenant ${userInfo.tenantId}`, err);
+      }
       const allRoles = await Role.query().withGraphFetched('permissions');
 
       for (const item of items) {
@@ -137,19 +142,31 @@ const service = {
     } else {
       // if user has an id, then we fetch whatever forms match the query params
       items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
-      const userGroupsByTenant = new Map();
-      const allRoles = await Role.query().withGraphFetched('permissions');
-      for (const item of items) {
-        if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
-          // Group-only tenanted forms need tenant context to look up roles; skip if no headers
-          if (!headers) continue;
 
-          if (!userGroupsByTenant.has(item.tenantId)) {
-            const userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);
-            userGroupsByTenant.set(item.tenantId, userGroups);
+      // For single-form permission checks (params.formId set, e.g. hasFormPermissions
+      // middleware on /form/submit, /user/draft, /user/view), resolve group-based roles
+      // using the form's own tenantId from form_tenant — not from the request header,
+      // since those routes never send x-tenant-id by design. This lets legitimate group
+      // members access the form regardless of which tenant is currently selected in the UI.
+      //
+      // For list-all calls (no formId, e.g. "My Forms"), skip resolution: group-only
+      // forms must only appear when that tenant is actively selected (branch above).
+      if (params.formId && headers) {
+        const userGroupsByTenant = new Map();
+        const allRoles = await Role.query().withGraphFetched('permissions');
+        for (const item of items) {
+          if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
+            if (!userGroupsByTenant.has(item.tenantId)) {
+              let userGroups = [];
+              try {
+                userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);
+              } catch (err) {
+                log.error(`Failed to fetch tenant groups/roles for form ${item.formId} (tenant ${item.tenantId})`, err);
+              }
+              userGroupsByTenant.set(item.tenantId, userGroups);
+            }
+            await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
           }
-
-          await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
         }
       }
 
