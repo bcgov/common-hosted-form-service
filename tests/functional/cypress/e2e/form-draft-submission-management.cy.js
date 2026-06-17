@@ -26,7 +26,7 @@ describe('Form Designer', () => {
     formsettings();
     cy.checkA11yPage();
   });  
-it('Getting page', () => {
+  it('Getting page', () => {
     
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
@@ -69,15 +69,8 @@ it('Getting page', () => {
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
     //Share link verification
-    let shareFormButton = cy.get('[data-cy=shareFormButton]');
-    expect(shareFormButton).to.not.be.null;
-    shareFormButton.trigger('click').then(()=>{
-      //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
-      cy.get('.mx-2 > .v-btn').click();
-    })
+    cy.get('[data-cy=shareFormButton]').should('be.visible');
+    cy.get('[data-cy=shareFormButton]').click();
       //Draft submission and verification
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);

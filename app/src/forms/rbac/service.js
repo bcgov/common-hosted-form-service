@@ -5,6 +5,7 @@ const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
 const idpService = require('../../components/idpService');
+const log = require('../../components/log')(module.filename);
 
 const service = {
   list: async () => {
@@ -93,7 +94,8 @@ const service = {
       );
       const filteredForms = authService.filterForms(currentUser, forms, accessLevels);
       return filteredForms;
-    } catch {
+    } catch (err) {
+      log.error('Failed to get current user forms', err);
       return [];
     }
   },

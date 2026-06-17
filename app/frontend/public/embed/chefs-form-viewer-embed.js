@@ -172,7 +172,7 @@
  * **Required:**
  * - `form-id`: CHEFS form UUID
  * - `auth-token`: JWT authentication token (preferred)
- *   - The auth-token should be fetched by your backend server using the protected api-key and form-id via POST /app/gateway/v1/auth/token/forms/<form-id>.
+ *   - The auth-token should be fetched by your backend server via POST /app/gateway/v1/auth/token/forms/<form-id> with required Authorization: Basic base64(formId:apiKey).
  *   - The backend should return the short-lived, refreshable token to the frontend for embedding and authenticating form access.
  * - `api-key`: API access key (fallback, only if auth-token is not available)
 

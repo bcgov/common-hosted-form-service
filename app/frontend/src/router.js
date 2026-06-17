@@ -41,12 +41,7 @@ export default function getRouter(basePath = '/') {
       {
         path: '/about',
         name: 'About',
-        component: () => {
-          const tenantStore = useTenantStore();
-          return tenantStore.isTenantFeatureEnabled
-            ? import('~/views/LandingPage.vue')
-            : import('~/views/About.vue');
-        },
+        component: () => import('~/views/About.vue'),
         meta: {
           hasLogin: true,
         },

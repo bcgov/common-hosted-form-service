@@ -44,21 +44,17 @@ const headers = computed(() => [
 ]);
 
 const canCreateForm = computed(() => {
-  // For Enterprise CHEFS (tenanted): check if user has form_admin role on selected tenant
-  // For Personal CHEFS: use the primary IdP check
   if (selectedTenant.value) {
     return isFormAdmin.value;
   }
   return idpStore.isPrimary(user?.value?.idp?.code);
 });
 
-const pageTitle = computed(() => {
-  // Show "My Forms" for Personal CHEFS (no tenant selected)
-  // Show "Forms" for Enterprise CHEFS (when tenant is selected)
-  return selectedTenant.value
-    ? t('trans.formsTable.forms')
-    : t('trans.formsTable.myForms');
-});
+const pageTitle = computed(() =>
+  selectedTenant.value
+    ? t('trans.formsTable.groupForms')
+    : t('trans.formsTable.myForms')
+);
 
 const filteredFormList = computed(() =>
   formList.value.filter(

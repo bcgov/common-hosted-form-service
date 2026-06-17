@@ -18,6 +18,11 @@ describe('Form Designer', () => {
       console.log(err);
       return false;
     });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
   });
   it('Visits the form settings page', () => {
     
@@ -27,20 +32,20 @@ describe('Form Designer', () => {
     cy.checkA11yPage();
   });
   it('Getting page ready', () => {
-    cy.viewport(1000, 1800);
-    cy.get('button').contains('BC Government').click();   
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Basic Fields').click();
   });
-  it('checks Data Retention Settings', () => {
-    cy.viewport(1000, 1800);
-    cy.waitForLoad();
+  // Publish a simple form 
+  it('Verify Data Retention Settings', () => {
+    cy.viewport(1000, 1100);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('[data-key="simplebcaddress"]')
+      cy.get('span.btn').contains('Text Field')
+      
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -550, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
+      .trigger('mousemove', coords.x, -150, { force: true })
       .trigger('mouseup', { force: true });
-      cy.wait(1000); 
       cy.get('.btn-success').click();
     });
     // Form saving
@@ -49,12 +54,20 @@ describe('Form Designer', () => {
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
+    // Filter the newly created form
+    cy.location('search').then(search => {
+      //let pathName = fullUrl.pathname
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
     //Publish the form
-    cy.get('.mdi-dots-vertical').click();
-    cy.get('[data-cy="publishRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.get('.v-label > span').click();
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
+    });
     //Update form design version
     cy.get('.mdi-plus').click();
     //Add new component to version 1
@@ -142,7 +155,7 @@ describe('Form Designer', () => {
     cy.contains('label', 'Custom Retention Period (days)').next('input[type="number"]').clear().type('60');
     cy.contains('label', 'Classification Notes').next('textarea').type('some privacy issues');
     cy.get('.v-alert__content > span').contains('WARNING: After 60 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('exist');
-    cy.get(':nth-child(2) > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.contains('.v-select__selection-text', 'Custom period').click();
     cy.contains('90 days').should('exist');
     cy.contains('180 days').should('exist');
     cy.contains('1 year (365 days)').should('exist');

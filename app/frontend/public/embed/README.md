@@ -69,8 +69,20 @@ These files are **not in source control** and are created by the build process:
 
 ### Authentication
 
+#### Obtaining a gateway token (server-side only)
+
+Your backend must fetch the JWT before passing it to the embed. Call this endpoint from your server — never expose the form API key to the browser.
+
+- **Endpoint**: `POST {basePath}/gateway/v1/auth/token/forms/{formId}`
+- **Authorization**: `Basic base64(formId:apiKey)` (required)
+- **Response**: `201 { "token": "<jwt>" }`
+
+The `formId` in the URL must match the `formId` in the Basic auth credentials.
+
+#### Using the token in the webcomponent
+
 The webcomponent uses the `X-Chefs-Gateway-Token` header for authentication when making requests to CHEFS backend endpoints. This custom header allows host applications to use the `Authorization: Bearer` header for their own authentication needs.
 
 - **Header name**: `X-Chefs-Gateway-Token`
-- **Value**: JWT token obtained from the gateway token endpoint
+- **Value**: JWT token obtained from the gateway token endpoint above
 - **Usage**: Automatically added to all requests to CHEFS backend URLs (URLs matching the component's `baseUrl`)

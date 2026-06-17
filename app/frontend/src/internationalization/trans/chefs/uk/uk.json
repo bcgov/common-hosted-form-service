@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "ВІДЧИНЕНО",
   "date": {
     "date": "рррр-мм-дд"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Мої форми",
+    "groupForms": "Групові форми",
     "createNewForm": "Створіть нову форму",
     "search": "Пошук",
     "manage": "Керувати",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "О нас",
     "myForms": "Мої форми",
+    "groupForms": "Групові форми",
     "createNewForm": "Створіть нову форму",
     "help": "Довідка",
     "feedback": "Зворотній зв'язок",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "З Enterprise CHEFS команди можуть безпечно ділитися формами, призначати ролі та керувати проектами в рамках орендаря своєї організації.",
     "enterpriseSectionWelcome": "Ласкаво просимо до Enterprise CHEFS, де команди по всьому уряду можуть безпечно та ефективно співпрацювати.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS тепер підтримує мультиорендність!",
+    "multiTenancySubTitle": "Створіть групу для свого проекту або команди та керуйте доступом до спільних форм для всієї групи в одному місці.",
+    "multiTenancyFitHeading": "Це може підійти вашій команді, якщо ви:",
+    "multiTenancyBullet1": "керуєте багатьма формами у різних програмах або середовищах",
+    "multiTenancyBullet2": "маєте кількох адміністраторів або рецензентів",
+    "multiTenancyBullet3": "часто змінюєте склад персоналу",
+    "multiTenancyBullet4": "хочете централізованого управління доступом",
+    "multiTenancyBullet5": "впроваджуєте інші підключені сервіси, наприклад Notify",
+    "multiTenancyFooter": "Керівники команд та адміністратори можуть використовувати CSTAR для створення орендаря та управління доступом для своєї команди.",
+    "multiTenancyBtnLabel": "Увійдіть до CSTAR, щоб розпочати"
   },
   "baseStepper": {
     "setUpForm": "Налаштувати форму",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "Мої форми",
     "tenantLabel": "Орендар:",
-    "infoTooltip": "Enterprise CHEFS — це нова версія CHEFS, яка підтримує багатоорендний доступ. Вибір вашого орендаря автоматично перенесе вас туди.",
+    "infoTooltip": "Виберіть орендаря для доступу до Групових форм. Повертайтесь до 'Мої форми' будь-коли.",
     "selectLabel": "Виберіть орендаря (відкривається в Enterprise CHEFS)",
     "placeholder": "Виберіть з доступних орендарів",
     "noDataText": "Орендарів не знайдено",
-    "switchToClassic": "Переключитися на Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Перейти до CSTAR (Підключені служби, доступ команди та ролі)",
     "noTenantsAvailable": "Немає доступних орендарів",
     "manageTenantsIn": "Керування орендарями в",
