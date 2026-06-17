@@ -179,8 +179,9 @@ class IdpService {
 
   async userSearch(params) {
     // check the idpCode, set up User query accordingly.
+    let idp = null;
     if (params && params.idpCode) {
-      const idp = await this.findByCode(params.idpCode);
+      idp = await this.findByCode(params.idpCode);
       if (idp && idp.extra?.userSearch) {
         // ok, this idp has specific requirements of user search...
         const q = User.query();
@@ -194,11 +195,21 @@ class IdpService {
       }
     }
 
+    // Expand idpCode to include all providers sharing the same canonical code
+    // e.g. searching 'idir' also returns 'azureidir' users
+    let idpCodes = null;
+    if (params?.idpCode) {
+      const canonicalCode = idp?.extra?.canonicalCode || params.idpCode;
+      const providers = await this.getIdentityProviders(true);
+      idpCodes = providers.filter((p) => (p.extra?.canonicalCode || p.code) === canonicalCode).map((p) => p.code);
+      if (!idpCodes.length) idpCodes = [params.idpCode];
+    }
+
     // ok, no error thown, no specific search requirements...
     // so here is the default user search.
     return User.query()
       .modify('filterIdpUserId', params.idpUserId)
-      .modify('filterIdpCode', params.idpCode)
+      .modify('filterIdpCodes', idpCodes)
       .modify('filterUsername', params.username, false, false)
       .modify('filterFullName', params.fullName)
       .modify('filterFirstName', params.firstName)

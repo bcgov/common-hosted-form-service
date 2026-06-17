@@ -14,9 +14,11 @@ const preferences = { columns: [] };
 beforeEach(() => {
   MockModel.mockReset();
   MockTransaction.mockReset();
+  jest.clearAllMocks();
 });
 
 idpService.findByCode = jest.fn().mockReturnValue(null);
+idpService.getIdentityProviders = jest.fn().mockResolvedValue([]);
 
 describe('list', () => {
   it('should query user table by id', async () => {
@@ -37,7 +39,7 @@ describe('list', () => {
     expect(MockModel.query).toBeCalledWith();
     expect(MockModel.modify).toBeCalledTimes(9);
     expect(MockModel.modify).toBeCalledWith('filterIdpUserId', params.idpUserId);
-    expect(MockModel.modify).toBeCalledWith('filterIdpCode', params.idpCode);
+    expect(MockModel.modify).toBeCalledWith('filterIdpCodes', [params.idpCode]);
     expect(MockModel.modify).toBeCalledWith('filterUsername', params.username, false, false);
     expect(MockModel.modify).toBeCalledWith('filterFullName', params.fullName);
     expect(MockModel.modify).toBeCalledWith('filterFirstName', params.firstName);

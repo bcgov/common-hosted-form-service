@@ -40,6 +40,11 @@ class User extends Timestamps(Model) {
           query.where('idpCode', value);
         }
       },
+      filterIdpCodes(query, values) {
+        if (values && values.length) {
+          query.whereIn('idpCode', values);
+        }
+      },
       filterUsername(query, value, exact = false, caseSensitive = true) {
         if (value) {
           if (exact && caseSensitive) query.where('username', value);
