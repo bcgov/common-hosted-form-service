@@ -254,13 +254,16 @@ const service = {
     userInfo.idp = idp.code;
     const user = await service.getUserId(userInfo);
     const canonicalCode = idp.extra?.canonicalCode || idp.code;
+    // idpHint must match the idp field in form_identity_providers. For alias IDPs (e.g. azureidir),
+    // resolve to the canonical parent so alias users can access forms configured for the parent IDP.
+    const canonicalIdp = canonicalCode !== idp.code ? await idpService.findByCode(canonicalCode) : idp;
 
     await service.recordLoginHistory(user.id, idp.code);
 
     return {
       ...user,
       usernameIdp: idp.code === 'public' ? user.username : `${user.username}@${canonicalCode}`,
-      idpHint: canonicalCode,
+      idpHint: canonicalIdp?.idp || idp.idp,
     };
   },
 
