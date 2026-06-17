@@ -9,7 +9,7 @@ import DocumentTemplate from '../../forms/manage/DocumentTemplate.vue';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
-const { form, isRTL } = storeToRefs(useFormStore());
+const { form, isRTL, isFormPublished } = storeToRefs(useFormStore());
 
 /* c8 ignore start */
 const emailArrayRules = ref([
@@ -135,6 +135,7 @@ const emailArrayRules = ref([
 
       <v-checkbox
         v-model="form.enableSubmissionPackageEmail"
+        :disabled="!isFormPublished"
         hide-details="auto"
         class="my-0"
         data-test="submission-package-email-test"
@@ -142,7 +143,11 @@ const emailArrayRules = ref([
         <template #label>
           <div :class="{ 'mr-2': isRTL }">
             <span :lang="locale">
-              Email submission package with document template
+              {{
+                isFormPublished
+                  ? $t('trans.formSettings.emailPackage')
+                  : $t('trans.formSettings.emailPackageDisabled')
+              }}
             </span>
 
             <v-tooltip location="bottom">
@@ -156,8 +161,7 @@ const emailArrayRules = ref([
                 />
               </template>
               <span :lang="locale">
-                Upload a document template to include a generated submission
-                package in the completion email.
+                {{ $t('trans.formSettings.emailPackageTooltip') }}
               </span>
             </v-tooltip>
           </div>
