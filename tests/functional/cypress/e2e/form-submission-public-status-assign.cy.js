@@ -121,21 +121,15 @@ describe('Form Designer', () => {
     cy.get('button[title="Email a receipt of this submission"]').click();
     cy.get('span').contains('SEND').click();
     cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
-    //Re-login before viewing submissions (manage page requires authentication).
-    //The Keycloak logout above does not clear the upstream IdP (SSO) session, so the
-    //login may complete silently. Only fill the IDIR credential form if it is shown.
-    cy.visit(`/${depEnv}`);
-    cy.get('#loginButton').click();
-    cy.wait(3000);
-    cy.get('body').then(($body) => {
-      if ($body.find('[data-test="idir"]').length) {
-        cy.get('[data-test="idir"]').click();
-        cy.get('#user').type(username);
-        cy.get('#password').type(password);
-        cy.get('.btn').click();
-      }
+  });
+  it('Verify public form submission', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
     });
-    cy.get('#logoutButton', { timeout: 60000 }).should('exist');
     //view submission   
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.wait(1000);
