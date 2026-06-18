@@ -112,7 +112,10 @@ export const useAuthStore = defineStore('auth', {
               lastName: user.lastName,
               fullName: user.fullName,
               email: user.email,
-              idp: idpObject,
+              idp: {
+                ...idpObject,
+                idpCode: user.idp,
+              },
               public: user.public,
             };
           })
