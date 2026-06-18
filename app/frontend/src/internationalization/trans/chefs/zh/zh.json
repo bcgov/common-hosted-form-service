@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "打开",
   "date": {
     "date": "年-月-日"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "我的表格",
+    "groupForms": "群组表单",
     "createNewForm": "创建新表单",
     "search": "搜索",
     "manage": "管理",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "关于",
     "myForms": "我的表格",
+    "groupForms": "群组表单",
     "createNewForm": "创建新表单",
     "help": "帮助",
     "feedback": "反馈",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "借助 Enterprise CHEFS，团队可以在其组织的租户内安全地共享表单、分配角色和管理项目。",
     "enterpriseSectionWelcome": "欢迎使用 Enterprise CHEFS，政府各部门的团队可以在这里安全高效地协作。",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS 现在支持多租户！",
+    "multiTenancySubTitle": "为您的项目或团队创建一个群组，并在一个地方管理整个群组的共享表单访问权限。",
+    "multiTenancyFitHeading": "如果您符合以下情况，这可能非常适合您的团队：",
+    "multiTenancyBullet1": "跨程序或环境管理许多表单",
+    "multiTenancyBullet2": "拥有多个管理员或审核员",
+    "multiTenancyBullet3": "经历频繁的人员变动",
+    "multiTenancyBullet4": "希望集中管理访问权限",
+    "multiTenancyBullet5": "正在采用 Notify 等其他连接服务",
+    "multiTenancyFooter": "团队负责人和管理员可以使用 CSTAR 创建租户并管理其团队的访问权限。",
+    "multiTenancyBtnLabel": "登录 CSTAR 开始使用"
   },
   "baseStepper": {
     "setUpForm": "设置表格",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "我的表格",
     "tenantLabel": "租户:",
-    "infoTooltip": "Enterprise CHEFS 是支持多租户访问的新版本 CHEFS。选择您的租户将自动带您到那里。",
+    "infoTooltip": "选择您的租户以访问群组表单。随时切换回'我的表格'。",
     "selectLabel": "选择租户（在 Enterprise CHEFS 中打开）",
     "placeholder": "从可用租户中选择",
     "noDataText": "未找到租户",
-    "switchToClassic": "切换到 Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "转到 CSTAR（连接服务、团队访问和角色）",
     "noTenantsAvailable": "没有可用的租户",
     "manageTenantsIn": "在以下位置管理租户",

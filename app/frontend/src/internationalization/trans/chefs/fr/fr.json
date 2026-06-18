@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Ouvrir",
   "date": {
     "date": "aaaa-mm-jj"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Mes formulaires",
+    "groupForms": "Formulaires de Groupe",
     "createNewForm": "Créer un nouveau formulaire",
     "search": "Recherche",
     "manage": "Gérer",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "À propos",
     "myForms": "Mes formulaires",
+    "groupForms": "Formulaires de Groupe",
     "createNewForm": "Créer un nouveau formulaire",
     "help": "Aider",
     "feedback": "Retour",
@@ -999,7 +1001,17 @@
     "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS.",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
-    "getStarted": "Commencer"
+    "getStarted": "Commencer",
+    "multiTenancyTitle": "CHEFS prend maintenant en charge la multi-location !",
+    "multiTenancySubTitle": "Créez un groupe pour votre projet ou votre équipe et gérez l'accès aux formulaires partagés pour l'ensemble du groupe en un seul endroit.",
+    "multiTenancyFitHeading": "Cela pourrait convenir à votre équipe si vous :",
+    "multiTenancyBullet1": "gérez de nombreux formulaires dans différents programmes ou environnements",
+    "multiTenancyBullet2": "avez plusieurs administrateurs ou réviseurs",
+    "multiTenancyBullet3": "faites face à des changements fréquents de personnel",
+    "multiTenancyBullet4": "souhaitez une gestion centralisée des accès",
+    "multiTenancyBullet5": "adoptez d'autres services connectés comme Notify",
+    "multiTenancyFooter": "Les responsables d'équipe et les administrateurs peuvent utiliser CSTAR pour créer un locataire et gérer l'accès pour leur équipe.",
+    "multiTenancyBtnLabel": "Se connecter à CSTAR pour commencer"
   },
   "baseStepper": {
     "setUpForm": "Configurer le formulaire",
@@ -1466,12 +1478,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "Mes formulaires",
     "tenantLabel": "Locataire :",
-    "infoTooltip": "Enterprise CHEFS est la nouvelle version de CHEFS qui prend en charge l'accès multi-locataire. La sélection de votre locataire vous y amènera automatiquement.",
+    "infoTooltip": "Sélectionnez votre locataire pour accéder aux Formulaires de Groupe. Revenez à 'Mes formulaires' à tout moment.",
     "selectLabel": "Sélectionnez le locataire (s'ouvre dans Enterprise CHEFS)",
     "placeholder": "Sélectionnez parmi les locataires disponibles",
     "noDataText": "Aucun locataire trouvé",
-    "switchToClassic": "Passer à Classic CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Aller à CSTAR (Services connectés, accès d'équipe et rôles)",
     "noTenantsAvailable": "Aucun locataire disponible",
     "manageTenantsIn": "Gérer les locataires dans",

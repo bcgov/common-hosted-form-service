@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "開ける",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "私のフォーム",
+    "groupForms": "グループフォーム",
     "createNewForm": "新しいフォームを作成する",
     "search": "検索",
     "manage": "管理",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "だいたい",
     "myForms": "私のフォーム",
+    "groupForms": "グループフォーム",
     "createNewForm": "新しいフォームを作成する",
     "help": "ヘルプ",
     "feedback": "フィードバック",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Enterprise CHEFSを使用すると、チームは組織のテナント内でフォームを安全に共有し、役割を割り当て、プロジェクトを管理できます。",
     "enterpriseSectionWelcome": "Enterprise CHEFSへようこそ。政府全体のチームが安全かつ効率的に協力できる場所です。",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFSがマルチテナントに対応しました！",
+    "multiTenancySubTitle": "プロジェクトやチームのグループを作成し、グループ全体の共有フォームへのアクセスを一か所で管理できます。",
+    "multiTenancyFitHeading": "次のような場合、あなたのチームに適しているかもしれません：",
+    "multiTenancyBullet1": "プログラムや環境をまたいで多くのフォームを管理している",
+    "multiTenancyBullet2": "複数の管理者やレビュアーがいる",
+    "multiTenancyBullet3": "頻繁な人員変更がある",
+    "multiTenancyBullet4": "アクセス管理を一元化したい",
+    "multiTenancyBullet5": "Notifyなど他の連携サービスを導入している",
+    "multiTenancyFooter": "チームリーダーや管理者はCSTARを使用してテナントを作成し、チームのアクセス管理ができます。",
+    "multiTenancyBtnLabel": "CSTARにログインして始める"
   },
   "baseStepper": {
     "setUpForm": "フォームの設定",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "私のフォーム",
     "tenantLabel": "テナント:",
-    "infoTooltip": "Enterprise CHEFS は、マルチテナントアクセスをサポートする CHEFS の新しいバージョンです。テナントを選択すると、自動的にそこに移動します。",
+    "infoTooltip": "グループフォームにアクセスするにはテナントを選択してください。いつでも「私のフォーム」に切り替えられます。",
     "selectLabel": "テナントを選択（Enterprise CHEFS で開く）",
     "placeholder": "利用可能なテナントから選択",
     "noDataText": "テナントが見つかりません",
-    "switchToClassic": "Personal CHEFS に切り替え",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "CSTAR に移動（接続サービス、チームアクセス、役割）",
     "noTenantsAvailable": "利用可能なテナントがありません",
     "manageTenantsIn": "テナントを管理",

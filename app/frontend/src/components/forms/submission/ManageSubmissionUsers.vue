@@ -44,6 +44,7 @@ const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 
 const { isRTL, form } = storeToRefs(formStore);
+const { formAccessButtons } = storeToRefs(idpStore);
 
 // True when this form uses CSTAR group-based access and draft sharing is restricted to those groups.
 // form.hasGroups is set by the backend _fetchSubmissionData so it's available without an
@@ -297,7 +298,7 @@ defineExpose({
         <v-card-subtitle>
           <v-radio-group v-if="isDraft" v-model="selectedIdp" inline>
             <v-radio
-              v-for="button in idpStore.loginButtons"
+              v-for="button in formAccessButtons"
               :key="button.code"
               :value="button.code"
               :label="button.display"

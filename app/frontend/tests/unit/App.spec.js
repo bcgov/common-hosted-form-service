@@ -121,27 +121,25 @@ describe('App.vue', () => {
     expect(wrapper.vm.isFormSubmitMode).toBeTruthy();
   });
 
-  it('appTitle appends | Personal when tenant feature is enabled and no tenant is selected', () => {
+  it('appTitle returns route meta title with no suffix when tenant feature is enabled and no tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
     useAppStore().config = { tenantFeatureEnabled: true };
     const wrapper = mountApp({ meta: { title: TITLE } });
-    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Personal`);
+    expect(wrapper.vm.appTitle).toEqual(TITLE);
   });
 
-  it('appTitle appends | Enterprise when a tenant is selected', () => {
+  it('appTitle returns route meta title with no suffix when a tenant is selected', () => {
     const TITLE = 'THIS IS AN APP TITLE';
     const tenant = { id: 't1', name: 'Tenant 1' };
     useAppStore().config = { tenantFeatureEnabled: true };
-    // Set both localStorage (read by initializeStore on mount) and the in-memory
-    // store value (read by the appTitle computed before/after mount).
     localStorage.setItem('selectedTenant', JSON.stringify(tenant));
     const tenantStore = useTenantStore();
     tenantStore.selectedTenant = tenant;
     const wrapper = mountApp({ meta: { title: TITLE } });
-    expect(wrapper.vm.appTitle).toEqual(`${TITLE} | Enterprise`);
+    expect(wrapper.vm.appTitle).toEqual(TITLE);
   });
 
-  it('appTitle has no suffix when tenant feature is disabled', () => {
+  it('appTitle returns route meta title with no suffix when tenant feature is disabled', () => {
     const TITLE = 'THIS IS AN APP TITLE';
     useAppStore().config = { tenantFeatureEnabled: false };
     const wrapper = mountApp({ meta: { title: TITLE } });

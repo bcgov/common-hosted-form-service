@@ -67,6 +67,16 @@ describe('GroupManagement.vue', () => {
       expect(wrapper.html()).toContain('v-alert');
       expect(rbacService.getFormGroups).not.toHaveBeenCalled();
     });
+
+    it('is false while switchingTenant, even if selectedTenant is null', () => {
+      // Regression: TenantDropdown clears selectedTenant synchronously before
+      // navigating away from this page. Without the switchingTenant check,
+      // this would briefly flash the "tenant required" alert.
+      tenantStore.selectedTenant = null;
+      tenantStore.switchingTenant = true;
+      const wrapper = mountComponent();
+      expect(wrapper.vm.noTenant).toBe(false);
+    });
   });
 
   describe('canManageGroups', () => {

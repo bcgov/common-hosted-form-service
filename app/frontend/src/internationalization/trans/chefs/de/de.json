@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Offen",
   "date": {
     "date": "jjjj-mm-tt"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Meine Formulare",
+    "groupForms": "Gruppenformulare",
     "createNewForm": "Erstellen Sie ein neues Formular",
     "search": "Suchen",
     "manage": "Verwalten",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "Um",
     "myForms": "Meine Formulare",
+    "groupForms": "Gruppenformulare",
     "createNewForm": "Erstellen Sie ein neues Formular",
     "help": "Hilfe",
     "feedback": "Rückmeldung",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "Mit Enterprise CHEFS können Teams Formulare sicher teilen, Rollen zuweisen und Projekte im Mandanten ihrer Organisation verwalten — ein dedizierter Arbeitsbereich, der Ihre Projekte und Berechtigungen organisiert hält.",
     "enterpriseSectionWelcome": "Willkommen bei Enterprise CHEFS, wo Teams in der gesamten Regierung sicher und effizient zusammenarbeiten können.",
     "classicChefsLabel": "Classic CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS unterstützt jetzt Multi-Tenancy!",
+    "multiTenancySubTitle": "Erstellen Sie eine Gruppe für Ihr Projekt oder Team und verwalten Sie den Zugriff auf gemeinsame Formulare für die gesamte Gruppe an einem Ort.",
+    "multiTenancyFitHeading": "Dies könnte für Ihr Team geeignet sein, wenn Sie:",
+    "multiTenancyBullet1": "viele Formulare über Programme oder Umgebungen hinweg verwalten",
+    "multiTenancyBullet2": "mehrere Administratoren oder Prüfer haben",
+    "multiTenancyBullet3": "häufige Personalwechsel erleben",
+    "multiTenancyBullet4": "zentralisiertes Zugriffsmanagement wünschen",
+    "multiTenancyBullet5": "andere verbundene Dienste wie Notify einführen",
+    "multiTenancyFooter": "Teamleiter und Administratoren können CSTAR verwenden, um einen Mandanten zu erstellen und den Zugriff für ihr Team zu verwalten.",
+    "multiTenancyBtnLabel": "Bei CSTAR anmelden, um zu beginnen"
   },
   "baseStepper": {
     "designForm": "Designform",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "Meine Formulare",
     "tenantLabel": "Mandant:",
-    "infoTooltip": "Enterprise CHEFS ist die neue Version von CHEFS, die Mehrmandantenzugriff unterstützt. Durch Auswahl Ihres Mandanten gelangen Sie automatisch dorthin.",
+    "infoTooltip": "Wählen Sie Ihren Mandanten aus, um auf Gruppenformulare zuzugreifen. Wechseln Sie jederzeit zurück zu 'Meine Formulare'.",
     "selectLabel": "Mandant auswählen (öffnet in Enterprise CHEFS)",
     "placeholder": "Aus verfügbaren Mandanten auswählen",
     "noDataText": "Keine Mandanten gefunden",
-    "switchToClassic": "Zu Classic CHEFS wechseln",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Zu CSTAR gehen (Verbundene Dienste, Teamzugriff und Rollen)",
     "noTenantsAvailable": "Keine Mandanten verfügbar",
     "manageTenantsIn": "Mandanten verwalten in",
