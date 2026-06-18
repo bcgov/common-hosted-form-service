@@ -8,7 +8,12 @@
   },
 
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      // The feature's "latest" buildx detection resolves to a tag whose
+      // linux-arm64 artifact is not published, causing a 404 during install.
+      // moby-buildx is already installed via apt, so skip the extra download.
+      "installDockerBuildx": false
+    },
     "ghcr.io/devcontainers/features/git:1": {}
   },
 
