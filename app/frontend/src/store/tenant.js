@@ -76,6 +76,15 @@ export const useTenantStore = defineStore('tenant', {
       // depend on selectedTenant (banner, title, forms list) should wait on
       // this to avoid flashing Personal CHEFS before the tenant lands.
       isRestoring: hydrateIsRestoring(selectedTenant),
+      // True while the user is actively switching tenants via the dropdown
+      // (TenantDropdown.handleTenantChange). selectedTenant is cleared/changed
+      // synchronously before the async form-refetch + navigation away from the
+      // currently mounted tenant-scoped page (e.g. Group Management) completes,
+      // so pages that show a "tenant required" error when selectedTenant is
+      // null should also check this flag to avoid flashing that error during
+      // the switch. Set/cleared together with the selectedTenant mutation so
+      // Vue batches both into the same reactive flush.
+      switchingTenant: false,
     };
   },
 
@@ -100,6 +109,22 @@ export const useTenantStore = defineStore('tenant', {
     isBCServicesCardUser: () => {
       const authStore = useAuthStore();
       return authStore.identityProvider?.code === 'bcservicescard';
+    },
+
+    /**
+     * Whether the current user's IDP can never have tenant membership, so
+     * tenant API calls should be skipped entirely for them.
+     * - BC Services Card and Basic BCeID: individual citizen identities that
+     *   only ever hold the FORM_SUBMITTER role — never need tenant context.
+     * - Basic BCeID is excluded the same way as BCSC.
+     * - Business BCeID is intentionally NOT excluded: those users can hold
+     *   elevated group roles (submission_approver, submission_reviewer) within a
+     *   tenant, so they need the tenant switcher same as IDIR.
+     */
+    isTenantIneligibleUser: () => {
+      const authStore = useAuthStore();
+      const code = authStore.identityProvider?.code;
+      return code === 'bcservicescard' || code === 'bceid-basic';
     },
 
     /**
@@ -188,7 +213,7 @@ export const useTenantStore = defineStore('tenant', {
      * Corrupted entries are also removed from localStorage.
      */
     initializeStore() {
-      if (!this.isTenantFeatureEnabled || this.isBCServicesCardUser) {
+      if (!this.isTenantFeatureEnabled || this.isTenantIneligibleUser) {
         this.selectedTenant = null;
         return;
       }
@@ -226,7 +251,7 @@ export const useTenantStore = defineStore('tenant', {
      * Fetch all available tenants for the current user
      */
     async fetchTenants() {
-      if (!this.isTenantFeatureEnabled || this.isBCServicesCardUser) return;
+      if (!this.isTenantFeatureEnabled || this.isTenantIneligibleUser) return;
       if (this.loading) return;
       // Skip tenant API call on submission pages - they don't need tenant info
       try {
@@ -317,6 +342,15 @@ export const useTenantStore = defineStore('tenant', {
         this.loading = false;
         this.isRestoring = false;
       }
+    },
+
+    /**
+     * Mark whether a tenant switch (via the dropdown) is in progress. See the
+     * switchingTenant state doc comment for why this exists.
+     * @param {boolean} value
+     */
+    setSwitchingTenant(value) {
+      this.switchingTenant = value;
     },
 
     /**

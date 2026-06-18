@@ -46,6 +46,28 @@ const identityProviders = [
     tokenmap: {},
     extra: { sortOrder: 30 },
   },
+  {
+    code: 'bceid-basic',
+    display: 'Basic BCeID',
+    idp: 'bceidbasic',
+    primary: false,
+    login: true,
+    permissions: [],
+    roles: [],
+    tokenmap: {},
+    extra: { sortOrder: 40 },
+  },
+  {
+    code: 'bceid-business',
+    display: 'Business BCeID',
+    idp: 'bceidbusiness',
+    primary: false,
+    login: true,
+    permissions: [],
+    roles: [],
+    tokenmap: {},
+    extra: { sortOrder: 20 },
+  },
 ];
 
 describe('tenant store', () => {
@@ -186,6 +208,38 @@ describe('tenant store', () => {
     });
   });
 
+  // ---- isTenantIneligibleUser getter ----
+
+  describe('isTenantIneligibleUser', () => {
+    it('returns false for IDIR user', () => {
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'idir' },
+      };
+      expect(tenantStore.isTenantIneligibleUser).toBe(false);
+    });
+
+    it('returns true for BC Services Card user', () => {
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'bcservicescard' },
+      };
+      expect(tenantStore.isTenantIneligibleUser).toBe(true);
+    });
+
+    it('returns true for Basic BCeID user', () => {
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'bceidbasic' },
+      };
+      expect(tenantStore.isTenantIneligibleUser).toBe(true);
+    });
+
+    it('returns false for Business BCeID user', () => {
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'bceidbusiness' },
+      };
+      expect(tenantStore.isTenantIneligibleUser).toBe(false);
+    });
+  });
+
   // ---- initializeStore ----
 
   describe('initializeStore', () => {
@@ -218,6 +272,30 @@ describe('tenant store', () => {
       tenantStore.initializeStore();
 
       expect(tenantStore.selectedTenant).toBeNull();
+    });
+
+    it('skips loading for Basic BCeID users', () => {
+      const tenant = { id: 'tenant-1', name: 'Test Tenant' };
+      localStorage.setItem('selectedTenant', JSON.stringify(tenant));
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'bceidbasic' },
+      };
+
+      tenantStore.initializeStore();
+
+      expect(tenantStore.selectedTenant).toBeNull();
+    });
+
+    it('does not skip loading for Business BCeID users', () => {
+      const tenant = { id: 'tenant-1', name: 'Test Tenant' };
+      localStorage.setItem('selectedTenant', JSON.stringify(tenant));
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'bceidbusiness' },
+      };
+
+      tenantStore.initializeStore();
+
+      expect(tenantStore.selectedTenant).toEqual(tenant);
     });
 
     it('ignores null/undefined stored values', () => {
@@ -275,6 +353,28 @@ describe('tenant store', () => {
       expect(tenantStore.tenants).toEqual([]);
     });
 
+    it('skips API call for Basic BCeID users', async () => {
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'bceidbasic' },
+      };
+
+      await tenantStore.fetchTenants();
+
+      expect(rbacService.getCurrentUserTenants).not.toHaveBeenCalled();
+      expect(tenantStore.tenants).toEqual([]);
+    });
+
+    it('does not skip API call for Business BCeID users', async () => {
+      authStore.keycloak = {
+        tokenParsed: { identity_provider: 'bceidbusiness' },
+      };
+      rbacService.getCurrentUserTenants.mockResolvedValue({ data: [] });
+
+      await tenantStore.fetchTenants();
+
+      expect(rbacService.getCurrentUserTenants).toHaveBeenCalled();
+    });
+
     it('skips API call on formSubmitMode routes', async () => {
       getRouter.mockReturnValue({
         currentRoute: { value: { meta: { formSubmitMode: true } } },
@@ -321,6 +421,16 @@ describe('tenant store', () => {
   });
 
   // ---- Other actions ----
+
+  describe('setSwitchingTenant', () => {
+    it('sets the switchingTenant flag', () => {
+      expect(tenantStore.switchingTenant).toBe(false);
+      tenantStore.setSwitchingTenant(true);
+      expect(tenantStore.switchingTenant).toBe(true);
+      tenantStore.setSwitchingTenant(false);
+      expect(tenantStore.switchingTenant).toBe(false);
+    });
+  });
 
   describe('selectTenant', () => {
     it('sets selectedTenant and persists to localStorage', () => {

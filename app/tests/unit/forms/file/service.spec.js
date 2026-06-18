@@ -236,7 +236,7 @@ describe('create', () => {
         patchAndFetchById: jest.fn().mockResolvedValue({}),
       });
 
-      await expect(service.moveSubmissionFile('subId', { id: 'fileId' }, 'user')).resolves.toBeUndefined();
+      await expect(service.moveSubmissionFile('subId', { id: 'fileId' }, 'user')).resolves.toEqual({ id: 'fileId' });
       expect(storageService.move).toHaveBeenCalled();
       expect(FileStorage.query().patchAndFetchById).toHaveBeenCalled();
     });
@@ -382,6 +382,61 @@ describe('create', () => {
       expect(mockTrx.commit).toHaveBeenCalled();
       // Delete was attempted
       expect(storageService.delete).toHaveBeenCalled();
+    });
+  });
+
+  describe('moveSubmissionFile with an external transaction', () => {
+    it('reuses the supplied transaction and does not commit, rollback, or delete the source', async () => {
+      const etrx = { commit: jest.fn(), rollback: jest.fn() };
+      const fileStorage = { id: 'fileId', path: 'uploads/fileId', storage: 'uploads' };
+      const patchAndFetchById = jest.fn().mockResolvedValue({});
+
+      const startTransactionSpy = jest.spyOn(FileStorage, 'startTransaction');
+      storageService.move = jest.fn().mockResolvedValue('/new/path');
+      storageService.delete = jest.fn().mockResolvedValue(true);
+      FileStorage.query = jest.fn().mockReturnValue({ patchAndFetchById });
+
+      const result = await service.moveSubmissionFile('subId', fileStorage, 'user', etrx);
+
+      // The DB update runs inside the supplied transaction.
+      expect(FileStorage.query).toHaveBeenCalledWith(etrx);
+      expect(patchAndFetchById).toHaveBeenCalledWith('fileId', expect.objectContaining({ formSubmissionId: 'subId', path: '/new/path' }));
+      // No second transaction is opened, and the caller owns commit + cleanup.
+      expect(startTransactionSpy).not.toHaveBeenCalled();
+      expect(etrx.commit).not.toHaveBeenCalled();
+      expect(etrx.rollback).not.toHaveBeenCalled();
+      expect(storageService.delete).not.toHaveBeenCalled();
+      // The original file is returned so the caller can clean it up post-commit.
+      expect(result).toBe(fileStorage);
+    });
+
+    it('does not roll back the supplied transaction when the move fails', async () => {
+      const etrx = { commit: jest.fn(), rollback: jest.fn() };
+      storageService.move = jest.fn().mockResolvedValue(null);
+
+      await expect(service.moveSubmissionFile('subId', { id: 'fileId' }, 'user', etrx)).rejects.toThrow('Error moving files for submission');
+      expect(etrx.rollback).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteStorageObject', () => {
+    it('returns the storageService.delete result on success', async () => {
+      const fileStorage = { id: 'fileId' };
+      storageService.delete = jest.fn().mockResolvedValue(true);
+
+      const result = await service.deleteStorageObject(fileStorage);
+
+      expect(result).toBe(true);
+      expect(storageService.delete).toHaveBeenCalledWith(fileStorage);
+    });
+
+    it('swallows storage errors and returns false', async () => {
+      const fileStorage = { id: 'fileId' };
+      storageService.delete = jest.fn().mockRejectedValue(new Error('S3 down'));
+
+      const result = await service.deleteStorageObject(fileStorage);
+
+      expect(result).toBe(false);
     });
   });
 
