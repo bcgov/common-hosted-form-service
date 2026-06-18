@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "يفتح",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "نماذجي",
+    "groupForms": "نماذج المجموعة",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "search": "يبحث",
     "manage": "يدير",
@@ -976,6 +977,7 @@
   "bCGovNavBar": {
     "about": "عن",
     "myForms": "نماذجي",
+    "groupForms": "نماذج المجموعة",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "help": "يساعد",
     "feedback": "تعليق",
@@ -1005,7 +1007,17 @@
     "enterpriseSectionBody2": "مع CHEFS المؤسسي، يمكن للفرق مشاركة النماذج بأمان وتعيين الأدوار وإدارة المشاريع داخل مستأجر مؤسستها — مساحة عمل مخصصة تُبقي مشاريعك وأذوناتك منظمة.",
     "enterpriseSectionWelcome": "مرحبًا بك في CHEFS المؤسسي، حيث يمكن للفرق عبر الحكومة التعاون بأمان وكفاءة.",
     "classicChefsLabel": "Classic CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "يدعم CHEFS الآن تعدد المستأجرين!",
+    "multiTenancySubTitle": "أنشئ مجموعة لمشروعك أو فريقك وأدر الوصول إلى النماذج المشتركة للمجموعة بأكملها في مكان واحد.",
+    "multiTenancyFitHeading": "قد يكون هذا مناسبًا لفريقك إذا كنت:",
+    "multiTenancyBullet1": "تدير العديد من النماذج عبر البرامج أو البيئات",
+    "multiTenancyBullet2": "لديك مسؤولون أو مراجعون متعددون",
+    "multiTenancyBullet3": "تواجه تغييرات متكررة في الموظفين",
+    "multiTenancyBullet4": "تريد إدارة مركزية للوصول",
+    "multiTenancyBullet5": "تتبنى خدمات متصلة أخرى مثل Notify",
+    "multiTenancyFooter": "يمكن لقادة الفريق والمسؤولين استخدام CSTAR لإنشاء مستأجر وإدارة الوصول لفريقهم.",
+    "multiTenancyBtnLabel": "تسجيل الدخول إلى CSTAR للبدء"
   },
   "baseStepper": {
     "designForm": "نموذج التصميم",
@@ -1436,12 +1448,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "نماذجي",
     "tenantLabel": "المستأجر:",
-    "infoTooltip": "Enterprise CHEFS هو الإصدار الجديد من CHEFS الذي يدعم الوصول متعدد المستأجرين. سيؤدي تحديد المستأجر الخاص بك إلى نقلك إلى هناك تلقائيًا.",
+    "infoTooltip": "حدد المستأجر الخاص بك للوصول إلى نماذج المجموعة. العودة إلى 'نماذجي' في أي وقت.",
     "selectLabel": "حدد المستأجر (يفتح في Enterprise CHEFS)",
     "placeholder": "حدد من المستأجرين المتاحين",
     "noDataText": "لم يتم العثور على مستأجرين",
-    "switchToClassic": "التبديل إلى Classic CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "انتقل إلى CSTAR (الخدمات المتصلة والوصول الجماعي والأدوار)",
     "noTenantsAvailable": "لا توجد مستأجرين متاحين",
     "manageTenantsIn": "إدارة المستأجرين في",

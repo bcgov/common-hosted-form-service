@@ -184,12 +184,13 @@ const service = {
    */
   deleteSubmissionAndRelatedData: async (submissionId) => {
     let trx;
+    let fileRecords = [];
     try {
       trx = await FileStorage.startTransaction();
 
-      // Delete the file from the storage service first
-      const fileRecords = await FileStorage.query(trx).where('formSubmissionId', submissionId);
-      fileService.deleteFiles(fileRecords.map((file) => file.id));
+      // Capture the file rows up front so we can remove the stored objects once
+      // everything has been deleted from the database and committed.
+      fileRecords = await FileStorage.query(trx).where('formSubmissionId', submissionId);
 
       // Delete in the correct order based on foreign key dependencies
 
@@ -209,6 +210,14 @@ const service = {
       const result = await FormSubmission.query(trx).where('id', submissionId).delete();
 
       await trx.commit();
+
+      // Now that the DB rows are committed, purge the stored objects. This is
+      // best-effort and runs outside the transaction: a storage failure just
+      // leaves an orphan to be cleaned up later rather than failing the delete.
+      for (const file of fileRecords) {
+        await fileService.deleteStorageObject(file);
+      }
+
       return { success: result > 0 };
     } catch (error) {
       if (trx) await trx.rollback();

@@ -26,18 +26,11 @@ const showTenantRestoreLoader = computed(
     !route?.meta?.hideTenantUI
 );
 
-const appTitle = computed(() => {
-  const base =
-    route && route.meta && route.meta.title
-      ? route.meta.title
-      : import.meta.env.VITE_TITLE || 'Common Hosted Forms';
-
-  if (!tenantStore.isTenantFeatureEnabled) return base;
-  if (isTenantRestoring.value) return base;
-
-  const suffix = tenantStore.selectedTenant ? 'Enterprise' : 'Personal';
-  return `${base} | ${suffix}`;
-});
+const appTitle = computed(() =>
+  route && route.meta && route.meta.title
+    ? route.meta.title
+    : import.meta.env.VITE_TITLE || 'Common Hosted Forms'
+);
 
 const isFormSubmitMode = computed(() => {
   return route && route.meta && route.meta.formSubmitMode;
