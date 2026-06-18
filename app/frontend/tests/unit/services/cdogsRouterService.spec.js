@@ -1,74 +1,92 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
-import cdogsRouterService from '~/services/cdogsRouterService';
 import { ApiRoutes } from '~/utils/constants';
-
-const mockInstance = axios.create();
-const mockAxios = new MockAdapter(mockInstance);
 
 const formId = '00000000-0000-0000-0000-000000000000';
 const submissionId = '11111111-1111-1111-1111-111111111111';
 
-vi.mock('~/services/interceptors', () => {
-  return {
-    appAxios: () => mockInstance,
-  };
+let cdogsRouterService;
+let mockGet;
+let mockPost;
+
+beforeEach(async () => {
+  vi.resetModules();
+
+  mockGet = vi.fn();
+  mockPost = vi.fn();
+
+  vi.doMock('~/services/interceptors', () => ({
+    appAxios: () => ({
+      get: mockGet,
+      post: mockPost,
+    }),
+  }));
+
+  cdogsRouterService = (await import('~/services/cdogsRouterService')).default;
+});
+
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.unmock('~/services/interceptors');
 });
 
 describe('CDOGS Router Service', () => {
-  beforeEach(() => {
-    mockAxios.reset();
-  });
-
   describe('determineCdogsVersion', () => {
     it('returns v1 when config endpoint returns 404 (not found)', async () => {
       const endpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
-      mockAxios.onGet(endpoint).reply(404);
+      mockGet.mockRejectedValueOnce({
+        response: { status: 404 },
+      });
 
       const result = await cdogsRouterService.determineCdogsVersion(formId);
       expect(result).toBe('v1');
+      expect(mockGet).toHaveBeenCalledWith(endpoint);
     });
 
     it('returns v2 when config is enabled', async () => {
       const endpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
-      mockAxios.onGet(endpoint).reply(200, { enabled: true });
+      mockGet.mockResolvedValueOnce({
+        data: { enabled: true },
+      });
 
       const result = await cdogsRouterService.determineCdogsVersion(formId);
       expect(result).toBe('v2');
+      expect(mockGet).toHaveBeenCalledWith(endpoint);
     });
 
     it('throws error when config exists but is not enabled', async () => {
       const endpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
-      mockAxios.onGet(endpoint).reply(200, { enabled: false });
+      mockGet.mockResolvedValueOnce({
+        data: { enabled: false },
+      });
 
-      try {
-        await cdogsRouterService.determineCdogsVersion(formId);
-        expect.fail('Should have thrown an error');
-      } catch (error) {
-        expect(error.message).toContain('CDOGS v3 is not enabled');
-      }
+      await expect(
+        cdogsRouterService.determineCdogsVersion(formId)
+      ).rejects.toThrow('CDOGS v3 is not enabled');
+      expect(mockGet).toHaveBeenCalledWith(endpoint);
     });
 
     it('throws error when 403 Forbidden response', async () => {
       const endpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
-      mockAxios.onGet(endpoint).reply(403);
+      mockGet.mockRejectedValueOnce({
+        response: { status: 403 },
+      });
 
-      try {
-        await cdogsRouterService.determineCdogsVersion(formId);
-        expect.fail('Should have thrown an error');
-      } catch (error) {
-        expect(error.response.status).toBe(403);
-      }
+      await expect(
+        cdogsRouterService.determineCdogsVersion(formId)
+      ).rejects.toMatchObject({ response: { status: 403 } });
+      expect(mockGet).toHaveBeenCalledWith(endpoint);
     });
 
     it('returns v1 for other errors to maintain backward compatibility', async () => {
       const endpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
-      mockAxios.onGet(endpoint).reply(500);
+      mockGet.mockRejectedValueOnce({
+        response: { status: 500 },
+      });
 
       const result = await cdogsRouterService.determineCdogsVersion(formId);
       expect(result).toBe('v1');
+      expect(mockGet).toHaveBeenCalledWith(endpoint);
     });
   });
 
@@ -90,47 +108,52 @@ describe('CDOGS Router Service', () => {
       const configEndpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
       const submitEndpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`;
 
-      mockAxios.onGet(configEndpoint).reply(404);
-      mockAxios.onPost(submitEndpoint).reply(200, { data: 'rendered' });
+      mockGet.mockRejectedValueOnce({ response: { status: 404 } });
+      mockPost.mockResolvedValueOnce({ data: { rendered: true } });
 
       const result = await cdogsRouterService.docGen(
         formId,
         submissionId,
         mockBody
       );
-      expect(result).toBeTruthy();
-      expect(mockAxios.history.post).toHaveLength(1);
-      expect(mockAxios.history.post[0].url).toBe(submitEndpoint);
+      expect(result).toEqual({ data: { rendered: true } });
+      expect(mockGet).toHaveBeenCalledWith(configEndpoint);
+      expect(mockPost).toHaveBeenCalledWith(submitEndpoint, mockBody, {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      });
     });
 
     it('routes to v2 when config is enabled', async () => {
       const configEndpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
       const submitEndpoint = `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`;
 
-      mockAxios.onGet(configEndpoint).reply(200, { enabled: true });
-      mockAxios.onPost(submitEndpoint).reply(200, { data: 'rendered' });
+      mockGet.mockResolvedValueOnce({ data: { enabled: true } });
+      mockPost.mockResolvedValueOnce({ data: { rendered: true } });
 
       const result = await cdogsRouterService.docGen(
         formId,
         submissionId,
         mockBody
       );
-      expect(result).toBeTruthy();
-      expect(mockAxios.history.post).toHaveLength(1);
-      expect(mockAxios.history.post[0].url).toBe(submitEndpoint);
+      expect(result).toEqual({ data: { rendered: true } });
+      expect(mockGet).toHaveBeenCalledWith(configEndpoint);
+      expect(mockPost).toHaveBeenCalledWith(submitEndpoint, mockBody, {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      });
     });
 
     it('throws error when config exists but is disabled', async () => {
       const configEndpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
 
-      mockAxios.onGet(configEndpoint).reply(200, { enabled: false });
+      mockGet.mockResolvedValueOnce({ data: { enabled: false } });
 
-      try {
-        await cdogsRouterService.docGen(formId, submissionId, mockBody);
-        expect.fail('Should have thrown an error');
-      } catch (error) {
-        expect(error.message).toContain('CDOGS v3 is not enabled');
-      }
+      await expect(
+        cdogsRouterService.docGen(formId, submissionId, mockBody)
+      ).rejects.toThrow('CDOGS v3 is not enabled');
+      expect(mockGet).toHaveBeenCalledWith(configEndpoint);
+      expect(mockPost).not.toHaveBeenCalled();
     });
   });
 
@@ -149,53 +172,61 @@ describe('CDOGS Router Service', () => {
       const configEndpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
       const draftEndpoint = `${ApiRoutes.UTILS}/template/render`;
 
-      mockAxios.onGet(configEndpoint).reply(404);
-      mockAxios.onPost(draftEndpoint).reply(200, { data: 'rendered' });
+      mockGet.mockRejectedValueOnce({ response: { status: 404 } });
+      mockPost.mockResolvedValueOnce({ data: { rendered: true } });
 
       const result = await cdogsRouterService.draftDocGen(formId, mockBody);
-      expect(result).toBeTruthy();
-      expect(mockAxios.history.post).toHaveLength(1);
-      expect(mockAxios.history.post[0].url).toBe(draftEndpoint);
+      expect(result).toEqual({ data: { rendered: true } });
+      expect(mockGet).toHaveBeenCalledWith(configEndpoint);
+      expect(mockPost).toHaveBeenCalledWith(draftEndpoint, mockBody, {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      });
     });
 
     it('routes to v2 when config is enabled', async () => {
       const configEndpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
       const draftEndpoint = `${ApiRoutes.UTILS}/template/render`;
 
-      mockAxios.onGet(configEndpoint).reply(200, { enabled: true });
-      mockAxios.onPost(draftEndpoint).reply(200, { data: 'rendered' });
+      mockGet.mockResolvedValueOnce({ data: { enabled: true } });
+      mockPost.mockResolvedValueOnce({ data: { rendered: true } });
 
       const result = await cdogsRouterService.draftDocGen(formId, mockBody);
-      expect(result).toBeTruthy();
-      expect(mockAxios.history.post).toHaveLength(1);
-      expect(mockAxios.history.post[0].url).toBe(draftEndpoint);
+      expect(result).toEqual({ data: { rendered: true } });
+      expect(mockGet).toHaveBeenCalledWith(configEndpoint);
+      expect(mockPost).toHaveBeenCalledWith(draftEndpoint, mockBody, {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      });
     });
 
     it('throws error when config exists but is disabled', async () => {
       const configEndpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
 
-      mockAxios.onGet(configEndpoint).reply(200, { enabled: false });
+      mockGet.mockResolvedValueOnce({ data: { enabled: false } });
 
-      try {
-        await cdogsRouterService.draftDocGen(formId, mockBody);
-        expect.fail('Should have thrown an error');
-      } catch (error) {
-        expect(error.message).toContain('CDOGS v3 is not enabled');
-      }
+      await expect(
+        cdogsRouterService.draftDocGen(formId, mockBody)
+      ).rejects.toThrow('CDOGS v3 is not enabled');
+      expect(mockGet).toHaveBeenCalledWith(configEndpoint);
+      expect(mockPost).not.toHaveBeenCalled();
     });
 
     it('includes formId in request body for v2 routes', async () => {
       const configEndpoint = `${ApiRoutes.FORMS}/${formId}/cdogsV3Config`;
       const draftEndpoint = `${ApiRoutes.UTILS}/template/render`;
 
-      mockAxios.onGet(configEndpoint).reply(200, { enabled: true });
-      mockAxios.onPost(draftEndpoint).reply(200, { data: 'rendered' });
+      mockGet.mockResolvedValueOnce({ data: { enabled: true } });
+      mockPost.mockResolvedValueOnce({ data: { rendered: true } });
 
       await cdogsRouterService.draftDocGen(formId, mockBody);
 
-      const postRequest = mockAxios.history.post[0];
-      const requestBody = JSON.parse(postRequest.data);
-      expect(requestBody.formId).toBe(formId);
+      expect(mockPost).toHaveBeenCalledWith(draftEndpoint, mockBody, {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      });
+      const callBody = mockPost.mock.calls[0][1];
+      expect(callBody.formId).toBe(formId);
     });
   });
 });

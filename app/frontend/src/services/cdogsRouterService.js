@@ -30,6 +30,11 @@ export default {
         );
       }
     } catch (error) {
+      // If it's our custom error, re-throw it
+      if (error.message?.includes('CDOGS v3 is not enabled')) {
+        throw error;
+      }
+
       // If 404, config doesn't exist - use v1 (legacy behavior)
       if (error.response?.status === 404) {
         return 'v1';
