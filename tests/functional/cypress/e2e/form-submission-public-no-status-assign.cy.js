@@ -94,13 +94,21 @@ describe('Form Designer', () => {
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
-    //Re-login as IDIR before viewing submissions (manage page requires authentication)
+    //Re-login before viewing submissions (manage page requires authentication).
+    //The Keycloak logout above does not clear the upstream IdP (SSO) session, so the
+    //login may complete silently. Only fill the IDIR credential form if it is shown.
     cy.visit(`/${depEnv}`);
     cy.get('#loginButton').click();
-    cy.get('[data-test="idir"]').click();
-    cy.get('#user').type(username);
-    cy.get('#password').type(password);
-    cy.get('.btn').click();
+    cy.wait(3000);
+    cy.get('body').then(($body) => {
+      if ($body.find('[data-test="idir"]').length) {
+        cy.get('[data-test="idir"]').click();
+        cy.get('#user').type(username);
+        cy.get('#password').type(password);
+        cy.get('.btn').click();
+      }
+    });
+    cy.get('#logoutButton', { timeout: 60000 }).should('exist');
     //view submission
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.get('.mdi-list-box-outline').click();
