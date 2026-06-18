@@ -45,6 +45,7 @@ describe('Form Designer', () => {
         //Submit the form
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    });
     cy.wait(2000);
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
@@ -87,10 +88,9 @@ describe('Form Designer', () => {
       win.sessionStorage.clear();
     });
     //Form submission and verification for public forms
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
-    cy.waitForLoad();
-    cy.get('button').contains('Submit').should('be.visible');
-    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
+    });
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
@@ -130,18 +130,23 @@ describe('Form Designer', () => {
     cy.window().then((win) => {
       win.sessionStorage.clear();
     });
-    //view submission   
+    //view submission
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    });   
     cy.wait(1000);
     //Login to view submissions
     cy.get('[data-test="login-btn"]').click();
     cy.get('[data-test="idir"]').click();
+    cy.get('#user').type(username);
+    cy.get('#password').type(password);
+    cy.get('.btn').click();
+    cy.wait(1000);
     cy.get('.mdi-list-box-outline').click();
-    cy.waitForLoad();
+    cy.wait(1000);
     cy.contains('Assigned to me').should('exist');//Assigned to me checkbox
     //View the submission
     cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
-    });
     //Assign status submission
     cy.get('.status-heading > .mdi-chevron-right').click();
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
@@ -186,7 +191,6 @@ describe('Form Designer', () => {
     cy.get('span').contains('Close').click();
     cy.waitForLoad();
     cy.get('.mdi-logout').click();
-
   });
-    
 });
+    
