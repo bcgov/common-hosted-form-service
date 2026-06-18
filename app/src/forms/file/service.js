@@ -136,20 +136,48 @@ const service = {
   },
 
   /**
+   * Best-effort deletion of the stored object for a file, without touching the
+   * database record. Used to remove the original object after a submission file
+   * has been copied to permanent storage, and to purge orphaned objects once the
+   * DB rows are gone. Storage failures are logged and swallowed so they can't
+   * undo work that has already been committed.
+   *
+   * @param {FileStorage} fileStorage the file storage object to remove.
+   * @returns {boolean} true if the object was removed.
+   */
+  deleteStorageObject: async (fileStorage) => {
+    try {
+      return await storageService.delete(fileStorage);
+    } catch (err) {
+      log.error(`Failed to delete stored object for file ${fileStorage?.id}`, err);
+      return false;
+    }
+  },
+
+  /**
    * Move a submission file from the "upload" storage location to the
    * "submission" location. This is used when a submission is either saved as
    * draft or submitted, and makes the uploaded files permanent.
    *
+   * When an existing transaction is supplied the database update runs inside it
+   * and the caller owns both the commit and the cleanup of the original object
+   * (which must happen only after the commit). This avoids opening a second
+   * transaction that would deadlock against the caller's row lock. Without a
+   * transaction this manages its own and cleans up the original itself.
+   *
    * @param {uuidv4} submissionId the id of the submission that holds the file.
    * @param {FileStorage} fileStorage the file storage object for the file.
    * @param {string} updatedBy the user who is saving the submission.
+   * @param {object} [etrx] an optional existing transaction to run within.
+   * @returns {FileStorage} the original file storage object (pre-move), so the
+   *   caller can clean up the source object after committing.
    */
-  moveSubmissionFile: async (submissionId, fileStorage, updatedBy) => {
+  moveSubmissionFile: async (submissionId, fileStorage, updatedBy, etrx = undefined) => {
     let trx;
     try {
-      trx = await FileStorage.startTransaction();
+      trx = etrx || (await FileStorage.startTransaction());
 
-      // Move the file from its current directory to the "submissions" subdirectory.
+      // Copy the file from its current directory to the "submissions" subdirectory.
       const path = await storageService.move(fileStorage, 'submissions', submissionId);
       if (!path) {
         throw new Error('Error moving files for submission');
@@ -162,16 +190,15 @@ const service = {
         updatedBy: updatedBy,
       });
 
-      await trx.commit();
-
-      // Only after successful commit, remove the original object from storage.
-      try {
-        await storageService.delete(fileStorage);
-      } catch (delErr) {
-        log.error(`Failed to delete original file after move for file ${fileStorage.id}`, delErr);
+      // Only manage commit/cleanup when we own the transaction.
+      if (!etrx) {
+        await trx.commit();
+        await service.deleteStorageObject(fileStorage);
       }
+
+      return fileStorage;
     } catch (err) {
-      if (trx) await trx.rollback();
+      if (!etrx && trx) await trx.rollback();
       throw err;
     }
   },

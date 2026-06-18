@@ -10,6 +10,7 @@ jest.mock('../../../../src/forms/common/models', () => ({
 jest.mock('../../../../src/forms/file/service', () => ({
   read: jest.fn(),
   moveSubmissionFile: jest.fn(),
+  deleteStorageObject: jest.fn(),
 }));
 jest.mock('../../../../src/forms/email/emailService', () => ({
   submissionReceived: jest.fn().mockResolvedValue(),
@@ -184,14 +185,13 @@ describe('updateService', () => {
 
   describe('_handleFileUploads', () => {
     const fileService = require('../../../../src/forms/file/service');
-    const { FileStorage } = require('../../../../src/forms/common/models');
 
-    it('patches and moves files that are not already linked', async () => {
+    it('moves files that are not already linked, reusing the submission transaction', async () => {
       const fileIds = ['f1', 'f2'];
       const data = {};
       const id = 555;
       const user = { usernameIdp: 'uploader' };
-      const trx = {};
+      const trx = { id: 'submission-trx' };
 
       // Mock submissionService._findFileIds to return fileIds
       const submissionService = {
@@ -201,24 +201,26 @@ describe('updateService', () => {
       // Mock fileService.read to return fileStorage objects
       fileService.read.mockImplementation((fileId) => Promise.resolve({ id: fileId, formSubmissionId: null }));
 
-      // Mock FileStorage.query().patchAndFetchById
-      const patchAndFetchById = jest.fn().mockResolvedValue({});
-      FileStorage.query.mockReturnValue({ patchAndFetchById });
+      // moveSubmissionFile returns the original file storage object
+      fileService.moveSubmissionFile.mockImplementation((_id, fileStorage) => Promise.resolve(fileStorage));
 
-      // Mock fileService.moveSubmissionFile
-      fileService.moveSubmissionFile.mockResolvedValue();
-
-      await updateService._handleFileUploads(submissionService, data, id, user, trx);
+      const moved = await updateService._handleFileUploads(submissionService, data, id, user, trx);
 
       expect(submissionService._findFileIds).toHaveBeenCalledWith(data);
       expect(fileService.read).toHaveBeenCalledTimes(fileIds.length);
-      expect(patchAndFetchById).toHaveBeenCalledTimes(fileIds.length);
       expect(fileService.moveSubmissionFile).toHaveBeenCalledTimes(fileIds.length);
-      expect(fileService.moveSubmissionFile).toHaveBeenCalledWith(id, { id: 'f1', formSubmissionId: null }, 'uploader');
-      expect(fileService.moveSubmissionFile).toHaveBeenCalledWith(id, { id: 'f2', formSubmissionId: null }, 'uploader');
+      // The submission transaction must be passed through so a second transaction
+      // is never opened against the row this transaction already locked.
+      expect(fileService.moveSubmissionFile).toHaveBeenCalledWith(id, { id: 'f1', formSubmissionId: null }, 'uploader', trx);
+      expect(fileService.moveSubmissionFile).toHaveBeenCalledWith(id, { id: 'f2', formSubmissionId: null }, 'uploader', trx);
+      // It returns the moved files so the caller can clean up the originals.
+      expect(moved).toEqual([
+        { id: 'f1', formSubmissionId: null },
+        { id: 'f2', formSubmissionId: null },
+      ]);
     });
 
-    it('does not patch or move files already linked to a submission', async () => {
+    it('does not move files already linked to a submission', async () => {
       const fileIds = ['f3'];
       const data = {};
       const id = 556;
@@ -230,14 +232,12 @@ describe('updateService', () => {
       };
 
       fileService.read.mockResolvedValue({ id: 'f3', formSubmissionId: 556 });
-      const patchAndFetchById = jest.fn();
-      FileStorage.query.mockReturnValue({ patchAndFetchById });
       fileService.moveSubmissionFile.mockResolvedValue();
 
-      await updateService._handleFileUploads(submissionService, data, id, user, trx);
+      const moved = await updateService._handleFileUploads(submissionService, data, id, user, trx);
 
-      expect(patchAndFetchById).not.toHaveBeenCalled();
       expect(fileService.moveSubmissionFile).not.toHaveBeenCalled();
+      expect(moved).toEqual([]);
     });
 
     it('should throw error from moveSubmissionFile instead of silently catching', async () => {
@@ -253,16 +253,13 @@ describe('updateService', () => {
 
       fileService.read.mockResolvedValue({ id: 'f1', formSubmissionId: null });
 
-      const patchAndFetchById = jest.fn().mockResolvedValue({});
-      FileStorage.query.mockReturnValue({ patchAndFetchById });
-
       // Mock moveSubmissionFile to throw
       fileService.moveSubmissionFile.mockRejectedValue(new Error('File move failed'));
 
       // Should throw, not silently catch
       await expect(updateService._handleFileUploads(submissionService, data, id, user, trx)).rejects.toThrow('File move failed');
 
-      expect(fileService.moveSubmissionFile).toHaveBeenCalledWith(id, { id: 'f1', formSubmissionId: null }, 'uploader');
+      expect(fileService.moveSubmissionFile).toHaveBeenCalledWith(id, { id: 'f1', formSubmissionId: null }, 'uploader', trx);
     });
   });
 
@@ -408,6 +405,53 @@ describe('updateService', () => {
 
       // Clean up
       startTransactionSpy.mockRestore();
+    });
+
+    it('deletes the original storage objects after the internal transaction commits', async () => {
+      const fileService = require('../../../../src/forms/file/service');
+      const mockTrx = { rollback: jest.fn(), commit: jest.fn() };
+      const startTransactionSpy = jest.spyOn(require('../../../../src/forms/common/models').FormSubmissionStatus, 'startTransaction').mockResolvedValue(mockTrx);
+
+      const movedFiles = [{ id: 'f1' }, { id: 'f2' }];
+      updateService._isRestoring = jest.fn().mockReturnValue(false);
+      updateService._getStatuses = jest.fn().mockResolvedValue([]);
+      updateService._shouldBlockDraftUpdate = jest.fn().mockReturnValue(false);
+      updateService._handleStatusChange = jest.fn().mockResolvedValue(false);
+      updateService._patchSubmission = jest.fn();
+      updateService._handleFileUploads = jest.fn().mockResolvedValue(movedFiles);
+      updateService._sendNotifications = jest.fn();
+      const submissionService = { read: jest.fn().mockResolvedValue({ id: 1 }) };
+
+      // No external transaction -> update owns the commit and the cleanup.
+      await updateService.update(submissionService, 1, { draft: true }, { usernameIdp: 'user' }, null);
+
+      expect(mockTrx.commit).toHaveBeenCalled();
+      expect(fileService.deleteStorageObject).toHaveBeenCalledTimes(2);
+      expect(fileService.deleteStorageObject).toHaveBeenCalledWith({ id: 'f1' });
+      expect(fileService.deleteStorageObject).toHaveBeenCalledWith({ id: 'f2' });
+
+      startTransactionSpy.mockRestore();
+    });
+
+    it('does not delete original storage objects when using an external transaction', async () => {
+      const fileService = require('../../../../src/forms/file/service');
+
+      const movedFiles = [{ id: 'f1' }];
+      updateService._isRestoring = jest.fn().mockReturnValue(false);
+      updateService._getStatuses = jest.fn().mockResolvedValue([]);
+      updateService._shouldBlockDraftUpdate = jest.fn().mockReturnValue(false);
+      updateService._handleStatusChange = jest.fn().mockResolvedValue(false);
+      updateService._patchSubmission = jest.fn();
+      updateService._handleFileUploads = jest.fn().mockResolvedValue(movedFiles);
+      updateService._sendNotifications = jest.fn();
+      const submissionService = { read: jest.fn().mockResolvedValue({ id: 1 }) };
+      const fakeTrx = { commit: jest.fn(), rollback: jest.fn() };
+
+      // External transaction -> the owner commits and is responsible for cleanup.
+      await updateService.update(submissionService, 1, { draft: true }, { usernameIdp: 'user' }, null, fakeTrx);
+
+      expect(fakeTrx.commit).not.toHaveBeenCalled();
+      expect(fileService.deleteStorageObject).not.toHaveBeenCalled();
     });
 
     it('internal transaction rolled back on error', async () => {
