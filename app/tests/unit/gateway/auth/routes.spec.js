@@ -1,10 +1,10 @@
 const express = require('express');
 const request = require('supertest');
 const controller = require('../../../../src/gateway/v1/auth/controller');
-const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
+const requireApiKeyBasic = require('../../../../src/gateway/v1/auth/middleware/requireApiKeyBasic');
 
 // Mock middleware
-jest.mock('../../../../src/forms/auth/middleware/apiAccess', () => jest.fn((req, res, next) => next()));
+jest.mock('../../../../src/gateway/v1/auth/middleware/requireApiKeyBasic', () => jest.fn((req, res, next) => next()));
 
 // Mock controller methods
 jest.mock('../../../../src/gateway/v1/auth/controller', () => ({
@@ -26,13 +26,13 @@ describe('gateway/v1/auth routes', () => {
     app.use('/gateway/v1/auth', routes);
   });
 
-  it('POST /token/forms/:formId should route to controller.issueFormToken with apiAccess middleware', async () => {
+  it('POST /token/forms/:formId should route to controller.issueFormToken with requireApiKeyBasic middleware', async () => {
     controller.issueFormToken.mockImplementation(async (_req, res) => res.status(201).json({ token: 'abc' }));
     const res = await request(app).post('/gateway/v1/auth/token/forms/123').send({ formId: '123' });
     expect(res.statusCode).toBe(201);
     expect(res.body).toEqual({ token: 'abc' });
     expect(controller.issueFormToken).toHaveBeenCalled();
-    expect(apiAccess).toHaveBeenCalled();
+    expect(requireApiKeyBasic).toHaveBeenCalled();
   });
 
   it('POST /refresh should route to controller.refreshToken without middleware', async () => {
