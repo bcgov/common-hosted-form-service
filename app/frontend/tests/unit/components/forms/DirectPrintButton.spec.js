@@ -6,7 +6,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import DirectPrintButton from '~/components/forms/DirectPrintButton.vue';
 import * as printOptionsComposables from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { formService } from '~/services';
+import cdogsRouterService from '~/services/cdogsRouterService';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import * as transformUtils from '~/utils/transformUtils';
@@ -147,7 +148,7 @@ describe('DirectPrintButton.vue', () => {
 
     const mocks = setupCommonMocks();
     const docGenSpy = vi
-      .spyOn(formService, 'docGen')
+      .spyOn(cdogsRouterService, 'docGen')
       .mockResolvedValue(createDocGenResponse());
 
     const mountOptions = createMountOptions(pinia);
@@ -162,7 +163,7 @@ describe('DirectPrintButton.vue', () => {
     );
     expect(docGenSpy).toHaveBeenCalledTimes(1);
     const docGenCall = docGenSpy.mock.calls[0];
-    expect(docGenCall[1].options.reportName).toBe('Test Form');
+    expect(docGenCall[2].options.reportName).toBe('Test Form');
     expect(mocks.createDownloadSpy).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -179,7 +180,7 @@ describe('DirectPrintButton.vue', () => {
 
     const mocks = setupCommonMocks();
     const draftDocGenSpy = vi
-      .spyOn(utilsService, 'draftDocGen')
+      .spyOn(cdogsRouterService, 'draftDocGen')
       .mockResolvedValue(createDocGenResponse());
 
     const mountOptions = createMountOptions(pinia, {
@@ -261,7 +262,7 @@ describe('DirectPrintButton.vue', () => {
     mocks.getDispositionSpy.mockReturnValue('custom-name.pdf');
 
     const docGenSpy = vi
-      .spyOn(formService, 'docGen')
+      .spyOn(cdogsRouterService, 'docGen')
       .mockResolvedValue(createDocGenResponse('custom-name.pdf'));
 
     const printConfig = createPrintConfig({
@@ -275,7 +276,7 @@ describe('DirectPrintButton.vue', () => {
     await wrapper.vm.generateDirectPrint();
 
     const docGenCall = docGenSpy.mock.calls[0];
-    expect(docGenCall[1].options.reportName).toBe('Custom Report Name');
+    expect(docGenCall[2].options.reportName).toBe('Custom Report Name');
   });
 
   it('uses form name only when reportNameOption is formName', async () => {
@@ -286,7 +287,7 @@ describe('DirectPrintButton.vue', () => {
 
     setupCommonMocks();
     const docGenSpy = vi
-      .spyOn(formService, 'docGen')
+      .spyOn(cdogsRouterService, 'docGen')
       .mockResolvedValue(createDocGenResponse());
 
     const mountOptions = createMountOptions(pinia);
@@ -296,7 +297,7 @@ describe('DirectPrintButton.vue', () => {
     await wrapper.vm.generateDirectPrint();
 
     const docGenCall = docGenSpy.mock.calls[0];
-    expect(docGenCall[1].options.reportName).toBe('Test Form');
+    expect(docGenCall[2].options.reportName).toBe('Test Form');
   });
 
   it('fetches form when form name is missing', async () => {
@@ -307,7 +308,7 @@ describe('DirectPrintButton.vue', () => {
 
     setupCommonMocks();
     const docGenSpy = vi
-      .spyOn(formService, 'docGen')
+      .spyOn(cdogsRouterService, 'docGen')
       .mockResolvedValue(createDocGenResponse());
 
     const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
@@ -328,6 +329,6 @@ describe('DirectPrintButton.vue', () => {
 
     expect(fetchFormSpy).toHaveBeenCalledWith('test-form-id');
     const docGenCall = docGenSpy.mock.calls[0];
-    expect(docGenCall[1].options.reportName).toBe('Fetched Form Name');
+    expect(docGenCall[2].options.reportName).toBe('Fetched Form Name');
   });
 });

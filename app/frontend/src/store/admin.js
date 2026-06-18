@@ -338,5 +338,53 @@ export const useAdminStore = defineStore('admin', {
         });
       }
     },
+
+    //
+    // CDOGS v3 Configuration
+    //
+    async readCdogsV3Config(formId) {
+      try {
+        const response = await adminService.readCdogsV3Config(formId);
+        return response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.fetchingCdogsV3ConfigErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.fetchingCdogsV3ConfigErrMsg',
+            {
+              formId: formId,
+              error: error,
+            }
+          ),
+        });
+      }
+    },
+
+    async updateCdogsV3Config(formId, enabled) {
+      try {
+        const response = await adminService.updateCdogsV3Config(formId, {
+          enabled,
+        });
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.cdogsV3ConfigUpdated'),
+          ...NotificationTypes.SUCCESS,
+        });
+        return response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.updatingCdogsV3ConfigErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.updatingCdogsV3ConfigErrMsg',
+            {
+              formId: formId,
+              error: error,
+            }
+          ),
+        });
+      }
+    },
   },
 });

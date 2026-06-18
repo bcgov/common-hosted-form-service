@@ -361,4 +361,12 @@ module.exports = {
       next(error);
     }
   },
+  readCdogsV3Config: async (req, res, next) => {
+    try {
+      const response = await service.readCdogsV3Config(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

@@ -55,6 +55,14 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
   await controller.setFormUserRoles(req, res, next);
 });
 
+routes.get('/forms/:formId/cdogsV3Config', async (req, res, next) => {
+  await controller.readCdogsV3Config(req, res, next);
+});
+
+routes.put('/forms/:formId/cdogsV3Config', async (req, res, next) => {
+  await controller.updateCdogsV3Config(req, res, next);
+});
+
 //
 // Users
 //

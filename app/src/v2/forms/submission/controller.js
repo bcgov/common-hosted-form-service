@@ -82,7 +82,6 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await submissionService.read(req.params.formSubmissionId);
-
       const templateBody = {
         ...req.body,
         data: chefsTemplate(submission),

@@ -38,6 +38,7 @@ module.exports = {
   FormPrintConfigTypeCode: require('./tables/formPrintConfigTypeCode'),
   FormTenant: require('./tables/formTenant'),
   FormGroup: require('./tables/formGroup'),
+  CDOGSV3Config: require('./tables/cdogsV3Config'),
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
   PublicFormAccess: require('./views/publicFormAccess'),

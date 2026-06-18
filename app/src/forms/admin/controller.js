@@ -68,6 +68,27 @@ module.exports = {
   },
 
   //
+  // CDOGS v3 Configuration
+  //
+  readCdogsV3Config: async (req, res, next) => {
+    try {
+      const response = await service.getCdogsV3Config(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateCdogsV3Config: async (req, res, next) => {
+    try {
+      const response = await service.updateCdogsV3Config(req.params.formId, req.body);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  //
   // Users
   //
   getUsers: async (req, res, next) => {
