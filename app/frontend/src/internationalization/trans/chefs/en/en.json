@@ -511,7 +511,8 @@
     "confirmDeletion": "Confirm Deletion",
     "confirmDeletionMsg": "Are you sure you want to delete this API Key?",
     "delete": "Delete",
-    "confirmRestore": "Confirm Restore"
+    "confirmRestore": "Confirm Restore",
+    "enableCdogsV3": "Enable CDOGS v3 for this form"
   },
   "administerUser": {
     "userDetails": "User Details",
@@ -729,7 +730,6 @@
     "formSubmission": "form submission",
     "delete": "Delete"
   },
-
   "manageSubmissionUsers": {
     "manageTeamMembers": "Manage Team Members",
     "add": "Add",
@@ -1253,7 +1253,10 @@
       "updateAPIsErrMsg": "Error updating External API.",
       "updateAPIsConsErrMsg": "Error updating External API: {error}",
       "getAPICodesErrMsg": "Error fetching External API Status Codes list.",
-      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}"
+      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}",
+      "cdogsV3ConfigUpdated": "CDOGS v3 configuration updated successfully.",
+      "updatingCdogsV3ConfigErrMsg": "An error occurred while updating CDOGS v3 configuration.",
+      "updatingCdogsV3ConfigConsErrMsg": "Error updating CDOGS v3 configuration for form {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",

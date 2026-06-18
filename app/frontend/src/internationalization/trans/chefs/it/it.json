@@ -420,7 +420,8 @@
     "confirmDeletion": "Confermare la cancellazione",
     "confirmDeletionMsg": "Sei sicuro di voler eliminare questa chiave API?",
     "delete": "Eliminare",
-    "confirmRestore": "Conferma ripristino"
+    "confirmRestore": "Conferma ripristino",
+    "enableCdogsV3": "Abilita CDOGS v3 per questo modulo"
   },
   "administerUser": {
     "userDetails": "Dettagli utente",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "Errore durante l'aggiornamento dell'API esterna.",
       "updateAPIsConsErrMsg": "Errore durante l'aggiornamento dell'API esterna: {error}",
       "getAPICodesErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna.",
-      "getAPICodesConsErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna: {error}"
+      "getAPICodesConsErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna: {error}",
+      "cdogsV3ConfigUpdated": "Configurazione di CDOGS v3 aggiornata con successo.",
+      "updatingCdogsV3ConfigErrMsg": "Si è verificato un errore durante l'aggiornamento della configurazione di CDOGS v3.",
+      "updatingCdogsV3ConfigConsErrMsg": "Errore nell'aggiornamento della configurazione di CDOGS v3 per il modulo {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Errore durante il caricamento dei modelli di email per {formId}: {error}",

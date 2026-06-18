@@ -420,7 +420,8 @@
     "confirmDeletion": "حذف را تایید کنید",
     "confirmDeletionMsg": "آیا مطمئن هستید که می خواهید این کلید API را حذف کنید؟",
     "delete": "حذف",
-    "confirmRestore": "Restore را تایید کنید"
+    "confirmRestore": "Restore را تایید کنید",
+    "enableCdogsV3": "فعال‌سازی CDOGS v3 برای این فرم"
   },
   "administerUser": {
     "userDetails": "مشخصات کاربر",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "خطا در به‌روزرسانی API خارجی.",
       "updateAPIsConsErrMsg": "خطا در به‌روزرسانی API خارجی: {error}",
       "getAPICodesErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی.",
-      "getAPICodesConsErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی: {error}"
+      "getAPICodesConsErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی: {error}",
+      "cdogsV3ConfigUpdated": "پیکربندی CDOGS v3 با موفقیت به‌روز شد.",
+      "updatingCdogsV3ConfigErrMsg": "خطایی در هنگام به‌روز رسانی پیکربندی CDOGS v3 رخ داد.",
+      "updatingCdogsV3ConfigConsErrMsg": "خطا در به‌روز رسانی پیکربندی CDOGS v3 برای فرم {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطا در بارگیری الگوهای ایمیل برای {formId}: {error}",

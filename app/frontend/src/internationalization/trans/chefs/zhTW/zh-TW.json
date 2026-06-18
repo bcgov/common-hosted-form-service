@@ -420,7 +420,8 @@
     "confirmDeletion": "確認刪除",
     "confirmDeletionMsg": "您確定要刪除此 API 密鑰嗎？",
     "delete": "刪除",
-    "confirmRestore": "確認恢復"
+    "confirmRestore": "確認恢復",
+    "enableCdogsV3": "為此表單啟用 CDOGS v3"
   },
   "administerUser": {
     "userDetails": "用戶詳細信息",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "更新外部 API 時發生錯誤。",
       "updateAPIsConsErrMsg": "更新外部 API 時發生錯誤：{error}",
       "getAPICodesErrMsg": "取得外部 API 狀態代碼清單時發生錯誤。",
-      "getAPICodesConsErrMsg": "取得外部 API 狀態代碼清單時發生錯誤：{error}"
+      "getAPICodesConsErrMsg": "取得外部 API 狀態代碼清單時發生錯誤：{error}",
+      "cdogsV3ConfigUpdated": "CDOGS v3 設定已成功更新。",
+      "updatingCdogsV3ConfigErrMsg": "更新 CDOGS v3 設定時發生錯誤。",
+      "updatingCdogsV3ConfigConsErrMsg": "為表單 {formId} 更新 CDOGS v3 設定時發生錯誤: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "加載 {formId} 的電子郵件模板時出錯：{error}",

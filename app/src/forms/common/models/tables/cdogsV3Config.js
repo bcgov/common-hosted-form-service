@@ -1,5 +1,6 @@
 const { Model } = require('objection');
 const { Timestamps } = require('../mixins');
+const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
 class CDOGSV3Config extends Timestamps(Model) {
@@ -27,8 +28,8 @@ class CDOGSV3Config extends Timestamps(Model) {
       type: 'object',
       required: ['formId'],
       properties: {
-        id: { type: 'string', format: 'uuid' },
-        formId: { type: 'string', format: 'uuid' },
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
         enabled: { type: 'boolean' },
         ...stamps,
       },

@@ -420,7 +420,8 @@
     "confirmDeletion": "削除の確認",
     "confirmDeletionMsg": "この API キーを削除してもよろしいですか?",
     "delete": "消去",
-    "confirmRestore": "復元の確認"
+    "confirmRestore": "復元の確認",
+    "enableCdogsV3": "このフォームのCDOGS v3を有効にする"
   },
   "administerUser": {
     "userDetails": "ユーザーの詳細",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "外部 API の更新中にエラーが発生しました。",
       "updateAPIsConsErrMsg": "外部 API の更新中にエラーが発生しました: {error}",
       "getAPICodesErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました。",
-      "getAPICodesConsErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました: {error}"
+      "getAPICodesConsErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました: {error}",
+      "cdogsV3ConfigUpdated": "CDOGS v3設定が正常に更新されました。",
+      "updatingCdogsV3ConfigErrMsg": "CDOGS v3設定の更新中にエラーが発生しました。",
+      "updatingCdogsV3ConfigConsErrMsg": "フォーム{formId}のCDOGS v3設定の更新中にエラーが発生しました: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} の電子メール テンプレートの読み込みエラー: {error}",

@@ -420,7 +420,8 @@
     "confirmDeletion": "تأكيد الحذف",
     "confirmDeletionMsg": "هل أنت متأكد أنك تريد حذف مفتاح API هذا؟",
     "delete": "يمسح",
-    "confirmRestore": "تأكيد الاستعادة"
+    "confirmRestore": "تأكيد الاستعادة",
+    "enableCdogsV3": "تفعيل CDOGS v3 لهذا النموذج"
   },
   "administerUser": {
     "userDetails": "بيانات المستخدم",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية.",
       "updateAPIsConsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية: {error}",
       "getAPICodesErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية.",
-      "getAPICodesConsErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية: {error}"
+      "getAPICodesConsErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية: {error}",
+      "cdogsV3ConfigUpdated": "تم تحديث إعدادات CDOGS v3 بنجاح.",
+      "updatingCdogsV3ConfigErrMsg": "حدث خطأ أثناء تحديث إعدادات CDOGS v3.",
+      "updatingCdogsV3ConfigConsErrMsg": "خطأ في تحديث إعدادات CDOGS v3 للنموذج {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطأ في تحميل قوالب البريد الإلكتروني لـ {formId}: {error}",

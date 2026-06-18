@@ -420,7 +420,8 @@
     "confirmDeletion": "मिटाने की पुष्टि",
     "confirmDeletionMsg": "क्या आप वाकई इस एपीआई कुंजी को हटाना चाहते हैं?",
     "delete": "मिटाना",
-    "confirmRestore": "पुनर्स्थापना की पुष्टि करें"
+    "confirmRestore": "पुनर्स्थापना की पुष्टि करें",
+    "enableCdogsV3": "इस फॉर्म के लिए CDOGS v3 सक्षम करें"
   },
   "administerUser": {
     "userDetails": "उपयोगकर्ता विवरण",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "बाह्य API अद्यतन करने में त्रुटि.",
       "updateAPIsConsErrMsg": "बाहरी API अपडेट करते समय त्रुटि: {error}",
       "getAPICodesErrMsg": "बाह्य API स्थिति कोड सूची प्राप्त करने में त्रुटि हुई.",
-      "getAPICodesConsErrMsg": "बाहरी API स्थिति कोड सूची प्राप्त करने में त्रुटि: {त्रुटि}"
+      "getAPICodesConsErrMsg": "बाहरी API स्थिति कोड सूची प्राप्त करने में त्रुटि: {त्रुटि}",
+      "cdogsV3ConfigUpdated": "CDOGS v3 कॉन्फ़िगरेशन सफलतापूर्वक अपडेट किया गया।",
+      "updatingCdogsV3ConfigErrMsg": "CDOGS v3 कॉन्फ़िगरेशन को अपडेट करते समय एक त्रुटि हुई।",
+      "updatingCdogsV3ConfigConsErrMsg": "फॉर्म {formId} के लिए CDOGS v3 कॉन्फ़िगरेशन अपडेट करने में त्रुटि: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} के लिए ईमेल टेम्पलेट लोड करने में त्रुटि: {error}",
