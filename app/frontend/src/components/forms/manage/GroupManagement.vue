@@ -84,8 +84,14 @@ const someAssignedSelected = computed(() =>
   filteredAssigned.value.some((g) => selectedAssigned.value.includes(g.id))
 );
 
-// True when the component is loaded without a tenant context (direct URL access, degraded state)
-const noTenant = computed(() => !tenantStore.selectedTenant);
+// True when the component is loaded without a tenant context (direct URL access, degraded state).
+// Suppressed while switchingTenant is true so this doesn't flash on screen
+// while TenantDropdown navigates away from this page (selectedTenant is
+// cleared synchronously, before the navigation away from Group Management
+// completes).
+const noTenant = computed(
+  () => !tenantStore.selectedTenant && !tenantStore.switchingTenant
+);
 
 onMounted(() => {
   if (noTenant.value) {
