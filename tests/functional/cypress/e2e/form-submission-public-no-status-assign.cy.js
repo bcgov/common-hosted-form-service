@@ -33,9 +33,14 @@ describe('Form Designer', () => {
     
   });  
 // Publish a simple form with Simplebc Address component
- it('Verify public form submission', () => {
+ it('Make form to public', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
     cy.visit(`/${depEnv}`); 
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     cy.get('#loginButton').click();
@@ -71,11 +76,20 @@ describe('Form Designer', () => {
     cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should('not.be.enabled')
     .and("not.be.checked");
     cy.get('[data-test="canEditForm"]').click();
-    
     //Logout to submit the public form
     cy.get('#logoutButton').click({ force: true });
     cy.log('Page visited, checking for logout button');
     cy.get('#logoutButton').should('not.exist');
+    });  
+// Publish a simple form with Simplebc Address component
+  it('Verify public form submission', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     cy.waitForLoad();
