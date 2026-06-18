@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 const { CDOGSV3Config } = require('../common/models');
 const log = require('../../components/log')(module.filename);
 
@@ -36,7 +37,7 @@ const getV3Config = async (formId) => {
 
     // If no config exists, create one with enabled: false as default
     if (!config) {
-      config = await CDOGSV3Config.query().insert({ formId, enabled: false });
+      config = await CDOGSV3Config.query().insert({ id: uuidv4(), formId, enabled: false });
     }
 
     return config;
@@ -58,7 +59,7 @@ const enableV3 = async (formId) => {
     if (config) {
       return await CDOGSV3Config.query().patchAndFetchById(config.id, { enabled: true });
     } else {
-      return await CDOGSV3Config.query().insert({ formId, enabled: true });
+      return await CDOGSV3Config.query().insert({ id: uuidv4(), formId, enabled: true });
     }
   } catch (error) {
     log.error('Error enabling CDOGS v3', { formId, error: error.message });
@@ -78,7 +79,7 @@ const disableV3 = async (formId) => {
     if (config) {
       return await CDOGSV3Config.query().patchAndFetchById(config.id, { enabled: false });
     } else {
-      return await CDOGSV3Config.query().insert({ formId, enabled: false });
+      return await CDOGSV3Config.query().insert({ id: uuidv4(), formId, enabled: false });
     }
   } catch (error) {
     log.error('Error disabling CDOGS v3', { formId, error: error.message });
