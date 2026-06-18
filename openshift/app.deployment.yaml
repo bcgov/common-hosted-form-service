@@ -292,7 +292,7 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
-                  name: "${APP_NAME}${SERVER_CONFIGMAP_SUFFIX}-server-config"
+                    name: "${APP_NAME}${SERVER_CONFIGMAP_SUFFIX}-server-config"
                 - configMapRef:
                     name: "${APP_NAME}-service-config"
                 - configMapRef:
