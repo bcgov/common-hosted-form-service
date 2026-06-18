@@ -143,7 +143,7 @@ const service = {
    * undo work that has already been committed.
    *
    * @param {FileStorage} fileStorage the file storage object to remove.
-   * @returns {boolean} true if the object was removed.
+   * @returns {Promise<boolean>} true if the object was removed.
    */
   deleteStorageObject: async (fileStorage) => {
     try {
@@ -168,9 +168,9 @@ const service = {
    * @param {uuidv4} submissionId the id of the submission that holds the file.
    * @param {FileStorage} fileStorage the file storage object for the file.
    * @param {string} updatedBy the user who is saving the submission.
-   * @param {object} [etrx] an optional existing transaction to run within.
-   * @returns {FileStorage} the original file storage object (pre-move), so the
-   *   caller can clean up the source object after committing.
+   * @param {*} [etrx] an optional existing transaction to run within.
+   * @returns {Promise<FileStorage>} the original file storage object (pre-move),
+   *   so the caller can clean up the source object after committing.
    */
   moveSubmissionFile: async (submissionId, fileStorage, updatedBy, etrx = undefined) => {
     let trx;
