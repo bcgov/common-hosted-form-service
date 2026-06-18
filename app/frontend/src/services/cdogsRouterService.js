@@ -60,27 +60,15 @@ export default {
   async docGen(formId, submissionId, body) {
     const version = await this.determineCdogsVersion(formId);
 
-    if (version === 'v2' && submissionId) {
-      // Use v2 submission endpoint
-      return appAxios().post(
-        `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
-        body,
-        {
-          responseType: 'arraybuffer',
-          timeout: 30000,
-        }
-      );
-    } else {
-      // Use v1 submission endpoint (default)
-      return appAxios().post(
-        `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
-        body,
-        {
-          responseType: 'arraybuffer',
-          timeout: 30000,
-        }
-      );
-    }
+    // Use the version-specific axios instance (v1 or v2)
+    return appAxios(version).post(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
+      body,
+      {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      }
+    );
   },
 
   /**
@@ -92,18 +80,11 @@ export default {
   async draftDocGen(formId, body) {
     const version = await this.determineCdogsVersion(formId);
 
-    // Both v1 and v2 use the same endpoint for drafts, but v2 requires formId in body
-    if (version === 'v2') {
-      return appAxios().post(`${ApiRoutes.UTILS}/template/render`, body, {
-        responseType: 'arraybuffer',
-        timeout: 30000,
-      });
-    } else {
-      // v1 - same endpoint but without formId requirement
-      return appAxios().post(`${ApiRoutes.UTILS}/template/render`, body, {
-        responseType: 'arraybuffer',
-        timeout: 30000,
-      });
-    }
+    // Use the version-specific axios instance (v1 or v2)
+    // Both v1 and v2 use the same endpoint, but v2 requires formId in body
+    return appAxios(version).post(`${ApiRoutes.UTILS}/template/render`, body, {
+      responseType: 'arraybuffer',
+      timeout: 30000,
+    });
   },
 };
