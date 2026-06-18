@@ -105,6 +105,10 @@ describe('Form Designer', () => {
     cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
     //view submission   
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    cy.wait(1000);
+    //Login to view submissions
+    cy.get('[data-test="login-btn"]').click();
+    cy.get('[data-test="idir"]').click();
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
     cy.contains('Assigned to me').should('exist');//Assigned to me checkbox
