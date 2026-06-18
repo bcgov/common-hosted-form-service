@@ -103,6 +103,13 @@ describe('Form Designer', () => {
     cy.get('button[title="Email a receipt of this submission"]').click();
     cy.get('span').contains('SEND').click();
     cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
+    //Re-login as IDIR before viewing submissions (manage page requires authentication)
+    cy.visit(`/${depEnv}`);
+    cy.get('#loginButton').click();
+    cy.get('[data-test="idir"]').click();
+    cy.get('#user').type(username);
+    cy.get('#password').type(password);
+    cy.get('.btn').click();
     //view submission   
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.get('.mdi-list-box-outline').click();

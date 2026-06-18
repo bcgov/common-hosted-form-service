@@ -94,6 +94,13 @@ describe('Form Designer', () => {
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
+    //Re-login as IDIR before viewing submissions (manage page requires authentication)
+    cy.visit(`/${depEnv}`);
+    cy.get('#loginButton').click();
+    cy.get('[data-test="idir"]').click();
+    cy.get('#user').type(username);
+    cy.get('#password').type(password);
+    cy.get('.btn').click();
     //view submission
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.get('.mdi-list-box-outline').click();
