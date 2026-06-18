@@ -19,7 +19,7 @@ const requireCdogsV3Access = async (req, res, next) => {
     // Otherwise, fetch submission to get formId (submission-based routes)
     else if (req.params.formSubmissionId) {
       const submission = await submissionService.read(req.params.formSubmissionId);
-      formId = submission.meta.formId;
+      formId = submission.form.id;
     }
 
     if (!formId) {
