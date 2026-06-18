@@ -21,31 +21,19 @@ export default {
       );
 
       // Config exists - check if enabled
-      if (response.data?.enabled) {
+      if (response.data?.enabled === true) {
         return 'v2';
       } else {
-        // Config exists but not enabled - fail fast
-        throw new Error(
-          'CDOGS v3 is not enabled for this form. Contact your administrator.'
-        );
+        // Config exists but not enabled (or enabled is false) - use v1
+        return 'v1';
       }
     } catch (error) {
-      // If it's our custom error, re-throw it
-      if (error.message?.includes('CDOGS v3 is not enabled')) {
-        throw error;
-      }
-
       // If 404, config doesn't exist - use v1 (legacy behavior)
       if (error.response?.status === 404) {
         return 'v1';
       }
 
-      // If 403, config exists but not enabled - propagate error
-      if (error.response?.status === 403) {
-        throw error;
-      }
-
-      // For other errors, default to v1 to maintain backward compatibility
+      // For any other errors, default to v1 to maintain backward compatibility
       return 'v1';
     }
   },

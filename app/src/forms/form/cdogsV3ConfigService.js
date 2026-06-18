@@ -24,7 +24,7 @@ const hasV3Access = async (formId) => {
 /**
  * Get CDOGS v3 configuration for a form
  * @param {string} formId - The form ID
- * @returns {Promise<Object|null>} - The config object or null if not found
+ * @returns {Promise<Object>} - The config object (creates with enabled: false if not found)
  */
 const getV3Config = async (formId) => {
   try {
@@ -32,10 +32,17 @@ const getV3Config = async (formId) => {
       return null;
     }
 
-    return await CDOGSV3Config.query().modify('findByFormId', formId).first();
+    let config = await CDOGSV3Config.query().modify('findByFormId', formId).first();
+
+    // If no config exists, create one with enabled: false as default
+    if (!config) {
+      config = await CDOGSV3Config.query().insert({ formId, enabled: false });
+    }
+
+    return config;
   } catch (error) {
     log.error('Error retrieving CDOGS v3 config', { formId, error: error.message });
-    return null;
+    throw error;
   }
 };
 
