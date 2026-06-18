@@ -40,6 +40,7 @@ const validFileExtensions = new Set([
   'odt',
   'pptx',
   'xlsx',
+  'xml',
 ]);
 
 const notificationStore = useNotificationStore();

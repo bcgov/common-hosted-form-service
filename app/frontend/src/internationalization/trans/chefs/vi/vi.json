@@ -87,7 +87,7 @@
     "upload": "Tải lên",
     "delete": "Xóa",
     "download": "Tải xuống",
-    "invalidFileMessage": "Mẫu phải sử dụng một trong các phần mở rộng sau: .txt, .docx, .html, .odt, .pptx, .xlsx",
+    "invalidFileMessage": "Mẫu phải sử dụng một trong các tiện ích mở rộng sau: .txt, .docx, .html, .odt, .pptx, .xlsx, .xml",
     "uploadSuccess": "Tải lên mẫu thành công.",
     "uploadError": "Có lỗi xảy ra khi tải lên mẫu.",
     "deleteSuccess": "Xóa mẫu thành công.",

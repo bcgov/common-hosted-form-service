@@ -84,7 +84,7 @@
     "upload": "Upload",
     "delete": "Delete",
     "download": "Download",
-    "invalidFileMessage": "The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx",
+    "invalidFileMessage": "The template must use one of the following extensions: .txt, .docx, .html, .odt, .pptx, .xlsx, .xml",
     "uploadSuccess": "Template uploaded successfully.",
     "uploadError": "An error occurred while uploading the template.",
     "deleteSuccess": "Template deleted successfully.",

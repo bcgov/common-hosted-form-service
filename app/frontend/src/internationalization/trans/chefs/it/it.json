@@ -87,7 +87,7 @@
     "upload": "Carica",
     "delete": "Elimina",
     "download": "Scarica",
-    "invalidFileMessage": "Il template deve usare una delle seguenti estensioni: .txt, .docx, .html, .odt, .pptx, .xlsx",
+    "invalidFileMessage": "Il modello deve utilizzare una delle seguenti estensioni: .txt, .docx, .html, .odt, .pptx, .xlsx, .xml",
     "uploadSuccess": "Template caricato con successo.",
     "uploadError": "Si è verificato un errore durante il caricamento del template.",
     "deleteSuccess": "Template eliminato con successo.",

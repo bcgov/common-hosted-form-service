@@ -87,7 +87,7 @@
     "upload": "Subir",
     "delete": "Eliminar",
     "download": "Descargar",
-    "invalidFileMessage": "La plantilla debe usar una de las siguientes extensiones: .txt, .docx, .html, .odt, .pptx, .xlsx",
+    "invalidFileMessage": "La plantilla debe usar una de las siguientes extensiones: .txt, .docx, .html, .odt, .pptx, .xlsx, .xml",
     "uploadSuccess": "Plantilla subida exitosamente.",
     "uploadError": "Ocurrió un error al subir la plantilla.",
     "deleteSuccess": "Plantilla eliminada exitosamente.",
