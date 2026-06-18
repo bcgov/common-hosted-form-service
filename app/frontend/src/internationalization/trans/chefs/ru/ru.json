@@ -87,7 +87,7 @@
     "upload": "Загрузить",
     "delete": "Удалить",
     "download": "Скачать",
-    "invalidFileMessage": "Шаблон должен использовать одно из следующих расширений: .txt, .docx, .html, .odt, .pptx, .xlsx, .xml",
+    "invalidFileMessage": "Шаблон должен использовать одно из следующих расширений: .txt, .docx, .html, .odt, .pptx, .xlsx",
     "uploadSuccess": "Шаблон успешно загружен.",
     "uploadError": "Произошла ошибка при загрузке шаблона.",
     "deleteSuccess": "Шаблон успешно удален.",
