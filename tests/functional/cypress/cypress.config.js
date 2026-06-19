@@ -33,7 +33,7 @@ module.exports = defineConfig({
      // return require('./plugins/index.js')(on, config)
     
     //baseUrl: 'http://localhost:5173',
-    baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
+    //baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
     specPattern: [
       'e2e/*.cy.{js,jsx,ts,tsx}',
       //'eCHEFS/*.cy.{js,jsx,ts,tsx}',
