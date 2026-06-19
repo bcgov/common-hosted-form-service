@@ -100,14 +100,12 @@ describe('Form Designer', () => {
     cy.contains('h1', 'Your form has been submitted successfully');
     //view submission
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
-    })//Login to view submissions
-    cy.get('#loginButton').click();
-    cy.get('[data-test="idir"]').click();
-    cy.get('#user').type(username);
-    cy.get('#password').type(password);
-    cy.get('.btn').click();
-    cy.get('.mdi-list-box-outline').click();
+    })
     cy.wait(2000);
+    //Login to view submissions
+    cy.get('[data-test="login-btn"]').click();
+    cy.get('[data-test="idir"]').click();
+    cy.get('.mdi-list-box-outline').click();
     cy.contains('Assigned to me').should('not.exist');//Assigned to me checkbox
     //View the submission
     cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn').click();
