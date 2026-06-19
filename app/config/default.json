@@ -96,7 +96,10 @@
         "endpoint": "https://cdogs-dev.api.gov.bc.ca/api",
         "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
         "clientId": "CDOGS_CLIENT_ID",
-        "clientSecret": "CDOGS_CLIENT_SECRET"
+        "clientSecret": "CDOGS_CLIENT_SECRET",
+        "v3": {
+          "endpoint": "https://cdogs-v3-dev.api.gov.bc.ca/api"
+        }
       },
       "css": {
         "endpoint": "https://api.loginproxy.gov.bc.ca/api",
