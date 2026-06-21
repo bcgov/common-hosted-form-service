@@ -62,7 +62,9 @@
     "port": "SERVER_PORT",
     "encryption": {
       "proxy": "SERVER_ENCRYPTION_PROXY"
-    }
+    },
+    "submissionTokenKey": "SUBMISSION_TOKEN_KEY",
+    "submissionTokenTtlMinutes": "SUBMISSION_TOKEN_TTL_MINUTES"
   },
   "eventStreamService": {
     "servers": "EVENTSTREAMSERVICE_SERVERS",

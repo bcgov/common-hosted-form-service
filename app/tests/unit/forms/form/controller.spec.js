@@ -4,6 +4,9 @@ const uuid = require('uuid');
 const controller = require('../../../../src/forms/form/controller');
 const exportService = require('../../../../src/forms/form/exportService');
 const service = require('../../../../src/forms/form/service');
+const emailService = require('../../../../src/forms/email/emailService');
+const fileService = require('../../../../src/forms/file/service');
+const submissionTokenService = require('../../../../src/components/submissionTokenService');
 
 // Various strings that should produce 400 errors when used as UUIDs.
 const testCases400 = [[''], ['undefined'], ['{{oops}}'], [uuid.v4() + '.']];
@@ -255,5 +258,97 @@ describe('readFormOptions', () => {
     // Assert
     expect(service.readFormOptions).toBeCalled();
     expect(next).toBeCalledWith(error);
+  });
+});
+
+describe('createSubmission access token attachment', () => {
+  const formIdLocal = uuid.v4();
+  const formVersionId = uuid.v4();
+  const submissionId = uuid.v4();
+  const createdSubmission = { id: submissionId, formVersionId };
+
+  const buildReq = ({ isPublic = true, draft = false } = {}) =>
+    getMockReq({
+      params: { formId: formIdLocal, formVersionId },
+      body: { draft },
+      currentUser: { public: isPublic, id: uuid.v4(), usernameIdp: 'public' },
+      headers: { referer: '' },
+    });
+
+  beforeEach(() => {
+    service.createSubmission = jest.fn().mockResolvedValue(createdSubmission);
+    emailService.submissionReceived = jest.fn().mockResolvedValue(undefined);
+    fileService.moveSubmissionFiles = jest.fn().mockResolvedValue(undefined);
+  });
+
+  test('on a sharing-off public form for an anonymous submitter, response includes _accessToken that verifies for the submission id', async () => {
+    service.readForm = jest.fn().mockResolvedValue({
+      id: formIdLocal,
+      enableSubmissionUrlSharing: false,
+      identityProviders: [{ code: 'public' }],
+    });
+    const req = buildReq();
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(res.status).toBeCalledWith(201);
+    const body = res.json.mock.calls[0][0];
+    expect(body.id).toBe(submissionId);
+    expect(typeof body._accessToken).toBe('string');
+    expect(submissionTokenService.verify(body._accessToken, submissionId)).toBe(true);
+  });
+
+  test('does not attach _accessToken when the form has enableSubmissionUrlSharing on', async () => {
+    service.readForm = jest.fn().mockResolvedValue({
+      id: formIdLocal,
+      enableSubmissionUrlSharing: true,
+      identityProviders: [{ code: 'public' }],
+    });
+    const req = buildReq();
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    const body = res.json.mock.calls[0][0];
+    expect(body._accessToken).toBeUndefined();
+  });
+
+  test('does not attach _accessToken for authenticated submitters', async () => {
+    service.readForm = jest.fn();
+    const req = buildReq({ isPublic: false });
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(service.readForm).not.toBeCalled();
+    const body = res.json.mock.calls[0][0];
+    expect(body._accessToken).toBeUndefined();
+  });
+
+  test('does not attach _accessToken for drafts', async () => {
+    service.readForm = jest.fn();
+    const req = buildReq({ draft: true });
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(service.readForm).not.toBeCalled();
+    const body = res.json.mock.calls[0][0];
+    expect(body._accessToken).toBeUndefined();
+  });
+
+  test('does not mutate the service-layer submission object', async () => {
+    service.readForm = jest.fn().mockResolvedValue({
+      id: formIdLocal,
+      enableSubmissionUrlSharing: false,
+      identityProviders: [{ code: 'public' }],
+    });
+    const req = buildReq();
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(createdSubmission._accessToken).toBeUndefined();
   });
 });

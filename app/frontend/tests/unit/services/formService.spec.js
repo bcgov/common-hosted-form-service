@@ -1,8 +1,13 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { formService } from '~/services';
+import {
+  clearSubmissionAccessToken,
+  getValidSubmissionAccessToken,
+  SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX,
+} from '~/services/formService';
 import { ApiRoutes } from '~/utils/constants';
 
 const mockInstance = axios.create();
@@ -629,6 +634,104 @@ describe('Form Service', () => {
       const result = await formService.externalAPIDelete(zeroUuid, zeroUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.delete).toHaveLength(1);
+    });
+  });
+
+  describe('createSubmission access token handling', () => {
+    const formId = zeroUuid;
+    const versionId = oneUuid;
+    const submissionId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+    const endpoint = `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`;
+
+    afterEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('persists _accessToken to sessionStorage and strips it from the returned data', async () => {
+      const token = `${submissionId}.${Date.now() + 60_000}.${'a'.repeat(64)}`;
+      mockAxios.onPost(endpoint).reply(201, { id: submissionId, _accessToken: token, foo: 'bar' });
+
+      const result = await formService.createSubmission(formId, versionId, {});
+
+      expect(result.data.id).toBe(submissionId);
+      expect(result.data.foo).toBe('bar');
+      expect(result.data._accessToken).toBeUndefined();
+      expect(sessionStorage.getItem(SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId)).toBe(token);
+    });
+
+    it('does nothing to sessionStorage when the response has no _accessToken', async () => {
+      mockAxios.onPost(endpoint).reply(201, { id: submissionId, foo: 'bar' });
+
+      const result = await formService.createSubmission(formId, versionId, {});
+
+      expect(result.data._accessToken).toBeUndefined();
+      expect(sessionStorage.getItem(SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId)).toBeNull();
+    });
+  });
+
+  describe('getValidSubmissionAccessToken', () => {
+    const submissionId = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+    const key = SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId;
+
+    afterEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('returns the token when its exp segment is in the future', () => {
+      const token = `${submissionId}.${Date.now() + 60_000}.${'a'.repeat(64)}`;
+      sessionStorage.setItem(key, token);
+      expect(getValidSubmissionAccessToken(submissionId)).toBe(token);
+    });
+
+    it('returns null when the exp segment is in the past', () => {
+      sessionStorage.setItem(key, `${submissionId}.${Date.now() - 1000}.${'a'.repeat(64)}`);
+      expect(getValidSubmissionAccessToken(submissionId)).toBeNull();
+    });
+
+    it('returns null when no token is stored', () => {
+      expect(getValidSubmissionAccessToken(submissionId)).toBeNull();
+    });
+
+    it('returns null when the token is malformed', () => {
+      sessionStorage.setItem(key, 'not-a-real-token');
+      expect(getValidSubmissionAccessToken(submissionId)).toBeNull();
+    });
+
+    it('returns null when the exp segment is not a number', () => {
+      sessionStorage.setItem(key, `${submissionId}.notanumber.${'a'.repeat(64)}`);
+      expect(getValidSubmissionAccessToken(submissionId)).toBeNull();
+    });
+
+    it('returns null when no submissionId is provided', () => {
+      expect(getValidSubmissionAccessToken(undefined)).toBeNull();
+      expect(getValidSubmissionAccessToken('')).toBeNull();
+    });
+  });
+
+  describe('clearSubmissionAccessToken', () => {
+    const submissionId = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
+    const key = SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId;
+
+    afterEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('removes the token for the given submissionId', () => {
+      sessionStorage.setItem(key, 'something');
+      clearSubmissionAccessToken(submissionId);
+      expect(sessionStorage.getItem(key)).toBeNull();
+    });
+
+    it('is a no-op when no token is stored', () => {
+      expect(() => clearSubmissionAccessToken(submissionId)).not.toThrow();
+      expect(sessionStorage.getItem(key)).toBeNull();
+    });
+
+    it('is a no-op when no submissionId is provided', () => {
+      sessionStorage.setItem(key, 'something');
+      clearSubmissionAccessToken(undefined);
+      clearSubmissionAccessToken('');
+      expect(sessionStorage.getItem(key)).toBe('something');
     });
   });
 

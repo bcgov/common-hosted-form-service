@@ -66,7 +66,8 @@
     },
     "encryption": {
       "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7"
-    }
+    },
+    "submissionTokenTtlMinutes": "15"
   },
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",

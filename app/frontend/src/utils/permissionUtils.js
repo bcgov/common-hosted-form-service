@@ -1,5 +1,6 @@
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useIdpStore } from '~/store/identityProviders';
 import {
@@ -115,12 +116,23 @@ export async function preFlightAuth(options, next) {
   async function fetchIdpHints() {
     if (options.formId) {
       const { data } = await formService.readFormOptions(options.formId);
+      // CCP-4720: surface enableSubmissionUrlSharing so downstream views
+      // (e.g. the post-submit success page) can decide what to render without
+      // round-tripping to the authenticated submission endpoint.
+      useFormStore().form.enableSubmissionUrlSharing =
+        data.enableSubmissionUrlSharing;
+      useFormStore().form.showSubmissionConfirmation =
+        data.showSubmissionConfirmation;
       return getValidIdpHints(data.idpHints);
     }
     if (options.submissionId) {
       const { data } = await formService.getSubmissionOptions(
         options.submissionId
       );
+      useFormStore().form.enableSubmissionUrlSharing =
+        data.form.enableSubmissionUrlSharing;
+      useFormStore().form.showSubmissionConfirmation =
+        data.form.showSubmissionConfirmation;
       return getValidIdpHints(data.form.idpHints);
     }
     throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));
