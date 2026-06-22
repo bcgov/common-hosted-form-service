@@ -402,6 +402,8 @@ async function schemaCreateNew() {
     }),
     sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
     enableSubmitterDraft: form.value.enableSubmitterDraft,
+    submissionCompletionTemplateId: form.value.submissionCompletionTemplateId,
+    enableSubmissionPackageEmail: form.value.enableSubmissionPackageEmail,
     allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
     wideFormLayout: form.value.wideFormLayout,

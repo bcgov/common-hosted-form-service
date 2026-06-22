@@ -505,8 +505,9 @@ export const useFormStore = defineStore('form', {
             : false,
           formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
-          submissionCompletionTemplateId: this.submissionCompletionTemplateId,
-          enableSubmissionPackageEmail: this.enableSubmissionPackageEmail,
+          submissionCompletionTemplateId:
+            this.form.submissionCompletionTemplateId,
+          enableSubmissionPackageEmail: this.form.enableSubmissionPackageEmail,
         });
 
         // update user labels with any new added labels

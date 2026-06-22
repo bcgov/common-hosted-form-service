@@ -170,8 +170,8 @@ const emailArrayRules = ref([
 
       <div v-if="form.enableSubmissionPackageEmail" class="mt-4">
         <DocumentTemplate
-          form-settings-mode
           v-model:selected-template-id="form.submissionCompletionTemplateId"
+          form-settings-mode
         />
       </div>
     </div>

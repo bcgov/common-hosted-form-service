@@ -63,7 +63,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  selectedTemplateId: {
+  submissionCompletionTemplateId: {
     type: String,
     default: null,
   },
