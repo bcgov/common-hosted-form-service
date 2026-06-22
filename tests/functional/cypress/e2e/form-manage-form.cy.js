@@ -26,6 +26,8 @@ describe('Form Designer', () => {
     cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     cy.get('#loginButton').click();
+    //IDIR-MFA login option check
+    cy.get('[data-test="azureidir"]').should('be.visible');
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
