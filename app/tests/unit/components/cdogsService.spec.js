@@ -28,6 +28,27 @@ describe('constructor', () => {
   it('should return a service', () => {
     assertService(cdogsService);
   });
+
+  describe('v2 (default)', () => {
+    it('should use the common cdogs endpoint', () => {
+      expect(cdogsService.apiUrl).toBe(config.get('serviceClient.commonServices.cdogs.endpoint'));
+    });
+
+    it('should specify version as v2', () => {
+      expect(cdogsService.version).toBe('v2');
+    });
+  });
+
+  describe('v3', () => {
+    it('should use the scoped v3 endpoint', () => {
+      expect(cdogsService.v3).toBeTruthy();
+      expect(cdogsService.v3.apiUrl).toBe(config.get('serviceClient.commonServices.cdogs.v3.endpoint'));
+    });
+
+    it('should specify version as v3', () => {
+      expect(cdogsService.v3.version).toBe('v3');
+    });
+  });
 });
 
 describe('templateUploadAndRender', () => {

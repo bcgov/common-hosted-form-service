@@ -15,9 +15,8 @@ const resolveConfig = (version) => {
   const tokenUrl = isScopedV3 ? undefined : config.get(`${CDOGS_CONFIG_PATH}.tokenEndpoint`);
   const clientId = isScopedV3 ? undefined : config.get(`${CDOGS_CONFIG_PATH}.clientId`);
   const clientSecret = isScopedV3 ? undefined : config.get(`${CDOGS_CONFIG_PATH}.clientSecret`);
-  const authEnabled = !isScopedV3;
 
-  return { endpoint, tokenUrl, clientId, clientSecret, authEnabled };
+  return { endpoint, tokenUrl, clientId, clientSecret };
 };
 
 class CdogsService extends AxiosService {
@@ -31,7 +30,6 @@ class CdogsService extends AxiosService {
       apiUrl: cdogsConfig.endpoint,
       serviceName: SERVICE,
       version: version,
-      authEnabled: cdogsConfig.authEnabled,
     });
   }
 
