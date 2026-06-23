@@ -100,9 +100,11 @@ function resetModels() {
   // IdentityProvider model setup
   IdentityProvider.query = jest.fn().mockReturnThis();
   IdentityProvider.where = jest.fn().mockReturnThis();
+  IdentityProvider.whereRaw = jest.fn().mockReturnThis();
   IdentityProvider.modify = jest.fn().mockReturnThis();
   IdentityProvider.first = jest.fn().mockResolvedValue({ code: 'idir', active: true });
   IdentityProvider.insert = jest.fn().mockReturnThis();
+  IdentityProvider.select = jest.fn().mockResolvedValue([]);
 
   // FormIdentityProvider model setup
   FormIdentityProvider.query = jest.fn().mockReturnThis();
@@ -1157,6 +1159,36 @@ describe('createForm', () => {
         enableSubmitterRevision: true,
         enableStatusUpdates: false,
         showAssigneeInSubmissionsTable: true, // Should be true because of the OR logic
+      })
+    );
+  });
+
+  it('should properly handle enableTeamMemberDraftShare in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Test Form',
+      identityProviders: [{ code: 'idir' }],
+      enableSubmitterDraft: true,
+      enableTeamMemberDraftShare: true,
+    };
+
+    // Mock the Form.insert to capture what's being inserted
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({
+      insert: mockInsert,
+    });
+
+    await service.createForm(data, currentUser);
+
+    // Verify that enableTeamMemberDraftShare was passed to the insert
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        enableSubmitterDraft: true,
+        enableTeamMemberDraftShare: true,
       })
     );
   });

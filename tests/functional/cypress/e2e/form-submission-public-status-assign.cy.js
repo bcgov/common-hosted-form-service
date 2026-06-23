@@ -26,13 +26,18 @@ describe('Form Designer', () => {
       win.sessionStorage.clear();
     });
   });  
-// Publish a simple form with Simplebc Address component
- it('Verify public form submission', () => {
+// update form settings page
+ it('Update form settings for status assignment', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
     cy.visit(`/${depEnv}`); 
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+    cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
@@ -40,6 +45,7 @@ describe('Form Designer', () => {
         //Submit the form
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    });
     cy.wait(2000);
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
@@ -68,11 +74,23 @@ describe('Form Designer', () => {
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
       //Logout to submit the public form
-    cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
+    cy.get('#logoutButton').click({ force: true });
     cy.log('Page visited, checking for logout button');
-    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    cy.get('#logoutButton').should('not.exist');
+  });
+  //Form submission and verification for public forms
+  it('Verify public form submission', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
     //Form submission and verification for public forms
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
+    });
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
@@ -103,14 +121,32 @@ describe('Form Designer', () => {
     cy.get('button[title="Email a receipt of this submission"]').click();
     cy.get('span').contains('SEND').click();
     cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
-    //view submission   
-    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
-    cy.get('.mdi-list-box-outline').click();
+  });
+  it('Verify public form submission', () => {
+    cy.viewport(1000, 1100);
     cy.waitForLoad();
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
+    //view submission
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    });   
+    cy.wait(1000);
+    //Login to view submissions
+    cy.get('[data-test="login-btn"]').click();
+    cy.get('[data-test="idir"]').click();
+    cy.get('#user').type(username);
+    cy.get('#password').type(password);
+    cy.get('.btn').click();
+    cy.wait(1000);
+    cy.get('.mdi-list-box-outline').click();
+    cy.wait(1000);
     cy.contains('Assigned to me').should('exist');//Assigned to me checkbox
     //View the submission
     cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
-    });
     //Assign status submission
     cy.get('.status-heading > .mdi-chevron-right').click();
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
@@ -154,7 +190,7 @@ describe('Form Designer', () => {
     cy.get('.v-data-table__tr> :nth-child(1)').contains('CHEFSTST@idir').should('be.visible');
     cy.get('span').contains('Close').click();
     cy.waitForLoad();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
   });
-    
 });
+    

@@ -25,7 +25,9 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}`); 
     cy.checkA11yPage();
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+    cy.get('#loginButton').click();
+    //IDIR-MFA login option check
+    cy.get('[data-test="azureidir"]').should('be.visible');
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
     cy.get('#password').type(password);
@@ -48,12 +50,12 @@ describe('Form Designer', () => {
       cy.get(':nth-child(5) > .v-card > .v-card-text').should('be.visible');
       cy.get('input[placeholder="yyyy-mm-dd"]').click();
       // Select date for open submission
-      cy.get('input[placeholder="yyyy-mm-dd"]').type('2026-06-17'); 
+      cy.get('input[placeholder="yyyy-mm-dd"]').type('2027-06-17'); 
       //Checking the  schedule of closing date settings
       cy.contains('Schedule a closing date').click();
       cy.get('[data-test="closeSubmissionDateTime"]').should('be.visible');
       cy.get('[data-test="closeSubmissionDateTime"]').click();
-      cy.get('[data-test="closeSubmissionDateTime"]').type('2026-09-17');
+      cy.get('[data-test="closeSubmissionDateTime"]').type('2027-09-17');
       cy.contains('Allow late submissions').click();
       cy.get('[data-test="afterCloseDateFor"]').should('be.visible');
       cy.get('[data-test="afterCloseDateFor"]').click();
@@ -105,9 +107,9 @@ describe('Form Designer', () => {
 
         const rem=$el[0];
         const rem1=$el[1];
-        cy.get(rem).contains('June 17, 2026 at 9:00 AM').should('exist');
+        cy.get(rem).contains('June 17, 2027 at 9:00 AM').should('exist');
         cy.get('span').contains(' to ').should('exist');
-        cy.get(rem1).contains('September 17, 2026 at 5:00 PM').should('exist');
+        cy.get(rem1).contains('September 17, 2027 at 5:00 PM').should('exist');
 
        });
        cy.get('span').contains(' allowing late submissions for 5 weeks.').should('exist');
@@ -196,7 +198,7 @@ describe('Form Designer', () => {
       cy.wait(2000);
       cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(1)').should('not.exist'); 
        //Logout
-      cy.get('#logoutButton > .v-btn__content > span').click();        
+      cy.get('.mdi-logout').click();        
      
     });
 });

@@ -270,6 +270,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterRevision = data.enableSubmitterRevision;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
+      obj.enableTeamMemberDraftShare = data.enableTeamMemberDraftShare;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
       obj.schedule = data.schedule;
@@ -463,8 +464,13 @@ const service = {
       .allowGraph('[idpHints]')
       .withGraphFetched('idpHints')
       .throwIfNotFound()
-      .then((form) => {
-        form.idpHints = form.idpHints.map((idp) => idp.idp);
+      .then(async (form) => {
+        const hints = form.idpHints.map((idp) => idp.idp);
+        // Include IDPs that are canonical aliases of the form's configured IDPs.
+        // e.g. if a form allows 'idir', azureidir users (canonicalCode: 'idir') can also log in.
+        const aliases = await IdentityProvider.query().whereRaw("extra->>'canonicalCode' = ANY(?::text[])", [hints]).where('active', true).select('idp');
+        const aliasHints = aliases.map((a) => a.idp).filter((idp) => !hints.includes(idp));
+        form.idpHints = [...hints, ...aliasHints];
         return form;
       });
   },

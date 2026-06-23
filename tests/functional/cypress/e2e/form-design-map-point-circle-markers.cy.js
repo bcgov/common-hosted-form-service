@@ -30,7 +30,6 @@ describe('Form Designer', () => {
 // Checks Map component functionalities
   it('Checks Map component for Point marker', () => {
       cy.viewport(1000, 1100);
-      cy.waitForLoad();
       cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="map"]')
@@ -217,7 +216,7 @@ describe('Form Designer', () => {
       //Delete form after test run
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
-      cy.get('#logoutButton > .v-btn__content > span').click();
+      cy.get('.mdi-logout').click();
   
     });
   });

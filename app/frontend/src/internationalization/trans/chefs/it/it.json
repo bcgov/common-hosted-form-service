@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Aprire",
   "date": {
     "date": "aaaa-mm-gg"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Le mie Forme",
+    "groupForms": "Moduli di Gruppo",
     "createNewForm": "Crea un nuovo modulo",
     "search": "Ricerca",
     "manage": "Maneggio",
@@ -996,6 +997,7 @@
   "bCGovNavBar": {
     "about": "Di",
     "myForms": "Le mie Forme",
+    "groupForms": "Moduli di Gruppo",
     "createNewForm": "Crea un nuovo modulo",
     "help": "Aiuto",
     "feedback": "Feedback",
@@ -1025,7 +1027,17 @@
     "enterpriseSectionBody2": "Con Enterprise CHEFS, i team possono condividere moduli in modo sicuro, assegnare ruoli e gestire progetti all'interno del tenant della propria organizzazione.",
     "enterpriseSectionWelcome": "Benvenuto in Enterprise CHEFS, dove i team di tutta l'amministrazione pubblica possono collaborare in modo sicuro ed efficiente.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS ora supporta il multi-tenancy!",
+    "multiTenancySubTitle": "Crea un gruppo per il tuo progetto o team e gestisci l'accesso ai moduli condivisi per l'intero gruppo in un unico posto.",
+    "multiTenancyFitHeading": "Questa potrebbe essere una buona soluzione per il tuo team se:",
+    "multiTenancyBullet1": "gestisci molti moduli in diversi programmi o ambienti",
+    "multiTenancyBullet2": "hai più amministratori o revisori",
+    "multiTenancyBullet3": "affronti frequenti cambiamenti del personale",
+    "multiTenancyBullet4": "desideri una gestione centralizzata degli accessi",
+    "multiTenancyBullet5": "stai adottando altri servizi connessi come Notify",
+    "multiTenancyFooter": "I responsabili del team e gli amministratori possono usare CSTAR per creare un tenant e gestire l'accesso per il loro team.",
+    "multiTenancyBtnLabel": "Accedi a CSTAR per iniziare"
   },
   "baseStepper": {
     "setUpForm": "Imposta modulo",
@@ -1456,12 +1468,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "Le mie Forme",
     "tenantLabel": "Tenant:",
-    "infoTooltip": "Enterprise CHEFS è la nuova versione di CHEFS che supporta l'accesso multi-tenant. Selezionando il tuo tenant verrai portato automaticamente lì.",
+    "infoTooltip": "Seleziona il tuo tenant per accedere ai Moduli di Gruppo. Torna a 'Le mie Forme' in qualsiasi momento.",
     "selectLabel": "Seleziona tenant (si apre in Enterprise CHEFS)",
     "placeholder": "Seleziona tra i tenant disponibili",
     "noDataText": "Nessun tenant trovato",
-    "switchToClassic": "Passa a Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Vai a CSTAR (Servizi connessi, accesso team e ruoli)",
     "noTenantsAvailable": "Nessun tenant disponibile",
     "manageTenantsIn": "Gestisci tenant in",

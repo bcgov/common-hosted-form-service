@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "باز کن",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "فرم های من",
+    "groupForms": "فرم‌های گروهی",
     "createNewForm": "یک فرم جدید ایجاد کنید",
     "search": "جستجو کردن",
     "manage": "مدیریت کنید",
@@ -996,6 +997,7 @@
   "bCGovNavBar": {
     "about": "در باره",
     "myForms": "فرم های من",
+    "groupForms": "فرم‌های گروهی",
     "createNewForm": "یک فرم جدید ایجاد کنید",
     "help": "کمک",
     "feedback": "بازخورد",
@@ -1025,7 +1027,17 @@
     "enterpriseSectionBody2": "با CHEFS سازمانی، تیم‌ها می‌توانند فرم‌ها را به‌طور ایمن به اشتراک بگذارند، نقش‌ها را اختصاص دهند و پروژه‌ها را در مستأجر سازمانشان مدیریت کنند.",
     "enterpriseSectionWelcome": "به CHEFS سازمانی خوش آمدید، جایی که تیم‌های سراسر دولت می‌توانند به‌طور ایمن و کارآمد همکاری کنند.",
     "classicChefsLabel": "Classic CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS اکنون از چند مستأجری پشتیبانی می‌کند!",
+    "multiTenancySubTitle": "یک گروه برای پروژه یا تیم خود ایجاد کنید و دسترسی به فرم‌های مشترک را برای کل گروه در یک مکان مدیریت کنید.",
+    "multiTenancyFitHeading": "این ممکن است برای تیم شما مناسب باشد اگر:",
+    "multiTenancyBullet1": "فرم‌های زیادی را در برنامه‌ها یا محیط‌های مختلف مدیریت می‌کنید",
+    "multiTenancyBullet2": "چندین مدیر یا بازبین دارید",
+    "multiTenancyBullet3": "تغییرات مکرر کارکنان را تجربه می‌کنید",
+    "multiTenancyBullet4": "مدیریت دسترسی متمرکز می‌خواهید",
+    "multiTenancyBullet5": "خدمات متصل دیگری مانند Notify را پذیرفته‌اید",
+    "multiTenancyFooter": "سرپرستان تیم و مدیران می‌توانند از CSTAR برای ایجاد مستأجر و مدیریت دسترسی تیم خود استفاده کنند.",
+    "multiTenancyBtnLabel": "برای شروع وارد CSTAR شوید"
   },
   "baseStepper": {
     "setUpForm": "فرم را تنظیم کنید",
@@ -1456,12 +1468,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "فرم های من",
     "tenantLabel": "مستأجر:",
-    "infoTooltip": "Enterprise CHEFS نسخه جدید CHEFS است که از دسترسی چند مستأجر پشتیبانی می‌کند. انتخاب مستأجر شما به طور خودکار شما را به آنجا می‌برد.",
+    "infoTooltip": "برای دسترسی به فرم‌های گروهی مستأجر خود را انتخاب کنید. هر زمان به 'فرم های من' بازگردید.",
     "selectLabel": "مستأجر را انتخاب کنید (در Enterprise CHEFS باز می‌شود)",
     "placeholder": "از مستأجران موجود انتخاب کنید",
     "noDataText": "مستأجری یافت نشد",
-    "switchToClassic": "تعویض به Classic CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "رفتن به CSTAR (خدمات متصل، دسترسی تیم و نقش‌ها)",
     "noTenantsAvailable": "مستأجری در دسترس نیست",
     "manageTenantsIn": "مدیریت مستأجران در",

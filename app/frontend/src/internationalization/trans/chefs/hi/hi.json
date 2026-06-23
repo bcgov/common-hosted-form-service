@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "खुला",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "मेरे प्रपत्र",
+    "groupForms": "समूह फ़ॉर्म",
     "createNewForm": "एक नया फॉर्म बनाएं",
     "search": "खोज",
     "manage": "प्रबंधित करना",
@@ -996,6 +997,7 @@
   "bCGovNavBar": {
     "about": "के बारे में",
     "myForms": "मेरे प्रपत्र",
+    "groupForms": "समूह फ़ॉर्म",
     "createNewForm": "एक नया फॉर्म बनाएं",
     "help": "मदद",
     "feedback": "प्रतिक्रिया",
@@ -1025,7 +1027,17 @@
     "enterpriseSectionBody2": "Enterprise CHEFS के साथ, टीमें अपने संगठन के किरायेदार के भीतर सुरक्षित रूप से फ़ॉर्म साझा कर सकती हैं, भूमिकाएं असाइन कर सकती हैं और प्रोजेक्ट प्रबंधित कर सकती हैं।",
     "enterpriseSectionWelcome": "Enterprise CHEFS में आपका स्वागत है, जहाँ सरकार भर की टीमें सुरक्षित और कुशलतापूर्वक सहयोग कर सकती हैं।",
     "classicChefsLabel": "Classic CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS अब मल्टी-टेनेंसी को सपोर्ट करता है!",
+    "multiTenancySubTitle": "अपने प्रोजेक्ट या टीम के लिए एक ग्रुप बनाएं और पूरे ग्रुप के लिए साझा फ़ॉर्म तक पहुंच को एक जगह प्रबंधित करें।",
+    "multiTenancyFitHeading": "यह आपकी टीम के लिए उपयुक्त हो सकता है यदि आप:",
+    "multiTenancyBullet1": "विभिन्न कार्यक्रमों या परिवेशों में कई फ़ॉर्म प्रबंधित करते हैं",
+    "multiTenancyBullet2": "कई प्रशासक या समीक्षक हैं",
+    "multiTenancyBullet3": "अक्सर स्टाफिंग बदलाव का अनुभव करते हैं",
+    "multiTenancyBullet4": "केंद्रीकृत एक्सेस प्रबंधन चाहते हैं",
+    "multiTenancyBullet5": "Notify जैसी अन्य कनेक्टेड सेवाओं को अपना रहे हैं",
+    "multiTenancyFooter": "टीम लीड और प्रशासक CSTAR का उपयोग करके एक टेनेंट बना सकते हैं और अपनी टीम के लिए एक्सेस प्रबंधित कर सकते हैं।",
+    "multiTenancyBtnLabel": "शुरुआत करने के लिए CSTAR में लॉगिन करें"
   },
   "baseStepper": {
     "setUpForm": "फॉर्म सेट करें",
@@ -1492,12 +1504,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "मेरे प्रपत्र",
     "tenantLabel": "किरायेदार:",
-    "infoTooltip": "Enterprise CHEFS, CHEFS का नया संस्करण है जो मल्टी-टेनेंट एक्सेस का समर्थन करता है। अपने टेनेंट का चयन करने से आप स्वचालित रूप से वहां पहुंच जाएंगे।",
+    "infoTooltip": "समूह फ़ॉर्म तक पहुँचने के लिए अपना टेनेंट चुनें। कभी भी 'मेरे प्रपत्र' पर वापस स्विच करें।",
     "selectLabel": "टेनेंट चुनें (Enterprise CHEFS में खुलता है)",
     "placeholder": "उपलब्ध टेनेंट में से चुनें",
     "noDataText": "कोई टेनेंट नहीं मिला",
-    "switchToClassic": "Classic CHEFS पर स्विच करें",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "CSTAR पर जाएं (कनेक्टेड सेवाएं, टीम एक्सेस और भूमिकाएं)",
     "noTenantsAvailable": "कोई टेनेंट उपलब्ध नहीं",
     "manageTenantsIn": "टेनेंट प्रबंधित करें",

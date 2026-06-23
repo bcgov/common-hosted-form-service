@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "mở",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "biểu mẫu của tôi",
+    "groupForms": "Biểu mẫu nhóm",
     "createNewForm": "Tạo một biểu mẫu mới",
     "search": "Tìm kiếm",
     "manage": "Quản lý",
@@ -996,6 +997,7 @@
   "bCGovNavBar": {
     "about": "Về",
     "myForms": "biểu mẫu của tôi",
+    "groupForms": "Biểu mẫu nhóm",
     "createNewForm": "Tạo một biểu mẫu mới",
     "help": "Giúp đỡ",
     "feedback": "Nhận xét",
@@ -1025,7 +1027,17 @@
     "enterpriseSectionBody2": "Với Enterprise CHEFS, các nhóm có thể chia sẻ biểu mẫu một cách an toàn, phân công vai trò và quản lý dự án trong phạm vi người thuê của tổ chức họ.",
     "enterpriseSectionWelcome": "Chào mừng đến với Enterprise CHEFS, nơi các nhóm trên toàn chính phủ có thể cộng tác một cách an toàn và hiệu quả.",
     "classicChefsLabel": "Personal CHEFS",
-    "enterpriseChefsLabel": "Enterprise CHEFS"
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS hiện hỗ trợ đa người thuê!",
+    "multiTenancySubTitle": "Tạo một nhóm cho dự án hoặc nhóm của bạn và quản lý quyền truy cập vào các biểu mẫu được chia sẻ cho toàn bộ nhóm ở một nơi.",
+    "multiTenancyFitHeading": "Điều này có thể phù hợp với nhóm của bạn nếu bạn:",
+    "multiTenancyBullet1": "quản lý nhiều biểu mẫu trên các chương trình hoặc môi trường",
+    "multiTenancyBullet2": "có nhiều quản trị viên hoặc người xem xét",
+    "multiTenancyBullet3": "thường xuyên thay đổi nhân sự",
+    "multiTenancyBullet4": "muốn quản lý quyền truy cập tập trung",
+    "multiTenancyBullet5": "đang áp dụng các dịch vụ kết nối khác như Notify",
+    "multiTenancyFooter": "Trưởng nhóm và quản trị viên có thể sử dụng CSTAR để tạo tenant và quản lý quyền truy cập cho nhóm của họ.",
+    "multiTenancyBtnLabel": "Đăng nhập vào CSTAR để bắt đầu"
   },
   "baseStepper": {
     "setUpForm": "Thiết lập biểu mẫu",
@@ -1460,12 +1472,13 @@
     }
   },
   "tenantDropdown": {
+    "myForms": "biểu mẫu của tôi",
     "tenantLabel": "Người thuê:",
-    "infoTooltip": "Enterprise CHEFS là phiên bản mới của CHEFS hỗ trợ truy cập đa thuê bao. Chọn thuê bao của bạn sẽ tự động đưa bạn đến đó.",
+    "infoTooltip": "Chọn tenant của bạn để truy cập Biểu mẫu nhóm. Chuyển lại 'biểu mẫu của tôi' bất cứ lúc nào.",
     "selectLabel": "Chọn thuê bao (mở trong Enterprise CHEFS)",
     "placeholder": "Chọn từ các thuê bao có sẵn",
     "noDataText": "Không tìm thấy thuê bao",
-    "switchToClassic": "Chuyển sang Personal CHEFS",
+    "switchToClassic": "Switch to My Forms",
     "goToCstar": "Đi đến CSTAR (Dịch vụ kết nối, quyền truy cập nhóm và vai trò)",
     "noTenantsAvailable": "Không có thuê bao nào",
     "manageTenantsIn": "Quản lý thuê bao trong",
