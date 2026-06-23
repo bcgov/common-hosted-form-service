@@ -174,7 +174,7 @@ module.exports = {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
       if (!req.body.draft) {
-        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch((error) => {
+        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer, req.currentUser).catch((error) => {
           log.error('Failed to send submission received email', { error, submissionId: response.id, userId: req.currentUser.id });
         });
       }

@@ -3,12 +3,16 @@ const JSZip = require('jszip');
 const cdogsService = require('../../components/cdogsService');
 const log = require('../../components/log')(module.filename);
 
-const documentTemplateService = require('../documentTemplate/service');
+const documentTemplateService = require('../form/documentTemplate/service');
 const fileService = require('../file/service');
 const storageService = require('../file/storage/storageService');
 
 const { chefsTemplate } = require('../common/utils');
 const uuid = require('uuid');
+
+const fs = require('fs/promises');
+const os = require('os');
+const path = require('path');
 
 const streamToBuffer = async (stream) =>
   new Promise((resolve, reject) => {
@@ -21,60 +25,70 @@ const streamToBuffer = async (stream) =>
 
 const safeFileName = (name = 'file') => name.replace(/[\\/:*?"<>|]/g, '_');
 
-/**
- * Given the data for a submission, find uploaded files.
- */
-const findFiles = (submission) => {
-  const files = [];
-  const seen = new Set();
+const service = {
+  /**
+   * Given the data for a submission, find uploaded files.
+   */
+  findFiles: (submission) => {
+    console.log('Parsing for file components and file ids');
+    const files = [];
+    const seen = new Set();
 
-  const walk = (current) => {
-    if (Array.isArray(current)) {
-      current.forEach(walk);
-      return;
-    }
-
-    if (!current || typeof current !== 'object') {
-      return;
-    }
-
-    if (typeof current.originalName === 'string' && current.data?.id && uuid.validate(current.data.id)) {
-      if (!seen.has(current.data.id)) {
-        seen.add(current.data.id);
-
-        files.push({
-          id: current.data.id,
-          originalName: current.originalName,
-          size: current.size,
-          url: current.url,
-        });
+    const walk = (current) => {
+      if (Array.isArray(current)) {
+        current.forEach(walk);
+        return;
       }
 
-      return;
-    }
+      if (!current || typeof current !== 'object') {
+        return;
+      }
 
-    Object.values(current).forEach(walk);
-  };
+      if (typeof current.originalName === 'string' && current.data?.id && uuid.validate(current.data.id)) {
+        if (!seen.has(current.data.id)) {
+          seen.add(current.data.id);
 
-  walk(submission?.submission?.data);
+          files.push({
+            id: current.data.id,
+            originalName: current.originalName,
+            size: current.size,
+            url: current.url,
+          });
+        }
 
-  return files;
-};
+        return;
+      }
 
-const service = {
+      Object.values(current).forEach(walk);
+    };
+
+    walk(submission?.submission?.data);
+
+    return files;
+  },
   /**
    * Render the configured document template for a submission.
    */
-  renderSubmissionTemplate: async ({ submission, documentTemplateId, convertTo = 'pdf', body = {} }) => {
+  renderSubmissionTemplate: async ({ form, submission, documentTemplateId, convertTo = 'pdf', body = {} }) => {
+    console.log('renderSubTemplate Submision');
+    console.log(submission);
+    console.log('rendering submission with cdogs');
     const template = await documentTemplateService.documentTemplateRead(documentTemplateId);
-
+    console.log('template' + template);
     const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
 
     const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
+    //Retrieve the version of form the submission was created with
+
+    const submissionFormVersion = form.versions.find((v) => v.id === submission.formVersionId)?.version;
+
+    const cdogsSubData = chefsTemplate({ version: submissionFormVersion, submission });
+    console.log('cdogssub Data');
+    console.log(cdogsSubData);
 
     const templateBody = {
       ...body,
-      data: chefsTemplate(submission),
+      data: cdogsSubData,
       options: {
         convertTo,
         overwrite: true,
@@ -99,7 +113,7 @@ const service = {
    * Download all uploaded files associated with a submission.
    */
   getSubmissionFiles: async (submission) => {
-    const subFiles = findFiles(submission);
+    const subFiles = service.findFiles(submission);
 
     const files = [];
 
@@ -114,6 +128,11 @@ const service = {
           filename: safeFileName(file.originalName || fileRecord.id),
           mimeType: fileRecord.mimeType,
           buffer,
+        });
+        console.log('Successfully retrieved file', {
+          id: file.id,
+          filename: file.originalName,
+          size: buffer.length,
         });
       } catch (error) {
         log.error('Failed to read submission file', {
@@ -132,6 +151,7 @@ const service = {
    *  - all uploaded submission files
    */
   buildSubmissionPackage: async ({ form, submission, convertTo = 'pdf' }) => {
+    console.log(form);
     if (!form.submissionCompletionTemplateId) {
       throw new Error('No submissionCompletionTemplateId configured on form.');
     }
@@ -142,6 +162,7 @@ const service = {
     // Rendered template
     //
     const renderedTemplate = await service.renderSubmissionTemplate({
+      form,
       submission,
       documentTemplateId: form.submissionCompletionTemplateId,
       convertTo,
@@ -174,7 +195,7 @@ const service = {
   /**
    * Build CHES-compatible attachment payload.
    */
-  buildEmailAttachment: async ({ form, submission, convertTo = 'pdf' }) => {
+  buildEmailAttachment: async (form, submission, convertTo = 'pdf') => {
     const zip = await service.buildSubmissionPackage({
       form,
       submission,
@@ -187,6 +208,41 @@ const service = {
       encoding: 'base64',
       content: zip.buffer.toString('base64'),
     };
+  },
+  writeSubmissionPackage: async ({ form, submission, currentUser, folder = 'uploads', convertTo = 'pdf' }) => {
+    const zip = await service.buildSubmissionPackage({
+      form,
+      submission,
+      convertTo,
+    });
+
+    const tempPath = path.join(os.tmpdir(), `${uuid.v4()}-${zip.filename}`);
+
+    await fs.writeFile(tempPath, zip.buffer);
+
+    try {
+      const fileRecord = await fileService.create(
+        {
+          originalname: zip.filename,
+          mimetype: zip.contentType,
+          size: zip.buffer.length,
+          path: tempPath,
+        },
+        currentUser,
+        folder
+      );
+
+      return {
+        fileRecord,
+        filename: zip.filename,
+        contentType: zip.contentType,
+        size: zip.buffer.length,
+        fileCount: zip.fileCount,
+      };
+    } finally {
+      console.log('Leaving temp zip for inspection' + tempPath);
+      // await fs.rm(tempPath, { force: true });
+    }
   },
 };
 
