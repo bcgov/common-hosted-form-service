@@ -25,7 +25,7 @@ const _replaceHandlebars = (format, context) => {
 };
 
 /** Helper function used to build the email template based on email type and contents */
-const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0, currentUser) => {
+const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, currentUser, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
   const submission = await formService.readSubmission(formSubmissionId);
 
@@ -404,7 +404,7 @@ const service = {
    */
   submissionReceived: async (formId, submissionId, body, referer, currentUser) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, referer, { body }, currentUser);
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, referer, currentUser, { body });
       if (contexts[0].to.length) {
         return service._sendEmailTemplate(configData, contexts);
       } else {

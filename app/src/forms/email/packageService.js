@@ -10,9 +10,9 @@ const storageService = require('../file/storage/storageService');
 const { chefsTemplate } = require('../common/utils');
 const uuid = require('uuid');
 
-const fs = require('fs/promises');
-const os = require('os');
-const path = require('path');
+const fs = require('node:fs/promises');
+const os = require('node:os');
+const path = require('node:path');
 
 const streamToBuffer = async (stream) =>
   new Promise((resolve, reject) => {
@@ -70,11 +70,7 @@ const service = {
    * Render the configured document template for a submission.
    */
   renderSubmissionTemplate: async ({ form, submission, documentTemplateId, convertTo = 'pdf', body = {} }) => {
-    console.log('renderSubTemplate Submision');
-    console.log(submission);
-    console.log('rendering submission with cdogs');
     const template = await documentTemplateService.documentTemplateRead(documentTemplateId);
-    console.log('template' + template);
     const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
 
     const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
@@ -83,8 +79,6 @@ const service = {
     const submissionFormVersion = form.versions.find((v) => v.id === submission.formVersionId)?.version;
 
     const cdogsSubData = chefsTemplate({ version: submissionFormVersion, submission });
-    console.log('cdogssub Data');
-    console.log(cdogsSubData);
 
     const templateBody = {
       ...body,
@@ -151,7 +145,6 @@ const service = {
    *  - all uploaded submission files
    */
   buildSubmissionPackage: async ({ form, submission, convertTo = 'pdf' }) => {
-    console.log(form);
     if (!form.submissionCompletionTemplateId) {
       throw new Error('No submissionCompletionTemplateId configured on form.');
     }
@@ -240,8 +233,7 @@ const service = {
         fileCount: zip.fileCount,
       };
     } finally {
-      console.log('Leaving temp zip for inspection' + tempPath);
-      // await fs.rm(tempPath, { force: true });
+      await fs.rm(tempPath, { force: true });
     }
   },
 };
