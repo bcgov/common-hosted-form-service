@@ -1163,6 +1163,36 @@ describe('createForm', () => {
     );
   });
 
+  it('should properly handle enableTeamMemberDraftShare in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Test Form',
+      identityProviders: [{ code: 'idir' }],
+      enableSubmitterDraft: true,
+      enableTeamMemberDraftShare: true,
+    };
+
+    // Mock the Form.insert to capture what's being inserted
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({
+      insert: mockInsert,
+    });
+
+    await service.createForm(data, currentUser);
+
+    // Verify that enableTeamMemberDraftShare was passed to the insert
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        enableSubmitterDraft: true,
+        enableTeamMemberDraftShare: true,
+      })
+    );
+  });
+
   it('should throw when tenant form creation is attempted without headers', async () => {
     service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
     service.readForm = jest.fn().mockResolvedValueOnce({});
