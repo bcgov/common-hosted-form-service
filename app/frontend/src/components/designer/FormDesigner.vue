@@ -404,6 +404,7 @@ async function schemaCreateNew() {
     enableSubmitterDraft: form.value.enableSubmitterDraft,
     submissionCompletionTemplateId: form.value.submissionCompletionTemplateId,
     enableSubmissionPackageEmail: form.value.enableSubmissionPackageEmail,
+    enableTeamMemberDraftShare: form.value.enableTeamMemberDraftShare,
     allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
     wideFormLayout: form.value.wideFormLayout,
