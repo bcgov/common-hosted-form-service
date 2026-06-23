@@ -57,12 +57,11 @@ module.exports = {
       };
 
       const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
-      const contentDisposition = headers['content-disposition'];
 
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Disposition': 'attachment',
           'Content-Type': headers['content-type'],
         })
         .send(data);
@@ -88,11 +87,10 @@ module.exports = {
       };
 
       const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
-      const contentDisposition = headers['content-disposition'];
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition || 'attachment',
+          'Content-Disposition': 'attachment',
           'Content-Type': headers['content-type'],
         })
         .send(data);
@@ -114,12 +112,10 @@ module.exports = {
       const templateBody = { ...req.body.template, data: req.body.submission.data };
       const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
 
-      const contentDisposition = headers['content-disposition'];
-
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition || 'attachment',
+          'Content-Disposition': 'attachment',
           'Content-Type': headers['content-type'],
         })
         .send(data);
