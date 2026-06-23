@@ -44,4 +44,4 @@ The values file is configured for productionl overrides exist for dev and test.
 helm upgrade --install chefs-clamav ./charts/clamav -f ./charts/clamav/values.yaml -f ./charts/clamav/values-test.yaml
 ```
 
-This would apply our default values file (`values.yaml`) with any overrides found in `values-test.yaml` taking priority.
+This would apply our default values file (`values.yaml`) with any overrides found in `values-test.yaml` taking priority...
