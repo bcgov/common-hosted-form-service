@@ -13,7 +13,7 @@ const requireCdogsV3Access = async (req, res, next) => {
     let formId;
 
     // Check if formId is in request body (draft template routes)
-    if (req.body && req.body.formId) {
+    if (req.body?.formId) {
       formId = req.body.formId;
     }
     // Otherwise, fetch submission to get formId (submission-based routes)

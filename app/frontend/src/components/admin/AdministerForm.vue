@@ -7,6 +7,7 @@ import AddOwner from '~/components/admin/AddOwner.vue';
 import AdminVersions from '~/components/admin/AdminVersions.vue';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useAdminStore } from '~/store/admin';
+import { useNotificationStore } from '~/store/notification';
 import { onMounted, ref } from 'vue';
 
 const { locale } = useI18n({ useScope: 'global' });
@@ -27,6 +28,7 @@ const cdogsV3Enabled = ref(false);
 const cdogsV3Loading = ref(false);
 
 const adminStore = useAdminStore();
+const notificationStore = useNotificationStore();
 
 const { form, roles, apiKey } = storeToRefs(adminStore);
 
@@ -51,6 +53,10 @@ async function loadCdogsV3Config() {
   } catch (error) {
     // If no config exists, default to disabled
     cdogsV3Enabled.value = false;
+    notificationStore.pushNotification({
+      message: 'Failed to load CDOGS v3 configuration',
+      type: 'error',
+    });
   }
 }
 
@@ -64,6 +70,10 @@ async function toggleCdogsV3Access() {
   } catch (error) {
     // If error, revert the checkbox
     cdogsV3Enabled.value = !cdogsV3Enabled.value;
+    notificationStore.pushNotification({
+      message: 'Failed to update CDOGS v3 configuration',
+      type: 'error',
+    });
   } finally {
     cdogsV3Loading.value = false;
   }
