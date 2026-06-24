@@ -1,4 +1,5 @@
 const JSZip = require('jszip');
+const config = require('config');
 
 const cdogsService = require('../../components/cdogsService');
 const log = require('../../components/log')(module.filename);
@@ -13,6 +14,9 @@ const uuid = require('uuid');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+
+const PERMANENT_STORAGE = config.get('files.permanent');
+const { StorageTypes } = require('../common/constants');
 
 const streamToBuffer = async (stream) =>
   new Promise((resolve, reject) => {
@@ -30,7 +34,6 @@ const service = {
    * Given the data for a submission, find uploaded files.
    */
   findFiles: (submission) => {
-    console.log('Parsing for file components and file ids');
     const files = [];
     const seen = new Set();
 
@@ -233,7 +236,12 @@ const service = {
         fileCount: zip.fileCount,
       };
     } finally {
-      await fs.rm(tempPath, { force: true });
+      //comment this out when running local storage, otherwise it'll just delete the zip from the folder it's "uploaded" to
+      if (PERMANENT_STORAGE !== StorageTypes.LOCAL_STORAGE) {
+        await fs.rm(tempPath, { force: true });
+      } else {
+        console.log('Local Development, Files not deleted');
+      }
     }
   },
 };

@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
@@ -12,16 +12,28 @@ const { t, locale } = useI18n({ useScope: 'global' });
 const { form, isRTL, isFormPublished } = storeToRefs(useFormStore());
 
 /* c8 ignore start */
-const emailArrayRules = ref([
-  (v) =>
-    !form.value.sendSubmissionReceivedEmail ||
+const makeEmailArrayRules = (enabledRefOrGetter) => [
+  (v = []) =>
+    !enabledRefOrGetter() ||
     v.length > 0 ||
     t('trans.formSettings.atLeastOneEmailReq'),
-  (v) =>
-    !form.value.sendSubmissionReceivedEmail ||
-    v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
+
+  (v = []) =>
+    !enabledRefOrGetter() ||
+    v.every((item) => new RegExp(Regex.EMAIL).test(String(item).trim())) ||
     t('trans.formSettings.validEmailRequired'),
-]);
+  (v) => {
+    console.log(v, typeof v, Array.isArray(v));
+  },
+];
+
+const submissionReceivedEmailRules = computed(() =>
+  makeEmailArrayRules(() => form.sendSubmissionReceivedEmail)
+);
+
+const submissionPackageEmailRules = computed(() =>
+  makeEmailArrayRules(() => form.enableSubmissionPackageEmail)
+);
 /* c8 ignore stop */
 </script>
 
@@ -105,7 +117,7 @@ const emailArrayRules = ref([
       <v-combobox
         v-model="form.submissionReceivedEmails"
         :hide-no-data="false"
-        :rules="emailArrayRules"
+        :rules="submissionReceivedEmailRules"
         solid
         variant="outlined"
         hide-selected
@@ -169,6 +181,35 @@ const emailArrayRules = ref([
       </v-checkbox>
 
       <div v-if="form.enableSubmissionPackageEmail" class="mt-4">
+        <v-combobox
+          v-model="form.submissionPackageEmails"
+          :hide-no-data="false"
+          :rules="submissionPackageEmailRules"
+          solid
+          variant="outlined"
+          hide-selected
+          clearable
+          :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
+          :label="$t('trans.formSettings.notificationEmailAddrs')"
+          multiple
+          chips
+          closable-chips
+          :delimiters="[' ', ',']"
+          append-icon=""
+          :lang="locale"
+        >
+          <template #no-data>
+            <v-list-item>
+              <v-list-item-title>
+                <span
+                  :lang="locale"
+                  v-html="$t('trans.formSettings.pressToAddMultiEmail')"
+                />
+              </v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-combobox>
+
         <DocumentTemplate
           v-model:selected-template-id="form.submissionCompletionTemplateId"
           form-settings-mode

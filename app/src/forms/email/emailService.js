@@ -88,14 +88,10 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       priority: 'normal',
       form,
     };
-  } else if (emailType === EmailTypes.SUBMISSION_RECEIVED) {
-    console.log('SUB REC EMAIL ' + form.enableSubmissionPackageEmail);
-    contextToVal = form.sendSubmissionReceivedEmail ? form.submissionReceivedEmails : [];
+  } else if (emailType === EmailTypes.SUBMISSION_PACKAGE) {
     if (form.enableSubmissionPackageEmail) {
-      console.log(contextToVal);
+      contextToVal = form.submissionPackageEmails ? form.submissionPackageEmails : [];
       const subPackage = await packageService.writeSubmissionPackage({ form, submission, currentUser });
-      console.log('subPackage');
-      console.log(subPackage.fileRecord);
       userTypePath = 'form/view';
       configData = {
         submissionPackagePath: `api/v1/files/${subPackage.fileRecord.id}`,
@@ -107,19 +103,21 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
         priority: 'normal',
         form,
       };
-      console.log(configData);
     } else {
-      userTypePath = 'form/view';
-      configData = {
-        body: additionalProperties.body,
-        bodyTemplate: 'submission-confirmation.html',
-        title: `${form.name} Submission`,
-        subject: `${form.name} Submission`,
-        messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
-        priority: 'normal',
-        form,
-      };
+      contextToVal = [];
     }
+  } else if (emailType === EmailTypes.SUBMISSION_RECEIVED) {
+    contextToVal = form.sendSubmissionReceivedEmail ? form.submissionReceivedEmails : [];
+    userTypePath = 'form/view';
+    configData = {
+      body: additionalProperties.body,
+      bodyTemplate: 'submission-confirmation.html',
+      title: `${form.name} Submission`,
+      subject: `${form.name} Submission`,
+      messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
+      priority: 'normal',
+      form,
+    };
   } else if (emailType === EmailTypes.SUBMISSION_CONFIRMATION) {
     contextToVal = [additionalProperties.body.to];
     userTypePath = 'form/success';
@@ -387,6 +385,35 @@ const service = {
       log.error(e.message, e, {
         function: EmailTypes.STATUS_REVISING,
         status: currentStatus,
+        referer: referer,
+      });
+      throw e;
+    }
+  },
+
+  /**
+   * @function submissionReceived
+   * Completing submission of a form
+   * @param {string} formId
+   * @param {string} submissionId
+   * @param {string} body
+   * @param {string} referer
+   * @returns The result of the email merge operation
+   */
+  submissionPackage: async (formId, submissionId, body, referer, currentUser) => {
+    try {
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_PACKAGE, referer, currentUser, { body });
+      if (contexts[0].to.length) {
+        return service._sendEmailTemplate(configData, contexts);
+      } else {
+        return {};
+      }
+    } catch (e) {
+      log.error(e.message, {
+        function: EmailTypes.SUBMISSION_PACKAGE,
+        formId: formId,
+        submissionId: submissionId,
+        body: body,
         referer: referer,
       });
       throw e;

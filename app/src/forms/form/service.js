@@ -269,6 +269,7 @@ const service = {
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableSubmissionPackageEmail = data.enableSubmissionPackageEmail;
       obj.submissionCompletionTemplateId = data.submissionCompletionTemplateId;
+      obj.submissionPackageEmails = data.submissionPackageEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterRevision = data.enableSubmitterRevision;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
@@ -363,6 +364,7 @@ const service = {
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableSubmissionPackageEmail: data.enableSubmissionPackageEmail,
         submissionCompletionTemplateId: data.submissionCompletionTemplateId,
+        submissionPackageEmails: data.submissionPackageEmails,
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterRevision: data.enableSubmitterRevision,
         enableSubmitterDraft: data.enableSubmitterDraft,

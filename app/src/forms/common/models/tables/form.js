@@ -171,6 +171,7 @@ class Form extends Timestamps(Model) {
         },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
+        submissionPackageEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableDocumentTemplates: { type: 'boolean' },
         enableStatusUpdates: { type: 'boolean' },
         enableSubmitterRevision: { type: 'boolean' },

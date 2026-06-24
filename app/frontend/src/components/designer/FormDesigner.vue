@@ -413,6 +413,7 @@ async function schemaCreateNew() {
     showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
     showSubmissionConfirmation: form.value.showSubmissionConfirmation,
     submissionReceivedEmails: form.value.submissionReceivedEmails,
+    submissionPackageEmails: form.value.submissionPackageEmails,
     reminder_enabled: false,
     deploymentLevel: form.value.deploymentLevel,
     ministry: form.value.ministry,
