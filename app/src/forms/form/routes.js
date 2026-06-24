@@ -49,6 +49,10 @@ routes.get('/:formId/version', apiAccess, hasFormPermissions([P.FORM_READ]), asy
   await controller.readPublishedForm(req, res, next);
 });
 
+routes.get('/:formId/fields', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.readFormFields(req, res, next);
+});
+
 routes.put('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
   await controller.updateForm(req, res, next);
 });

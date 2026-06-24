@@ -777,6 +777,65 @@ describe('readVersionFields', () => {
   });
 });
 
+describe('readFormFields', () => {
+  // Build a thenable query mock whose modify() chain resolves to the versions.
+  const mockVersionQuery = (versions) => {
+    const query = {
+      modify: jest.fn().mockReturnThis(),
+      then: (resolve) => resolve(versions),
+    };
+    FormVersion.query = jest.fn().mockReturnValue(query);
+    return query;
+  };
+
+  it('returns the published version and its fields when one is published', async () => {
+    const versions = [
+      { id: 'v2', version: 2, published: false },
+      { id: 'v1', version: 1, published: true },
+    ];
+    mockVersionQuery(versions);
+    service.readVersionFields = jest.fn().mockResolvedValue(['simpletextfield']);
+
+    const result = await service.readFormFields(formId);
+
+    expect(result.versionId).toEqual('v1');
+    expect(result.published).toEqual(true);
+    expect(result.versions).toEqual(versions);
+    expect(result.fields).toEqual(['simpletextfield']);
+    expect(service.readVersionFields).toHaveBeenCalledWith('v1');
+  });
+
+  it('falls back to the latest version when none are published', async () => {
+    const versions = [
+      { id: 'v2', version: 2, published: false },
+      { id: 'v1', version: 1, published: false },
+    ];
+    mockVersionQuery(versions);
+    service.readVersionFields = jest.fn().mockResolvedValue(['simpletextfield']);
+
+    const result = await service.readFormFields(formId);
+
+    expect(result.versionId).toEqual('v2');
+    expect(result.published).toEqual(false);
+    expect(service.readVersionFields).toHaveBeenCalledWith('v2');
+  });
+
+  it('returns empty results when the form has no versions', async () => {
+    mockVersionQuery([]);
+    service.readVersionFields = jest.fn();
+
+    const result = await service.readFormFields(formId);
+
+    expect(result).toEqual({
+      versionId: null,
+      published: false,
+      versions: [],
+      fields: [],
+    });
+    expect(service.readVersionFields).not.toHaveBeenCalled();
+  });
+});
+
 describe('processPaginationData', () => {
   const SubmissionData = require('../../../fixtures/submission/kitchen_sink_submission_pagination.json');
 
