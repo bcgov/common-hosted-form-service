@@ -16,9 +16,15 @@ const features = [
     allowAll: false,
   },
   {
-    code: 'carboneEnterprise',
-    name: 'Carbone Enterprise',
-    description: 'Enable Carbone Enterprise document generation / template rendering.',
+    code: 'documentGenerationV2',
+    name: 'Document Generation V2',
+    description: 'Existing document generation. Available to all forms.',
+    allowAll: true,
+  },
+  {
+    code: 'documentGenerationV3',
+    name: 'Document Generation V3',
+    description: 'Next-generation document generation (Carbone Enterprise).',
     allowAll: false,
   },
 ];

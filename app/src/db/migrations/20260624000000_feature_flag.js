@@ -20,7 +20,10 @@ exports.up = function (knex) {
       knex.schema.createTable('feature_flag_form', (table) => {
         table.uuid('id').primary();
         table.uuid('featureFlagId').references('id').inTable('feature_flag').notNullable().index();
-        table.uuid('formId').references('id').inTable('form').notNullable().index();
+        // formId is a loose identifier (no FK) so it behaves like feature_flag_tenant.tenantId:
+        // an allowlist match key, not a referential constraint. Keeps form/tenant allowlists
+        // consistent and avoids the FK blocking a hard form delete.
+        table.uuid('formId').notNullable().index();
         table.unique(['featureFlagId', 'formId']);
         stamps(knex, table);
       })

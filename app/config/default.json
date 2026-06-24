@@ -141,7 +141,10 @@
     "submitToEmail": {
       "enabled": false
     },
-    "carboneEnterprise": {
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "documentGenerationV3": {
       "enabled": false
     }
   }

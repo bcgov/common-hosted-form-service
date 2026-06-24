@@ -127,8 +127,11 @@
     "submitToEmail": {
       "enabled": "FEATURES_SUBMITTOEMAIL_ENABLED"
     },
-    "carboneEnterprise": {
-      "enabled": "FEATURES_CARBONEENTERPRISE_ENABLED"
+    "documentGenerationV2": {
+      "enabled": "FEATURES_DOCUMENTGENERATIONV2_ENABLED"
+    },
+    "documentGenerationV3": {
+      "enabled": "FEATURES_DOCUMENTGENERATIONV3_ENABLED"
     }
   }
 }

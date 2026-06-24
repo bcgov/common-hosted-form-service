@@ -384,10 +384,13 @@ export const useAdminStore = defineStore('admin', {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.admin.updateFeatureFlagErrMsg'),
-          consoleError: i18n.t('trans.store.admin.updateFeatureFlagConsErrMsg', {
-            code: code,
-            error: error,
-          }),
+          consoleError: i18n.t(
+            'trans.store.admin.updateFeatureFlagConsErrMsg',
+            {
+              code: code,
+              error: error,
+            }
+          ),
         });
       }
     },

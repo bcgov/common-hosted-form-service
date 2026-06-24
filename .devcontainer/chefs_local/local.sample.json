@@ -139,13 +139,16 @@
     "jwtLifetime": "30m"
   },
   "features": {
+    "documentGenerationV2": {
+      "enabled": true
+    },
     "offlineForms": {
       "enabled": false
     },
     "submitToEmail": {
       "enabled": false
     },
-    "carboneEnterprise": {
+    "documentGenerationV3": {
       "enabled": false
     }
   }
