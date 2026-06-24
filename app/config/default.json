@@ -133,5 +133,16 @@
   "recordsManagement": {
     "implementation": "local",
     "enabled": true
+  },
+  "features": {
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": false
+    },
+    "carboneEnterprise": {
+      "enabled": false
+    }
   }
 }

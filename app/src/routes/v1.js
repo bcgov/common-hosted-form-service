@@ -6,6 +6,7 @@ const yaml = require('js-yaml');
 
 const admin = require('../forms/admin');
 const bcgeoaddress = require('../forms/bcgeoaddress');
+const feature = require('../forms/feature');
 const file = require('../forms/file');
 const form = require('../forms/form');
 const permission = require('../forms/permission');
@@ -23,6 +24,7 @@ const statusService = require('../components/statusService');
 
 admin.mount(router);
 const bcaddress = bcgeoaddress.mount(router);
+const featurePath = feature.mount(router);
 const filePath = file.mount(router);
 const formPath = form.mount(router);
 const permissionPath = permission.mount(router);
@@ -59,6 +61,7 @@ router.get('/', (_req, res) => {
       submissionPath,
       userPath,
       bcaddress,
+      featurePath,
       publicPath,
       utilsPath,
       commonServicesPath,

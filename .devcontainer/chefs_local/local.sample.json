@@ -137,5 +137,16 @@
   },
   "gateway": {
     "jwtLifetime": "30m"
+  },
+  "features": {
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": false
+    },
+    "carboneEnterprise": {
+      "enabled": false
+    }
   }
 }

@@ -21,6 +21,8 @@ export const useAdminStore = defineStore('admin', {
     fcProactiveHelp: {}, // Form Component Proactive Help
     fcProactiveHelpImageUrl: '',
     fcProactiveHelpGroupList: [],
+    featureFlags: [], // Feature flag list
+    featureFlag: null, // Currently-managed feature flag (incl. allowlists)
   }),
   getters: {},
   actions: {
@@ -333,6 +335,121 @@ export const useAdminStore = defineStore('admin', {
           text: i18n.t('trans.store.admin.fecthingFormBuilderCompsErrMsg'),
           consoleError: i18n.t(
             'trans.store.admin.fecthingFormBuilderCompsConsErrMsg',
+            { error: error }
+          ),
+        });
+      }
+    },
+
+    //
+    // Feature Flags
+    //
+    async getFeatureFlags() {
+      try {
+        this.featureFlags = [];
+        const response = await adminService.listFeatureFlags();
+        this.featureFlags = response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getFeatureFlagsErrMsg'),
+          consoleError: i18n.t('trans.store.admin.getFeatureFlagsConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
+    async getFeatureFlag(code) {
+      try {
+        this.featureFlag = null;
+        const response = await adminService.readFeatureFlag(code);
+        this.featureFlag = response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getFeatureFlagErrMsg'),
+          consoleError: i18n.t('trans.store.admin.getFeatureFlagConsErrMsg', {
+            code: code,
+            error: error,
+          }),
+        });
+      }
+    },
+    async setFeatureFlagAllowAll(code, allowAll) {
+      try {
+        const response = await adminService.updateFeatureFlag(code, allowAll);
+        this.featureFlag = response.data;
+        await this.getFeatureFlags();
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.updateFeatureFlagErrMsg'),
+          consoleError: i18n.t('trans.store.admin.updateFeatureFlagConsErrMsg', {
+            code: code,
+            error: error,
+          }),
+        });
+      }
+    },
+    async addFeatureFlagForm(code, formId) {
+      try {
+        await adminService.addFeatureFlagForm(code, formId);
+        await this.getFeatureFlag(code);
+        await this.getFeatureFlags();
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.featureFlagAllowlistErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.featureFlagAllowlistConsErrMsg',
+            { error: error }
+          ),
+        });
+      }
+    },
+    async removeFeatureFlagForm(code, formId) {
+      try {
+        await adminService.removeFeatureFlagForm(code, formId);
+        await this.getFeatureFlag(code);
+        await this.getFeatureFlags();
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.featureFlagAllowlistErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.featureFlagAllowlistConsErrMsg',
+            { error: error }
+          ),
+        });
+      }
+    },
+    async addFeatureFlagTenant(code, tenantId) {
+      try {
+        await adminService.addFeatureFlagTenant(code, tenantId);
+        await this.getFeatureFlag(code);
+        await this.getFeatureFlags();
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.featureFlagAllowlistErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.featureFlagAllowlistConsErrMsg',
+            { error: error }
+          ),
+        });
+      }
+    },
+    async removeFeatureFlagTenant(code, tenantId) {
+      try {
+        await adminService.removeFeatureFlagTenant(code, tenantId);
+        await this.getFeatureFlag(code);
+        await this.getFeatureFlags();
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.featureFlagAllowlistErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.featureFlagAllowlistConsErrMsg',
             { error: error }
           ),
         });
