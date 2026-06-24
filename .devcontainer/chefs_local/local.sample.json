@@ -98,7 +98,7 @@
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET",
         "v3": {
-          "endpoint": "https://chefs-cdogs-dev.apps.silver.devops.gov.bc.ca/"
+          "endpoint": "https://chefs-cdogs.apps.silver.devops.gov.bc.ca/"
         }
       },
       "css": {
