@@ -57,11 +57,13 @@ module.exports = {
       };
 
       const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
+      const upstreamDisposition = headers['content-disposition'];
+      const contentDisposition = upstreamDisposition ? upstreamDisposition.replace(/^inline/i, 'attachment') : 'attachment';
 
       res
         .status(status)
         .set({
-          'Content-Disposition': 'attachment',
+          'Content-Disposition': contentDisposition,
           'Content-Type': headers['content-type'],
         })
         .send(data);
@@ -87,10 +89,12 @@ module.exports = {
       };
 
       const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
+      const upstreamDisposition = headers['content-disposition'];
+      const contentDisposition = upstreamDisposition ? upstreamDisposition.replace(/^inline/i, 'attachment') : 'attachment';
       res
         .status(status)
         .set({
-          'Content-Disposition': 'attachment',
+          'Content-Disposition': contentDisposition,
           'Content-Type': headers['content-type'],
         })
         .send(data);
@@ -111,11 +115,13 @@ module.exports = {
     try {
       const templateBody = { ...req.body.template, data: req.body.submission.data };
       const { data, headers, status } = await cdogsV3Service.templateUploadAndRender(templateBody);
+      const upstreamDisposition = headers['content-disposition'];
+      const contentDisposition = upstreamDisposition ? upstreamDisposition.replace(/^inline/i, 'attachment') : 'attachment';
 
       res
         .status(status)
         .set({
-          'Content-Disposition': 'attachment',
+          'Content-Disposition': contentDisposition,
           'Content-Type': headers['content-type'],
         })
         .send(data);
