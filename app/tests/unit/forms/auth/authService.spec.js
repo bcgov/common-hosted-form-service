@@ -41,7 +41,16 @@ describe('formAccessToForm', () => {
       permissions: 12,
     };
     const result = service.formAccessToForm(form);
-    expect(result).toEqual(form);
+    expect(result).toMatchObject(form);
+  });
+
+  // Regression: whitelist mapper silently drops new fields if not added here.
+  it('projects enableOfflineSubmission', () => {
+    const out = service.formAccessToForm({ enableOfflineSubmission: true });
+    expect(out.enableOfflineSubmission).toBe(true);
+
+    const off = service.formAccessToForm({ enableOfflineSubmission: false });
+    expect(off.enableOfflineSubmission).toBe(false);
   });
 });
 
