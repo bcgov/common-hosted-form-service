@@ -64,7 +64,7 @@ describe('Form Designer', () => {
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Public (anonymous)').click();
     cy.waitForLoad();
-    cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//uncheck for not able to update the status of the form
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').find('input[type="checkbox"]').click(); //uncheck so the form cannot update status
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').should("not.be.checked");
     cy.contains('span','Display assignee column for reviewers').should("not.exist");
     cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').click();
