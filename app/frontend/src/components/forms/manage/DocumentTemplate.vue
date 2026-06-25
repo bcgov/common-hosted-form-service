@@ -20,7 +20,10 @@ const documentTemplates = ref([]);
 const enablePreview = ref(false);
 const fileInput = ref(null);
 const printConfig = ref(null);
-const headers = ref([
+const headers = computed(() => [
+  ...(props.formSettingsMode
+    ? [{ title: '', key: 'selected', width: '60px' }]
+    : []),
   { title: 'File Name', key: 'filename' },
   { title: 'Date Created', key: 'createdAt' },
   { title: 'Actions', key: 'actions', align: 'end' },
@@ -54,6 +57,23 @@ const validationRules = computed(() => [
 const isTemplateInUse = (templateId) => {
   return printConfig.value?.templateId === templateId;
 };
+
+const props = defineProps({
+  formSettingsMode: {
+    type: Boolean,
+    default: false,
+  },
+  submissionCompletionTemplateId: {
+    type: String,
+    default: null,
+  },
+});
+
+const emit = defineEmits(['update:selectedTemplateId']);
+
+function handleTemplateSelection(templateId) {
+  emit('update:selectedTemplateId', templateId);
+}
 
 function handlePrintConfigUpdate(event) {
   // Only refresh if it's for this form
@@ -391,6 +411,17 @@ defineExpose({
             <span v-else>{{ $t('trans.documentTemplate.delete') }}</span>
           </v-tooltip>
         </div>
+      </template>
+
+      <!-- Select Template (for sending packaged emails)-->
+      <template v-if="props.formSettingsMode" #item.selected="{ item }">
+        <v-radio
+          :model-value="props.selectedTemplateId"
+          :value="item.templateId"
+          color="primary"
+          hide-details
+          @click="handleTemplateSelection(item.templateId)"
+        />
       </template>
 
       <!-- Empty footer, remove if allowing multiple templates -->

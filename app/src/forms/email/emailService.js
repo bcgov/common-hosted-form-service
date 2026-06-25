@@ -8,6 +8,8 @@ const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
 const moment = require('moment');
+const packageService = require('../email/packageService');
+const { currentUser } = require('../auth/middleware/userAccess');
 
 /**
  * Replace the {{ handlebar }} expressions in a string with the values from a
@@ -23,9 +25,10 @@ const _replaceHandlebars = (format, context) => {
 };
 
 /** Helper function used to build the email template based on email type and contents */
-const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
+const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, currentUser, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
   const submission = await formService.readSubmission(formSubmissionId);
+
   let configData = {};
   let contextToVal = [];
   let userTypePath = '';
@@ -85,6 +88,24 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       priority: 'normal',
       form,
     };
+  } else if (emailType === EmailTypes.SUBMISSION_PACKAGE) {
+    if (form.enableSubmissionPackageEmail) {
+      contextToVal = form.submissionPackageEmails ? form.submissionPackageEmails : [];
+      const subPackage = await packageService.writeSubmissionPackage({ form, submission, currentUser });
+      userTypePath = 'form/view';
+      configData = {
+        submissionPackagePath: `api/v1/files/${subPackage.fileRecord.id}`,
+        body: additionalProperties.body,
+        bodyTemplate: 'submission-package.html',
+        title: `${form.name} Submission`,
+        subject: `${form.name} Submission`,
+        messageLinkText: `There is a new ${form.name} submission. Please click below to download the attachments and formatted submisison.`,
+        priority: 'normal',
+        form,
+      };
+    } else {
+      contextToVal = [];
+    }
   } else if (emailType === EmailTypes.SUBMISSION_RECEIVED) {
     contextToVal = form.sendSubmissionReceivedEmail ? form.submissionReceivedEmails : [];
     userTypePath = 'form/view';
@@ -135,6 +156,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
           messageLinkUrl: `${baseUrl}/${userTypePath}?s=${submission.id}`,
           emailContent: additionalProperties.emailContent,
           title: configData.title,
+          submissionPackageUrl: `${baseUrl}/${configData.submissionPackagePath}`,
         },
         to: contextToVal,
       },
@@ -378,9 +400,38 @@ const service = {
    * @param {string} referer
    * @returns The result of the email merge operation
    */
-  submissionReceived: async (formId, submissionId, body, referer) => {
+  submissionPackage: async (formId, submissionId, body, referer, currentUser) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, referer, { body });
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_PACKAGE, referer, currentUser, { body });
+      if (contexts[0].to.length) {
+        return service._sendEmailTemplate(configData, contexts);
+      } else {
+        return {};
+      }
+    } catch (e) {
+      log.error(e.message, {
+        function: EmailTypes.SUBMISSION_PACKAGE,
+        formId: formId,
+        submissionId: submissionId,
+        body: body,
+        referer: referer,
+      });
+      throw e;
+    }
+  },
+
+  /**
+   * @function submissionReceived
+   * Completing submission of a form
+   * @param {string} formId
+   * @param {string} submissionId
+   * @param {string} body
+   * @param {string} referer
+   * @returns The result of the email merge operation
+   */
+  submissionReceived: async (formId, submissionId, body, referer, currentUser) => {
+    try {
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, referer, currentUser, { body });
       if (contexts[0].to.length) {
         return service._sendEmailTemplate(configData, contexts);
       } else {
@@ -409,7 +460,7 @@ const service = {
    */
   submissionConfirmation: async (formId, submissionId, body, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, { body: body });
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, { body: body }, currentUser);
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
