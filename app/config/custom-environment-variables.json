@@ -119,5 +119,19 @@
     "listGroupsForUserForTenantPath": "CSTAR_LIST_GROUPS_FOR_USER_FOR_TENANT_PATH",
     "listGroupsForTenant": "CSTAR_LIST_GROUPS_FOR_TENANT",
     "listTenantUsersPath": "CSTAR_LIST_TENANT_USERS_PATH"
+  },
+  "features": {
+    "offlineForms": {
+      "enabled": "FEATURES_OFFLINEFORMS_ENABLED"
+    },
+    "submitToEmail": {
+      "enabled": "FEATURES_SUBMITTOEMAIL_ENABLED"
+    },
+    "documentGenerationV2": {
+      "enabled": "FEATURES_DOCUMENTGENERATIONV2_ENABLED"
+    },
+    "documentGenerationV3": {
+      "enabled": "FEATURES_DOCUMENTGENERATIONV3_ENABLED"
+    }
   }
 }
