@@ -6,6 +6,7 @@ const { getBaseUrl } = require('../common/utils');
 const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
+const featureService = require('../feature/service');
 const formService = require('../form/service');
 const moment = require('moment');
 const packageService = require('../email/packageService');
@@ -89,7 +90,12 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       form,
     };
   } else if (emailType === EmailTypes.SUBMISSION_PACKAGE) {
-    if (form.enableSubmissionPackageEmail) {
+    // Gate the submission package email behind the submitToEmail feature flag.
+    // The form must be allowlisted (allowAll, or this form added) AND the flag
+    // enabled globally, otherwise no package email is sent even if the form's
+    // stored setting is still on (e.g. after being de-allowlisted).
+    const submitToEmail = await featureService.resolve('submitToEmail', { formId: form.id });
+    if (form.enableSubmissionPackageEmail && submitToEmail.active) {
       contextToVal = form.submissionPackageEmails ? form.submissionPackageEmails : [];
       const subPackage = await packageService.writeSubmissionPackage({ form, submission, currentUser });
       userTypePath = 'form/view';
