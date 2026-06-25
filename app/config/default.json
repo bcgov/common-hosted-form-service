@@ -32,7 +32,7 @@
   },
   "frontend": {
     "adminDashboardUrl": "",
-    "apiPath": "api/v1",
+    "apiPath": "api",
     "basePath": "/app",
     "cstarBaseUrl": "https://dev.connect.digital.gov.bc.ca",
     "tenantFeatureEnabled": false,
@@ -44,7 +44,7 @@
     }
   },
   "server": {
-    "apiPath": "/api/v1",
+    "apiPath": "/api",
     "basePath": "/app",
     "bodyLimit": "30mb",
     "oidc": {
@@ -96,7 +96,10 @@
         "endpoint": "https://cdogs-dev.api.gov.bc.ca/api",
         "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
         "clientId": "CDOGS_CLIENT_ID",
-        "clientSecret": "CDOGS_CLIENT_SECRET"
+        "clientSecret": "CDOGS_CLIENT_SECRET",
+        "v3": {
+          "endpoint": "https://cdogs-v3-dev.api.gov.bc.ca/api"
+        }
       },
       "css": {
         "endpoint": "https://api.loginproxy.gov.bc.ca/api",
@@ -105,6 +108,10 @@
         "clientSecret": "CSS_CLIENT_SECRET",
         "environment": "dev"
       }
+    },
+    "carbone": {
+      "apiKey": "SC_CARBONE_APIKEY",
+      "endpoint": "SC_CARBONE_ENDPOINT"
     }
   },
   "cstar": {

@@ -96,8 +96,35 @@ runs:
 
     - name: Deploy app ConfigMaps
       shell: bash
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.cm.yaml -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} -p SERVER_HOST=${{ inputs.server_host }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        APP_PARAM_FILE="openshift/app.${NAMESPACE_ENVIRONMENT}.param"
+        APP_CM_PARAM_FILE="$(mktemp)"
+
+        if [[ -f "${APP_PARAM_FILE}" ]]; then
+          grep -E '^(FRONTEND_APIPATH|SERVER_APIPATH|SERVER_BODYLIMIT|SERVER_LOGLEVEL|SERVER_PORT)=' "${APP_PARAM_FILE}" > "${APP_CM_PARAM_FILE}" || true
+        fi
+
+        CONFIGMAP_SUFFIX=""
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          CONFIGMAP_SUFFIX="-${JOB_NAME}"
+        fi
+
+        oc process --namespace "${NAMESPACE}" \
+          -f openshift/app.cm.yaml \
+          --param-file="${APP_CM_PARAM_FILE}" \
+          -p NAMESPACE="${NAMESPACE}" \
+          -p APP_NAME=${{ inputs.acronym }} \
+          -p JOB_NAME=${{ inputs.job_name }} \
+          -p SERVER_HOST=${{ inputs.server_host }} \
+          -p CONFIGMAP_SUFFIX="${CONFIGMAP_SUFFIX}" \
+          -p VITE_FRONTEND_BASEPATH=${{ inputs.route_path }} \
+          -p SERVER_BASEPATH=${{ inputs.route_path }} \
+          -p FRONTEND_ENV=${{ inputs.namespace_environment }} \
+          -o yaml | oc apply --namespace "${NAMESPACE}" -f -
 
     - name: Deploy event stream ConfigMaps
       shell: bash
@@ -143,11 +170,31 @@ runs:
 
     - name: Deploy App
       shell: bash
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
       run: |
-        if [[ "${{ inputs.job_name }}" == pr-* ]]; then
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.deployment.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.route_prefix }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        APP_PARAM_FILE="openshift/app.${NAMESPACE_ENVIRONMENT}.param"
+        APP_DEPLOY_PARAM_FILE="$(mktemp)"
+
+        if [[ -f "${APP_PARAM_FILE}" ]]; then
+          grep -E '^(CPU_LIMIT|CPU_REQUEST|MEMORY_LIMIT|MEMORY_REQUEST|REPLICAS)=' "${APP_PARAM_FILE}" > "${APP_DEPLOY_PARAM_FILE}" || true
+        fi
+
+        FRONTEND_CONFIGMAP_SUFFIX=""
+        SERVER_CONFIGMAP_SUFFIX=""
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          FRONTEND_CONFIGMAP_SUFFIX="-${JOB_NAME}"
+          SERVER_CONFIGMAP_SUFFIX="-${JOB_NAME}"
+        fi
+
+        echo "Deploying with frontend configmap suffix: '${FRONTEND_CONFIGMAP_SUFFIX}'"
+        echo "Deploying with server configmap suffix: '${SERVER_CONFIGMAP_SUFFIX}'"
+
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.deployment.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.route_prefix }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -p FRONTEND_CONFIGMAP_SUFFIX="${FRONTEND_CONFIGMAP_SUFFIX}" -p SERVER_CONFIGMAP_SUFFIX="${SERVER_CONFIGMAP_SUFFIX}" -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
         else
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.deployment.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.route_prefix }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} --param-file=openshift/app.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.deployment.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.route_prefix }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -p FRONTEND_CONFIGMAP_SUFFIX="${FRONTEND_CONFIGMAP_SUFFIX}" -p SERVER_CONFIGMAP_SUFFIX="${SERVER_CONFIGMAP_SUFFIX}" --param-file="${APP_DEPLOY_PARAM_FILE}" -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
         fi
 
     - name: Wait on App

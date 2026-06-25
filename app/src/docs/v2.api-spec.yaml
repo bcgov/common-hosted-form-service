@@ -1,0 +1,545 @@
+---
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Common Hosted Form Service (CHEFS)
+  description: >-
+    The API for an application for teams to create, manage and publish web
+    forms. These back-end operations can work for different form builder tools
+    that define the form as a json schema. Form management features include
+    role-based access for administrators, form versioning, submission review and
+    export, as well as notifications, document generation and reporting.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  contact:
+    name: Forminators
+    email: submit.digital@gov.bc.ca
+externalDocs:
+  description: Project Readmes
+  url: https://github.com/bcgov/common-hosted-form-service
+servers:
+  - url: /api/v2
+    description: This Server
+security:
+  - BearerAuth: []
+    OpenID: []
+paths:
+  /submissions/{formSubmissionId}/template/{documentTemplateId}/render:
+    get:
+      summary: Generate document from submission ID and template ID
+      description: >-
+        Uses form submission data (given the form submission ID) and a document
+        template (given the document template ID) and generates a document
+        containing the submission data.
+
+        #### Common Document Generation Service (CDOGS)
+
+        This endpoint is a passthrough to CDOGS. Instead of using *BasicAuth* to
+        call this endpoint, it is highly recommended that you [directly call
+        CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html).
+        Benefits of calling CDOGS directly from your application:
+          - avoid CHEFS API rate limiting restrictions
+          - avoid CHEFS API timeout restrictions (for large documents)
+          - better performance (direct call instead of passthrough)
+          - ability to use the CDOGS template cache
+          - direct support from the CDOGS team for your specific Client ID
+      operationId: templateIdSubmissionIdRender
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+        - $ref: '#/components/parameters/documentTemplateIdParam'
+        - in: query
+          name: convertTo
+          schema:
+            type: string
+          description: file type to convert to
+          example: pdf
+      responses:
+        '200':
+          description: Returns the document template with merged variables
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary-encoded response
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: >-
+                Indicates if a browser should render this resource inline or
+                treat as an attachment for download
+              example: attachment; filename=file.pdf
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME-type of the binary file payload
+              example: application/pdf
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /submissions/{formSubmissionId}/template/render:
+    post:
+      summary: Generate document from submission ID and template object
+      description: >-
+        Merges data from a form submission into a document template.
+
+        #### Common Document Generation Service (CDOGS)
+
+        This endpoint is a passthrough to CDOGS. Instead of using *BasicAuth* to
+        call this endpoint, it is highly recommended that you [directly call
+        CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html).
+        Benefits of calling CDOGS directly from your application:
+          - avoid CHEFS API rate limiting restrictions
+          - avoid CHEFS API timeout restrictions (for large documents)
+          - better performance (direct call instead of passthrough)
+          - ability to use the CDOGS template cache
+          - direct support from the CDOGS team for your specific Client ID
+      operationId: templateObjectSubmissionIdRender
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      requestBody:
+        description: Fields required to generate a document
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRenderObject'
+      responses:
+        '200':
+          description: Returns the document template with merged variables
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary-encoded response
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: >-
+                Indicates if a browser should render this resource inline or
+                treat as an attachment for download
+              example: attachment; filename=file.pdf
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME-type of the binary file payload
+              example: application/pdf
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  headers:
+    RateLimit:
+      schema:
+        type: string
+      description: >-
+        Indicates the remaining number of allowed API calls within the
+        remaining window. In the example, 18 more requests are allowed
+        within the 45 seconds that remain in the window. When the window resets
+        after 45 seconds then the "remaining" will be reset to "limit".
+      example: limit=20, remaining=18, reset=45
+    RateLimit-Policy:
+      schema:
+        type: string
+      description: >-
+        Indicates how many API calls can be made within a "window" of time.
+        Additional API calls within the window will result in HTTP 429
+        responses. In the example, 20 requests are allowed within a 60
+        second window.
+      example: 20;w=60
+    retry-after:
+      schema:
+        type: integer
+      description: >-
+        Only returned when the rate limit is exceeded (HTTP 429). Indicates the
+        number of seconds before the window resets, after which API calls will
+        again be allowed. In the example, 13 seconds remain before the window is
+        reset.
+      example: 13
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    OpenID:
+      type: openIdConnect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  parameters:
+    documentTemplateIdParam:
+      in: path
+      name: documentTemplateId
+      description: ID of the document template.
+      schema:
+        type: string
+        format: uuid
+      required: true
+      example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
+    formSubmissionIdParam:
+      in: path
+      name: formSubmissionId
+      description: ID of the submission.
+      schema:
+        type: string
+        format: uuid
+      example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
+      required: true
+  schemas:
+    DocumentTemplateResponse:
+      allOf:
+        - $ref: '#/components/schemas/DocumentTemplateResponseBasic'
+        - type: object
+          properties:
+            template:
+              type: string
+              description: >
+                The file that is the document template to be used in document
+                generation.
+              example: Hello {d.firstName}
+    DocumentTemplateResponseBasic:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the document template.
+              example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
+            formId:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the form that this document template
+                belongs to.
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            active:
+              type: boolean
+              description: >
+                Whether the document template is active. Inactive templates are
+                treated as if they do not exist and will not be returned by GET
+                routes.
+              example: true
+            filename:
+              type: string
+              description: >
+                The filename that the document template had when it was
+                originally uploaded.
+              example: my_document_template.docx
+        - $ref: '#/components/schemas/TimeStampCreate'
+    Error:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            status:
+              example: 500
+            title:
+              example: Internal Server Error
+            type:
+              example: https://httpstatuses.com/500
+    Problem:
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          description: What type of problem, link to explanation of problem
+        title:
+          type: string
+          description: Title of problem, generally the HTTP status code description
+        status:
+          type: string
+          description: The HTTP status code
+        detail:
+          type: string
+          description: Short description of why this problem was raised
+    ServiceStatus:
+      type: object
+      properties:
+        ready:
+          type: boolean
+          description: If CHEFS is ready to accept requests
+          example: true
+        stopped:
+          type: boolean
+          description: If CHEFS is stopped or in the process of shutting down
+          example: false
+        connections:
+          type: object
+          description: Describe state of services CHEFS requires
+          properties:
+            clamAvScanner:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Virus Scanner
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
+            dataConnection:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Data Connection
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
+            eventStreamService:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Event Stream Service
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
+    TemplateRenderObject:
+      type: object
+      properties:
+        options:
+          type: object
+          description: Object containing processing options
+          properties:
+            convertTo:
+              type: string
+              description: >-
+                The desired file type of the generated document. If not
+                supplied, will use the original contentFileType.
+              example: pdf
+            reportName:
+              type: string
+              description: >-
+                The desired file name of the generated document. Can perform
+                template substitution using the form data. If not supplied, will
+                use a random UUID.
+              example: abc_123_{d.firstName}_{d.lastName}.pdf
+        template:
+          type: object
+          description: Object containing the document template
+          properties:
+            content:
+              type: string
+              description: >-
+                The document template encoded as a `base64` string. The example
+                is the encoded value of the text file
+                `Hello {d.firstName} {d.lastName}!`.
+              example: 'SGVsbG8ge2QuZmlyc3ROYW1lfSB7ZC5sYXN0TmFtZX0hCg=='
+            encodingType:
+              type: string
+              description: >-
+                The encoding of the `content` property: use `base64`.
+              example: base64
+            fileType:
+              type: string
+              description: >-
+                The original file type of the `content` document template.
+              example: txt
+    TimeStampCreate:
+      type: object
+      properties:
+        createdBy:
+          type: string
+          description: >
+            The username of the person who created the object.
+          example: bsmith@idir
+        createdAt:
+          type: string
+          description: >
+            The UTC date and time when the object was created.
+          example: '2020-06-04T18:49:20.672Z'
+        updatedBy:
+          type: string
+          description: >
+            The username of the person who last modified the object.
+          example:
+        updatedAt:
+          type: string
+          description: >
+            The UTC date and time when the object was last modified.
+          example: '2020-06-04T18:49:20.672Z'
+  responses:
+    BadRequest:
+      description: Request is missing content or is malformed
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 400
+                  title:
+                    example: Bad Request
+                  type:
+                    example: https://httpstatuses.com/400
+    Forbidden:
+      description: Lack required role to perform action
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 403
+                  title:
+                    example: Forbidden
+                  type:
+                    example: https://httpstatuses.com/403
+    ServiceUnavailable:
+      description: External service is unavailable
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  detail:
+                    $ref: '#/components/schemas/ServiceStatus'
+              - type: object
+                properties:
+                  status:
+                    example: 503
+                  title:
+                    example: Service Unavailable
+                  type:
+                    example: https://httpstatuses.com/503
+    TooManyRequests:
+      description: BasicAuth request exceeds rate limiting
+      headers:
+        RateLimit:
+          $ref: '#/components/headers/RateLimit'
+        RateLimit-Policy:
+          $ref: '#/components/headers/RateLimit-Policy'
+        retry-after:
+          $ref: '#/components/headers/retry-after'
+    Unauthorized:
+      description: Invalid authorization credentials
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 401
+                  title:
+                    example: Unauthorized
+                  type:
+                    example: https://httpstatuses.com/401
+    UnprocessableEntity:
+      description: >-
+        The server was unable to process the contained instructions. Generally
+        validation error(s).
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - message
+                      properties:
+                        value:
+                          type: object
+                          description: Contents of the field that was in error.
+                          example: utf-8x
+                        message:
+                          type: string
+                          description: The error message for the field.
+                          example: Invalid value `encoding`.
+                  status:
+                    example: 422
+                  title:
+                    example: Unprocessable Entity
+                  type:
+                    example: https://httpstatuses.com/422

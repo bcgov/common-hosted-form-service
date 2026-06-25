@@ -420,7 +420,8 @@
     "confirmDeletion": "삭제 확인",
     "confirmDeletionMsg": "이 API 키를 삭제하시겠습니까?",
     "delete": "삭제",
-    "confirmRestore": "복원 확인"
+    "confirmRestore": "복원 확인",
+    "enableCdogsV3": "이 양식에 대해 CDOGS v3 활성화"
   },
   "administerUser": {
     "userDetails": "사용자 세부정보",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "외부 API를 업데이트하는 중 오류가 발생했습니다.",
       "updateAPIsConsErrMsg": "외부 API 업데이트 중 오류 발생: {error}",
       "getAPICodesErrMsg": "외부 API 상태 코드 목록을 가져오는 중 오류가 발생했습니다.",
-      "getAPICodesConsErrMsg": "외부 API 상태 코드 목록을 가져오는 중 오류가 발생했습니다: {error}"
+      "getAPICodesConsErrMsg": "외부 API 상태 코드 목록을 가져오는 중 오류가 발생했습니다: {error}",
+      "cdogsV3ConfigUpdated": "CDOGS v3 구성이 성공적으로 업데이트되었습니다.",
+      "updatingCdogsV3ConfigErrMsg": "CDOGS v3 구성을 업데이트하는 중에 오류가 발생했습니다.",
+      "updatingCdogsV3ConfigConsErrMsg": "양식 {formId}의 CDOGS v3 구성을 업데이트하는 중에 오류가 발생했습니다: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId}에 대한 이메일 템플릿을 로드하는 중에 오류가 발생했습니다. {error}",

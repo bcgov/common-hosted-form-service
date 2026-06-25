@@ -202,6 +202,8 @@ objects:
                       name: "${APP_NAME}-bcgeoaddress-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
+                - name: SERVER_APIPATH
+                  value: "/api"
                 - name: SERVER_KC_CLIENTID
                   valueFrom:
                     secretKeyRef:
@@ -286,11 +288,11 @@ objects:
                 #   value: "/var/log/app.log"
               envFrom:
                 - configMapRef:
-                    name: "${APP_NAME}-frontend-config"
+                    name: "${APP_NAME}${FRONTEND_CONFIGMAP_SUFFIX}-frontend-config"
                 - configMapRef:
                     name: "${APP_NAME}-sc-config"
                 - configMapRef:
-                    name: "${APP_NAME}-server-config"
+                    name: "${APP_NAME}${SERVER_CONFIGMAP_SUFFIX}-server-config"
                 - configMapRef:
                     name: "${APP_NAME}-service-config"
                 - configMapRef:
@@ -359,6 +361,14 @@ parameters:
     description: Job identifier (i.e. 'pr-5' OR 'master')
     displayName: Job Branch Name
     required: true
+  - name: FRONTEND_CONFIGMAP_SUFFIX
+    description: Optional suffix for frontend ConfigMap naming (i.e. '-pr-5' or empty)
+    displayName: Frontend ConfigMap Suffix
+    value: ""
+  - name: SERVER_CONFIGMAP_SUFFIX
+    description: Optional suffix for server ConfigMap naming (i.e. '-pr-5' or empty)
+    displayName: Server ConfigMap Suffix
+    value: ""
   - name: IMAGE_REGISTRY
     description: The container registry
     displayName: Docker Image Registry

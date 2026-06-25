@@ -420,7 +420,8 @@
     "confirmDeletion": "ਮਿਟਾਉਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
     "confirmDeletionMsg": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਇਸ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
     "delete": "ਮਿਟਾਓ",
-    "confirmRestore": "ਰੀਸਟੋਰ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ"
+    "confirmRestore": "ਰੀਸਟੋਰ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+    "enableCdogsV3": "ਇਸ ਫਾਰਮ ਲਈ CDOGS v3 ਯੋਗ ਕਰੋ"
   },
   "administerUser": {
     "userDetails": "ਉਪਭੋਗਤਾ ਵੇਰਵੇ",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "ਬਾਹਰੀ API ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ।",
       "updateAPIsConsErrMsg": "ਬਾਹਰੀ API ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "getAPICodesErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ।",
-      "getAPICodesConsErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+      "getAPICodesConsErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "cdogsV3ConfigUpdated": "CDOGS v3 ਕੌਨਫਿਗਰੇਸ਼ਨ ਸਫਲਤਾ ਨਾਲ ਅਪਡੇਟ ਕੀਤੀ ਗਈ।",
+      "updatingCdogsV3ConfigErrMsg": "CDOGS v3 ਕੌਨਫਿਗਰੇਸ਼ਨ ਅਪਡੇਟ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਹੋਈ।",
+      "updatingCdogsV3ConfigConsErrMsg": "ਫਾਰਮ {formId} ਲਈ CDOGS v3 ਕੌਨਫਿਗਰੇਸ਼ਨ ਅਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",

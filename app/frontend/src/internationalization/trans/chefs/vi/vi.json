@@ -420,7 +420,8 @@
     "confirmDeletion": "Xác nhận xóa",
     "confirmDeletionMsg": "Bạn có chắc chắn muốn xóa Khóa API này không?",
     "delete": "Xóa bỏ",
-    "confirmRestore": "Xác nhận khôi phục"
+    "confirmRestore": "Xác nhận khôi phục",
+    "enableCdogsV3": "Bật CDOGS v3 cho biểu mẫu này"
   },
   "administerUser": {
     "userDetails": "Chi tiết người dùng",
@@ -1142,7 +1143,10 @@
       "updateAPIsErrMsg": "Lỗi khi cập nhật API bên ngoài.",
       "updateAPIsConsErrMsg": "Lỗi khi cập nhật API bên ngoài: {error}",
       "getAPICodesErrMsg": "Có lỗi khi tải danh sách Mã trạng thái API bên ngoài.",
-      "getAPICodesConsErrMsg": "Lỗi khi tải danh sách Mã trạng thái API bên ngoài: {error}"
+      "getAPICodesConsErrMsg": "Lỗi khi tải danh sách Mã trạng thái API bên ngoài: {error}",
+      "cdogsV3ConfigUpdated": "Cấu hình CDOGS v3 đã được cập nhật thành công.",
+      "updatingCdogsV3ConfigErrMsg": "Đã xảy ra lỗi khi cập nhật cấu hình CDOGS v3.",
+      "updatingCdogsV3ConfigConsErrMsg": "Lỗi khi cập nhật cấu hình CDOGS v3 cho biểu mẫu {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Lỗi tải mẫu email cho {formId}: {error}",

@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 
 import { createDownload } from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { formService } from '~/services';
+import cdogsRouterService from '~/services/cdogsRouterService';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
@@ -74,11 +75,14 @@ function createBody(content, contentFileType, outputFileName, outputFileType) {
 
 async function generateDocument(submissionId, body, submission) {
   if (submissionId?.length > 0) {
-    return await formService.docGen(submissionId, body);
+    // For existing submissions, use intelligent routing to determine v1 vs v2
+    return await cdogsRouterService.docGen(formId.value, submissionId, body);
   }
-  return await utilsService.draftDocGen({
+  // For drafts, use intelligent routing with formId in body
+  return await cdogsRouterService.draftDocGen(formId.value, {
     template: body,
     submission: submission,
+    formId: formId.value,
   });
 }
 

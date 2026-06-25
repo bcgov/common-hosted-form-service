@@ -420,7 +420,8 @@
     "confirmDeletion": "Confirmer la suppression",
     "confirmDeletionMsg": "Voulez-vous vraiment supprimer cette clé API ?",
     "delete": "Supprimer",
-    "confirmRestore": "Confirmer la restauration"
+    "confirmRestore": "Confirmer la restauration",
+    "enableCdogsV3": "Activer CDOGS v3 pour ce formulaire"
   },
   "administerUser": {
     "userDetails": "Détails de l'utilisateur",
@@ -1138,7 +1139,10 @@
       "updateAPIsErrMsg": "Erreur lors de la mise à jour de l'API externe.",
       "updateAPIsConsErrMsg": "Erreur lors de la mise à jour de l'API externe : {error}",
       "getAPICodesErrMsg": "Erreur lors de la récupération de la liste des codes d'état de l'API externe.",
-      "getAPICodesConsErrMsg": "Erreur lors de la récupération de la liste des codes d'état de l'API externe : {error}"
+      "getAPICodesConsErrMsg": "Erreur lors de la récupération de la liste des codes d'état de l'API externe : {error}",
+      "cdogsV3ConfigUpdated": "La configuration de CDOGS v3 a été mise à jour avec succès.",
+      "updatingCdogsV3ConfigErrMsg": "Une erreur s'est produite lors de la mise à jour de la configuration de CDOGS v3.",
+      "updatingCdogsV3ConfigConsErrMsg": "Erreur lors de la mise à jour de la configuration de CDOGS v3 pour le formulaire {formId} : {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Erreur lors du chargement des modèles d'e-mail pour {formId} : {error}",

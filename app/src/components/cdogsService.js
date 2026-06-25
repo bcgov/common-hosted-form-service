@@ -4,16 +4,32 @@ const errorToProblem = require('./errorToProblem');
 const log = require('./log')(module.filename);
 
 const SERVICE = 'CDOGS';
+const CDOGS_CONFIG_PATH = 'serviceClient.commonServices.cdogs';
+
+const resolveConfig = (version) => {
+  const scopedPath = `${CDOGS_CONFIG_PATH}.${version}`;
+  const hasScopedEndpoint = config.has(`${scopedPath}.endpoint`);
+  const isScopedV3 = version === 'v3' && hasScopedEndpoint;
+
+  const endpoint = isScopedV3 ? config.get(`${scopedPath}.endpoint`) : config.get(`${CDOGS_CONFIG_PATH}.endpoint`);
+  const tokenUrl = isScopedV3 ? undefined : config.get(`${CDOGS_CONFIG_PATH}.tokenEndpoint`);
+  const clientId = isScopedV3 ? undefined : config.get(`${CDOGS_CONFIG_PATH}.clientId`);
+  const clientSecret = isScopedV3 ? undefined : config.get(`${CDOGS_CONFIG_PATH}.clientSecret`);
+
+  return { endpoint, tokenUrl, clientId, clientSecret };
+};
 
 class CdogsService extends AxiosService {
-  constructor() {
+  constructor(version = 'v2') {
+    const cdogsConfig = resolveConfig(version);
+
     super({
-      tokenUrl: config.get('serviceClient.commonServices.cdogs.tokenEndpoint'),
-      clientId: config.get('serviceClient.commonServices.cdogs.clientId'),
-      clientSecret: config.get('serviceClient.commonServices.cdogs.clientSecret'),
-      apiUrl: config.get('serviceClient.commonServices.cdogs.endpoint'),
+      tokenUrl: cdogsConfig.tokenUrl,
+      clientId: cdogsConfig.clientId,
+      clientSecret: cdogsConfig.clientSecret,
+      apiUrl: cdogsConfig.endpoint,
       serviceName: SERVICE,
-      version: 'v2',
+      version: version,
     });
   }
 
@@ -33,4 +49,7 @@ class CdogsService extends AxiosService {
   }
 }
 
-module.exports = new CdogsService();
+const cdogsService = new CdogsService();
+cdogsService.v3 = new CdogsService('v3');
+
+module.exports = cdogsService;

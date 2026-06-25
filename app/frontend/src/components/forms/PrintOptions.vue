@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { onBeforeUnmount, computed, ref, watch, nextTick } from 'vue';
 
 import { createDownload } from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { formService } from '~/services';
+import cdogsRouterService from '~/services/cdogsRouterService';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
@@ -179,15 +180,20 @@ async function generate() {
       outputFileType
     );
     let response = null;
-    // Submit Template to CDOGS API
+    // Submit Template to CDOGS API using intelligent routing
     if (properties.submissionId?.length > 0) {
-      response = await formService.docGen(properties.submissionId, body);
+      response = await cdogsRouterService.docGen(
+        formId.value,
+        properties.submissionId,
+        body
+      );
     } else {
       const draftData = {
         template: body,
         submission: properties.submission,
+        formId: formId.value,
       };
-      response = await utilsService.draftDocGen(draftData);
+      response = await cdogsRouterService.draftDocGen(formId.value, draftData);
     }
     // create file to download
     const filename = getDisposition(response.headers['content-disposition']);

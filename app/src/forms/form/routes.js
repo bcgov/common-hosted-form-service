@@ -162,4 +162,8 @@ routes.put('/:formId/subscriptions', hasFormPermissions([P.FORM_READ, P.FORM_UPD
   await controller.createOrUpdateSubscriptionDetails(req, res, next);
 });
 
+routes.get('/:formId/cdogsV3Config', hasFormPermissions([P.FORM_UPDATE, P.SUBMISSION_REVIEW]), async (req, res, next) => {
+  await controller.readCdogsV3Config(req, res, next);
+});
+
 module.exports = routes;

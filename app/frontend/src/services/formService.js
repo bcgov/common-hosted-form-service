@@ -525,24 +525,6 @@ export default {
   },
 
   /**
-   * @function docGen
-   * Upload a template to generate PDF from CDOGS API
-   * @param {string} submissionId The form submission identifier
-   * @param {Object} body The request body
-   * @returns {Promise} An axios response
-   */
-  docGen(submissionId, body) {
-    return appAxios().post(
-      `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
-      body,
-      {
-        responseType: 'arraybuffer', // Needed for binaries unless you want pain
-        timeout: 30000, // Override default timeout as this call could take a while
-      }
-    );
-  },
-
-  /**
    * @function updateSubmissionStatus
    * Add a new status entry to the submission
    * @param {string} submissionId The form submission identifier
@@ -786,5 +768,14 @@ export default {
     return appAxios().get(
       `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/statusCodes`
     );
+  },
+  /**
+   * @function readCdogsV3Config
+   * Get CDOGS v3 configuration for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readCdogsV3Config(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/cdogsV3Config`);
   },
 };

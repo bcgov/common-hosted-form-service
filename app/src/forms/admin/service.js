@@ -421,6 +421,38 @@ const service = {
     }
     return {};
   },
+
+  //
+  // CDOGS v3 Configuration
+  //
+
+  /**
+   * @function getCdogsV3Config
+   * Get CDOGS v3 configuration for a form
+   * @param {String} formId The form ID
+   * @returns {Promise} The CDOGS v3 config object
+   */
+  getCdogsV3Config: async (formId) => {
+    const cdogsV3ConfigService = require('../form/cdogsV3ConfigService');
+    return await cdogsV3ConfigService.getV3Config(formId);
+  },
+
+  /**
+   * @function updateCdogsV3Config
+   * Enable or disable CDOGS v3 for a form
+   * @param {String} formId The form ID
+   * @param {Object} data Object with 'enabled' boolean property
+   * @returns {Promise} The updated CDOGS v3 config
+   */
+  updateCdogsV3Config: async (formId, data) => {
+    const cdogsV3ConfigService = require('../form/cdogsV3ConfigService');
+
+    if (data.enabled) {
+      return await cdogsV3ConfigService.enableV3(formId);
+    } else {
+      return await cdogsV3ConfigService.disableV3(formId);
+    }
+  },
 };
 
 module.exports = service;

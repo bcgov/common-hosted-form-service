@@ -235,4 +235,30 @@ export default {
       `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`
     );
   },
+
+  /**
+   * @function readCdogsV3Config
+   * Get CDOGS v3 configuration for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readCdogsV3Config(formId) {
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/cdogsV3Config`
+    );
+  },
+
+  /**
+   * @function updateCdogsV3Config
+   * Enable or disable CDOGS v3 for a form
+   * @param {string} formId The form uuid
+   * @param {Object} data Object with 'enabled' boolean property
+   * @returns {Promise} An axios response
+   */
+  updateCdogsV3Config(formId, data) {
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FORMS}/${formId}/cdogsV3Config`,
+      data
+    );
+  },
 };

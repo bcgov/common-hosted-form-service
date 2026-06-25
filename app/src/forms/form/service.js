@@ -1365,6 +1365,17 @@ const service = {
       throw error;
     }
   },
+
+  /**
+   * @function readCdogsV3Config
+   * Get CDOGS v3 configuration for a form
+   * @param {String} formId The form ID
+   * @returns {Promise} The CDOGS v3 config object
+   */
+  readCdogsV3Config: async (formId) => {
+    const cdogsV3ConfigService = require('./cdogsV3ConfigService');
+    return await cdogsV3ConfigService.getV3Config(formId);
+  },
 };
 
 module.exports = service;

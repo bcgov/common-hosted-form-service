@@ -420,7 +420,8 @@
     "confirmDeletion": "Kumpirmahin ang pagtanggal",
     "confirmDeletionMsg": "Sigurado ka bang gusto mong tanggalin ang API Key na ito?",
     "delete": "Tanggalin",
-    "confirmRestore": "Kumpirmahin ang Pagpapanumbalik"
+    "confirmRestore": "Kumpirmahin ang Pagpapanumbalik",
+    "enableCdogsV3": "Paganahin ang CDOGS v3 para sa form na ito"
   },
   "administerUser": {
     "userDetails": "Mga Detalye ng User",
@@ -1142,7 +1143,10 @@
       "updateAPIsErrMsg": "Error sa pag-update ng External API.",
       "updateAPIsConsErrMsg": "Error sa pag-update ng External API: {error}",
       "getAPICodesErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes.",
-      "getAPICodesConsErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes: {error}"
+      "getAPICodesConsErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes: {error}",
+      "cdogsV3ConfigUpdated": "Ang configuration ng CDOGS v3 ay matagumpay na nag-update.",
+      "updatingCdogsV3ConfigErrMsg": "Isang error ang naganap sa panahon ng pag-update ng CDOGS v3 configuration.",
+      "updatingCdogsV3ConfigConsErrMsg": "Error sa pag-update ng CDOGS v3 configuration para sa form {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error sa paglo-load ng mga template ng email para sa {formId}: {error}",

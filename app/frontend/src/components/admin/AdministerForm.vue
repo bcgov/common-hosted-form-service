@@ -7,6 +7,7 @@ import AddOwner from '~/components/admin/AddOwner.vue';
 import AdminVersions from '~/components/admin/AdminVersions.vue';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useAdminStore } from '~/store/admin';
+import { useNotificationStore } from '~/store/notification';
 import { onMounted, ref } from 'vue';
 
 const { locale } = useI18n({ useScope: 'global' });
@@ -23,8 +24,11 @@ const loading = ref(true);
 const restoreInProgress = ref(false);
 const showDeleteDialog = ref(false);
 const showRestoreDialog = ref(false);
+const cdogsV3Enabled = ref(false);
+const cdogsV3Loading = ref(false);
 
 const adminStore = useAdminStore();
+const notificationStore = useNotificationStore();
 
 const { form, roles, apiKey } = storeToRefs(adminStore);
 
@@ -33,6 +37,7 @@ onMounted(async () => {
     adminStore.readForm(properties.formId),
     adminStore.readApiDetails(properties.formId),
     adminStore.readRoles(properties.formId),
+    loadCdogsV3Config(),
   ]);
 
   formDetails.value = { ...form.value };
@@ -40,6 +45,39 @@ onMounted(async () => {
 
   loading.value = false;
 });
+
+async function loadCdogsV3Config() {
+  try {
+    const config = await adminStore.readCdogsV3Config(properties.formId);
+    cdogsV3Enabled.value = config?.enabled ?? false;
+  } catch (error) {
+    // If no config exists, default to disabled
+    cdogsV3Enabled.value = false;
+    notificationStore.pushNotification({
+      message: 'Failed to load CDOGS v3 configuration',
+      type: 'error',
+    });
+  }
+}
+
+async function toggleCdogsV3Access() {
+  cdogsV3Loading.value = true;
+  try {
+    await adminStore.updateCdogsV3Config(
+      properties.formId,
+      cdogsV3Enabled.value
+    );
+  } catch (error) {
+    // If error, revert the checkbox
+    cdogsV3Enabled.value = !cdogsV3Enabled.value;
+    notificationStore.pushNotification({
+      message: 'Failed to update CDOGS v3 configuration',
+      type: 'error',
+    });
+  } finally {
+    cdogsV3Loading.value = false;
+  }
+}
 
 async function deleteKey() {
   await adminStore.deleteApiKey(form.value.id);
@@ -110,6 +148,17 @@ async function restore() {
         </v-col>
       </v-row>
     </v-container>
+
+    <div class="mt-12">
+      <h4 :lang="locale">CDOGS v3 Configuration</h4>
+      <v-checkbox
+        v-model="cdogsV3Enabled"
+        :disabled="cdogsV3Loading"
+        :label="$t('trans.administerForm.enableCdogsV3')"
+        :lang="locale"
+        @update:model-value="toggleCdogsV3Access"
+      ></v-checkbox>
+    </div>
 
     <div v-if="form.active" class="mt-12">
       <h4 :lang="locale">

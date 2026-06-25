@@ -12,6 +12,7 @@ const httpLogger = require('./src/components/log').httpLogger;
 const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
+const v2Router = require('./src/routes/v2');
 const webcomponentRouter = require('./src/webcomponents');
 const gatewayRouter = require('./src/gateway');
 
@@ -58,12 +59,14 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(httpLogger);
 }
 
-const statusPath = `${config.get('server.basePath')}${config.get('server.apiPath')}/status`;
+const v1StatusPath = `${config.get('server.basePath')}${config.get('server.apiPath')}/v1/status`;
+const v2StatusPath = `${config.get('server.basePath')}${config.get('server.apiPath')}/v2/status`;
+const configPath = `${config.get('server.basePath')}/config`;
 
 // Block requests until service is ready, except for /config and /status
 app.use((req, res, next) => {
   // Only skip for exact /config or /status
-  if (req.path === '/config' || req.path === statusPath) {
+  if (req.path === configPath || req.path === v1StatusPath || req.path === v2StatusPath) {
     return next();
   }
   const status = statusService.getStatus();
@@ -76,7 +79,8 @@ app.use((req, res, next) => {
   }
 });
 
-app.use(config.get('server.basePath') + config.get('server.apiPath'), rateLimiter);
+app.use(config.get('server.basePath') + config.get('server.apiPath') + '/v1', rateLimiter);
+app.use(config.get('server.basePath') + config.get('server.apiPath') + '/v2', rateLimiter);
 
 // Frontend configuration endpoint
 apiRouter.get('/config', (_req, res, next) => {
@@ -110,7 +114,8 @@ apiRouter.get('/api', (_req, res) => {
 });
 
 // Host API endpoints
-apiRouter.use(config.get('server.apiPath'), v1Router);
+apiRouter.use(config.get('server.apiPath') + '/v1', v1Router);
+apiRouter.use(config.get('server.apiPath') + '/v2', v2Router);
 app.use(config.get('server.basePath'), apiRouter);
 
 // Host web component endpoints (separate from API) and apply rate limiting

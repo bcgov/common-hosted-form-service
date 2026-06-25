@@ -7,7 +7,8 @@ import { beforeEach, expect, vi } from 'vitest';
 
 import PrintOptions from '~/components/forms/PrintOptions.vue';
 import * as printOptionsComposables from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { formService } from '~/services';
+import cdogsRouterService from '~/services/cdogsRouterService';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import * as transformUtils from '~/utils/transformUtils';
@@ -384,7 +385,7 @@ describe('PrintOptions.vue', () => {
       'createDownload'
     );
     createDownloadSpy.mockImplementation(() => {});
-    const docGenSpy = vi.spyOn(formService, 'docGen');
+    const docGenSpy = vi.spyOn(cdogsRouterService, 'docGen');
     docGenSpy.mockImplementation(() => {
       return {
         headers: {
@@ -392,7 +393,7 @@ describe('PrintOptions.vue', () => {
         },
       };
     });
-    const draftDocGenSpy = vi.spyOn(utilsService, 'draftDocGen');
+    const draftDocGenSpy = vi.spyOn(cdogsRouterService, 'draftDocGen');
     draftDocGenSpy.mockImplementation(() => {});
     let submission = undefined;
     formStore.form = {
@@ -436,7 +437,7 @@ describe('PrintOptions.vue', () => {
       'createDownload'
     );
     createDownloadSpy.mockImplementation(() => {});
-    const docGenSpy = vi.spyOn(formService, 'docGen');
+    const docGenSpy = vi.spyOn(cdogsRouterService, 'docGen');
     docGenSpy.mockImplementation(() => {
       return {
         headers: {
@@ -444,7 +445,7 @@ describe('PrintOptions.vue', () => {
         },
       };
     });
-    const draftDocGenSpy = vi.spyOn(utilsService, 'draftDocGen');
+    const draftDocGenSpy = vi.spyOn(cdogsRouterService, 'draftDocGen');
     draftDocGenSpy.mockImplementation(() => {});
     let submission = undefined;
     formStore.form = {
@@ -488,9 +489,9 @@ describe('PrintOptions.vue', () => {
       'createDownload'
     );
     createDownloadSpy.mockImplementation(() => {});
-    const docGenSpy = vi.spyOn(formService, 'docGen');
+    const docGenSpy = vi.spyOn(cdogsRouterService, 'docGen');
     docGenSpy.mockImplementation(() => {});
-    const draftDocGenSpy = vi.spyOn(utilsService, 'draftDocGen');
+    const draftDocGenSpy = vi.spyOn(cdogsRouterService, 'draftDocGen');
     draftDocGenSpy.mockImplementation(() => {
       return {
         headers: {
@@ -540,9 +541,9 @@ describe('PrintOptions.vue', () => {
       'createDownload'
     );
     createDownloadSpy.mockImplementation(() => {});
-    const docGenSpy = vi.spyOn(formService, 'docGen');
+    const docGenSpy = vi.spyOn(cdogsRouterService, 'docGen');
     docGenSpy.mockImplementation(() => {});
-    const draftDocGenSpy = vi.spyOn(utilsService, 'draftDocGen');
+    const draftDocGenSpy = vi.spyOn(cdogsRouterService, 'draftDocGen');
     draftDocGenSpy.mockImplementation(() => {
       throw new Error();
     });

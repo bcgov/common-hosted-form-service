@@ -420,7 +420,8 @@
     "confirmDeletion": "Подтвердить удаление",
     "confirmDeletionMsg": "Вы уверены, что хотите удалить этот ключ API?",
     "delete": "Удалить",
-    "confirmRestore": "Подтвердить восстановление"
+    "confirmRestore": "Подтвердить восстановление",
+    "enableCdogsV3": "Включить CDOGS v3 для этой формы"
   },
   "administerUser": {
     "userDetails": "Сведения о пользователе",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "Ошибка обновления внешнего API.",
       "updateAPIsConsErrMsg": "Ошибка обновления внешнего API: {error}",
       "getAPICodesErrMsg": "Ошибка при получении списка кодов состояния внешнего API.",
-      "getAPICodesConsErrMsg": "Ошибка при получении списка кодов состояния внешнего API: {error}"
+      "getAPICodesConsErrMsg": "Ошибка при получении списка кодов состояния внешнего API: {error}",
+      "cdogsV3ConfigUpdated": "Конфигурация CDOGS v3 успешно обновлена.",
+      "updatingCdogsV3ConfigErrMsg": "При обновлении конфигурации CDOGS v3 произошла ошибка.",
+      "updatingCdogsV3ConfigConsErrMsg": "Ошибка при обновлении конфигурации CDOGS v3 для формы {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Ошибка загрузки шаблонов электронной почты для {formId}: {error}.",

@@ -43,7 +43,7 @@ export REPO_NAME=common-hosted-form-service
 export STORAGE_BUCKET=<yourstoragebucket>
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
-  --from-literal=FRONTEND_APIPATH=api/v1 \
+  --from-literal=FRONTEND_APIPATH=api \
   --from-literal=VITE_FRONTEND_BASEPATH=/app \
   --from-literal=FRONTEND_ENV=dev
 ```
@@ -52,16 +52,17 @@ oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
 oc create -n $NAMESPACE configmap $APP_NAME-sc-config \
   --from-literal=SC_CS_CHES_ENDPOINT=https://ches-dev.api.gov.bc.ca/api \
   --from-literal=SC_CS_CDOGS_ENDPOINT=https://cdogs-dev.api.gov.bc.ca/api \
+  --from-literal=SC_CS_CDOGS_V3_ENDPOINT=https://cdogs-v3-dev.api.gov.bc.ca/api \
   --from-literal=SC_CS_CSS_ENDPOINT=https://api.loginproxy.gov.bc.ca/api \
-  --from-literal=SC_CS_CHES_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
-  --from-literal=SC_CS_CDOGS_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
-  --from-literal=SC_CS_CSS_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
+  --from-literal=SC_CS_CHES_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token \
+  --from-literal=SC_CS_CDOGS_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token \
+  --from-literal=SC_CS_CSS_TOKEN_ENDPOINT=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token \
   --from-literal=SC_CS_CSS_ENVIRONMENT=dev
 ```
 
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-server-config \
-  --from-literal=SERVER_APIPATH=/api/v1 \
+  --from-literal=SERVER_APIPATH=/api \
   --from-literal=SERVER_BASEPATH=/app \
   --from-literal=SERVER_BODYLIMIT=30mb \
   --from-literal=SERVER_LOGLEVEL=http \

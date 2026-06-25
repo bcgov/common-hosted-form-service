@@ -420,7 +420,8 @@
     "confirmDeletion": "Confirmar exclusão",
     "confirmDeletionMsg": "Tem certeza de que deseja excluir esta chave de API?",
     "delete": "Excluir",
-    "confirmRestore": "Confirmar restauração"
+    "confirmRestore": "Confirmar restauração",
+    "enableCdogsV3": "Ativar CDOGS v3 para este formulário"
   },
   "administerUser": {
     "userDetails": "Detalhes do usuario",
@@ -1144,7 +1145,10 @@
       "updateAPIsErrMsg": "Erro ao atualizar API externa.",
       "updateAPIsConsErrMsg": "Erro ao atualizar API externa: {error}",
       "getAPICodesErrMsg": "Erro ao buscar a lista de códigos de status da API externa.",
-      "getAPICodesConsErrMsg": "Erro ao buscar a lista de códigos de status da API externa: {error}"
+      "getAPICodesConsErrMsg": "Erro ao buscar a lista de códigos de status da API externa: {error}",
+      "cdogsV3ConfigUpdated": "Configuração de CDOGS v3 atualizada com sucesso.",
+      "updatingCdogsV3ConfigErrMsg": "Ocorreu um erro ao atualizar a configuração de CDOGS v3.",
+      "updatingCdogsV3ConfigConsErrMsg": "Erro ao atualizar a configuração de CDOGS v3 para o formulário {formId}: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Erro ao carregar modelos de e-mail para {formId}: {error}",

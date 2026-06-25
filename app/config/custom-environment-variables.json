@@ -92,7 +92,10 @@
         "endpoint": "SC_CS_CDOGS_ENDPOINT",
         "tokenEndpoint": "SC_CS_CDOGS_TOKEN_ENDPOINT",
         "clientId": "SC_CS_CDOGS_CLIENT_ID",
-        "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
+        "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET",
+        "v3": {
+          "endpoint": "SC_CS_CDOGS_V3_ENDPOINT"
+        }
       },
       "css": {
         "endpoint": "SC_CS_CSS_ENDPOINT",
@@ -101,6 +104,10 @@
         "clientSecret": "SC_CS_CSS_CLIENT_SECRET",
         "environment": "SC_CS_CSS_ENVIRONMENT"
       }
+    },
+    "carbone": {
+      "apiKey": "SC_CARBONE_APIKEY",
+      "endpoint": "SC_CARBONE_ENDPOINT"
     }
   },
   "webcomponents": {
