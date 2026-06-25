@@ -156,7 +156,9 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
           messageLinkUrl: `${baseUrl}/${userTypePath}?s=${submission.id}`,
           emailContent: additionalProperties.emailContent,
           title: configData.title,
-          submissionPackageUrl: `${baseUrl}/${configData.submissionPackagePath}`,
+          ...(configData.submissionPackagePath && {
+            submissionPackageUrl: `${baseUrl}/${configData.submissionPackagePath}`,
+          }),
         },
         to: contextToVal,
       },
@@ -279,7 +281,9 @@ const service = {
    */
   submissionAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_ASSIGNED, referer, { assignmentNotificationEmail });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_ASSIGNED, referer, undefined, {
+        assignmentNotificationEmail,
+      });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
@@ -303,7 +307,9 @@ const service = {
    */
   submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_UNASSIGNED, referer, { assignmentNotificationEmail });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_UNASSIGNED, referer, undefined, {
+        assignmentNotificationEmail,
+      });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
@@ -328,7 +334,7 @@ const service = {
    */
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, {
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, undefined, {
         assignmentNotificationEmail,
         emailContent,
       });
@@ -355,7 +361,10 @@ const service = {
    */
   statusCompleted: async (formId, currentStatus, submissionUserEmails, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, { submissionUserEmails, emailContent });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, undefined, {
+        submissionUserEmails,
+        emailContent,
+      });
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
@@ -379,7 +388,10 @@ const service = {
    */
   statusRevising: async (formId, currentStatus, submissionUserEmails, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, { submissionUserEmails, emailContent });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, undefined, {
+        submissionUserEmails,
+        emailContent,
+      });
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {
@@ -460,7 +472,7 @@ const service = {
    */
   submissionConfirmation: async (formId, submissionId, body, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, { body: body }, currentUser);
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, currentUser, { body });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {

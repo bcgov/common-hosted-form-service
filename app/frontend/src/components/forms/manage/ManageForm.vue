@@ -105,8 +105,6 @@ function enableSettingsEdit() {
 
 async function updateSettings() {
   try {
-    console.log('update Settings');
-    console.log(settingsForm.value);
     const { valid } = await settingsForm.value.validate();
     if (valid) {
       await formStore.updateForm();

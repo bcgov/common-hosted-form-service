@@ -36,7 +36,6 @@ export default {
    * @note Tenant ID is automatically included via x-tenant-id header when tenant is selected
    */
   updateForm(formId, formData) {
-    console.log(formData);
     return appAxios().put(`${ApiRoutes.FORMS}/${formId}`, formData);
   },
 

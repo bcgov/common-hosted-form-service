@@ -466,7 +466,6 @@ export const useFormStore = defineStore('form', {
     },
     async updateForm() {
       try {
-        console.log('SubPackEmails' + this.form.submissionPackageEmails);
         const schedule = this.form.schedule.enabled ? this.form.schedule : {};
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe

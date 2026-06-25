@@ -22,9 +22,6 @@ const makeEmailArrayRules = (enabledRefOrGetter) => [
     !enabledRefOrGetter() ||
     v.every((item) => new RegExp(Regex.EMAIL).test(String(item).trim())) ||
     t('trans.formSettings.validEmailRequired'),
-  (v) => {
-    console.log(v, typeof v, Array.isArray(v));
-  },
 ];
 
 const submissionReceivedEmailRules = computed(() =>

@@ -126,11 +126,11 @@ const service = {
           mimeType: fileRecord.mimeType,
           buffer,
         });
-        console.log('Successfully retrieved file', {
-          id: file.id,
-          filename: file.originalName,
-          size: buffer.length,
-        });
+        // console.log('Successfully retrieved file', {
+        //   id: file.id,
+        //   filename: file.originalName,
+        //   size: buffer.length,
+        // });
       } catch (error) {
         log.error('Failed to read submission file', {
           file,
@@ -240,7 +240,7 @@ const service = {
       if (PERMANENT_STORAGE !== StorageTypes.LOCAL_STORAGE) {
         await fs.rm(tempPath, { force: true });
       } else {
-        console.log('Local Development, Files not deleted');
+        //console.log('Local Development, Files not deleted');
       }
     }
   },

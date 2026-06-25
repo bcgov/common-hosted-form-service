@@ -320,12 +320,12 @@ defineExpose({
       <div style="display: inline-flex; align-items: center">
         {{ $t('trans.documentTemplate.info') }}
         <v-tooltip location="bottom">
-          <template #activator="{ props }">
+          <template #activator="{ props: tooltipProps }">
             <v-icon
               color="primary"
               class="ml-2"
               :class="{ 'mr-2': isRTL }"
-              v-bind="props"
+              v-bind="tooltipProps"
               icon="mdi:mdi-help-circle-outline"
             ></v-icon>
           </template>
@@ -361,10 +361,10 @@ defineExpose({
       <template #item.filename="{ item }">
         <span v-if="!enablePreview">{{ item.filename }}</span>
         <v-tooltip v-if="enablePreview" location="bottom">
-          <template #activator="{ props }">
+          <template #activator="{ props: tooltipProps }">
             <a
               href="#"
-              v-bind="props"
+              v-bind="tooltipProps"
               @click="handleFileAction(item, 'preview')"
             >
               {{ item.filename }}
@@ -381,10 +381,10 @@ defineExpose({
       <template #item.actions="{ item }">
         <div class="icon-container">
           <v-tooltip location="bottom">
-            <template #activator="{ props }">
+            <template #activator="{ props: tooltipProps }">
               <v-icon
                 color="primary"
-                v-bind="props"
+                v-bind="tooltipProps"
                 class="action-icon"
                 @click="handleFileAction(item, 'download')"
               >
@@ -394,10 +394,10 @@ defineExpose({
             <span>{{ $t('trans.documentTemplate.download') }}</span>
           </v-tooltip>
           <v-tooltip location="bottom">
-            <template #activator="{ props }">
+            <template #activator="{ props: tooltipProps }">
               <v-icon
                 :color="isTemplateInUse(item.templateId) ? 'grey' : 'red'"
-                v-bind="props"
+                v-bind="tooltipProps"
                 class="action-icon"
                 :class="{ 'disabled-icon': isTemplateInUse(item.templateId) }"
                 @click="!isTemplateInUse(item.templateId) && handleDelete(item)"

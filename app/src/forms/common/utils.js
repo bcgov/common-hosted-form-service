@@ -294,7 +294,7 @@ const encodeURI = (unsafe) => {
 };
 
 const chefsTemplate = (submission) => {
-  console.log(submission);
+  //console.log(submission);
   /*
     A helper method to build the data object for CDOGS export
    */
