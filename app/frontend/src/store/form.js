@@ -413,6 +413,24 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async fetchSubmissionFields(formId) {
+      try {
+        this.formFields = [];
+        const { data } = await formService.readFormFields(formId);
+        this.formFields = data?.fields ?? [];
+        return data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+        return { versionId: null, published: false, versions: [], fields: [] };
+      }
+    },
     async publishDraft({ formId, draftId }) {
       try {
         await formService.publishDraft(formId, draftId);

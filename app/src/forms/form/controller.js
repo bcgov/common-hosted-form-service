@@ -154,6 +154,17 @@ module.exports = {
       next(error);
     }
   },
+  readFormFields: async (req, res, next) => {
+    try {
+      const response = await service.readFormFields(req.params.formId);
+      res.status(200).json({
+        ...response,
+        fields: response.fields.filter((f) => f !== 'submit'),
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   publishVersion: async (req, res, next) => {
     try {
       const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.currentUser, req.query);
