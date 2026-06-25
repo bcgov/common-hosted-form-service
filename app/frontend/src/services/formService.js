@@ -274,10 +274,14 @@ export default {
    * @param {Object} requestBody The form data for the submission
    * @returns {Promise} An axios response
    */
-  createSubmission(formId, versionId, requestBody) {
+  createSubmission(formId, versionId, requestBody, { dedupKey } = {}) {
+    const config = dedupKey
+      ? { headers: { 'Dedup-Key': dedupKey } }
+      : undefined;
     return appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`,
-      requestBody
+      requestBody,
+      config
     );
   },
 
