@@ -812,6 +812,30 @@ const service = {
     const { schema } = await service.readVersion(formVersionId);
     return schema.components.flatMap((c) => findFields(c));
   },
+
+  // Returns the schema-free version list for a form plus the field keys for the
+  // "current" version (the published one, falling back to the latest version if
+  // none are published). This lets users who can read submissions but not the
+  // form design (e.g. Reviewers) populate the submissions column picker without
+  // exposing version schemas through readForm.
+  readFormFields: async (formId) => {
+    const versions = await FormVersion.query().modify('filterFormId', formId).modify('selectWithoutSchema').modify('orderVersionDescending');
+
+    if (!versions.length) {
+      return { versionId: null, published: false, versions: [], fields: [] };
+    }
+
+    const publishedVersion = versions.find((v) => v.published);
+    const targetVersion = publishedVersion ?? versions[0];
+    const fields = await service.readVersionFields(targetVersion.id);
+
+    return {
+      versionId: targetVersion.id,
+      published: !!publishedVersion,
+      versions,
+      fields,
+    };
+  },
   listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query().where('formVersionId', formVersionId).modify('filterCreatedBy', params.createdBy).modify('orderDescending');
   },
