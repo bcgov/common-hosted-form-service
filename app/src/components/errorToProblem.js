@@ -69,7 +69,8 @@ const _summarizeData = (data) => {
   } else {
     try {
       str = JSON.stringify(data);
-    } catch (error) {
+    } catch {
+      // non-serializable (e.g. circular) — fall back to a plain coercion
       str = String(data);
     }
   }

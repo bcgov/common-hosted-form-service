@@ -18,6 +18,17 @@ const MAX_ERROR_DETAIL = 1000;
 // Useless string coercion of an object (e.g. `String({})`); never worth storing.
 const USELESS_DETAIL = '[object Object]';
 
+// JSON-stringify an object detail, or null if it's empty or non-serializable.
+const _stringifyDetail = (detail) => {
+  try {
+    const json = JSON.stringify(detail);
+    return json && json !== '{}' ? json : null;
+  } catch {
+    // circular / non-serializable
+    return null;
+  }
+};
+
 /**
  * Derive a meaningful, storable error detail string from a thrown error.
  * Prefers `error.detail`: a non-empty, non-`[object Object]` string is used as-is;
@@ -28,24 +39,12 @@ const normalizeErrorDetail = (error) => {
   if (!error) return null;
 
   const { detail, message } = error;
+  const fallback = message || null;
 
-  if (detail !== undefined && detail !== null) {
-    if (typeof detail === 'string') {
-      if (detail.length > 0 && detail !== USELESS_DETAIL) return detail;
-    } else if (typeof detail === 'object') {
-      try {
-        const json = JSON.stringify(detail);
-        if (json && json !== '{}') return json;
-      } catch {
-        // circular / non-serializable — fall through to message
-      }
-    } else {
-      // number, boolean, etc.
-      return String(detail);
-    }
-  }
-
-  return message || null;
+  if (detail === undefined || detail === null) return fallback;
+  if (typeof detail === 'string') return detail && detail !== USELESS_DETAIL ? detail : fallback;
+  if (typeof detail === 'object') return _stringifyDetail(detail) || fallback;
+  return String(detail);
 };
 
 const service = {
