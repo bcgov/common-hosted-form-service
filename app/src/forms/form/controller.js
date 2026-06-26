@@ -183,7 +183,7 @@ module.exports = {
   },
   createSubmission: async (req, res, next) => {
     try {
-      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
+      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser, { dedupKey: req.dedupKey });
       if (!req.body.draft) {
         emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch((error) => {
           log.error('Failed to send submission received email', { error, submissionId: response.id, userId: req.currentUser.id });

@@ -2,6 +2,7 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const apiAccess = require('../auth/middleware/apiAccess');
+const checkDedupKey = require('../auth/middleware/checkDedupKey');
 const { currentUser, hasFormPermissions, requireCreateFormPermission } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
@@ -86,7 +87,7 @@ routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPer
   await controller.listSubmissions(req, res, next);
 });
 
-routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
+routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), checkDedupKey, async (req, res, next) => {
   await controller.createSubmission(req, res, next);
 });
 

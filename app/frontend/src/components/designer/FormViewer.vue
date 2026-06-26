@@ -16,6 +16,8 @@ import { useRouter } from 'vue-router';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
+import { offlineQueue, QUEUE_SOFT_CAP } from '~/offline/queue';
+import { useSimulationToggle } from '~/offline/useSimulationToggle';
 import templateExtensions from '~/plugins/templateExtensions';
 import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
@@ -103,6 +105,8 @@ const saveDraftState = ref(0);
 const saving = ref(false);
 const showModal = ref(false);
 const showSubmitConfirmDialog = ref(false);
+// Optional label shown in the Pending Submissions list; cleared per dialog open.
+const queueNote = ref('');
 const submission = ref({ data: { lateEntry: false } });
 const submissionRecord = ref({});
 const version = ref(0);
@@ -113,6 +117,8 @@ const appStore = useAppStore();
 const authStore = useAuthStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
+
+const { canSimulateOffline, simulatingOffline, online } = useSimulationToggle();
 
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
@@ -396,6 +402,19 @@ async function setProxyHeaders() {
 
 // Get the form definition/schema
 async function getFormSchema() {
+  // Offline: use in-memory cache (only works within a single SPA session).
+  if (!online.value && properties.formId) {
+    const cache = formStore.getCachedFormSchema(
+      properties.formId,
+      properties.versionId
+    );
+    if (cache) {
+      form.value = cache.form;
+      formSchema.value = cache.schema;
+      versionIdToSubmitTo.value = properties.versionId || cache.versionId;
+      return;
+    }
+  }
   try {
     let response = undefined;
     if (properties.versionId) {
@@ -452,6 +471,13 @@ async function getFormSchema() {
       version.value = response.data.versions[0].version;
       versionIdToSubmitTo.value = response.data.versions[0].id;
       formSchema.value = response.data.versions[0].schema;
+      // Cache for offline "Start another submission" re-mount.
+      formStore.cacheFormSchema(
+        properties.formId,
+        versionIdToSubmitTo.value,
+        form.value,
+        formSchema.value
+      );
 
       if (response.data.schedule && response.data.schedule.expire) {
         let formScheduleStatus = response.data.schedule;
@@ -604,8 +630,13 @@ function onSubmitButton(event) {
   currentForm.value = event.instance.parent.root;
   currentForm.value.form.action = undefined;
 
-  // if form has drafts enabled in form settings, show 'confirm submit?' dialog
-  if (form.value.enableSubmitterDraft) {
+  // if form has drafts enabled in form settings, show 'confirm submit?' dialog.
+  // Also show offline so the user knows their submission will be queued.
+  if (
+    form.value.enableSubmitterDraft ||
+    (form.value.enableOfflineSubmission && !online.value)
+  ) {
+    queueNote.value = '';
     showSubmitConfirmDialog.value = true;
   }
 }
@@ -626,8 +657,11 @@ async function onBeforeSubmit(submission, next) {
     return;
   }
 
-  // if form has drafts enabled in form setttings,
-  if (form.value.enableSubmitterDraft) {
+  // if form has drafts enabled in form setttings, or we're queuing while offline
+  if (
+    form.value.enableSubmitterDraft ||
+    (form.value.enableOfflineSubmission && !online.value)
+  ) {
     let timeout;
     // while 'confirm submit?' dialog is open..
     while (showSubmitConfirmDialog.value) {
@@ -707,11 +741,53 @@ function extractErrorMessage(error) {
   return t('trans.formViewer.errMsg');
 }
 
+function isNetworkError(error) {
+  if (!error) return false;
+  if (error.code === 'ERR_NETWORK') return true;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false)
+    return true;
+  return !error.response;
+}
+
+// Queue offline; return undefined on success, an error message on failure.
+async function tryQueueOffline(sub) {
+  try {
+    await queueSubmissionOffline(sub);
+    return undefined;
+  } catch (queueError) {
+    return queueError.code === 'QUEUE_CAP'
+      ? t('trans.offlineSubmission.errorAtCap', { cap: QUEUE_SOFT_CAP })
+      : extractErrorMessage(queueError);
+  }
+}
+
+async function queueSubmissionOffline(sub) {
+  const entry = await offlineQueue.enqueue({
+    formId: properties.formId,
+    formName: form.value?.name,
+    versionId: versionIdToSubmitTo.value,
+    userId: user.value?.idpUserId,
+    body: {
+      draft: false,
+      submission: sub,
+    },
+    note: queueNote.value?.trim() || null,
+    showConfirmationId: !!form.value?.showSubmissionConfirmation,
+  });
+  notificationStore.addNotification({
+    text: t('trans.offlineSubmission.queuedToastMessage'),
+    ...NotificationTypes.SUCCESS,
+  });
+  // Let onSubmitDone do the single navigation; a router.push here races it.
+  submissionRecord.value = { id: `pending-${entry.dedupKey}` };
+}
+
 // Not a formIO event, our saving routine to POST the submission to our API
 async function doSubmit(sub) {
   // since we are not using formio api
   // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
+  const isNewSubmission = !properties.submissionId || properties.isDuplicate;
   try {
     // Validate schedule before submission
     if (isFormScheduleExpired.value && !isLateSubmissionAllowed.value) {
@@ -721,6 +797,15 @@ async function doSubmit(sub) {
         consoleError: `Submission blocked: ${errorMsg}`,
       });
       return errorMsg; // This will be caught and handled by onSubmit
+    }
+    // Pre-empt the POST when offline; in simulation it would otherwise succeed
+    // and bypass the queue (browser is actually online).
+    if (
+      form.value.enableOfflineSubmission &&
+      isNewSubmission &&
+      !online.value
+    ) {
+      return tryQueueOffline(sub);
     }
     const response = await sendSubmission(false, sub);
 
@@ -736,7 +821,15 @@ async function doSubmit(sub) {
       );
     }
   } catch (error) {
-    errMsg = extractErrorMessage(error);
+    if (
+      form.value.enableOfflineSubmission &&
+      isNewSubmission &&
+      isNetworkError(error)
+    ) {
+      errMsg = await tryQueueOffline(sub);
+    } else {
+      errMsg = extractErrorMessage(error);
+    }
   } finally {
     confirmSubmit.value = false;
   }
@@ -754,11 +847,19 @@ async function onSubmitDone() {
     // updating an existing submission on the staff side
     emit('submission-updated');
   } else {
-    // User created new submission
+    // Offline-queued submit: forward f=<formId> so "Start another" works after
+    // the entry has drained, and simulateOffline=1 so the test session sticks.
+    const isPending =
+      typeof submissionRecord.value.id === 'string' &&
+      submissionRecord.value.id.startsWith('pending-');
     router.push({
       name: 'FormSuccess',
       query: {
         s: submissionRecord.value.id,
+        ...(isPending ? { f: properties.formId } : {}),
+        ...(isPending && canSimulateOffline.value
+          ? { simulateOffline: '1' }
+          : {}),
       },
     });
   }
@@ -957,7 +1058,7 @@ async function uploadFile(file, config = {}) {
             :block="block"
             :bulk-file="bulkFile"
             :copy-existing-submission="form.enableCopyExistingSubmission"
-            :draft-enabled="form.enableSubmitterDraft"
+            :draft-enabled="form.enableSubmitterDraft && online"
             :form-id="form.id"
             :is-draft="submissionRecord.draft"
             :permissions="permissions"
@@ -966,7 +1067,11 @@ async function uploadFile(file, config = {}) {
             :submission-id="submissionId"
             :wide-form-layout="form.wideFormLayout"
             :public-form="isFormPublic(form)"
+            :offline-enabled="!!form.enableOfflineSubmission"
+            :can-simulate-offline="canSimulateOffline"
+            :simulating-offline="simulatingOffline"
             class="d-print-none"
+            @toggle-simulate-offline="simulatingOffline = !simulatingOffline"
             @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
             @save-draft="saveDraft"
             @switchView="switchView"
@@ -1013,13 +1118,33 @@ async function uploadFile(file, config = {}) {
                 $t('trans.formViewer.pleaseConfirm')
               }}</span></template
             >
-            <template #text
-              ><span :lang="locale">{{
-                $t('trans.formViewer.submitFormWarningMsg')
-              }}</span></template
-            >
+            <template #text>
+              <span :lang="locale">{{
+                form.enableOfflineSubmission && !online
+                  ? $t('trans.offlineSubmission.queueConfirmMessage')
+                  : $t('trans.formViewer.submitFormWarningMsg')
+              }}</span>
+              <v-text-field
+                v-if="form.enableOfflineSubmission && !online"
+                v-model="queueNote"
+                class="mt-3"
+                density="compact"
+                variant="outlined"
+                hide-details
+                :label="$t('trans.offlineSubmission.queueConfirmNoteLabel')"
+                :placeholder="
+                  $t('trans.offlineSubmission.queueConfirmNotePlaceholder')
+                "
+                maxlength="100"
+                :lang="locale"
+              />
+            </template>
             <template #button-text-continue>
-              <span :lang="locale">{{ $t('trans.formViewer.submit') }}</span>
+              <span :lang="locale">{{
+                form.enableOfflineSubmission && !online
+                  ? $t('trans.offlineSubmission.queueConfirmQueue')
+                  : $t('trans.formViewer.submit')
+              }}</span>
             </template>
           </BaseDialog>
 

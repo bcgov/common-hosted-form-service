@@ -402,6 +402,7 @@ async function schemaCreateNew() {
     }),
     sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
     enableSubmitterDraft: form.value.enableSubmitterDraft,
+    enableOfflineSubmission: form.value.enableOfflineSubmission,
     enableTeamMemberDraftShare: form.value.enableTeamMemberDraftShare,
     allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
