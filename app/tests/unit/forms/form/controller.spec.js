@@ -324,6 +324,7 @@ describe('draftTemplateUploadAndRender', () => {
     expect(res.set).toBeCalledWith(
       expect.objectContaining({
         'Content-Disposition': 'attachment; filename=draft.pdf',
+        'X-Content-Type-Options': 'nosniff',
       })
     );
     expect(res.send).toBeCalledTimes(1);

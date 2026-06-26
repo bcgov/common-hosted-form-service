@@ -401,6 +401,7 @@ module.exports = {
         .set({
           'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
+          'X-Content-Type-Options': 'nosniff',
         })
         .send(data);
     } catch (error) {
