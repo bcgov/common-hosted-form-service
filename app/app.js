@@ -93,6 +93,10 @@ apiRouter.get('/config', (_req, res, next) => {
         ...ess,
       };
     }
+    // Slim feature-flag catalog (codes + global enabled only; no allowlists).
+    if (config.has('features')) {
+      feConfig['features'] = config.get('features');
+    }
     res.status(200).json(feConfig);
   } catch (err) {
     next(err);

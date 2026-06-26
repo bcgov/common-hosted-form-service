@@ -1,0 +1,49 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  template: "chefs-app-features-template"
+metadata:
+  name: "chefs-app-features"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-${JOB_NAME}-features-config"
+    data:
+      FEATURES_OFFLINEFORMS_ENABLED: ${FEATURES_OFFLINEFORMS_ENABLED}
+      FEATURES_SUBMITTOEMAIL_ENABLED: ${FEATURES_SUBMITTOEMAIL_ENABLED}
+      FEATURES_DOCUMENTGENERATIONV2_ENABLED: ${FEATURES_DOCUMENTGENERATIONV2_ENABLED}
+      FEATURES_DOCUMENTGENERATIONV3_ENABLED: ${FEATURES_DOCUMENTGENERATIONV3_ENABLED}
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: JOB_NAME
+    description: Job/Instance name
+    displayName: Job Name
+    required: true
+  - name: FEATURES_OFFLINEFORMS_ENABLED
+    description: Master switch for the Offline Forms feature
+    displayName: Offline Forms Enabled
+    required: true
+    value: "false"
+  - name: FEATURES_SUBMITTOEMAIL_ENABLED
+    description: Master switch for the Submit to Email feature
+    displayName: Submit to Email Enabled
+    required: true
+    value: "false"
+  - name: FEATURES_DOCUMENTGENERATIONV2_ENABLED
+    description: Master switch for Document Generation V2 (existing document generation)
+    displayName: Document Generation V2 Enabled
+    required: true
+    value: "true"
+  - name: FEATURES_DOCUMENTGENERATIONV3_ENABLED
+    description: Master switch for Document Generation V3
+    displayName: Document Generation V3 Enabled
+    required: true
+    value: "false"

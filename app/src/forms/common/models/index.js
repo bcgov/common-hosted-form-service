@@ -38,6 +38,9 @@ module.exports = {
   FormPrintConfigTypeCode: require('./tables/formPrintConfigTypeCode'),
   FormTenant: require('./tables/formTenant'),
   FormGroup: require('./tables/formGroup'),
+  FeatureFlag: require('./tables/featureFlag'),
+  FeatureFlagForm: require('./tables/featureFlagForm'),
+  FeatureFlagTenant: require('./tables/featureFlagTenant'),
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
   PublicFormAccess: require('./views/publicFormAccess'),

@@ -133,5 +133,19 @@
   "recordsManagement": {
     "implementation": "local",
     "enabled": true
+  },
+  "features": {
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": false
+    },
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "documentGenerationV3": {
+      "enabled": false
+    }
   }
 }
