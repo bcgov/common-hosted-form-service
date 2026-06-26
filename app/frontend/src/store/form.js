@@ -98,6 +98,9 @@ const genInitialForm = () => ({
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
+  enableSubmissionPackageEmail: false,
+  submissionCompletionTemplateId: null,
+  submissionPackageEmails: [],
 });
 
 export const useFormStore = defineStore('form', {
@@ -481,6 +484,7 @@ export const useFormStore = defineStore('form', {
     },
     async updateForm() {
       try {
+        console.log('SubPackEmails' + this.form.submissionPackageEmails);
         const schedule = this.form.schedule.enabled ? this.form.schedule : {};
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
@@ -521,6 +525,10 @@ export const useFormStore = defineStore('form', {
             : false,
           formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
+          submissionCompletionTemplateId:
+            this.form.submissionCompletionTemplateId,
+          enableSubmissionPackageEmail: this.form.enableSubmissionPackageEmail,
+          submissionPackageEmails: this.form.submissionPackageEmails,
         });
 
         // update user labels with any new added labels
