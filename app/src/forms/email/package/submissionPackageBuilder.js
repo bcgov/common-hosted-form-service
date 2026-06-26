@@ -1,22 +1,27 @@
 const JSZip = require('jszip');
 const config = require('config');
-
-const cdogsService = require('../../components/cdogsService');
-const log = require('../../components/log')(module.filename);
-
-const documentTemplateService = require('../form/documentTemplate/service');
-const fileService = require('../file/service');
-const storageService = require('../file/storage/storageService');
-
-const { chefsTemplate } = require('../common/utils');
 const uuid = require('uuid');
 
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 
+const cdogsService = require('../../../components/cdogsService');
+const log = require('../../../components/log')(module.filename);
+
+const documentTemplateService = require('../../form/documentTemplate/service');
+const fileService = require('../../file/service');
+const storageService = require('../../file/storage/storageService');
+
+const { chefsTemplate } = require('../../common/utils');
+const { StorageTypes } = require('../../common/constants');
+
 const PERMANENT_STORAGE = config.get('files.permanent');
-const { StorageTypes } = require('../common/constants');
+
+const WORKER_USER = {
+  username: 'submission-package-worker',
+  idpUserId: 'submission-package-worker',
+};
 
 const streamToBuffer = async (stream) =>
   new Promise((resolve, reject) => {
@@ -31,7 +36,7 @@ const safeFileName = (name = 'file') => name.replace(/[\\/:*?"<>|]/g, '_');
 
 const service = {
   /**
-   * Given the data for a submission, find uploaded files.
+   * Find CHEFS uploaded files inside the submission payload.
    */
   findFiles: (submission) => {
     const files = [];
@@ -69,19 +74,26 @@ const service = {
 
     return files;
   },
-  /**
-   * Render the configured document template for a submission.
-   */
-  renderSubmissionTemplate: async ({ form, submission, documentTemplateId, convertTo = 'pdf', body = {} }) => {
-    const template = await documentTemplateService.documentTemplateRead(documentTemplateId);
-    const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
 
+  /**
+   * Render the configured document template using CDOGS.
+   */
+  renderSubmissionTemplate: async ({ form, submission, convertTo = 'pdf', body = {} }) => {
+    if (!form.submissionCompletionTemplateId) {
+      throw new Error('No submissionCompletionTemplateId configured on form.');
+    }
+
+    const template = await documentTemplateService.documentTemplateRead(form.submissionCompletionTemplateId);
+
+    const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
     const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
-    //Retrieve the version of form the submission was created with
 
     const submissionFormVersion = form.versions.find((v) => v.id === submission.formVersionId)?.version;
 
-    const cdogsSubData = chefsTemplate({ version: submissionFormVersion, submission });
+    const cdogsSubData = chefsTemplate({
+      version: submissionFormVersion,
+      submission,
+    });
 
     const templateBody = {
       ...body,
@@ -107,14 +119,13 @@ const service = {
   },
 
   /**
-   * Download all uploaded files associated with a submission.
+   * Read all uploaded submission files from storage.
    */
   getSubmissionFiles: async (submission) => {
-    const subFiles = service.findFiles(submission);
-
+    const submissionFiles = service.findFiles(submission);
     const files = [];
 
-    for (const file of subFiles) {
+    for (const file of submissionFiles) {
       try {
         const fileRecord = await fileService.read(file.id);
         const stream = await storageService.read(fileRecord);
@@ -126,11 +137,6 @@ const service = {
           mimeType: fileRecord.mimeType,
           buffer,
         });
-        // console.log('Successfully retrieved file', {
-        //   id: file.id,
-        //   filename: file.originalName,
-        //   size: buffer.length,
-        // });
       } catch (error) {
         log.error('Failed to read submission file', {
           file,
@@ -143,32 +149,19 @@ const service = {
   },
 
   /**
-   * Build a zip package containing:
-   *  - rendered document template
-   *  - all uploaded submission files
+   * Build the ZIP in memory.
    */
   buildSubmissionPackage: async ({ form, submission, convertTo = 'pdf' }) => {
-    if (!form.submissionCompletionTemplateId) {
-      throw new Error('No submissionCompletionTemplateId configured on form.');
-    }
-
     const zip = new JSZip();
 
-    //
-    // Rendered template
-    //
     const renderedTemplate = await service.renderSubmissionTemplate({
       form,
       submission,
-      documentTemplateId: form.submissionCompletionTemplateId,
       convertTo,
     });
 
     zip.file(renderedTemplate.filename, renderedTemplate.buffer);
 
-    //
-    // Uploaded files
-    //
     const files = await service.getSubmissionFiles(submission);
 
     files.forEach((file, index) => {
@@ -189,23 +182,9 @@ const service = {
   },
 
   /**
-   * Build CHES-compatible attachment payload.
+   * Build ZIP, upload it through fileService, and return the created file record.
    */
-  buildEmailAttachment: async (form, submission, convertTo = 'pdf') => {
-    const zip = await service.buildSubmissionPackage({
-      form,
-      submission,
-      convertTo,
-    });
-
-    return {
-      filename: zip.filename,
-      contentType: zip.contentType,
-      encoding: 'base64',
-      content: zip.buffer.toString('base64'),
-    };
-  },
-  writeSubmissionPackage: async ({ form, submission, currentUser, folder = 'uploads', convertTo = 'pdf' }) => {
+  writeSubmissionPackage: async ({ form, submission, folder = 'uploads', convertTo = 'pdf' }) => {
     const zip = await service.buildSubmissionPackage({
       form,
       submission,
@@ -224,7 +203,7 @@ const service = {
           size: zip.buffer.length,
           path: tempPath,
         },
-        currentUser,
+        WORKER_USER,
         folder
       );
 
@@ -236,11 +215,9 @@ const service = {
         fileCount: zip.fileCount,
       };
     } finally {
-      //comment this out when running local storage, otherwise it'll just delete the zip from the folder it's "uploaded" to
+      //Running this locally will simply "upload" the files into the /tmp/ folder in the container
       if (PERMANENT_STORAGE !== StorageTypes.LOCAL_STORAGE) {
         await fs.rm(tempPath, { force: true });
-      } else {
-        //console.log('Local Development, Files not deleted');
       }
     }
   },

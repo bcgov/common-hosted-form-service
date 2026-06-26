@@ -125,4 +125,10 @@ module.exports = Object.freeze({
     CREATE: 'CREATE',
     RECALCUALTE: 'RECALCULATE',
   },
+  PackageJobStatuses: {
+    QUEUED: 'queued',
+    PROCESSING: 'processing',
+    COMPLETED: 'completed',
+    FAILED: 'failed',
+  },
 });

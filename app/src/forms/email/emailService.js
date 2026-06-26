@@ -9,7 +9,7 @@ const { EmailProperties, EmailTypes } = require('../common/constants');
 const featureService = require('../feature/service');
 const formService = require('../form/service');
 const moment = require('moment');
-const packageService = require('../email/packageService');
+const packageService = require('./package/packageService');
 const { currentUser } = require('../auth/middleware/userAccess');
 
 /**
@@ -26,7 +26,7 @@ const _replaceHandlebars = (format, context) => {
 };
 
 /** Helper function used to build the email template based on email type and contents */
-const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, currentUser, additionalProperties = 0) => {
+const buildEmailTemplate = async (formId, formSubmissionId, emailType, currentUser, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
   const submission = await formService.readSubmission(formSubmissionId);
 
@@ -89,29 +89,6 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       priority: 'normal',
       form,
     };
-  } else if (emailType === EmailTypes.SUBMISSION_PACKAGE) {
-    // Gate the submission package email behind the submitToEmail feature flag.
-    // The form must be allowlisted (allowAll, or this form added) AND the flag
-    // enabled globally, otherwise no package email is sent even if the form's
-    // stored setting is still on (e.g. after being de-allowlisted).
-    const submitToEmail = await featureService.resolve('submitToEmail', { formId: form.id });
-    if (form.enableSubmissionPackageEmail && submitToEmail.active) {
-      contextToVal = form.submissionPackageEmails ? form.submissionPackageEmails : [];
-      const subPackage = await packageService.writeSubmissionPackage({ form, submission, currentUser });
-      userTypePath = 'form/view';
-      configData = {
-        submissionPackagePath: `api/v1/files/${subPackage.fileRecord.id}`,
-        body: additionalProperties.body,
-        bodyTemplate: 'submission-package.html',
-        title: `${form.name} Submission`,
-        subject: `${form.name} Submission`,
-        messageLinkText: `There is a new ${form.name} submission. Please click below to download the attachments and formatted submisison.`,
-        priority: 'normal',
-        form,
-      };
-    } else {
-      contextToVal = [];
-    }
   } else if (emailType === EmailTypes.SUBMISSION_RECEIVED) {
     contextToVal = form.sendSubmissionReceivedEmail ? form.submissionReceivedEmails : [];
     userTypePath = 'form/view';
@@ -287,7 +264,7 @@ const service = {
    */
   submissionAssigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_ASSIGNED, referer, undefined, {
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_ASSIGNED, undefined, {
         assignmentNotificationEmail,
       });
 
@@ -313,7 +290,7 @@ const service = {
    */
   submissionUnassigned: async (formId, currentStatus, assignmentNotificationEmail, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_UNASSIGNED, referer, undefined, {
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.formSubmissionId, EmailTypes.SUBMISSION_UNASSIGNED, undefined, {
         assignmentNotificationEmail,
       });
 
@@ -340,7 +317,7 @@ const service = {
    */
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, undefined, {
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, undefined, {
         assignmentNotificationEmail,
         emailContent,
       });
@@ -367,7 +344,7 @@ const service = {
    */
   statusCompleted: async (formId, currentStatus, submissionUserEmails, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, referer, undefined, {
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_COMPLETED, undefined, {
         submissionUserEmails,
         emailContent,
       });
@@ -394,7 +371,7 @@ const service = {
    */
   statusRevising: async (formId, currentStatus, submissionUserEmails, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, undefined, {
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, undefined, {
         submissionUserEmails,
         emailContent,
       });
@@ -419,22 +396,21 @@ const service = {
    * @returns The result of the email merge operation
    */
   submissionPackage: async (formId, submissionId, body, referer, currentUser) => {
-    try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_PACKAGE, referer, currentUser, { body });
-      if (contexts[0].to.length) {
-        return service._sendEmailTemplate(configData, contexts);
-      } else {
-        return {};
-      }
-    } catch (e) {
-      log.error(e.message, {
-        function: EmailTypes.SUBMISSION_PACKAGE,
-        formId: formId,
-        submissionId: submissionId,
-        body: body,
-        referer: referer,
+    // Gate the submission package email behind the submitToEmail feature flag.
+    // The form must be allowlisted (allowAll, or this form added) AND the flag
+    // enabled globally, otherwise no package email is sent even if the form's
+    // stored setting is still on (e.g. after being de-allowlisted).
+    const submitToEmail = await featureService.resolve('submitToEmail', { formId });
+    const form = await formService.readForm(formId);
+    //Submission Package Enabled, Emails Entered to receive package, and allowlisted for email feature
+    if (form.enableSubmissionPackageEmail && form.submissionPackageEmails.length && submitToEmail.active) {
+      const submission = await formService.readSubmission(submissionId);
+      await packageService.enqueue({
+        formId: form.id,
+        submissionId: submission.id,
+        currentUser: currentUser || 'public',
+        referer,
       });
-      throw e;
     }
   },
 
@@ -449,7 +425,7 @@ const service = {
    */
   submissionReceived: async (formId, submissionId, body, referer, currentUser) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, referer, currentUser, { body });
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_RECEIVED, currentUser, { body });
       if (contexts[0].to.length) {
         return service._sendEmailTemplate(configData, contexts);
       } else {
@@ -478,7 +454,7 @@ const service = {
    */
   submissionConfirmation: async (formId, submissionId, body, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, referer, currentUser, { body });
+      const { configData, contexts } = await buildEmailTemplate(formId, submissionId, EmailTypes.SUBMISSION_CONFIRMATION, currentUser, { body });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
