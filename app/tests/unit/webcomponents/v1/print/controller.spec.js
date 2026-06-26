@@ -1,5 +1,5 @@
 const controller = require('../../../../../src/webcomponents/v1/print/controller');
-const cdogsService = require('../../../../../src/components/cdogsService');
+const docGenService = require('../../../../../src/components/docGenService');
 const submissionService = require('../../../../../src/forms/submission/service');
 const printConfigService = require('../../../../../src/forms/form/printConfig/service');
 const documentTemplateService = require('../../../../../src/forms/form/documentTemplate/service');
@@ -48,7 +48,7 @@ describe('webcomponents/v1/print controller', () => {
         filename: 'template.docx',
         template: Buffer.from('file'),
       });
-      jest.spyOn(cdogsService, 'templateUploadAndRender').mockResolvedValue({
+      jest.spyOn(docGenService, 'templateUploadAndRender').mockResolvedValue({
         data: Buffer.from('pdf'),
         headers: {
           'content-disposition': 'attachment; filename="file.pdf"',
@@ -62,15 +62,19 @@ describe('webcomponents/v1/print controller', () => {
       expect(printConfigService.readPrintConfig).toHaveBeenCalledWith('form-1');
       expect(submissionService.read).toHaveBeenCalledWith('sub-1');
       expect(documentTemplateService.documentTemplateRead).toHaveBeenCalledWith('tmpl-1');
-      expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(
+      expect(docGenService.templateUploadAndRender).toHaveBeenCalledWith(
         expect.objectContaining({
-          options: expect.objectContaining({ reportName: 'Form Name', convertTo: 'pdf' }),
-          template: expect.objectContaining({ encodingType: 'base64', fileType: 'docx' }),
-          data: expect.objectContaining({
-            field: 'value',
-            chefs: expect.objectContaining({
-              submissionId: 'sub-1',
-              confirmationId: 'conf-1',
+          formId: 'form-1',
+          submissionId: 'sub-1',
+          templateBody: expect.objectContaining({
+            options: expect.objectContaining({ reportName: 'Form Name', convertTo: 'pdf' }),
+            template: expect.objectContaining({ encodingType: 'base64', fileType: 'docx' }),
+            data: expect.objectContaining({
+              field: 'value',
+              chefs: expect.objectContaining({
+                submissionId: 'sub-1',
+                confirmationId: 'conf-1',
+              }),
             }),
           }),
         })
@@ -113,7 +117,7 @@ describe('webcomponents/v1/print controller', () => {
         filename: 'template.docx',
         template: Buffer.from('file'),
       });
-      jest.spyOn(cdogsService, 'templateUploadAndRender').mockResolvedValue({
+      jest.spyOn(docGenService, 'templateUploadAndRender').mockResolvedValue({
         data: Buffer.from('pdf'),
         headers: {
           'content-disposition': 'attachment; filename="file.pdf"',
@@ -125,9 +129,12 @@ describe('webcomponents/v1/print controller', () => {
       await controller.printSubmission(req, response, next);
 
       expect(formService.readPublishedForm).toHaveBeenCalledWith('form-1');
-      expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(
+      expect(docGenService.templateUploadAndRender).toHaveBeenCalledWith(
         expect.objectContaining({
-          options: expect.objectContaining({ reportName: 'Fallback Form' }),
+          formId: 'form-1',
+          templateBody: expect.objectContaining({
+            options: expect.objectContaining({ reportName: 'Fallback Form' }),
+          }),
         })
       );
       expect(response.status).toHaveBeenCalledWith(200);
@@ -165,7 +172,7 @@ describe('webcomponents/v1/print controller', () => {
         template: Buffer.from('file'),
       });
       jest.spyOn(formService, 'readPublishedForm').mockResolvedValue({ name: 'Form Name' });
-      jest.spyOn(cdogsService, 'templateUploadAndRender').mockResolvedValue({
+      jest.spyOn(docGenService, 'templateUploadAndRender').mockResolvedValue({
         data: Buffer.from('pdf'),
         headers: {
           'content-disposition': 'attachment; filename="file.pdf"',
@@ -179,11 +186,14 @@ describe('webcomponents/v1/print controller', () => {
       expect(printConfigService.readPrintConfig).toHaveBeenCalledWith('form-1');
       expect(documentTemplateService.documentTemplateRead).toHaveBeenCalledWith('tmpl-1');
       expect(formService.readPublishedForm).toHaveBeenCalledWith('form-1');
-      expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(
+      expect(docGenService.templateUploadAndRender).toHaveBeenCalledWith(
         expect.objectContaining({
-          options: expect.objectContaining({ reportName: 'Form Name', convertTo: 'pdf' }),
-          template: expect.objectContaining({ encodingType: 'base64', fileType: 'docx' }),
-          data: expect.objectContaining({ draft: true }),
+          formId: 'form-1',
+          templateBody: expect.objectContaining({
+            options: expect.objectContaining({ reportName: 'Form Name', convertTo: 'pdf' }),
+            template: expect.objectContaining({ encodingType: 'base64', fileType: 'docx' }),
+            data: expect.objectContaining({ draft: true }),
+          }),
         })
       );
       expect(response.status).toHaveBeenCalledWith(200);
@@ -227,7 +237,7 @@ describe('webcomponents/v1/print controller', () => {
         filename: 'template.docx',
         template: Buffer.from('file'),
       });
-      jest.spyOn(cdogsService, 'templateUploadAndRender').mockResolvedValue({
+      jest.spyOn(docGenService, 'templateUploadAndRender').mockResolvedValue({
         data: Buffer.from('pdf'),
         headers: { 'content-type': 'application/pdf' },
         status: 200,
