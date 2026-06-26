@@ -543,6 +543,25 @@ export default {
   },
 
   /**
+   * @function draftDocGen
+   * Upload a template and ad-hoc (draft) submission data to render a document for a
+   * form, before any submission has been saved.
+   * @param {string} formId The form identifier
+   * @param {Object} body The request body containing the template and submission data
+   * @returns {Promise} An axios response
+   */
+  draftDocGen(formId, body) {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/template/render`,
+      body,
+      {
+        responseType: 'arraybuffer', // Needed for binaries unless you want pain
+        timeout: 30000, // Override default timeout as this call could take a while
+      }
+    );
+  },
+
+  /**
    * @function updateSubmissionStatus
    * Add a new status entry to the submission
    * @param {string} submissionId The form submission identifier

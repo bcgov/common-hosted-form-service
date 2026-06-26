@@ -13,7 +13,6 @@ export const ApiRoutes = Object.freeze({
   SUBMISSION: '/submissions',
   USERS: '/users',
   FILES: '/files',
-  UTILS: '/utils',
   FILES_API_ACCESS: '/filesApiAccess',
   PROXY: '/proxy',
   EXTERNAL_APIS: '/externalAPIs',

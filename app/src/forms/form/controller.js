@@ -1,5 +1,6 @@
 const { validate } = require('uuid');
 
+const docGenService = require('../../components/docGenService');
 const emailService = require('../email/emailService');
 const exportService = require('./exportService');
 const service = require('./service');
@@ -368,6 +369,40 @@ module.exports = {
     try {
       const response = await service.createOrUpdateEmailTemplate(req.params.formId, req.body, req.currentUser);
       res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Takes an uploaded document template and an ad-hoc (draft) submission object and
+   * renders the template into a document. Used for previewing/printing before a
+   * submission is saved, so there is no submission id — the form id comes from the
+   * route. Gating and metrics are handled by docGenService.
+   *
+   * @param {Object} req the Express object representing the HTTP request.
+   * @param {Object} res the Express object representing the HTTP response.
+   * @param {Object} next the Express chaining function.
+   */
+  draftTemplateUploadAndRender: async (req, res, next) => {
+    try {
+      const templateBody = { ...req.body.template, data: req.body.submission.data };
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId: req.params.formId,
+        tenantId: req.currentUser?.tenantId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
+
+      const contentDisposition = headers['content-disposition'];
+
+      res
+        .status(status)
+        .set({
+          'Content-Disposition': contentDisposition || 'attachment',
+          'Content-Type': headers['content-type'],
+        })
+        .send(data);
     } catch (error) {
       next(error);
     }

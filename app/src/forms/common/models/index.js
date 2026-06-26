@@ -41,6 +41,7 @@ module.exports = {
   FeatureFlag: require('./tables/featureFlag'),
   FeatureFlagForm: require('./tables/featureFlagForm'),
   FeatureFlagTenant: require('./tables/featureFlagTenant'),
+  FormDocumentGeneration: require('./tables/formDocumentGeneration'),
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
   PublicFormAccess: require('./views/publicFormAccess'),
