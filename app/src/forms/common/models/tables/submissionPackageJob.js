@@ -2,7 +2,7 @@ const { Model } = require('objection');
 const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
-const Status = require('../../../forms/email/submissionPackageJobStatuses');
+const Status = require('../../constants').PackageJobStatuses;
 
 class SubmissionPackageJob extends Timestamps(Model) {
   static get tableName() {

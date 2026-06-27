@@ -84,9 +84,11 @@ async function markCompleted(jobId) {
 async function markFailed(job, error) {
   const nextStatus = job.attempts >= MAX_ATTEMPTS ? PackageJobStatuses.FAILED : PackageJobStatuses.QUEUED;
 
+  const errorEntry = timestamped(`Error: ${error.message}`);
+
   return SubmissionPackageJob.query().patchAndFetchById(job.id, {
     status: nextStatus,
-    logs: `${job.logs || ''}\n${timestamped(`Error: ${error.message}`)}`,
+    logs: `${job.logs || ''}\n${errorEntry}`,
   });
 }
 

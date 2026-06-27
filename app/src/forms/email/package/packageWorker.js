@@ -3,6 +3,8 @@ const submissionPackageProcessor = require('./submissionPackageProcessor');
 
 const POLL_INTERVAL_MS = 5000;
 
+let running = false;
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -32,14 +34,19 @@ async function processOne() {
 }
 
 async function start() {
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  running = true;
+
+  while (running) {
     const processed = await processOne();
 
     if (!processed) {
       await sleep(POLL_INTERVAL_MS);
     }
   }
+}
+
+function stop() {
+  running = false;
 }
 
 if (require.main === module) {
@@ -52,5 +59,6 @@ if (require.main === module) {
 
 module.exports = {
   start,
+  stop,
   processOne,
 };
