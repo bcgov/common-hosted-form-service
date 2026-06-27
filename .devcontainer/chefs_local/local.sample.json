@@ -146,7 +146,7 @@
       "enabled": false
     },
     "submitToEmail": {
-      "enabled": false
+      "enabled": true
     },
     "documentGenerationV3": {
       "enabled": false

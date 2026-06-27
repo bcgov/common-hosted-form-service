@@ -139,7 +139,7 @@
       "enabled": false
     },
     "submitToEmail": {
-      "enabled": false
+      "enabled": true
     },
     "documentGenerationV2": {
       "enabled": true

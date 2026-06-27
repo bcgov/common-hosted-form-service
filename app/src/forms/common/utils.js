@@ -293,7 +293,29 @@ const encodeURI = (unsafe) => {
   return unsafe.replace(textDelimiterRegex, textDelimiter);
 };
 
+const chefsTemplate = (submission) => {
+  //console.log(submission);
+  /*
+    A helper method to build the data object for CDOGS export
+   */
+  return {
+    ...submission.submission.data,
+    chefs: {
+      formVersion: submission.version.version,
+      submissionId: submission.submission.id,
+      confirmationId: submission.submission.confirmationId,
+      createdBy: submission.submission.createdBy,
+      createdAt: submission.submission.createdAt,
+      updatedBy: submission.submission.updatedBy,
+      updatedAt: submission.submission.updatedAt,
+      isDraft: submission.submission.draft,
+      isDeleted: submission.submission.deleted,
+    },
+  };
+};
+
 module.exports = {
+  chefsTemplate,
   falsey,
   getBaseUrl,
   setupMount,

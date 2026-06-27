@@ -165,8 +165,13 @@ class Form extends Timestamps(Model) {
         showAssigneeInSubmissionsTable: { type: 'boolean' },
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         sendSubmissionReceivedEmail: { type: 'boolean' },
+        enableSubmissionPackageEmail: { type: 'boolean' },
+        submissionCompletionTemplateId: {
+          anyOf: [{ type: 'string', pattern: Regex.UUID }, { type: 'null' }],
+        },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
+        submissionPackageEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableDocumentTemplates: { type: 'boolean' },
         enableStatusUpdates: { type: 'boolean' },
         enableSubmitterRevision: { type: 'boolean' },

@@ -61,6 +61,7 @@ const service = {
     validateFileSecurity(data);
 
     let trx;
+
     try {
       trx = await FileStorage.startTransaction();
 
@@ -76,7 +77,11 @@ const service = {
       const uploadResult = await storageService.upload(obj);
       obj.path = uploadResult.path;
       obj.storage = uploadResult.storage;
-
+      // console.log('INSERTING FILE', {
+      //   storage: obj.storage,
+      //   path: obj.path,
+      //   folder,
+      // });
       await FileStorage.query(trx).insert(obj);
 
       await trx.commit();

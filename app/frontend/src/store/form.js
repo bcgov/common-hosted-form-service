@@ -11,6 +11,7 @@ import {
   eventStreamConfigService,
   recordsManagementService,
 } from '~/services';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
@@ -98,6 +99,9 @@ const genInitialForm = () => ({
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
+  enableSubmissionPackageEmail: false,
+  submissionCompletionTemplateId: null,
+  submissionPackageEmails: [],
 });
 
 export const useFormStore = defineStore('form', {
@@ -373,7 +377,15 @@ export const useFormStore = defineStore('form', {
         if (!data.formMetadata) {
           data.formMetadata = genInitialFormMetadata();
         }
-        const evntSrvCfg = await this.fetchEventStreamConfig(formId);
+        // Event stream config and feature-flag resolution both only need formId
+        // and are independent of each other, so run them concurrently. Both
+        // handle their own errors (resolveForContext fails safe), so neither
+        // rejects here. resolveForContext populates the active map used by
+        // gated settings UIs (e.g. the submission package email controls).
+        const [evntSrvCfg] = await Promise.all([
+          this.fetchEventStreamConfig(formId),
+          useFeatureFlagStore().resolveForContext({ formId }),
+        ]);
         data.eventStreamConfig = evntSrvCfg;
 
         // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
@@ -521,6 +533,10 @@ export const useFormStore = defineStore('form', {
             : false,
           formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
+          submissionCompletionTemplateId:
+            this.form.submissionCompletionTemplateId,
+          enableSubmissionPackageEmail: this.form.enableSubmissionPackageEmail,
+          submissionPackageEmails: this.form.submissionPackageEmails,
         });
 
         // update user labels with any new added labels

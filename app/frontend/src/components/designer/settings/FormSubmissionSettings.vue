@@ -1,26 +1,45 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { Regex } from '~/utils/constants';
+import DocumentTemplate from '../../forms/manage/DocumentTemplate.vue';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
-const { form, isRTL } = storeToRefs(useFormStore());
+const { form, isRTL, isFormPublished } = storeToRefs(useFormStore());
+
+const featureFlagStore = useFeatureFlagStore();
+// Allowlist-gated: the submission package email controls only render when
+// submitToEmail is active for this form (enabled globally AND allowlisted).
+// resolveForContext() is called by the FormDesigner on load.
+const submitToEmailActive = computed(() =>
+  featureFlagStore.isActive('submitToEmail')
+);
 
 /* c8 ignore start */
-const emailArrayRules = ref([
-  (v) =>
-    !form.value.sendSubmissionReceivedEmail ||
+const makeEmailArrayRules = (enabledRefOrGetter) => [
+  (v = []) =>
+    !enabledRefOrGetter() ||
     v.length > 0 ||
     t('trans.formSettings.atLeastOneEmailReq'),
-  (v) =>
-    !form.value.sendSubmissionReceivedEmail ||
-    v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
+
+  (v = []) =>
+    !enabledRefOrGetter() ||
+    v.every((item) => new RegExp(Regex.EMAIL).test(String(item).trim())) ||
     t('trans.formSettings.validEmailRequired'),
-]);
+];
+
+const submissionReceivedEmailRules = computed(() =>
+  makeEmailArrayRules(() => form.sendSubmissionReceivedEmail)
+);
+
+const submissionPackageEmailRules = computed(() =>
+  makeEmailArrayRules(() => form.enableSubmissionPackageEmail)
+);
 /* c8 ignore stop */
 </script>
 
@@ -100,35 +119,110 @@ const emailArrayRules = ref([
         </div>
       </template>
     </v-checkbox>
+    <div v-if="form.sendSubmissionReceivedEmail">
+      <v-combobox
+        v-model="form.submissionReceivedEmails"
+        :hide-no-data="false"
+        :rules="submissionReceivedEmailRules"
+        solid
+        variant="outlined"
+        hide-selected
+        clearable
+        :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
+        :label="$t('trans.formSettings.notificationEmailAddrs')"
+        multiple
+        chips
+        closable-chips
+        :delimiters="[' ', ',']"
+        append-icon=""
+        :lang="locale"
+      >
+        <template #no-data>
+          <v-list-item>
+            <v-list-item-title>
+              <span
+                :lang="locale"
+                v-html="$t('trans.formSettings.pressToAddMultiEmail')"
+              />
+            </v-list-item-title>
+          </v-list-item>
+        </template>
+      </v-combobox>
 
-    <v-combobox
-      v-if="form.sendSubmissionReceivedEmail"
-      v-model="form.submissionReceivedEmails"
-      :hide-no-data="false"
-      :rules="emailArrayRules"
-      solid
-      variant="outlined"
-      hide-selected
-      clearable
-      :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
-      :label="$t('trans.formSettings.notificationEmailAddrs')"
-      multiple
-      chips
-      closable-chips
-      :delimiters="[' ', ',']"
-      append-icon=""
-      :lang="locale"
-    >
-      <template #no-data>
-        <v-list-item>
-          <v-list-item-title>
-            <span
-              :lang="locale"
-              v-html="$t('trans.formSettings.pressToAddMultiEmail')"
-            />
-          </v-list-item-title>
-        </v-list-item>
+      <template v-if="submitToEmailActive">
+        <v-divider class="my-6" />
+
+        <v-checkbox
+          v-model="form.enableSubmissionPackageEmail"
+          :disabled="!isFormPublished"
+          hide-details="auto"
+          class="my-0"
+          data-test="submission-package-email-test"
+        >
+          <template #label>
+            <div :class="{ 'mr-2': isRTL }">
+              <span :lang="locale">
+                {{
+                  isFormPublished
+                    ? $t('trans.formSettings.emailPackage')
+                    : $t('trans.formSettings.emailPackageDisabled')
+                }}
+              </span>
+
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-icon
+                    color="primary"
+                    class="ml-3"
+                    :class="{ 'mr-2': isRTL }"
+                    v-bind="props"
+                    icon="mdi:mdi-help-circle-outline"
+                  />
+                </template>
+                <span :lang="locale">
+                  {{ $t('trans.formSettings.emailPackageTooltip') }}
+                </span>
+              </v-tooltip>
+            </div>
+          </template>
+        </v-checkbox>
+
+        <div v-if="form.enableSubmissionPackageEmail" class="mt-4">
+          <v-combobox
+            v-model="form.submissionPackageEmails"
+            :hide-no-data="false"
+            :rules="submissionPackageEmailRules"
+            solid
+            variant="outlined"
+            hide-selected
+            clearable
+            :hint="$t('trans.formSettings.addMoreValidEmailAddrs')"
+            :label="$t('trans.formSettings.notificationEmailAddrs')"
+            multiple
+            chips
+            closable-chips
+            :delimiters="[' ', ',']"
+            append-icon=""
+            :lang="locale"
+          >
+            <template #no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  <span
+                    :lang="locale"
+                    v-html="$t('trans.formSettings.pressToAddMultiEmail')"
+                  />
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-combobox>
+
+          <DocumentTemplate
+            v-model:selected-template-id="form.submissionCompletionTemplateId"
+            form-settings-mode
+          />
+        </div>
       </template>
-    </v-combobox>
+    </div>
   </BasePanel>
 </template>
