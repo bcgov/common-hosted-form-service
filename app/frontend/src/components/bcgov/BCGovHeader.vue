@@ -31,7 +31,7 @@ const appBase = computed(() => props.appTitle);
 // - Admin pages
 // - Submission viewing/submission pages (formSubmitMode routes)
 const showTenantDropdown = computed(() => {
-  if (!tenantStore.isTenantFeatureEnabled || tenantStore.isBCServicesCardUser)
+  if (!tenantStore.isTenantFeatureEnabled || tenantStore.isTenantIneligibleUser)
     return false;
   if (!ready.value || !authenticated.value || !route.name) {
     return false;

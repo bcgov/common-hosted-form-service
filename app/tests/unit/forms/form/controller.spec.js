@@ -77,6 +77,29 @@ describe('form controller', () => {
   });
 });
 
+describe('readFormFields', () => {
+  it('returns the version metadata and strips the submit field', async () => {
+    service.readFormFields = jest.fn().mockResolvedValue({
+      versionId: 'v1',
+      published: true,
+      versions: [{ id: 'v1', version: 1, published: true }],
+      fields: ['simpletextfield', 'submit'],
+    });
+    const { res, next } = getMockRes();
+
+    await controller.readFormFields(getMockReq(req), res, next);
+
+    expect(service.readFormFields).toBeCalledWith(req.params.formId);
+    expect(res.json).toBeCalledWith({
+      versionId: 'v1',
+      published: true,
+      versions: [{ id: 'v1', version: 1, published: true }],
+      fields: ['simpletextfield'],
+    });
+    expect(next).not.toBeCalled();
+  });
+});
+
 describe('createForm', () => {
   it('should call service.createForm with body, currentUser, and headers and return 201', async () => {
     // Arrange

@@ -6,6 +6,7 @@
 export const ApiRoutes = Object.freeze({
   ADMIN: '/admin',
   APIKEY: '/apiKey',
+  FEATURES: '/features',
   FORMS: '/forms',
   RBAC: '/rbac',
   ROLES: '/roles',

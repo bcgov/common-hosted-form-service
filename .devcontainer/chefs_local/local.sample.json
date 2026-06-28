@@ -34,7 +34,7 @@
   "frontend": {
     "apiPath": "api/v1",
     "basePath": "/app",
-    "cstarBaseUrl": "https://cstar-dev.apps.gold.devops.gov.bc.ca",
+    "cstarBaseUrl": "https://dev.connect.digital.gov.bc.ca",
     "tenantFeatureEnabled": false,
     "oidc": {
       "clientId": "chefs-frontend-localhost-5300",
@@ -109,7 +109,7 @@
   },
   "cstar": {
     "tenantFeatureEnabled": false,
-    "endpoint": "https://cstar-dev.apps.gold.devops.gov.bc.ca/api/v1/",
+    "endpoint": "https://dev.connect.digital.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
     "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
     "listGroupsForTenant": "tenants/{tenantId}/groups",
@@ -137,5 +137,19 @@
   },
   "gateway": {
     "jwtLifetime": "30m"
+  },
+  "features": {
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": false
+    },
+    "documentGenerationV3": {
+      "enabled": false
+    }
   }
 }

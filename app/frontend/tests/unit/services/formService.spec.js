@@ -69,6 +69,19 @@ describe('Form Service', () => {
     });
   });
 
+  describe('Forms/{formId}/fields', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/fields`;
+
+    it('calls fields endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200, { versions: [], fields: [] });
+
+      const result = await formService.readFormFields(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+      expect(mockAxios.history.get[0].url).toEqual(endpoint);
+    });
+  });
+
   describe('Forms/{formId}/options', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/options`;
 

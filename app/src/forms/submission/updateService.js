@@ -1,4 +1,4 @@
-const { FileStorage, FormSubmission, FormSubmissionStatus, SubmissionMetadata } = require('../common/models');
+const { FormSubmission, FormSubmissionStatus, SubmissionMetadata } = require('../common/models');
 const emailService = require('../email/emailService');
 const eventService = require('../event/eventService');
 const fileService = require('../file/service');
@@ -43,20 +43,23 @@ const service = {
 
   _handleFileUploads: async (submissionService, data, id, user, trx) => {
     const fileIds = submissionService._findFileIds(data);
+    const movedFiles = [];
     for (const fileId of fileIds) {
       const fileStorage = await fileService.read(fileId);
       if (!fileStorage.formSubmissionId) {
-        await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: id, updatedBy: user.usernameIdp });
-
-        // move file and update storage/path atomically to ensure we don't swallow errors
+        // Run the file's row update inside the submission transaction so it does
+        // not deadlock against the lock this transaction holds. The original
+        // object is removed by the caller once the transaction has committed.
         try {
-          await fileService.moveSubmissionFile(id, fileStorage, user.usernameIdp);
+          const moved = await fileService.moveSubmissionFile(id, fileStorage, user.usernameIdp, trx);
+          movedFiles.push(moved || fileStorage);
         } catch (error) {
           log.error('Error moving file', { error, fileId, submissionId: id, userId: user.usernameIdp, originalName: fileStorage.originalName });
           throw error;
         }
       }
     }
+    return movedFiles;
   },
 
   _sendNotifications: async (updated, data, referrer, submissionReceived, formSubmissionId) => {
@@ -82,6 +85,7 @@ const service = {
     let trx;
     let result;
     let submissionReceived = false;
+    let movedFiles = [];
     try {
       trx = etrx || (await FormSubmissionStatus.startTransaction());
       log.info(`Starting update for submissionId=${formSubmissionId} by user=${currentUser.usernameIdp}`);
@@ -105,11 +109,18 @@ const service = {
         submissionReceived = await service._handleStatusChange(submissionService, formSubmissionId, data, statuses, currentUser, trx);
         log.info(`Patched submissionId=${formSubmissionId} with new data`);
         await service._patchSubmission(formSubmissionId, data, currentUser, trx);
-        await service._handleFileUploads(submissionService, data, formSubmissionId, currentUser, trx);
+        movedFiles = (await service._handleFileUploads(submissionService, data, formSubmissionId, currentUser, trx)) || [];
       }
 
       if (!etrx) {
         await trx.commit();
+
+        // Files were copied to permanent storage inside the transaction; now that
+        // it is committed, remove the original (pre-move) objects. Best-effort: a
+        // storage failure just leaves an orphan and must not fail the submission.
+        for (const fileStorage of movedFiles) {
+          await fileService.deleteStorageObject(fileStorage);
+        }
         log.info(`Transaction committed for submissionId=${formSubmissionId}`);
       }
       result = await submissionService.read(formSubmissionId);

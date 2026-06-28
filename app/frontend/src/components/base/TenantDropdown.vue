@@ -117,6 +117,11 @@ const allTenantOptions = computed(() => [
 
 // Handle tenant selection change
 const handleTenantChange = async (value) => {
+  // Set before mutating selectedTenant so Vue batches both into the same
+  // reactive flush — pages like Group Management that show a "tenant
+  // required" error when selectedTenant is null would otherwise flash that
+  // error while this async flow navigates away from them.
+  tenantStore.setSwitchingTenant(true);
   try {
     if (value) {
       const tenant = tenantStore.getTenantById(value);
@@ -142,6 +147,8 @@ const handleTenantChange = async (value) => {
       text: 'Error navigating to forms. Please try again.',
       consoleError: error,
     });
+  } finally {
+    tenantStore.setSwitchingTenant(false);
   }
 };
 

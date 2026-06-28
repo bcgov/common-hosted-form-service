@@ -471,7 +471,7 @@ export default function getRouter(basePath = '/') {
       if (
         tenantStore.isTenantFeatureEnabled &&
         !to.meta?.formSubmitMode &&
-        !tenantStore.isBCServicesCardUser
+        !tenantStore.isTenantIneligibleUser
       ) {
         tenantStore.fetchTenants();
       }

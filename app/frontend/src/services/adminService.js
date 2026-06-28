@@ -235,4 +235,94 @@ export default {
       `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`
     );
   },
+
+  //
+  // Feature Flags
+  //
+
+  /**
+   * @function listFeatureFlags
+   * List all feature flags with their global enabled state and allowAll flag
+   * @returns {Promise} An axios response
+   */
+  listFeatureFlags() {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FEATURES}`);
+  },
+
+  /**
+   * @function readFeatureFlag
+   * Read a single feature flag including its form/tenant allowlists
+   * @param {string} code The feature flag code
+   * @returns {Promise} An axios response
+   */
+  readFeatureFlag(code) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FEATURES}/${code}`);
+  },
+
+  /**
+   * @function updateFeatureFlag
+   * Toggle the allowAll (universal) flag on a feature
+   * @param {string} code The feature flag code
+   * @param {boolean} allowAll Whether the feature is universally allowed
+   * @returns {Promise} An axios response
+   */
+  updateFeatureFlag(code, allowAll) {
+    return appAxios().patch(`${ApiRoutes.ADMIN}${ApiRoutes.FEATURES}/${code}`, {
+      allowAll,
+    });
+  },
+
+  /**
+   * @function addFeatureFlagForm
+   * Add a form to a feature's allowlist
+   * @param {string} code The feature flag code
+   * @param {string} formId The form UUID to allowlist
+   * @returns {Promise} An axios response
+   */
+  addFeatureFlagForm(code, formId) {
+    return appAxios().post(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FEATURES}/${code}/forms`,
+      { formId }
+    );
+  },
+
+  /**
+   * @function removeFeatureFlagForm
+   * Remove a form from a feature's allowlist
+   * @param {string} code The feature flag code
+   * @param {string} formId The form UUID to remove
+   * @returns {Promise} An axios response
+   */
+  removeFeatureFlagForm(code, formId) {
+    return appAxios().delete(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FEATURES}/${code}/forms/${formId}`
+    );
+  },
+
+  /**
+   * @function addFeatureFlagTenant
+   * Add a tenant to a feature's allowlist
+   * @param {string} code The feature flag code
+   * @param {string} tenantId The tenant UUID to allowlist
+   * @returns {Promise} An axios response
+   */
+  addFeatureFlagTenant(code, tenantId) {
+    return appAxios().post(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FEATURES}/${code}/tenants`,
+      { tenantId }
+    );
+  },
+
+  /**
+   * @function removeFeatureFlagTenant
+   * Remove a tenant from a feature's allowlist
+   * @param {string} code The feature flag code
+   * @param {string} tenantId The tenant UUID to remove
+   * @returns {Promise} An axios response
+   */
+  removeFeatureFlagTenant(code, tenantId) {
+    return appAxios().delete(
+      `${ApiRoutes.ADMIN}${ApiRoutes.FEATURES}/${code}/tenants/${tenantId}`
+    );
+  },
 };
