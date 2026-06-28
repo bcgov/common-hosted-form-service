@@ -129,6 +129,7 @@ module.exports = Object.freeze({
     QUEUED: 'queued',
     PROCESSING: 'processing',
     COMPLETED: 'completed',
+    SKIPPED: 'skipped',
     FAILED: 'failed',
   },
 });

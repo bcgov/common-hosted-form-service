@@ -63,7 +63,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  submissionCompletionTemplateId: {
+  selectedTemplateId: {
     type: String,
     default: null,
   },
@@ -122,6 +122,20 @@ async function fetchTemplates() {
   try {
     documentTemplates.value = [];
     documentTemplates.value = await fetchDocumentTemplates(form.value.id);
+
+    // In form-settings mode, if the selected template no longer exists (e.g. it
+    // was just deleted, or was removed since the form was saved), clear the
+    // selection so the form doesn't keep referencing a non-existent template.
+    if (
+      props.formSettingsMode &&
+      props.selectedTemplateId &&
+      !documentTemplates.value.some(
+        (template) => template.templateId === props.selectedTemplateId
+      )
+    ) {
+      handleTemplateSelection(null);
+    }
+
     // disable preview for microsoft docs
     if (documentTemplates.value.length > 0) {
       // get file extension

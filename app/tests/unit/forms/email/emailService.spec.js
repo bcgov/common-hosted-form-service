@@ -113,7 +113,7 @@ describe('public methods', () => {
   const body_low = { priority: 'low', to: 'a@b.com' };
   const body_normal = { priority: 'normal', to: 'a@b.com' };
   const emailContent = 'Email Content';
-  const baseUrl = 'http://localhost/app';
+  const baseUrl = 'http://localhost:5173/app';
   const allFormSubmissionUrl = `${baseUrl}/user/submissions?f=xxx-yyy`;
 
   afterEach(() => {

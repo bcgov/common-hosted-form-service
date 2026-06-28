@@ -6,10 +6,8 @@ const { getBaseUrl } = require('../common/utils');
 const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
-const featureService = require('../feature/service');
 const formService = require('../form/service');
 const moment = require('moment');
-const packageService = require('./package/packageService');
 const { currentUser } = require('../auth/middleware/userAccess');
 
 /**
@@ -245,6 +243,9 @@ const service = {
         title: configData.title,
         priority: configData.priority,
         messageLinkText: configData.messageLinkText,
+        // Optional CHES attachments (e.g. the submitToEmail "attachment" delivery
+        // strategy). Omitted entirely when not provided.
+        ...(configData.attachments && { attachments: configData.attachments }),
       };
       return chesService.merge(data);
     } catch (err) {
@@ -383,34 +384,6 @@ const service = {
         referer: referer,
       });
       throw e;
-    }
-  },
-
-  /**
-   * @function submissionReceived
-   * Completing submission of a form
-   * @param {string} formId
-   * @param {string} submissionId
-   * @param {string} body
-   * @param {string} referer
-   * @returns The result of the email merge operation
-   */
-  submissionPackage: async (formId, submissionId, body, referer, currentUser) => {
-    // Gate the submission package email behind the submitToEmail feature flag.
-    // The form must be allowlisted (allowAll, or this form added) AND the flag
-    // enabled globally, otherwise no package email is sent even if the form's
-    // stored setting is still on (e.g. after being de-allowlisted).
-    const submitToEmail = await featureService.resolve('submitToEmail', { formId });
-    const form = await formService.readForm(formId);
-    //Submission Package Enabled, Emails Entered to receive package, and allowlisted for email feature
-    if (form.enableSubmissionPackageEmail && form.submissionPackageEmails.length && submitToEmail.active) {
-      const submission = await formService.readSubmission(submissionId);
-      await packageService.enqueue({
-        formId: form.id,
-        submissionId: submission.id,
-        currentUser: currentUser || 'public',
-        referer,
-      });
     }
   },
 

@@ -271,6 +271,7 @@
     "formTitleReq": "Form Title is required",
     "atLeastOneEmailReq": "Please enter at least 1 email address",
     "validEmailRequired": "Please enter all valid email addresses",
+    "templateRequired": "Please select a document template",
     "fieldRequired": "This field is required.",
     "correctDateFormat": "Date must be in correct format. ie. yyyy-mm-dd",
     "dateDiffMsg": "Close Submission date should be greater than open submission date.",

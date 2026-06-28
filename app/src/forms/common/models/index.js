@@ -29,6 +29,7 @@ module.exports = {
   ExternalAPI: require('./tables/externalAPI'),
   ExternalAPIStatusCode: require('./tables/externalAPIStatusCode'),
   FormMetadata: require('./tables/formMetadata'),
+  FormSubmissionPackageSettings: require('./tables/formSubmissionPackageSettings'),
   FormEncryptionKey: require('./tables/formEncryptionKey'),
   FormEventStreamConfig: require('./tables/formEventStreamConfig'),
   RetentionClassification: require('./tables/retentionClassification'),

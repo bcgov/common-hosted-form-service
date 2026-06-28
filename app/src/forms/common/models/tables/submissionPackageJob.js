@@ -45,6 +45,9 @@ class SubmissionPackageJob extends Timestamps(Model) {
         logs: {
           type: ['string', 'null'],
         },
+        packageFileId: {
+          anyOf: [{ type: 'string', pattern: Regex.UUID }, { type: 'null' }],
+        },
         ...stamps,
       },
       additionalProperties: false,

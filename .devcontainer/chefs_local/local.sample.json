@@ -146,7 +146,13 @@
       "enabled": false
     },
     "submitToEmail": {
-      "enabled": true
+      "enabled": true,
+      "batchSize": 25,
+      "delivery": "attachment",
+      "reportSizeLimit": 5000000,
+      "attachmentsSizeLimit": 10000000,
+      "attachmentsCountLimit": 10,
+      "stuckTimeoutMinutes": 30
     },
     "documentGenerationV3": {
       "enabled": false

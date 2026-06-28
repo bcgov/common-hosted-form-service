@@ -35,6 +35,7 @@ class Form extends Timestamps(Model) {
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
     const FormMetadata = require('./formMetadata');
+    const FormSubmissionPackageSettings = require('./formSubmissionPackageSettings');
     return {
       drafts: {
         relation: Model.HasManyRelation,
@@ -83,6 +84,14 @@ class Form extends Timestamps(Model) {
         join: {
           from: 'form.id',
           to: 'form_metadata.formId',
+        },
+      },
+      submissionPackageSettings: {
+        relation: Model.HasOneRelation,
+        modelClass: FormSubmissionPackageSettings,
+        join: {
+          from: 'form.id',
+          to: 'form_submission_package_settings.formId',
         },
       },
     };
@@ -165,13 +174,8 @@ class Form extends Timestamps(Model) {
         showAssigneeInSubmissionsTable: { type: 'boolean' },
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         sendSubmissionReceivedEmail: { type: 'boolean' },
-        enableSubmissionPackageEmail: { type: 'boolean' },
-        submissionCompletionTemplateId: {
-          anyOf: [{ type: 'string', pattern: Regex.UUID }, { type: 'null' }],
-        },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
-        submissionPackageEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableDocumentTemplates: { type: 'boolean' },
         enableStatusUpdates: { type: 'boolean' },
         enableSubmitterRevision: { type: 'boolean' },

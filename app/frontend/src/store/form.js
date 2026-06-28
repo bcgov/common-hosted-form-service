@@ -69,6 +69,12 @@ const genInitialFormMetadata = () => ({
   formId: null,
   metadata: {},
 });
+
+const genInitialSubmissionPackageSettings = () => ({
+  enabled: false,
+  templateId: null,
+  emails: [],
+});
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -99,9 +105,7 @@ const genInitialForm = () => ({
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
-  enableSubmissionPackageEmail: false,
-  submissionCompletionTemplateId: null,
-  submissionPackageEmails: [],
+  submissionPackageSettings: genInitialSubmissionPackageSettings(),
 });
 
 export const useFormStore = defineStore('form', {
@@ -377,6 +381,10 @@ export const useFormStore = defineStore('form', {
         if (!data.formMetadata) {
           data.formMetadata = genInitialFormMetadata();
         }
+        if (!data.submissionPackageSettings) {
+          data.submissionPackageSettings =
+            genInitialSubmissionPackageSettings();
+        }
         // Event stream config and feature-flag resolution both only need formId
         // and are independent of each other, so run them concurrently. Both
         // handle their own errors (resolveForContext fails safe), so neither
@@ -533,10 +541,7 @@ export const useFormStore = defineStore('form', {
             : false,
           formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
-          submissionCompletionTemplateId:
-            this.form.submissionCompletionTemplateId,
-          enableSubmissionPackageEmail: this.form.enableSubmissionPackageEmail,
-          submissionPackageEmails: this.form.submissionPackageEmails,
+          submissionPackageSettings: this.form.submissionPackageSettings,
         });
 
         // update user labels with any new added labels
