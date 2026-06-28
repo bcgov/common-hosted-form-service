@@ -29,6 +29,21 @@ export default class Component extends (ParentComponent as any) {
 
     public static editForm = editForm;
 
+    // @formio/vue stores the Form.io instance in ref(), causing Vue's reactive Proxy to
+    // wrap CKEditor's internal Observable Proxy. CKEditor's Proxy marks _events as
+    // non-configurable; Vue's outer Proxy returns a reactive (different) object for it,
+    // violating the Proxy invariant and throwing a TypeError on edit and unmount.
+    // Overriding addCKE (called by the parent's attachElement) sets __v_skip = true
+    // before the editor is stored in this.editors[], so Vue never creates a cached
+    // reactive proxy for it. Using attachElement.then() is too late — Vue's scheduler
+    // can access editors[] between the two microtasks and cache a reactive proxy first.
+    addCKE(element: any, settings: any, onChange: any) {
+        return (super.addCKE as any)(element, settings, onChange).then((editor: any) => {
+            if (editor) editor.__v_skip = true;
+            return editor;
+        });
+    }
+
     static get builderInfo() {
         return {
             title: DISPLAY,
