@@ -53,7 +53,7 @@ const service = {
   },
 
   upsert: async (formId, data, currentUser, transaction) => {
-    const settings = data ? data : {};
+    const settings = data || {};
     service.validate(settings);
     const externalTrx = transaction != undefined;
     let trx;

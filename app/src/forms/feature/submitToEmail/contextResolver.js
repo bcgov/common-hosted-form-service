@@ -10,7 +10,7 @@ const orNullIfNotFound = async (promise) => {
   try {
     return await promise;
   } catch (error) {
-    if (error && error.name === 'NotFoundError') return null;
+    if (error?.name === 'NotFoundError') return null;
     throw error;
   }
 };
@@ -38,7 +38,7 @@ const service = {
 
     const settings = form ? form.submissionPackageSettings : null;
     const version = submission ? submission.version.version : null;
-    const template = settings && settings.templateId ? await orNullIfNotFound(documentTemplateService.documentTemplateRead(settings.templateId)) : null;
+    const template = settings?.templateId ? await orNullIfNotFound(documentTemplateService.documentTemplateRead(settings.templateId)) : null;
 
     return { submission, form, version, settings, allowed: submitToEmail.active, template };
   },

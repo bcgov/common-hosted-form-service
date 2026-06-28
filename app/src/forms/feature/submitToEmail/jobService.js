@@ -148,7 +148,7 @@ async function markFailed(job, error, logger) {
   // Permanent errors (missing form/submission/template, misconfiguration) cannot
   // be fixed by retrying, so fail immediately. Everything else is retried until
   // the attempt limit is reached.
-  const permanent = error && error.permanent === true;
+  const permanent = error?.permanent === true;
   const nextStatus = permanent || job.attempts >= config.getConfig().maxAttempts ? PackageJobStatuses.FAILED : PackageJobStatuses.QUEUED;
 
   logger.add(`${permanent ? 'Permanent failure' : 'Error'}: ${error.message}`);
