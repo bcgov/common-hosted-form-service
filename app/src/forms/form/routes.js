@@ -41,6 +41,10 @@ routes.put('/:formId/emailTemplate', hasFormPermissions([P.EMAIL_TEMPLATE_READ, 
   await controller.createOrUpdateEmailTemplate(req, res, next);
 });
 
+routes.post('/:formId/template/render', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.draftTemplateUploadAndRender(req, res, next);
+});
+
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
 });
