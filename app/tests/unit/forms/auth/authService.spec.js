@@ -74,6 +74,7 @@ describe('login', () => {
   it('uses canonicalCode for usernameIdp when IDP has extra.canonicalCode', async () => {
     idpService.parseToken = jest.fn().mockReturnValue({ idp: 'azureidir' });
     idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'azureidir', code: 'azureidir', extra: { canonicalCode: 'idir' } });
+    idpService.findByCode = jest.fn().mockReturnValue({ idp: 'idir', code: 'idir', extra: { sortOrder: 10 } });
     service.getUserId = jest.fn().mockReturnValue({ username: 'testuser', idpCode: 'azureidir' });
 
     const result = await service.login('token');

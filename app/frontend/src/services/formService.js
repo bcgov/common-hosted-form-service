@@ -216,6 +216,18 @@ export default {
   },
 
   /**
+   * @function readFormFields
+   * Get the schema-free version list plus the field keys for the current
+   * (published, else latest) version. Available to users with submission read,
+   * so reviewers can populate the submissions column picker.
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readFormFields(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/fields`);
+  },
+
+  /**
    * @function publishVersion
    * Publish or unpublish a specific form version. Publishing a verison will unpublish all others.
    * @param {string} formId The form uuid

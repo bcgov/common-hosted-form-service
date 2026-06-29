@@ -7,6 +7,7 @@ describe('Constants', () => {
       ADMIN: '/admin',
       APIKEY: '/apiKey',
       EXTERNAL_APIS: '/externalAPIs',
+      FEATURES: '/features',
       FILES: '/files',
       FORMS: '/forms',
       RBAC: '/rbac',
