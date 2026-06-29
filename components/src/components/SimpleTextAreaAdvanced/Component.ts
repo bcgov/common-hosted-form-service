@@ -52,7 +52,7 @@ export default class Component extends (ParentComponent as any) {
         try {
           const rawEditor = (editor as any).__v_raw ?? editor;
           rawEditor.destroy();
-        } catch (__error__) {
+        } catch (__error) {
           /* intentional */
         }
       }
