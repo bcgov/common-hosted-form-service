@@ -239,12 +239,26 @@ async function getFormData() {
           );
 
           if (next) {
-            fieldsArray.push(next);
+            if (Array.isArray(next)) {
+              fieldsArray.push(...next);
+            } else {
+              fieldsArray.push(next);
+            }
           }
         }
 
         if (fieldsArray.length > 0) {
           return fieldsArray;
+        }
+      } else if (typeof innerObject === 'object' && innerObject !== null) {
+        const result = iterate(
+          innerObject,
+          stack + '.' + property,
+          fields,
+          propNeeded
+        );
+        if (result) {
+          return result;
         }
       } else if (typeof innerObject === 'object') {
         return iterate(innerObject, stack + '.' + property, fields, propNeeded);
