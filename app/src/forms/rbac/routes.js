@@ -1,3 +1,4 @@
+const config = require('config');
 const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
@@ -5,6 +6,10 @@ const { currentUser, hasFormPermissions, hasFormRoles, hasRoleDeletePermissions,
 const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
 const controller = require('./controller');
+
+routes.get('/idps', async (req, res, next) => {
+  await controller.getIdentityProviders(req, res, next);
+});
 
 routes.use(currentUser);
 
@@ -18,10 +23,6 @@ routes.get('/current/forms', jwtService.protect(), async (req, res, next) => {
 
 routes.get('/current/submissions', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUserSubmissions(req, res, next);
-});
-
-routes.get('/idps', async (req, res, next) => {
-  await controller.getIdentityProviders(req, res, next);
 });
 
 routes.get('/forms', hasFormPermissions([P.TEAM_READ]), async (req, res, next) => {
@@ -54,6 +55,29 @@ routes.delete('/users', hasFormPermissions([P.TEAM_UPDATE]), hasFormRoles([R.OWN
 
 routes.get('/form/user', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.isUserPartOfFormTeams(req, res, next);
+});
+
+const requireTenantFeature = (_req, res, next) => {
+  if (!config.get('cstar.tenantFeatureEnabled')) {
+    return res.status(404).json({ detail: 'Tenant features are not enabled.' });
+  }
+  next();
+};
+
+routes.get('/current/tenants', requireTenantFeature, jwtService.protect(), async (req, res, next) => {
+  await controller.getCurrentUserTenants(req, res, next);
+});
+
+routes.get('/current/groups', requireTenantFeature, jwtService.protect(), async (req, res, next) => {
+  await controller.getGroupsForCurrentTenant(req, res, next);
+});
+
+routes.put('/forms/:formId/groups', requireTenantFeature, jwtService.protect(), async (req, res, next) => {
+  await controller.assignGroupsToForm(req, res, next);
+});
+
+routes.get('/forms/:formId/groups', requireTenantFeature, jwtService.protect(), async (req, res, next) => {
+  await controller.getFormGroups(req, res, next);
 });
 
 module.exports = routes;

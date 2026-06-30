@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { IdentityMode } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -24,7 +25,12 @@ const loginRequiredRules = ref([
 
 const idpType = ref([]);
 const IdpTypeList = computed(() => {
-  const items = [
+  const tenantStore = useTenantStore();
+  const isEnterprise = !!tenantStore.selectedTenant;
+
+  // if we want it sorted...
+  // return items.sort((a, b) => a.text.localeCompare(b.text));
+  return [
     {
       id: ID_MODE.value.PUBLIC,
       text: t('trans.formSettings.public'),
@@ -35,19 +41,19 @@ const IdpTypeList = computed(() => {
     },
     {
       id: ID_MODE.value.TEAM,
-      text: t('trans.formSettings.specificTeamMembers'),
+      // Enterprise CHEFS: group-based access via CSTAR
+      text: isEnterprise
+        ? t('trans.formSettings.specificGroups')
+        : t('trans.formSettings.specificTeamMembers'),
     },
   ];
-  // if we want it sorted...
-  // return items.sort((a, b) => a.text.localeCompare(b.text));
-  return items;
 });
 const userTypeRef = ref(null); // use this to trigger validation on the v-autocomplete
 
 const idpStore = useIdpStore();
 
 const { form, isRTL } = storeToRefs(useFormStore());
-const { loginButtons } = storeToRefs(idpStore);
+const { formAccessButtons } = storeToRefs(idpStore);
 
 const ID_MODE = computed(() => IdentityMode);
 
@@ -125,7 +131,11 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
           </h4>
           <p class="mt-2 mb-0" :lang="locale">
             {{ $t('trans.formSettings.info') }}
-            <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
+            <a
+              href="https://engage.gov.bc.ca/govtogetherbc/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               govTogetherBC.
               <v-icon size="small" color="primary" icon="mdi:mdi-open-in-new" />
             </a>
@@ -136,7 +146,7 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
         <div v-if="form.userType === ID_MODE.LOGIN" class="pl-6">
           <div>
             <v-checkbox
-              v-for="btn in loginButtons"
+              v-for="btn in formAccessButtons"
               :key="btn.code"
               v-model="idpType"
               :label="btn.display"
@@ -187,8 +197,14 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
           :class="{ 'dir-rtl': isRTL }"
         >
           <p class="mt-2 mb-0" :lang="locale">
-            {{ $t('trans.formSettings.teamMemberTooltip')
-            }}<v-icon icon="mdi:mdi-account-multiple" />
+            <template v-if="useTenantStore().selectedTenant">
+              {{ $t('trans.formSettings.groupAccessTooltip')
+              }}<v-icon icon="mdi:mdi-account-group" />
+            </template>
+            <template v-else>
+              {{ $t('trans.formSettings.teamMemberTooltip')
+              }}<v-icon icon="mdi:mdi-account-multiple" />
+            </template>
           </p>
         </BaseInfoCard>
       </v-expand-transition>

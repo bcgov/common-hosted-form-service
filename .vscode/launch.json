@@ -25,7 +25,7 @@
       "name": "CHEFS API",
       "outputCapture": "std",
       "request": "launch",
-      "runtimeArgs": ["run", "serve"],
+      "runtimeArgs": ["run", "serve", "--trace-warnings"],
       "runtimeExecutable": "npm",
       "type": "node",
       "env": {
@@ -35,7 +35,7 @@
     {
       "cwd": "${workspaceFolder}/app/frontend",
       "env": {
-        "VITE_CHEFS_GEO_ADDRESS_APIURL": "http://localhost:8080/app/api/v1/bcgeoaddress/advance/address",
+        "VITE_CHEFS_GEO_ADDRESS_APIURL": "../api/v1/bcgeoaddress/advance/address",
         "VITE_CHEFSTOURURL": "https://www.youtube.com/embed/obOhyYusMjM",
         "VITE_CONTACT": "submit.digital@gov.bc.ca",
         "VITE_FRONTEND_BASEPATH": "/app",
@@ -71,6 +71,23 @@
         "--config",
         "${workspaceFolder}/app/jest.config.js",
         "--coverage=true"
+      ],
+      "console": "integratedTerminal",
+      "windows": {
+        "program": "${workspaceFolder}/app/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest: current file (no coverage)",
+      "env": { "NODE_ENV": "test" },
+      "program": "${workspaceFolder}/app/node_modules/.bin/jest",
+      "args": [
+        "${file}",
+        "--config",
+        "${workspaceFolder}/app/jest.config.js",
+        "--coverage=false"
       ],
       "console": "integratedTerminal",
       "windows": {

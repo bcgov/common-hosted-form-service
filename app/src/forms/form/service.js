@@ -1,11 +1,11 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const uuid = require('uuid');
-const { EmailTypes, ScheduleType } = require('../common/constants');
+const { EmailTypes, ScheduleType, TenantRoles } = require('../common/constants');
 const eventService = require('../event/eventService');
+const authService = require('../auth/service');
 const moment = require('moment');
 const {
-  DocumentTemplate,
   FileStorage,
   Form,
   FormApiKey,
@@ -22,13 +22,17 @@ const {
   SubmissionMetadata,
   FormComponentsProactiveHelp,
   FormSubscription,
+  FormTenant,
+  FormGroup,
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
-const { checkIsFormExpired, isDateValid, isDateInFuture } = require('../common/scheduleService');
+const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
+const tenantService = require('../../components/tenantService');
+const log = require('../../components/log')(module.filename);
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -92,12 +96,12 @@ function validateScheduleObject(schedule = {}) {
  * @returns {Boolean} True if late submission config is valid
  */
 function isLateSubmissionConfigValid(schedule) {
-  const lateSubmissionsEnabled = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
+  const lateSubmissionsEnabled = schedule?.allowLateSubmissions?.enabled;
 
   if (lateSubmissionsEnabled) {
-    const hasValidTerm = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
+    const hasValidTerm = schedule?.allowLateSubmissions?.forNext?.term;
 
-    const hasValidInterval = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
+    const hasValidInterval = schedule?.allowLateSubmissions?.forNext?.intervalType;
 
     if (!hasValidTerm || !hasValidInterval) {
       return false;
@@ -119,6 +123,40 @@ function isClosingMessageValid(schedule) {
   return true;
 }
 
+async function ensureTenantFormSetup(currentUser, headers, trx, formId) {
+  if (!currentUser.tenantId) {
+    return;
+  }
+
+  if (!headers) {
+    throw new Problem(500, 'Request headers required for tenant form creation');
+  }
+
+  const formTenant = {
+    id: uuid.v4(),
+    formId,
+    tenantId: currentUser.tenantId,
+    createdBy: currentUser.usernameIdp,
+  };
+  await FormTenant.query(trx).insert(formTenant);
+
+  const reqContext = { currentUser, headers };
+  const groups = await tenantService.getUserTenantGroupsAndRoles(reqContext, currentUser.tenantId);
+  const adminGroups = groups.filter((group) => Array.isArray(group.roles) && group.roles.includes(TenantRoles.FORM_ADMIN));
+
+  if (adminGroups.length === 0) {
+    throw new Problem(403, 'User does not belong to any group with form_admin role');
+  }
+
+  const formGroups = adminGroups.map((group) => ({
+    id: uuid.v4(),
+    formId,
+    groupId: group.id,
+    createdBy: currentUser.usernameIdp,
+  }));
+  await FormGroup.query(trx).insert(formGroups);
+}
+
 const service = {
   /**
    * Validates reminder settings against schedule configuration
@@ -134,7 +172,7 @@ const service = {
     }
 
     // Check if schedule exists and is properly configured
-    if (!data.schedule || !data.schedule.enabled || !data.schedule.scheduleType || data.schedule.scheduleType === ScheduleType.MANUAL) {
+    if (!data.schedule?.enabled || !data.schedule?.scheduleType || data.schedule?.scheduleType === ScheduleType.MANUAL) {
       return false;
     }
 
@@ -185,7 +223,7 @@ const service = {
         });
       } else if (typeof currentData === 'object' && currentData !== null) {
         Object.keys(currentData).forEach((key) => {
-          if (key === 'data' && currentData[key] && currentData[key].id) {
+          if (key === 'data' && currentData[key]?.id) {
             // Add the file ID if it exists
             fileIds.push(currentData[key].id);
           } else {
@@ -211,7 +249,7 @@ const service = {
       .modify('orderNameAscending');
   },
 
-  createForm: async (data, currentUser) => {
+  createForm: async (data, currentUser, headers = null) => {
     let trx;
     const scheduleData = service.validateScheduleObject(data.schedule);
     if (scheduleData.status !== 'success') {
@@ -232,6 +270,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterRevision = data.enableSubmitterRevision;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
+      obj.enableTeamMemberDraftShare = data.enableTeamMemberDraftShare;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
       obj.schedule = data.schedule;
@@ -246,6 +285,7 @@ const service = {
       obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
 
       await Form.query(trx).insert(obj);
+
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
         const fips = [];
         for (const p of data.identityProviders) {
@@ -257,11 +297,14 @@ const service = {
         }
         await FormIdentityProvider.query(trx).insert(fips);
       }
+
       // make this user have ALL the roles...
-      const userRoles = Rolenames.map((r) => {
-        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
-      });
-      await FormRoleUser.query(trx).insert(userRoles);
+      if (!currentUser.tenantId) {
+        const userRoles = Rolenames.map((r) => {
+          return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
+        });
+        await FormRoleUser.query(trx).insert(userRoles);
+      }
 
       // create a unpublished draft
       const draft = {
@@ -283,6 +326,8 @@ const service = {
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+
+      await ensureTenantFormSetup(currentUser, headers, trx, obj.id);
 
       await trx.commit();
       const result = await service.readForm(obj.id);
@@ -346,7 +391,7 @@ const service = {
         code: p.code,
         createdBy: currentUser.usernameIdp,
       }));
-      if (fIdps && fIdps.length) await FormIdentityProvider.query(trx).insert(fIdps);
+      if (fIdps?.length) await FormIdentityProvider.query(trx).insert(fIdps);
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
@@ -380,16 +425,34 @@ const service = {
     }
   },
 
-  readForm: (formId, params = {}) => {
+  readForm: async (formId, params = {}, currentUser = null, headers = null) => {
     params = queryUtils.defaultActiveOnly(params);
-    return Form.query()
+
+    let hasPermissionsForVersions = true;
+    // Making an assumption that user is turned away before this if it's protected and they're not logged in
+    if (currentUser !== null && currentUser !== undefined) {
+      const forms = await authService.getUserForms(
+        currentUser,
+        {
+          ...params,
+          active: true,
+          formId: formId,
+        },
+        headers
+      );
+      hasPermissionsForVersions = forms.some((f) => f.permissions.includes(Permissions.DESIGN_CREATE));
+    }
+
+    const query = Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
       .allowGraph('[formMetadata,identityProviders,versions]')
       .withGraphFetched('formMetadata')
-      .withGraphFetched('identityProviders(orderDefault)')
-      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
-      .throwIfNotFound();
+      .withGraphFetched('identityProviders(orderDefault)');
+    if (hasPermissionsForVersions) {
+      query.withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)');
+    }
+    return query.throwIfNotFound();
   },
 
   readFormOptions: (formId, params = {}) => {
@@ -401,8 +464,13 @@ const service = {
       .allowGraph('[idpHints]')
       .withGraphFetched('idpHints')
       .throwIfNotFound()
-      .then((form) => {
-        form.idpHints = form.idpHints.map((idp) => idp.idp);
+      .then(async (form) => {
+        const hints = form.idpHints.map((idp) => idp.idp);
+        // Include IDPs that are canonical aliases of the form's configured IDPs.
+        // e.g. if a form allows 'idir', azureidir users (canonicalCode: 'idir') can also log in.
+        const aliases = await IdentityProvider.query().whereRaw("extra->>'canonicalCode' = ANY(?::text[])", [hints]).where('active', true).select('idp');
+        const aliasHints = aliases.map((a) => a.idp).filter((idp) => !hints.includes(idp));
+        form.idpHints = [...hints, ...aliasHints];
         return form;
       });
   },
@@ -425,89 +493,6 @@ const service = {
       });
   },
 
-  /**
-   * Creates a document template that can be used to generate a document from
-   * a form's submission data.
-   *
-   * @param {uuid} formId the identifier for the form.
-   * @param {object} data the data for the document template.
-   * @param {string} currentUsername the currently logged in user's username.
-   * @returns the created object.
-   */
-  documentTemplateCreate: async (formId, data, currentUsername) => {
-    let trx;
-
-    try {
-      const documentTemplate = {
-        id: uuid.v4(),
-        formId: formId,
-        filename: data.filename,
-        template: data.template,
-        createdBy: currentUsername,
-      };
-
-      trx = await DocumentTemplate.startTransaction();
-      await DocumentTemplate.query(trx).insert(documentTemplate);
-      await trx.commit();
-
-      const result = await service.documentTemplateRead(documentTemplate.id);
-
-      return result;
-    } catch (error) {
-      if (trx) {
-        await trx.rollback();
-      }
-
-      throw error;
-    }
-  },
-
-  /**
-   * Deletes an active document template given its ID.
-   *
-   * @param {uuid} documentTemplateId the id of the document template.
-   * @param {string} currentUsername the currently logged in user's username.
-   * @throws an Error if the document template does not exist.
-   */
-  documentTemplateDelete: async (documentTemplateId, currentUsername) => {
-    let trx;
-    try {
-      trx = await DocumentTemplate.startTransaction();
-      await DocumentTemplate.query(trx).patchAndFetchById(documentTemplateId, {
-        active: false,
-        updatedBy: currentUsername,
-      });
-      await trx.commit();
-    } catch (error) {
-      if (trx) {
-        await trx.rollback();
-      }
-
-      throw error;
-    }
-  },
-
-  /**
-   * Gets the active document templates for a form.
-   *
-   * @param {uuid} formId the identifier for the form.
-   * @returns a Promise for the document templates belonging to a form.
-   */
-  documentTemplateList: (formId) => {
-    return DocumentTemplate.query().modify('filterFormId', formId).modify('filterActive', true);
-  },
-
-  /**
-   * Reads an active document template given its ID.
-   *
-   * @param {uuid} documentTemplateId the id of the document template.
-   * @returns a Promise for the document template.
-   * @throws an Error if the document template does not exist.
-   */
-  documentTemplateRead: (documentTemplateId) => {
-    return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
-  },
-
   _initFormSubmissionsListQuery: (formId, params, currentUser, shouldIncludeAssignee = false) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
@@ -522,7 +507,7 @@ const service = {
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
     // Only apply assigned user filter if both conditions are true
-    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser?.id) {
       query.where('formSubmissionAssignedToUserId', currentUser.id);
     }
 
@@ -544,7 +529,7 @@ const service = {
       selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
     }
 
-    if (params.fields && params.fields.length) {
+    if (params.fields?.length) {
       fields = Array.isArray(params.fields) ? params.fields.flatMap((f) => f.split(',').map((s) => s.trim())) : params.fields.split(',').map((s) => s.trim());
       if (fields.includes('updatedAt')) selection.push('updatedAt');
       if (fields.includes('updatedBy')) selection.push('updatedBy');
@@ -570,6 +555,8 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params, currentUser) => {
+    log.info('listFormSubmissions service start', { formId, paginationEnabled: params.paginationEnabled });
+
     // First, get form settings to check if assignee data should be included
     const form = await service.readForm(formId);
 
@@ -585,54 +572,177 @@ const service = {
     );
 
     if (params.paginationEnabled) {
-      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
+      const result = await service.processPaginationData(query, Number.parseInt(params.page), Number.parseInt(params.itemsPerPage), params.search, params.searchEnabled);
+      log.info('listFormSubmissions service complete (pagination path)', {
+        formId,
+        resultCount: Array.isArray(result) ? result.length : result?.results?.length ?? 0,
+      });
+      return result;
     }
 
+    log.info('listFormSubmissions service complete (non-pagination path)', { formId });
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
-    const isSearchEnabled = (x) => (x !== undefined ? JSON.parse(x) : false);
+  async processPaginationData(query, page, itemsPerPage, search, searchEnabled) {
+    const isSearchEnabled = (x) => (x === undefined ? false : JSON.parse(x));
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
-    if (isSearchAble) {
-      let submissionsData = await query;
-      let result = {
-        results: [],
-        total: 0,
-      };
 
-      const isDateLike = (x, s) =>
-        !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
-      const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
-      const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
-
-      let searchedData = submissionsData.filter((data) => {
-        return Object.keys(data).some((key) => {
-          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
-            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
-              if (isDateLike(data[key], search) || isStringLike(data[key], search) || isNumberLike(data[key], search)) {
-                result.total = result.total + 1;
-                return true;
-              }
-              return false;
-            }
-            return false;
-          }
-          return false;
-        });
+    if (isSearchAble && search) {
+      log.info('processPaginationData: using search path', { page, itemsPerPage });
+      const submissionsData = await query;
+      const result = this.searchSubmissions(submissionsData, search, page, itemsPerPage);
+      log.info('processPaginationData: search complete', {
+        inputRows: submissionsData?.length ?? 0,
+        resultCount: result?.results?.length ?? 0,
+        total: result?.total ?? 0,
       });
-      if (itemsPerPage !== -1) {
-        let start = page * itemsPerPage;
-        let end = page * itemsPerPage + itemsPerPage;
-        result.results = searchedData.slice(start, end);
-      } else {
-        result.results = searchedData;
-      }
       return result;
-    } else if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
-    return await query;
+
+    if (itemsPerPage && Number.parseInt(itemsPerPage) >= 0 && Number.parseInt(page) >= 0) {
+      log.info('processPaginationData: using page path', { page, itemsPerPage });
+      const result = await query.page(Number.parseInt(page), Number.parseInt(itemsPerPage));
+      log.info('processPaginationData: page complete', {
+        resultCount: result?.results?.length ?? 0,
+        total: result?.total ?? 0,
+      });
+      return result;
+    }
+
+    log.info('processPaginationData: using full fetch path (itemsPerPage invalid or -1)', {
+      page,
+      itemsPerPage,
+      itemsPerPageParsed: Number.parseInt(itemsPerPage),
+    });
+    const result = await query;
+    log.info('processPaginationData: full fetch complete', {
+      resultCount: Array.isArray(result) ? result.length : 0,
+    });
+    return result;
+  },
+
+  searchSubmissions(submissionsData, search, page, itemsPerPage) {
+    const result = {
+      results: [],
+      total: 0,
+    };
+
+    const term = search.value || search;
+    const searchFields = search.fields || [];
+
+    const ignoredFields = new Set(['submissionId', 'formVersionId', 'formId']);
+
+    const isDateLike = (x, s) =>
+      !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
+
+    const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
+
+    const isNumberLike = (x, s) =>
+      (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && Number.parseFloat(x) === Number.parseFloat(s);
+
+    const isBoolLike = (x, s) => {
+      // Only bother if the data value itself is a boolean
+      if (!typeUtils.isBoolean(x)) return false;
+
+      // If the search term is already a boolean
+      if (typeUtils.isBoolean(s)) {
+        return x === s;
+      }
+
+      // If the search term is a string, normalize and match "true"/"false"
+      if (typeUtils.isString(s)) {
+        const normalized = s.trim().toLowerCase();
+        if (normalized === 'true') return x === true;
+        if (normalized === 'false') return x === false;
+      }
+
+      return false;
+    };
+
+    function deepSearch(data, term) {
+      if (data === null || data === undefined) return false;
+
+      const normalized = String(term).toLowerCase();
+
+      // Primitive
+      if (typeof data !== 'object') {
+        const match = isDateLike(data, term) || isStringLike(data, term) || isNumberLike(data, term) || isBoolLike(data, term);
+        return match;
+      }
+
+      // Array
+      if (Array.isArray(data)) {
+        return data.some((item) => deepSearch(item, term));
+      }
+
+      // Object
+      for (const [key, value] of Object.entries(data)) {
+        // Key matches AND value is truthy → true
+
+        if (key.toLowerCase() === normalized && Boolean(value)) {
+          return true;
+        }
+
+        // Primitive value check
+
+        if (
+          typeof value !== 'object' &&
+          value !== null &&
+          value !== undefined &&
+          (isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term) || isBoolLike(value, term))
+        ) {
+          return true;
+        }
+
+        // Nested object/array
+        if (typeof value === 'object') {
+          if (deepSearch(value, term)) return true;
+        }
+      }
+
+      return false;
+    }
+
+    const searchedData = submissionsData.filter((row) => {
+      const hasSelectedFields = Array.isArray(searchFields) && searchFields.length > 0;
+      const fieldsToSearch = hasSelectedFields ? searchFields : Object.keys(row);
+
+      const matched = fieldsToSearch.some((field) => {
+        if (ignoredFields.has(field)) return false;
+
+        const value = row[field];
+
+        // If no fields are selected → simple / shallow search only on primitives
+        if (!hasSelectedFields) {
+          if (value === null || value === undefined) return false;
+          if (typeof value === 'object') return false; // skip objects/arrays in simple mode
+
+          const primitiveMatch = isDateLike(value, term) || isStringLike(value, term) || isNumberLike(value, term) || isBoolLike(value, term);
+
+          return primitiveMatch;
+        }
+
+        // If fields ARE selected → deep search into that field
+        return deepSearch(value, term);
+      });
+
+      if (matched) result.total += 1;
+      return matched;
+    });
+
+    // ---------------------------------------------------------
+    // Pagination
+    // ---------------------------------------------------------
+    if (itemsPerPage === -1) {
+      result.results = searchedData;
+    } else {
+      const start = page * itemsPerPage;
+      const end = start + itemsPerPage;
+      result.results = searchedData.slice(start, end);
+    }
+
+    return result;
   },
 
   publishVersion: async (formId, formVersionId, currentUser, params = {}) => {
@@ -702,6 +812,30 @@ const service = {
     const { schema } = await service.readVersion(formVersionId);
     return schema.components.flatMap((c) => findFields(c));
   },
+
+  // Returns the schema-free version list for a form plus the field keys for the
+  // "current" version (the published one, falling back to the latest version if
+  // none are published). This lets users who can read submissions but not the
+  // form design (e.g. Reviewers) populate the submissions column picker without
+  // exposing version schemas through readForm.
+  readFormFields: async (formId) => {
+    const versions = await FormVersion.query().modify('filterFormId', formId).modify('selectWithoutSchema').modify('orderVersionDescending');
+
+    if (!versions.length) {
+      return { versionId: null, published: false, versions: [], fields: [] };
+    }
+
+    const publishedVersion = versions.find((v) => v.published);
+    const targetVersion = publishedVersion ?? versions[0];
+    const fields = await service.readVersionFields(targetVersion.id);
+
+    return {
+      versionId: targetVersion.id,
+      published: !!publishedVersion,
+      versions,
+      fields,
+    };
+  },
   listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query().where('formVersionId', formVersionId).modify('filterCreatedBy', params.createdBy).modify('orderDescending');
   },
@@ -710,7 +844,11 @@ const service = {
     let result;
     try {
       const formVersion = await service.readVersion(formVersionId);
-      const { identityProviders } = await service.readForm(formVersion.formId);
+      const form = await service.readForm(formVersion.formId);
+      const { identityProviders } = form;
+
+      // Validate schedule before allowing submission
+      validateSubmissionSchedule(form.schedule);
 
       trx = await FormSubmission.startTransaction();
 
@@ -808,12 +946,10 @@ const service = {
         const submissionDataArray = data.submission.data;
         const recordWithoutData = data;
         delete recordWithoutData.submission.data;
-        let recordsToInsert = [];
-        let submissionId;
         // let's create multiple submissions with same metadata
-        service.popFormLevelInfo(submissionDataArray).map((singleData) => {
-          submissionId = uuid.v4();
-          recordsToInsert.push({
+        const recordsToInsert = service.popFormLevelInfo(submissionDataArray).map((singleData) => {
+          const submissionId = uuid.v4();
+          return {
             ...recordWithoutData,
             id: submissionId,
             formVersionId: formVersion.id,
@@ -823,7 +959,7 @@ const service = {
               ...recordWithoutData.submission,
               data: singleData,
             },
-          });
+          };
         });
         const result = await FormSubmission.query(trx).insert(recordsToInsert);
         const perms = [Permissions.SUBMISSION_CREATE, Permissions.SUBMISSION_READ];
@@ -1052,7 +1188,7 @@ const service = {
     let result = [];
     result = await FormComponentsProactiveHelp.query().modify('findByComponentId', componentId);
     let item = result.length > 0 ? result[0] : null;
-    let imageUrl = item !== null ? 'data:' + item.imageType + ';' + 'base64' + ',' + item.image : '';
+    let imageUrl = item === null ? '' : 'data:' + item.imageType + ';' + 'base64' + ',' + item.image;
     return { url: imageUrl };
   },
 
@@ -1181,7 +1317,7 @@ const service = {
   // Get all the email templates for a form
   readEmailTemplates: async (formId) => {
     const hasEmailTemplate = (emailTemplates, type) => {
-      return emailTemplates.find((t) => t.type === type) !== undefined;
+      return emailTemplates.some((t) => t.type === type);
     };
 
     let result = await FormEmailTemplate.query().modify('filterFormId', formId);

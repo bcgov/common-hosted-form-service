@@ -28,11 +28,14 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         formsettings();
         
+    });
+    it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get('button').contains('Basic Fields').click();   
     }); 
     it('Form Submission and Updation', () => {
     cy.viewport(1000, 1800);
     cy.waitForLoad();
-    cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
@@ -210,7 +213,7 @@ describe('Form Designer', () => {
         cy.wait(2000);
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
-        cy.get('#logoutButton > .v-btn__content > span').click();
+        cy.get('.mdi-logout').click();
         
         });
           

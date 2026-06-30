@@ -16,36 +16,37 @@ describe("Form Designer", () => {
       console.log(err);
       return false;
     });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
   });
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
+    cy.checkA11yPage();
   });
-  it("Add some fields for submission", () => {
-    cy.viewport(1000, 1800);
-    cy.waitForLoad();
-    cy.get("button").contains("Basic Fields").click();
-    cy.get("div.formio-builder-form").then(($el) => {
+  it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Basic Fields').click();
+  });
+  // Publish a simple form 
+  it('Verify draft submission', () => {
+    cy.viewport(1000, 1100);
+    cy.wait(2000);
+    cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
+      .trigger('mousemove', coords.x, -150, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
     });
-    //Multiline Text
-    cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -110, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('.btn-success').click();
-    });
-    // Form saving
   });
   it("Form Submission and Updation", () => {
     cy.viewport(1000, 1100);
@@ -67,6 +68,11 @@ describe("Form Designer", () => {
       cy.get("span").contains("Publish Version 1");
       cy.contains("Continue").should("be.visible");
       cy.contains("Continue").trigger("click");
+      //Share link verification
+      cy.get('[data-cy=shareFormButton]').should('be.visible');
+      cy.get('[data-cy=shareFormButton]').click();
+      //Close  form share window
+      cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
       //Submit the form
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
       cy.wait(2000);
@@ -91,15 +97,11 @@ describe("Form Designer", () => {
         .find('input[type="text"]')
         .should("have.value", "chefs.testing@gov.bc.ca");
       cy.wait(1000);
-      cy.get(
-        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
-      ).click();
+      cy.contains('Normal').click();
       cy.contains("Normal").should("exist");
       cy.contains("High").should("exist");
       cy.contains("Low").should("exist");
-      cy.get(
-        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
-      ).click();
+      cy.contains('Normal').click();
       cy.get("span").contains("SEND").should("be.visible");
       cy.get('[data-test="continue-btn-cancel"]').click();
       cy.get('button[title="Email a receipt of this submission"]').click();
@@ -222,7 +224,7 @@ describe("Form Designer", () => {
       cy.waitForLoad();
       cy.get(".mdi-delete").click();
       cy.get('[data-test="continue-btn-continue"]').click();
-      cy.get("#logoutButton > .v-btn__content > span").click();
+      cy.get('.mdi-logout').click();
     });
   });
 });

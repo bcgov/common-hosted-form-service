@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 import { useIdpStore } from '~/store/identityProviders';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
@@ -19,9 +20,11 @@ const sortBy = ref([{ key: 'name', order: 'asc' }]);
 
 const formStore = useFormStore();
 const idpStore = useIdpStore();
+const tenantStore = useTenantStore();
 
 const { formList, isRTL } = storeToRefs(formStore);
 const { user } = storeToRefs(useAuthStore());
+const { selectedTenant, isFormAdmin } = storeToRefs(tenantStore);
 
 const headers = computed(() => [
   {
@@ -40,8 +43,17 @@ const headers = computed(() => [
   },
 ]);
 
-const canCreateForm = computed(() =>
-  idpStore.isPrimary(user?.value?.idp?.code)
+const canCreateForm = computed(() => {
+  if (selectedTenant.value) {
+    return isFormAdmin.value;
+  }
+  return idpStore.isPrimary(user?.value?.idp?.code);
+});
+
+const pageTitle = computed(() =>
+  selectedTenant.value
+    ? t('trans.formsTable.groupForms')
+    : t('trans.formsTable.myForms')
 );
 
 const filteredFormList = computed(() =>
@@ -76,7 +88,7 @@ defineExpose({
     >
       <!-- page title -->
       <div>
-        <h1 :lang="locale">{{ $t('trans.formsTable.myForms') }}</h1>
+        <h1 :lang="locale">{{ pageTitle }}</h1>
       </div>
       <!-- buttons -->
       <div v-if="canCreateForm">
@@ -147,6 +159,7 @@ defineExpose({
           query: { f: item.id },
         }"
         target="_blank"
+        rel="noopener noreferrer"
       >
         <v-tooltip location="bottom">
           <template #activator="{ props }">

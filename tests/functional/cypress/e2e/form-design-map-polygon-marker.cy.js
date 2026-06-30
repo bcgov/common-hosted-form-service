@@ -20,12 +20,17 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
+    cy.checkA11yPage();
+  });
+  it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('BC Government').click();
   });  
 // Checks Map component functionalities
   it('Checks Map component for Polygon marker', () => {
       cy.viewport(1000, 1100);
-      cy.waitForLoad();
-      cy.get('button').contains('BC Government').click();
       cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="map"]')
@@ -283,7 +288,7 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
-      cy.get('#logoutButton > .v-btn__content > span').click();
+      cy.get('.mdi-logout').click();
    
       });
   });

@@ -3,6 +3,10 @@
 # Project - Zed Attack Proxy) Scan against a deployed application.
 #
 name: OWASP ZAP Scan
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   workflow_call:
     inputs:
@@ -17,7 +21,7 @@ jobs:
 
     steps:
       - name: Run Scan
-        uses: zaproxy/action-full-scan@v0.12.0
+        uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c
         with:
           # Do not create GitHub Issues
           allow_issue_writing: false

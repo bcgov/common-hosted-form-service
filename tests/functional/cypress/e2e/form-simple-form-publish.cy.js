@@ -10,21 +10,32 @@ Cypress.Commands.add("waitForLoad", () => {
 });
 
 describe("Form Designer", () => {
-  cy.on("uncaught:exception", (err, runnable) => {
-    // Form.io throws an uncaught exception for missing projectid
-    // Cypress catches it as undefined: undefined so we can't get the text
-    console.log(err);
-    return false;
+  beforeEach(()=>{
+      cy.on('uncaught:exception', (err, runnable) => {
+        // Form.io throws an uncaught exception for missing projectid
+        // Cypress catches it as undefined: undefined so we can't get the text
+        console.log(err);
+        return false;
+      });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+    win.sessionStorage.clear();
+    });
   });
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
+    cy.checkA11yPage();
+  });
+  it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get("button").contains("Advanced Data").click();  
+        
   });
   it("Checks Hidden component", () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
-    cy.get("button").contains("Advanced Data").click();
     cy.wait(2000);
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
@@ -251,8 +262,6 @@ it('Checks the Button', () => {
     cy.get('[value="dashboard"] > .v-btn__content').should("exist");
     cy.wait(2000);
     //Logout after test run
-    cy.get("#logoutButton > .v-btn__content > span")
-      .should("be.visible")
-      .click();
+            cy.get('.mdi-logout').click();
   });
 });

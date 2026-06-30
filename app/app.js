@@ -1,15 +1,19 @@
 const compression = require('compression');
 const config = require('config');
 const express = require('express');
-const path = require('path');
+const path = require('node:path');
 const Problem = require('api-problem');
-const querystring = require('querystring');
+const querystring = require('node:querystring');
+const qs = require('qs');
+const clsRtracer = require('cls-rtracer');
 
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
 const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
+const webcomponentRouter = require('./src/webcomponents');
+const gatewayRouter = require('./src/gateway');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
@@ -25,6 +29,10 @@ const apiRouter = express.Router();
 
 let probeId;
 const app = express();
+
+// Configure query parser to use qs for nested query parameters
+app.set('query parser', qs.parse);
+
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +44,11 @@ app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', 1);
 
 app.set('x-powered-by', false);
+
+// Add correlation ID middleware early in the chain
+// useHeader: true - Use existing X-Request-ID header if present, otherwise generate one
+// echoHeader: true - Add the request ID to response headers
+app.use(clsRtracer.expressMiddleware({ enableRequestId: true, useHeader: true, echoHeader: true }));
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
@@ -54,12 +67,12 @@ app.use((req, res, next) => {
     return next();
   }
   const status = statusService.getStatus();
-  if (status.stopped) {
-    new Problem(503, { details: { message: 'Server is shutting down', ...status } }).send(res);
-  } else if (!status.ready) {
-    new Problem(503, { details: { message: 'Server is not ready', ...status } }).send(res);
-  } else {
+  if (status.ready) {
     next();
+  } else if (status.stopped) {
+    new Problem(503, { details: { message: 'Server is shutting down', ...status } }).send(res);
+  } else {
+    new Problem(503, { details: { message: 'Server is not ready', ...status } }).send(res);
   }
 });
 
@@ -80,6 +93,10 @@ apiRouter.get('/config', (_req, res, next) => {
         ...ess,
       };
     }
+    // Slim feature-flag catalog (codes + global enabled only; no allowlists).
+    if (config.has('features')) {
+      feConfig['features'] = config.get('features');
+    }
     res.status(200).json(feConfig);
   } catch (err) {
     next(err);
@@ -99,6 +116,13 @@ apiRouter.get('/api', (_req, res) => {
 // Host API endpoints
 apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
+
+// Host web component endpoints (separate from API) and apply rate limiting
+app.use(`${config.get('server.basePath')}/webcomponents`, rateLimiter, webcomponentRouter);
+
+// Host gateway endpoints (separate from API) and apply rate limiting
+app.use(`${config.get('server.basePath')}/gateway`, rateLimiter, gatewayRouter);
+
 app.use(middleware.errorHandler);
 
 // Host the static frontend assets

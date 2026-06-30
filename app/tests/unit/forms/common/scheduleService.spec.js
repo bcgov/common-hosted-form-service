@@ -445,4 +445,199 @@ describe('ScheduleService', () => {
       expect(scheduleService.calculateMiddleDate('2023-06-15', null, 'UTC')).toBeNull();
     });
   });
+
+  describe('validateSubmissionSchedule', () => {
+    it('should not throw when schedule is not enabled', () => {
+      expect(() => {
+        scheduleService.validateSubmissionSchedule({ enabled: false });
+      }).not.toThrow();
+    });
+
+    it('should not throw when schedule is null or undefined', () => {
+      expect(() => {
+        scheduleService.validateSubmissionSchedule(null);
+      }).not.toThrow();
+      expect(() => {
+        scheduleService.validateSubmissionSchedule(undefined);
+      }).not.toThrow();
+      expect(() => {
+        scheduleService.validateSubmissionSchedule({});
+      }).not.toThrow();
+    });
+
+    it('should throw Problem 403 when schedule is expired and late submissions not allowed', () => {
+      const realNow = moment.now;
+      try {
+        moment.now = () => new Date('2025-04-02T12:00:00Z').getTime();
+        const expiredSchedule = {
+          enabled: true,
+          scheduleType: ScheduleType.CLOSINGDATE,
+          allowLateSubmissions: { enabled: false },
+          openSubmissionDateTime: '2025-03-30',
+          openSubmissionTime: '00:00',
+          closeSubmissionDateTime: '2025-03-31',
+          closeSubmissionTime: '23:59',
+          timezone: 'UTC',
+        };
+
+        expect(() => {
+          scheduleService.validateSubmissionSchedule(expiredSchedule);
+        }).toThrow('Form submission period has expired');
+      } finally {
+        moment.now = realNow;
+      }
+    });
+
+    it('should not throw when schedule is expired but late submissions are allowed', () => {
+      const realNow = moment.now;
+      try {
+        moment.now = () => new Date('2025-04-02T12:00:00Z').getTime();
+        const expiredScheduleWithLate = {
+          enabled: true,
+          scheduleType: ScheduleType.CLOSINGDATE,
+          allowLateSubmissions: {
+            enabled: true,
+            forNext: { term: 2, intervalType: 'days' },
+          },
+          openSubmissionDateTime: '2025-03-30',
+          openSubmissionTime: '00:00',
+          closeSubmissionDateTime: '2025-03-31',
+          closeSubmissionTime: '23:59',
+          timezone: 'UTC',
+        };
+
+        expect(() => {
+          scheduleService.validateSubmissionSchedule(expiredScheduleWithLate);
+        }).not.toThrow();
+      } finally {
+        moment.now = realNow;
+      }
+    });
+
+    it('should throw Problem 403 with custom message when schedule has closing message', () => {
+      const realNow = moment.now;
+      try {
+        moment.now = () => new Date('2025-04-02T12:00:00Z').getTime();
+        const expiredSchedule = {
+          enabled: true,
+          scheduleType: ScheduleType.CLOSINGDATE,
+          allowLateSubmissions: { enabled: false },
+          closingMessageEnabled: true,
+          closingMessage: 'Custom closing message',
+          openSubmissionDateTime: '2025-03-30',
+          openSubmissionTime: '00:00',
+          closeSubmissionDateTime: '2025-03-31',
+          closeSubmissionTime: '23:59',
+          timezone: 'UTC',
+        };
+
+        expect(() => {
+          scheduleService.validateSubmissionSchedule(expiredSchedule);
+        }).toThrow('Custom closing message');
+      } finally {
+        moment.now = realNow;
+      }
+    });
+  });
+
+  describe('validateFormSubmissionSchedule', () => {
+    it('should not throw when form has no schedule', () => {
+      expect(() => {
+        scheduleService.validateFormSubmissionSchedule({});
+      }).not.toThrow();
+      expect(() => {
+        scheduleService.validateFormSubmissionSchedule({ schedule: null });
+      }).not.toThrow();
+    });
+
+    it('should validate processed schedule directly when expire property exists', () => {
+      const formWithProcessedSchedule = {
+        schedule: {
+          expire: true,
+          allowLateSubmissions: false,
+          message: 'Processed schedule message',
+        },
+      };
+
+      expect(() => {
+        scheduleService.validateFormSubmissionSchedule(formWithProcessedSchedule);
+      }).toThrow('Processed schedule message');
+    });
+
+    it('should not throw when processed schedule allows late submissions', () => {
+      const formWithProcessedSchedule = {
+        schedule: {
+          expire: true,
+          allowLateSubmissions: true,
+        },
+      };
+
+      expect(() => {
+        scheduleService.validateFormSubmissionSchedule(formWithProcessedSchedule);
+      }).not.toThrow();
+    });
+
+    it('should process raw schedule when expire property does not exist', () => {
+      const realNow = moment.now;
+      try {
+        moment.now = () => new Date('2025-04-02T12:00:00Z').getTime();
+        const formWithRawSchedule = {
+          schedule: {
+            enabled: true,
+            scheduleType: ScheduleType.CLOSINGDATE,
+            allowLateSubmissions: { enabled: false },
+            openSubmissionDateTime: '2025-03-30',
+            openSubmissionTime: '00:00',
+            closeSubmissionDateTime: '2025-03-31',
+            closeSubmissionTime: '23:59',
+            timezone: 'UTC',
+          },
+        };
+
+        expect(() => {
+          scheduleService.validateFormSubmissionSchedule(formWithRawSchedule);
+        }).toThrow('Form submission period has expired');
+      } finally {
+        moment.now = realNow;
+      }
+    });
+
+    it('should not throw when raw schedule is not expired', () => {
+      const realNow = moment.now;
+      try {
+        // Set current time to be clearly within the valid submission period (midway between opening and closing)
+        moment.now = () => new Date('2025-03-31T12:00:00Z').getTime();
+        const formWithRawSchedule = {
+          schedule: {
+            enabled: true,
+            scheduleType: ScheduleType.CLOSINGDATE,
+            allowLateSubmissions: { enabled: false },
+            openSubmissionDateTime: '2025-03-30',
+            openSubmissionTime: '00:00',
+            closeSubmissionDateTime: '2025-03-31',
+            closeSubmissionTime: '23:59',
+            timezone: 'UTC',
+          },
+        };
+
+        expect(() => {
+          scheduleService.validateFormSubmissionSchedule(formWithRawSchedule);
+        }).not.toThrow();
+      } finally {
+        moment.now = realNow;
+      }
+    });
+
+    it('should not throw when raw schedule is not enabled', () => {
+      const formWithDisabledSchedule = {
+        schedule: {
+          enabled: false,
+        },
+      };
+
+      expect(() => {
+        scheduleService.validateFormSubmissionSchedule(formWithDisabledSchedule);
+      }).not.toThrow();
+    });
+  });
 });

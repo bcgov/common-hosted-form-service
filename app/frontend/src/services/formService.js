@@ -21,6 +21,7 @@ export default {
    * Create a new Form
    * @param {Object} formData An object containing the form details
    * @returns {Promise} An axios response
+   * @note Tenant ID is automatically included via x-tenant-id header when tenant is selected
    */
   createForm(formData) {
     return appAxios().post(`${ApiRoutes.FORMS}`, formData);
@@ -32,6 +33,7 @@ export default {
    * @param {string} formId The form uuid
    * @param {Object} formData An object containing the form details
    * @returns {Promise} An axios response
+   * @note Tenant ID is automatically included via x-tenant-id header when tenant is selected
    */
   updateForm(formId, formData) {
     return appAxios().put(`${ApiRoutes.FORMS}/${formId}`, formData);
@@ -211,6 +213,18 @@ export default {
     return appAxios().get(
       `${ApiRoutes.FORMS}/${formId}/versions/${formVersionId}/fields`
     );
+  },
+
+  /**
+   * @function readFormFields
+   * Get the schema-free version list plus the field keys for the current
+   * (published, else latest) version. Available to users with submission read,
+   * so reviewers can populate the submissions column picker.
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readFormFields(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/fields`);
   },
 
   /**
@@ -520,6 +534,25 @@ export default {
   docGen(submissionId, body) {
     return appAxios().post(
       `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
+      body,
+      {
+        responseType: 'arraybuffer', // Needed for binaries unless you want pain
+        timeout: 30000, // Override default timeout as this call could take a while
+      }
+    );
+  },
+
+  /**
+   * @function draftDocGen
+   * Upload a template and ad-hoc (draft) submission data to render a document for a
+   * form, before any submission has been saved.
+   * @param {string} formId The form identifier
+   * @param {Object} body The request body containing the template and submission data
+   * @returns {Promise} An axios response
+   */
+  draftDocGen(formId, body) {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/template/render`,
       body,
       {
         responseType: 'arraybuffer', // Needed for binaries unless you want pain

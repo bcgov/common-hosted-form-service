@@ -6,9 +6,11 @@ import { computed, onMounted, ref, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
+import AdvancedSubmissionSearch from './submission/AdvancedSubmissionSearch.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { FormPermissions } from '~/utils/constants';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -59,6 +61,9 @@ const singleSubmissionDelete = ref(false);
 const singleSubmissionRestore = ref(false);
 const sort = ref({});
 const firstDataLoad = ref(true);
+const isFetching = ref(false);
+const drawerOpen = ref(false);
+
 // When filtering, this data will not be preselected when clicking reset
 const tableFilterIgnore = ref([
   { key: 'updatedAt' },
@@ -94,6 +99,9 @@ const multiRestoreMessage = computed(() =>
 );
 const singleRestoreMessage = computed(() =>
   t('trans.submissionsTable.singleRestoreWarning')
+);
+const canDeleteSubmissions = computed(() =>
+  permissions.value?.includes(FormPermissions.SUBMISSION_DELETE)
 );
 const showFormManage = computed(() => checkFormManage(permissions.value));
 const showSelectColumns = computed(
@@ -205,6 +213,50 @@ const BASE_HEADERS = computed(() => {
   return headers;
 });
 
+// All possible headers
+const ALL_HEADER_KEYS = computed(() => {
+  return BASE_HEADERS.value ? BASE_HEADERS.value.map((h) => h.key) : [];
+});
+
+const baseOrderIndex = computed(() => {
+  const map = new Map();
+  (BASE_HEADERS.value ?? []).forEach((h, i) => map.set(h.key, i));
+  return map;
+});
+
+const currentPrefKeys = computed(() => USER_PREFERENCES.value ?? []);
+
+function normaliseToBaseOrder(keys) {
+  const seen = new Set();
+  return (
+    keys
+      // keep only real headers
+      .filter((k) => ALL_HEADER_KEYS.value.includes(k))
+      // remove duplicates (keep first occurrence)
+      .filter((k) => (seen.has(k) ? false : (seen.add(k), true)))
+      // sort according to canonical BASE_HEADERS order
+      .sort(
+        (a, b) =>
+          (baseOrderIndex.value.get(a) ?? 9999) -
+          (baseOrderIndex.value.get(b) ?? 9999)
+      )
+  );
+}
+async function addColumns(keys, options) {
+  const { includeReset = false, toFront = false } = options;
+  const validNew = normaliseToBaseOrder(keys);
+  const base = includeReset
+    ? normaliseToBaseOrder([...currentPrefKeys.value, ...RESET_HEADERS.value])
+    : normaliseToBaseOrder(currentPrefKeys.value);
+
+  // Append or prepend new keys while preserving canonical order
+  const next = toFront
+    ? normaliseToBaseOrder([...validNew, ...base])
+    : normaliseToBaseOrder([...base, ...validNew]);
+
+  await updateColumns(next);
+}
+
 // The headers are based on the base headers but are modified
 // by the following order:
 // Add CRUD options to headers
@@ -247,15 +299,17 @@ const HEADERS = computed(() => {
     width: '40px',
   });
 
-  // Actions column at the end
-  headers.push({
-    title: t('trans.submissionsTable.event'),
-    align: 'end',
-    key: 'event',
-    filterable: false,
-    sortable: false,
-    width: '40px',
-  });
+  if (canDeleteSubmissions.value) {
+    // Actions column at the end
+    headers.push({
+      title: t('trans.submissionsTable.event'),
+      align: 'end',
+      key: 'event',
+      filterable: false,
+      sortable: false,
+      width: '40px',
+    });
+  }
   return headers;
 });
 
@@ -360,6 +414,7 @@ function onShowColumnDialog() {
 }
 
 async function updateTableOptions({ page, itemsPerPage, sortBy }) {
+  if (loading.value && !firstDataLoad.value) return;
   if (page) {
     currentPage.value = page;
   }
@@ -382,7 +437,7 @@ async function getSubmissionData() {
     paginationEnabled: true,
     sortBy: sort.value,
     search: search.value,
-    searchEnabled: search.value.length > 0,
+    searchEnabled: search.value.length > 0 || search.value?.value?.length > 0,
     createdAt: Object.values({
       minDate: moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
       maxDate: moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
@@ -451,24 +506,21 @@ async function populateSubmissionsTable() {
 }
 
 async function refreshSubmissions() {
+  if (isFetching.value) return;
+  isFetching.value = true;
   loading.value = true;
   Promise.all([
     formStore.getFormRolesForUser(properties.formId),
     formStore.getFormPermissionsForUser(properties.formId),
-    formStore.fetchForm(properties.formId).then(async () => {
-      if (form.value.versions?.length > 0) {
-        await formStore.fetchFormFields({
-          formId: properties.formId,
-          formVersionId: form.value.versions[0].id,
-        });
-      }
-    }),
+    formStore.fetchForm(properties.formId),
+    formStore.fetchSubmissionFields(properties.formId),
   ])
     .then(async () => {
       await populateSubmissionsTable();
       loading.value = false;
     })
     .finally(() => {
+      isFetching.value = false;
       selectedSubmissions.value = [];
     });
 }
@@ -487,7 +539,10 @@ async function restoreSub() {
 
 async function deleteSingleSubs() {
   showDeleteDialog.value = false;
-  await formStore.deleteSubmission(deleteItem.value.submissionId);
+  await formStore.deleteSubmission(
+    form.value.id,
+    deleteItem.value.submissionId
+  );
   refreshSubmissions();
 }
 
@@ -628,7 +683,12 @@ async function updateFormPreferences(id, columns, filters, sort) {
 }
 
 async function handleSearch(value) {
-  search.value = value;
+  if (value?.fields?.length) {
+    await addColumns(value.fields, { includeReset: true });
+    search.value = value;
+  } else {
+    search.value = value;
+  }
   if (value === '') {
     await refreshSubmissions();
   } else {
@@ -639,6 +699,7 @@ async function handleSearch(value) {
 defineExpose({
   BASE_FILTER_HEADERS,
   BASE_HEADERS,
+  canDeleteSubmissions,
   debounceInput,
   debounceTime,
   delSub,
@@ -799,6 +860,14 @@ defineExpose({
             </template>
           </v-checkbox>
         </div>
+        <div>
+          <AdvancedSubmissionSearch
+            v-model="drawerOpen"
+            :form-fields="formFields"
+            location="right"
+            @search="handleSearch"
+          />
+        </div>
 
         <div>
           <!-- search input -->
@@ -843,7 +912,7 @@ defineExpose({
         return-object
         @update:options="updateTableOptions"
       >
-        <template #header.event>
+        <template v-if="canDeleteSubmissions" #header.event>
           <span v-if="!deletedOnly">
             <v-btn
               color="red"
@@ -938,7 +1007,7 @@ defineExpose({
             }}</span>
           </v-tooltip>
         </template>
-        <template #item.event="{ item }">
+        <template v-if="canDeleteSubmissions" #item.event="{ item }">
           <span>
             <v-tooltip v-if="!item.deleted" location="bottom">
               <template #activator="{ props }">

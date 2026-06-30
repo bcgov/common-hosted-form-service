@@ -1,0 +1,106 @@
+<script setup>
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '~/store/auth';
+import { useTenantStore } from '~/store/tenant';
+
+defineProps({
+  formSubmitMode: {
+    type: Boolean,
+    default: false,
+  },
+  hideTenantUI: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const { authenticated } = storeToRefs(useAuthStore());
+const tenantStore = useTenantStore();
+const { selectedTenant } = storeToRefs(tenantStore);
+
+const isEnterprise = computed(() => !!selectedTenant.value);
+
+const tenantName = computed(
+  () => selectedTenant.value?.name || selectedTenant.value?.displayName || ''
+);
+
+const { isTenantRestoring: showRestoring } = storeToRefs(tenantStore);
+
+const showBanner = computed(() => isEnterprise.value || showRestoring.value);
+</script>
+
+<template>
+  <div
+    v-if="
+      authenticated &&
+      tenantStore.isTenantFeatureEnabled &&
+      !formSubmitMode &&
+      !hideTenantUI &&
+      showBanner
+    "
+    class="context-banner d-print-none"
+    :class="showRestoring ? 'restoring-banner' : 'enterprise-banner'"
+    role="status"
+    :aria-label="showRestoring ? 'Restoring tenant context' : tenantName"
+  >
+    <div class="banner-content px-md-16 px-4">
+      <template v-if="showRestoring">
+        <v-progress-circular indeterminate size="16" width="2" class="mr-2" />
+        <span class="banner-prefix">Restoring your tenant context&hellip;</span>
+      </template>
+      <template v-else>
+        <span class="banner-tenant">{{ tenantName }}</span>
+      </template>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.context-banner {
+  width: 100%;
+
+  &.enterprise-banner {
+    background-color: #fcba19;
+
+    .banner-content {
+      color: #003366;
+      font-size: 1rem;
+    }
+  }
+
+  &.restoring-banner {
+    background-color: #e0e0e0;
+
+    .banner-content {
+      color: #333333;
+    }
+  }
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    min-height: 2rem;
+
+    .banner-tenant {
+      font-weight: 400;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 0.8rem;
+      padding: 0.35rem 0;
+
+      .banner-tenant {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: calc(100vw - 14rem);
+      }
+    }
+  }
+}
+</style>

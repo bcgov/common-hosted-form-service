@@ -1,9 +1,11 @@
 import NProgress from 'nprogress';
+import { watch } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 import { preFlightAuth } from '~/utils/permissionUtils';
 import { formService } from '~/services';
 let isFirstTransition = true;
@@ -37,7 +39,7 @@ export default function getRouter(basePath = '/') {
         redirect: { name: 'About' },
       },
       {
-        path: '/',
+        path: '/about',
         name: 'About',
         component: () => import('~/views/About.vue'),
         meta: {
@@ -69,6 +71,7 @@ export default function getRouter(basePath = '/') {
         meta: {
           requiresAuth: true,
           hasLogin: true,
+          hideTenantUI: true,
         },
       },
       {
@@ -225,6 +228,17 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/Teams.vue'),
             meta: {
               breadcrumbTitle: 'Team Management',
+              requiresAuth: 'primary',
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
+            path: 'groups',
+            name: 'FormGroups',
+            component: () => import('~/views/form/Groups.vue'),
+            meta: {
+              breadcrumbTitle: 'Group Management',
               requiresAuth: 'primary',
               hasLogin: true,
             },
@@ -396,6 +410,7 @@ export default function getRouter(basePath = '/') {
             meta: {
               requiresAuth: true,
               hasLogin: true,
+              hideTenantUI: true,
             },
             props: createProps,
           },
@@ -406,6 +421,9 @@ export default function getRouter(basePath = '/') {
         name: 'Login',
         component: () => import('~/views/Login.vue'),
         props: createProps,
+        meta: {
+          hideTenantUI: true,
+        },
         beforeEnter(to, from, next) {
           // Block navigation to login page if already authenticated
           NProgress.done();
@@ -436,6 +454,7 @@ export default function getRouter(basePath = '/') {
         component: () => import('~/views/NotFound.vue'),
         meta: {
           hasLogin: true,
+          hideTenantUI: true,
         },
       },
     ],
@@ -444,53 +463,113 @@ export default function getRouter(basePath = '/') {
     },
   });
 
-  router.beforeEach((to, from, next) => {
+  function handleFirstTransition(to, authStore) {
+    if (!isFirstTransition) return;
+
+    // Always call rbac/current if authenticated and on first page load
+    if (authStore?.ready && authStore?.authenticated) {
+      const formStore = useFormStore();
+      formStore.getFormsForCurrentUser();
+      const tenantStore = useTenantStore();
+      if (
+        tenantStore.isTenantFeatureEnabled &&
+        !to.meta?.formSubmitMode &&
+        !tenantStore.isTenantIneligibleUser
+      ) {
+        tenantStore.fetchTenants();
+      }
+    }
+
+    // Handle proper redirections on first page load
+    if (to.query.r) {
+      router.replace({
+        path: to.query.r.replace(basePath, ''),
+        query: (({ r, ...q }) => q)(to.query), // eslint-disable-line no-unused-vars
+      });
+    }
+  }
+
+  // Wait for an in-flight tenant restore to settle before resolving navigation
+  // to a tenant-scoped route. Only applies when:
+  //   - the tenant feature is enabled
+  //   - the route is NOT a public/submitter route (interceptors.js doesn't send
+  //     x-tenant-id for those, so they don't need to wait)
+  // Without this, components like ManageLayout/SubmissionsTable/FormDesigner
+  // that fetch on mount would race the restore and request data with the wrong
+  // (or missing) tenant context.
+  async function waitForTenantContext(to, tenantStore) {
+    if (!tenantStore.isTenantFeatureEnabled) return;
+    if (to.meta?.formSubmitMode) return;
+    if (to.meta?.hideTenantUI) return;
+    if (!tenantStore.isTenantRestoring) return;
+
+    await new Promise((resolve) => {
+      const stop = watch(
+        () => tenantStore.isTenantRestoring,
+        (restoring) => {
+          if (!restoring) {
+            stop();
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  function handleAuthRedirect(to, authStore) {
+    const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
+    if (!requiresAuth || !authStore.ready || authStore.authenticated) return;
+
+    const redirectUri = location.origin + basePath + to.path + location.search;
+    authStore.redirectUri = redirectUri;
+
+    // In tenanted (Enterprise CHEFS) mode, let the component render so that
+    // BaseSecure can show the "You must be logged in" prompt in-page.
+    const tenantStore = useTenantStore();
+    if (tenantStore.isTenantFeatureEnabled) return;
+
+    const idpStore = useIdpStore();
+    const idpHint =
+      to.meta.requiresAuth === 'primary'
+        ? idpStore.primaryIdp?.code ?? null
+        : undefined;
+    authStore.login(idpHint);
+  }
+
+  router.beforeEach(async (to, _from, next) => {
     NProgress.start();
 
     const authStore = useAuthStore();
-    const idpStore = useIdpStore();
 
-    if (isFirstTransition) {
-      // Always call rbac/current if authenticated and on first page load
-      if (authStore?.ready && authStore?.authenticated) {
-        const formStore = useFormStore();
-        formStore.getFormsForCurrentUser();
-      }
+    handleFirstTransition(to, authStore);
+    handleAuthRedirect(to, authStore);
 
-      // Handle proper redirections on first page load
-      if (to.query.r) {
-        router.replace({
-          path: to.query.r.replace(basePath, ''),
-          query: (({ r, ...q }) => q)(to.query), // eslint-disable-line no-unused-vars
-        });
-      }
+    const tenantStore = useTenantStore();
+    await waitForTenantContext(to, tenantStore);
+
+    // For Enterprise CHEFS (tenanted): check form_admin role for FormCreate route
+    if (
+      to.name === 'FormCreate' &&
+      authStore.authenticated &&
+      tenantStore.isTenantFeatureEnabled &&
+      tenantStore.selectedTenant &&
+      !tenantStore.isFormAdmin
+    ) {
+      return next({ name: 'UserForms' });
     }
 
-    // Force login redirect if not authenticated
-    // Note some pages (Submit and Success) only require auth if the form being loaded is secured
-    // in those cases, see the beforeEnter navigation guards for auth loop determination
+    // Group Management is only for tenanted forms — redirect non-tenanted users to FormManage
     if (
-      to.matched.some((route) => route.meta.requiresAuth) &&
-      authStore.ready &&
-      !authStore.authenticated
+      to.name === 'FormGroups' &&
+      authStore.authenticated &&
+      !tenantStore.selectedTenant
     ) {
-      const redirectUri =
-        location.origin + basePath + to.path + location.search;
-      authStore.redirectUri = redirectUri;
-
-      // Determine what kind of redirect behavior is needed
-      let idpHint = undefined;
-      if (
-        typeof to.meta.requiresAuth === 'string' &&
-        to.meta.requiresAuth === 'primary'
-      ) {
-        idpHint = idpStore.primaryIdp ? idpStore.primaryIdp.code : null;
-      }
-      authStore.login(idpHint);
+      return next({ name: 'FormManage', query: { f: to.query.f } });
     }
 
     // Update document title if applicable
-    document.title = to.meta.title ? to.meta.title : import.meta.env.VITE_TITLE;
+    document.title =
+      to.meta.title || import.meta.env.VITE_TITLE || 'Common Hosted Forms';
     next();
   });
 

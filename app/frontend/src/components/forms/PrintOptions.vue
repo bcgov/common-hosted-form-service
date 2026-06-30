@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { onBeforeUnmount, computed, ref, watch, nextTick } from 'vue';
 
 import { createDownload } from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
@@ -187,7 +187,7 @@ async function generate() {
         template: body,
         submission: properties.submission,
       };
-      response = await utilsService.draftDocGen(draftData);
+      response = await formService.draftDocGen(formId.value, draftData);
     }
     // create file to download
     const filename = getDisposition(response.headers['content-disposition']);
@@ -405,6 +405,7 @@ defineExpose({
                 <a
                   href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Printing-from-a-browser/"
                   target="_blank"
+                  rel="noopener noreferrer"
                   class="more-info-link"
                   :lang="locale"
                 >
@@ -537,6 +538,7 @@ defineExpose({
                       <a
                         href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/"
                         target="_blank"
+                        rel="noopener noreferrer"
                         class="more-info-link"
                         :lang="locale"
                         :title="$t('trans.printOptions.moreInfo')"

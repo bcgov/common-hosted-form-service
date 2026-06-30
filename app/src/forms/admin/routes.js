@@ -103,4 +103,36 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
 
+//
+// Feature Flags
+//
+
+routes.get('/features', async (req, res, next) => {
+  await controller.listFeatureFlags(req, res, next);
+});
+
+routes.get('/features/:code', async (req, res, next) => {
+  await controller.readFeatureFlag(req, res, next);
+});
+
+routes.patch('/features/:code', async (req, res, next) => {
+  await controller.updateFeatureFlag(req, res, next);
+});
+
+routes.post('/features/:code/forms', async (req, res, next) => {
+  await controller.addFeatureFlagForm(req, res, next);
+});
+
+routes.delete('/features/:code/forms/:formId', async (req, res, next) => {
+  await controller.removeFeatureFlagForm(req, res, next);
+});
+
+routes.post('/features/:code/tenants', async (req, res, next) => {
+  await controller.addFeatureFlagTenant(req, res, next);
+});
+
+routes.delete('/features/:code/tenants/:tenantId', async (req, res, next) => {
+  await controller.removeFeatureFlagTenant(req, res, next);
+});
+
 module.exports = routes;

@@ -1,11 +1,11 @@
-const path = require('path');
+const path = require('node:path');
 
 module.exports = {
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: ["css-loader"],
+        use: ['css-loader'],
       },
     ],
   },
@@ -20,6 +20,6 @@ module.exports = {
   mode: 'development',
   performance: { hints: false },
   externals: {
-    formiojs: 'Formio'
-  }
+    formiojs: 'Formio',
+  },
 };

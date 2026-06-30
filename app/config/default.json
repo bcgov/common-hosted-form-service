@@ -34,6 +34,8 @@
     "adminDashboardUrl": "",
     "apiPath": "api/v1",
     "basePath": "/app",
+    "cstarBaseUrl": "https://dev.connect.digital.gov.bc.ca",
+    "tenantFeatureEnabled": false,
     "oidc": {
       "clientId": "chefs-frontend-localhost-5300",
       "realm": "standard",
@@ -95,8 +97,26 @@
         "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
+      },
+      "cdogsV3": {
+        "endpoint": "http://common-document-generation-service-master.a12c97-prod:3000/api"
+      },
+      "css": {
+        "endpoint": "https://api.loginproxy.gov.bc.ca/api",
+        "tokenEndpoint": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+        "clientId": "CSS_CLIENT_ID",
+        "clientSecret": "CSS_CLIENT_SECRET",
+        "environment": "dev"
       }
     }
+  },
+  "cstar": {
+    "tenantFeatureEnabled": false,
+    "endpoint": "https://dev.connect.digital.gov.bc.ca/api/v1/",
+    "listUserTenantsPath": "users/{userId}/tenants",
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
+    "listGroupsForTenant": "tenants/{tenantId}/groups",
+    "listTenantUsersPath": "tenants/{tenantId}/users"
   },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",
@@ -111,6 +131,24 @@
       "matchAccuracy": 100,
       "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
       "precisionPoints": 100
+    }
+  },
+  "recordsManagement": {
+    "implementation": "local",
+    "enabled": true
+  },
+  "features": {
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": false
+    },
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "documentGenerationV3": {
+      "enabled": false
     }
   }
 }

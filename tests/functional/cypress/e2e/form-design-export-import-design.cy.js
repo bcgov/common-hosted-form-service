@@ -24,12 +24,17 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
-  });  
+    cy.checkA11yPage();
+  });   
+  it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('BC Government').click();
+  }); 
 // Publish a simple form with Simplebc Address component
  it('Checks Export/Import design functionality', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    cy.get('button').contains('BC Government').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-key="simplebcaddress"]')
@@ -50,7 +55,7 @@ describe('Form Designer', () => {
     cy.get('input[name="data[simplebcaddress]"]').should('not.exist'); 
     cy.get('.mdi-dots-vertical').click();
     cy.get(':nth-child(6) > .v-list-item__content > .d-flex > .v-btn').click();
-    cy.wait(2000);
+    cy.wait(1000);
     //Verifies design downloads into download folder
     cy.get('.text-center > h4').then(($elem) => {
         const rem = $elem.text();
@@ -63,21 +68,25 @@ describe('Form Designer', () => {
         cy.readFile(path.join(downloadsFolder,remname)).should('exist');
 
     });
-    cy.wait(2000);
+    cy.wait(1000);
     //Verify visibility of right side buttons on design page
     cy.get('.mdi-content-save').should('not.have.attr', 'disabled');
     cy.get('.mdi-dots-vertical').click();
     //Preview button disabled before form saving
     cy.get('[data-cy="previewRouterLink"] > .v-btn').should('have.attr', 'disabled');
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Save a version of the form to preview').should('exist');
+    cy.get('[data-cy="publishRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Insufficient permissions to publish form').should('exist');
     cy.get('[data-cy="undoButton"] > .v-btn').should('not.have.attr', 'disabled');
     cy.get('[data-cy="redoButton"] > .v-btn').should('have.attr', 'disabled');
     cy.get('.mdi-undo').click();
     cy.get('[data-cy="redoButton"] > .v-btn').should('not.have.attr', 'disabled');
     cy.get('[data-cy="redoButton"] > .v-btn').click();
+    cy.wait(2000);
     //Verify  existence of page top/bottom move button
     cy.get('.mdi-arrow-up').should('not.exist');
-    cy.get('.mdi-arrow-down').should('exist');
-    cy.wait(1000);  
+    cy.get('.mdi-arrow-down').should('be.visible');  
     // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
@@ -86,6 +95,7 @@ describe('Form Designer', () => {
      cy.get('.mdi-dots-vertical').click();
     //Preview button enabled
     cy.get('[data-cy="previewRouterLink"] > .v-btn').should('not.have.attr', 'disabled');
+    cy.get('.v-overlay__content').contains('Click to Preview Form').should('exist');
     // Filter the newly created form
     cy.location('search').then(search => {
     let arr = search.split('=');
@@ -132,7 +142,7 @@ describe('Form Designer', () => {
     //Delete form after test run
     cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
     
        
 });

@@ -4,19 +4,7 @@ const uuid = require('uuid');
 const controller = require('../../../../src/forms/form/controller');
 const exportService = require('../../../../src/forms/form/exportService');
 const service = require('../../../../src/forms/form/service');
-
-const currentUser = {
-  usernameIdp: 'TESTER',
-};
-
-const documentTemplate = {
-  filename: 'cdogs_template.txt',
-  formId: uuid.v4(),
-  id: uuid.v4(),
-  template: 'My Template',
-};
-
-const error = new Error('error');
+const docGenService = require('../../../../src/components/docGenService');
 
 // Various strings that should produce 400 errors when used as UUIDs.
 const testCases400 = [[''], ['undefined'], ['{{oops}}'], [uuid.v4() + '.']];
@@ -24,11 +12,6 @@ const testCases400 = [[''], ['undefined'], ['{{oops}}'], [uuid.v4() + '.']];
 //
 // Mock out all happy-path service calls.
 //
-
-service.documentTemplateCreate = jest.fn().mockReturnValue(documentTemplate);
-service.documentTemplateDelete = jest.fn().mockReturnValue();
-service.documentTemplateList = jest.fn().mockReturnValue([]);
-service.documentTemplateRead = jest.fn().mockReturnValue(documentTemplate);
 
 const req = {
   params: { formId: 'bd4dcf26-65bd-429b-967f-125500bfd8a4' },
@@ -47,185 +30,6 @@ const req = {
 
 afterEach(() => {
   jest.restoreAllMocks();
-});
-
-describe('documentTemplateCreate', () => {
-  const validRequest = {
-    body: {
-      ...documentTemplate,
-    },
-    currentUser: currentUser,
-    params: {
-      formId: documentTemplate.formId,
-    },
-  };
-
-  describe('error response when', () => {
-    it('has no current user', async () => {
-      const invalidRequest = { ...validRequest };
-      delete invalidRequest.currentUser;
-      const req = getMockReq(invalidRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateCreate(req, res, next);
-
-      expect(res.json).not.toBeCalled();
-      expect(res.status).not.toBeCalled();
-      expect(next).toBeCalledWith(expect.any(TypeError));
-    });
-
-    it('has an unsuccessful service call', async () => {
-      service.documentTemplateCreate.mockRejectedValueOnce(error);
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateCreate(req, res, next);
-
-      expect(service.documentTemplateCreate).toBeCalledWith(validRequest.params.formId, validRequest.body, validRequest.currentUser.usernameIdp);
-      expect(res.json).not.toBeCalled();
-      expect(res.status).not.toBeCalled();
-      expect(next).toBeCalledWith(error);
-    });
-  });
-
-  describe('201 response when', () => {
-    it('has a successful service call', async () => {
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateCreate(req, res, next);
-
-      expect(service.documentTemplateCreate).toBeCalledWith(validRequest.params.formId, validRequest.body, validRequest.currentUser.usernameIdp);
-      expect(res.json).toBeCalledWith(
-        expect.objectContaining({
-          ...documentTemplate,
-        })
-      );
-      expect(res.status).toBeCalledWith(201);
-      expect(next).not.toBeCalled();
-    });
-  });
-});
-
-describe('documentTemplateDelete', () => {
-  const validRequest = {
-    currentUser: currentUser,
-    params: {
-      documentTemplateId: documentTemplate.id,
-    },
-  };
-
-  describe('error response when', () => {
-    it('has no current user', async () => {
-      const invalidRequest = { ...validRequest };
-      delete invalidRequest.currentUser;
-      const req = getMockReq(invalidRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateDelete(req, res, next);
-
-      expect(res.json).not.toBeCalled();
-      expect(res.status).not.toBeCalled();
-      expect(next).toBeCalledWith(expect.any(TypeError));
-    });
-
-    it('has an unsuccessful service call', async () => {
-      service.documentTemplateDelete.mockRejectedValueOnce(error);
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateDelete(req, res, next);
-
-      expect(service.documentTemplateDelete).toBeCalledWith(validRequest.params.documentTemplateId, validRequest.currentUser.usernameIdp);
-      expect(res.json).not.toBeCalled();
-      expect(res.status).not.toBeCalled();
-      expect(next).toBeCalledWith(error);
-    });
-  });
-
-  describe('204 response when', () => {
-    it('has a successful service call', async () => {
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateDelete(req, res, next);
-
-      expect(service.documentTemplateDelete).toBeCalledWith(validRequest.params.documentTemplateId, validRequest.currentUser.usernameIdp);
-      expect(res.json).not.toBeCalled();
-      expect(res.sendStatus).toBeCalledWith(204);
-      expect(next).not.toBeCalled();
-    });
-  });
-});
-
-describe('documentTemplateList', () => {
-  const validRequest = {
-    params: { formId: documentTemplate.formId },
-  };
-
-  describe('error response when', () => {
-    it('has an unsuccessful service call', async () => {
-      service.documentTemplateList.mockRejectedValueOnce(error);
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateList(req, res, next);
-
-      expect(service.documentTemplateList).toBeCalledWith(validRequest.params.formId);
-      expect(res.json).not.toBeCalled();
-      expect(res.status).not.toBeCalled();
-      expect(next).toBeCalledWith(error);
-    });
-  });
-
-  describe('200 response when', () => {
-    it('has a successful service call', async () => {
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateList(req, res, next);
-
-      expect(service.documentTemplateList).toBeCalledWith(validRequest.params.formId);
-      expect(res.json).toBeCalledWith([]);
-      expect(res.status).toBeCalledWith(200);
-      expect(next).not.toBeCalled();
-    });
-  });
-});
-
-describe('documentTemplateRead', () => {
-  const validRequest = {
-    params: { formId: documentTemplate.formId },
-  };
-
-  describe('error response when', () => {
-    it('has an unsuccessful service call', async () => {
-      service.documentTemplateRead.mockRejectedValueOnce(error);
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateRead(req, res, next);
-
-      expect(service.documentTemplateRead).toBeCalledWith(validRequest.params.documentTemplateId);
-      expect(res.json).not.toBeCalled();
-      expect(res.status).not.toBeCalled();
-      expect(next).toBeCalledWith(error);
-    });
-  });
-
-  describe('200 response when', () => {
-    it('has a successful service call', async () => {
-      const req = getMockReq(validRequest);
-      const { res, next } = getMockRes();
-
-      await controller.documentTemplateRead(req, res, next);
-
-      expect(service.documentTemplateRead).toBeCalledWith(validRequest.params.documentTemplateId);
-      expect(res.json).toBeCalledWith(documentTemplate);
-      expect(res.status).toBeCalledWith(200);
-      expect(next).not.toBeCalled();
-    });
-  });
 });
 
 describe('form controller', () => {
@@ -271,6 +75,70 @@ describe('form controller', () => {
     expect(exportService._getForm).toBeCalledTimes(1);
     expect(exportService._getSubmissions).toBeCalledTimes(1);
     expect(formatDataSpy).toBeCalledTimes(1);
+  });
+});
+
+describe('readFormFields', () => {
+  it('returns the version metadata and strips the submit field', async () => {
+    service.readFormFields = jest.fn().mockResolvedValue({
+      versionId: 'v1',
+      published: true,
+      versions: [{ id: 'v1', version: 1, published: true }],
+      fields: ['simpletextfield', 'submit'],
+    });
+    const { res, next } = getMockRes();
+
+    await controller.readFormFields(getMockReq(req), res, next);
+
+    expect(service.readFormFields).toBeCalledWith(req.params.formId);
+    expect(res.json).toBeCalledWith({
+      versionId: 'v1',
+      published: true,
+      versions: [{ id: 'v1', version: 1, published: true }],
+      fields: ['simpletextfield'],
+    });
+    expect(next).not.toBeCalled();
+  });
+});
+
+describe('createForm', () => {
+  it('should call service.createForm with body, currentUser, and headers and return 201', async () => {
+    // Arrange
+    const mockResponse = { id: uuid.v4(), formName: 'Test Form' };
+    service.createForm = jest.fn().mockResolvedValue(mockResponse);
+    const req = getMockReq({
+      body: { formName: 'Test Form' },
+      currentUser: { sub: 'test-user' },
+      headers: { authorization: 'Bearer token' },
+    });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.createForm(req, res, next);
+
+    // Assert
+    expect(service.createForm).toBeCalledWith(req.body, req.currentUser, req.headers);
+    expect(res.status).toBeCalledWith(201);
+    expect(res.json).toBeCalledWith(mockResponse);
+  });
+
+  it('should forward service errors for handling elsewhere', async () => {
+    // Arrange
+    const error = new Error('create form failed');
+    service.createForm = jest.fn().mockRejectedValue(error);
+    const req = getMockReq({
+      body: { formName: 'Test Form' },
+      currentUser: { sub: 'test-user' },
+      headers: { authorization: 'Bearer token' },
+    });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.createForm(req, res, next);
+
+    // Assert
+    expect(service.createForm).toBeCalledWith(req.body, req.currentUser, req.headers);
+    expect(next).toBeCalledWith(error);
   });
 });
 
@@ -411,5 +279,78 @@ describe('readFormOptions', () => {
     // Assert
     expect(service.readFormOptions).toBeCalled();
     expect(next).toBeCalledWith(error);
+  });
+});
+
+describe('draftTemplateUploadAndRender', () => {
+  const formId = uuid.v4();
+  const validBody = {
+    template: {
+      options: { convertTo: 'pdf', overwrite: true, reportName: 'draft' },
+      content: 'base64content',
+      encodingType: 'base64',
+      fileType: 'txt',
+    },
+    submission: {
+      data: { simpletextfield: 'firstName lastName' },
+    },
+  };
+  const expectedTemplateBody = {
+    ...validBody.template,
+    data: validBody.submission.data,
+  };
+  const mockResponse = {
+    data: {},
+    headers: { 'content-disposition': 'attachment; filename=draft.pdf' },
+    status: 200,
+  };
+
+  it('should pass the form id and template body to docGenService and stream the result', async () => {
+    docGenService.templateUploadAndRender = jest.fn().mockResolvedValue(mockResponse);
+    const req = getMockReq({ params: { formId }, body: validBody, currentUser: { tenantId: 'tenant-1' } });
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(docGenService.templateUploadAndRender).toBeCalledTimes(1);
+    expect(docGenService.templateUploadAndRender).toBeCalledWith(
+      expect.objectContaining({
+        formId,
+        tenantId: 'tenant-1',
+        templateBody: expectedTemplateBody,
+      })
+    );
+    expect(res.status).toBeCalledWith(200);
+    expect(res.set).toBeCalledWith(
+      expect.objectContaining({
+        'Content-Disposition': 'attachment; filename=draft.pdf',
+        'X-Content-Type-Options': 'nosniff',
+      })
+    );
+    expect(res.send).toBeCalledTimes(1);
+  });
+
+  it('should default the Content-Disposition when none is returned', async () => {
+    const response = { ...mockResponse, headers: {} };
+    docGenService.templateUploadAndRender = jest.fn().mockResolvedValue(response);
+    const req = getMockReq({ params: { formId }, body: validBody, currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(res.set).toBeCalledWith(expect.objectContaining({ 'Content-Disposition': 'attachment' }));
+    expect(res.status).toBeCalledWith(200);
+  });
+
+  it('should forward errors to next', async () => {
+    docGenService.templateUploadAndRender = jest.fn().mockReturnValue(mockResponse);
+    const req = getMockReq({ params: { formId } }); // missing body -> throws when reading submission.data
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(docGenService.templateUploadAndRender).toBeCalledTimes(0);
+    expect(res.send).toBeCalledTimes(0);
+    expect(next).toBeCalledWith(expect.any(TypeError));
   });
 });

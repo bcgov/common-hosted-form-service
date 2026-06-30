@@ -84,50 +84,55 @@ const hasFileCreate = async (req, res, next) => {
  * @returns {Function} a middleware function
  */
 const hasFileDelete = async (req, res, next) => {
-  // You can't do this if you are not authenticated as a USER (not a public user)
-  // Can expand on this for API key access if ever needed
-  if (!req.currentUser || !req.currentUser.idpUserId) {
-    return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
-  }
+  try {
+    // You can't do this if you are not authenticated as a USER (not a public user)
+    // Can expand on this for API key access if ever needed
+    if (!req.currentUser || !req.currentUser.idpUserId) {
+      return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
+    }
 
-  const fileIds = req.body.fileIds;
+    const fileIds = req.body.fileIds;
 
-  if (!Array.isArray(fileIds)) {
-    return next(new Problem(403, { detail: 'File IDs must be an array of file UUIDs.' }));
-  }
+    if (!Array.isArray(fileIds)) {
+      return next(new Problem(403, { detail: 'File IDs must be an array of file UUIDs.' }));
+    }
 
-  let fileNotFound = false;
-  let permissionError = null;
-  for (const fileId of fileIds) {
-    const fileRecord = await service.read(fileId);
-    if (!fileRecord) {
-      fileNotFound = true;
-      break;
-    } else {
-      req.currentFileRecord = fileRecord;
-      req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
-      const subPermCheck = userAccess.hasSubmissionPermissions([Permissions.SUBMISSION_UPDATE]);
-      await subPermCheck(req, res, (err) => {
-        if (err) {
-          permissionError = err;
-        }
-      });
-      if (permissionError) {
+    let fileNotFound = false;
+    let permissionError = null;
+    for (const fileId of fileIds) {
+      const fileRecord = await service.read(fileId);
+      if (!fileRecord) {
+        fileNotFound = true;
         break;
+      } else {
+        req.currentFileRecord = fileRecord;
+        req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
+        const subPermCheck = userAccess.hasSubmissionPermissions([Permissions.SUBMISSION_UPDATE]);
+        await subPermCheck(req, res, (err) => {
+          if (err) {
+            permissionError = err;
+          }
+        });
+        if (permissionError) {
+          break;
+        }
       }
     }
-  }
 
-  if (fileNotFound) {
-    // 403 on no auth or file not found (don't 404 for id discovery)
-    return next(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
-  }
+    if (fileNotFound) {
+      // 403 on no auth or file not found (don't 404 for id discovery)
+      return next(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
+    }
 
-  if (permissionError) {
-    return next(permissionError);
-  }
+    if (permissionError) {
+      return next(permissionError);
+    }
 
-  next();
+    next();
+  } catch (error) {
+    log.error('Error in hasFileDelete middleware:', error);
+    return next(new Problem(500, { detail: 'Unable to delete files at this time. Please try again later.' }));
+  }
 };
 
 /**
@@ -157,7 +162,6 @@ const hasFilePermissions = (permissions) => {
     }
 
     // For submitted files, check permissions normally
-    req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
     const subPermCheck = userAccess.hasSubmissionPermissions(permissions);
     return subPermCheck(req, res, next);
   };

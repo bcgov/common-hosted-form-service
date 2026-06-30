@@ -1,4 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
+const config = require('config');
 const uuid = require('uuid');
 
 const {
@@ -9,10 +10,13 @@ const {
   hasRoleDeletePermissions,
   hasRoleModifyPermissions,
   hasSubmissionPermissions,
+  requireCreateFormPermission,
+  requireFormTenantAssociation,
 } = require('../../../../../src/forms/auth/middleware/userAccess');
 
 const jwtService = require('../../../../../src/components/jwtService');
 const rbacService = require('../../../../../src/forms/rbac/service');
+const tenantService = require('../../../../../src/components/tenantService');
 
 const service = require('../../../../../src/forms/auth/service');
 
@@ -43,6 +47,8 @@ afterEach(() => {
 describe('currentUser', () => {
   // Bearer token and its authorization header.
   const bearerToken = Math.random().toString(36).substring(2);
+  const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
+  const otherTenantId = '1d3f5d5f-1a2b-4c3d-9e8f-112233445567';
 
   // Default mock of the token validation.
   jwtService.getBearerToken = jest.fn().mockReturnValue(bearerToken);
@@ -52,6 +58,17 @@ describe('currentUser', () => {
   // Default mock of the service login.
   const mockUser = { user: 'me' };
   service.login = jest.fn().mockReturnValue(mockUser);
+
+  beforeEach(() => {
+    jest.spyOn(config, 'get').mockImplementation((key) => {
+      if (key === 'cstar.tenantFeatureEnabled') {
+        return true;
+      }
+
+      return undefined;
+    });
+    jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([{ id: tenantId }]);
+  });
 
   describe('401 response when', () => {
     const expectedStatus = { status: 401 };
@@ -139,6 +156,75 @@ describe('currentUser', () => {
     expect(req.currentUser).toEqual(mockUser);
     expect(next).toBeCalledTimes(1);
     expect(next).toBeCalledWith();
+  });
+
+  it('sets tenantId from x-tenant-id header', async () => {
+    const req = getMockReq({
+      headers: { 'x-tenant-id': tenantId },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(req.currentUser).toBeDefined();
+    expect(req.currentUser.tenantId).toBe(tenantId);
+    expect(tenantService.getCurrentUserTenants).toHaveBeenCalledWith(req);
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
+  });
+
+  it('rejects an invalid tenantId header', async () => {
+    const req = getMockReq({
+      headers: { 'x-tenant-id': 'not-a-uuid' },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(
+      expect.objectContaining({
+        status: 400,
+        detail: 'Bad tenantId',
+      })
+    );
+  });
+
+  it('rejects a tenantId not owned by the current user', async () => {
+    tenantService.getCurrentUserTenants.mockResolvedValueOnce([{ id: otherTenantId }]);
+    const req = getMockReq({
+      headers: { 'x-tenant-id': tenantId },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(req.currentUser).toEqual(mockUser);
+    expect(req.currentUser.tenantId).toBeUndefined();
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(
+      expect.objectContaining({
+        status: 403,
+        detail: 'Tenant not accessible for current user.',
+      })
+    );
+  });
+
+  it('returns 503 when tenant service is degraded', async () => {
+    tenantService.getCurrentUserTenants.mockImplementationOnce((req) => {
+      req._tenantServiceDegraded = true;
+      return Promise.resolve([]);
+    });
+    const req = getMockReq({
+      headers: { 'x-tenant-id': tenantId },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(expect.objectContaining({ status: 503 }));
   });
 });
 
@@ -481,6 +567,7 @@ describe('filterMultipleSubmissions', () => {
         body: { submissionIds: [] },
         currentUser: {},
         formIdWithDeletePermission: formId,
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -490,6 +577,7 @@ describe('filterMultipleSubmissions', () => {
       await filterMultipleSubmissions(req, res, next);
 
       expect(service.getUserForms).toBeCalled();
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -723,6 +811,7 @@ describe('hasFormPermissions', () => {
       ]);
       const req = getMockReq({
         currentUser: {},
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -732,6 +821,7 @@ describe('hasFormPermissions', () => {
       await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
       expect(service.getUserForms).toBeCalled();
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -1115,6 +1205,7 @@ describe('hasSubmissionPermissions', () => {
       ]);
       const req = getMockReq({
         currentUser: {},
+        headers: { authorization: 'Bearer token' },
         params: {
           formSubmissionId: formSubmissionId,
         },
@@ -1126,6 +1217,7 @@ describe('hasSubmissionPermissions', () => {
       expect(service.checkSubmissionPermission).toBeCalledTimes(0);
       expect(service.getSubmissionForm).toBeCalledTimes(1);
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -1398,6 +1490,7 @@ describe('hasFormRoles', () => {
       ]);
       const req = getMockReq({
         currentUser: {},
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -1407,6 +1500,7 @@ describe('hasFormRoles', () => {
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -1759,6 +1853,7 @@ describe('hasRoleDeletePermissions', () => {
         currentUser: {
           id: userId,
         },
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
         },
@@ -1768,6 +1863,7 @@ describe('hasRoleDeletePermissions', () => {
       await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
@@ -2171,6 +2267,7 @@ describe('hasRoleModifyPermissions', () => {
         currentUser: {
           id: userId,
         },
+        headers: { authorization: 'Bearer token' },
         params: {
           formId: formId,
           userId: userId2,
@@ -2181,6 +2278,7 @@ describe('hasRoleModifyPermissions', () => {
       await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
+      expect(service.getUserForms).toHaveBeenCalledWith(req.currentUser, { active: true, formId }, req.headers);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
@@ -2247,5 +2345,152 @@ describe('hasRoleModifyPermissions', () => {
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
+  });
+});
+
+// External dependencies used by the implementation are:
+//  - service.getUserForms: gets the forms that the user can access.
+//  - rbacService.readUserRole: gets the roles that user has on a form.
+//
+describe('requireCreateFormPermission', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('allows when tenantService.canCreateForm returns true', async () => {
+    jest.spyOn(tenantService, 'canCreateForm').mockResolvedValue(true);
+
+    const req = getMockReq({ currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await requireCreateFormPermission(req, res, next);
+
+    expect(tenantService.canCreateForm).toHaveBeenCalledWith(req);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('denies with 403 when tenantService.canCreateForm returns false', async () => {
+    jest.spyOn(tenantService, 'canCreateForm').mockResolvedValue(false);
+
+    const req = getMockReq({ currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await requireCreateFormPermission(req, res, next);
+
+    expect(tenantService.canCreateForm).toHaveBeenCalledWith(req);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403, detail: 'You do not have permission to create a form.' }));
+  });
+
+  it('propagates error from tenantService.canCreateForm', async () => {
+    const err = new Error('boom');
+    jest.spyOn(tenantService, 'canCreateForm').mockRejectedValue(err);
+
+    const req = getMockReq({ currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await requireCreateFormPermission(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(err);
+  });
+});
+
+// Add tests for requireFormTenantAssociation
+describe('requireFormTenantAssociation', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('allows when no tenantId on currentUser', async () => {
+    const req = getMockReq({
+      currentUser: {}, // no tenantId
+      params: { formId: uuid.v4() },
+    });
+    const { res, next } = getMockRes();
+
+    const spy = jest.spyOn(tenantService, 'isFormInUsersTenant');
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('rejects with 400 when tenantId present and formId is invalid (params)', async () => {
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      params: { formId: 'not-a-uuid' },
+    });
+    const { res, next } = getMockRes();
+
+    const spy = jest.spyOn(tenantService, 'isFormInUsersTenant');
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400, detail: 'Bad formId' }));
+  });
+
+  it('rejects with 400 when tenantId present and formId is invalid (query)', async () => {
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      query: { formId: 'not-a-uuid' },
+    });
+    const { res, next } = getMockRes();
+
+    const spy = jest.spyOn(tenantService, 'isFormInUsersTenant');
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400, detail: 'Bad formId' }));
+  });
+
+  it('allows when form is in user tenant (params)', async () => {
+    const formId = uuid.v4();
+    jest.spyOn(tenantService, 'isFormInUsersTenant').mockResolvedValue(true);
+
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      params: { formId },
+    });
+    const { res, next } = getMockRes();
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(tenantService.isFormInUsersTenant).toHaveBeenCalledWith(req, formId);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('denies with 403 when form is not in user tenant (query)', async () => {
+    const formId = uuid.v4();
+    jest.spyOn(tenantService, 'isFormInUsersTenant').mockResolvedValue(false);
+
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      query: { formId },
+    });
+    const { res, next } = getMockRes();
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(tenantService.isFormInUsersTenant).toHaveBeenCalledWith(req, formId);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403, detail: 'Form not accessible for your tenant.' }));
+  });
+
+  it('propagates error from tenantService.isFormInUsersTenant', async () => {
+    const formId = uuid.v4();
+    const err = new Error('lookup failed');
+    jest.spyOn(tenantService, 'isFormInUsersTenant').mockRejectedValue(err);
+
+    const req = getMockReq({
+      currentUser: { tenantId: 'tenant-123' },
+      params: { formId },
+    });
+    const { res, next } = getMockRes();
+
+    await requireFormTenantAssociation(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(err);
   });
 });

@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Aprire",
   "date": {
     "date": "aaaa-mm-gg"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Le mie Forme",
+    "groupForms": "Moduli di Gruppo",
     "createNewForm": "Crea un nuovo modulo",
     "search": "Ricerca",
     "manage": "Maneggio",
@@ -30,7 +31,12 @@
     "description": "descrizione",
     "Description": "Descrizione:",
     "action": "Azioni",
-    "loadingText": "Attendere il caricamento prego"
+    "loadingText": "Attendere il caricamento prego",
+    "forms": "Moduli",
+    "deleteForm": "Elimina modulo",
+    "manageForm": "Gestisci modulo",
+    "viewSubmissions": "Visualizza invii",
+    "noDataText": "Nessun modulo trovato"
   },
   "manageLayout": {
     "manageForm": "Gestisci modulo"
@@ -53,6 +59,7 @@
     "emailManagement": "Gestione della posta elettronica",
     "viewSubmissions": "Visualizza invii",
     "teamManagement": "Gestione della squadra",
+    "groupManagement": "Gestione dei gruppi",
     "deleteForm": "Elimina modulo",
     "confirmDeletion": "Confermare la cancellazione",
     "deleteMessageA": "Sei sicuro di voler eliminare",
@@ -85,6 +92,8 @@
     "uploadError": "Si è verificato un errore durante il caricamento del template.",
     "deleteSuccess": "Template eliminato con successo.",
     "deleteError": "Si è verificato un errore durante l'eliminazione del template.",
+    "deleteErrorInUse": "Impossibile eliminare il template: Il template è attualmente in uso dalla Configurazione di stampa. Si prega di aggiornare prima le impostazioni della Configurazione di stampa.",
+    "deleteDisabledTooltip": "Questo template è attualmente in uso dalla Configurazione di stampa. Si prega di aggiornare prima le impostazioni della Configurazione di stampa.",
     "fetchError": "Si è verificato un errore durante il recupero del template.",
     "info": "Carica un template per utilizzare il Servizio di Generazione Documenti Comuni (CDOGS)",
     "fileSizeError": "La dimensione del file deve essere inferiore a 25 MB."
@@ -103,7 +112,9 @@
     "referenceGuideB": "guida utente",
     "referenceGuideC": "per maggiori dettagli",
     "specificTeamMembers": "Membri specifici del team",
+    "specificGroups": "Gruppi specifici",
     "teamMemberTooltip": "Dopo aver creato il modulo, avrai accesso alla pagina di Gestione del Team dove potrai aggiungere utenti e assegnare ruoli. Cerca l’icona delle persone nella pagina Gestisci modulo ",
+    "groupAccessTooltip": "L’accesso è controllato dai gruppi CSTAR. Dopo aver creato il modulo, vai alla pagina Gestione gruppi per associare i gruppi CSTAR a questo modulo. Solo gli utenti appartenenti a quei gruppi potranno accedervi. Per aggiungere o rimuovere utenti da un gruppo, gestisci l’appartenenza al gruppo in CSTAR.",
     "formFunctionality": "Funzionalità della forma",
     "formSubmissinScheduleMsg": "Il programma di invio del modulo sarà disponibile nelle Impostazioni del modulo dopo la pubblicazione del modulo.",
     "formSubmissionsSchedule": "Programma di invio dei moduli",
@@ -204,7 +215,38 @@
     "encryptionKeyUpdatedBy": "Chiave di crittografia aggiornata da",
     "encryptionKeyCopySnackbar": "Chiave di crittografia copiata negli appunti",
     "encryptionKeyCopyTooltip": "Copia la chiave di crittografia negli appunti",
-    "encryptionKeyGenerate": "Genera chiave di crittografia"
+    "encryptionKeyGenerate": "Genera chiave di crittografia",
+    "dataRetention": "Politica di conservazione dei dati",
+    "enableHardDeletion": "Abilitare l'eliminazione definitiva automatica",
+    "hardDeletionTooltip": "Quando abilitato, le sottomissioni contrassegnate per l'eliminazione saranno rimosse permanentemente dopo il periodo di conservazione.",
+    "hardDeletionWarning": "L'eliminazione definitiva è permanente e non può essere annullata.",
+    "permanentDeletion": "I dati saranno irrecuperabili dopo l'eliminazione.",
+    "dataClassification": "Classificazione dei dati",
+    "dataClassificationHint": "Categorizzare il tipo di dati raccolti da questo modulo",
+    "retentionPeriod": "Periodo di conservazione",
+    "retentionPeriodHint": "Per quanto tempo conservare le sottomissioni eliminate prima della rimozione permanente",
+    "classPublic": "Pubblico",
+    "classInternal": "Interno",
+    "classSensitive": "Sensibile",
+    "classConfidential": "Confidenziale",
+    "classProtected": "Protetto",
+    "classificationCustomHint": "È possibile digitare una classificazione personalizzata se necessario",
+    "days30": "30 giorni",
+    "days90": "90 giorni",
+    "days180": "180 giorni",
+    "year1": "1 anno (365 giorni)",
+    "years2": "2 anni (730 giorni)",
+    "years5": "5 anni (1825 giorni)",
+    "daysCustom": "Periodo personalizzato",
+    "customDaysLabel": "Periodo di conservazione personalizzato (giorni)",
+    "customDaysHint": "Inserisci un numero tra 1 e 3650 giorni (10 anni)",
+    "classificationDescription": "Note di classificazione",
+    "classificationDescriptionHint": "Descrizione opzionale del motivo per cui sono stati scelti questa classificazione e periodo di conservazione",
+    "retentionDaysUpdated": "Periodo di conservazione aggiornato",
+    "deletionDisclaimerWithDays": "AVVERTENZA: Dopo {days} giorni, le sottomissioni contrassegnate per l'eliminazione saranno eliminate permanentemente e non potranno essere recuperate.",
+    "setRetentionPrompt": "Si prega di impostare un periodo di conservazione per completare la politica di conservazione dei dati.",
+    "fetchRetentionClassificationListError": "Errore durante il recupero dell'elenco delle classificazioni di conservazione.",
+    "fetchRetentionClassificationListConsErrMsg": "Errore durante il recupero delle classificazioni di conservazione: {error}"
   },
   "formProfile": {
     "message": "Il team CHEFS sta raccogliendo e organizzando informazioni per servire come input cruciale per la creazione di casi aziendali completi. Questi casi avranno un ruolo cruciale nella guida dell'operazione strategica e nell'ulteriore miglioramento di CHEFS nei prossimi anni. Questa iniziativa di raccolta dati è essenziale per informare decisioni critiche e plasmare la traiettoria di CHEFS, garantendone adattabilità ed efficacia nel affrontare esigenze e sfide in evoluzione.",
@@ -687,10 +729,12 @@
     "fetchSubmissionUsersErr": "Si è verificato un errore durante il tentativo di recuperare le email dei destinatari per questo invio.",
     "fetchSubmissionUsersConsErr": "Errore durante il recupero delle email del destinatario per",
     "assignSubmissnToFormReviewer": "Gli invii possono essere assegnati ai revisori dei moduli.<br /> Per aggiungere altri membri del team come revisori del modulo, vai alla pagina Gestisci per questo modulo.",
+    "assignSubmissnToFormReviewerTenanted": "Gli invii possono essere assegnati ai revisori dei moduli. <br />Per aggiungere o aggiornare i membri come revisori del modulo, vai su CSTAR e aggiorna il gruppo appropriato.",
     "update": "AGGIORNAMENTO",
     "revise": "RIVEDERE",
     "complete": "COMPLETARE",
-    "assign": "ASSEGNARE"
+    "assign": "ASSEGNARE",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Attendere il caricamento prego",
@@ -829,6 +873,44 @@
     "setUserFormsErrMsg": "Si è verificato un errore durante il tentativo di aggiornare i ruoli per un utente",
     "setUserFormsConsoleErrMsg": "Errore durante l'impostazione dei ruoli utente per il modulo {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Gestione dei gruppi",
+    "manageForm": "Gestisci modulo",
+    "search": "Cerca",
+    "loadingText": "Caricamento in corso... Attendere",
+    "noDataText": "Nessun gruppo disponibile per questo tenant",
+    "noMatchingRecordText": "Nessun record corrispondente trovato",
+    "groupName": "Nome del gruppo",
+    "description": "Descrizione",
+    "associated": "Associato",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "confirmSave": "Conferma modifiche",
+    "confirmSaveMsg": "Sei sicuro di voler aggiornare le associazioni di gruppo per questo modulo?",
+    "saveSuccessMsg": "Associazioni di gruppo aggiornate con successo",
+    "saveErrMsg": "Si è verificato un errore durante il salvataggio delle associazioni di gruppo",
+    "getGroupsErrMsg": "Si è verificato un errore durante il caricamento dei gruppi per questo modulo",
+    "missingGroupsWarning": "{count} gruppo/i precedentemente associato/i non esiste/esistono più in questo tenant",
+    "availableGroups": "Gruppi disponibili",
+    "assignedGroups": "Gruppi assegnati",
+    "searchAvailable": "Cerca gruppi disponibili",
+    "searchAssigned": "Cerca gruppi assegnati",
+    "noAvailableGroups": "Nessun gruppo disponibile in questo tenant",
+    "noAssignedGroups": "Nessun gruppo assegnato a questo modulo",
+    "addGroup": "Aggiungi gruppo",
+    "removeGroup": "Rimuovi gruppo",
+    "deleted": "Eliminato",
+    "noTenantAccess": "La gestione dei gruppi è disponibile solo per i moduli con tenant. Seleziona un tenant per continuare.",
+    "unsavedChangesWarning": "Hai modifiche al gruppo non salvate. Uscire senza salvare?",
+    "unsavedChangesTitle": "Modifiche non salvate",
+    "leave": "Lascia",
+    "selectAll": "Seleziona tutto",
+    "addSelected": "Aggiungi selezionati",
+    "removeSelected": "Rimuovi selezionati",
+    "formAdminGroupRequired": "Almeno un gruppo assegnato deve avere il ruolo form_admin.",
+    "invalidGroupIds": "Uno o più gruppi selezionati non sono validi per questo tenant.",
+    "insufficientPermissions": "Non hai il permesso di gestire le associazioni di gruppi."
+  },
   "floatButton": {
     "publish": "Pubblicare",
     "manage": "Maneggio",
@@ -895,10 +977,12 @@
   "bCGovNavBar": {
     "about": "Di",
     "myForms": "Le mie Forme",
+    "groupForms": "Moduli di Gruppo",
     "createNewForm": "Crea un nuovo modulo",
     "help": "Aiuto",
     "feedback": "Feedback",
-    "admin": "Amministratore"
+    "admin": "Amministratore",
+    "forms": "Moduli"
   },
   "homePage": {
     "title": "Crea, pubblica moduli e ricevi invii con Common Hosted Forms Service.",
@@ -917,7 +1001,23 @@
     "chefsHowToSub": "La nostra guida rapida ti introdurrà ad alcune delle funzioni di base di CHEFS.",
     "getStartedToChefs": "Inizia a usare CHEFS",
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
-    "getStarted": "Iniziare"
+    "getStarted": "Iniziare",
+    "enterpriseSectionTitle": "Scopri il nuovo Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS amplia il CHEFS classico (Common Hosted Forms Service) lavorando insieme a CSTAR — Servizi Connessi, Accesso al Team e Ruoli — per creare uno spazio di lavoro condiviso e collaborativo.",
+    "enterpriseSectionBody2": "Con Enterprise CHEFS, i team possono condividere moduli in modo sicuro, assegnare ruoli e gestire progetti all'interno del tenant della propria organizzazione.",
+    "enterpriseSectionWelcome": "Benvenuto in Enterprise CHEFS, dove i team di tutta l'amministrazione pubblica possono collaborare in modo sicuro ed efficiente.",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS ora supporta il multi-tenancy!",
+    "multiTenancySubTitle": "Crea un gruppo per il tuo progetto o team e gestisci l'accesso ai moduli condivisi per l'intero gruppo in un unico posto.",
+    "multiTenancyFitHeading": "Questa potrebbe essere una buona soluzione per il tuo team se:",
+    "multiTenancyBullet1": "gestisci molti moduli in diversi programmi o ambienti",
+    "multiTenancyBullet2": "hai più amministratori o revisori",
+    "multiTenancyBullet3": "affronti frequenti cambiamenti del personale",
+    "multiTenancyBullet4": "desideri una gestione centralizzata degli accessi",
+    "multiTenancyBullet5": "stai adottando altri servizi connessi come Notify",
+    "multiTenancyFooter": "I responsabili del team e gli amministratori possono usare CSTAR per creare un tenant e gestire l'accesso per il loro team.",
+    "multiTenancyBtnLabel": "Accedi a CSTAR per iniziare"
   },
   "baseStepper": {
     "setUpForm": "Imposta modulo",
@@ -1117,6 +1217,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Le impostazioni di iscrizione per questo modulo sono state salvate.",
       "saveSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di salvare le impostazioni dell'abbonamento.",
       "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "Si è verificato un errore durante il recupero della politica di conservazione per questo modulo.",
+      "getFormRetentionPolicyConsErrMsg": "Errore durante il recupero della politica di conservazione per il modulo {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "Si è verificato un errore durante la configurazione della politica di conservazione per questo modulo.",
+      "configureFormRetentionPolicyConsErrMsg": "Errore durante la configurazione della politica di conservazione per il modulo {formId}: {error}"
     }
   },
   "admin": {
@@ -1155,6 +1261,33 @@
     "editTitle": "Modifica configurazione flusso eventi",
     "fetchError": "Si è verificato un errore durante il recupero della configurazione del flusso di eventi.",
     "save": "Salva"
+  },
+  "printConfig": {
+    "title": "Configurazione di stampa",
+    "description": "Configura come gli utenti possono stampare le invii del modulo",
+    "typeDefault": "Predefinito",
+    "typeDefaultDescription": "Gli utenti possono scegliere il metodo di stampa (stampa del browser o modello)",
+    "typeDirect": "Stampa diretta",
+    "typeDirectDescription": "Gli utenti stampano direttamente utilizzando un modello preconfigurato (output PDF)",
+    "selectTemplate": "Seleziona modello",
+    "save": "Salva configurazione",
+    "saving": "Salvataggio...",
+    "saveSuccess": "Configurazione di stampa salvata con successo",
+    "saveError": "Si è verificato un errore durante il salvataggio della configurazione di stampa",
+    "fetchError": "Si è verificato un errore durante il recupero della configurazione di stampa",
+    "templateRequired": "Il modello è richiesto quando si utilizza la stampa diretta",
+    "noTemplatesAvailable": "Nessun modello disponibile. Si prega di caricare prima un modello.",
+    "templateDeleted": "Il modello selezionato in precedenza è stato eliminato. Si prega di selezionare un nuovo modello.",
+    "currentConfig": "Configurazione corrente",
+    "type": "Tipo",
+    "template": "Modello",
+    "reportNameLabel": "Nome file di output",
+    "reportNameOptionFormName": "Usa nome modulo",
+    "reportNameOptionFormNameDescription": "Il file di output sarà denominato utilizzando il nome del modulo",
+    "reportNameOptionCustom": "Usa nome personalizzato",
+    "reportNameOptionCustomDescription": "Inserisci un nome personalizzato per il file di output",
+    "reportNameCustomInput": "Nome file personalizzato",
+    "reportNameCustomInputHint": "Inserisci il nome personalizzato per il documento generato"
   },
   "encryptionKey": {
     "info": "Configura le chiavi di crittografia per il tuo modulo.",
@@ -1226,7 +1359,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
-    "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo"
+    "canShareGroupMessage": "Non puoi condividere la bozza con questo utente. Deve essere membro di uno dei gruppi autorizzati di questo modulo.",
+    "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo",
+    "shareDraftGroupMessage": "Condividi la bozza solo con i membri del gruppo del modulo",
+    "groupShareHint": "Possono essere aggiunti solo i membri dei gruppi autorizzati di questo modulo."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Questo servizio non è temporaneamente disponibile.",
@@ -1245,5 +1381,96 @@
     "shuttingDown": "CHEFS si sta spegnendo.",
     "notReady": "CHEFS non può connettersi a tutti i servizi richiesti.",
     "unableToReachBackend": "Impossibile raggiungere il servizio backend."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Vuoi lavorare in sicurezza con il tuo team, consegnare moduli più velocemente e collaborare nel governo?",
+      "title": "Presentiamo Enterprise CHEFS e CSTAR!",
+      "enterpriseTitle": "Sperimenta il nuovo Enterprise CHEFS",
+      "tenant": "tenant",
+      "description1": "Enterprise CHEFS è la nuova versione di CHEFS che supporta l'accesso multi-tenant e la gestione del team tramite CSTAR (Connected Services, Team Access and Roles).",
+      "description2": "Con Enterprise CHEFS, la tua organizzazione può:",
+      "description3": "Lavorare in modalità ",
+      "description4": " - Ogni tenant ha il proprio spazio sicuro con moduli, dati e autorizzazioni isolati",
+      "description5": "Gestire l'accesso del team - Controlla chi può visualizzare, modificare o gestire moduli all'interno del tuo tenant",
+      "description6": "Mantenere la sicurezza dei dati - I dati di ogni tenant sono completamente isolati da altri tenant",
+      "description7": "Enterprise CHEFS include anche tutte le potenti funzionalità che conosci e ami di Personal CHEFS, come il costruttore di moduli drag-and-drop, logica condizionale, invii crittografati e integrazioni API.",
+      "loginButton": "Accedi per iniziare",
+      "goToChefs": "Vai a CHEFS",
+      "learnMore": "Scopri di più"
+    },
+    "gettingStarted": {
+      "title": "Nuovo su CHEFS e non sai da dove iniziare?",
+      "description": "Puoi iniziare a creare moduli con pochi semplici passaggi:",
+      "step1Title": "1. Accedi con il tuo account IDIR o BCeID",
+      "step2Title": "2. Crea un nuovo modulo o usa un modello",
+      "step3Title": "3. Progetta il tuo modulo con il nostro costruttore drag-and-drop",
+      "step4Title": "4. Pubblica e condividi il tuo modulo con il tuo team o il pubblico",
+      "loginButton": "Accedi per iniziare",
+      "learnMore": "Scopri di più"
+    },
+    "examples": {
+      "demographicSurvey": "Esempio | Sondaggio di raccolta dati demografici",
+      "projectRequest": "Esempio | Richiesta di progetto",
+      "permitApplication": "Esempio | Richiesta di permesso"
+    },
+    "testimonials": {
+      "title": "Non fidarti solo della nostra parola, ascolta cosa hanno da dire i nostri utenti su di noi.",
+      "author": "Autore",
+      "role": "Ruolo"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "Utente CHEFS 1",
+        "role": "Analista di programma",
+        "quote": "\"CHEFS ha trasformato il modo in cui raccogliamo i dati. Il sistema multi-tenant ci consente di mantenere i progetti separati condividendo al contempo le migliori pratiche in tutto il nostro dipartimento.\""
+      },
+      "testimonial2": {
+        "author": "Utente CHEFS 2",
+        "role": "Project Manager",
+        "quote": "\"L'integrazione con CSTAR rende la gestione dell'accesso del team molto più semplice. Posso integrare rapidamente nuovi membri del team e controllare esattamente cosa possono fare.\""
+      },
+      "testimonial3": {
+        "author": "Utente CHEFS 3",
+        "role": "Amministratore IT",
+        "quote": "\"Apprezziamo le robuste funzionalità di sicurezza e isolamento dei dati. Ogni tenant è completamente separato, il che ci dà tranquillità quando lavoriamo con dati sensibili.\""
+      }
+    },
+    "finalCta": {
+      "title": "Inizia a usare Enterprise CHEFS",
+      "description": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare il tuo flusso di lavoro.",
+      "loginButton": "Accedi per iniziare"
+    },
+    "formViewer": {
+      "title": "Visualizzatore moduli",
+      "description": "Anteprima di come apparirà il tuo modulo",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "myForms": "Le mie Forme",
+    "tenantLabel": "Tenant:",
+    "infoTooltip": "Seleziona il tuo tenant per accedere ai Moduli di Gruppo. Torna a 'Le mie Forme' in qualsiasi momento.",
+    "selectLabel": "Seleziona tenant (si apre in Enterprise CHEFS)",
+    "placeholder": "Seleziona tra i tenant disponibili",
+    "noDataText": "Nessun tenant trovato",
+    "switchToClassic": "Switch to My Forms",
+    "goToCstar": "Vai a CSTAR (Servizi connessi, accesso team e ruoli)",
+    "noTenantsAvailable": "Nessun tenant disponibile",
+    "manageTenantsIn": "Gestisci tenant in",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Tenant:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR è temporaneamente non disponibile. La selezione del tenant è attualmente disabilitata.",
+    "errorFetchingTenants": "Errore nel recupero dei tenant"
   }
 }

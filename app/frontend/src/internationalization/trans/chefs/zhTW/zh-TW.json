@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "打開",
   "date": {
     "date": "年-月-日"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "我的表格",
+    "groupForms": "群組表單",
     "createNewForm": "創建新表單",
     "search": "搜索",
     "manage": "管理",
@@ -30,7 +31,12 @@
     "description": "描述",
     "Description": "描述：",
     "action": "行動",
-    "loadingText": "加載請稍候"
+    "loadingText": "加載請稍候",
+    "forms": "表單",
+    "deleteForm": "刪除表單",
+    "manageForm": "管理表單",
+    "viewSubmissions": "查看提交",
+    "noDataText": "未找到表單"
   },
   "manageLayout": {
     "manageForm": "管理表格"
@@ -53,6 +59,7 @@
     "emailManagement": "電子郵件管理",
     "viewSubmissions": "查看提交內容",
     "teamManagement": "團隊管理",
+    "groupManagement": "群組管理",
     "deleteForm": "刪除表格",
     "confirmDeletion": "確認刪除",
     "deleteMessageA": "您確定要刪除嗎",
@@ -85,6 +92,8 @@
     "uploadError": "上傳範本時發生錯誤。",
     "deleteSuccess": "範本成功刪除。",
     "deleteError": "刪除範本時發生錯誤。",
+    "deleteErrorInUse": "無法刪除範本：範本目前正在被列印設定使用。請先更新列印設定。",
+    "deleteDisabledTooltip": "此範本目前正在被列印設定使用。請先更新列印設定。",
     "fetchError": "獲取範本時發生錯誤。",
     "info": "上傳範本以使用公共文檔生成服務（CDOGS）",
     "fileSizeError": "檔案大小必須小於25MB。"
@@ -103,7 +112,9 @@
     "referenceGuideB": "使用者指南",
     "referenceGuideC": "以獲取更多詳情。",
     "specificTeamMembers": "具體團隊成員",
+    "specificGroups": "特定群組",
     "teamMemberTooltip": "建立表單後，您將可進入團隊管理頁面，新增使用者並指派角色。請在管理表單頁面尋找人員圖示 ",
+    "groupAccessTooltip": "存取由CSTAR群組控制。建立表單後，前往群組管理頁面將CSTAR群組與此表單關聯。只有屬於這些群組的使用者才能存取它。要在群組中新增或移除使用者，請在CSTAR中管理群組成員資格。",
     "formFunctionality": "表單功能",
     "formSubmissinScheduleMsg": "表單發布後，表單提交計劃將在表單設置中可用。",
     "formSubmissionsSchedule": "表格提交時間表",
@@ -204,7 +215,38 @@
     "encryptionKeyUpdatedBy": "加密金鑰更新者",
     "encryptionKeyCopySnackbar": "加密金鑰已複製到剪貼簿",
     "encryptionKeyCopyTooltip": "將加密金鑰複製到剪貼簿",
-    "encryptionKeyGenerate": "產生加密金鑰"
+    "encryptionKeyGenerate": "產生加密金鑰",
+    "dataRetention": "資料保留政策",
+    "enableHardDeletion": "啟用自動永久刪除",
+    "hardDeletionTooltip": "啟用後，標記為刪除的提交將在保留期結束後被永久刪除。",
+    "hardDeletionWarning": "永久刪除是不可逆的，無法撤銷。",
+    "permanentDeletion": "刪除後資料將無法恢復。",
+    "dataClassification": "資料分類",
+    "dataClassificationHint": "對此表單收集的資料類型進行分類",
+    "retentionPeriod": "保留期限",
+    "retentionPeriodHint": "在永久刪除前保留已刪除提交的時間",
+    "classPublic": "公開",
+    "classInternal": "內部",
+    "classSensitive": "敏感",
+    "classConfidential": "機密",
+    "classProtected": "受保護",
+    "classificationCustomHint": "如有需要可以輸入自定義分類",
+    "days30": "30天",
+    "days90": "90天",
+    "days180": "180天",
+    "year1": "1年（365天）",
+    "years2": "2年（730天）",
+    "years5": "5年（1825天）",
+    "daysCustom": "自定義期限",
+    "customDaysLabel": "自定義保留期限（天數）",
+    "customDaysHint": "輸入1到3650天（10年）之間的數字",
+    "classificationDescription": "分類說明",
+    "classificationDescriptionHint": "可選擇說明為什麼選擇此分類和保留期限",
+    "retentionDaysUpdated": "保留期限已更新",
+    "deletionDisclaimerWithDays": "警告：{days}天後，標記為刪除的提交將被永久刪除，無法恢復。",
+    "setRetentionPrompt": "請設置保留期限以完成您的資料保留政策。",
+    "fetchRetentionClassificationListError": "取得保留分類清單時發生錯誤。",
+    "fetchRetentionClassificationListConsErrMsg": "取得保留分類時發生錯誤：{error}"
   },
   "formProfile": {
     "message": "CHEFS團隊正在收集和組織信息，作為制定全面業務案例的關鍵輸入。這些案例將在指導CHEFS未來幾年的戰略運作和持續改進中發揮關鍵作用。這一收集數據的倡議對於提供關鍵決策的信息和塑造CHEFS軌跡至關重要，確保其在應對不斷變化的需求和挑戰中的適應性和有效性。",
@@ -687,10 +729,12 @@
     "fetchSubmissionUsersErr": "嘗試獲取此提交的收件人電子郵件時發生錯誤。",
     "fetchSubmissionUsersConsErr": "獲取收件人電子郵件時出錯",
     "assignSubmissnToFormReviewer": "提交的內容可以分配給表單審閱者。<br />要將更多團隊成員添加為表單審閱者，請轉到此表單的管理頁面。",
+    "assignSubmissnToFormReviewerTenanted": "提交的內容可以分配給表單審閱者。<br />要新增或更新表單審閱者成員，請前往 CSTAR 並更新適當的群組。",
     "update": "更新",
     "revise": "修訂",
     "complete": "完全的",
-    "assign": "分配"
+    "assign": "分配",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "加載請稍候",
@@ -829,6 +873,44 @@
     "setUserFormsErrMsg": "嘗試更新用戶的角色時發生錯誤",
     "setUserFormsConsoleErrMsg": "設置表單 {formId} 的用戶角色時出錯：{error}"
   },
+  "groupManagement": {
+    "groupManagement": "群組管理",
+    "manageForm": "管理表單",
+    "search": "搜尋",
+    "loadingText": "載入中...請稍候",
+    "noDataText": "此租戶沒有可用的群組",
+    "noMatchingRecordText": "未找到符合的記錄",
+    "groupName": "群組名稱",
+    "description": "描述",
+    "associated": "已關聯",
+    "save": "儲存",
+    "cancel": "取消",
+    "confirmSave": "確認變更",
+    "confirmSaveMsg": "您確定要更新此表單的群組關聯嗎？",
+    "saveSuccessMsg": "群組關聯已成功更新",
+    "saveErrMsg": "儲存群組關聯時發生錯誤",
+    "getGroupsErrMsg": "載入此表單的群組時發生錯誤",
+    "missingGroupsWarning": "{count} 個之前關聯的群組在此租戶中不再存在",
+    "availableGroups": "可用群組",
+    "assignedGroups": "已分配的群組",
+    "searchAvailable": "搜尋可用群組",
+    "searchAssigned": "搜尋已分配的群組",
+    "noAvailableGroups": "此租戶中沒有可用的群組",
+    "noAssignedGroups": "此表單沒有分配任何群組",
+    "addGroup": "新增群組",
+    "removeGroup": "移除群組",
+    "deleted": "已刪除",
+    "noTenantAccess": "群組管理僅適用於租戶表單。請選擇租戶以繼續。",
+    "unsavedChangesWarning": "您有未儲存的群組變更。不儲存就離開？",
+    "unsavedChangesTitle": "未儲存的變更",
+    "leave": "離開",
+    "selectAll": "全選",
+    "addSelected": "新增所選",
+    "removeSelected": "移除所選",
+    "formAdminGroupRequired": "至少一個已指派的群組必須具有 form_admin 角色。",
+    "invalidGroupIds": "一個或多個選取的群組對此租戶無效。",
+    "insufficientPermissions": "您沒有管理群組關聯的權限。"
+  },
   "floatButton": {
     "publish": "發布",
     "manage": "管理",
@@ -895,10 +977,12 @@
   "bCGovNavBar": {
     "about": "關於",
     "myForms": "我的表格",
+    "groupForms": "群組表單",
     "createNewForm": "創建新表單",
     "help": "幫助",
     "feedback": "反饋",
-    "admin": "行政"
+    "admin": "行政",
+    "forms": "表單"
   },
   "homePage": {
     "title": "使用通用託管表單服務創建、發布表單並接收提交內容。",
@@ -917,7 +1001,23 @@
     "chefsHowToSub": "我們的快速入門指南將向您介紹 CHEFS 的一些基本功能。",
     "getStartedToChefs": "開始使用 CHEFS",
     "createOnlineTitle": "創建在線表單以收集客戶的信息並改進您的工作流程。",
-    "getStarted": "開始使用"
+    "getStarted": "開始使用",
+    "enterpriseSectionTitle": "體驗全新的 Enterprise CHEFS",
+    "enterpriseSectionBody1": "Enterprise CHEFS 透過與 CSTAR（Connected Services、Team Access 和 Roles）合作，擴展了傳統 CHEFS（Common Hosted Forms Service），創建了一個共享的協作工作區。",
+    "enterpriseSectionBody2": "借助 Enterprise CHEFS，團隊可以在其組織的租戶內安全地共享表單、指派角色並管理專案。",
+    "enterpriseSectionWelcome": "歡迎使用 Enterprise CHEFS，政府各部門的團隊可以在這裡安全高效地協作。",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS 現在支援多租戶！",
+    "multiTenancySubTitle": "為您的專案或團隊建立群組，並在一個地方管理整個群組的共用表單存取權限。",
+    "multiTenancyFitHeading": "如果您符合以下情況，這可能非常適合您的團隊：",
+    "multiTenancyBullet1": "跨程式或環境管理許多表單",
+    "multiTenancyBullet2": "擁有多個管理員或審核員",
+    "multiTenancyBullet3": "經歷頻繁的人員變動",
+    "multiTenancyBullet4": "希望集中管理存取權限",
+    "multiTenancyBullet5": "正在採用 Notify 等其他連接服務",
+    "multiTenancyFooter": "團隊負責人和管理員可以使用 CSTAR 建立租戶並管理其團隊的存取權限。",
+    "multiTenancyBtnLabel": "登入 CSTAR 開始使用"
   },
   "baseStepper": {
     "setUpForm": "設置表格",
@@ -1117,6 +1217,12 @@
       "saveSubscriptionSettingsNotifyMsg": "此表单的订阅设置已保存。",
       "saveSubscriptionSettingsErrMsg": "尝试保存订阅设置时出错。",
       "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "獲取此表單的保留策略時發生錯誤。",
+      "getFormRetentionPolicyConsErrMsg": "獲取表單 {formId} 的保留策略時出錯：{error}",
+      "configureFormRetentionPolicyErrMsg": "配置此表單的保留策略時發生錯誤。",
+      "configureFormRetentionPolicyConsErrMsg": "配置表單 {formId} 的保留策略時出錯：{error}"
     }
   },
   "admin": {
@@ -1155,6 +1261,33 @@
     "editTitle": "編輯事件流配置",
     "fetchError": "取得事件流配置時發生錯誤。",
     "save": "節省"
+  },
+  "printConfig": {
+    "title": "列印設定",
+    "description": "設定使用者如何列印表單提交",
+    "typeDefault": "預設",
+    "typeDefaultDescription": "使用者可以選擇列印方法（瀏覽器列印或範本）",
+    "typeDirect": "直接列印",
+    "typeDirectDescription": "使用者使用預先設定的範本直接列印（PDF輸出）",
+    "selectTemplate": "選擇範本",
+    "save": "儲存設定",
+    "saving": "儲存中...",
+    "saveSuccess": "列印設定已成功儲存",
+    "saveError": "儲存列印設定時發生錯誤",
+    "fetchError": "取得列印設定時發生錯誤",
+    "templateRequired": "使用直接列印時需要範本",
+    "noTemplatesAvailable": "沒有可用的範本。請先上傳範本。",
+    "templateDeleted": "之前選擇的範本已被刪除。請選擇新範本。",
+    "currentConfig": "目前設定",
+    "type": "類型",
+    "template": "範本",
+    "reportNameLabel": "輸出檔案名稱",
+    "reportNameOptionFormName": "使用表單名稱",
+    "reportNameOptionFormNameDescription": "輸出檔案將使用表單名稱命名",
+    "reportNameOptionCustom": "使用自訂名稱",
+    "reportNameOptionCustomDescription": "輸入輸出檔案的自訂名稱",
+    "reportNameCustomInput": "自訂檔案名稱",
+    "reportNameCustomInputHint": "輸入產生文件的自訂名稱"
   },
   "encryptionKey": {
     "info": "為您的表單配置加密金鑰。",
@@ -1226,7 +1359,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "您無法與尚未新增至表單的使用者共用草稿。請聯絡管理員新增它們。",
-    "shareDraftMessage": "僅與表單團隊成員分享草稿"
+    "canShareGroupMessage": "您無法與此使用者共享草稿。他們必須是此表單授權群組之一的成員。",
+    "shareDraftMessage": "僅與表單團隊成員分享草稿",
+    "shareDraftGroupMessage": "僅與表單群組成員共享草稿",
+    "groupShareHint": "只能新增此表單授權群組的成員。"
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "此服務暫時無法使用。",
@@ -1245,5 +1381,96 @@
     "shuttingDown": "CHEFS 正在關閉。",
     "notReady": "CHEFS 無法連接到所有必需的服務。",
     "unableToReachBackend": "無法存取後端服務。"
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "您是否希望與您的團隊安全地合作、更快地交付表單並在政府中協作？",
+      "title": "介紹 Enterprise CHEFS 和 CSTAR！",
+      "enterpriseTitle": "體驗新的 Enterprise CHEFS",
+      "tenant": "租戶",
+      "description1": "Enterprise CHEFS 是 CHEFS 的新版本，通過 CSTAR（連接服務、團隊訪問和角色）支持多租戶訪問和團隊管理。",
+      "description2": "使用 Enterprise CHEFS，您的組織可以：",
+      "description3": "以",
+      "description4": "模式工作 - 每個租戶都有自己的安全空間，具有隔離的表單、數據和權限",
+      "description5": "管理團隊訪問 - 控制誰可以在您的租戶內查看、編輯或管理表單",
+      "description6": "維護數據安全 - 每個租戶的數據完全與其他租戶隔離",
+      "description7": "Enterprise CHEFS 還包括您熟悉和喜愛的 Personal CHEFS 的所有強大功能，例如拖放表單生成器、條件邏輯、加密提交和 API 集成。",
+      "loginButton": "登入開始",
+      "goToChefs": "轉到 CHEFS",
+      "learnMore": "了解更多"
+    },
+    "gettingStarted": {
+      "title": "剛接觸 CHEFS，不知道從哪裡開始？",
+      "description": "您可以通過幾個簡單的步驟開始創建表單：",
+      "step1Title": "1. 使用您的 IDIR 或 BCeID 帳戶登入",
+      "step2Title": "2. 創建新表單或使用模板",
+      "step3Title": "3. 使用我們的拖放生成器設計您的表單",
+      "step4Title": "4. 發佈並與您的團隊或公眾分享您的表單",
+      "loginButton": "登入開始",
+      "learnMore": "了解更多"
+    },
+    "examples": {
+      "demographicSurvey": "示例 | 人口統計數據收集調查",
+      "projectRequest": "示例 | 項目請求",
+      "permitApplication": "示例 | 許可申請"
+    },
+    "testimonials": {
+      "title": "不要只相信我們的話，聽聽我們的用戶對我們的評價。",
+      "author": "作者",
+      "role": "角色"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS 用戶 1",
+        "role": "項目分析師",
+        "quote": "\"CHEFS 改變了我們收集數據的方式。多租戶系統允許我們保持項目分離，同時在整個部門共享最佳實踐。\""
+      },
+      "testimonial2": {
+        "author": "CHEFS 用戶 2",
+        "role": "項目經理",
+        "quote": "\"與 CSTAR 的集成使團隊訪問管理變得更加容易。我可以快速加入新團隊成員並準確控制他們可以做什麼。\""
+      },
+      "testimonial3": {
+        "author": "CHEFS 用戶 3",
+        "role": "IT 管理員",
+        "quote": "\"我們讚賞強大的安全性和數據隔離功能。每個租戶完全分離，這讓我們在處理敏感數據時感到安心。\""
+      }
+    },
+    "finalCta": {
+      "title": "開始使用 Enterprise CHEFS",
+      "description": "創建在線表單以從您的客戶那裡收集信息並改進您的工作流程。",
+      "loginButton": "登入開始"
+    },
+    "formViewer": {
+      "title": "表單查看器",
+      "description": "預覽您的表單外觀",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "myForms": "我的表格",
+    "tenantLabel": "租戶:",
+    "infoTooltip": "選擇您的租戶以存取群組表單。隨時切換回「我的表格」。",
+    "selectLabel": "選擇租戶（在 Enterprise CHEFS 中打開）",
+    "placeholder": "從可用租戶中選擇",
+    "noDataText": "未找到租戶",
+    "switchToClassic": "Switch to My Forms",
+    "goToCstar": "轉到 CSTAR（連接服務、團隊訪問和角色）",
+    "noTenantsAvailable": "沒有可用的租戶",
+    "manageTenantsIn": "在以下位置管理租戶",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "租戶:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR 暫時無法使用。租戶選擇目前已停用。",
+    "errorFetchingTenants": "獲取租戶時出錯"
   }
 }

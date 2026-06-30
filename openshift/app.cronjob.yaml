@@ -64,7 +64,42 @@ objects:
                   command:
                     - /bin/sh
                     - -ec
-                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "http://${APP_NAME}-app-${JOB_NAME}:8080${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
+                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "https://${APP_NAME}-${NAMESPACE_ENVIRONMENT}.apps.silver.devops.gov.bc.ca${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
+              restartPolicy: OnFailure
+  - apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: "${APP_NAME}-form-submission-deletion-cronjob-${JOB_NAME}"
+    spec:
+      # Run at 3am daily (less busy time)
+      schedule: "0 */3 * * *"
+      concurrencyPolicy: "Replace"
+      startingDeadlineSeconds: 200
+      suspend: false
+      successfulJobsHistoryLimit: 3
+      failedJobsHistoryLimit: 1
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              labels:
+                parent: "cronjobpi"
+                workload: formsubmissiondeletioncronjob
+                type: trigger
+            spec:
+              containers:
+                - name: form-submission-deletion-container
+                  image: docker.io/curlimages/curl:8.12.1
+                  env:
+                    - name: APITOKEN
+                      valueFrom:
+                        secretKeyRef:
+                          name: "chefs-${JOB_NAME}-secret"
+                          key: mailapitoken
+                  command:
+                    - /bin/sh
+                    - -ec
+                    - 'curl -v -X POST -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "https://${APP_NAME}-${NAMESPACE_ENVIRONMENT}.apps.silver.devops.gov.bc.ca${ROUTE_PATH}/api/v1/recordsManagement/internal/deletions/process"||exit 0'
               restartPolicy: OnFailure
 parameters:
   - name: APP_NAME
@@ -82,4 +117,8 @@ parameters:
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
+    required: true
+  - name: NAMESPACE_ENVIRONMENT
+    description: Target namespace environment (i.e. 'dev' or 'test' or 'prod')
+    displayName: Namespace Environment
     required: true
