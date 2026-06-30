@@ -251,16 +251,6 @@ async function getFormData() {
           return fieldsArray;
         }
       } else if (typeof innerObject === 'object' && innerObject !== null) {
-        const result = iterate(
-          innerObject,
-          stack + '.' + property,
-          fields,
-          propNeeded
-        );
-        if (result) {
-          return result;
-        }
-      } else if (typeof innerObject === 'object') {
         return iterate(innerObject, stack + '.' + property, fields, propNeeded);
       }
     }
