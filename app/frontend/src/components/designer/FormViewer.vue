@@ -257,40 +257,34 @@ function getCurrentAuthHeader() {
 }
 
 async function getFormData() {
+  // When the form contains a Data Grid there will be an array that needs to be
+  // checked, and an array of properties to be unset.
+  function iterateArray(array, stack, fields, propNeeded) {
+    const fieldsArray = [];
+    for (let i = 0; i < array.length; i++) {
+      const next = iterate(array[i], stack + '[' + i + ']', fields, propNeeded);
+      if (next) {
+        fieldsArray.push(...(Array.isArray(next) ? next : [next]));
+      }
+    }
+    return fieldsArray;
+  }
+
   function iterate(obj, stack, fields, propNeeded) {
     //Get property path from nested object
     for (let property in obj) {
       const innerObject = obj[property];
+      const path = stack + '.' + property;
 
       if (propNeeded === property) {
-        fields = fields + stack + '.' + property;
-        return fields.replace(/^\./, '');
+        return (fields + path).replace(/^\./, '');
       } else if (Array.isArray(innerObject)) {
-        // When the form contains a Data Grid there will be an array that
-        // needs to be checked, and an array of properties to be unset.
-        const fieldsArray = [];
-        for (let i = 0; i < innerObject.length; i++) {
-          const next = iterate(
-            innerObject[i],
-            stack + '.' + property + '[' + i + ']',
-            fields,
-            propNeeded
-          );
-
-          if (next) {
-            if (Array.isArray(next)) {
-              fieldsArray.push(...next);
-            } else {
-              fieldsArray.push(next);
-            }
-          }
-        }
-
+        const fieldsArray = iterateArray(innerObject, path, fields, propNeeded);
         if (fieldsArray.length > 0) {
           return fieldsArray;
         }
       } else if (typeof innerObject === 'object' && innerObject !== null) {
-        return iterate(innerObject, stack + '.' + property, fields, propNeeded);
+        return iterate(innerObject, path, fields, propNeeded);
       }
     }
   }
