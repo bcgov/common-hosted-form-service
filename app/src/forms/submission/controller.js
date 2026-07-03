@@ -1,4 +1,4 @@
-const cdogsService = require('../../components/cdogsService');
+const docGenService = require('../../components/docGenService');
 
 const { Statuses } = require('../common/constants');
 const emailService = require('../email/emailService');
@@ -211,7 +211,13 @@ module.exports = {
         },
       };
 
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId: submission.form.id,
+        tenantId: req.currentUser?.tenantId,
+        submissionId: req.params.formSubmissionId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
       const contentDisposition = headers['content-disposition'];
 
       res
@@ -219,6 +225,7 @@ module.exports = {
         .set({
           'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
           'Content-Type': headers['content-type'],
+          'X-Content-Type-Options': 'nosniff',
         })
         .send(data);
     } catch (error) {
@@ -243,40 +250,20 @@ module.exports = {
         data: chefsTemplate(submission),
       };
 
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId: submission.form.id,
+        tenantId: req.currentUser?.tenantId,
+        submissionId: req.params.formSubmissionId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
       const contentDisposition = headers['content-disposition'];
       res
         .status(status)
         .set({
           'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
-        })
-        .send(data);
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  /**
-   * Takes a document template file and a form submission object and renders the
-   * template into a document.
-   *
-   * @param {Object} req the Express object representing the HTTP request.
-   * @param {Object} res the Express object representing the HTTP response.
-   * @param {Object} next the Express chaining function.
-   */
-  draftTemplateUploadAndRender: async (req, res, next) => {
-    try {
-      const templateBody = { ...req.body.template, data: req.body.submission.data };
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
-
-      const contentDisposition = headers['content-disposition'];
-
-      res
-        .status(status)
-        .set({
-          'Content-Disposition': contentDisposition || 'attachment',
-          'Content-Type': headers['content-type'],
+          'X-Content-Type-Options': 'nosniff',
         })
         .send(data);
     } catch (error) {

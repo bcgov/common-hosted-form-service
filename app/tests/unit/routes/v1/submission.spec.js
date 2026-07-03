@@ -28,7 +28,7 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
 //
 const service = require('../../../../src/forms/submission/service');
 
-const cdogsService = require('../../../../src/components/cdogsService');
+const docGenService = require('../../../../src/components/docGenService');
 const emailService = require('../../../../src/forms/email/emailService');
 
 //
@@ -594,13 +594,16 @@ describe(`${basePath}/:formSubmissionId/template/render`, () => {
         version: {
           version: 1,
         },
+        form: {
+          id: uuid.v4(),
+        },
       };
       const renderResponse = {
         headers: {},
         status: 200,
       };
       service.read = jest.fn().mockReturnValue(readResponse);
-      cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(renderResponse);
+      docGenService.templateUploadAndRender = jest.fn().mockReturnValue(renderResponse);
 
       const response = await appRequest.post(path, {});
 

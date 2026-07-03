@@ -17,7 +17,7 @@ describe(`${basePath}`, () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeTruthy();
       expect(Array.isArray(response.body.endpoints)).toBeTruthy();
-      expect(response.body.endpoints).toHaveLength(16);
+      expect(response.body.endpoints).toHaveLength(15);
       expect(response.body.endpoints).toContain('/docs');
       expect(response.body.endpoints).toContain('/status');
       expect(response.body.endpoints).toContain('/features');
@@ -29,7 +29,6 @@ describe(`${basePath}`, () => {
       expect(response.body.endpoints).toContain('/roles');
       expect(response.body.endpoints).toContain('/submissions');
       expect(response.body.endpoints).toContain('/users');
-      expect(response.body.endpoints).toContain('/utils');
       expect(response.body.endpoints).toContain('/cs');
       expect(response.body.endpoints).toContain('/recordsManagement');
     });
