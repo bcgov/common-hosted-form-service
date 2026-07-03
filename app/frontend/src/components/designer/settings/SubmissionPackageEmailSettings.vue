@@ -68,6 +68,20 @@ const submissionPackageTemplateRules = computed(() => [
               {{ $t('trans.formSettings.emailPackageTooltip') }}
             </span>
           </v-tooltip>
+          <v-tooltip location="bottom" close-delay="2500">
+            <template #activator="slotProps">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="slotProps.props"
+                icon="mdi:mdi-flask"
+              />
+            </template>
+            <span :lang="locale">
+              {{ $t('trans.formSettings.experimental') }}
+            </span>
+          </v-tooltip>
         </div>
       </template>
     </v-checkbox>
