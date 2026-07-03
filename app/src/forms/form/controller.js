@@ -1,7 +1,6 @@
 const { validate } = require('uuid');
 
 const docGenService = require('../../components/docGenService');
-const emailService = require('../email/emailService');
 const exportService = require('./exportService');
 const service = require('./service');
 const fileService = require('../file/service');
