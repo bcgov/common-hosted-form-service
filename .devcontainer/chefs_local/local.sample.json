@@ -98,6 +98,9 @@
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
       },
+      "cdogsV3": {
+        "endpoint": "https://chefs-cdogs.apps.silver.devops.gov.bc.ca/api"
+      },
       "css": {
         "endpoint": "https://api.loginproxy.gov.bc.ca/api",
         "tokenEndpoint": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
@@ -137,5 +140,19 @@
   },
   "gateway": {
     "jwtLifetime": "30m"
+  },
+  "features": {
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": false
+    },
+    "documentGenerationV3": {
+      "enabled": false
+    }
   }
 }

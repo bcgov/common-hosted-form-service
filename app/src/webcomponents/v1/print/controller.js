@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const path = require('node:path');
 
-const cdogsService = require('../../../components/cdogsService');
+const docGenService = require('../../../components/docGenService');
 const submissionService = require('../../../forms/submission/service');
 const printConfigService = require('../../../forms/form/printConfig/service');
 const documentTemplateService = require('../../../forms/form/documentTemplate/service');
@@ -89,7 +89,13 @@ module.exports = {
       }
       const templateBody = buildTemplateBody(template, reportName, printConfig.outputFileType, chefsTemplate(submission));
 
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId,
+        tenantId: req.currentUser?.tenantId,
+        submissionId: formSubmissionId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
       const contentDisposition = headers['content-disposition'] || buildContentDisposition(reportName, printConfig.outputFileType);
 
       res
@@ -98,6 +104,7 @@ module.exports = {
           'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
           'Access-Control-Expose-Headers': 'Content-Disposition, Content-Type',
+          'X-Content-Type-Options': 'nosniff',
         })
         .send(data);
     } catch (error) {
@@ -122,7 +129,12 @@ module.exports = {
 
       const templateBody = buildTemplateBody(template, reportName, printConfig.outputFileType, submissionData);
 
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId,
+        tenantId: req.currentUser?.tenantId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
       const contentDisposition = headers['content-disposition'] || buildContentDisposition(reportName, printConfig.outputFileType);
 
       res
@@ -131,6 +143,7 @@ module.exports = {
           'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
           'Access-Control-Expose-Headers': 'Content-Disposition, Content-Type',
+          'X-Content-Type-Options': 'nosniff',
         })
         .send(data);
     } catch (error) {

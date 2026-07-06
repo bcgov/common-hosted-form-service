@@ -98,6 +98,9 @@
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
       },
+      "cdogsV3": {
+        "endpoint": "http://common-document-generation-service-master.a12c97-prod:3000/api"
+      },
       "css": {
         "endpoint": "https://api.loginproxy.gov.bc.ca/api",
         "tokenEndpoint": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
@@ -133,5 +136,19 @@
   "recordsManagement": {
     "implementation": "local",
     "enabled": true
+  },
+  "features": {
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": false
+    },
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "documentGenerationV3": {
+      "enabled": false
+    }
   }
 }

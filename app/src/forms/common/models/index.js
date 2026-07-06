@@ -39,6 +39,10 @@ module.exports = {
   FormTenant: require('./tables/formTenant'),
   FormGroup: require('./tables/formGroup'),
   FormMigrationLog: require('./tables/formMigrationLog'),
+  FeatureFlag: require('./tables/featureFlag'),
+  FeatureFlagForm: require('./tables/featureFlagForm'),
+  FeatureFlagTenant: require('./tables/featureFlagTenant'),
+  FormDocumentGeneration: require('./tables/formDocumentGeneration'),
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
   PublicFormAccess: require('./views/publicFormAccess'),

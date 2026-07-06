@@ -69,6 +69,19 @@ describe('Form Service', () => {
     });
   });
 
+  describe('Forms/{formId}/fields', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/fields`;
+
+    it('calls fields endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200, { versions: [], fields: [] });
+
+      const result = await formService.readFormFields(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+      expect(mockAxios.history.get[0].url).toEqual(endpoint);
+    });
+  });
+
   describe('Forms/{formId}/options', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/options`;
 
@@ -428,6 +441,28 @@ describe('Form Service', () => {
       };
 
       const result = await formService.docGen(zeroUuid, mockBody);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  describe('forms/{formId}/template/render', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/template/render`;
+
+    it('calls post endpoint', async () => {
+      mockAxios.onPost(endpoint).reply(200);
+      const mockBody = {
+        template: {
+          content: 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK',
+          encodingType: 'base64',
+          fileType: 'txt',
+        },
+        submission: {
+          data: { simpletextfield: 'firstName lastName' },
+        },
+      };
+
+      const result = await formService.draftDocGen(zeroUuid, mockBody);
       expect(result).toBeTruthy();
       expect(mockAxios.history.post).toHaveLength(1);
     });
