@@ -63,7 +63,7 @@ describe('Form Designer', () => {
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Public (anonymous)').click();
-    cy.waitForLoad();
+    cy.wait(1000);
     //Validate the default privacy settings for public form
     cy.get('[data-test="enableSubmissionUrlSharingCheckbox"] input[type="checkbox"]').should('be.checked');
     cy.get('[data-test="canAllowSubmissionConfirmationCheckbox"] input[type="checkbox"]').should('be.checked');
