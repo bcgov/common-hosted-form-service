@@ -14,7 +14,6 @@ const rbac = require('../forms/rbac');
 const role = require('../forms/role');
 const user = require('../forms/user');
 const submission = require('../forms/submission');
-const utils = require('../forms/utils');
 const index = require('../forms/public');
 const proxy = require('../forms/proxy');
 const commonServices = require('../forms/commonServices');
@@ -32,7 +31,6 @@ const rbacPath = rbac.mount(router);
 const rolePath = role.mount(router);
 const userPath = user.mount(router);
 const submissionPath = submission.mount(router);
-const utilsPath = utils.mount(router);
 const publicPath = index.mount(router);
 const proxyPath = proxy.mount(router);
 const commonServicesPath = commonServices.mount(router);
@@ -63,7 +61,6 @@ router.get('/', (_req, res) => {
       bcaddress,
       featurePath,
       publicPath,
-      utilsPath,
       commonServicesPath,
       recordsManagementPath,
     ],

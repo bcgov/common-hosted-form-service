@@ -446,6 +446,28 @@ describe('Form Service', () => {
     });
   });
 
+  describe('forms/{formId}/template/render', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/template/render`;
+
+    it('calls post endpoint', async () => {
+      mockAxios.onPost(endpoint).reply(200);
+      const mockBody = {
+        template: {
+          content: 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK',
+          encodingType: 'base64',
+          fileType: 'txt',
+        },
+        submission: {
+          data: { simpletextfield: 'firstName lastName' },
+        },
+      };
+
+      const result = await formService.draftDocGen(zeroUuid, mockBody);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
   describe('submission/{submissionId}/status', () => {
     const endpoint = `${ApiRoutes.SUBMISSION}/${zeroUuid}/status`;
 

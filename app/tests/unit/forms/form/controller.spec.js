@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const controller = require('../../../../src/forms/form/controller');
 const exportService = require('../../../../src/forms/form/exportService');
 const service = require('../../../../src/forms/form/service');
+const docGenService = require('../../../../src/components/docGenService');
 
 // Various strings that should produce 400 errors when used as UUIDs.
 const testCases400 = [[''], ['undefined'], ['{{oops}}'], [uuid.v4() + '.']];
@@ -278,5 +279,78 @@ describe('readFormOptions', () => {
     // Assert
     expect(service.readFormOptions).toBeCalled();
     expect(next).toBeCalledWith(error);
+  });
+});
+
+describe('draftTemplateUploadAndRender', () => {
+  const formId = uuid.v4();
+  const validBody = {
+    template: {
+      options: { convertTo: 'pdf', overwrite: true, reportName: 'draft' },
+      content: 'base64content',
+      encodingType: 'base64',
+      fileType: 'txt',
+    },
+    submission: {
+      data: { simpletextfield: 'firstName lastName' },
+    },
+  };
+  const expectedTemplateBody = {
+    ...validBody.template,
+    data: validBody.submission.data,
+  };
+  const mockResponse = {
+    data: {},
+    headers: { 'content-disposition': 'attachment; filename=draft.pdf' },
+    status: 200,
+  };
+
+  it('should pass the form id and template body to docGenService and stream the result', async () => {
+    docGenService.templateUploadAndRender = jest.fn().mockResolvedValue(mockResponse);
+    const req = getMockReq({ params: { formId }, body: validBody, currentUser: { tenantId: 'tenant-1' } });
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(docGenService.templateUploadAndRender).toBeCalledTimes(1);
+    expect(docGenService.templateUploadAndRender).toBeCalledWith(
+      expect.objectContaining({
+        formId,
+        tenantId: 'tenant-1',
+        templateBody: expectedTemplateBody,
+      })
+    );
+    expect(res.status).toBeCalledWith(200);
+    expect(res.set).toBeCalledWith(
+      expect.objectContaining({
+        'Content-Disposition': 'attachment; filename=draft.pdf',
+        'X-Content-Type-Options': 'nosniff',
+      })
+    );
+    expect(res.send).toBeCalledTimes(1);
+  });
+
+  it('should default the Content-Disposition when none is returned', async () => {
+    const response = { ...mockResponse, headers: {} };
+    docGenService.templateUploadAndRender = jest.fn().mockResolvedValue(response);
+    const req = getMockReq({ params: { formId }, body: validBody, currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(res.set).toBeCalledWith(expect.objectContaining({ 'Content-Disposition': 'attachment' }));
+    expect(res.status).toBeCalledWith(200);
+  });
+
+  it('should forward errors to next', async () => {
+    docGenService.templateUploadAndRender = jest.fn().mockReturnValue(mockResponse);
+    const req = getMockReq({ params: { formId } }); // missing body -> throws when reading submission.data
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(docGenService.templateUploadAndRender).toBeCalledTimes(0);
+    expect(res.send).toBeCalledTimes(0);
+    expect(next).toBeCalledWith(expect.any(TypeError));
   });
 });
