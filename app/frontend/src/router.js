@@ -269,7 +269,7 @@ export default function getRouter(basePath = '/') {
                 next();
               } catch (err) {
                 if (err.response?.status === 401) {
-                  // Not authenticated — let the global auth guard redirect to login
+                  // Not authenticated — allow navigation so the app’s auth handling can prompt login (instead of redirecting to NotFound)
                   next();
                 } else if (err.response?.status === 404) {
                   next({ name: 'NotFound' });
