@@ -118,7 +118,7 @@ describe('Form Designer', () => {
     //Validate confirmation ID is visible on success page for public form
     cy.contains('Confirmation ID:').should('be.visible');
     // Receipent email option validation for public form submission
-    cy.get('span').contains('Email a receipt of this submission').should('not.be.visible');
+    cy.get('span').contains('Email a receipt of this submission').should('not.exist');
     //Recall submission not avaiable for public forms
     cy.get('button[title="Recall Submission"]').should('not.exist');
     
