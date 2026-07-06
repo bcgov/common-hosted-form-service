@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 
 import { createDownload } from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
@@ -76,7 +76,7 @@ async function generateDocument(submissionId, body, submission) {
   if (submissionId?.length > 0) {
     return await formService.docGen(submissionId, body);
   }
-  return await utilsService.draftDocGen({
+  return await formService.draftDocGen(formId.value, {
     template: body,
     submission: submission,
   });
