@@ -469,6 +469,28 @@ describe(`${basePath}/:formId/export/fields`, () => {
   });
 });
 
+describe(`${basePath}/:formId/template/render`, () => {
+  const formId = uuid.v4();
+  const path = `${basePath}/${formId}/template/render`;
+
+  it('should have correct middleware for POST', async () => {
+    controller.draftTemplateUploadAndRender = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.post(path);
+
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(controller.draftTemplateUploadAndRender).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+  });
+});
+
 describe(`${basePath}/:formId/options`, () => {
   const formId = uuid.v4();
   const path = `${basePath}/${formId}/options`;
@@ -587,6 +609,28 @@ describe(`${basePath}/:formId/version`, () => {
 
     expect(apiAccess).toBeCalledTimes(1);
     expect(controller.readPublishedForm).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionDraftId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+  });
+});
+
+describe(`${basePath}/:formId/fields`, () => {
+  const formId = uuid.v4();
+  const path = `${basePath}/${formId}/fields`;
+
+  it('should have correct middleware for GET', async () => {
+    controller.readFormFields = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(controller.readFormFields).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);

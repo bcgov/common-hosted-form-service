@@ -302,6 +302,8 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-cstar-config"
                 - configMapRef:
+                    name: "${APP_NAME}-${JOB_NAME}-features-config"
+                - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
                 - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-clamav"
