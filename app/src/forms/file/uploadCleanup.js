@@ -186,9 +186,9 @@ const startUploadCleanupScheduler = (options = {}) => {
     return;
   }
 
-  const staleAgeMinutes = parseInt(options.staleAgeMinutes, 10) || 1440;
-  const intervalMinutes = parseInt(options.intervalMinutes, 10) || 60;
-  const batchSize = parseInt(options.batchSize, 10) || 100;
+  const staleAgeMinutes = Number.parseInt(options.staleAgeMinutes, 10) || 1440;
+  const intervalMinutes = Number.parseInt(options.intervalMinutes, 10) || 60;
+  const batchSize = Number.parseInt(options.batchSize, 10) || 100;
 
   const runSweep = async () => {
     try {

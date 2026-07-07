@@ -5,6 +5,14 @@ const { fileUpload } = require('./upload');
 const uploadCleanup = require('../uploadCleanup');
 
 /**
+ * Neutralizes user-controlled text before it is written to a log line by
+ * stripping control characters (CR/LF/etc.), preventing log injection/forging.
+ * @param {*} value - The value to sanitize (e.g. an uploaded file name).
+ * @returns {string} - The value with control characters replaced by spaces.
+ */
+const sanitizeForLog = (value) => String(value ?? '').replace(/\p{Cc}/gu, ' ');
+
+/**
  * Validates that a file path is within a specified base directory.
  * @param {string} filePath - The file path to validate.
  * @param {string} [baseDirectory] - The base directory to restrict file operations.
@@ -52,7 +60,7 @@ const scanFile = async (req, res, next) => {
   try {
     const scanResult = await clamAvScanner.scanFile(filePath);
 
-    log.info(`${fileName} scanned. Is infected? ${scanResult.isInfected}. Viruses: ${scanResult.viruses || 'None'}`);
+    log.info(`${sanitizeForLog(fileName)} scanned. Is infected? ${scanResult.isInfected}. Viruses: ${scanResult.viruses || 'None'}`);
 
     if (scanResult.isInfected) {
       await removeInfected(filePath);
@@ -61,7 +69,7 @@ const scanFile = async (req, res, next) => {
 
     next();
   } catch (error) {
-    log.error(`Error scanning file: ${fileName || 'unknown'}. ${error.message}`);
+    log.error(`Error scanning file: ${sanitizeForLog(fileName) || 'unknown'}. ${error.message}`);
     await uploadCleanup.removeUploadedFile(filePath, 'scan-error');
     next(error);
   }
