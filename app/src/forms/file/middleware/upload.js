@@ -8,7 +8,20 @@ const log = require('../../../components/log')(module.filename);
 
 const Problem = require('api-problem');
 
-let fileUploadsDir = os.tmpdir();
+// Multer stages uploads in a dedicated subdirectory of the OS temp dir (rather
+// than the shared temp root) so the upload cleanup sweeper can safely target
+// only CHEFS upload temp files and never touch unrelated files in /tmp.
+const UPLOADS_SUBDIR = 'chefs-uploads';
+
+// The default staging directory: a dedicated subdir of the OS temp dir. Shared
+// by fileSetup() and getFileUploadsDir() so the resolved path is identical
+// whether it is read before or after init().
+const defaultUploadsDir = () => path.join(fs.realpathSync(os.tmpdir()), UPLOADS_SUBDIR);
+
+// Resolved lazily by getFileUploadsDir() (or explicitly by fileSetup via init()).
+// Left unset so a read before init() still returns the correct default rather
+// than the bare OS temp dir.
+let fileUploadsDir;
 let maxFileSize = bytes.parse('25MB');
 let maxFileCount = 1;
 
@@ -61,7 +74,7 @@ const sanitizeFilename = (filename) => {
 };
 
 const fileSetup = (options) => {
-  fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
+  fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || defaultUploadsDir();
   try {
     fs.ensureDirSync(fileUploadsDir);
   } catch (error) {
@@ -130,6 +143,11 @@ const fileUpload = {
    * @returns the file uploads directory.
    */
   getFileUploadsDir() {
+    // Fall back to the default if read before init() so callers never receive
+    // the bare OS temp dir (which the sweeper would not be scoped to).
+    if (!fileUploadsDir) {
+      fileUploadsDir = defaultUploadsDir();
+    }
     return fileUploadsDir;
   },
 

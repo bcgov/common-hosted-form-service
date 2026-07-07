@@ -14,7 +14,13 @@
       "fileKey": "FILES_UPLOADS_FILEKEY",
       "fileMaxSize": "FILES_UPLOADS_FILEMAXSIZE",
       "fileMinSize": "FILES_UPLOADS_FILEMINSIZE",
-      "path": "FILES_UPLOADS_PATH"
+      "path": "FILES_UPLOADS_PATH",
+      "cleanup": {
+        "enabled": "FILES_UPLOADS_CLEANUP_ENABLED",
+        "staleAgeMinutes": "FILES_UPLOADS_CLEANUP_STALEAGEMINUTES",
+        "intervalMinutes": "FILES_UPLOADS_CLEANUP_INTERVALMINUTES",
+        "batchSize": "FILES_UPLOADS_CLEANUP_BATCHSIZE"
+      }
     },
     "permanent": "FILES_PERMANENT",
     "localStorage": {
