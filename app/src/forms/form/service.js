@@ -29,6 +29,8 @@ const { falsey, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
+const formSubmissionPackageSettingsService = require('../feature/submitToEmail/settingsService');
+const submitToEmailJobService = require('../feature/submitToEmail/jobService');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const tenantService = require('../../components/tenantService');
@@ -326,6 +328,7 @@ const service = {
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+      await formSubmissionPackageSettingsService.upsert(obj.id, data.submissionPackageSettings, currentUser, trx);
 
       await ensureTenantFormSetup(currentUser, headers, trx, obj.id);
 
@@ -395,6 +398,7 @@ const service = {
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+      await formSubmissionPackageSettingsService.upsert(obj.id, data.submissionPackageSettings, currentUser, trx);
 
       await trx.commit();
       return await service.readForm(obj.id);
@@ -446,8 +450,9 @@ const service = {
     const query = Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .allowGraph('[formMetadata,identityProviders,versions]')
+      .allowGraph('[formMetadata,submissionPackageSettings,identityProviders,versions]')
       .withGraphFetched('formMetadata')
+      .withGraphFetched('submissionPackageSettings')
       .withGraphFetched('identityProviders(orderDefault)');
     if (hasPermissionsForVersions) {
       query.withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)');
@@ -913,6 +918,32 @@ const service = {
 
       await trx.commit();
       result = await service.readSubmission(obj.id);
+
+      // Best-effort post-submission side effects. The transaction is already
+      // committed, so neither may fail the submission: the package enqueue is
+      // awaited but its error is swallowed, and the email is fire-and-forget.
+      // 1. Queue a submission package job. enqueueForSubmission no-ops for drafts
+      //    and for forms not allowlisted for submitToEmail.
+      try {
+        await submitToEmailJobService.enqueueForSubmission({
+          formId: formVersion.formId,
+          submissionId: obj.id,
+          draft: data.draft,
+          currentUser,
+        });
+      } catch (e) {
+        log.error('Failed to enqueue submission package job', { error: e, submissionId: obj.id });
+      }
+
+      // 2. Submission received notification email (non-draft only). Fire-and-forget
+      //    so a slow/failed email never blocks the response. Lazy require avoids a
+      //    circular dependency (emailService requires this form service).
+      if (!data.draft) {
+        const emailService = require('../email/emailService');
+        emailService
+          .submissionReceived(formVersion.formId, obj.id, data, null, currentUser)
+          .catch((e) => log.error('Failed to send submission received email', { error: e, submissionId: obj.id }));
+      }
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

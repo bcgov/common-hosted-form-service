@@ -19,6 +19,8 @@ const tenantService = require('../../../../src/components/tenantService');
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
 const eventService = require('../../../../src/forms//event/eventService');
+const submitToEmailJobService = require('../../../../src/forms/feature/submitToEmail/jobService');
+const emailService = require('../../../../src/forms/email/emailService');
 const { validateSubmissionSchedule } = require('../../../../src/forms/common/scheduleService');
 
 const {
@@ -214,6 +216,18 @@ jest.mock('../../../../src/forms/form/formMetadata/service', () => ({
 
 jest.mock('../../../../src/forms/form/eventStreamConfig/service', () => ({
   upsert: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('../../../../src/forms/feature/submitToEmail/settingsService', () => ({
+  upsert: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('../../../../src/forms/feature/submitToEmail/jobService', () => ({
+  enqueueForSubmission: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock('../../../../src/forms/email/emailService', () => ({
+  submissionReceived: jest.fn().mockResolvedValue({}),
 }));
 
 jest.mock('../../../../src/forms/event/eventService', () => ({
@@ -1484,6 +1498,8 @@ describe('createSubmission', () => {
     MockTransaction.mockReset();
     resetModels();
     validateSubmissionSchedule.mockClear();
+    submitToEmailJobService.enqueueForSubmission.mockClear();
+    emailService.submissionReceived.mockClear();
     // Reset to default implementation that handles null/undefined gracefully
     validateSubmissionSchedule.mockImplementation((schedule) => {
       // validateSubmissionSchedule should not throw for null/undefined/disabled schedules
@@ -1511,6 +1527,38 @@ describe('createSubmission', () => {
     expect(eventService.formSubmissionEventReceived).toBeCalledTimes(1);
     expect(eventStreamService.onSubmit).toBeCalledTimes(1);
     expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('enqueues a submission package job and sends the received email for a non-draft submission', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }], identityProviders: [] });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledTimes(1);
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledWith(expect.objectContaining({ formId, draft: false }));
+    expect(emailService.submissionReceived).toBeCalledTimes(1);
+  });
+
+  it('does not send the received email for a draft submission (but still calls the gated enqueue)', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }], identityProviders: [] });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: true, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    // enqueue is always called; it no-ops internally for drafts.
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledWith(expect.objectContaining({ draft: true }));
+    expect(emailService.submissionReceived).not.toBeCalled();
   });
 
   it('should validate schedule before allowing submission', async () => {
