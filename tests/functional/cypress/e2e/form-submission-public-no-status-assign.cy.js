@@ -65,10 +65,11 @@ describe('Form Designer', () => {
     cy.contains('Public (anonymous)').click();
     cy.wait(1000);
     //Validate the default privacy settings for public form
-    cy.get('[data-test="enableSubmissionUrlSharingCheckbox"] input[type="checkbox"]').should('be.checked');
     cy.get('[data-test="canAllowSubmissionConfirmationCheckbox"] input[type="checkbox"]').should('be.checked');
     cy.get('[data-test="enableSubmitterEmailReceiptCheckbox"] input[type="checkbox"]').should('be.checked');
     cy.get('[data-test="hideSubmissionContentOnSuccessCheckbox"] input[type="checkbox"]').should('not.be.checked');
+    cy.wait(1000);
+    cy.get('[data-test="enableSubmissionUrlSharingCheckbox"] input[type="checkbox"]').should('be.checked');
     //disable confirmation id
     cy.get('[data-test="canAllowSubmissionConfirmationCheckbox"] input[type="checkbox"]').click();
     //Hide  submission content on success page
