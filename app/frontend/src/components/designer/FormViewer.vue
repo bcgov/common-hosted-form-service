@@ -34,7 +34,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 
-const emit = defineEmits(['submission-updated']);
+const emit = defineEmits(['submission-updated', 'access-denied']);
 
 const properties = defineProps({
   displayTitle: {
@@ -365,13 +365,25 @@ async function getFormData() {
       permissions.value = permRes.data[0] ? permRes.data[0].permissions : [];
     }
   } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
-      consoleError: t('trans.formViewer.getUsersSubmissionsConsoleErrMsg', {
-        submissionId: properties.submissionId,
-        error: error,
-      }),
-    });
+    // Sharing-off + 401 is the "forwarded success URL, viewer isn't on the form
+    // team" case. Success.vue listens on `access-denied` and falls back to the
+    // static confirmation block; suppressing the notification (and the follow-on
+    // calls below) avoids a burst of misleading errors for what is really a
+    // known "you can't view this submission" state.
+    if (
+      error.response?.status === 401 &&
+      formStore.form.enableSubmissionUrlSharing === false
+    ) {
+      emit('access-denied');
+    } else {
+      notificationStore.addNotification({
+        text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
+        consoleError: t('trans.formViewer.getUsersSubmissionsConsoleErrMsg', {
+          submissionId: properties.submissionId,
+          error: error,
+        }),
+      });
+    }
   } finally {
     loadingSubmission.value = false;
   }

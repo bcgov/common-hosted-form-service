@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
@@ -49,7 +49,14 @@ const urlLeakage = computed(
 const hideContent = computed(
   () => form.value.hideSubmissionContentOnSuccess === true
 );
-const useStaticPath = computed(() => urlLeakage.value || hideContent.value);
+// Set to true when FormViewer emits access-denied after a 401 on getSubmission
+// for a sharing-off form. Covers the "forwarded success URL, viewer isn't on
+// the form team" case; we fall back to the static block instead of leaving a
+// half-rendered viewer + a burst of error notifications.
+const accessDenied = ref(false);
+const useStaticPath = computed(
+  () => urlLeakage.value || hideContent.value || accessDenied.value
+);
 const confirmationId = computed(() =>
   properties.s ? properties.s.substring(0, 8).toUpperCase() : ''
 );
@@ -87,7 +94,12 @@ onBeforeUnmount(() => {
     <hr />
   </div>
   <div v-else>
-    <FormViewer :submission-id="s" :read-only="true" display-title>
+    <FormViewer
+      :submission-id="s"
+      :read-only="true"
+      display-title
+      @access-denied="accessDenied = true"
+    >
       <template #alert>
         <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
           <h1 class="mb-5" :lang="locale">
