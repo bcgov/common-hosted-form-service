@@ -3,6 +3,7 @@ const Problem = require('api-problem');
 const uuid = require('uuid');
 
 const jwtService = require('../../../components/jwtService');
+const submissionTokenService = require('../../../components/submissionTokenService');
 const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
@@ -462,12 +463,23 @@ const hasSubmissionPermissions = (permissions) => {
         });
       }
 
-      // Public (anonymous) forms are publicly viewable.
+      // Public (anonymous) forms are publicly viewable when enableSubmissionUrlSharing is on (the default).
       const publicAllowed = submissionForm.form.identityProviders.find((p) => p.code === 'public') !== undefined;
-      if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
+      const publicViewAllowed = submissionForm.form.enableSubmissionUrlSharing !== false;
+      if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed && publicViewAllowed) {
         next();
 
         return;
+      }
+
+      // Privacy-locked public form: accept a valid X-Submission-Token minted at create time for SUBMISSION_READ.
+      if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed && !publicViewAllowed) {
+        const presented = req.headers['x-submission-token'];
+        if (presented && submissionTokenService.verify(presented, submissionId)) {
+          next();
+
+          return;
+        }
       }
 
       // check against the submission level permissions assigned to the user...

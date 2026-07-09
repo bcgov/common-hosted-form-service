@@ -275,6 +275,14 @@ const service = {
       obj.enableTeamMemberDraftShare = data.enableTeamMemberDraftShare;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
+      obj.enableSubmissionUrlSharing = data.enableSubmissionUrlSharing !== false;
+      // The email-receipt URL routes back to the success page, which 401s for
+      // anyone but the original submitter when URL sharing is disabled, and
+      // forwarding the email is exactly the leakage vector the lock closes.
+      // Force-off here so the persisted state is always consistent with the
+      // lock, regardless of how the row was written (UI, raw API call, hand-edited).
+      obj.enableSubmitterEmailReceipt = obj.enableSubmissionUrlSharing && data.enableSubmitterEmailReceipt !== false;
+      obj.hideSubmissionContentOnSuccess = data.hideSubmissionContentOnSuccess === true;
       obj.schedule = data.schedule;
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
@@ -354,12 +362,18 @@ const service = {
       }
 
       const validatedReminderEnabled = service._validateReminderSettings(data);
+      // Sharing-off wins. Asymmetric with createForm: updateForm requires
+      // enableSubmitterEmailReceipt === true rather than the looser !== false idiom,
+      // so a partial PATCH that omits the field can't flip it on by accident.
+      const sharingOn = data.enableSubmissionUrlSharing !== false;
       const upd = {
         name: data.name,
         description: data.description,
         labels: data.labels ? data.labels : [],
         enableTeamMemberDraftShare: data.enableTeamMemberDraftShare,
         showSubmissionConfirmation: data.showSubmissionConfirmation,
+        enableSubmitterEmailReceipt: sharingOn && data.enableSubmitterEmailReceipt === true,
+        hideSubmissionContentOnSuccess: data.hideSubmissionContentOnSuccess === true,
         sendSubmissionReceivedEmail: data.sendSubmissionReceivedEmail,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
@@ -367,6 +381,7 @@ const service = {
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
+        enableSubmissionUrlSharing: sharingOn,
         schedule: data.schedule,
         subscribe: data.subscribe,
         reminder_enabled: validatedReminderEnabled,
@@ -465,7 +480,7 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .select(['id', 'name', 'description'])
+      .select(['id', 'name', 'description', 'enableSubmissionUrlSharing', 'showSubmissionConfirmation', 'enableSubmitterEmailReceipt', 'hideSubmissionContentOnSuccess'])
       .allowGraph('[idpHints]')
       .withGraphFetched('idpHints')
       .throwIfNotFound()
