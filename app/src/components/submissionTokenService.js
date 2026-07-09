@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const config = require('config');
 
 const SIG_BYTES = 32;
