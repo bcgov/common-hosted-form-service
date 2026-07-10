@@ -91,8 +91,21 @@ runs:
 
     - name: Deploy App Secret
       shell: bash
-      run: >-
-        oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret chefs-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.secret.yaml -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+      env:
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        JOB_NAME: ${{ inputs.job_name }}
+      run: |
+        set -euo pipefail
+
+        SECRET_NAME="chefs-${JOB_NAME}-secret"
+        if ! oc get --namespace "${NAMESPACE}" secret "${SECRET_NAME}" >/dev/null 2>&1; then
+          oc process --namespace "${NAMESPACE}" -f openshift/app.secret.yaml -p INSTANCE="${JOB_NAME}" | oc create --namespace "${NAMESPACE}" -f -
+        fi
+
+        SUBMISSION_TOKEN_KEY="$(oc get --namespace "${NAMESPACE}" secret "${SECRET_NAME}" -o jsonpath='{.data.submissiontokenkey}' | base64 -d || true)"
+        if [[ ${#SUBMISSION_TOKEN_KEY} -lt 32 ]]; then
+          oc patch --namespace "${NAMESPACE}" secret "${SECRET_NAME}" --type merge -p "{\"stringData\":{\"submissiontokenkey\":\"$(openssl rand -hex 32)\"}}"
+        fi
 
     - name: Deploy app ConfigMaps
       shell: bash
