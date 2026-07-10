@@ -113,26 +113,29 @@ export async function preFlightAuth(options, next) {
       : [];
   }
 
+  // CCP-4720: mirror the form's privacy flags into the store so Success.vue
+  // can decide what to render. Without this, genInitialForm defaults leak
+  // through (e.g. enableSubmitterEmailReceipt: true) and the static block
+  // shows widgets the designer turned off.
+  function applyFormOptions(form) {
+    const store = useFormStore().form;
+    store.enableSubmissionUrlSharing = form.enableSubmissionUrlSharing;
+    store.showSubmissionConfirmation = form.showSubmissionConfirmation;
+    store.enableSubmitterEmailReceipt = form.enableSubmitterEmailReceipt;
+    store.hideSubmissionContentOnSuccess = form.hideSubmissionContentOnSuccess;
+  }
+
   async function fetchIdpHints() {
     if (options.formId) {
       const { data } = await formService.readFormOptions(options.formId);
-      // CCP-4720: surface enableSubmissionUrlSharing so downstream views
-      // (e.g. the post-submit success page) can decide what to render without
-      // round-tripping to the authenticated submission endpoint.
-      useFormStore().form.enableSubmissionUrlSharing =
-        data.enableSubmissionUrlSharing;
-      useFormStore().form.showSubmissionConfirmation =
-        data.showSubmissionConfirmation;
+      applyFormOptions(data);
       return getValidIdpHints(data.idpHints);
     }
     if (options.submissionId) {
       const { data } = await formService.getSubmissionOptions(
         options.submissionId
       );
-      useFormStore().form.enableSubmissionUrlSharing =
-        data.form.enableSubmissionUrlSharing;
-      useFormStore().form.showSubmissionConfirmation =
-        data.form.showSubmissionConfirmation;
+      applyFormOptions(data.form);
       return getValidIdpHints(data.form.idpHints);
     }
     throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));

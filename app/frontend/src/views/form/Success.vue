@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
@@ -21,22 +21,12 @@ const properties = defineProps({
   },
 });
 
-const { authenticated, email } = storeToRefs(useAuthStore());
+const { email } = storeToRefs(useAuthStore());
 const { form, isRTL } = storeToRefs(useFormStore());
 
-// preFlightAuth populates the form options (sharing flag, hide-content flag,
-// etc.) from the unauthenticated /options endpoint before this view mounts.
-// The static block serves two paths:
-//   * URL-leakage fallback: sharing is off AND the viewer has no way to fetch
-//     the submission (anonymous, no token in sessionStorage). Authenticated
-//     viewers and anonymous viewers with a valid token still mount FormViewer.
-//   * Designer-opted-in hide-content: hideSubmissionContentOnSuccess is true.
-//     Every viewer (anonymous, token-holder, authenticated) gets the static
-//     block; FormViewer is never mounted.
-// RequestReceipt is suppressed in the URL-leakage path (the link in the
-// receipt email points back to the same trimmed page and would defeat the
-// privacy protection if forwarded), but shown in the hide-content path
-// because the receipt email is the only way the submitter sees their data.
+// Static block: sharing off + no token (strict privacy) OR hide-content.
+// RequestReceipt is suppressed on the sharing-off path (forwarding it would
+// defeat the privacy protection).
 const isSharingDisabled = computed(
   () => form.value.enableSubmissionUrlSharing === false
 );
@@ -44,27 +34,18 @@ const hasValidToken = computed(
   () => getValidSubmissionAccessToken(properties.s) !== null
 );
 const urlLeakage = computed(
-  () => isSharingDisabled.value && !hasValidToken.value && !authenticated.value
+  () => isSharingDisabled.value && !hasValidToken.value
 );
 const hideContent = computed(
   () => form.value.hideSubmissionContentOnSuccess === true
 );
-// Set to true when FormViewer emits access-denied after a 401 on getSubmission
-// for a sharing-off form. Covers the "forwarded success URL, viewer isn't on
-// the form team" case; we fall back to the static block instead of leaving a
-// half-rendered viewer + a burst of error notifications.
-const accessDenied = ref(false);
-const useStaticPath = computed(
-  () => urlLeakage.value || hideContent.value || accessDenied.value
-);
+const useStaticPath = computed(() => urlLeakage.value || hideContent.value);
 const confirmationId = computed(() =>
   properties.s ? properties.s.substring(0, 8).toUpperCase() : ''
 );
 
-// Wipe the access token as soon as the submitter leaves this page so a later
-// reload of the URL falls back to the static block. Covers SPA route changes
-// via onBeforeUnmount and browser-level navigation (tab close, refresh,
-// off-origin) via pagehide.
+// Wipe the token on navigation so later URL reloads fall back to static.
+// pagehide covers browser-level navigation; onBeforeUnmount covers SPA routes.
 const wipeToken = () => clearSubmissionAccessToken(properties.s);
 onMounted(() => globalThis.addEventListener('pagehide', wipeToken));
 onBeforeUnmount(() => {
@@ -94,12 +75,7 @@ onBeforeUnmount(() => {
     <hr />
   </div>
   <div v-else>
-    <FormViewer
-      :submission-id="s"
-      :read-only="true"
-      display-title
-      @access-denied="accessDenied = true"
-    >
+    <FormViewer :submission-id="s" :read-only="true" display-title>
       <template #alert>
         <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
           <h1 class="mb-5" :lang="locale">
