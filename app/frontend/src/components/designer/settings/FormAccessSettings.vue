@@ -204,10 +204,8 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
                 @update:model-value="(checked) => onIdpToggle(idp, checked)"
               />
 
-              <div v-if="idp.deprecated" class="text-error">
-                This identity provider is deprecated and is no longer available
-                for new selections. If you disable this login option, you will
-                be unable to re-enable it.
+              <div v-if="idp.deprecated" class="text-error" :lang="locale">
+                {{ $t('trans.formSettings.idpDeprecatedWarning') }}
               </div>
             </div>
             <BaseDialog
@@ -222,9 +220,7 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
 
               <template #text>
                 <span :lang="locale">
-                  This identity provider is no longer available for new
-                  selections. If you remove it, you may not be able to add it
-                  back.
+                  {{ $t('trans.formSettings.idpDeprecatedDialog') }}
                 </span>
               </template>
 

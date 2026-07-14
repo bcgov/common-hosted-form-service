@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "Activer la notification de rappel automatique",
     "autoReminderNotificatnToolTip": "Envoyez des e-mails de rappel avec le lien du formulaire pendant la période de soumission.",
     "selectLoginType": "Veuillez sélectionner au moins un fournisseur d'identité.",
+    "idpDeprecatedWarning": "Ce fournisseur d’identité est obsolète et n’est plus disponible pour de nouvelles sélections. Si vous désactivez cette option de connexion, vous ne pourrez pas la réactiver.",
+    "idpDeprecatedDialog": "Ce fournisseur d’identité n’est plus disponible pour de nouvelles sélections. Si vous le supprimez, il se peut que vous ne puissiez pas l’ajouter de nouveau.",
     "formDescriptnMaxChars": "La description du formulaire ne doit pas dépasser 255 caractères",
     "formTitlemaxChars": "Le titre du formulaire doit comporter 255 caractères maximum",
     "formTitleReq": "Le titre du formulaire est requis",

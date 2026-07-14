@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "Bật thông báo nhắc nhở tự động",
     "autoReminderNotificatnToolTip": "Gửi (các) email nhắc nhở với liên kết biểu mẫu trong thời gian gửi.",
     "selectLoginType": "Vui lòng chọn ít nhất một nhà cung cấp danh tính.",
+    "idpDeprecatedWarning": "Nhà cung cấp danh tính này đã bị ngừng sử dụng và không còn khả dụng cho các lựa chọn mới. Nếu bạn tắt tùy chọn đăng nhập này, bạn sẽ không thể bật lại.",
+    "idpDeprecatedDialog": "Nhà cung cấp danh tính này không còn khả dụng cho các lựa chọn mới. Nếu bạn xóa nó, bạn có thể sẽ không thể thêm lại.",
     "formDescriptnMaxChars": "Mô tả biểu mẫu phải từ 255 ký tự trở xuống",
     "formTitlemaxChars": "Tiêu đề biểu mẫu phải từ 255 ký tự trở xuống",
     "formTitleReq": "Tiêu đề biểu mẫu là bắt buộc",
