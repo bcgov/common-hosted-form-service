@@ -2,8 +2,10 @@ const config = require('config');
 const uuid = require('uuid');
 const path = require('path');
 const { FileStorage } = require('../common/models');
+const { StorageTypes } = require('../common/constants');
 const log = require('../../components/log')(module.filename);
 const storageService = require('./storage/storageService');
+const uploadCleanup = require('./uploadCleanup');
 
 const PERMANENT_STORAGE = config.get('files.permanent');
 
@@ -58,14 +60,23 @@ const validateFileSecurity = (file) => {
 
 const service = {
   create: async (data, currentUser, folder = 'uploads') => {
-    validateFileSecurity(data);
-
+    const tempPath = data?.path;
     let trx;
+    let uploadResult;
+    let obj;
+    // Once the transaction commits, the file record and its stored object are
+    // durable and reference each other. Anything that fails after this point
+    // (e.g. the read-back below) must NOT trigger compensation, or we would roll
+    // back an already-committed transaction and delete the object that a
+    // committed row still points at - orphaning the record.
+    let committed = false;
 
     try {
+      validateFileSecurity(data);
+
       trx = await FileStorage.startTransaction();
 
-      const obj = {};
+      obj = {};
       obj.id = uuid.v4();
       obj.storage = folder;
       obj.originalName = data.originalname;
@@ -74,21 +85,38 @@ const service = {
       obj.path = data.path;
       obj.createdBy = currentUser?.usernameIdp || 'public';
 
-      const uploadResult = await storageService.upload(obj);
+      uploadResult = await storageService.upload(obj);
       obj.path = uploadResult.path;
       obj.storage = uploadResult.storage;
-      // console.log('INSERTING FILE', {
-      //   storage: obj.storage,
-      //   path: obj.path,
-      //   folder,
-      // });
       await FileStorage.query(trx).insert(obj);
 
       await trx.commit();
+      committed = true;
+
+      if (uploadResult.storage === StorageTypes.OBJECT_STORAGE) {
+        await uploadCleanup.removeUploadedFile(tempPath, 'object-storage-upload-success');
+      }
+
       const result = await service.read(obj.id);
       return result;
     } catch (err) {
-      if (trx) await trx.rollback();
+      // Compensation only applies while the work is still undoable. After a
+      // successful commit the object is legitimately referenced (and for local
+      // storage the temp file IS that object), so leave everything in place.
+      if (!committed) {
+        if (trx) await trx.rollback();
+
+        if (uploadResult && obj?.id) {
+          await service.deleteStorageObject({
+            id: obj.id,
+            path: uploadResult.path,
+            storage: uploadResult.storage,
+          });
+        }
+
+        await uploadCleanup.removeUploadedFile(tempPath, 'create-failure');
+      }
+
       throw err;
     }
   },
