@@ -279,15 +279,12 @@ export default function getRouter(basePath = '/') {
                 await formService.getSubmissionStatuses(submissionId);
                 next();
               } catch (err) {
-                // Handle specific HTTP errors
-                if (
-                  err.response &&
-                  (err.response.status === 401 || err.response.status === 404)
-                ) {
-                  // Expected errors: redirect to NotFound
+                if (err.response?.status === 401) {
+                  // Not authenticated — allow navigation so the app’s auth handling can prompt login (instead of redirecting to NotFound)
+                  next();
+                } else if (err.response?.status === 404) {
                   next({ name: 'NotFound' });
                 } else {
-                  // Unexpected errors: let them propagate
                   throw err;
                 }
               }

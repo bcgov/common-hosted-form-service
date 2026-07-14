@@ -29,6 +29,7 @@ module.exports = {
   ExternalAPI: require('./tables/externalAPI'),
   ExternalAPIStatusCode: require('./tables/externalAPIStatusCode'),
   FormMetadata: require('./tables/formMetadata'),
+  FormSubmissionPackageSettings: require('./tables/formSubmissionPackageSettings'),
   FormEncryptionKey: require('./tables/formEncryptionKey'),
   FormEventStreamConfig: require('./tables/formEventStreamConfig'),
   RetentionClassification: require('./tables/retentionClassification'),
@@ -42,6 +43,7 @@ module.exports = {
   FeatureFlag: require('./tables/featureFlag'),
   FeatureFlagForm: require('./tables/featureFlagForm'),
   FeatureFlagTenant: require('./tables/featureFlagTenant'),
+  SubmissionPackageJob: require('./tables/submissionPackageJob'),
   FormDocumentGeneration: require('./tables/formDocumentGeneration'),
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),
