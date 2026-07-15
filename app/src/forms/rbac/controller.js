@@ -5,6 +5,8 @@ const tenantService = require('../../components/tenantService');
 const userService = require('../user/service');
 const { FormTenant, FormSubmissionUser } = require('../common/models');
 
+const BCEID_IDP_CODES = new Set(['bceid-basic', 'bceid-business']);
+
 // Shared mapping for a raw CSTAR user object → RBAC response shape.
 async function _mapCstarUser(user) {
   const ssoUser = user?.ssoUser || {};
@@ -311,13 +313,11 @@ module.exports = {
         ),
       ]);
 
-      const BCEID_CODES = new Set(['bceid-basic', 'bceid-business']);
-
       // user_form_roles_vw UNIONs every user with roles={} for forms they have no
       // explicit entry on — filter those out so only real team members appear.
       const explicitTeamMembers = teamMembers.filter((m) => Array.isArray(m.roles) && m.roles.length > 0);
 
-      // Build a unique-user list preserving all roles per person
+      // Build a unique-user map; use a Set per entry to deduplicate roles in O(1).
       const userMap = new Map();
       for (const m of explicitTeamMembers) {
         if (!userMap.has(m.email)) {
@@ -325,15 +325,13 @@ module.exports = {
             email: m.email,
             fullName: m.fullName,
             idpCode: m.user_idpCode || null,
-            isBceid: BCEID_CODES.has(m.user_idpCode),
-            roles: [],
+            isBceid: BCEID_IDP_CODES.has(m.user_idpCode),
+            roleSet: new Set(),
           });
         }
         const entry = userMap.get(m.email);
         if (Array.isArray(m.roles)) {
-          for (const r of m.roles) {
-            if (!entry.roles.includes(r)) entry.roles.push(r);
-          }
+          for (const r of m.roles) entry.roleSet.add(r);
         }
       }
 
@@ -342,7 +340,7 @@ module.exports = {
       res.status(200).json({
         eligibleTenants,
         impact: {
-          team: Array.from(userMap.values()),
+          team: Array.from(userMap.values()).map(({ roleSet, ...rest }) => ({ ...rest, roles: [...roleSet] })),
           submissions: {
             total: parseInt(stats.total || '0', 10),
             drafts: parseInt(stats.drafts || '0', 10),
