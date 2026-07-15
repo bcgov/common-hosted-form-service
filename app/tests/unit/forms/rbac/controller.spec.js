@@ -525,8 +525,9 @@ describe('getMigrationPreview', () => {
   let req, res, next;
 
   function mockKnexRaw(statsRow, shareCount) {
-    const raw = jest.fn()
-      .mockResolvedValueOnce({ rows: [statsRow] })   // submissionStatsResult
+    const raw = jest
+      .fn()
+      .mockResolvedValueOnce({ rows: [statsRow] }) // submissionStatsResult
       .mockResolvedValueOnce({ rows: [{ count: String(shareCount) }] }); // shareUsersResult
     FormSubmissionUser.knex.mockReturnValue({ raw });
     return raw;

@@ -1509,9 +1509,7 @@ describe('TenantService', () => {
     });
 
     it('returns empty array when user has no tenants with form_admin role', async () => {
-      jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([
-        { id: tenantId1, name: 'Tenant A', roles: ['form_viewer'] },
-      ]);
+      jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([{ id: tenantId1, name: 'Tenant A', roles: ['form_viewer'] }]);
 
       const result = await tenantService.getEligibleTenantsForMigration(req);
 
@@ -1576,9 +1574,7 @@ describe('TenantService', () => {
           first: jest.fn().mockResolvedValue(null),
         }),
       });
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
-        { id: 'group-1', name: 'Readers', roles: ['form_viewer'] },
-      ]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Readers', roles: ['form_viewer'] }]);
 
       const err = await tenantService.migrateFormToTenant(req, formId, tenantId).catch((e) => e);
 
