@@ -107,6 +107,20 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
         $t('trans.formSettings.formAccess')
       }}</span></template
     >
+    <v-alert
+      color="primary"
+      icon="mdi-alert"
+      lines="one"
+      class="text-white mb-2"
+    >
+      Basic BCeID is no longer onboarding new services to the identity solution.
+      Existing services and current users of Basic BCeID are not affected by
+      this change and existing integrations will continue to operate normally.
+      Additional details regarding this change will be available in a Service
+      Bulletin in late July. For Identity Service onboarding questions, please
+      connect with
+      <a href="mailto:DT.Consulting@gov.bc.ca">DT.Consulting@gov.bc.ca</a>
+    </v-alert>
     <v-autocomplete
       ref="userTypeRef"
       v-model="form.userType"
