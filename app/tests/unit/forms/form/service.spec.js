@@ -1266,6 +1266,116 @@ describe('createForm', () => {
     );
   });
 
+  it('should default enableSubmissionUrlSharing to true when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: true }));
+  });
+
+  it('should persist enableSubmissionUrlSharing false in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], enableSubmissionUrlSharing: false };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: false }));
+  });
+
+  it('should default enableSubmitterEmailReceipt to true when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmitterEmailReceipt: true }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt false in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: false };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should force enableSubmitterEmailReceipt to false in createForm when enableSubmissionUrlSharing is false, even if the payload says true', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Test Form',
+      identityProviders: [{ code: 'public' }],
+      enableSubmissionUrlSharing: false,
+      enableSubmitterEmailReceipt: true,
+    };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: false, enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should default hideSubmissionContentOnSuccess to false when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ hideSubmissionContentOnSuccess: false }));
+  });
+
+  it('should persist hideSubmissionContentOnSuccess true in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], hideSubmissionContentOnSuccess: true };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ hideSubmissionContentOnSuccess: true }));
+  });
+
   it('should throw when tenant form creation is attempted without headers', async () => {
     service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
     service.readForm = jest.fn().mockResolvedValueOnce({});
@@ -1399,6 +1509,116 @@ describe('updateForm', () => {
         showAssigneeInSubmissionsTable: true, // Should be true because of the OR logic
       })
     );
+  });
+
+  it('should default enableSubmissionUrlSharing to true when undefined in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }] };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: true }));
+  });
+
+  it('should persist enableSubmissionUrlSharing false in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmissionUrlSharing: false };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: false }));
+  });
+
+  it('should default enableSubmitterEmailReceipt to false in updateForm when the payload omits it (strict-on-update; prevents accidental opt-in)', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }] };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt true in updateForm when the payload says true and sharing is on', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: true };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: true }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt false in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: false };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should force enableSubmitterEmailReceipt to false in updateForm when enableSubmissionUrlSharing is false, even if the payload says true', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Form',
+      identityProviders: [{ code: 'public' }],
+      enableSubmissionUrlSharing: false,
+      enableSubmitterEmailReceipt: true,
+    };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: false, enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should persist hideSubmissionContentOnSuccess true in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], hideSubmissionContentOnSuccess: true };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ hideSubmissionContentOnSuccess: true }));
   });
 });
 
