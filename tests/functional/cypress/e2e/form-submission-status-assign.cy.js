@@ -207,7 +207,7 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.get('.mdi-list-box-outline').click();
         //Deselect Assigned to me checkbox
-        //cy.contains('Assigned to me').click();
+        cy.contains('Assigned to me').click();
         cy.get('button[title="Delete Submission"]').then($el => {
           const rem=$el[0];
           rem.click();
