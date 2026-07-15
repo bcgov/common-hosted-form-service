@@ -5752,22 +5752,16 @@ components:
       type: object
       required:
         - tenantId
-        - groupIds
       properties:
         tenantId:
           type: string
           format: uuid
-          description: UUID of the target tenant to migrate the form into.
+          description: >
+            UUID of the target tenant to migrate the form into. Groups are
+            determined server-side — all form_admin groups the caller holds in
+            the target tenant are auto-assigned. No explicit group selection is
+            required or accepted.
           example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-        groupIds:
-          type: array
-          description: CSTAR group UUIDs to assign to the form. At least one must have form_admin role.
-          items:
-            type: string
-            format: uuid
-          minItems: 1
-          example:
-            - d6c1ec98-6ea6-4ab5-bca8-7b4a9e016062
     MigrationExecuteResponse:
       type: object
       properties:

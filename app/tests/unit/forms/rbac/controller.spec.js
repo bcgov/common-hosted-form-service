@@ -524,6 +524,14 @@ describe('getFormGroups', () => {
 describe('getMigrationPreview', () => {
   let req, res, next;
 
+  function mockKnexRaw(statsRow, shareCount) {
+    const raw = jest.fn()
+      .mockResolvedValueOnce({ rows: [statsRow] })   // submissionStatsResult
+      .mockResolvedValueOnce({ rows: [{ count: String(shareCount) }] }); // shareUsersResult
+    FormSubmissionUser.knex.mockReturnValue({ raw });
+    return raw;
+  }
+
   beforeEach(() => {
     req = {
       params: { formId: 'form-1' },
@@ -550,19 +558,15 @@ describe('getMigrationPreview', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return prepare data with eligible tenants and impact', async () => {
+  it('should return eligible tenants and impact with team and submission stats', async () => {
     FormTenant.query.mockReturnValue({
-      where: jest.fn().mockReturnValue({
-        first: jest.fn().mockResolvedValue(null),
-      }),
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
     });
     const eligibleTenants = [{ id: 'tenant-1', name: 'Tenant 1', groups: [] }];
-    const teamMembers = [{ email: 'a@a.com', fullName: 'Alice', roles: ['owner'] }];
+    const teamMembers = [{ email: 'a@a.com', fullName: 'Alice', roles: ['owner'], user_idpCode: 'idir' }];
     tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue(eligibleTenants);
     service.getFormUsers = jest.fn().mockResolvedValue(teamMembers);
-    FormSubmissionUser.knex.mockReturnValue({
-      raw: jest.fn().mockResolvedValue({ rows: [{ count: '3' }] }),
-    });
+    mockKnexRaw({ total: '5', drafts: '2' }, 3);
 
     await controller.getMigrationPreview(req, res, next);
 
@@ -572,47 +576,86 @@ describe('getMigrationPreview', () => {
     expect(res.json).toHaveBeenCalledWith({
       eligibleTenants,
       impact: {
-        teamMembers: [{ email: 'a@a.com', fullName: 'Alice', role: 'owner' }],
-        draftShareAffectedCount: 3,
+        team: [{ email: 'a@a.com', fullName: 'Alice', idpCode: 'idir', isBceid: false, roles: ['owner'] }],
+        submissions: { total: 5, drafts: 2, withShareUsers: 3 },
       },
     });
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should map team member role to null when roles array is empty', async () => {
+  it('should flag bceid-basic and bceid-business users as isBceid: true', async () => {
     FormTenant.query.mockReturnValue({
-      where: jest.fn().mockReturnValue({
-        first: jest.fn().mockResolvedValue(null),
-      }),
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
     });
     tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
-    service.getFormUsers = jest.fn().mockResolvedValue([{ email: 'b@b.com', fullName: 'Bob', roles: [] }]);
-    FormSubmissionUser.knex.mockReturnValue({
-      raw: jest.fn().mockResolvedValue({ rows: [{ count: '0' }] }),
-    });
+    service.getFormUsers = jest.fn().mockResolvedValue([
+      { email: 'bceid@example.com', fullName: 'BCeID User', roles: ['form_submitter'], user_idpCode: 'bceid-basic' },
+      { email: 'biz@example.com', fullName: 'Biz User', roles: ['form_submitter'], user_idpCode: 'bceid-business' },
+      { email: 'idir@example.com', fullName: 'IDIR User', roles: ['owner'], user_idpCode: 'idir' },
+    ]);
+    mockKnexRaw({ total: '0', drafts: '0' }, 0);
 
     await controller.getMigrationPreview(req, res, next);
 
-    const response = res.json.mock.calls[0][0];
-    expect(response.impact.teamMembers[0].role).toBeNull();
+    const { team } = res.json.mock.calls[0][0].impact;
+    expect(team.find((u) => u.email === 'bceid@example.com').isBceid).toBe(true);
+    expect(team.find((u) => u.email === 'biz@example.com').isBceid).toBe(true);
+    expect(team.find((u) => u.email === 'idir@example.com').isBceid).toBe(false);
   });
 
-  it('should default draftShareAffectedCount to 0 when count is missing', async () => {
+  it('should deduplicate users who appear multiple times with different roles', async () => {
     FormTenant.query.mockReturnValue({
-      where: jest.fn().mockReturnValue({
-        first: jest.fn().mockResolvedValue(null),
-      }),
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    // Same email appears twice (once per role) from user_form_access_vw
+    service.getFormUsers = jest.fn().mockResolvedValue([
+      { email: 'multi@gov.bc.ca', fullName: 'Multi Role', roles: ['owner'], user_idpCode: 'idir' },
+      { email: 'multi@gov.bc.ca', fullName: 'Multi Role', roles: ['team_manager'], user_idpCode: 'idir' },
+    ]);
+    mockKnexRaw({ total: '0', drafts: '0' }, 0);
+
+    await controller.getMigrationPreview(req, res, next);
+
+    const { team } = res.json.mock.calls[0][0].impact;
+    expect(team).toHaveLength(1);
+    expect(team[0].roles).toEqual(expect.arrayContaining(['owner', 'team_manager']));
+  });
+
+  it('should exclude system/service users that appear with empty roles from the view UNION', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    service.getFormUsers = jest.fn().mockResolvedValue([
+      { email: 'real@gov.bc.ca', fullName: 'Real User', roles: ['owner'], user_idpCode: 'idir' },
+      { email: 'api-user@runtime-auth.local', fullName: 'API User', roles: [], user_idpCode: 'idir' },
+      { email: 'gateway-user@runtime-auth.local', fullName: 'Gateway User', roles: [], user_idpCode: 'idir' },
+    ]);
+    mockKnexRaw({ total: '0', drafts: '0' }, 0);
+
+    await controller.getMigrationPreview(req, res, next);
+
+    const { team } = res.json.mock.calls[0][0].impact;
+    expect(team).toHaveLength(1);
+    expect(team[0].email).toBe('real@gov.bc.ca');
+  });
+
+  it('should default submission counts to 0 when rows are missing', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
     });
     tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
     service.getFormUsers = jest.fn().mockResolvedValue([]);
-    FormSubmissionUser.knex.mockReturnValue({
-      raw: jest.fn().mockResolvedValue({ rows: [] }),
-    });
+    const raw = jest.fn().mockResolvedValue({ rows: [] });
+    FormSubmissionUser.knex.mockReturnValue({ raw });
 
     await controller.getMigrationPreview(req, res, next);
 
-    const response = res.json.mock.calls[0][0];
-    expect(response.impact.draftShareAffectedCount).toBe(0);
+    const { submissions } = res.json.mock.calls[0][0].impact;
+    expect(submissions.total).toBe(0);
+    expect(submissions.drafts).toBe(0);
+    expect(submissions.withShareUsers).toBe(0);
   });
 
   it('should call next on unexpected error', async () => {

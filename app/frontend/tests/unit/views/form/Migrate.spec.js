@@ -30,13 +30,17 @@ const MOCK_TENANT = {
   roles: ['form_admin'],
 };
 
+const MOCK_IMPACT = {
+  team: [
+    { email: 'user@example.com', fullName: 'User One', idpCode: 'idir', isBceid: false, roles: ['owner'] },
+  ],
+  submissions: { total: 10, drafts: 3, withShareUsers: 2 },
+};
+
 const MOCK_PREPARE_RESPONSE = {
   data: {
     eligibleTenants: [MOCK_TENANT],
-    impact: {
-      teamMembers: [{ email: 'user@example.com', fullName: 'User One', role: 'owner' }],
-      draftShareAffectedCount: 2,
-    },
+    impact: MOCK_IMPACT,
   },
 };
 
@@ -99,16 +103,19 @@ describe('Migrate.vue', () => {
       const wrapper = mountComponent();
       await flushPromises();
 
-      expect(wrapper.vm.impact).toEqual(MOCK_PREPARE_RESPONSE.data.impact);
+      expect(wrapper.vm.impact).toEqual(MOCK_IMPACT);
     });
 
-    it('defaults impact to empty when response omits it', async () => {
+    it('defaults impact to empty team and zero submission counts when response omits it', async () => {
       rbacService.getMigrationPreview.mockResolvedValueOnce({ data: { eligibleTenants: [] } });
 
       const wrapper = mountComponent();
       await flushPromises();
 
-      expect(wrapper.vm.impact).toEqual({ teamMembers: [], draftShareAffectedCount: 0 });
+      expect(wrapper.vm.impact.team).toEqual([]);
+      expect(wrapper.vm.impact.submissions.total).toBe(0);
+      expect(wrapper.vm.impact.submissions.drafts).toBe(0);
+      expect(wrapper.vm.impact.submissions.withShareUsers).toBe(0);
     });
 
     it('sets error and keeps eligibleTenants empty on prepare failure', async () => {

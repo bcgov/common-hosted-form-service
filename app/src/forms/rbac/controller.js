@@ -289,9 +289,18 @@ module.exports = {
         return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
       }
 
-      const [eligibleTenants, teamMembers, draftResult] = await Promise.all([
+      const [eligibleTenants, teamMembers, submissionStatsResult, shareUsersResult] = await Promise.all([
         tenantService.getEligibleTenantsForMigration(req),
         service.getFormUsers({ formId }),
+        FormSubmissionUser.knex().raw(
+          `SELECT
+             COUNT(DISTINCT fs.id)                                    AS total,
+             COUNT(DISTINCT fs.id) FILTER (WHERE fs.draft = true)    AS drafts
+           FROM form_version fv
+           JOIN form_submission fs ON fs."formVersionId" = fv.id
+           WHERE fv."formId" = ? AND fs.deleted = false`,
+          [formId]
+        ),
         FormSubmissionUser.knex().raw(
           `SELECT COUNT(DISTINCT fsu."formSubmissionId") AS count
            FROM form_submission_user fsu
@@ -302,17 +311,43 @@ module.exports = {
         ),
       ]);
 
-      const draftShareAffectedCount = parseInt(draftResult.rows[0]?.count || '0', 10);
+      const BCEID_CODES = new Set(['bceid-basic', 'bceid-business']);
+
+      // user_form_roles_vw UNIONs every user with roles={} for forms they have no
+      // explicit entry on — filter those out so only real team members appear.
+      const explicitTeamMembers = teamMembers.filter((m) => Array.isArray(m.roles) && m.roles.length > 0);
+
+      // Build a unique-user list preserving all roles per person
+      const userMap = new Map();
+      for (const m of explicitTeamMembers) {
+        if (!userMap.has(m.email)) {
+          userMap.set(m.email, {
+            email: m.email,
+            fullName: m.fullName,
+            idpCode: m.user_idpCode || null,
+            isBceid: BCEID_CODES.has(m.user_idpCode),
+            roles: [],
+          });
+        }
+        const entry = userMap.get(m.email);
+        if (Array.isArray(m.roles)) {
+          for (const r of m.roles) {
+            if (!entry.roles.includes(r)) entry.roles.push(r);
+          }
+        }
+      }
+
+      const stats = submissionStatsResult.rows[0] || {};
 
       res.status(200).json({
         eligibleTenants,
         impact: {
-          teamMembers: teamMembers.map((m) => ({
-            email: m.email,
-            fullName: m.fullName,
-            role: Array.isArray(m.roles) && m.roles.length > 0 ? m.roles[0] : null,
-          })),
-          draftShareAffectedCount,
+          team: Array.from(userMap.values()),
+          submissions: {
+            total: parseInt(stats.total || '0', 10),
+            drafts: parseInt(stats.drafts || '0', 10),
+            withShareUsers: parseInt(shareUsersResult.rows[0]?.count || '0', 10),
+          },
         },
       });
     } catch (error) {
