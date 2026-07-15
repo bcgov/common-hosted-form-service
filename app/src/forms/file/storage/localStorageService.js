@@ -41,7 +41,10 @@ const service = {
       }
 
       const newPath = `${bp}${path.sep}${fileStorage.id}`;
-      fs.renameSync(fileStorage.path, newPath);
+      // moveSync (not renameSync) so a cross-device move works — the upload temp
+      // (e.g. /tmp) and the storage root can be on different filesystems, where
+      // rename() fails with EXDEV. moveSync falls back to copy+remove.
+      fs.moveSync(fileStorage.path, newPath, { overwrite: true });
       if (fs.existsSync(newPath) && !fs.existsSync(fileStorage.path)) {
         return newPath;
       }

@@ -29,6 +29,8 @@ const { falsey, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
+const formSubmissionPackageSettingsService = require('../feature/submitToEmail/settingsService');
+const submitToEmailJobService = require('../feature/submitToEmail/jobService');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const tenantService = require('../../components/tenantService');
@@ -273,6 +275,14 @@ const service = {
       obj.enableTeamMemberDraftShare = data.enableTeamMemberDraftShare;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
+      obj.enableSubmissionUrlSharing = data.enableSubmissionUrlSharing !== false;
+      // The email-receipt URL routes back to the success page, which 401s for
+      // anyone but the original submitter when URL sharing is disabled, and
+      // forwarding the email is exactly the leakage vector the lock closes.
+      // Force-off here so the persisted state is always consistent with the
+      // lock, regardless of how the row was written (UI, raw API call, hand-edited).
+      obj.enableSubmitterEmailReceipt = obj.enableSubmissionUrlSharing && data.enableSubmitterEmailReceipt !== false;
+      obj.hideSubmissionContentOnSuccess = data.hideSubmissionContentOnSuccess === true;
       obj.schedule = data.schedule;
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
@@ -326,6 +336,7 @@ const service = {
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+      await formSubmissionPackageSettingsService.upsert(obj.id, data.submissionPackageSettings, currentUser, trx);
 
       await ensureTenantFormSetup(currentUser, headers, trx, obj.id);
 
@@ -351,12 +362,18 @@ const service = {
       }
 
       const validatedReminderEnabled = service._validateReminderSettings(data);
+      // Sharing-off wins. Asymmetric with createForm: updateForm requires
+      // enableSubmitterEmailReceipt === true rather than the looser !== false idiom,
+      // so a partial PATCH that omits the field can't flip it on by accident.
+      const sharingOn = data.enableSubmissionUrlSharing !== false;
       const upd = {
         name: data.name,
         description: data.description,
         labels: data.labels ? data.labels : [],
         enableTeamMemberDraftShare: data.enableTeamMemberDraftShare,
         showSubmissionConfirmation: data.showSubmissionConfirmation,
+        enableSubmitterEmailReceipt: sharingOn && data.enableSubmitterEmailReceipt === true,
+        hideSubmissionContentOnSuccess: data.hideSubmissionContentOnSuccess === true,
         sendSubmissionReceivedEmail: data.sendSubmissionReceivedEmail,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
@@ -364,6 +381,7 @@ const service = {
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
+        enableSubmissionUrlSharing: sharingOn,
         schedule: data.schedule,
         subscribe: data.subscribe,
         reminder_enabled: validatedReminderEnabled,
@@ -395,6 +413,7 @@ const service = {
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+      await formSubmissionPackageSettingsService.upsert(obj.id, data.submissionPackageSettings, currentUser, trx);
 
       await trx.commit();
       return await service.readForm(obj.id);
@@ -446,8 +465,9 @@ const service = {
     const query = Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .allowGraph('[formMetadata,identityProviders,versions]')
+      .allowGraph('[formMetadata,submissionPackageSettings,identityProviders,versions]')
       .withGraphFetched('formMetadata')
+      .withGraphFetched('submissionPackageSettings')
       .withGraphFetched('identityProviders(orderDefault)');
     if (hasPermissionsForVersions) {
       query.withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)');
@@ -460,7 +480,7 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .select(['id', 'name', 'description'])
+      .select(['id', 'name', 'description', 'enableSubmissionUrlSharing', 'showSubmissionConfirmation', 'enableSubmitterEmailReceipt', 'hideSubmissionContentOnSuccess'])
       .allowGraph('[idpHints]')
       .withGraphFetched('idpHints')
       .throwIfNotFound()
@@ -913,6 +933,32 @@ const service = {
 
       await trx.commit();
       result = await service.readSubmission(obj.id);
+
+      // Best-effort post-submission side effects. The transaction is already
+      // committed, so neither may fail the submission: the package enqueue is
+      // awaited but its error is swallowed, and the email is fire-and-forget.
+      // 1. Queue a submission package job. enqueueForSubmission no-ops for drafts
+      //    and for forms not allowlisted for submitToEmail.
+      try {
+        await submitToEmailJobService.enqueueForSubmission({
+          formId: formVersion.formId,
+          submissionId: obj.id,
+          draft: data.draft,
+          currentUser,
+        });
+      } catch (e) {
+        log.error('Failed to enqueue submission package job', { error: e, submissionId: obj.id });
+      }
+
+      // 2. Submission received notification email (non-draft only). Fire-and-forget
+      //    so a slow/failed email never blocks the response. Lazy require avoids a
+      //    circular dependency (emailService requires this form service).
+      if (!data.draft) {
+        const emailService = require('../email/emailService');
+        emailService
+          .submissionReceived(formVersion.formId, obj.id, data, null, currentUser)
+          .catch((e) => log.error('Failed to send submission received email', { error: e, submissionId: obj.id }));
+      }
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

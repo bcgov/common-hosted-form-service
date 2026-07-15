@@ -14,7 +14,13 @@
       "fileKey": "FILES_UPLOADS_FILEKEY",
       "fileMaxSize": "FILES_UPLOADS_FILEMAXSIZE",
       "fileMinSize": "FILES_UPLOADS_FILEMINSIZE",
-      "path": "FILES_UPLOADS_PATH"
+      "path": "FILES_UPLOADS_PATH",
+      "cleanup": {
+        "enabled": "FILES_UPLOADS_CLEANUP_ENABLED",
+        "staleAgeMinutes": "FILES_UPLOADS_CLEANUP_STALEAGEMINUTES",
+        "intervalMinutes": "FILES_UPLOADS_CLEANUP_INTERVALMINUTES",
+        "batchSize": "FILES_UPLOADS_CLEANUP_BATCHSIZE"
+      }
     },
     "permanent": "FILES_PERMANENT",
     "localStorage": {
@@ -62,7 +68,9 @@
     "port": "SERVER_PORT",
     "encryption": {
       "proxy": "SERVER_ENCRYPTION_PROXY"
-    }
+    },
+    "submissionTokenKey": "SUBMISSION_TOKEN_KEY",
+    "submissionTokenTtlMinutes": "SUBMISSION_TOKEN_TTL_MINUTES"
   },
   "eventStreamService": {
     "servers": "EVENTSTREAMSERVICE_SERVERS",
@@ -128,7 +136,14 @@
       "enabled": "FEATURES_OFFLINEFORMS_ENABLED"
     },
     "submitToEmail": {
-      "enabled": "FEATURES_SUBMITTOEMAIL_ENABLED"
+      "enabled": "FEATURES_SUBMITTOEMAIL_ENABLED",
+      "batchSize": "FEATURES_SUBMITTOEMAIL_BATCHSIZE",
+      "delivery": "FEATURES_SUBMITTOEMAIL_DELIVERY",
+      "reportSizeLimit": "FEATURES_SUBMITTOEMAIL_REPORTSIZELIMIT",
+      "attachmentsSizeLimit": "FEATURES_SUBMITTOEMAIL_ATTACHMENTSSIZELIMIT",
+      "attachmentsCountLimit": "FEATURES_SUBMITTOEMAIL_ATTACHMENTSCOUNTLIMIT",
+      "stuckTimeoutMinutes": "FEATURES_SUBMITTOEMAIL_STUCKTIMEOUTMINUTES",
+      "maxAttempts": "FEATURES_SUBMITTOEMAIL_MAXATTEMPTS"
     },
     "documentGenerationV2": {
       "enabled": "FEATURES_DOCUMENTGENERATIONV2_ENABLED"
