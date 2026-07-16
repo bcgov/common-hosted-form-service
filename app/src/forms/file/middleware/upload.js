@@ -1,9 +1,9 @@
 const bytes = require('bytes');
 const fs = require('fs-extra');
 const multer = require('multer');
-const os = require('os');
-const path = require('path');
-const crypto = require('crypto');
+const os = require('node:os');
+const path = require('node:path');
+const crypto = require('node:crypto');
 const log = require('../../../components/log')(module.filename);
 
 const Problem = require('api-problem');

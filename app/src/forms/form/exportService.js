@@ -3,12 +3,12 @@ const { flattenComponents, unwindPath, submissionHeaders } = require('../common/
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
 const _ = require('lodash');
-const { Readable } = require('stream');
-const { pipeline } = require('stream/promises');
+const { Readable } = require('node:stream');
+const { pipeline } = require('node:stream/promises');
 const { unwind, flatten } = require('@json2csv/transforms');
 const { Transform } = require('@json2csv/node');
 const fs = require('fs-extra');
-const config = require('config');
+const path = require('node:path');
 const log = require('../../components/log')(module.filename);
 const fileService = require('../file/service');
 const { fileUpload } = require('../file/middleware/upload');
@@ -316,19 +316,17 @@ const service = {
     let csv = [];
 
     if (emailExport !== 'false' && emailExport !== false) {
-      // If submission count is big we're start streams parsed chunks into the temp file
-      // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
-      // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
-      // to use it in email for link generation for downloading...
+      // If submission count is big we stream the parsed chunks into a temp file,
+      // then upload the outcome CSV file to Filestorage (object storage, or the
+      // local uploads dir) gathering the file storage ID to use in the email link
+      // for downloading.
       //
-      // When files.localStorage.path is not configured (e.g. object storage envs)
-      // the temp file MUST be staged inside the upload dir: objectStorageService
+      // The temp file MUST be staged inside the upload dir: objectStorageService
       // reads it back through a containment check scoped to getFileUploadsDir(),
-      // and the post-upload cleanup targets the same directory. Writing to the
-      // bare OS temp dir makes both fail (upload throws -> the export email that
-      // follows this upload is never sent).
-      const path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fileUpload.getFileUploadsDir();
-      const pathToTmpFile = `${path}/${uuid.v4()}.csv`;
+      // and the post-upload cleanup targets the same directory. Staging anywhere
+      // else makes both fail (upload throws -> the export email that follows this
+      // upload is never sent).
+      const pathToTmpFile = path.join(fileUpload.getFileUploadsDir(), `${uuid.v4()}.csv`);
       const filename = service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv);
       const outputStream = fs.createWriteStream(pathToTmpFile);
 
@@ -339,9 +337,14 @@ const service = {
       // becomes a silent unhandled rejection and the user simply never receives
       // the export email. `pipeline` is used (instead of raw .pipe()) so an
       // error on any stage rejects rather than hanging or crashing the process.
+      const logCtx = { formId: form.id, to: currentUser.email, function: '_submissionCSVExport' };
+      // `stage` attributes any failure to the step that produced it (pipe -> stat
+      // -> upload -> email) so the log below points at the actual break.
+      let stage = 'pipe';
       const buildAndEmailExport = async () => {
         await pipeline(dataStream, json2csvParser, outputStream);
 
+        stage = 'stat';
         const stats = await fs.stat(pathToTmpFile);
         const fileData = {
           originalname: filename,
@@ -352,18 +355,19 @@ const service = {
         const fileCurrentUser = {
           usernameIdp: currentUser.usernameIdp,
         };
+
+        stage = 'upload';
         // Upload to storage (removes the temp file on success for object storage).
         const fileResult = await fileService.create(fileData, fileCurrentUser, 'exports');
+
+        stage = 'email';
         // Send the email with a link to the uploaded export.
         await emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
+        log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
       };
 
       buildAndEmailExport().catch(async (err) => {
-        log.error(`Failed to build and email submission export for form ${form.id}: ${err.message}`, {
-          error: err,
-          formId: form.id,
-          function: '_submissionCSVExport',
-        });
+        log.error('Export email pipeline failed', { ...logCtx, stage, error: err.message, stack: err.stack });
         // Best-effort cleanup: the success path already removes the temp file for
         // object storage, so this covers the failure path to avoid orphaning it.
         // fs.remove does not throw when the file is already gone.
