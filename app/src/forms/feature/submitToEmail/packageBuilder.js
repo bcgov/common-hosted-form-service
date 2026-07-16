@@ -3,7 +3,6 @@ const config = require('config');
 const uuid = require('uuid');
 
 const fs = require('node:fs/promises');
-const os = require('node:os');
 const path = require('node:path');
 
 const cdogsService = require('../../../components/cdogsService');
@@ -11,6 +10,7 @@ const log = require('../../../components/log')(module.filename);
 
 const fileService = require('../../file/service');
 const storageService = require('../../file/storage/storageService');
+const { fileUpload } = require('../../file/middleware/upload');
 const { FileStorage } = require('../../common/models');
 
 const { chefsTemplate } = require('../../common/utils');
@@ -200,7 +200,10 @@ const service = {
    * the created file record.
    */
   uploadPackage: async ({ filename, contentType, buffer }, folder = 'uploads') => {
-    const tempPath = path.join(os.tmpdir(), `${uuid.v4()}-${filename}`);
+    // Stage inside the upload dir (not the bare OS temp dir): objectStorageService
+    // reads the temp file back through a containment check scoped to
+    // getFileUploadsDir(), so a file outside it makes fileService.create throw.
+    const tempPath = path.join(fileUpload.getFileUploadsDir(), `${uuid.v4()}-${filename}`);
 
     await fs.writeFile(tempPath, buffer);
 
