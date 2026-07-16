@@ -104,6 +104,7 @@ describe('Form Designer', () => {
       });
     //verify export button is enabled
     cy.get('.mb-5').should('be.enabled');
+    cy.get('.mb-5').click();
   });
   });
 
