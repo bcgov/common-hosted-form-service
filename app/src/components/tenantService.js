@@ -441,9 +441,7 @@ class TenantService {
     ]);
 
     const userGroupIds = new Set(userGroups.map((g) => g.id));
-    const preSelectedGroupIds = userGroups
-      .filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN))
-      .map((g) => g.id);
+    const preSelectedGroupIds = userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN)).map((g) => g.id);
 
     const groups = allTenantGroups.map((g) => ({
       id: g.id,
