@@ -18,6 +18,7 @@ vi.mock('vue-router', () => ({
 vi.mock('~/services/rbacService', () => ({
   default: {
     getMigrationPreview: vi.fn(),
+    getMigrationTenantGroups: vi.fn(),
     executeMigration: vi.fn(),
   },
 }));
@@ -57,10 +58,15 @@ describe('Migrate.vue', () => {
 
   const tenantStore = useTenantStore(pinia);
 
+  const MOCK_GROUPS_RESPONSE = {
+    data: { groups: [], preSelectedGroupIds: [], teamMemberGroups: [] },
+  };
+
   beforeEach(() => {
     tenantStore.$reset();
     tenantStore.isTenantFeatureEnabled = true;
     rbacService.getMigrationPreview.mockResolvedValue(MOCK_PREPARE_RESPONSE);
+    rbacService.getMigrationTenantGroups.mockResolvedValue(MOCK_GROUPS_RESPONSE);
   });
 
   function mountComponent() {
@@ -147,11 +153,20 @@ describe('Migrate.vue', () => {
       expect(wrapper.vm.canSubmit).toBe(false);
     });
 
-    it('is true when a tenant is selected', async () => {
+    it('is false when tenant selected but confirm checkbox unchecked', async () => {
       const wrapper = mountComponent();
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
+      expect(wrapper.vm.canSubmit).toBe(false);
+    });
+
+    it('is true when a tenant is selected and confirmed', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      wrapper.vm.confirmed = true;
       expect(wrapper.vm.canSubmit).toBe(true);
     });
   });
@@ -174,17 +189,18 @@ describe('Migrate.vue', () => {
     });
   });
 
-  describe('confirmMigration', () => {
+  describe('submitMigration', () => {
     beforeEach(() => {
       rbacService.executeMigration.mockResolvedValue({});
     });
 
-    it('calls executeMigration with formId and tenantId only — no groupIds', async () => {
+    it('calls executeMigration with formId and tenantId only when no groups assigned', async () => {
       const wrapper = mountComponent();
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
-      await wrapper.vm.confirmMigration();
+      await flushPromises(); // let the watcher fire
+      await wrapper.vm.submitMigration();
 
       expect(rbacService.executeMigration).toHaveBeenCalledWith(FORM_ID, {
         tenantId: 'tenant-1',
@@ -196,12 +212,13 @@ describe('Migrate.vue', () => {
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
-      await wrapper.vm.confirmMigration();
+      await flushPromises();
+      await wrapper.vm.submitMigration();
 
       expect(tenantStore.selectTenant).toHaveBeenCalledWith(MOCK_TENANT);
     });
 
-    it('redirects to FormGroups on success so user can review auto-assigned groups', async () => {
+    it('redirects to UserForms on success', async () => {
       const push = vi.fn();
       useRouter.mockImplementationOnce(() => ({ replace: vi.fn(), push }));
 
@@ -209,9 +226,10 @@ describe('Migrate.vue', () => {
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
-      await wrapper.vm.confirmMigration();
+      await flushPromises();
+      await wrapper.vm.submitMigration();
 
-      expect(push).toHaveBeenCalledWith({ name: 'FormGroups', query: { f: FORM_ID } });
+      expect(push).toHaveBeenCalledWith({ name: 'UserForms' });
     });
 
     it('sets error and does not redirect on executeMigration failure', async () => {
@@ -225,7 +243,8 @@ describe('Migrate.vue', () => {
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
-      await wrapper.vm.confirmMigration();
+      await flushPromises();
+      await wrapper.vm.submitMigration();
 
       expect(tenantStore.selectTenant).not.toHaveBeenCalled();
       expect(push).not.toHaveBeenCalled();
@@ -236,7 +255,8 @@ describe('Migrate.vue', () => {
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
-      await wrapper.vm.confirmMigration();
+      await flushPromises();
+      await wrapper.vm.submitMigration();
 
       expect(wrapper.vm.submitting).toBe(false);
     });

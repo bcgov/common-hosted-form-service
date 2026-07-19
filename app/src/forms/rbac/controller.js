@@ -282,6 +282,22 @@ module.exports = {
     }
   },
 
+  getMigrationTenantGroups: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const { tenantId } = req.query;
+      if (!tenantId) return res.status(400).json({ detail: 'tenantId is required.' });
+
+      const existing = await FormTenant.query().where({ formId }).first();
+      if (existing) return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   getMigrationPreview: async (req, res, next) => {
     try {
       const { formId } = req.params;
@@ -356,25 +372,21 @@ module.exports = {
   migrateForm: async (req, res, next) => {
     try {
       const { formId } = req.params;
-      const { tenantId } = req.body;
+      const { tenantId, groupIds } = req.body;
 
-      if (!tenantId) {
-        return res.status(400).json({ detail: 'tenantId is required.' });
+      if (!tenantId) return res.status(400).json({ detail: 'tenantId is required.' });
+      if (groupIds !== undefined && !Array.isArray(groupIds)) {
+        return res.status(400).json({ detail: 'groupIds must be an array.' });
       }
 
-      await tenantService.migrateFormToTenant(req, formId, tenantId);
+      await tenantService.migrateFormToTenant(req, formId, tenantId, groupIds || null);
       res.status(200).json({ message: 'Form migrated successfully.' });
     } catch (error) {
-      if (error.code === 'ALREADY_MIGRATED') {
-        return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
-      }
-      if (error.code === 'FORM_ADMIN_GROUP_REQUIRED') {
-        return res.status(400).json({ detail: error.message, code: error.code });
-      }
+      if (error.code === 'ALREADY_MIGRATED') return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+      if (error.code === 'FORM_ADMIN_GROUP_REQUIRED') return res.status(400).json({ detail: error.message, code: error.code });
       const cstarStatus = error?.response?.status;
-      if (cstarStatus === 401 || cstarStatus === 403) {
-        return res.status(401).json({ detail: 'Your session has expired. Please refresh the page and try again.' });
-      }
+      if (cstarStatus === 401) return res.status(401).json({ detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' });
+      if (cstarStatus === 403) return res.status(403).json({ detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' });
       next(error);
     }
   },

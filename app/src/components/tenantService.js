@@ -390,16 +390,93 @@ class TenantService {
   }
 
   /**
+   * Fetch the CSTAR groups that a specific SSO user belongs to in a tenant.
+   * Degrades to [] on any error so one unreachable user never breaks the page.
+   * @param {object} req - Express request (headers used for auth)
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {string} ssoUserId - The SSO user ID (idpUserId) to look up
+   * @returns {Promise<Array<{id, name}>>}
+   */
+  async getGroupsForUser(req, tenantId, ssoUserId) {
+    const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
+    const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', ssoUserId)}`;
+    try {
+      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req) });
+      return (data?.data?.groups || []).map((g) => ({ id: g.id, name: g.name }));
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Returns all groups for a target tenant enriched with role details, plus the
+   * IDs of the current user's form_admin groups to use as pre-selection defaults,
+   * plus per-team-member CSTAR group membership so the UI can show live status.
+   * @param {object} req - Express request with currentUser
+   * @param {string} formId - UUID of the form being migrated
+   * @param {string} tenantId - UUID of the target tenant
+   * @returns {Promise<{groups, preSelectedGroupIds, teamMemberGroups}>}
+   */
+  async getMigrationTenantGroups(req, formId, tenantId) {
+    if (!req?.currentUser) throw new TypeError(`${SERVICE}: missing currentUser`);
+    if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
+    if (!tenantId) throw new TypeError(`${SERVICE}: missing tenantId`);
+
+    const reqContext = { ...req, currentUser: { ...req.currentUser, tenantId }, headers: req.headers };
+
+    // Tenant groups and current user's membership run in parallel with the member lookup
+    const [allTenantGroups, userGroups, rawMembers] = await Promise.all([
+      this._getTenantGroupsWithRolesForCurrentTenant(reqContext),
+      this.getUserTenantGroupsAndRoles(reqContext, tenantId),
+      FormTenant.knex()
+        .raw(
+          `SELECT u.email, u."fullName", u."idpUserId"
+           FROM "user" u
+           INNER JOIN form_role_user fru ON u.id = fru."userId"
+           WHERE fru."formId" = ?
+           GROUP BY u.email, u."fullName", u."idpUserId"`,
+          [formId]
+        )
+        .then((r) => r.rows),
+    ]);
+
+    const userGroupIds = new Set(userGroups.map((g) => g.id));
+    const preSelectedGroupIds = userGroups
+      .filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN))
+      .map((g) => g.id);
+
+    const groups = allTenantGroups.map((g) => ({
+      id: g.id,
+      name: g.name,
+      roles: g.roles,
+      isFormAdmin: g.roles.includes(TenantRoles.FORM_ADMIN),
+      isUserMember: userGroupIds.has(g.id),
+    }));
+
+    // Fetch each team member's group membership in this tenant — parallel, errors degrade to []
+    const teamMemberGroups = await Promise.all(
+      rawMembers
+        .filter((m) => m.idpUserId)
+        .map(async (m) => {
+          const memberGroups = await this.getGroupsForUser(req, tenantId, m.idpUserId);
+          return { email: m.email, fullName: m.fullName, groupIds: memberGroups.map((g) => g.id) };
+        })
+    );
+
+    return { groups, preSelectedGroupIds, teamMemberGroups };
+  }
+
+  /**
    * Migrates a personal form to a tenant by inserting form_tenant, form_group,
    * and form_migration_log records in a single atomic transaction.
-   * Mirrors ensureTenantFormSetup in form/service.js: all of the user's
-   * form_admin groups in the target tenant are auto-assigned, so the migrated
-   * form starts with the same access footprint as a freshly created tenant form.
+   * If groupIds is provided, those groups are assigned (must include at least one
+   * form_admin group). If omitted, all of the user's form_admin groups are used.
    * @param {object} req - Express request with currentUser
    * @param {string} formId - UUID of the form to migrate
    * @param {string} tenantId - UUID of the target tenant
+   * @param {string[]|null} groupIds - Optional explicit group IDs to assign
    */
-  async migrateFormToTenant(req, formId, tenantId) {
+  async migrateFormToTenant(req, formId, tenantId, groupIds = null) {
     if (!req?.currentUser) throw new TypeError(`${SERVICE}: missing currentUser`);
     if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
     if (!tenantId) throw new TypeError(`${SERVICE}: missing tenantId`);
@@ -417,12 +494,22 @@ class TenantService {
       throw Object.assign(new Error(`${SERVICE}: user has no form_admin groups in this tenant`), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
     }
 
-    const groupIds = adminGroups.map((g) => g.id);
+    let finalGroupIds;
+    if (Array.isArray(groupIds) && groupIds.length > 0) {
+      const adminGroupIds = new Set(adminGroups.map((g) => g.id));
+      if (!groupIds.some((id) => adminGroupIds.has(id))) {
+        throw Object.assign(new Error(`${SERVICE}: at least one assigned group must have form_admin role`), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
+      }
+      finalGroupIds = [...new Set(groupIds)];
+    } else {
+      finalGroupIds = adminGroups.map((g) => g.id);
+    }
+
     const createdBy = req.currentUser.usernameIdp || req.currentUser.username;
 
     await FormGroup.transaction(async (trx) => {
       await FormTenant.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
-      await FormGroup.query(trx).insert(groupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
+      await FormGroup.query(trx).insert(finalGroupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
       await FormMigrationLog.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
     });
   }

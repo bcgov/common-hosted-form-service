@@ -80,6 +80,10 @@ routes.get('/forms/:formId/groups', requireTenantFeature, jwtService.protect(), 
   await controller.getFormGroups(req, res, next);
 });
 
+routes.get('/forms/:formId/migration/tenant-groups', requireTenantFeature, hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.getMigrationTenantGroups(req, res, next);
+});
+
 routes.get('/forms/:formId/migration/preview', requireTenantFeature, hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
   await controller.getMigrationPreview(req, res, next);
 });

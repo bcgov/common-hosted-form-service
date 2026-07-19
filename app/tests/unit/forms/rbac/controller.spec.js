@@ -705,7 +705,7 @@ describe('migrateForm', () => {
 
     await controller.migrateForm(req, res, next);
 
-    expect(tenantService.migrateFormToTenant).toHaveBeenCalledWith(req, 'form-1', 'tenant-1');
+    expect(tenantService.migrateFormToTenant).toHaveBeenCalledWith(req, 'form-1', 'tenant-1', null);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: 'Form migrated successfully.' });
     expect(next).not.toHaveBeenCalled();
@@ -735,14 +735,25 @@ describe('migrateForm', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 401 when CSTAR rejects the token during migration (session expired)', async () => {
-    const err = Object.assign(new Error('Request failed with status code 403'), { response: { status: 403 } });
+  it('should return 401 with SESSION_EXPIRED code when CSTAR returns 401', async () => {
+    const err = Object.assign(new Error('Request failed with status code 401'), { response: { status: 401 } });
     tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
 
     await controller.migrateForm(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ detail: 'Your session has expired. Please refresh the page and try again.' });
+    expect(res.json).toHaveBeenCalledWith({ detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return 403 with CSTAR_FORBIDDEN code when CSTAR returns 403', async () => {
+    const err = Object.assign(new Error('Request failed with status code 403'), { response: { status: 403 } });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' });
     expect(next).not.toHaveBeenCalled();
   });
 

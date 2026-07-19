@@ -90,6 +90,13 @@ export default {
     );
   },
 
+  getMigrationTenantGroups(formId, tenantId) {
+    return appAxios().get(
+      `${ApiRoutes.RBAC}/forms/${formId}/migration/tenant-groups`,
+      { params: { tenantId } }
+    );
+  },
+
   getMigrationPreview(formId) {
     return appAxios().get(
       `${ApiRoutes.RBAC}/forms/${formId}/migration/preview`
