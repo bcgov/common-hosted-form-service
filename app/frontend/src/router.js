@@ -245,6 +245,17 @@ export default function getRouter(basePath = '/') {
             props: createProps,
           },
           {
+            path: 'migrate',
+            name: 'FormMigrate',
+            component: () => import('~/views/form/Migrate.vue'),
+            meta: {
+              breadcrumbTitle: 'Transfer Form to Tenant',
+              requiresAuth: 'primary',
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'view',
             name: 'FormView',
             component: () => import('~/views/form/View.vue'),
@@ -268,15 +279,12 @@ export default function getRouter(basePath = '/') {
                 await formService.getSubmissionStatuses(submissionId);
                 next();
               } catch (err) {
-                // Handle specific HTTP errors
-                if (
-                  err.response &&
-                  (err.response.status === 401 || err.response.status === 404)
-                ) {
-                  // Expected errors: redirect to NotFound
+                if (err.response?.status === 401) {
+                  // Not authenticated — allow navigation so the app’s auth handling can prompt login (instead of redirecting to NotFound)
+                  next();
+                } else if (err.response?.status === 404) {
                   next({ name: 'NotFound' });
                 } else {
-                  // Unexpected errors: let them propagate
                   throw err;
                 }
               }
@@ -565,6 +573,15 @@ export default function getRouter(basePath = '/') {
       !tenantStore.selectedTenant
     ) {
       return next({ name: 'FormManage', query: { f: to.query.f } });
+    }
+
+    // Form migration is only available when tenant feature is enabled
+    if (
+      to.name === 'FormMigrate' &&
+      authStore.authenticated &&
+      !tenantStore.isTenantFeatureEnabled
+    ) {
+      return next({ name: 'UserForms' });
     }
 
     // Update document title if applicable

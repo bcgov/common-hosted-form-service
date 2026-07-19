@@ -3,6 +3,9 @@ const formService = require('../submission/service');
 const service = require('./service');
 const tenantService = require('../../components/tenantService');
 const userService = require('../user/service');
+const { FormTenant, FormSubmissionUser } = require('../common/models');
+
+const BCEID_IDP_CODES = new Set(['bceid-basic', 'bceid-business']);
 
 // Shared mapping for a raw CSTAR user object → RBAC response shape.
 async function _mapCstarUser(user) {
@@ -275,6 +278,115 @@ module.exports = {
       const groups = await tenantService.getFormGroups(req, formId);
       res.status(200).json(groups);
     } catch (error) {
+      next(error);
+    }
+  },
+
+  getMigrationTenantGroups: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const { tenantId } = req.query;
+      if (!tenantId) return res.status(400).json({ detail: 'tenantId is required.' });
+
+      const existing = await FormTenant.query().where({ formId }).first();
+      if (existing) return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  getMigrationPreview: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+
+      const existing = await FormTenant.query().where({ formId }).first();
+      if (existing) {
+        return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+      }
+
+      const [eligibleTenants, teamMembers, submissionStatsResult, shareUsersResult] = await Promise.all([
+        tenantService.getEligibleTenantsForMigration(req),
+        service.getFormUsers({ formId }),
+        FormSubmissionUser.knex().raw(
+          `SELECT
+             COUNT(DISTINCT fs.id)                                    AS total,
+             COUNT(DISTINCT fs.id) FILTER (WHERE fs.draft = true)    AS drafts
+           FROM form_version fv
+           JOIN form_submission fs ON fs."formVersionId" = fv.id
+           WHERE fv."formId" = ? AND fs.deleted = false`,
+          [formId]
+        ),
+        FormSubmissionUser.knex().raw(
+          `SELECT COUNT(DISTINCT fsu."formSubmissionId") AS count
+           FROM form_submission_user fsu
+           JOIN form_submission fs ON fs.id = fsu."formSubmissionId"
+           JOIN form_version fv ON fv.id = fs."formVersionId"
+           WHERE fv."formId" = ?`,
+          [formId]
+        ),
+      ]);
+
+      // user_form_roles_vw UNIONs every user with roles={} for forms they have no
+      // explicit entry on — filter those out so only real team members appear.
+      const explicitTeamMembers = teamMembers.filter((m) => Array.isArray(m.roles) && m.roles.length > 0);
+
+      // Build a unique-user map; use a Set per entry to deduplicate roles in O(1).
+      const userMap = new Map();
+      for (const m of explicitTeamMembers) {
+        if (!userMap.has(m.email)) {
+          userMap.set(m.email, {
+            email: m.email,
+            fullName: m.fullName,
+            idpCode: m.user_idpCode || null,
+            isBceid: BCEID_IDP_CODES.has(m.user_idpCode),
+            roleSet: new Set(),
+          });
+        }
+        const entry = userMap.get(m.email);
+        if (Array.isArray(m.roles)) {
+          for (const r of m.roles) entry.roleSet.add(r);
+        }
+      }
+
+      const stats = submissionStatsResult.rows[0] || {};
+
+      res.status(200).json({
+        eligibleTenants,
+        impact: {
+          team: Array.from(userMap.values()).map(({ roleSet, ...rest }) => ({ ...rest, roles: [...roleSet] })),
+          submissions: {
+            total: parseInt(stats.total || '0', 10),
+            drafts: parseInt(stats.drafts || '0', 10),
+            withShareUsers: parseInt(shareUsersResult.rows[0]?.count || '0', 10),
+          },
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  migrateForm: async (req, res, next) => {
+    try {
+      const { formId } = req.params;
+      const { tenantId, groupIds } = req.body;
+
+      if (!tenantId) return res.status(400).json({ detail: 'tenantId is required.' });
+      if (groupIds !== undefined && !Array.isArray(groupIds)) {
+        return res.status(400).json({ detail: 'groupIds must be an array.' });
+      }
+
+      await tenantService.migrateFormToTenant(req, formId, tenantId, groupIds || null);
+      res.status(200).json({ message: 'Form migrated successfully.' });
+    } catch (error) {
+      if (error.code === 'ALREADY_MIGRATED') return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+      if (error.code === 'FORM_ADMIN_GROUP_REQUIRED') return res.status(400).json({ detail: error.message, code: error.code });
+      const cstarStatus = error?.response?.status;
+      if (cstarStatus === 401) return res.status(401).json({ detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' });
+      if (cstarStatus === 403) return res.status(403).json({ detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' });
       next(error);
     }
   },

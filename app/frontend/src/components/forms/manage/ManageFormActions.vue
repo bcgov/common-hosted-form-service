@@ -45,6 +45,14 @@ const canManageGroups = computed(() => {
   return roles.includes(TenantRoles.FORM_ADMIN);
 });
 
+// Show Transfer to Tenant for personal forms when tenant feature is enabled and user is OWNER
+const canMigrateForm = computed(
+  () =>
+    tenantStore.isTenantFeatureEnabled &&
+    permissions.value.includes(FormPermissions.FORM_UPDATE) &&
+    selectedTenant.value === null
+);
+
 const canViewSubmissions = computed(() => {
   const perms = [
     FormPermissions.SUBMISSION_READ,
@@ -70,6 +78,7 @@ defineExpose({
   canManageEmail,
   canManageGroups,
   canManageTeam,
+  canMigrateForm,
   canViewSubmissions,
   isPublished,
   deleteForm,
@@ -142,6 +151,27 @@ defineExpose({
         </template>
         <span :lang="locale">{{
           $t('trans.manageFormActions.groupManagement')
+        }}</span>
+      </v-tooltip>
+    </span>
+
+    <span v-if="canMigrateForm">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-btn
+            class="mx-1"
+            color="primary"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-transfer"
+            data-test="canMigrateForm"
+            :to="{ name: 'FormMigrate', query: { f: form.id } }"
+            :title="$t('trans.manageFormActions.migrateForm')"
+          />
+        </template>
+        <span :lang="locale">{{
+          $t('trans.manageFormActions.migrateForm')
         }}</span>
       </v-tooltip>
     </span>

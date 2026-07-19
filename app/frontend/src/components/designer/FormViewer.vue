@@ -34,7 +34,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 
-const emit = defineEmits(['submission-updated']);
+const emit = defineEmits(['submission-updated', 'access-denied']);
 
 const properties = defineProps({
   displayTitle: {
@@ -365,16 +365,32 @@ async function getFormData() {
       permissions.value = permRes.data[0] ? permRes.data[0].permissions : [];
     }
   } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
-      consoleError: t('trans.formViewer.getUsersSubmissionsConsoleErrMsg', {
-        submissionId: properties.submissionId,
-        error: error,
-      }),
-    });
+    handleGetFormDataError(error);
   } finally {
     loadingSubmission.value = false;
   }
+}
+
+// Sharing-off + 401 is the "forwarded success URL, viewer isn't on the form
+// team" case. Success.vue listens on `access-denied` and falls back to the
+// static confirmation block; suppressing the notification (and the follow-on
+// calls) avoids a burst of misleading errors for what is really a known
+// "you can't view this submission" state.
+function handleGetFormDataError(error) {
+  if (
+    error.response?.status === 401 &&
+    formStore.form.enableSubmissionUrlSharing === false
+  ) {
+    emit('access-denied');
+    return;
+  }
+  notificationStore.addNotification({
+    text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
+    consoleError: t('trans.formViewer.getUsersSubmissionsConsoleErrMsg', {
+      submissionId: properties.submissionId,
+      error: error,
+    }),
+  });
 }
 
 async function setProxyHeaders() {
@@ -397,85 +413,90 @@ async function setProxyHeaders() {
 // Get the form definition/schema
 async function getFormSchema() {
   try {
-    let response = undefined;
     if (properties.versionId) {
-      versionIdToSubmitTo.value = properties.versionId;
-      // If getting for a specific older version of the form
-      response = await formService.readVersion(
-        properties.formId,
-        properties.versionId
-      );
-      if (!response.data || !response.data.schema) {
-        throw new Error(
-          t('trans.formViewer.readVersionErrMsg', {
-            versionId: properties.versionId,
-          })
-        );
-      }
-      form.value = response.data;
-      version.value = response.data.version;
-      formSchema.value = response.data.schema;
-    } else if (properties.draftId) {
-      // If getting for a specific draft version of the form for preview
-      response = await formService.readDraft(
-        properties.formId,
-        properties.draftId
-      );
-      if (!response.data || !response.data.schema) {
-        throw new Error(
-          t('trans.formViewer.readDraftErrMsg', {
-            draftId: properties.draftId,
-          })
-        );
-      }
-      form.value = response.data;
-      formSchema.value = response.data.schema;
-    } else {
-      // If getting the HEAD form version (IE making a new submission)
-      response = await formService.readPublished(properties.formId);
-      if (
-        !response ||
-        !response.data ||
-        !response.data.versions ||
-        !response.data.versions[0]
-      ) {
-        router.push({
-          name: 'Alert',
-          query: {
-            text: t('trans.formViewer.alertRouteMsg'),
-            type: 'info',
-          },
-        });
-        return;
-      }
-      form.value = response.data;
-      version.value = response.data.versions[0].version;
-      versionIdToSubmitTo.value = response.data.versions[0].id;
-      formSchema.value = response.data.versions[0].schema;
-
-      if (response.data.schedule && response.data.schedule.expire) {
-        let formScheduleStatus = response.data.schedule;
-        isFormScheduleExpired.value = formScheduleStatus.expire;
-        isLateSubmissionAllowed.value = formScheduleStatus.allowLateSubmissions;
-      }
+      await loadFormByVersion();
+      return;
     }
+    if (properties.draftId) {
+      await loadFormByDraft();
+      return;
+    }
+    await loadPublishedForm();
   } catch (error) {
-    if (authenticated.value) {
-      // if 401 error, the user is not authorized to view the form
-      if (error.response && error.response.status === 401) {
-        isAuthorized.value = false;
-      } else {
-        // throw a generic error message
-        notificationStore.addNotification({
-          text: t('trans.formViewer.fecthingFormErrMsg'),
-          consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
-            versionId: properties.versionId,
-            error: error,
-          }),
-        });
-      }
-    }
+    handleGetFormSchemaError(error);
   }
+}
+
+async function loadFormByVersion() {
+  versionIdToSubmitTo.value = properties.versionId;
+  const response = await formService.readVersion(
+    properties.formId,
+    properties.versionId
+  );
+  if (!response.data || !response.data.schema) {
+    throw new Error(
+      t('trans.formViewer.readVersionErrMsg', {
+        versionId: properties.versionId,
+      })
+    );
+  }
+  form.value = response.data;
+  version.value = response.data.version;
+  formSchema.value = response.data.schema;
+}
+
+async function loadFormByDraft() {
+  const response = await formService.readDraft(
+    properties.formId,
+    properties.draftId
+  );
+  if (!response.data || !response.data.schema) {
+    throw new Error(
+      t('trans.formViewer.readDraftErrMsg', {
+        draftId: properties.draftId,
+      })
+    );
+  }
+  form.value = response.data;
+  formSchema.value = response.data.schema;
+}
+
+async function loadPublishedForm() {
+  const response = await formService.readPublished(properties.formId);
+  if (!response?.data?.versions?.[0]) {
+    router.push({
+      name: 'Alert',
+      query: {
+        text: t('trans.formViewer.alertRouteMsg'),
+        type: 'info',
+      },
+    });
+    return;
+  }
+  form.value = response.data;
+  version.value = response.data.versions[0].version;
+  versionIdToSubmitTo.value = response.data.versions[0].id;
+  formSchema.value = response.data.versions[0].schema;
+  if (response.data.schedule?.expire) {
+    isFormScheduleExpired.value = response.data.schedule.expire;
+    isLateSubmissionAllowed.value = response.data.schedule.allowLateSubmissions;
+  }
+}
+
+function handleGetFormSchemaError(error) {
+  // Silent for anonymous viewers (public forms rendered without auth).
+  if (!authenticated.value) return;
+  if (error.response?.status === 401) {
+    isAuthorized.value = false;
+    return;
+  }
+  notificationStore.addNotification({
+    text: t('trans.formViewer.fecthingFormErrMsg'),
+    consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
+      versionId: properties.versionId,
+      error: error,
+    }),
+  });
 }
 
 function isProcessingMultiUpload(e) {

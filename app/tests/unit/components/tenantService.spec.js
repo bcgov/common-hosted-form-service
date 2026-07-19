@@ -11,11 +11,13 @@ jest.mock('../../../src/components/idpService');
 const { Role, User } = require('../../../src/forms/common/models');
 const Form = require('../../../src/forms/common/models/tables/form');
 const FormGroup = require('../../../src/forms/common/models/tables/formGroup');
+const FormMigrationLog = require('../../../src/forms/common/models/tables/formMigrationLog');
 const FormTenant = require('../../../src/forms/common/models/tables/formTenant');
 
 jest.mock('../../../src/forms/common/models');
 jest.mock('../../../src/forms/common/models/tables/form');
 jest.mock('../../../src/forms/common/models/tables/formGroup');
+jest.mock('../../../src/forms/common/models/tables/formMigrationLog');
 jest.mock('../../../src/forms/common/models/tables/formTenant');
 
 const tenantService = require('../../../src/components/tenantService');
@@ -144,11 +146,15 @@ describe('TenantService', () => {
       expect(req._tenantServiceDegraded).toBe(true);
     });
 
-    it('should throw error on 401 unauthorized when token is invalid', async () => {
+    it('should return empty array on 401 when CSTAR does not recognise the token', async () => {
       jwtService.getBearerToken.mockReturnValue('invalid-token');
       mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
+      const freshReq = { currentUser: { idpUserId: userId }, headers: { authorization: 'Bearer invalid-token' } };
 
-      await expect(tenantService.getCurrentUserTenants(req)).rejects.toThrow();
+      const tenants = await tenantService.getCurrentUserTenants(freshReq);
+
+      expect(tenants).toEqual([]);
+      expect(freshReq._tenantServiceDegraded).toBeUndefined();
     });
 
     it('should throw error on 403 forbidden when user lacks permissions', async () => {
@@ -274,11 +280,36 @@ describe('TenantService', () => {
       await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId)).rejects.toThrow();
     });
 
-    it('should throw error on 401 unauthorized', async () => {
+    it('should return empty array on 401 when token is expired or unrecognised', async () => {
       jwtService.getBearerToken.mockReturnValue('invalid-token');
       mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
 
-      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId)).rejects.toThrow();
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
+
+      expect(groups).toEqual([]);
+    });
+
+    it('should return empty array on 403 when user does not match token', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(403, { error: 'Forbidden' });
+
+      const groups = await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
+
+      expect(groups).toEqual([]);
+    });
+
+    it('should rethrow on 401 when rethrowOnAuthError is true', async () => {
+      jwtService.getBearerToken.mockReturnValue('invalid-token');
+      mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
+
+      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId, { rethrowOnAuthError: true })).rejects.toMatchObject({ response: { status: 401 } });
+    });
+
+    it('should rethrow on 403 when rethrowOnAuthError is true', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(403, { error: 'Forbidden' });
+
+      await expect(tenantService.getUserTenantGroupsAndRoles(req, tenantId, { rethrowOnAuthError: true })).rejects.toMatchObject({ response: { status: 403 } });
     });
 
     it('should throw error if no currentUser', async () => {
@@ -1448,6 +1479,143 @@ describe('TenantService', () => {
       jest.spyOn(tenantService, 'getTenantUsers').mockRejectedValue(new Error('CSTAR error'));
 
       await expect(tenantService.getUsersForForm(req, formId)).rejects.toThrow('CSTAR error');
+    });
+  });
+
+  describe('getEligibleTenantsForMigration', () => {
+    const tenantId1 = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+    const tenantId2 = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+    const req = {
+      currentUser: { idpUserId: 'user-sso-id', usernameIdp: 'TEST@idir' },
+      headers: { authorization: 'Bearer token' },
+    };
+
+    it('returns only tenants where the user has form_admin, with groups filtered to form_admin', async () => {
+      jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([
+        { id: tenantId1, name: 'Tenant A', roles: ['form_admin'] },
+        { id: tenantId2, name: 'Tenant B', roles: ['form_viewer'] },
+      ]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
+        { id: 'group-1', name: 'Admins', roles: ['form_admin'] },
+        { id: 'group-2', name: 'Viewers', roles: ['form_viewer'] },
+      ]);
+
+      const result = await tenantService.getEligibleTenantsForMigration(req);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe(tenantId1);
+      expect(result[0].name).toBe('Tenant A');
+      expect(result[0].groups).toEqual([{ id: 'group-1', name: 'Admins', roles: ['form_admin'] }]);
+    });
+
+    it('returns empty array when user has no tenants with form_admin role', async () => {
+      jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([{ id: tenantId1, name: 'Tenant A', roles: ['form_viewer'] }]);
+
+      const result = await tenantService.getEligibleTenantsForMigration(req);
+
+      expect(result).toEqual([]);
+    });
+
+    it('returns empty array when user belongs to no tenants', async () => {
+      jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([]);
+
+      const result = await tenantService.getEligibleTenantsForMigration(req);
+
+      expect(result).toEqual([]);
+    });
+
+    it('propagates errors from getCurrentUserTenants', async () => {
+      jest.spyOn(tenantService, 'getCurrentUserTenants').mockRejectedValue(new Error('CSTAR down'));
+
+      await expect(tenantService.getEligibleTenantsForMigration(req)).rejects.toThrow('CSTAR down');
+    });
+  });
+
+  describe('migrateFormToTenant', () => {
+    const tenantId = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
+    const formId = 'dddddddd-dddd-dddd-dddd-dddddddddddd';
+    const req = {
+      currentUser: { idpUserId: 'user-sso-id', usernameIdp: 'TEST@idir' },
+      headers: { authorization: 'Bearer token' },
+    };
+    const adminGroups = [{ id: 'group-admin-1', name: 'Form Admins', roles: ['form_admin'] }];
+
+    beforeEach(() => {
+      FormGroup.transaction = jest.fn().mockImplementation(async (fn) => fn({}));
+    });
+
+    it('throws TypeError when currentUser is missing', async () => {
+      await expect(tenantService.migrateFormToTenant({}, formId, tenantId)).rejects.toThrow(TypeError);
+    });
+
+    it('throws TypeError when formId is missing', async () => {
+      await expect(tenantService.migrateFormToTenant(req, null, tenantId)).rejects.toThrow(TypeError);
+    });
+
+    it('throws TypeError when tenantId is missing', async () => {
+      await expect(tenantService.migrateFormToTenant(req, formId, null)).rejects.toThrow(TypeError);
+    });
+
+    it('throws ALREADY_MIGRATED when a form_tenant record already exists', async () => {
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ formId, tenantId }),
+        }),
+      });
+
+      const err = await tenantService.migrateFormToTenant(req, formId, tenantId).catch((e) => e);
+
+      expect(err.code).toBe('ALREADY_MIGRATED');
+    });
+
+    it('throws FORM_ADMIN_GROUP_REQUIRED when the user has no form_admin groups in the tenant', async () => {
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue(null),
+        }),
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Readers', roles: ['form_viewer'] }]);
+
+      const err = await tenantService.migrateFormToTenant(req, formId, tenantId).catch((e) => e);
+
+      expect(err.code).toBe('FORM_ADMIN_GROUP_REQUIRED');
+    });
+
+    it('inserts form_tenant, form_group, and form_migration_log in a transaction on success', async () => {
+      FormTenant.query.mockReturnValueOnce({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue(null),
+        }),
+      });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
+
+      const insertTenant = jest.fn().mockResolvedValue({});
+      const insertGroup = jest.fn().mockResolvedValue([]);
+      const insertLog = jest.fn().mockResolvedValue({});
+      FormTenant.query.mockReturnValueOnce({ insert: insertTenant });
+      FormGroup.query.mockReturnValue({ insert: insertGroup });
+      FormMigrationLog.query.mockReturnValue({ insert: insertLog });
+
+      await tenantService.migrateFormToTenant(req, formId, tenantId);
+
+      expect(FormGroup.transaction).toHaveBeenCalledTimes(1);
+      expect(insertTenant).toHaveBeenCalledWith(expect.objectContaining({ formId, tenantId, createdBy: 'TEST@idir' }));
+      expect(insertGroup).toHaveBeenCalledWith([expect.objectContaining({ formId, groupId: 'group-admin-1', createdBy: 'TEST@idir' })]);
+      expect(insertLog).toHaveBeenCalledWith(expect.objectContaining({ formId, tenantId, createdBy: 'TEST@idir' }));
+    });
+
+    it('rethrows CSTAR auth errors so callers surface 401/403 rather than a misleading group error', async () => {
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue(null),
+        }),
+      });
+      const authError = Object.assign(new Error('Unauthorized'), { response: { status: 401 } });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(authError);
+
+      await expect(tenantService.migrateFormToTenant(req, formId, tenantId)).rejects.toMatchObject({
+        response: { status: 401 },
+      });
     });
   });
 });
