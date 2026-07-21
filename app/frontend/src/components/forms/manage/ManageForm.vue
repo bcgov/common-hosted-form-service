@@ -42,6 +42,13 @@ const canEditForm = computed(() =>
   permissions.value.includes(FormPermissions.FORM_UPDATE)
 );
 
+// The version/design history list is only returned to designers (backend gates
+// it on design_create). Gate the panel on DESIGN_READ so non-designer roles
+// (e.g. team_manager) don't see a section rendered with missing version data.
+const canViewDesignHistory = computed(() =>
+  permissions.value.includes(FormPermissions.DESIGN_READ)
+);
+
 const combinedVersionAndDraftCount = computed(() => {
   return (
     (form.value?.versions ? form.value.versions.length : 0) +
@@ -342,7 +349,11 @@ defineExpose({
     </v-expansion-panels>
 
     <!-- Form Design -->
-    <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
+    <v-expansion-panels
+      v-if="canViewDesignHistory"
+      v-model="versionsPanel"
+      class="nrmc-expand-collapse"
+    >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
           <div
