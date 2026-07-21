@@ -44,28 +44,29 @@ class TenantService {
     const userId = req.currentUser.idpUserId;
     const now = Date.now();
     const cached = listTenantsCache.get(userId);
-    if (cached && cached.expiresAt > now) {
+    if (cached?.expiresAt > now) {
       return cached.promise;
     }
     const url = `${endpoint}${listUserTenantsPath.replace('{userId}', userId)}`;
     const headers = this._getAuthHeaders(req);
-    const entry = { promise: null, expiresAt: now + LIST_TENANTS_TTL_MS };
-    entry.promise = axios
+    const promise = axios
       .get(url, { headers })
-      .then((res) => ({ tenants: res?.data?.data?.tenants || [], degraded: false }))
+      .then((res) => {
+        const raw = res?.data?.data?.tenants;
+        return { tenants: Array.isArray(raw) ? raw : [], degraded: false };
+      })
       .catch((error) => {
-        // Drop the entry so the next call retries. Guard against evicting a
-        // newer entry that may have replaced ours after TTL.
+        // Guard prevents evicting a newer entry that replaced ours after TTL.
         const current = listTenantsCache.get(userId);
-        if (current === entry) listTenantsCache.delete(userId);
+        if (current?.promise === promise) listTenantsCache.delete(userId);
         const status = error?.response?.status;
         const isUnavailable = [500, 502, 503, 504].includes(status);
         const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error?.code);
         if (isUnavailable || isNetworkError) return { tenants: [], degraded: true };
         throw error;
       });
-    listTenantsCache.set(userId, entry);
-    return entry.promise;
+    listTenantsCache.set(userId, { promise, expiresAt: now + LIST_TENANTS_TTL_MS });
+    return promise;
   }
 
   _clearListTenantsCache() {
@@ -89,7 +90,7 @@ class TenantService {
     }
     const { tenants, degraded } = await this._fetchUserTenantsList(req);
     if (degraded) return { belongs: false, degraded: true };
-    const belongs = Array.isArray(tenants) && tenants.some((t) => t?.id === tenantId);
+    const belongs = tenants.some((t) => t?.id === tenantId);
     return { belongs, degraded: false };
   }
 
@@ -105,7 +106,7 @@ class TenantService {
       req._tenantServiceDegraded = true;
       return [];
     }
-    if (!Array.isArray(tenants) || tenants.length === 0) return [];
+    if (tenants.length === 0) return [];
 
     const tenantsWithRoles = await Promise.all(
       tenants.map(async (tenant) => {
