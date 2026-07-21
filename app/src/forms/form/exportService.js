@@ -4,6 +4,7 @@ const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
 const _ = require('lodash');
 const { Readable } = require('stream');
+const { pipeline } = require('node:stream/promises');
 const { unwind, flatten } = require('@json2csv/transforms');
 const { Transform } = require('@json2csv/node');
 const fs = require('fs-extra');
@@ -11,6 +12,7 @@ const path = require('node:path');
 const fileService = require('../file/service');
 const { fileUpload } = require('../file/middleware/upload');
 const emailService = require('../email/emailService');
+const log = require('../../components/log')(module.filename);
 const uuid = require('uuid');
 const nestedObjectsUtil = require('nested-objects-util');
 
@@ -317,43 +319,50 @@ const service = {
       // Stage the CSV inside the sanctioned uploads directory so it satisfies
       // ObjectStorageService._readLocalFile's allowlist (see CCP-5262).
       const pathToTmpFile = path.join(fileUpload.getFileUploadsDir(), `${uuid.v4()}.csv`);
+      const filename = service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv);
       const outputStream = fs.createWriteStream(pathToTmpFile);
-      dataStream.pipe(json2csvParser).pipe(outputStream);
 
-      // Creating FileStorage instance and uploading it, so we can download it later
-      outputStream.on('finish', () => {
-        // Read file stats to get fie size
-        fs.stat(pathToTmpFile, async (err, stats) => {
-          if (err) {
-            throw new Problem(400, {
-              detail: `Error while trying to fetch file stats: ${err}`,
-            });
-          } else {
-            const fileData = {
-              originalname: service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv),
-              mimetype: 'text/csv',
-              size: stats.size,
-              path: pathToTmpFile,
-            };
-            const fileCurrentUser = {
-              usernameIdp: currentUser.usernameIdp,
-            };
-            // Uploading to Object storage
-            const fileResult = await fileService.create(fileData, fileCurrentUser, 'exports');
-            // Sending the email with link to uploaded export
-            emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
-          }
-        });
+      // HTTP has already returned by the time the background work runs, so
+      // every failure MUST be caught and logged, or it becomes a silent
+      // unhandled rejection and the user simply never gets their email.
+      const logCtx = { formId: form.id, to: currentUser.email };
+      // `stage` attributes a failure to the step that produced it.
+      let stage = 'pipe';
+      const buildAndEmailExport = async () => {
+        // pipeline() propagates any stream error into one promise rejection; no
+        // separate .on('error') handlers needed.
+        await pipeline(dataStream, json2csvParser, outputStream);
+
+        stage = 'stat';
+        const stats = await fs.stat(pathToTmpFile);
+
+        stage = 'upload';
+        // fileService.create removes the temp file on success (object storage).
+        const fileResult = await fileService.create(
+          { originalname: filename, mimetype: 'text/csv', size: stats.size, path: pathToTmpFile },
+          { usernameIdp: currentUser.usernameIdp },
+          'exports'
+        );
+
+        stage = 'email';
+        await emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
+        log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
+      };
+
+      buildAndEmailExport().catch(async (err) => {
+        log.error('Export email pipeline failed', { ...logCtx, stage, err: err.message, stack: err.stack });
+        // Best-effort cleanup: covers the pre-upload failure path where
+        // fileService.create never ran and could not clean up itself.
+        await fs.remove(pathToTmpFile).catch((cleanupErr) => log.warn(`Could not remove temp export file ${pathToTmpFile}: ${cleanupErr.message}`));
       });
-      return new Promise((resolve) =>
-        resolve({
-          data: null,
-          headers: {
-            'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-            'content-type': 'text/csv',
-          },
-        })
-      );
+
+      return Promise.resolve({
+        data: null,
+        headers: {
+          'content-disposition': `attachment; filename="${filename}"`,
+          'content-type': 'text/csv',
+        },
+      });
     }
     // If we're working with not too many submissions, we can process parsing right away without
     // any memory constrains
