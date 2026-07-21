@@ -7,9 +7,9 @@ const { Readable } = require('stream');
 const { unwind, flatten } = require('@json2csv/transforms');
 const { Transform } = require('@json2csv/node');
 const fs = require('fs-extra');
-const os = require('os');
-const config = require('config');
+const path = require('node:path');
 const fileService = require('../file/service');
+const { fileUpload } = require('../file/middleware/upload');
 const emailService = require('../email/emailService');
 const uuid = require('uuid');
 const nestedObjectsUtil = require('nested-objects-util');
@@ -314,12 +314,9 @@ const service = {
     let csv = [];
 
     if (emailExport !== 'false' && emailExport !== false) {
-      // If submission count is big we're start streams parsed chunks into the temp file
-      // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
-      // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
-      // to use it in email for link generation for downloading...
-      const path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
-      const pathToTmpFile = `${path}/${uuid.v4()}.csv`;
+      // Stage the CSV inside the sanctioned uploads directory so it satisfies
+      // ObjectStorageService._readLocalFile's allowlist (see CCP-5262).
+      const pathToTmpFile = path.join(fileUpload.getFileUploadsDir(), `${uuid.v4()}.csv`);
       const outputStream = fs.createWriteStream(pathToTmpFile);
       dataStream.pipe(json2csvParser).pipe(outputStream);
 
