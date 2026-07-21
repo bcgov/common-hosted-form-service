@@ -144,9 +144,12 @@ const fileUpload = {
    */
   getFileUploadsDir() {
     // Fall back to the default if read before init() so callers never receive
-    // the bare OS temp dir (which the sweeper would not be scoped to).
+    // the bare OS temp dir (which the sweeper would not be scoped to). Also
+    // ensure the directory exists: temp-file writers (CSV export, submitToEmail
+    // packaging) may call this before init() runs its own mkdir.
     if (!fileUploadsDir) {
       fileUploadsDir = defaultUploadsDir();
+      fs.ensureDirSync(fileUploadsDir);
     }
     return fileUploadsDir;
   },
