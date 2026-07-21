@@ -13,6 +13,14 @@ const FormGroup = require('../forms/common/models/tables/formGroup');
 const FormTenant = require('../forms/common/models/tables/formTenant');
 const uuid = require('uuid');
 
+// Single-flight + short-TTL cache for the list-user-tenants CSTAR call. Every
+// authenticated CHEFS request routes through the tenant middleware (see
+// userAccess.currentUser), so bursts of concurrent requests from one user must
+// share one CSTAR call to avoid stampedes. Rejections are dropped so transient
+// failures don't get pinned for the whole TTL.
+const LIST_TENANTS_TTL_MS = 30 * 1000;
+const listTenantsCache = new Map();
+
 class TenantService {
   /**
    * Get authorization headers with Bearer token from request
@@ -24,6 +32,68 @@ class TenantService {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
+  /**
+   * Fetch the raw list-user-tenants array from CSTAR with request coalescing
+   * and short-TTL caching. Does NOT fan out into per-tenant roles.
+   *
+   * Returns `{ tenants, degraded }`. On transient CSTAR failure (5xx / network)
+   * returns `{ tenants: [], degraded: true }` without caching. On 4xx or other
+   * unexpected errors, throws.
+   */
+  _fetchUserTenantsList(req) {
+    const userId = req.currentUser.idpUserId;
+    const now = Date.now();
+    const cached = listTenantsCache.get(userId);
+    if (cached?.expiresAt > now) {
+      return cached.promise;
+    }
+    const url = `${endpoint}${listUserTenantsPath.replace('{userId}', userId)}`;
+    const headers = this._getAuthHeaders(req);
+    const promise = axios
+      .get(url, { headers })
+      .then((res) => {
+        const raw = res?.data?.data?.tenants;
+        return { tenants: Array.isArray(raw) ? raw : [], degraded: false };
+      })
+      .catch((error) => {
+        // Guard prevents evicting a newer entry that replaced ours after TTL.
+        const current = listTenantsCache.get(userId);
+        if (current?.promise === promise) listTenantsCache.delete(userId);
+        const status = error?.response?.status;
+        const isUnavailable = [500, 502, 503, 504].includes(status);
+        const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error?.code);
+        if (isUnavailable || isNetworkError) return { tenants: [], degraded: true };
+        throw error;
+      });
+    listTenantsCache.set(userId, { promise, expiresAt: now + LIST_TENANTS_TTL_MS });
+    return promise;
+  }
+
+  _clearListTenantsCache() {
+    listTenantsCache.clear();
+  }
+
+  /**
+   * Lightweight membership check for use by the currentUser middleware. Only
+   * makes the list-user-tenants CSTAR call; no per-tenant roles fan-out.
+   *
+   * @param {object} req      Express request with currentUser.idpUserId
+   * @param {string} tenantId Tenant ID from the x-tenant-id header
+   * @returns {Promise<{ belongs: boolean, degraded: boolean }>}
+   */
+  async verifyTenantMembership(req, tenantId) {
+    if (!req || !req.currentUser) {
+      throw new TypeError(`${SERVICE}: missing currentUser`);
+    }
+    if (!req.currentUser.idpUserId) {
+      throw new TypeError(`${SERVICE}: missing currentUser.idpUserId`);
+    }
+    const { tenants, degraded } = await this._fetchUserTenantsList(req);
+    if (degraded) return { belongs: false, degraded: true };
+    const belongs = tenants.some((t) => t?.id === tenantId);
+    return { belongs, degraded: false };
+  }
+
   async getCurrentUserTenants(req) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
@@ -31,41 +101,31 @@ class TenantService {
     if (!req.currentUser.idpUserId) {
       throw new TypeError(`${SERVICE}: missing currentUser.idpUserId`);
     }
-    const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
-    const headers = this._getAuthHeaders(req);
-    try {
-      const { data } = await axios.get(url, { headers });
-      const tenants = data?.data?.tenants || [];
-      if (!Array.isArray(tenants) || tenants.length === 0) return [];
-
-      const tenantsWithRoles = await Promise.all(
-        tenants.map(async (tenant) => {
-          const tenantId = tenant?.id;
-          if (!tenantId) return { ...tenant, roles: [] };
-
-          const reqContext = {
-            ...req,
-            currentUser: { ...req.currentUser, tenantId },
-            headers: req.headers,
-          };
-
-          const groups = await this.getUserTenantGroupsAndRoles(reqContext, tenantId);
-          const roles = Array.isArray(groups) ? groups.flatMap((group) => group.roles || []) : [];
-          return { ...tenant, roles: [...new Set(roles)] };
-        })
-      );
-
-      return tenantsWithRoles;
-    } catch (error) {
-      const status = error?.response?.status;
-      const isUnavailable = [500, 502, 503, 504].includes(status);
-      const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error?.code);
-      if (isUnavailable || isNetworkError) {
-        req._tenantServiceDegraded = true;
-        return [];
-      }
-      throw error;
+    const { tenants, degraded } = await this._fetchUserTenantsList(req);
+    if (degraded) {
+      req._tenantServiceDegraded = true;
+      return [];
     }
+    if (tenants.length === 0) return [];
+
+    const tenantsWithRoles = await Promise.all(
+      tenants.map(async (tenant) => {
+        const tenantId = tenant?.id;
+        if (!tenantId) return { ...tenant, roles: [] };
+
+        const reqContext = {
+          ...req,
+          currentUser: { ...req.currentUser, tenantId },
+          headers: req.headers,
+        };
+
+        const groups = await this.getUserTenantGroupsAndRoles(reqContext, tenantId);
+        const roles = Array.isArray(groups) ? groups.flatMap((group) => group.roles || []) : [];
+        return { ...tenant, roles: [...new Set(roles)] };
+      })
+    );
+
+    return tenantsWithRoles;
   }
 
   async getUserTenantGroupsAndRoles(req, tenantId) {
