@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "يفتح",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "نماذجي",
+    "groupForms": "نماذج المجموعة",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "search": "يبحث",
     "manage": "يدير",
@@ -30,7 +31,12 @@
     "description": "وصف",
     "Description": "وصف:",
     "action": "أجراءات",
-    "loadingText": "جاري التحميل الرجاءالانتظار"
+    "loadingText": "جاري التحميل الرجاءالانتظار",
+    "forms": "نماذج",
+    "deleteForm": "حذف النموذج",
+    "manageForm": "إدارة النموذج",
+    "viewSubmissions": "عرض التقديمات",
+    "noDataText": "لم يتم العثور على نماذج"
   },
   "manageLayout": {
     "manageForm": "إدارة النموذج"
@@ -53,6 +59,7 @@
     "emailManagement": "إدارة البريد الإلكتروني",
     "viewSubmissions": "مشاهدة عمليات الإرسال",
     "teamManagement": "ادارة فريق",
+    "groupManagement": "إدارة المجموعات",
     "deleteForm": "حذف النموذج",
     "confirmDeletion": "تأكيد الحذف",
     "deleteMessageA": "هل أنت متأكد أنك ترغب في حذف",
@@ -85,6 +92,8 @@
     "uploadError": "حدث خطأ أثناء تحميل القالب.",
     "deleteSuccess": "تم حذف القالب بنجاح.",
     "deleteError": "حدث خطأ أثناء حذف القالب.",
+    "deleteErrorInUse": "لا يمكن حذف القالب: القالب قيد الاستخدام حاليًا بواسطة تكوين الطباعة. يرجى تحديث إعدادات تكوين الطباعة أولاً.",
+    "deleteDisabledTooltip": "هذا القالب قيد الاستخدام حاليًا بواسطة تكوين الطباعة. يرجى تحديث إعدادات تكوين الطباعة أولاً.",
     "fetchError": "حدث خطأ أثناء جلب القالب.",
     "info": "قم بتحميل قالب لاستخدام خدمة توليد الوثائق المشتركة (CDOGS)",
     "fileSizeError": "يجب أن يكون حجم الملف أقل من 25 ميغابايت."
@@ -103,7 +112,9 @@
     "referenceGuideB": "دليل المستخدم",
     "referenceGuideC": "لمزيد من التفاصيل",
     "specificTeamMembers": "أعضاء الفريق المحدد",
+    "specificGroups": "مجموعات محددة",
     "teamMemberTooltip": " بعد إنشاء النموذج، سيكون لديك حق الوصول إلى صفحة إدارة الفريق حيث يمكنك إضافة المستخدمين وتعيين الأدوار. ابحث عن أيقونة الأشخاص في صفحة إدارة النموذج.",
+    "groupAccessTooltip": "يتم التحكم في الوصول من خلال مجموعات CSTAR. بعد إنشاء النموذج، انتقل إلى صفحة إدارة المجموعات لربط مجموعات CSTAR بهذا النموذج. يمكن للمستخدمين المنتمين إلى تلك المجموعات فقط الوصول إليه. لإضافة المستخدمين إلى مجموعة أو إزالتهم منها، قم بإدارة عضوية المجموعة في CSTAR.",
     "formFunctionality": "وظيفة الشكل",
     "formSubmissinScheduleMsg": "سيكون جدول تقديم النموذج متاحًا في \"إعدادات النموذج\" بعد نشر النموذج.",
     "formSubmissionsSchedule": "جدول تقديم النموذج",
@@ -123,6 +134,9 @@
     "emailNotificatnToTeamToolTip": "أرسل إشعارًا إلى عنوان بريدك الإلكتروني المحدد عندما يرسل أي مستخدم هذا النموذج",
     "notificationEmailAddrs": "عناوين البريد الإلكتروني الخاصة بالإشعار",
     "addMoreValidEmailAddrs": "أضف عنوان بريد إلكتروني واحدًا أو أكثر",
+    "emailPackage": "إرسال حزمة التقديم عبر البريد الإلكتروني مع قالب المستند",
+    "emailPackageTooltip": "قم بتحميل قالب مستند لتضمين حزمة تقديم مُنشأة في رسالة البريد الإلكتروني الخاصة بالإكمال.",
+    "emailPackageDisabled": "يرجى حفظ النموذج لتمكين حزم التقديم",
     "formScheduleSettings": "إعدادات جدول النموذج",
     "opensubmissions": "فتح عمليات الإرسال",
     "submissionsDeadline": "ما هي المدة التي تريدها لتلقي الطلبات؟",
@@ -204,7 +218,38 @@
     "encryptionKeyUpdatedBy": "تم تحديث مفتاح التشفير بواسطة",
     "encryptionKeyCopySnackbar": "تم نسخ مفتاح التشفير إلى الحافظة",
     "encryptionKeyCopyTooltip": "نسخ مفتاح التشفير إلى الحافظة",
-    "encryptionKeyGenerate": "إنشاء مفتاح التشفير"
+    "encryptionKeyGenerate": "إنشاء مفتاح التشفير",
+    "dataRetention": "سياسة الاحتفاظ بالبيانات",
+    "enableHardDeletion": "تمكين الحذف التلقائي النهائي",
+    "hardDeletionTooltip": "عند التمكين، سيتم إزالة البيانات المعلمة للحذف بشكل دائم بعد فترة الاحتفاظ.",
+    "hardDeletionWarning": "الحذف النهائي دائم ولا يمكن التراجع عنه.",
+    "permanentDeletion": "البيانات ستكون غير قابلة للاسترداد بعد الحذف.",
+    "dataClassification": "تصنيف البيانات",
+    "dataClassificationHint": "تصنيف نوع البيانات التي يتم جمعها بواسطة هذا النموذج",
+    "retentionPeriod": "فترة الاحتفاظ",
+    "retentionPeriodHint": "المدة التي يتم الاحتفاظ فيها بالطلبات المحذوفة قبل الإزالة النهائية",
+    "classPublic": "عامة",
+    "classInternal": "داخلية",
+    "classSensitive": "حساسة",
+    "classConfidential": "سرية",
+    "classProtected": "محمية",
+    "classificationCustomHint": "يمكنك كتابة تصنيف مخصص إذا لزم الأمر",
+    "days30": "30 يوم",
+    "days90": "90 يوم",
+    "days180": "180 يوم",
+    "year1": "سنة واحدة (365 يوم)",
+    "years2": "سنتان (730 يوم)",
+    "years5": "5 سنوات (1825 يوم)",
+    "daysCustom": "فترة مخصصة",
+    "customDaysLabel": "فترة احتفاظ مخصصة (بالأيام)",
+    "customDaysHint": "أدخل رقمًا بين 1 و 3650 يومًا (10 سنوات)",
+    "classificationDescription": "ملاحظات التصنيف",
+    "classificationDescriptionHint": "وصف اختياري لسبب اختيار هذا التصنيف وفترة الاحتفاظ",
+    "retentionDaysUpdated": "تم تحديث فترة الاحتفاظ",
+    "deletionDisclaimerWithDays": "تحذير: بعد {days} يوم، سيتم حذف البيانات المعلمة للحذف بشكل دائم ولا يمكن استردادها.",
+    "setRetentionPrompt": "الرجاء تحديد فترة الاحتفاظ لإكمال سياسة الاحتفاظ بالبيانات.",
+    "fetchRetentionClassificationListError": "حدث خطأ أثناء جلب تصنيفات الاحتفاظ.",
+    "fetchRetentionClassificationListConsErrMsg": "حدث خطأ أثناء جلب تصنيفات الاحتفاظ: {error}"
   },
   "formProfile": {
     "message": "تقوم فرق CHEFS بجمع وتنظيم المعلومات لتكون مدخلات حاسمة لصياغة حالات أعمال شاملة. ستلعب هذه الحالات دورًا حيويًا في توجيه العمليات الاستراتيجية وتحسين CHEFS المستمر في السنوات القادمة. هذه المبادرة لجمع البيانات ضرورية لإعلام القرارات الحاسمة وتشكيل مسار CHEFS ، مما يضمن قابليتها للتكيف وفعاليتها في التعامل مع الاحتياجات والتحديات المتطورة.",
@@ -687,10 +732,12 @@
     "fetchSubmissionUsersErr": "حدث خطأ أثناء محاولة جلب رسائل البريد الإلكتروني للمستلمين لهذا الإرسال.",
     "fetchSubmissionUsersConsErr": "خطأ في الحصول على رسائل البريد الإلكتروني للمستلم لـ",
     "assignSubmissnToFormReviewer": "يمكن تعيين التقديمات لمراجعي النموذج.<br /> لإضافة المزيد من أعضاء الفريق كمراجعين للنموذج ، انتقل إلى صفحة الإدارة لهذا النموذج.",
+    "assignSubmissnToFormReviewerTenanted": "يمكن تعيين التقديمات لمراجعي النموذج. <br />لإضافة أو تحديث الأعضاء كمراجعين للنموذج، انتقل إلى CSTAR وقم بتحديث المجموعة المناسبة.",
     "update": "تحديث",
     "revise": "يراجع",
     "complete": "مكتمل",
-    "assign": "تعيين"
+    "assign": "تعيين",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "جاري التحميل الرجاءالانتظار",
@@ -829,6 +876,44 @@
     "setUserFormsErrMsg": "حدث خطأ أثناء محاولة تحديث الأدوار للمستخدم",
     "setUserFormsConsoleErrMsg": "خطأ في تعيين أدوار المستخدم للنموذج {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "إدارة المجموعات",
+    "manageForm": "إدارة النموذج",
+    "search": "بحث",
+    "loadingText": "جارٍ التحميل... يرجى الانتظار",
+    "noDataText": "لا توجد مجموعات متاحة لهذا المستأجر",
+    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
+    "groupName": "اسم المجموعة",
+    "description": "الوصف",
+    "associated": "مرتبط",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirmSave": "تأكيد التغييرات",
+    "confirmSaveMsg": "هل أنت متأكد أنك تريد تحديث ارتباطات المجموعة لهذا النموذج؟",
+    "saveSuccessMsg": "تم تحديث ارتباطات المجموعة بنجاح",
+    "saveErrMsg": "حدث خطأ أثناء حفظ ارتباطات المجموعة",
+    "getGroupsErrMsg": "حدث خطأ أثناء تحميل المجموعات لهذا النموذج",
+    "missingGroupsWarning": "{count} مجموعة (مجموعات) مرتبطة مسبقًا لم تعد موجودة في هذا المستأجر",
+    "availableGroups": "المجموعات المتاحة",
+    "assignedGroups": "المجموعات المعينة",
+    "searchAvailable": "البحث في المجموعات المتاحة",
+    "searchAssigned": "البحث في المجموعات المعينة",
+    "noAvailableGroups": "لا توجد مجموعات متاحة في هذا المستأجر",
+    "noAssignedGroups": "لا توجد مجموعات معينة لهذا النموذج",
+    "addGroup": "إضافة مجموعة",
+    "removeGroup": "إزالة المجموعة",
+    "deleted": "محذوف",
+    "noTenantAccess": "إدارة المجموعات متاحة فقط للنماذج المرتبطة بمستأجر. يرجى تحديد مستأجر للمتابعة.",
+    "unsavedChangesWarning": "لديك تغييرات مجموعة غير محفوظة. هل تريد المغادرة بدون حفظ؟",
+    "unsavedChangesTitle": "تغييرات غير محفوظة",
+    "leave": "مغادرة",
+    "selectAll": "تحديد الكل",
+    "addSelected": "إضافة المحدد",
+    "removeSelected": "إزالة المحدد",
+    "formAdminGroupRequired": "يجب أن تمتلك مجموعة واحدة على الأقل دور form_admin.",
+    "invalidGroupIds": "واحدة أو أكثر من المجموعات المحددة غير صالحة لهذا المستأجر.",
+    "insufficientPermissions": "ليس لديك الإذن لإدارة ارتباطات المجموعة."
+  },
   "floatButton": {
     "publish": "ينشر",
     "manage": "يدير",
@@ -895,10 +980,12 @@
   "bCGovNavBar": {
     "about": "عن",
     "myForms": "نماذجي",
+    "groupForms": "نماذج المجموعة",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "help": "يساعد",
     "feedback": "تعليق",
-    "admin": "مسؤل"
+    "admin": "مسؤل",
+    "forms": "نماذج"
   },
   "homePage": {
     "title": "أنشئ النماذج وانشرها واستقبل عمليات الإرسال باستخدام Common Hosted Forms Service.",
@@ -917,7 +1004,23 @@
     "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS.",
     "getStartedToChefs": "ابدأ باستخدام CHEFS",
     "createOnlineTitle": "قم بإنشاء نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير العمل الخاص بك.",
-    "getStarted": "البدء"
+    "getStarted": "البدء",
+    "enterpriseSectionTitle": "اكتشف CHEFS المؤسسي الجديد",
+    "enterpriseSectionBody1": "يعمل CHEFS المؤسسي على توسيع نطاق CHEFS الكلاسيكي (خدمة النماذج المستضافة المشتركة) من خلال العمل مع CSTAR — الخدمات المتصلة والوصول إلى الفريق والأدوار — لإنشاء مساحة عمل مشتركة وتعاونية.",
+    "enterpriseSectionBody2": "مع CHEFS المؤسسي، يمكن للفرق مشاركة النماذج بأمان وتعيين الأدوار وإدارة المشاريع داخل مستأجر مؤسستها — مساحة عمل مخصصة تُبقي مشاريعك وأذوناتك منظمة.",
+    "enterpriseSectionWelcome": "مرحبًا بك في CHEFS المؤسسي، حيث يمكن للفرق عبر الحكومة التعاون بأمان وكفاءة.",
+    "classicChefsLabel": "Classic CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "يدعم CHEFS الآن تعدد المستأجرين!",
+    "multiTenancySubTitle": "أنشئ مجموعة لمشروعك أو فريقك وأدر الوصول إلى النماذج المشتركة للمجموعة بأكملها في مكان واحد.",
+    "multiTenancyFitHeading": "قد يكون هذا مناسبًا لفريقك إذا كنت:",
+    "multiTenancyBullet1": "تدير العديد من النماذج عبر البرامج أو البيئات",
+    "multiTenancyBullet2": "لديك مسؤولون أو مراجعون متعددون",
+    "multiTenancyBullet3": "تواجه تغييرات متكررة في الموظفين",
+    "multiTenancyBullet4": "تريد إدارة مركزية للوصول",
+    "multiTenancyBullet5": "تتبنى خدمات متصلة أخرى مثل Notify",
+    "multiTenancyFooter": "يمكن لقادة الفريق والمسؤولين استخدام CSTAR لإنشاء مستأجر وإدارة الوصول لفريقهم.",
+    "multiTenancyBtnLabel": "تسجيل الدخول إلى CSTAR للبدء"
   },
   "baseStepper": {
     "designForm": "نموذج التصميم",
@@ -1117,6 +1220,12 @@
       "saveSubscriptionSettingsNotifyMsg": "تم حفظ إعدادات الاشتراك لهذا النموذج.",
       "saveSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة حفظ إعدادات الاشتراك.",
       "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "حدث خطأ أثناء جلب سياسة الاحتفاظ لهذا النموذج.",
+      "getFormRetentionPolicyConsErrMsg": "خطأ في الحصول على سياسة الاحتفاظ للنموذج {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "حدث خطأ أثناء تكوين سياسة الاحتفاظ لهذا النموذج.",
+      "configureFormRetentionPolicyConsErrMsg": "خطأ في تكوين سياسة الاحتفاظ للنموذج {formId}: {error}"
     }
   },
   "admin": {
@@ -1155,6 +1264,33 @@
     "editTitle": "تحرير تكوين تدفق الحدث",
     "fetchError": "حدث خطأ أثناء جلب تكوين تدفق الحدث.",
     "save": "يحفظ"
+  },
+  "printConfig": {
+    "title": "تكوين الطباعة",
+    "description": "قم بتكوين كيفية طباعة المستخدمين لتقديمات النموذج",
+    "typeDefault": "افتراضي",
+    "typeDefaultDescription": "يمكن للمستخدمين اختيار طريقة الطباعة (طباعة المتصفح أو القالب)",
+    "typeDirect": "طباعة مباشرة",
+    "typeDirectDescription": "يطبع المستخدمون مباشرة باستخدام قالب مُكوّن مسبقًا (إخراج PDF)",
+    "selectTemplate": "حدد القالب",
+    "save": "حفظ التكوين",
+    "saving": "جاري الحفظ...",
+    "saveSuccess": "تم حفظ تكوين الطباعة بنجاح",
+    "saveError": "حدث خطأ أثناء حفظ تكوين الطباعة",
+    "fetchError": "حدث خطأ أثناء جلب تكوين الطباعة",
+    "templateRequired": "القالب مطلوب عند استخدام الطباعة المباشرة",
+    "noTemplatesAvailable": "لا توجد قوالب متاحة. يرجى تحميل قالب أولاً.",
+    "templateDeleted": "تم حذف القالب المحدد مسبقًا. يرجى تحديد قالب جديد.",
+    "currentConfig": "التكوين الحالي",
+    "type": "النوع",
+    "template": "القالب",
+    "reportNameLabel": "اسم ملف الإخراج",
+    "reportNameOptionFormName": "استخدام اسم النموذج",
+    "reportNameOptionFormNameDescription": "سيتم تسمية ملف الإخراج باستخدام اسم النموذج",
+    "reportNameOptionCustom": "استخدام اسم مخصص",
+    "reportNameOptionCustomDescription": "أدخل اسمًا مخصصًا لملف الإخراج",
+    "reportNameCustomInput": "اسم الملف المخصص",
+    "reportNameCustomInputHint": "أدخل الاسم المخصص للمستند المُنشأ"
   },
   "encryptionKey": {
     "info": "قم بتكوين مفاتيح التشفير للنماذج الخاصة بك.",
@@ -1226,7 +1362,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "لا يُمكنك مشاركة المسودة مع المستخدمين الذين لم تتم إضافتهم إلى النموذج. يُرجى التواصل مع المشرف لإضافتهم.",
-    "shareDraftMessage": "مشاركة المسودة مع أعضاء فريق النموذج فقط"
+    "canShareGroupMessage": "لا يمكنك مشاركة المسودة مع هذا المستخدم. يجب أن يكون عضوًا في إحدى مجموعات النموذج المعتمدة.",
+    "shareDraftMessage": "مشاركة المسودة مع أعضاء فريق النموذج فقط",
+    "shareDraftGroupMessage": "مشاركة المسودة مع أعضاء مجموعة النموذج فقط",
+    "groupShareHint": "يمكن إضافة أعضاء مجموعات النموذج المعتمدة فقط."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "هذه الخدمة غير متاحة مؤقتاً.",
@@ -1245,5 +1384,96 @@
     "shuttingDown": "CHEFS يتم إغلاقه.",
     "notReady": "لا يمكن لـ CHEFS الاتصال بجميع الخدمات المطلوبة.",
     "unableToReachBackend": "غير قادر على الوصول إلى خدمة الخلفية."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "هل تريد العمل بأمان مع فريقك، وتقديم النماذج بشكل أسرع، والتعاون في الحكومة؟",
+      "title": "تقديم Enterprise CHEFS و CSTAR!",
+      "enterpriseTitle": "جرب Enterprise CHEFS الجديد",
+      "tenant": "مستأجر",
+      "description1": "Enterprise CHEFS هو الإصدار الجديد من CHEFS الذي يدعم الوصول متعدد المستأجرين وإدارة الفريق من خلال CSTAR (الخدمات المتصلة والوصول الجماعي والأدوار).",
+      "description2": "مع Enterprise CHEFS، يمكن لمؤسستك:",
+      "description3": "العمل في وضع ",
+      "description4": " - لكل مستأجر مساحته الآمنة الخاصة مع نماذج وبيانات وأذونات معزولة",
+      "description5": "إدارة وصول الفريق - تحكم في من يمكنه عرض النماذج أو تحريرها أو إدارتها داخل مستأجرك",
+      "description6": "الحفاظ على أمان البيانات - بيانات كل مستأجر معزولة تمامًا عن المستأجرين الآخرين",
+      "description7": "يتضمن Enterprise CHEFS أيضًا جميع الميزات القوية التي تعرفها وتحبها من Classic CHEFS، مثل منشئ النماذج بالسحب والإفلات، والمنطق الشرطي، والتقديمات المشفرة، وتكاملات API.",
+      "loginButton": "تسجيل الدخول للبدء",
+      "goToChefs": "انتقل إلى CHEFS",
+      "learnMore": "معرفة المزيد"
+    },
+    "gettingStarted": {
+      "title": "جديد على CHEFS ولا تعرف من أين تبدأ؟",
+      "description": "يمكنك البدء في إنشاء النماذج ببضع خطوات بسيطة:",
+      "step1Title": "1. سجل الدخول باستخدام حساب IDIR أو BCeID الخاص بك",
+      "step2Title": "2. إنشاء نموذج جديد أو استخدام قالب",
+      "step3Title": "3. صمم نموذجك باستخدام منشئ السحب والإفلات الخاص بنا",
+      "step4Title": "4. انشر وشارك نموذجك مع فريقك أو الجمهور",
+      "loginButton": "تسجيل الدخول للبدء",
+      "learnMore": "معرفة المزيد"
+    },
+    "examples": {
+      "demographicSurvey": "مثال | استطلاع جمع البيانات الديموغرافية",
+      "projectRequest": "مثال | طلب مشروع",
+      "permitApplication": "مثال | طلب تصريح"
+    },
+    "testimonials": {
+      "title": "لا تصدق كلامنا فقط، استمع إلى ما يقوله مستخدمونا عنا.",
+      "author": "المؤلف",
+      "role": "الدور"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "مستخدم CHEFS 1",
+        "role": "محلل برامج",
+        "quote": "\"غيّر CHEFS الطريقة التي نجمع بها البيانات. يسمح لنا النظام متعدد المستأجرين بالحفاظ على المشاريع منفصلة بينما نشارك أفضل الممارسات في جميع أنحاء قسمنا.\""
+      },
+      "testimonial2": {
+        "author": "مستخدم CHEFS 2",
+        "role": "مدير المشروع",
+        "quote": "\"يجعل التكامل مع CSTAR إدارة وصول الفريق أسهل بكثير. يمكنني إضافة أعضاء فريق جدد بسرعة والتحكم بدقة في ما يمكنهم فعله.\""
+      },
+      "testimonial3": {
+        "author": "مستخدم CHEFS 3",
+        "role": "مسؤول تكنولوجيا المعلومات",
+        "quote": "\"نقدر ميزات الأمان وعزل البيانات القوية. كل مستأجر منفصل تمامًا، مما يمنحنا راحة البال عند العمل مع البيانات الحساسة.\""
+      }
+    },
+    "finalCta": {
+      "title": "ابدأ باستخدام Enterprise CHEFS",
+      "description": "أنشئ نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير عملك.",
+      "loginButton": "تسجيل الدخول للبدء"
+    },
+    "formViewer": {
+      "title": "عارض النماذج",
+      "description": "معاينة شكل نموذجك",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "myForms": "نماذجي",
+    "tenantLabel": "المستأجر:",
+    "infoTooltip": "حدد المستأجر الخاص بك للوصول إلى نماذج المجموعة. العودة إلى 'نماذجي' في أي وقت.",
+    "selectLabel": "حدد المستأجر (يفتح في Enterprise CHEFS)",
+    "placeholder": "حدد من المستأجرين المتاحين",
+    "noDataText": "لم يتم العثور على مستأجرين",
+    "switchToClassic": "Switch to My Forms",
+    "goToCstar": "انتقل إلى CSTAR (الخدمات المتصلة والوصول الجماعي والأدوار)",
+    "noTenantsAvailable": "لا توجد مستأجرين متاحين",
+    "manageTenantsIn": "إدارة المستأجرين في",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "المستأجر:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR غير متاح مؤقتاً. تحديد المستأجر معطّل حالياً.",
+    "errorFetchingTenants": "خطأ في جلب المستأجرين"
   }
 }

@@ -19,13 +19,19 @@ jwtService.protect = jest.fn(() => {
 });
 
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
-userAccess.currentUser = jest.fn((_req, _res, next) => {
+userAccess.currentUser = jest.fn((req, _res, next) => {
+  req.currentUser = {
+    id: '123',
+  };
   next();
 });
 userAccess.hasFormPermissions = jest.fn(() => {
   return jest.fn((_req, _res, next) => {
     next();
   });
+});
+userAccess.requireCreateFormPermission = jest.fn((_req, _res, next) => {
+  next();
 });
 
 const formId = uuid.v4();
@@ -45,7 +51,6 @@ service.readVersion = jest.fn().mockReturnValue({
   id: formVersionId,
 });
 
-const emailService = require('../../../../src/forms/email/emailService');
 const exportService = require('../../../../src/forms/form/exportService');
 const fileService = require('../../../../src/forms/file/service');
 
@@ -1338,41 +1343,14 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
 
     it('should return 201', async () => {
       // mock a success return value...
-      service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
+      service.createSubmission = jest.fn().mockResolvedValue(createSubmissionResult);
       fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
-      const response = await appRequest.post(path).set('Authorization', bearerAuth);
+      const response = await appRequest.post(path).send({}).set('Authorization', bearerAuth);
 
-      expect(emailService.submissionReceived).toBeCalledTimes(1);
-      expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should not call email service if it is a draft', async () => {
-      // mock a success return value...
-      service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
-      fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
-
-      const response = await appRequest.post(path).send({ draft: true }).set('Authorization', bearerAuth);
-
-      expect(emailService.submissionReceived).toBeCalledTimes(0);
-      expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should call email service if draft is provided and false', async () => {
-      // mock a success return value...
-      service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
-      fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
-
-      const response = await appRequest.post(path).send({ draft: false }).set('Authorization', bearerAuth);
-
-      expect(emailService.submissionReceived).toBeCalledTimes(1);
+      // Submission-received email and submission-package enqueue now happen
+      // inside service.createSubmission (tested at the service layer); the
+      // controller only moves files and returns 201.
       expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
       expect(response.statusCode).toBe(201);
       expect(response.body).toBeTruthy();
@@ -1383,7 +1361,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
       service.createSubmission = jest.fn(() => {
         throw new Problem(401);
       });
-      emailService.submissionReceived = jest.fn().mockReturnValue(true);
       fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
       const response = await appRequest.post(path).set('Authorization', bearerAuth);
@@ -1397,7 +1374,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
       service.createSubmission = jest.fn(() => {
         throw new Error();
       });
-      emailService.submissionReceived = jest.fn().mockReturnValue(true);
       fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
       const response = await appRequest.post(path).set('Authorization', bearerAuth);
@@ -1406,23 +1382,11 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
       expect(response.body).toBeTruthy();
     });
 
-    it('should handle error from email service gracefully', async () => {
-      service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.reject({}));
-      fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
-
-      const response = await appRequest.post(path).set('Authorization', bearerAuth);
-
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toBeTruthy();
-    });
-
     it('should handle error from file service gracefully', async () => {
-      service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
+      service.createSubmission = jest.fn().mockResolvedValue(createSubmissionResult);
       fileService.moveSubmissionFiles = jest.fn(() => Promise.reject({}));
 
-      const response = await appRequest.post(path).set('Authorization', bearerAuth);
+      const response = await appRequest.post(path).send({}).set('Authorization', bearerAuth);
 
       expect(response.statusCode).toBe(201);
       expect(response.body).toBeTruthy();

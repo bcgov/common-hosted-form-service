@@ -232,6 +232,16 @@ objects:
                     secretKeyRef:
                       key: cdogs_client_secret
                       name: "${APP_NAME}-sc-cs-secret"
+                - name: SC_CS_CSS_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: css_client_id
+                      name: "${APP_NAME}-sc-cs-secret"
+                - name: SC_CS_CSS_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: css_client_secret
+                      name: "${APP_NAME}-sc-cs-secret"
                 - name: FILES_OBJECTSTORAGE_ACCESSKEYID
                   valueFrom:
                     secretKeyRef:
@@ -252,6 +262,11 @@ objects:
                     secretKeyRef:
                       key: mailapitoken
                       name: "chefs-${JOB_NAME}-secret"
+                - name: SUBMISSION_TOKEN_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: submissiontokenkey
+                      name: "chefs-${JOB_NAME}-secret"
                 - name: EVENTSTREAMSERVICE_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -262,6 +277,16 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-event-stream-service"
+                - name: GATEWAY_JWTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: jwtSecret
+                      name: "${APP_NAME}-gateway"
+                - name: GATEWAY_JWTLIFETIME
+                  valueFrom:
+                    secretKeyRef:
+                      key: jwtLifetime
+                      name: "${APP_NAME}-gateway"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
@@ -279,6 +304,10 @@ objects:
                     name: "${APP_NAME}-oidc-config"
                 - configMapRef:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
+                - configMapRef:
+                    name: "${APP_NAME}-${JOB_NAME}-cstar-config"
+                - configMapRef:
+                    name: "${APP_NAME}-${JOB_NAME}-features-config"
                 - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
                 - configMapRef:

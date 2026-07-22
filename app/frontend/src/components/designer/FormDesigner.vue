@@ -13,6 +13,7 @@ import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormDesignerBuilderOptions } from '~/utils/constants';
@@ -71,6 +72,7 @@ const savedStatus = ref(properties.isSavedStatus);
 const saving = ref(false);
 
 const authStore = useAuthStore();
+const featureFlagStore = useFeatureFlagStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
@@ -101,6 +103,11 @@ onMounted(async () => {
   if (!properties.formId) {
     // We are creating a new form, so we obtain the original schema here.
     patch.value.originalSchema = deepClone(formSchema.value);
+    // Resolve feature flags with no form context. A brand-new form is not
+    // allowlisted, so allowlist-gated features (e.g. submitToEmail) resolve
+    // inactive. Without this, a stale active map from a previously-opened
+    // allowlisted form would leak in and show gated controls on a new form.
+    await featureFlagStore.resolveForContext({});
   }
 });
 
@@ -175,55 +182,65 @@ function onRemoveSchemaComponent() {
 // Patch History
 // ---------------------------------------------------------------------------------------------------
 function onSchemaChange(_changed, flags, modified) {
-  // If the form changed but was not done so through the undo
-  // or redo button
-  if (!patch.value.undoClicked && !patch.value.redoClicked) {
-    // flags and modified are defined when a component is added
-    if (flags !== undefined && modified !== undefined) {
-      // Component was added into the form and save was clicked
-      if (patch.value.componentAddedStart) {
-        addPatchToHistory();
-      } else {
-        // Tab changed, Edit saved, paste occurred
-        if (typeof modified == 'boolean') {
-          // Tab changed
-          resetHistoryFlags();
-        } else {
-          // Edit saved or paste occurred
-          addPatchToHistory();
-        }
-      }
-      canSave.value = true;
-      modified?.components?.map((comp) => {
-        if (comp.key === 'form') {
-          const notificationStore = useNotificationStore();
-          const msg = t('trans.formDesigner.fieldnameError', {
-            label: comp.label,
-          });
-          notificationStore.addNotification({
-            text: msg,
-            consoleError: msg,
-          });
-          canSave.value = false;
-        }
-      });
-    } else {
-      // If we removed a component but not during an add action
-      if (
-        (!patch.value.componentAddedStart &&
-          patch.value.componentRemovedStart) ||
-        patch.value.componentMovedStart
-      ) {
-        // Component was removed or moved
-        addPatchToHistory();
+  if (patch.value.undoClicked || patch.value.redoClicked) {
+    handleUndoRedo();
+    return;
+  }
+
+  if (flags !== undefined && modified !== undefined) {
+    handleComponentModification(modified);
+  } else {
+    handleComponentRemovalOrMove();
+  }
+}
+
+function handleUndoRedo() {
+  patch.value.undoClicked = false;
+  patch.value.redoClicked = false;
+  resetHistoryFlags();
+}
+
+function handleComponentModification(modified) {
+  if (patch.value.componentAddedStart) {
+    addPatchToHistory();
+  } else if (typeof modified === 'boolean') {
+    resetHistoryFlags();
+  } else {
+    addPatchToHistory();
+  }
+
+  canSave.value = true;
+  validateFormComponents(modified);
+}
+
+function handleComponentRemovalOrMove() {
+  if (shouldAddPatchForRemovalOrMove()) {
+    addPatchToHistory();
+  }
+}
+
+function shouldAddPatchForRemovalOrMove() {
+  return (
+    (!patch.value.componentAddedStart && patch.value.componentRemovedStart) ||
+    patch.value.componentMovedStart
+  );
+}
+
+function validateFormComponents(modified) {
+  if (modified?.components) {
+    for (const comp of modified.components) {
+      if (comp.key === 'form') {
+        const notificationStore = useNotificationStore();
+        const msg = t('trans.formDesigner.fieldnameError', {
+          label: comp.label,
+        });
+        notificationStore.addNotification({
+          text: msg,
+          consoleError: msg,
+        });
+        canSave.value = false;
       }
     }
-  } else {
-    // We pressed undo or redo, so we just ignore
-    // adding the action to the history
-    patch.value.undoClicked = false;
-    patch.value.redoClicked = false;
-    resetHistoryFlags();
   }
 }
 
@@ -392,6 +409,7 @@ async function schemaCreateNew() {
     }),
     sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
     enableSubmitterDraft: form.value.enableSubmitterDraft,
+    enableTeamMemberDraftShare: form.value.enableTeamMemberDraftShare,
     allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
     wideFormLayout: form.value.wideFormLayout,
@@ -399,7 +417,11 @@ async function schemaCreateNew() {
     enableSubmitterRevision: form.value.enableSubmitterRevision,
     showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
     showSubmissionConfirmation: form.value.showSubmissionConfirmation,
+    enableSubmitterEmailReceipt: form.value.enableSubmitterEmailReceipt,
+    enableSubmissionUrlSharing: form.value.enableSubmissionUrlSharing,
+    hideSubmissionContentOnSuccess: form.value.hideSubmissionContentOnSuccess,
     submissionReceivedEmails: form.value.submissionReceivedEmails,
+    submissionPackageSettings: form.value.submissionPackageSettings,
     reminder_enabled: false,
     deploymentLevel: form.value.deploymentLevel,
     ministry: form.value.ministry,

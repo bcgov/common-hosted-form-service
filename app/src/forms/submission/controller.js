@@ -1,10 +1,32 @@
-const cdogsService = require('../../components/cdogsService');
+const docGenService = require('../../components/docGenService');
 
 const { Statuses } = require('../common/constants');
 const emailService = require('../email/emailService');
-const formService = require('../form/service');
+const documentTemplateService = require('../form/documentTemplate/service');
+const log = require('../../components/log')(module.filename);
+const userService = require('../user/service');
 
 const service = require('./service');
+
+const chefsTemplate = (submission) => {
+  /*
+    A helper method to build the data object for CDOGS export
+   */
+  return {
+    ...submission.submission.submission.data,
+    chefs: {
+      formVersion: submission.version.version,
+      submissionId: submission.submission.id,
+      confirmationId: submission.submission.confirmationId,
+      createdBy: submission.submission.createdBy,
+      createdAt: submission.submission.createdAt,
+      updatedBy: submission.submission.updatedBy,
+      updatedAt: submission.submission.updatedAt,
+      isDraft: submission.submission.draft,
+      isDeleted: submission.submission.deleted,
+    },
+  };
+};
 
 module.exports = {
   read: async (req, res, next) => {
@@ -96,19 +118,37 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
+      // Validate assignee before writing status to avoid DB FK constraint errors.
+      if (req.body?.assignedToUserId) {
+        const dbUser = await userService.read(req.body.assignedToUserId).catch(() => null);
+        if (!dbUser?.id) {
+          return res
+            .status(400)
+            .json({ detail: 'Assigned user must sign in to CHEFS at least once before they can be assigned a submission.', key: 'trans.statusPanel.assignedUserNotLoggedIn' });
+        }
+      }
+
       const tasks = [service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser), service.read(req.params.formSubmissionId)];
       const [response, submission] = await Promise.all(tasks);
       // send an email (async in the background)
       if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
         emailService
           .statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer)
-          .catch(() => {});
+          .catch((error) => {
+            log.error('Failed to send status assigned email', { error, submissionId: submission.id, userId: req.currentUser.id });
+          });
       } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmails) {
         emailService
           .statusCompleted(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer)
-          .catch(() => {});
+          .catch((error) => {
+            log.error('Failed to send status completed email', { error, submissionId: submission.id, userId: req.currentUser.id });
+          });
       } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmails) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
+        emailService
+          .statusRevising(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer)
+          .catch((error) => {
+            log.error('Failed to send status revising email', { error, submissionId: submission.id, userId: req.currentUser.id });
+          });
       }
       res.status(200).json(response);
     } catch (error) {
@@ -152,20 +192,13 @@ module.exports = {
   templateRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
-      const template = await formService.documentTemplateRead(req.params.documentTemplateId);
+      const template = await documentTemplateService.documentTemplateRead(req.params.documentTemplateId);
       const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
       const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
       const convertTo = req.query.convertTo || 'pdf';
-
       const templateBody = {
-        data: {
-          ...submission.submission.submission.data,
-          chefs: {
-            confirmationId: submission.submission.confirmationId,
-            formVersion: submission.version.version,
-            submissionId: submission.submission.id,
-          },
-        },
+        ...req.body,
+        data: chefsTemplate(submission),
         options: {
           convertTo: convertTo,
           overwrite: true,
@@ -178,7 +211,13 @@ module.exports = {
         },
       };
 
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId: submission.form.id,
+        tenantId: req.currentUser?.tenantId,
+        submissionId: req.params.formSubmissionId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
       const contentDisposition = headers['content-disposition'];
 
       res
@@ -186,6 +225,7 @@ module.exports = {
         .set({
           'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
           'Content-Type': headers['content-type'],
+          'X-Content-Type-Options': 'nosniff',
         })
         .send(data);
     } catch (error) {
@@ -204,51 +244,26 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
+
       const templateBody = {
         ...req.body,
-        data: {
-          ...submission.submission.submission.data,
-          chefs: {
-            confirmationId: submission.submission.confirmationId,
-            formVersion: submission.version.version,
-            submissionId: submission.submission.id,
-          },
-        },
+        data: chefsTemplate(submission),
       };
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
-      const contentDisposition = headers['content-disposition'];
 
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId: submission.form.id,
+        tenantId: req.currentUser?.tenantId,
+        submissionId: req.params.formSubmissionId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
+      const contentDisposition = headers['content-disposition'];
       res
         .status(status)
         .set({
-          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Disposition': contentDisposition || 'attachment',
           'Content-Type': headers['content-type'],
-        })
-        .send(data);
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  /**
-   * Takes a document template file and a form submission object and renders the
-   * template into a document.
-   *
-   * @param {Object} req the Express object representing the HTTP request.
-   * @param {Object} res the Express object representing the HTTP response.
-   * @param {Object} next the Express chaining function.
-   */
-  draftTemplateUploadAndRender: async (req, res, next) => {
-    try {
-      const templateBody = { ...req.body.template, data: req.body.submission.data };
-      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
-      const contentDisposition = headers['content-disposition'];
-
-      res
-        .status(status)
-        .set({
-          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
-          'Content-Type': headers['content-type'],
+          'X-Content-Type-Options': 'nosniff',
         })
         .send(data);
     } catch (error) {

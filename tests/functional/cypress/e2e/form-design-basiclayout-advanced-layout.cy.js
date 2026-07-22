@@ -24,12 +24,19 @@ it('Visits the form settings page', () => {
   cy.waitForLoad();
   formsettings();
 });
+it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.intercept('POST', '**/forms/*', (req) => {
+      console.log(req);
+    }).as('formCreate');
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Advanced Layout').click();
+});
 
   // Form design page for Field set components
 it('Checks the Field set', () => {
-
   cy.viewport(1000, 1100);
-  cy.get('button').contains('Advanced Layout').click();
   cy.get('div.formio-builder-form').then($el => {
     const coords = $el[0].getBoundingClientRect();
     cy.get('span.btn').contains('Field Set')
@@ -176,7 +183,7 @@ it('Checks the Table', () => {
     //Delete form after test run
     cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
     })
 });
 

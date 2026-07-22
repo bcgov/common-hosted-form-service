@@ -13,7 +13,13 @@
       "fileMaxSize": "25MB",
       "fileMaxSizeBytes": "25000000",
       "fileMinSize": "0KB",
-      "path": "files"
+      "path": "files",
+      "cleanup": {
+        "enabled": true,
+        "staleAgeMinutes": 1440,
+        "intervalMinutes": 60,
+        "batchSize": 100
+      }
     },
     "permanent": "objectStorage",
     "localStorage": {
@@ -34,6 +40,8 @@
     "adminDashboardUrl": "",
     "apiPath": "api/v1",
     "basePath": "/app",
+    "cstarBaseUrl": "https://dev.connect.digital.gov.bc.ca",
+    "tenantFeatureEnabled": false,
     "oidc": {
       "clientId": "chefs-frontend-localhost-5300",
       "realm": "standard",
@@ -64,7 +72,8 @@
     },
     "encryption": {
       "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7"
-    }
+    },
+    "submissionTokenTtlMinutes": "15"
   },
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",
@@ -95,8 +104,26 @@
         "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
+      },
+      "cdogsV3": {
+        "endpoint": "http://common-document-generation-service-master.a12c97-prod:3000/api"
+      },
+      "css": {
+        "endpoint": "https://api.loginproxy.gov.bc.ca/api",
+        "tokenEndpoint": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+        "clientId": "CSS_CLIENT_ID",
+        "clientSecret": "CSS_CLIENT_SECRET",
+        "environment": "dev"
       }
     }
+  },
+  "cstar": {
+    "tenantFeatureEnabled": false,
+    "endpoint": "https://dev.connect.digital.gov.bc.ca/api/v1/",
+    "listUserTenantsPath": "users/{userId}/tenants",
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
+    "listGroupsForTenant": "tenants/{tenantId}/groups",
+    "listTenantUsersPath": "tenants/{tenantId}/users"
   },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",
@@ -111,6 +138,31 @@
       "matchAccuracy": 100,
       "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
       "precisionPoints": 100
+    }
+  },
+  "recordsManagement": {
+    "implementation": "local",
+    "enabled": true
+  },
+  "features": {
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": true,
+      "batchSize": 25,
+      "delivery": "attachment",
+      "reportSizeLimit": 5000000,
+      "attachmentsSizeLimit": 10000000,
+      "attachmentsCountLimit": 10,
+      "stuckTimeoutMinutes": 30,
+      "maxAttempts": 3
+    },
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "documentGenerationV3": {
+      "enabled": false
     }
   }
 }

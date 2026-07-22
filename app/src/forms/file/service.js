@@ -2,7 +2,10 @@ const config = require('config');
 const uuid = require('uuid');
 const path = require('path');
 const { FileStorage } = require('../common/models');
+const { StorageTypes } = require('../common/constants');
+const log = require('../../components/log')(module.filename);
 const storageService = require('./storage/storageService');
+const uploadCleanup = require('./uploadCleanup');
 
 const PERMANENT_STORAGE = config.get('files.permanent');
 
@@ -57,13 +60,23 @@ const validateFileSecurity = (file) => {
 
 const service = {
   create: async (data, currentUser, folder = 'uploads') => {
-    validateFileSecurity(data);
-
+    const tempPath = data?.path;
     let trx;
+    let uploadResult;
+    let obj;
+    // Once the transaction commits, the file record and its stored object are
+    // durable and reference each other. Anything that fails after this point
+    // (e.g. the read-back below) must NOT trigger compensation, or we would roll
+    // back an already-committed transaction and delete the object that a
+    // committed row still points at - orphaning the record.
+    let committed = false;
+
     try {
+      validateFileSecurity(data);
+
       trx = await FileStorage.startTransaction();
 
-      const obj = {};
+      obj = {};
       obj.id = uuid.v4();
       obj.storage = folder;
       obj.originalName = data.originalname;
@@ -72,17 +85,38 @@ const service = {
       obj.path = data.path;
       obj.createdBy = currentUser?.usernameIdp || 'public';
 
-      const uploadResult = await storageService.upload(obj);
+      uploadResult = await storageService.upload(obj);
       obj.path = uploadResult.path;
       obj.storage = uploadResult.storage;
-
       await FileStorage.query(trx).insert(obj);
 
       await trx.commit();
+      committed = true;
+
+      if (uploadResult.storage === StorageTypes.OBJECT_STORAGE) {
+        await uploadCleanup.removeUploadedFile(tempPath, 'object-storage-upload-success');
+      }
+
       const result = await service.read(obj.id);
       return result;
     } catch (err) {
-      if (trx) await trx.rollback();
+      // Compensation only applies while the work is still undoable. After a
+      // successful commit the object is legitimately referenced (and for local
+      // storage the temp file IS that object), so leave everything in place.
+      if (!committed) {
+        if (trx) await trx.rollback();
+
+        if (uploadResult && obj?.id) {
+          await service.deleteStorageObject({
+            id: obj.id,
+            path: uploadResult.path,
+            storage: uploadResult.storage,
+          });
+        }
+
+        await uploadCleanup.removeUploadedFile(tempPath, 'create-failure');
+      }
+
       throw err;
     }
   },
@@ -135,27 +169,71 @@ const service = {
   },
 
   /**
+   * Best-effort deletion of the stored object for a file, without touching the
+   * database record. Used to remove the original object after a submission file
+   * has been copied to permanent storage, and to purge orphaned objects once the
+   * DB rows are gone. Storage failures are logged and swallowed so they can't
+   * undo work that has already been committed.
+   *
+   * @param {FileStorage} fileStorage the file storage object to remove.
+   * @returns {Promise<boolean>} true if the object was removed.
+   */
+  deleteStorageObject: async (fileStorage) => {
+    try {
+      return await storageService.delete(fileStorage);
+    } catch (err) {
+      log.error(`Failed to delete stored object for file ${fileStorage?.id}`, err);
+      return false;
+    }
+  },
+
+  /**
    * Move a submission file from the "upload" storage location to the
    * "submission" location. This is used when a submission is either saved as
    * draft or submitted, and makes the uploaded files permanent.
    *
+   * When an existing transaction is supplied the database update runs inside it
+   * and the caller owns both the commit and the cleanup of the original object
+   * (which must happen only after the commit). This avoids opening a second
+   * transaction that would deadlock against the caller's row lock. Without a
+   * transaction this manages its own and cleans up the original itself.
+   *
    * @param {uuidv4} submissionId the id of the submission that holds the file.
    * @param {FileStorage} fileStorage the file storage object for the file.
    * @param {string} updatedBy the user who is saving the submission.
+   * @param {*} [etrx] an optional existing transaction to run within.
+   * @returns {Promise<FileStorage>} the original file storage object (pre-move),
+   *   so the caller can clean up the source object after committing.
    */
-  moveSubmissionFile: async (submissionId, fileStorage, updatedBy) => {
-    // Move the file from its current directory to the "submissions" subdirectory.
-    const path = await storageService.move(fileStorage, 'submissions', submissionId);
-    if (!path) {
-      throw new Error('Error moving files for submission');
-    }
+  moveSubmissionFile: async (submissionId, fileStorage, updatedBy, etrx = undefined) => {
+    let trx;
+    try {
+      trx = etrx || (await FileStorage.startTransaction());
 
-    await FileStorage.query().patchAndFetchById(fileStorage.id, {
-      formSubmissionId: submissionId,
-      path: path,
-      storage: PERMANENT_STORAGE,
-      updatedBy: updatedBy,
-    });
+      // Copy the file from its current directory to the "submissions" subdirectory.
+      const path = await storageService.move(fileStorage, 'submissions', submissionId);
+      if (!path) {
+        throw new Error('Error moving files for submission');
+      }
+
+      await FileStorage.query(trx).patchAndFetchById(fileStorage.id, {
+        formSubmissionId: submissionId,
+        path: path,
+        storage: PERMANENT_STORAGE,
+        updatedBy: updatedBy,
+      });
+
+      // Only manage commit/cleanup when we own the transaction.
+      if (!etrx) {
+        await trx.commit();
+        await service.deleteStorageObject(fileStorage);
+      }
+
+      return fileStorage;
+    } catch (err) {
+      if (!etrx && trx) await trx.rollback();
+      throw err;
+    }
   },
 
   moveSubmissionFiles: async (submissionId, currentUser) => {

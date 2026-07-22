@@ -16,7 +16,14 @@ node_modules
 /package-lock.json
 
 
-
+# Embed viewer build artifacts
+app/frontend/public/embed/chefs-form-viewer.min.js
+app/frontend/public/embed/chefs-form-viewer.min.js.map
+app/frontend/public/embed/chefs-form-viewer-embed.min.js
+app/frontend/public/embed/chefs-form-viewer-embed.min.js.map
+app/frontend/public/embed/chefs-index.css
+app/frontend/public/embed/chefs-theme.css
+app/webcomponents/*
 
 # local env files
 local.*
@@ -32,6 +39,7 @@ yarn-error.log*
 
 # Editor directories and files
 .idea
+.cursor
 *.iml
 *.suo
 *.ntvs*
@@ -48,6 +56,10 @@ yarn-error.log*
 
 # devcontainer files
 !.devcontainer/chefs_local/local.sample.json
+
+# Docker Compose override files (local development)
+docker-compose.override.yml
+**/docker-compose.override.yml
 
 # temp office files
 ~$*
@@ -71,3 +83,10 @@ build
 realm-export.json
 chefs_build
 tests/functional/cypress/core
+dummy
+
+# Ignore Windows reserved device files anywhere
+**/nul
+
+# Claude Code configuration
+.claude/

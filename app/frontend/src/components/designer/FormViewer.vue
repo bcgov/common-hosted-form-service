@@ -34,7 +34,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 
-const emit = defineEmits(['submission-updated']);
+const emit = defineEmits(['submission-updated', 'access-denied']);
 
 const properties = defineProps({
   displayTitle: {
@@ -145,6 +145,8 @@ const viewerOptions = computed(() => {
   // Force recomputation of viewerOptions after rerendered formio to prevent duplicate submission update calls
   reRenderFormIo.value;
 
+  const evalContextUser = getEvalContextUser();
+
   return {
     sanitizeConfig: {
       addTags: ['iframe'],
@@ -167,10 +169,48 @@ const viewerOptions = computed(() => {
     },
     evalContext: {
       token: tokenParsed.value,
-      user: user.value,
+      user: evalContextUser,
     },
   };
 });
+
+function getEvalContextUser() {
+  // New submission (no submissionId), use current logged in user
+  if (!properties.submissionId) {
+    return user.value;
+  }
+
+  // Reviewer viewing in read-only mode, use submitter
+  if (properties.readOnly && submissionRecord.value?.createdBy) {
+    return {
+      id: submissionRecord.value.createdBy,
+      username: submissionRecord.value.createdBy,
+      fullName:
+        submissionRecord.value.createdByUsername ||
+        submissionRecord.value.createdBy,
+      email: submissionRecord.value.createdByEmail || '',
+    };
+  }
+
+  // Submitter editing their own submission, use submitter
+  if (
+    !properties.staffEditMode &&
+    submissionRecord.value?.createdBy &&
+    submissionRecord.value.createdBy === user.value?.usernameIdp
+  ) {
+    return {
+      id: submissionRecord.value.createdBy,
+      username: submissionRecord.value.createdBy,
+      fullName:
+        submissionRecord.value.createdByUsername ||
+        submissionRecord.value.createdBy,
+      email: submissionRecord.value.createdByEmail || '',
+    };
+  }
+
+  // Reviewer editing a submission, use current logged in user
+  return user.value;
+}
 
 const canSaveDraft = computed(
   () =>
@@ -198,7 +238,6 @@ onMounted(async () => {
     await getFormSchema();
   }
   window.addEventListener('beforeunload', beforeWindowUnload);
-
   reRenderFormIo.value += 1;
 });
 
@@ -218,36 +257,34 @@ function getCurrentAuthHeader() {
 }
 
 async function getFormData() {
+  // When the form contains a Data Grid there will be an array that needs to be
+  // checked, and an array of properties to be unset.
+  function iterateArray(array, stack, fields, propNeeded) {
+    const fieldsArray = [];
+    for (let i = 0; i < array.length; i++) {
+      const next = iterate(array[i], stack + '[' + i + ']', fields, propNeeded);
+      if (next) {
+        fieldsArray.push(...(Array.isArray(next) ? next : [next]));
+      }
+    }
+    return fieldsArray;
+  }
+
   function iterate(obj, stack, fields, propNeeded) {
     //Get property path from nested object
     for (let property in obj) {
       const innerObject = obj[property];
+      const path = stack + '.' + property;
 
       if (propNeeded === property) {
-        fields = fields + stack + '.' + property;
-        return fields.replace(/^\./, '');
+        return (fields + path).replace(/^\./, '');
       } else if (Array.isArray(innerObject)) {
-        // When the form contains a Data Grid there will be an array that
-        // needs to be checked, and an array of properties to be unset.
-        const fieldsArray = [];
-        for (let i = 0; i < innerObject.length; i++) {
-          const next = iterate(
-            innerObject[i],
-            stack + '.' + property + '[' + i + ']',
-            fields,
-            propNeeded
-          );
-
-          if (next) {
-            fieldsArray.push(next);
-          }
-        }
-
+        const fieldsArray = iterateArray(innerObject, path, fields, propNeeded);
         if (fieldsArray.length > 0) {
           return fieldsArray;
         }
-      } else if (typeof innerObject === 'object') {
-        return iterate(innerObject, stack + '.' + property, fields, propNeeded);
+      } else if (typeof innerObject === 'object' && innerObject !== null) {
+        return iterate(innerObject, path, fields, propNeeded);
       }
     }
   }
@@ -290,6 +327,17 @@ async function getFormData() {
         ? false
         : true;
     form.value = response.data.form;
+    // Schedule status is already processed by backend (checkIsFormExpired)
+    // Set flags directly from the form schedule data
+    if (form.value.schedule && form.value.schedule.expire !== undefined) {
+      isFormScheduleExpired.value = form.value.schedule.expire === true;
+      isLateSubmissionAllowed.value =
+        form.value.schedule.allowLateSubmissions === true;
+    } else {
+      // Explicitly reset flags if no schedule
+      isFormScheduleExpired.value = false;
+      isLateSubmissionAllowed.value = false;
+    }
     versionIdToSubmitTo.value = versionIdToSubmitTo.value
       ? versionIdToSubmitTo.value
       : response.data?.version?.id;
@@ -315,16 +363,32 @@ async function getFormData() {
       permissions.value = permRes.data[0] ? permRes.data[0].permissions : [];
     }
   } catch (error) {
-    notificationStore.addNotification({
-      text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
-      consoleError: t('trans.formViewer.getUsersSubmissionsConsoleErrMsg', {
-        submissionId: properties.submissionId,
-        error: error,
-      }),
-    });
+    handleGetFormDataError(error);
   } finally {
     loadingSubmission.value = false;
   }
+}
+
+// Sharing-off + 401 is the "forwarded success URL, viewer isn't on the form
+// team" case. Success.vue listens on `access-denied` and falls back to the
+// static confirmation block; suppressing the notification (and the follow-on
+// calls) avoids a burst of misleading errors for what is really a known
+// "you can't view this submission" state.
+function handleGetFormDataError(error) {
+  if (
+    error.response?.status === 401 &&
+    formStore.form.enableSubmissionUrlSharing === false
+  ) {
+    emit('access-denied');
+    return;
+  }
+  notificationStore.addNotification({
+    text: t('trans.formViewer.getUsersSubmissionsErrMsg'),
+    consoleError: t('trans.formViewer.getUsersSubmissionsConsoleErrMsg', {
+      submissionId: properties.submissionId,
+      error: error,
+    }),
+  });
 }
 
 async function setProxyHeaders() {
@@ -347,85 +411,90 @@ async function setProxyHeaders() {
 // Get the form definition/schema
 async function getFormSchema() {
   try {
-    let response = undefined;
     if (properties.versionId) {
-      versionIdToSubmitTo.value = properties.versionId;
-      // If getting for a specific older version of the form
-      response = await formService.readVersion(
-        properties.formId,
-        properties.versionId
-      );
-      if (!response.data || !response.data.schema) {
-        throw new Error(
-          t('trans.formViewer.readVersionErrMsg', {
-            versionId: properties.versionId,
-          })
-        );
-      }
-      form.value = response.data;
-      version.value = response.data.version;
-      formSchema.value = response.data.schema;
-    } else if (properties.draftId) {
-      // If getting for a specific draft version of the form for preview
-      response = await formService.readDraft(
-        properties.formId,
-        properties.draftId
-      );
-      if (!response.data || !response.data.schema) {
-        throw new Error(
-          t('trans.formViewer.readDraftErrMsg', {
-            draftId: properties.draftId,
-          })
-        );
-      }
-      form.value = response.data;
-      formSchema.value = response.data.schema;
-    } else {
-      // If getting the HEAD form version (IE making a new submission)
-      response = await formService.readPublished(properties.formId);
-      if (
-        !response ||
-        !response.data ||
-        !response.data.versions ||
-        !response.data.versions[0]
-      ) {
-        router.push({
-          name: 'Alert',
-          query: {
-            text: t('trans.formViewer.alertRouteMsg'),
-            type: 'info',
-          },
-        });
-        return;
-      }
-      form.value = response.data;
-      version.value = response.data.versions[0].version;
-      versionIdToSubmitTo.value = response.data.versions[0].id;
-      formSchema.value = response.data.versions[0].schema;
-
-      if (response.data.schedule && response.data.schedule.expire) {
-        let formScheduleStatus = response.data.schedule;
-        isFormScheduleExpired.value = formScheduleStatus.expire;
-        isLateSubmissionAllowed.value = formScheduleStatus.allowLateSubmissions;
-      }
+      await loadFormByVersion();
+      return;
     }
+    if (properties.draftId) {
+      await loadFormByDraft();
+      return;
+    }
+    await loadPublishedForm();
   } catch (error) {
-    if (authenticated.value) {
-      // if 401 error, the user is not authorized to view the form
-      if (error.response && error.response.status === 401) {
-        isAuthorized.value = false;
-      } else {
-        // throw a generic error message
-        notificationStore.addNotification({
-          text: t('trans.formViewer.fecthingFormErrMsg'),
-          consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
-            versionId: properties.versionId,
-            error: error,
-          }),
-        });
-      }
-    }
+    handleGetFormSchemaError(error);
   }
+}
+
+async function loadFormByVersion() {
+  versionIdToSubmitTo.value = properties.versionId;
+  const response = await formService.readVersion(
+    properties.formId,
+    properties.versionId
+  );
+  if (!response.data || !response.data.schema) {
+    throw new Error(
+      t('trans.formViewer.readVersionErrMsg', {
+        versionId: properties.versionId,
+      })
+    );
+  }
+  form.value = response.data;
+  version.value = response.data.version;
+  formSchema.value = response.data.schema;
+}
+
+async function loadFormByDraft() {
+  const response = await formService.readDraft(
+    properties.formId,
+    properties.draftId
+  );
+  if (!response.data || !response.data.schema) {
+    throw new Error(
+      t('trans.formViewer.readDraftErrMsg', {
+        draftId: properties.draftId,
+      })
+    );
+  }
+  form.value = response.data;
+  formSchema.value = response.data.schema;
+}
+
+async function loadPublishedForm() {
+  const response = await formService.readPublished(properties.formId);
+  if (!response?.data?.versions?.[0]) {
+    router.push({
+      name: 'Alert',
+      query: {
+        text: t('trans.formViewer.alertRouteMsg'),
+        type: 'info',
+      },
+    });
+    return;
+  }
+  form.value = response.data;
+  version.value = response.data.versions[0].version;
+  versionIdToSubmitTo.value = response.data.versions[0].id;
+  formSchema.value = response.data.versions[0].schema;
+  if (response.data.schedule?.expire) {
+    isFormScheduleExpired.value = response.data.schedule.expire;
+    isLateSubmissionAllowed.value = response.data.schedule.allowLateSubmissions;
+  }
+}
+
+function handleGetFormSchemaError(error) {
+  // Silent for anonymous viewers (public forms rendered without auth).
+  if (!authenticated.value) return;
+  if (error.response?.status === 401) {
+    isAuthorized.value = false;
+    return;
+  }
+  notificationStore.addNotification({
+    text: t('trans.formViewer.fecthingFormErrMsg'),
+    consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
+      versionId: properties.versionId,
+      error: error,
+    }),
+  });
 }
 
 function isProcessingMultiUpload(e) {
@@ -461,7 +530,11 @@ async function saveDraft() {
     saving.value = true;
 
     const response = await sendSubmission(true, submission.value);
-    if (properties.submissionId && properties.submissionId !== null) {
+    if (
+      properties.submissionId &&
+      properties.submissionId !== null &&
+      !properties.isDuplicate
+    ) {
       // Editing an existing draft
       // Update this route with saved flag
       if (!properties.saved) {
@@ -472,8 +545,8 @@ async function saveDraft() {
       }
       saving.value = false;
     } else {
-      // Creating a new submission in draft state
-      // Go to the user form draft page
+      // Creating a new submission in draft state (fresh form or copied submission)
+      // Go to the user form draft page with the new draft's ID
       await router.push({
         name: 'UserFormDraftEdit',
         query: {
@@ -614,9 +687,43 @@ async function onSubmit(sub) {
         errors: errors,
       }),
     });
-  } else {
+    // On error: reset button state without triggering navigation
+    // Force re-render form.io to reset submit button state
+    reRenderFormIo.value += 1;
+  } else if (currentForm.value?.events) {
+    // On success: emit submitDone to reset button AND trigger navigation via onSubmitDone handler
     currentForm.value.events.emit('formio.submitDone');
   }
+}
+
+// Helper function to extract submission data from response
+function extractSubmissionData(response) {
+  if (properties.submissionId && properties.isDuplicate) {
+    return response.data;
+  }
+  if (properties.submissionId && !properties.isDuplicate) {
+    return response.data.submission;
+  }
+  return response.data;
+}
+
+// Helper function to extract error message from error object
+function extractErrorMessage(error) {
+  if (error.response?.status === 403) {
+    // Backend returns schedule expiration message
+    return (
+      error.response.data?.detail ||
+      error.response.data?.message ||
+      formScheduleExpireMessage.value
+    );
+  }
+  if (error.response?.data?.detail) {
+    return error.response.data.detail;
+  }
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+  return t('trans.formViewer.errMsg');
 }
 
 // Not a formIO event, our saving routine to POST the submission to our API
@@ -625,27 +732,21 @@ async function doSubmit(sub) {
   // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
   try {
+    // Validate schedule before submission
+    if (isFormScheduleExpired.value && !isLateSubmissionAllowed.value) {
+      const errorMsg = formScheduleExpireMessage.value;
+      notificationStore.addNotification({
+        text: errorMsg,
+        consoleError: `Submission blocked: ${errorMsg}`,
+      });
+      return errorMsg; // This will be caught and handled by onSubmit
+    }
     const response = await sendSubmission(false, sub);
 
     if ([200, 201].includes(response.status)) {
       // all is good, flag no errors and carry on...
       // store our submission result...
-      submissionRecord.value = Object.assign(
-        {},
-        properties.submissionId && properties.isDuplicate //Check if this submission is creating with the existing one
-          ? response.data
-          : (() => {
-              let result;
-              if (properties.submissionId && properties.isDuplicate) {
-                result = response.data;
-              } else if (properties.submissionId && !properties.isDuplicate) {
-                result = response.data.submission;
-              } else {
-                result = response.data;
-              }
-              return result;
-            })()
-      );
+      submissionRecord.value = { ...extractSubmissionData(response) };
     } else {
       throw new Error(
         t('trans.formViewer.sendSubmissionErrMsg', {
@@ -654,7 +755,7 @@ async function doSubmit(sub) {
       );
     }
   } catch (error) {
-    errMsg = t('trans.formViewer.errMsg');
+    errMsg = extractErrorMessage(error);
   } finally {
     confirmSubmit.value = false;
   }
@@ -666,6 +767,8 @@ async function onSubmitDone() {
   // really nothing to do, the formio button has consumed the event and updated its display
   // is there anything here for us to do?
   // console.info('onSubmitDone()') ; // eslint-disable-line no-console
+  // Note: This handler is only called on successful submission (when formio.submitDone is emitted)
+  // On errors, we use reRenderFormIo to reset button without triggering this handler
   if (properties.staffEditMode) {
     // updating an existing submission on the staff side
     emit('submission-updated');
@@ -791,25 +894,11 @@ async function deleteFile(file) {
 
 async function getFile(fileId, options = {}) {
   await formStore.downloadFile(fileId, options);
-  if (downloadedFile.value && downloadedFile.value.headers) {
-    let data;
 
-    if (
-      downloadedFile.value.headers['content-type'].includes('application/json')
-    ) {
-      data = JSON.stringify(downloadedFile.value.data);
-    } else {
-      data = downloadedFile.value.data;
-    }
+  if (downloadedFile.value?.data && downloadedFile.value?.headers) {
+    const blob = downloadedFile.value.data;
+    const url = window.URL.createObjectURL(blob);
 
-    if (typeof data === 'string') {
-      data = new Blob([data], {
-        type: downloadedFile.value.headers['content-type'],
-      });
-    }
-
-    // don't need to blob because it's already a blob
-    const url = window.URL.createObjectURL(data);
     const a = document.createElement('a');
     a.href = url;
     a.download = getDisposition(
@@ -819,9 +908,10 @@ async function getFile(fileId, options = {}) {
     a.classList.add('hiddenDownloadTextElement');
     document.body.appendChild(a);
     a.click();
+
     downloadTimeout.value = setTimeout(() => {
       document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
+      URL.revokeObjectURL(url);
     });
   }
 }
@@ -849,7 +939,7 @@ async function uploadFile(file, config = {}) {
         </v-alert>
       </div>
 
-      <div v-else-if="isFormScheduleExpired">
+      <div v-else-if="isFormScheduleExpired && !properties.readOnly">
         <v-alert
           :text="
             isLateSubmissionAllowed
@@ -857,7 +947,7 @@ async function uploadFile(file, config = {}) {
               : formScheduleExpireMessage
           "
           prominent
-          type="error"
+          type="info"
           :class="{ 'dir-rtl': isRTL }"
           :lang="locale"
         >

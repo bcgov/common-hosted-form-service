@@ -8,9 +8,11 @@ import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
 import ExternalAPIs from '~/components/forms/manage/ExternalAPIs.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
+import PrintConfig from '~/components/forms/manage/PrintConfig.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useRecordsManagementStore } from '~/store/recordsManagement';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import FormProfile from '~/components/designer/FormProfile.vue';
 
@@ -25,15 +27,26 @@ const settingsPanel = ref(1);
 const subscription = ref(false);
 const subscriptionsPanel = ref(0);
 const versionsPanel = ref(0);
+const printConfigPanel = ref(1);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
+const recordsManagementStore = useRecordsManagementStore();
 
 const { apiKey, drafts, form, permissions, isRTL, subscriptionData } =
   storeToRefs(formStore);
 
+const { formRetentionPolicy } = storeToRefs(recordsManagementStore);
+
 const canEditForm = computed(() =>
   permissions.value.includes(FormPermissions.FORM_UPDATE)
+);
+
+// The version/design history list is only returned to designers (backend gates
+// it on design_create). Gate the panel on DESIGN_READ so non-designer roles
+// (e.g. team_manager) don't see a section rendered with missing version data.
+const canViewDesignHistory = computed(() =>
+  permissions.value.includes(FormPermissions.DESIGN_READ)
 );
 
 const combinedVersionAndDraftCount = computed(() => {
@@ -102,6 +115,12 @@ async function updateSettings() {
     const { valid } = await settingsForm.value.validate();
     if (valid) {
       await formStore.updateForm();
+      if (formRetentionPolicy.value.enabled) {
+        await recordsManagementStore.configureRetentionPolicy(form.value.id);
+      } else if (formRetentionPolicy.value.formId) {
+        // If disabled and a policy exists, delete it
+        await recordsManagementStore.deleteRetentionPolicy(form.value.id);
+      }
       formSettingsDisabled.value = true;
       notificationStore.addNotification({
         text: 'Your form settings have been updated successfully.',
@@ -311,8 +330,30 @@ defineExpose({
       </v-expansion-panel>
     </v-expansion-panels>
 
+    <!-- Print Configuration -->
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="printConfigPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="locale">
+            <strong>{{ $t('trans.manageForm.printConfig') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <PrintConfig />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
     <!-- Form Design -->
-    <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
+    <v-expansion-panels
+      v-if="canViewDesignHistory"
+      v-model="versionsPanel"
+      class="nrmc-expand-collapse"
+    >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
           <div

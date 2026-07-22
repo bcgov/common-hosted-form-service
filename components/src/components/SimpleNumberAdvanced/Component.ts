@@ -7,24 +7,27 @@ const ID = 'simplenumberadvanced';
 const DISPLAY = 'Number';
 
 export default class Component extends SimpleNumberComponent {
-    static schema(...extend: any[]) {
-        return super.schema({
-            type: ID,
-            label: DISPLAY,
-            key: ID,
-        }, ...extend);
-    }
+  static schema(...extend: any[]) {
+    return super.schema(
+      {
+        type: ID,
+        label: DISPLAY,
+        key: ID,
+      },
+      ...extend
+    );
+  }
 
-    public static editForm = editForm;
+  public static readonly editForm = editForm;
 
-    static get builderInfo() {
-        return {
-            title: DISPLAY,
-            group: 'advanced',
-            icon: 'hashtag',
-            weight: 750,
-            documentation: Constants.DEFAULT_HELP_LINK,
-            schema: Component.schema(),
-        };
-    }
+  static get builderInfo() {
+    return {
+      title: DISPLAY,
+      group: 'advanced',
+      icon: 'hashtag',
+      weight: 750,
+      documentation: Constants.DEFAULT_HELP_LINK,
+      schema: Component.schema(),
+    };
+  }
 }

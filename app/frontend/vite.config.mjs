@@ -1,8 +1,9 @@
 import Vue from '@vitejs/plugin-vue';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { defineConfig, loadEnv } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import vuetify from 'vite-plugin-vuetify';
+// eslint-disable-next-line no-unused-vars
 import { defineConfig as vitestDefineConfig } from 'vitest/config';
 
 const proxyObject = {
@@ -22,8 +23,12 @@ export default defineConfig(({ command, mode }) => {
       proxy: {
         '^/pr-*/api': proxyObject,
         '^/pr-*/config': proxyObject,
+        '^/pr-*/gateway': proxyObject,
+        '^/pr-*/webcomponents': proxyObject,
         '^/app/api': proxyObject,
         '^/app/config': proxyObject,
+        '^/app/gateway': proxyObject,
+        '^/app/webcomponents': proxyObject,
       },
     },
     plugins: [Vue(), vuetify(), eslint()],

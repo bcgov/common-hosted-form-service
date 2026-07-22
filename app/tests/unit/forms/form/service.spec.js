@@ -5,14 +5,23 @@ const uuid = require('uuid');
 const { EmailTypes, ScheduleType } = require('../../../../src/forms/common/constants');
 const service = require('../../../../src/forms/form/service');
 
-jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formEmailTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
+jest.mock('../../../../src/forms/common/scheduleService', () => ({
+  checkIsFormExpired: jest.fn(),
+  isDateValid: jest.fn(() => true),
+  isDateInFuture: jest.fn(() => false),
+  validateSubmissionSchedule: jest.fn(),
+}));
 
 const { eventStreamService } = require('../../../../src/components/eventStreamService');
+const tenantService = require('../../../../src/components/tenantService');
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
 const eventService = require('../../../../src/forms//event/eventService');
+const submitToEmailJobService = require('../../../../src/forms/feature/submitToEmail/jobService');
+const emailService = require('../../../../src/forms/email/emailService');
+const { validateSubmissionSchedule } = require('../../../../src/forms/common/scheduleService');
 
 const {
   Form,
@@ -25,26 +34,19 @@ const {
   FormSubmission,
   FormSubmissionUser,
   FormSubmissionStatus,
-  DocumentTemplate,
   SubmissionMetadata,
   FormApiKey,
   FormSubscription,
   FormComponentsProactiveHelp,
+  FormTenant,
+  FormGroup,
 } = require('../../../../src/forms/common/models');
 
-const documentTemplateId = uuid.v4();
 const formId = uuid.v4();
 
 const currentUser = {
   usernameIdp: 'TESTER',
   id: uuid.v4(),
-};
-
-const documentTemplate = {
-  filename: 'cdogs_template.txt',
-  formId: formId,
-  id: documentTemplateId,
-  template: 'My Template',
 };
 
 const emailTemplateSubmissionConfirmation = {
@@ -100,9 +102,11 @@ function resetModels() {
   // IdentityProvider model setup
   IdentityProvider.query = jest.fn().mockReturnThis();
   IdentityProvider.where = jest.fn().mockReturnThis();
+  IdentityProvider.whereRaw = jest.fn().mockReturnThis();
   IdentityProvider.modify = jest.fn().mockReturnThis();
   IdentityProvider.first = jest.fn().mockResolvedValue({ code: 'idir', active: true });
   IdentityProvider.insert = jest.fn().mockReturnThis();
+  IdentityProvider.select = jest.fn().mockResolvedValue([]);
 
   // FormIdentityProvider model setup
   FormIdentityProvider.query = jest.fn().mockReturnThis();
@@ -188,6 +192,12 @@ function resetModels() {
     secret: 'secret',
     filesApiAccess: false,
   });
+
+  FormTenant.query = jest.fn().mockReturnThis();
+  FormTenant.insert = jest.fn().mockReturnThis();
+
+  FormGroup.query = jest.fn().mockReturnThis();
+  FormGroup.insert = jest.fn().mockReturnThis();
 }
 
 beforeEach(() => {
@@ -208,6 +218,18 @@ jest.mock('../../../../src/forms/form/eventStreamConfig/service', () => ({
   upsert: jest.fn().mockResolvedValue({}),
 }));
 
+jest.mock('../../../../src/forms/feature/submitToEmail/settingsService', () => ({
+  upsert: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('../../../../src/forms/feature/submitToEmail/jobService', () => ({
+  enqueueForSubmission: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock('../../../../src/forms/email/emailService', () => ({
+  submissionReceived: jest.fn().mockResolvedValue({}),
+}));
+
 jest.mock('../../../../src/forms/event/eventService', () => ({
   publishFormEvent: jest.fn(),
   formSubmissionEventReceived: jest.fn(),
@@ -223,156 +245,9 @@ jest.mock('../../../../src/components/eventStreamService', () => ({
   },
 }));
 
-describe('Document Templates', () => {
-  describe('documentTemplateCreate', () => {
-    // Need to temporarily replace calls to other functions within the module -
-    // they will be tested elsewhere.
-    beforeEach(() => {
-      jest.spyOn(service, 'documentTemplateRead').mockImplementation(() => documentTemplate);
-    });
-
-    it('should not roll back transaction create problems', async () => {
-      const error = new Error('error');
-      MockModel.startTransaction.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.insert.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(1);
-    });
-
-    it('should update database', async () => {
-      MockModel.mockResolvedValue(documentTemplate);
-      const newDocumentTemplate = { ...documentTemplate };
-      delete newDocumentTemplate.id;
-
-      await service.documentTemplateCreate(formId, newDocumentTemplate, currentUser.usernameIdp);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith(MockTransaction);
-      expect(MockModel.insert).toBeCalledTimes(1);
-      expect(MockModel.insert).toBeCalledWith(
-        expect.objectContaining({
-          ...newDocumentTemplate,
-          createdBy: currentUser.usernameIdp,
-        })
-      );
-      expect(MockTransaction.commit).toBeCalledTimes(1);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-  });
-
-  describe('documentTemplateDelete', () => {
-    it('should not roll back transaction create problems', async () => {
-      const error = new Error('error');
-      MockModel.startTransaction.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateDelete(formId, documentTemplate, currentUser)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.patchAndFetchById.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(error);
-
-      expect(MockTransaction.commit).toBeCalledTimes(0);
-      expect(MockTransaction.rollback).toBeCalledTimes(1);
-    });
-
-    it('should update database', async () => {
-      MockModel.mockResolvedValue(documentTemplate);
-
-      await service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith(MockTransaction);
-      expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
-      expect(MockModel.patchAndFetchById).toBeCalledWith(
-        documentTemplateId,
-        expect.objectContaining({
-          active: false,
-          updatedBy: currentUser.usernameIdp,
-        })
-      );
-      expect(MockTransaction.commit).toBeCalledTimes(1);
-      expect(MockTransaction.rollback).toBeCalledTimes(0);
-    });
-  });
-
-  describe('documentTemplateList', () => {
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.query.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      expect(service.documentTemplateList).toThrow(error);
-    });
-
-    it('should query database', async () => {
-      MockModel.mockResolvedValue([documentTemplate]);
-
-      const result = await service.documentTemplateList(formId);
-
-      expect(result).toEqual([documentTemplate]);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith();
-      expect(MockModel.modify).toBeCalledTimes(2);
-      expect(MockModel.modify).toBeCalledWith('filterActive', true);
-      expect(MockModel.modify).toBeCalledWith('filterFormId', formId);
-    });
-  });
-
-  describe('documentTemplateRead', () => {
-    it('should propagate database errors', async () => {
-      const error = new Error('error');
-      MockModel.query.mockImplementationOnce(() => {
-        throw error;
-      });
-
-      expect(service.documentTemplateRead).toThrow(error);
-    });
-
-    it('should query database', async () => {
-      MockModel.mockResolvedValue(documentTemplate);
-
-      const result = await service.documentTemplateRead(documentTemplateId);
-
-      expect(result).toEqual(documentTemplate);
-
-      expect(MockModel.query).toBeCalledTimes(1);
-      expect(MockModel.query).toBeCalledWith();
-      expect(MockModel.findById).toBeCalledTimes(1);
-      expect(MockModel.findById).toBeCalledWith(documentTemplateId);
-      expect(MockModel.modify).toBeCalledTimes(1);
-      expect(MockModel.modify).toBeCalledWith('filterActive', true);
-      expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
-    });
-  });
-});
+jest.mock('../../../../src/components/tenantService', () => ({
+  getUserTenantGroupsAndRoles: jest.fn(),
+}));
 
 describe('_findFileIds', () => {
   it('should handle a blank everything', () => {
@@ -916,6 +791,65 @@ describe('readVersionFields', () => {
   });
 });
 
+describe('readFormFields', () => {
+  // Build a thenable query mock whose modify() chain resolves to the versions.
+  const mockVersionQuery = (versions) => {
+    const query = {
+      modify: jest.fn().mockReturnThis(),
+      then: (resolve) => resolve(versions),
+    };
+    FormVersion.query = jest.fn().mockReturnValue(query);
+    return query;
+  };
+
+  it('returns the published version and its fields when one is published', async () => {
+    const versions = [
+      { id: 'v2', version: 2, published: false },
+      { id: 'v1', version: 1, published: true },
+    ];
+    mockVersionQuery(versions);
+    service.readVersionFields = jest.fn().mockResolvedValue(['simpletextfield']);
+
+    const result = await service.readFormFields(formId);
+
+    expect(result.versionId).toEqual('v1');
+    expect(result.published).toEqual(true);
+    expect(result.versions).toEqual(versions);
+    expect(result.fields).toEqual(['simpletextfield']);
+    expect(service.readVersionFields).toHaveBeenCalledWith('v1');
+  });
+
+  it('falls back to the latest version when none are published', async () => {
+    const versions = [
+      { id: 'v2', version: 2, published: false },
+      { id: 'v1', version: 1, published: false },
+    ];
+    mockVersionQuery(versions);
+    service.readVersionFields = jest.fn().mockResolvedValue(['simpletextfield']);
+
+    const result = await service.readFormFields(formId);
+
+    expect(result.versionId).toEqual('v2');
+    expect(result.published).toEqual(false);
+    expect(service.readVersionFields).toHaveBeenCalledWith('v2');
+  });
+
+  it('returns empty results when the form has no versions', async () => {
+    mockVersionQuery([]);
+    service.readVersionFields = jest.fn();
+
+    const result = await service.readFormFields(formId);
+
+    expect(result).toEqual({
+      versionId: null,
+      published: false,
+      versions: [],
+      fields: [],
+    });
+    expect(service.readVersionFields).not.toHaveBeenCalled();
+  });
+});
+
 describe('processPaginationData', () => {
   const SubmissionData = require('../../../fixtures/submission/kitchen_sink_submission_pagination.json');
 
@@ -960,29 +894,29 @@ describe('processPaginationData', () => {
         modify: () => jest.fn().mockReturnThis(),
       };
     });
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 0, null, false);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, null, false);
     expect(result.results).toHaveLength(5);
     expect(result.total).toEqual(SubmissionData.length);
   });
   it('search submission data with pagination base on datetime', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, '2023-08-19T19:11', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, '2023-08-19T19:11', true);
     expect(result.results).toHaveLength(3);
     expect(result.total).toEqual(3);
   });
   it('search submission data with pagination base on any value (first page)', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, 'a', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (second page)', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 0, 'a', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (test for case)', async () => {
     MockModel.query.mockImplementationOnce((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, 0, 'A', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, 'A', true);
     expect(result.results).toHaveLength(10);
   });
 });
@@ -1301,6 +1235,210 @@ describe('createForm', () => {
       })
     );
   });
+
+  it('should properly handle enableTeamMemberDraftShare in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Test Form',
+      identityProviders: [{ code: 'idir' }],
+      enableSubmitterDraft: true,
+      enableTeamMemberDraftShare: true,
+    };
+
+    // Mock the Form.insert to capture what's being inserted
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({
+      insert: mockInsert,
+    });
+
+    await service.createForm(data, currentUser);
+
+    // Verify that enableTeamMemberDraftShare was passed to the insert
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        enableSubmitterDraft: true,
+        enableTeamMemberDraftShare: true,
+      })
+    );
+  });
+
+  it('should default enableSubmissionUrlSharing to true when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: true }));
+  });
+
+  it('should persist enableSubmissionUrlSharing false in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], enableSubmissionUrlSharing: false };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: false }));
+  });
+
+  it('should default enableSubmitterEmailReceipt to true when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmitterEmailReceipt: true }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt false in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: false };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should force enableSubmitterEmailReceipt to false in createForm when enableSubmissionUrlSharing is false, even if the payload says true', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Test Form',
+      identityProviders: [{ code: 'public' }],
+      enableSubmissionUrlSharing: false,
+      enableSubmitterEmailReceipt: true,
+    };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: false, enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should default hideSubmissionContentOnSuccess to false when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ hideSubmissionContentOnSuccess: false }));
+  });
+
+  it('should persist hideSubmissionContentOnSuccess true in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], hideSubmissionContentOnSuccess: true };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ hideSubmissionContentOnSuccess: true }));
+  });
+
+  it('should throw when tenant form creation is attempted without headers', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValueOnce({});
+
+    const tenantUser = {
+      ...currentUser,
+      tenantId: uuid.v4(),
+    };
+
+    await expect(service.createForm({ name: 'Tenant Form', schema: { components: [] } }, tenantUser)).rejects.toThrow('Request headers required for tenant form creation');
+    expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create FormTenant and FormGroup records for tenant users with form_admin groups', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValueOnce({ id: formId, versions: [], identityProviders: [] });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    tenantService.getUserTenantGroupsAndRoles.mockResolvedValueOnce([
+      { id: 'group-1', roles: ['form_admin', 'form_viewer'] },
+      { id: 'group-2', roles: ['form_viewer'] },
+    ]);
+
+    const tenantUser = {
+      ...currentUser,
+      tenantId: uuid.v4(),
+    };
+    const headers = { authorization: 'Bearer token' };
+
+    await service.createForm({ name: 'Tenant Form', schema: { components: [] } }, tenantUser, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith(
+      {
+        currentUser: tenantUser,
+        headers,
+      },
+      tenantUser.tenantId
+    );
+    expect(FormTenant.insert).toHaveBeenCalledTimes(1);
+    expect(FormGroup.insert).toHaveBeenCalledTimes(1);
+    expect(FormRoleUser.insert).toHaveBeenCalledTimes(0);
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw 403 when tenant user has no form_admin group', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValueOnce({ id: formId, versions: [], identityProviders: [] });
+
+    tenantService.getUserTenantGroupsAndRoles.mockResolvedValueOnce([{ id: 'group-1', roles: ['form_viewer'] }]);
+
+    const tenantUser = {
+      ...currentUser,
+      tenantId: uuid.v4(),
+    };
+
+    await expect(service.createForm({ name: 'Tenant Form', schema: { components: [] } }, tenantUser, { authorization: 'Bearer token' })).rejects.toThrow(
+      'User does not belong to any group with form_admin role'
+    );
+
+    expect(FormGroup.insert).toHaveBeenCalledTimes(0);
+    expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('updateForm', () => {
@@ -1371,6 +1509,116 @@ describe('updateForm', () => {
         showAssigneeInSubmissionsTable: true, // Should be true because of the OR logic
       })
     );
+  });
+
+  it('should default enableSubmissionUrlSharing to true when undefined in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }] };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: true }));
+  });
+
+  it('should persist enableSubmissionUrlSharing false in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmissionUrlSharing: false };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: false }));
+  });
+
+  it('should default enableSubmitterEmailReceipt to false in updateForm when the payload omits it (strict-on-update; prevents accidental opt-in)', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }] };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt true in updateForm when the payload says true and sharing is on', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: true };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: true }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt false in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: false };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should force enableSubmitterEmailReceipt to false in updateForm when enableSubmissionUrlSharing is false, even if the payload says true', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Form',
+      identityProviders: [{ code: 'public' }],
+      enableSubmissionUrlSharing: false,
+      enableSubmitterEmailReceipt: true,
+    };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: false, enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should persist hideSubmissionContentOnSuccess true in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], hideSubmissionContentOnSuccess: true };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ hideSubmissionContentOnSuccess: true }));
   });
 });
 
@@ -1469,6 +1717,16 @@ describe('createSubmission', () => {
     MockModel.mockReset();
     MockTransaction.mockReset();
     resetModels();
+    validateSubmissionSchedule.mockClear();
+    submitToEmailJobService.enqueueForSubmission.mockClear();
+    emailService.submissionReceived.mockClear();
+    // Reset to default implementation that handles null/undefined gracefully
+    validateSubmissionSchedule.mockImplementation((schedule) => {
+      // validateSubmissionSchedule should not throw for null/undefined/disabled schedules
+      if (!schedule || !schedule.enabled) {
+        return;
+      }
+    });
   });
 
   afterEach(() => {
@@ -1488,6 +1746,104 @@ describe('createSubmission', () => {
 
     expect(eventService.formSubmissionEventReceived).toBeCalledTimes(1);
     expect(eventStreamService.onSubmit).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('enqueues a submission package job and sends the received email for a non-draft submission', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }], identityProviders: [] });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledTimes(1);
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledWith(expect.objectContaining({ formId, draft: false }));
+    expect(emailService.submissionReceived).toBeCalledTimes(1);
+  });
+
+  it('does not send the received email for a draft submission (but still calls the gated enqueue)', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }], identityProviders: [] });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: true, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    // enqueue is always called; it no-ops internally for drafts.
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledWith(expect.objectContaining({ draft: true }));
+    expect(emailService.submissionReceived).not.toBeCalled();
+  });
+
+  it('should validate schedule before allowing submission', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: formSchedule,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+    // Override default mock for this test to verify it's called
+    validateSubmissionSchedule.mockImplementation(() => {});
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('should throw error when schedule validation fails', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: formSchedule,
+    });
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    const scheduleError = new Error('Form submission period has expired');
+    scheduleError.status = 403;
+    validateSubmissionSchedule.mockImplementation(() => {
+      throw scheduleError;
+    });
+
+    const data = { draft: false, submission: { data: {} } };
+    await expect(service.createSubmission('123', data, currentUser)).rejects.toThrow('Form submission period has expired');
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).not.toHaveBeenCalled();
+  });
+
+  it('should not validate schedule when form has no schedule', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: null,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(null);
     expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 });
@@ -1810,95 +2166,6 @@ describe('readFormOptions', () => {
 
     const result = await service.readFormOptions(formId);
     expect(result.idpHints).toEqual(['idir', 'bceid']);
-  });
-});
-
-describe('documentTemplateCreate', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should rollback and throw if documentTemplateCreate fails', async () => {
-    DocumentTemplate.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
-    DocumentTemplate.query = jest.fn().mockImplementation(() => {
-      throw new Error('DB error');
-    });
-
-    await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser.usernameIdp)).rejects.toThrow('DB error');
-    expect(MockTransaction.rollback).toHaveBeenCalled();
-  });
-});
-describe('documentTemplateDelete', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should rollback and throw if documentTemplateDelete fails', async () => {
-    DocumentTemplate.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
-    DocumentTemplate.query = jest.fn().mockImplementation(() => {
-      throw new Error('DB error');
-    });
-
-    await expect(service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp)).rejects.toThrow('DB error');
-    expect(MockTransaction.rollback).toHaveBeenCalled();
-  });
-});
-
-describe('documentTemplateList', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should return empty array if no templates in documentTemplateList', async () => {
-    // Create a chainable mock object
-    const chain = {
-      modify: jest.fn().mockReturnThis(),
-      then: jest.fn((cb) => Promise.resolve(cb([]))),
-    };
-    // Mock DocumentTemplate.query to return the chainable object
-    DocumentTemplate.query = jest.fn(() => chain);
-
-    const result = await service.documentTemplateList(formId);
-
-    expect(result).toEqual([]);
-    expect(DocumentTemplate.query).toHaveBeenCalled();
-    expect(chain.modify).toHaveBeenCalledWith('filterFormId', formId);
-    expect(chain.modify).toHaveBeenCalledWith('filterActive', true);
-  });
-});
-
-describe('documentTemplateRead', () => {
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    resetModels();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-  it('should throw if documentTemplateRead not found', async () => {
-    DocumentTemplate.query = jest.fn().mockReturnThis();
-    DocumentTemplate.findById = jest.fn().mockReturnThis();
-    DocumentTemplate.modify = jest.fn().mockReturnThis();
-    DocumentTemplate.throwIfNotFound = jest.fn().mockRejectedValue(new Error('Not found'));
-
-    await expect(service.documentTemplateRead(documentTemplateId)).rejects.toThrow('Not found');
   });
 });
 
@@ -2436,7 +2703,7 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'bar', true);
+    const result = await service.processPaginationData(query, 0, 10, 'bar', true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe('Bar');
   });
@@ -2447,7 +2714,7 @@ describe('processPaginationData', () => {
       { foo: 456, submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 123, true);
+    const result = await service.processPaginationData(query, 0, 10, 123, true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe(123);
   });
@@ -2458,7 +2725,7 @@ describe('processPaginationData', () => {
       { foo: '2022-01-01T00:00:00Z', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, '2023-08-19', true);
+    const result = await service.processPaginationData(query, 0, 10, '2023-08-19', true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toContain('2023-08-19');
   });
@@ -2469,14 +2736,14 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'baz', true);
+    const result = await service.processPaginationData(query, 0, 10, 'baz', true);
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe('baz');
   });
 
   it('should return all results when itemsPerPage is -1 (no search)', async () => {
     const query = Promise.resolve({ results: [1, 2, 3], total: 3 });
-    const result = await service.processPaginationData(query, 0, -1, 3, null, false);
+    const result = await service.processPaginationData(query, 0, -1, null, false);
     expect(result.results).toEqual([1, 2, 3]);
     expect(result.total).toBe(3);
   });
@@ -2495,7 +2762,7 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'notfound', true);
+    const result = await service.processPaginationData(query, 0, 10, 'notfound', true);
     expect(result.results.length).toBe(0);
     expect(result.total).toBe(0);
   });
@@ -2506,7 +2773,7 @@ describe('processPaginationData', () => {
       { foo: 'baz', submissionId: 2, formVersionId: 2, formId: 2 },
     ];
     const query = Promise.resolve(data);
-    const result = await service.processPaginationData(query, 0, 10, 2, 'bar', 'true');
+    const result = await service.processPaginationData(query, 0, 10, 'bar', 'true');
     expect(result.results.length).toBe(1);
     expect(result.results[0].foo).toBe('bar');
   });
@@ -2516,6 +2783,176 @@ describe('processPaginationData', () => {
     const result = await service.processPaginationData(mockQuery, 0, 2, null, null, undefined);
     expect(result.results).toEqual([1, 2]);
     expect(result.total).toBe(2);
+  });
+
+  it('should search only within specified fields when search.fields is provided', async () => {
+    const data = [
+      { a: 'match', b: 'nope', submissionId: 1, formVersionId: 1, formId: 1 },
+      { a: 'nope', b: 'match', submissionId: 2, formVersionId: 2, formId: 2 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'match',
+      fields: ['a'], // only search column "a"
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    // Only row 1 matches because we restricted to field "a"
+    expect(result.total).toBe(1);
+    expect(result.results[0].a).toBe('match');
+  });
+
+  it('should return all matches when search.fields is empty', async () => {
+    const data = [
+      { x: 'foo', y: 'bar', submissionId: 1, formVersionId: 1, formId: 1 },
+      { x: 'hello', y: 'foo', submissionId: 2, formVersionId: 2, formId: 2 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'foo',
+      fields: [], // search all fields
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(2);
+    expect(result.results.length).toBe(2);
+  });
+
+  it('should fall back to searching all fields when search.fields is undefined', async () => {
+    const data = [
+      { name: 'alpha', tag: '123', submissionId: 1, formVersionId: 1, formId: 1 },
+      { name: 'beta', tag: '456', submissionId: 2, formVersionId: 2, formId: 2 },
+      { name: 'gamma', tag: '999', submissionId: 3, formVersionId: 3, formId: 3 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: '999',
+      // no fields provided
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results[0].tag).toBe('999');
+  });
+
+  it('should extract term using search.value when search is object', async () => {
+    const data = [{ foo: 'hello world', submissionId: 1, formVersionId: 1, formId: 1 }];
+    const query = Promise.resolve(data);
+
+    const search = { value: 'hello' };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results[0].foo).toBe('hello world');
+  });
+
+  it('should extract term using search when search is string', async () => {
+    const data = [{ foo: 'zzz', submissionId: 1, formVersionId: 1, formId: 1 }];
+    const query = Promise.resolve(data);
+
+    const result = await service.processPaginationData(query, 0, 10, 'zzz', true);
+
+    expect(result.total).toBe(1);
+    expect(result.results[0].foo).toBe('zzz');
+  });
+
+  it('should match boolean field when searching "true" in a top-level boolean field', async () => {
+    const data = [
+      { trueorfalse: true, other: 'nope', submissionId: 1, formVersionId: 1, formId: 1 },
+      { trueorfalse: false, other: 'nope', submissionId: 2, formVersionId: 2, formId: 2 },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'true',
+      fields: ['trueorfalse'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results.length).toBe(1);
+    expect(result.results[0].trueorfalse).toBe(true);
+  });
+
+  it('should not match when searching "false" on a top-level boolean true field', async () => {
+    const data = [{ trueorfalse: true, submissionId: 1, formVersionId: 1, formId: 1 }];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'false',
+      fields: ['trueorfalse'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(0);
+    expect(result.results.length).toBe(0);
+  });
+
+  it('should match nested boolean when searching "true" in a specified object field', async () => {
+    const data = [
+      {
+        meta: { nestedBool: true, other: 'x' },
+        submissionId: 1,
+        formVersionId: 1,
+        formId: 1,
+      },
+      {
+        meta: { nestedBool: false },
+        submissionId: 2,
+        formVersionId: 2,
+        formId: 2,
+      },
+    ];
+    const query = Promise.resolve(data);
+
+    // deep search into `meta` should find nestedBool: true
+    const search = {
+      value: 'true',
+      fields: ['meta'],
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(1);
+    expect(result.results.length).toBe(1);
+    expect(result.results[0].meta.nestedBool).toBe(true);
+  });
+
+  it('should NOT match nested boolean when searching across all fields in simple search mode', async () => {
+    const data = [
+      {
+        meta: { nestedBool: true },
+        submissionId: 1,
+        formVersionId: 1,
+        formId: 1,
+      },
+      {
+        meta: { nestedBool: false },
+        submissionId: 2,
+        formVersionId: 2,
+        formId: 2,
+      },
+    ];
+    const query = Promise.resolve(data);
+
+    const search = {
+      value: 'true',
+      // fields not provided → but primitive search should ignore all nested fields
+    };
+
+    const result = await service.processPaginationData(query, 0, 10, search, true);
+
+    expect(result.total).toBe(0);
+    expect(result.results.length).toBe(0);
   });
 });
 

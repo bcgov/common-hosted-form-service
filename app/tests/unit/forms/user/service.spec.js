@@ -14,9 +14,11 @@ const preferences = { columns: [] };
 beforeEach(() => {
   MockModel.mockReset();
   MockTransaction.mockReset();
+  jest.clearAllMocks();
 });
 
 idpService.findByCode = jest.fn().mockReturnValue(null);
+idpService.getIdentityProviders = jest.fn().mockResolvedValue([]);
 
 describe('list', () => {
   it('should query user table by id', async () => {
@@ -37,7 +39,7 @@ describe('list', () => {
     expect(MockModel.query).toBeCalledWith();
     expect(MockModel.modify).toBeCalledTimes(9);
     expect(MockModel.modify).toBeCalledWith('filterIdpUserId', params.idpUserId);
-    expect(MockModel.modify).toBeCalledWith('filterIdpCode', params.idpCode);
+    expect(MockModel.modify).toBeCalledWith('filterIdpCodes', [params.idpCode]);
     expect(MockModel.modify).toBeCalledWith('filterUsername', params.username, false, false);
     expect(MockModel.modify).toBeCalledWith('filterFullName', params.fullName);
     expect(MockModel.modify).toBeCalledWith('filterFirstName', params.firstName);
@@ -58,6 +60,30 @@ describe('read', () => {
     expect(MockModel.findById).toBeCalledWith(userId);
     expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
     expect(MockModel.throwIfNotFound).toBeCalledWith();
+  });
+});
+
+describe('readByKeycloakId', () => {
+  it('should return null when keycloakId is missing', () => {
+    const result = service.readByKeycloakId();
+
+    expect(result).toBeNull();
+    expect(MockModel.query).toBeCalledTimes(0);
+    expect(MockModel.modify).toBeCalledTimes(0);
+    expect(MockModel.first).toBeCalledTimes(0);
+  });
+
+  it('should query user by keycloakId', () => {
+    const keycloakId = 'kc-user-123';
+
+    service.readByKeycloakId(keycloakId);
+
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.modify).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledWith('filterKeycloakId', keycloakId);
+    expect(MockModel.first).toBeCalledTimes(1);
+    expect(MockModel.first).toBeCalledWith();
   });
 });
 

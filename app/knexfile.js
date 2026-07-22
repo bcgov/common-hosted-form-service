@@ -1,6 +1,7 @@
 const config = require('config');
 const log = require('./src/components/log')(module.filename);
 const moment = require('moment');
+const clsRtracer = require('cls-rtracer');
 
 /** Knex configuration
  *  Set database configuration for application and knex configuration for migrations
@@ -30,7 +31,11 @@ types.setTypeParser(1184, (value) => {
   return moment(value).toISOString();
 });
 
-const logWrapper = (level, msg) => log.log(level, msg);
+const logWrapper = (level, msg) => {
+  const correlationId = clsRtracer.id();
+  const meta = correlationId ? { correlationId } : {};
+  log.log(level, msg, meta);
+};
 
 module.exports = {
   client: 'pg',

@@ -2,14 +2,13 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const apiAccess = require('../auth/middleware/apiAccess');
-const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, requireCreateFormPermission } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 
 routes.use(currentUser);
 
-routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formVersionDraftId', validateParameter.validateFormVersionDraftId);
 routes.param('formVersionId', validateParameter.validateFormVersionId);
@@ -18,28 +17,12 @@ routes.get('/', jwtService.protect('admin'), async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
 
-routes.post('/', async (req, res, next) => {
+routes.post('/', requireCreateFormPermission, async (req, res, next) => {
   await controller.createForm(req, res, next);
 });
 
 routes.get('/:formId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readForm(req, res, next);
-});
-
-routes.get('/:formId/documentTemplates', apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_READ]), async (req, res, next) => {
-  await controller.documentTemplateList(req, res, next);
-});
-
-routes.post('/:formId/documentTemplates', apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_CREATE]), async (req, res, next) => {
-  await controller.documentTemplateCreate(req, res, next);
-});
-
-routes.delete('/:formId/documentTemplates/:documentTemplateId', apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_DELETE]), async (req, res, next) => {
-  await controller.documentTemplateDelete(req, res, next);
-});
-
-routes.get('/:formId/documentTemplates/:documentTemplateId', apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_READ]), async (req, res, next) => {
-  await controller.documentTemplateRead(req, res, next);
 });
 
 routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
@@ -58,12 +41,25 @@ routes.put('/:formId/emailTemplate', hasFormPermissions([P.EMAIL_TEMPLATE_READ, 
   await controller.createOrUpdateEmailTemplate(req, res, next);
 });
 
+routes.post('/:formId/template/render', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.draftTemplateUploadAndRender(req, res, next);
+});
+
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
 });
 
 routes.get('/:formId/version', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readPublishedForm(req, res, next);
+});
+
+// Gated by FORM_READ only (not SUBMISSION_READ): this endpoint returns just the
+// field key names and schema-free version metadata, which is form design info
+// already exposed at FORM_READ via /:formId/versions/:formVersionId/fields. It
+// must stay accessible to form_submitters (who have form_read but not
+// submission_read) so the "My Submissions" column picker works for them.
+routes.get('/:formId/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.readFormFields(req, res, next);
 });
 
 routes.put('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
@@ -102,8 +98,8 @@ routes.post('/:formId/versions/:formVersionId/multiSubmission', apiAccess, hasFo
   await controller.createMultiSubmission(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
-  controller.listSubmissionFields(req, res, next);
+routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.listSubmissionFields(req, res, next);
 });
 
 routes.get('/:formId/drafts', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {

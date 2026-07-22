@@ -1,55 +1,62 @@
-import "cypress-keycloak-commands";
-import { formsettings } from "../support/login.js";
+import 'cypress-keycloak-commands';
+import { formsettings } from '../support/login.js';
 
-const depEnv = Cypress.env("depEnv");
+const depEnv = Cypress.env('depEnv');
 
-Cypress.Commands.add("waitForLoad", () => {
+
+Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
 
-  cy.get(".nprogress-busy", { timeout: loaderTimeout }).should("not.exist");
+  cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
-describe("Form Designer", () => {
-  beforeEach(() => {
-    cy.on("uncaught:exception", (err, runnable) => {
-      // Form.io throws an uncaught exception for missing projectid
-      // Cypress catches it as undefined: undefined so we can't get the text
-      console.log(err);
-      return false;
-    });
+describe('Form Designer', () => {
+
+  beforeEach(()=>{
+      
+      
+      cy.on('uncaught:exception', (err, runnable) => {
+        // Form.io throws an uncaught exception for missing projectid
+        // Cypress catches it as undefined: undefined so we can't get the text
+        console.log(err);
+        return false;
+      });
   });
-  it("Visits the form settings page", () => {
+  it('Visits the form settings page', () => {
+    
+    
+        cy.viewport(1000, 1100);
+        cy.waitForLoad();
+        formsettings();
+        
+  });
+  it('Getting page ready', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    formsettings();
-  });
-  it("Add some fields for submission", () => {
+    cy.get('#heading-advanced').click();   
+  }); 
+  it('Form Submission and Updation', () => {
     cy.viewport(1000, 1800);
     cy.waitForLoad();
-    cy.get("button").contains("Basic Fields").click();
-    cy.get("div.formio-builder-form").then(($el) => {
+    cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      
+      cy.get('[data-type="simpletextfieldadvanced"]')
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
+      .trigger('mousemove', coords.x, -250, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
     });
-    //Multiline Text
+    //Checkbox field
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
-        
+        cy.get('[data-type="simplecheckboxadvanced"]')
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mousemove', coords.x, -600, { force: true })
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
-    // Form saving
-  });
+  }); 
   it("Form Submission and Updation", () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
+    cy.wait(1000);
     // Form saving
     let savedButton = cy.get("[data-cy=saveButton]");
     expect(savedButton).to.not.be.null;
@@ -67,6 +74,11 @@ describe("Form Designer", () => {
       cy.get("span").contains("Publish Version 1");
       cy.contains("Continue").should("be.visible");
       cy.contains("Continue").trigger("click");
+      //Share link verification
+      cy.get('[data-cy=shareFormButton]').should('be.visible');
+      cy.get('[data-cy=shareFormButton]').click();
+      //Close  form share window
+      cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
       //Submit the form
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
       cy.wait(2000);
@@ -83,40 +95,16 @@ describe("Form Designer", () => {
       cy.get("label").contains("Text Field").should("be.visible");
       cy.location("pathname").should("eq", `/${depEnv}/form/success`);
       cy.contains("h1", "Your form has been submitted successfully");
-      cy.get('button[title="Email a receipt of this submission"]').should(
-        "be.visible"
-      );
-      cy.get('button[title="Email a receipt of this submission"]').click();
-      cy.get('[data-test="text-form-to"]')
-        .find('input[type="text"]')
-        .should("have.value", "chefs.testing@gov.bc.ca");
-      cy.wait(1000);
-      cy.get(
-        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
-      ).click();
-      cy.contains("Normal").should("exist");
-      cy.contains("High").should("exist");
-      cy.contains("Low").should("exist");
-      cy.get(
-        ".v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down"
-      ).click();
-      cy.get("span").contains("SEND").should("be.visible");
-      cy.get('[data-test="continue-btn-cancel"]').click();
-      cy.get('button[title="Email a receipt of this submission"]').click();
-      cy.get("span").contains("SEND").click();
-      cy.get(".v-alert__content")
-        .contains("div", "An email has been sent to chefs.testing@gov.bc.ca.")
-        .should("be.visible");
       //Recall submission
       cy.get('button[title="Recall Submission"]').should("be.visible");
       cy.get('button[title="Recall Submission"]').click();
       cy.wait(1000);
       //Update form
-      cy.get('input[name="data[simpletextfield]"]').click();
-      cy.get('input[name="data[simpletextfield]"]').type(
+      cy.get('input[name="data[simpletextfieldadvanced]"]').click();
+      cy.get('input[name="data[simpletextfieldadvanced]"]').type(
         "{selectall}{backspace}"
       );
-      cy.get('input[name="data[simpletextfield]"]').type("Recalled");
+      cy.get('input[name="data[simpletextfieldadvanced]"]').type("Recalled");
       //Verify submission has revision status after recall
       cy.get(".mt-6 > :nth-child(1) > .v-btn").click();
       cy.get(".v-data-table__tr > :nth-child(4)")
@@ -127,11 +115,11 @@ describe("Form Designer", () => {
       cy.get('button[title="View This Submission"]').click();
       cy.get('button[title="Edit this Draft"]').click();
       //Update form
-      cy.get('input[name="data[simpletextfield]"]').click();
-      cy.get('input[name="data[simpletextfield]"]').type(
+      cy.get('input[name="data[simpletextfieldadvanced]"]').click();
+      cy.get('input[name="data[simpletextfieldadvanced]"]').type(
         "{selectall}{backspace}"
       );
-      cy.get('input[name="data[simpletextfield]"]').type("Nancy");
+      cy.get('input[name="data[simpletextfieldadvanced]"]').type("Nancy");
       //form submission
       cy.get("button").contains("Submit").click();
       cy.waitForLoad();
@@ -190,13 +178,13 @@ describe("Form Designer", () => {
       cy.get(".v-col-2 > .v-btn").should("be.visible");
       cy.get("button").contains("Submit").should("be.visible");
       //Validate input field value same as submission recall
-      cy.get('input[name="data[simpletextfield]"]').should(
+      cy.get('input[name="data[simpletextfieldadvanced]"]').should(
         "have.value",
         "Nancy"
       );
       //Edit submission data
       cy.contains("Text Field").click();
-      cy.get('input[name="data[simpletextfield]"]').type(
+      cy.get('input[name="data[simpletextfieldadvanced]"]').type(
         "{selectall}{backspace}"
       );
       cy.contains("Text Field").type("Smith");
@@ -216,13 +204,37 @@ describe("Form Designer", () => {
       cy.get('[data-test="canCancelNote"]').should("be.visible");
       cy.get('[data-test="btn-add-note"]').click();
       cy.get(".notes-text").contains("1");
+      //Submit the form
+      cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+      cy.wait(2000);
+      cy.get('button').contains('Submit').should('be.visible');
+      cy.waitForLoad();
+      cy.contains('Text Field').click();
+      cy.contains('Text Field').type('Alex');
+      cy.get('input[name="data[simplecheckboxadvanced]"]').check({ force: true });
+         //form submission
+      cy.get('button').contains('Submit').click();
+      cy.waitForLoad();
+      cy.get('button').contains('Submit').click();
+      cy.wait(2000);
+      cy.get('label').contains('Text Field').should('be.visible');
+      cy.location('pathname').should('eq', `/${depEnv}/form/success`);
+      cy.contains('h1', 'Your form has been submitted successfully');
+      cy.wait(2000);
+      cy.visit(`/${depEnv}/user/submissions?f=${arrayValues[0]}`);
+      //Copy submission
+      cy.get('button[title="Copy This Submission"]').eq(0).click();
+      cy.wait(1000);
+      //Verify value propagation for copy submission
+      cy.get('input[name="data[simpletextfieldadvanced]"]').should('not.have.value', 'Alex');
+      cy.get('input[name="data[simplecheckboxadvanced]"]').should('not.be.checked');
       //Delete form after test run
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
       cy.waitForLoad();
       cy.get(".mdi-delete").click();
       cy.get('[data-test="continue-btn-continue"]').click();
-      cy.get("#logoutButton > .v-btn__content > span").click();
+      cy.get('.mdi-logout').click();
     });
   });
 });

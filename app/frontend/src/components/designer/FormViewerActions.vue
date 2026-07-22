@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import SubmitterRevision from '~/components/forms/submission/SubmitterRevision.vue';
-import PrintOptions from '~/components/forms/PrintOptions.vue';
+import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
 import { FormPermissions } from '~/utils/constants';
 
 import { useFormStore } from '~/store/form';
@@ -172,7 +172,7 @@ watch(
       </span>
       <!-- Print options -->
       <span class="ml-2 d-print-none">
-        <PrintOptions
+        <PrintOptionsWrapper
           :submission="submission"
           :submission-id="submissionId"
           :f="formId"

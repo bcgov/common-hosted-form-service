@@ -134,34 +134,44 @@ class ObjectStorageService {
   }
 
   async read(fileStorage) {
+    // try to get by primary key first, then fallback to constructed key
+    const primaryKey = fileStorage.path;
+    const fallbackKey = this._join(this._key, 'submissions', fileStorage.formSubmissionId, fileStorage.id);
     try {
       const params = {
         Bucket: this._bucket,
-        Key: fileStorage.path,
+        Key: primaryKey,
       };
 
       const response = await this._s3.send(new GetObjectCommand(params));
 
       return Readable.from(response.Body);
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      if (e.name === 'NoSuchKey') {
+        try {
+          const params = {
+            Bucket: this._bucket,
+            Key: fallbackKey,
+          };
+
+          const response = await this._s3.send(new GetObjectCommand(params));
+
+          return Readable.from(response.Body);
+        } catch (err) {
+          errorToProblem(SERVICE, err);
+        }
+      } else {
+        errorToProblem(SERVICE, e);
+      }
     }
   }
 
   async move(fileStorage, ...subdirs) {
     try {
-      const sourcePath = fileStorage.path;
       const file = await this.copyFile(fileStorage, ...subdirs);
       if (file) {
         // this doesn't return the new key/path, but we can build it
         const newPath = this._join(this._key, ...subdirs, fileStorage.id);
-        // now delete original...
-        const params = {
-          Bucket: this._bucket,
-          Key: sourcePath,
-        };
-
-        await this._s3.send(new DeleteObjectCommand(params));
 
         return newPath;
       }

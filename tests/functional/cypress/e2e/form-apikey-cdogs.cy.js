@@ -18,26 +18,34 @@ describe('Form Designer', () => {
       console.log(err);
       return false;
     });
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
   });
   it('Visits the form settings page', () => {
     
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
+    cy.checkA11yPage();
   });
-  it('checks Apikey Settings', () => {
+  it('Getting page ready', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    
-    cy.get('button').contains('BC Government').click();
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Basic Fields').click();
+  });
+  // Publish a simple form 
+  it('Verify Data Retention Settings', () => {
+    cy.viewport(1000, 1100);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('[data-key="simplebcaddress"]')
+      cy.get('span.btn').contains('Text Field')
+      
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -550, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
+      .trigger('mousemove', coords.x, -150, { force: true })
       .trigger('mouseup', { force: true });
-      cy.wait(1000); 
       cy.get('.btn-success').click();
     });
     // Form saving
@@ -45,13 +53,21 @@ describe('Form Designer', () => {
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
-    cy.wait(3000);
-    //Publish form
-    cy.get('.mdi-dots-vertical').click();
-    cy.get('[data-cy="publishRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.wait(2000);
+    // Filter the newly created form
+    cy.location('search').then(search => {
+      //let pathName = fullUrl.pathname
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
+    //Publish the form
+    cy.get('.v-label > span').click();
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
+    });
     //Update form design version
     cy.get('.mdi-plus').click();
     //Add new component to version 1
@@ -65,13 +81,41 @@ describe('Form Designer', () => {
     });
      // Form saving
     cy.wait(1000); 
-    cy.get('[data-cy=saveButton]').click();
-    cy.wait(1000);
     cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Save a version of the form to preview').should('exist');
+    cy.get('[data-cy="publishRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Publish form').should('exist');
+    cy.get('[data-cy=saveButton]').click();
+    cy.wait(2000);
+    cy.get('.mdi-dots-vertical').click();
+    cy.get('[data-cy="publishRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Please save a new version to publish').should('exist');
     cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
     cy.get('span').contains('Please publish or delete your latest draft version before starting a new version.').should('exist');
     cy.get('.mdi-plus').should('not.be.enabled');
     cy.get('button[title="Delete Version"]').should('be.visible');
+    cy.get('button[title="Edit Version"]').click();
+    cy.wait(1000);
+    //Add new component to version 1
+    cy.get('div.formio-builder-form').then($el => {
+    const coords = $el[0].getBoundingClientRect();
+    cy.get('span.btn').contains('Text/Images')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.waitForLoad();
+    cy.get('.btn-success').click();
+    });
+    cy.wait(1000);
+    cy.get('.mdi-dots-vertical').click();
+    //Tooiltip message for preview button for new version
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').trigger('mouseover', { force: true });
+    cy.get('.v-overlay__content').contains('Save to preview updated form version').should('exist');
+    //Delete old version
+    cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.wait(1000);
     cy.get('button[title="Delete Version"]').click();
     cy.get('span').contains('Are you sure you wish to delete this Version?').should('be.visible');
     cy.get('button').contains('Delete').should('be.visible').click();
@@ -91,19 +135,41 @@ describe('Form Designer', () => {
     cy.get('[data-cy=saveButton]').click();
     cy.wait(1000);
     cy.get('.mdi-dots-vertical').click();
-    cy.get('[data-cy="publishRouterLink"] > .v-btn > .v-btn__content').click();
-    cy.get('span').contains('Publish Version 2');
-    cy.contains('Continue').should('be.visible');
-    cy.contains('Continue').trigger('click');
-    cy.get('button[title="Use version 2 as the base for a new version"]').should('be.visible');
-    cy.get('button[title="Use version 1 as the base for a new version"]').should('be.visible');
-    cy.get(':nth-child(1) > .v-data-table-column--align-end > :nth-child(1) > .v-btn > .v-btn__content > .mdi-download').should('be.visible');
-    cy.get(':nth-child(2) > .v-data-table-column--align-end > :nth-child(1) > .v-btn > .v-btn__content > .mdi-download').should('be.visible');
-    // Verify Api key functionality
-    cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
-    cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
+    cy.get('[data-cy="settingsRouterLink"] > .v-btn > .v-btn__content').click();
+    cy.wait(500);
     cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
-    //Generate Apikey 
+    cy.get('[data-test="canAllowEditFormSettings"] > .v-btn__content > .mdi-pencil').click();
+    cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    cy.get('[data-test="enableHardDeletionCheckbox"]').click();
+    cy.get(':nth-child(2) > .v-combobox > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.get('span.v-combobox__selection-text').contains('Public').should('exist');
+    cy.contains('Public').should('exist');
+    cy.contains('Sensitive').should('exist');
+    cy.contains('Protected').should('exist');
+    cy.contains('Confidential').should('exist');
+    cy.wait(1000);
+    cy.get('.v-alert__content > span').contains('WARNING: After 30 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('exist');
+    cy.contains('Sensitive').click();
+    cy.get(':nth-child(2) > .v-select > .v-input__control > .v-field > .v-field__field > .v-field__input > .v-select__selection > .v-select__selection-text').contains('Custom period').should('exist');
+    cy.contains('label', 'Custom Retention Period (days)').next('input[type="number"]').should('have.value', '30');
+    cy.contains('label', 'Custom Retention Period (days)').next('input[type="number"]').clear().type('60');
+    cy.contains('label', 'Classification Notes').next('textarea').type('some privacy issues');
+    cy.get('.v-alert__content > span').contains('WARNING: After 60 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('exist');
+    cy.contains('.v-select__selection-text', 'Custom period').click();
+    cy.contains('90 days').should('exist');
+    cy.contains('180 days').should('exist');
+    cy.contains('1 year (365 days)').should('exist');
+    cy.contains('5 years (1825 days)').should('exist');
+    cy.contains('2 years (730 days)').should('exist');
+    cy.contains('2 years (730 days)').click();
+    cy.get('.v-alert__content > span').contains('WARNING: After 730 days, submissions marked for deletion will be permanently deleted and cannot be recovered.').should('be.visible');
+    cy.get('[data-test="canEditForm"] > .v-btn__content > span').click();
+    cy.wait(2000); 
+  });     
+  it('checks Apikey Settings', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[data-test="canGenerateAPIKey"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
@@ -116,7 +182,8 @@ describe('Form Designer', () => {
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('.v-alert__content').contains('div','The API Key for this form has been deleted.').should('be.visible');
 
-  })
+
+  });
   it('checks Cdogs Upload', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
@@ -124,15 +191,11 @@ describe('Form Designer', () => {
     let fileUploadInputField = cy.get('input[type=file]');
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('add1.png');
-
     // Checking file type functionality
     cy.get('div').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx').should('be.visible');
-    //cy.get('.mdi-close-circle').click();
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('SamplePPTx.pptx');
     cy.get('div').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx').should('not.exist');
-    
-    cy.waitForLoad();
     cy.waitForLoad();
     cy.get('button[title="Upload"]').click();
     cy.wait(2000);    
@@ -158,6 +221,6 @@ describe('Form Designer', () => {
     cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
 
-  })
+  });
 
 })

@@ -44,12 +44,22 @@ const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 
 const { isRTL, form } = storeToRefs(formStore);
+const { formAccessButtons } = storeToRefs(idpStore);
 
-const autocompleteLabel = computed(() => {
-  return idpStore.isPrimary(selectedIdp.value)
+// True when this form uses CSTAR group-based access and draft sharing is restricted to those groups.
+// form.hasGroups is set by the backend _fetchSubmissionData so it's available without an
+// extra API call even though the submit view has no selectedTenant.
+const isGroupRestricted = computed(
+  () => !!(form.value.hasGroups && form.value.enableTeamMemberDraftShare)
+);
+
+const autocompleteItems = computed(() => userSearchResults.value);
+
+const autocompleteLabel = computed(() =>
+  idpStore.isPrimary(selectedIdp.value)
     ? t('trans.manageSubmissionUsers.requiredField')
-    : t('trans.manageSubmissionUsers.exactEmailOrUsername');
-});
+    : t('trans.manageSubmissionUsers.exactEmailOrUsername')
+);
 
 watch(selectedIdp, (newIdp, oldIdp) => {
   onChangeSelectedIdp(newIdp, oldIdp);
@@ -125,7 +135,9 @@ async function addUser() {
       if (formUsersResponse && !formUsersResponse.data) {
         notificationStore.addNotification({
           ...NotificationTypes.ERROR,
-          text: t('trans.canShareDraft.canShareMessage'),
+          text: isGroupRestricted.value
+            ? t('trans.canShareDraft.canShareGroupMessage')
+            : t('trans.canShareDraft.canShareMessage'),
         });
         return;
       }
@@ -238,7 +250,9 @@ function transformResponseToTable(responseData) {
 defineExpose({
   addUser,
   autocompleteLabel,
+  autocompleteItems,
   formSubmissionUsers,
+  isGroupRestricted,
   modifyPermissions,
   onChangeSelectedIdp,
   onChangeUserSearchInput,
@@ -284,7 +298,7 @@ defineExpose({
         <v-card-subtitle>
           <v-radio-group v-if="isDraft" v-model="selectedIdp" inline>
             <v-radio
-              v-for="button in idpStore.loginButtons"
+              v-for="button in formAccessButtons"
               :key="button.code"
               :value="button.code"
               :label="button.display"
@@ -301,7 +315,7 @@ defineExpose({
                   v-model:search="userSearchInput"
                   :class="{ label: isRTL }"
                   autocomplete="autocomplete_off"
-                  :items="userSearchResults"
+                  :items="autocompleteItems"
                   chips
                   closable-chips
                   clearable

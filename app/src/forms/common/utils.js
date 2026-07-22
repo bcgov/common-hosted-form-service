@@ -3,17 +3,54 @@ const falsey = require('falsey');
 const clone = require('lodash/clone');
 const _ = require('lodash');
 
-const setupMount = (type, app, routes) => {
-  const p = `/${type}`;
-  if (Array.isArray(routes)) {
-    for (let r of routes) {
-      app.use(p, r);
+const setupMount = (type, app, routeConfig) => {
+  const basePath = `/${type}`;
+
+  if (routeConfig && typeof routeConfig === 'object' && routeConfig.mainRouter) {
+    const { mainRouter, subRouters } = routeConfig;
+
+    const dispatcherRouter = require('express').Router();
+
+    // mount sub-routers with specific path patterns first
+    // this ensures that they intercept requests before mainRouter's generic /:formId pattern
+    if (subRouters && Array.isArray(subRouters)) {
+      for (const { router, patterns } of subRouters) {
+        // only passes through to this router if path matches patterns
+        dispatcherRouter.use((req, res, next) => {
+          // extract the next path segment
+          const remainingPath = req.path; // relative to basePath
+
+          // check if any pattern matches the next path segment or standalone routes
+          const matchesPattern = patterns.some((pattern) => remainingPath.includes(`/${pattern}`) || remainingPath.includes(pattern));
+
+          if (matchesPattern) {
+            // request should go to this sub-router
+            return router(req, res, next);
+          }
+
+          // continue checking other sub-routers or eventually the main router
+          next();
+        });
+      }
     }
-  } else {
-    app.use(p, routes);
+
+    dispatcherRouter.use(mainRouter);
+
+    app.use(basePath, dispatcherRouter);
+
+    return basePath;
   }
 
-  return p;
+  // array of routers for non-form modules
+  if (Array.isArray(routeConfig)) {
+    for (let r of routeConfig) {
+      app.use(basePath, r);
+    }
+  } else {
+    app.use(basePath, routeConfig);
+  }
+
+  return basePath;
 };
 
 /**
@@ -31,13 +68,9 @@ const getBaseUrl = () => {
   let host = process.env.SERVER_HOST;
 
   if (!host) {
+    let port = config.has('frontend.localhostPort') ? config.get('frontend.localhostPort') : 5173;
     protocol = 'http';
-    host = 'localhost';
-
-    // This only needs to be defined to use the email links in local dev.
-    if (config.has('frontend.localhostPort')) {
-      host += ':' + config.get('frontend.localhostPort');
-    }
+    host = `localhost:${port}`;
   }
 
   const basePath = config.get('frontend.basePath');
@@ -256,7 +289,31 @@ const encodeURI = (unsafe) => {
   return unsafe.replace(textDelimiterRegex, textDelimiter);
 };
 
+const chefsTemplate = (submission) => {
+  /*
+    A helper method to build the data object for CDOGS export.
+    `submission` is the composite returned by submissionService.read():
+      { submission: <FormSubmission record>, version: <FormVersion>, form }
+    so the submitted field data lives at submission.submission.submission.data.
+   */
+  return {
+    ...submission.submission.submission.data,
+    chefs: {
+      formVersion: submission.version.version,
+      submissionId: submission.submission.id,
+      confirmationId: submission.submission.confirmationId,
+      createdBy: submission.submission.createdBy,
+      createdAt: submission.submission.createdAt,
+      updatedBy: submission.submission.updatedBy,
+      updatedAt: submission.submission.updatedAt,
+      isDraft: submission.submission.draft,
+      isDeleted: submission.submission.deleted,
+    },
+  };
+};
+
 module.exports = {
+  chefsTemplate,
   falsey,
   getBaseUrl,
   setupMount,

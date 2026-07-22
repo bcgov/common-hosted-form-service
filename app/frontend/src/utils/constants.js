@@ -6,19 +6,21 @@
 export const ApiRoutes = Object.freeze({
   ADMIN: '/admin',
   APIKEY: '/apiKey',
+  FEATURES: '/features',
   FORMS: '/forms',
   RBAC: '/rbac',
   ROLES: '/roles',
   SUBMISSION: '/submissions',
   USERS: '/users',
   FILES: '/files',
-  UTILS: '/utils',
   FILES_API_ACCESS: '/filesApiAccess',
   PROXY: '/proxy',
   EXTERNAL_APIS: '/externalAPIs',
   FORM_METADATA: '/formMetadata',
   EVENT_STREAM_CONFIG: '/eventStreamConfig',
   ENCRYPTION_KEY: '/encryptionKey',
+  RECORDS_MANAGEMENT: '/recordsManagement',
+  PRINT_CONFIG: '/printConfig',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */
@@ -81,6 +83,7 @@ export const AppPermissions = Object.freeze({
   VIEWS_FORM_PREVIEW: 'views_form_preview',
   VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
   VIEWS_FORM_TEAMS: 'views_form_teams',
+  VIEWS_FORM_GROUPS: 'views_form_groups',
   VIEWS_FORM_VIEW: 'views_form_view',
   VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
 });
@@ -168,6 +171,11 @@ export const NotificationTypes = Object.freeze({
     type: 'warning',
     icon: '$warning',
   },
+});
+
+/** Role codes used for enterprise tenant access control */
+export const TenantRoles = Object.freeze({
+  FORM_ADMIN: 'form_admin',
 });
 
 export const Regex = Object.freeze({
@@ -339,6 +347,7 @@ export const FormDesignerBuilderOptions = Object.freeze({
       bcaddress: true,
       simplebcaddress: true,
       map: true,
+      idirusers: true,
     },
   },
 });

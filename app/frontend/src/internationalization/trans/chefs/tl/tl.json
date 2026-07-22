@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "Bukas",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "Aking Mga Form",
+    "groupForms": "Mga Group Form",
     "createNewForm": "Gumawa ng Bagong Form",
     "search": "Maghanap",
     "manage": "Pamahalaan",
@@ -30,7 +31,12 @@
     "description": "paglalarawan",
     "Description": "Paglalarawan:",
     "action": "Mga aksyon",
-    "loadingText": "Naglo-load... Mangyaring maghintay"
+    "loadingText": "Naglo-load... Mangyaring maghintay",
+    "forms": "Mga porma",
+    "deleteForm": "Tanggalin ang Pormularyo",
+    "manageForm": "Pamahalaan ang Pormularyo",
+    "viewSubmissions": "Tingnan ang mga Pagsusumite",
+    "noDataText": "Walang nakitang pormularyo"
   },
   "manageLayout": {
     "manageForm": "Pamahalaan ang Form"
@@ -53,6 +59,7 @@
     "emailManagement": "Pamamahala ng Email",
     "viewSubmissions": "Tingnan ang Mga Pagsusumite",
     "teamManagement": "Pamamahala ng Koponan",
+    "groupManagement": "Pamamahala ng grupo",
     "deleteForm": "Tanggalin ang Form",
     "confirmDeletion": "Kumpirmahin ang pagtanggal",
     "deleteMessageA": "Sigurado ka bang gusto mong tanggalin",
@@ -85,6 +92,8 @@
     "uploadError": "Nagkaroon ng error habang ina-upload ang template.",
     "deleteSuccess": "Matagumpay na natanggal ang template.",
     "deleteError": "Nagkaroon ng error habang tinatanggal ang template.",
+    "deleteErrorInUse": "Hindi maaaring tanggalin ang template: Ang template ay kasalukuyang ginagamit ng Print Configuration. Pakisuri muna ang mga setting ng Print Configuration.",
+    "deleteDisabledTooltip": "Ang template na ito ay kasalukuyang ginagamit ng Print Configuration. Pakisuri muna ang mga setting ng Print Configuration.",
     "fetchError": "Nagkaroon ng error habang kinukuha ang template.",
     "info": "Mag-upload ng template upang gamitin ang Common Document Generation Service (CDOGS)",
     "fileSizeError": "Ang laki ng file ay dapat mas mababa sa 25MB."
@@ -103,7 +112,9 @@
     "referenceGuideB": "gabay sa gumagamit",
     "referenceGuideC": "para sa higit pang detalye.",
     "specificTeamMembers": "Mga Partikular na Miyembro ng Koponan",
+    "specificGroups": "Mga Partikular na Grupo",
     "teamMemberTooltip": "Pagkatapos mong likhain ang form, magkakaroon ka ng access sa Team Management page kung saan maaari kang magdagdag ng mga user at magtalaga ng mga role. Hanapin ang people icon sa Manage Form page ",
+    "groupAccessTooltip": "Ang access ay kinokontrol ng mga grupo ng CSTAR. Pagkatapos malikha ang form, pumunta sa pahina ng Pamamahala ng Grupo upang iugnay ang mga grupo ng CSTAR sa form na ito. Ang mga gumagamit lamang na kabilang sa mga grupong iyon ang makakaakses nito. Upang magdagdag o mag-alis ng mga gumagamit mula sa isang grupo, pamahalaan ang membership ng grupo sa CSTAR.",
     "formFunctionality": "Pag-andar ng Form",
     "formSubmissinScheduleMsg": "Ang Iskedyul ng Pagsusumite ng Form ay magiging available sa Mga Setting ng Form pagkatapos mailathala ang form.",
     "formSubmissionsSchedule": "Iskedyul ng Pagsusumite ng Form",
@@ -122,6 +133,9 @@
     "emailNotificatnToTeam": "Padalhan ang aking koponan ng email ng notification",
     "emailNotificatnToTeamToolTip": "Magpadala ng notification sa iyong tinukoy na email address kapag isinumite ng sinumang user ang form na ito",
     "notificationEmailAddrs": "Mga Email Address ng Notification",
+    "emailPackage": "I-email ang submission package gamit ang template ng dokumento",
+    "emailPackageTooltip": "Mag-upload ng template ng dokumento upang maisama ang nabuong submission package sa completion email.",
+    "emailPackageDisabled": "Paki-save ang form upang paganahin ang Submission Packaging",
     "addMoreValidEmailAddrs": "Magdagdag ng isa o higit pang wastong email address",
     "formScheduleSettings": "Mga Setting ng Iskedyul ng Form",
     "opensubmissions": "Buksan ang mga pagsusumite",
@@ -204,7 +218,38 @@
     "encryptionKeyUpdatedBy": "Encryption Key Na-update Ni",
     "encryptionKeyCopySnackbar": "Nakopya ang Encryption Key sa clipboard",
     "encryptionKeyCopyTooltip": "Kopyahin ang Encryption Key sa clipboard",
-    "encryptionKeyGenerate": "Bumuo ng Encryption Key"
+    "encryptionKeyGenerate": "Bumuo ng Encryption Key",
+    "dataRetention": "Patakaran sa Pagpapanatili ng Data",
+    "enableHardDeletion": "Paganahin ang awtomatikong permanenteng pagtanggal",
+    "hardDeletionTooltip": "Kapag pinagana, ang mga submission na minarkahan para sa pagtanggal ay permanenteng matatanggal pagkatapos ng panahon ng pagpapanatili.",
+    "hardDeletionWarning": "Ang permanenteng pagtanggal ay hindi na maibabalik.",
+    "permanentDeletion": "Ang data ay hindi na maibabalik pagkatapos matanggal.",
+    "dataClassification": "Klasipikasyon ng Data",
+    "dataClassificationHint": "I-kategorya ang uri ng datos na kinokolekta ng form na ito",
+    "retentionPeriod": "Panahon ng Pagpapanatili",
+    "retentionPeriodHint": "Gaano katagal panatilihin ang mga tinanggal na submission bago permanenteng alisin",
+    "classPublic": "Pampubliko",
+    "classInternal": "Panloob",
+    "classSensitive": "Sensitibo",
+    "classConfidential": "Kumpidensyal",
+    "classProtected": "Protektado",
+    "classificationCustomHint": "Maaari kang mag-type ng custom na klasipikasyon kung kinakailangan",
+    "days30": "30 araw",
+    "days90": "90 araw",
+    "days180": "180 araw",
+    "year1": "1 taon (365 araw)",
+    "years2": "2 taon (730 araw)",
+    "years5": "5 taon (1825 araw)",
+    "daysCustom": "Custom na panahon",
+    "customDaysLabel": "Custom na Panahon ng Pagpapanatili (araw)",
+    "customDaysHint": "Maglagay ng numero sa pagitan ng 1 at 3650 araw (10 taon)",
+    "classificationDescription": "Mga Tala sa Klasipikasyon",
+    "classificationDescriptionHint": "Opsyonal na paglalarawan kung bakit pinili ang klasipikasyong ito at panahon ng pagpapanatili",
+    "retentionDaysUpdated": "Na-update ang panahon ng pagpapanatili",
+    "deletionDisclaimerWithDays": "BABALA: Pagkatapos ng {days} araw, ang mga submission na minarkahan para sa pagtanggal ay permanenteng matatanggal at hindi na maibabalik.",
+    "setRetentionPrompt": "Mangyaring magtakda ng panahon ng pagpapanatili upang makumpleto ang iyong patakaran sa pagpapanatili ng data.",
+    "fetchRetentionClassificationListError": "May naganap na error habang kinukuha ang listahan ng mga klasipikasyon ng pagpapanatili.",
+    "fetchRetentionClassificationListConsErrMsg": "May naganap na error habang kinukuha ang mga klasipikasyon ng pagpapanatili: {error}"
   },
   "formProfile": {
     "message": "Ang CHEFS team ay nagkokolekta at nag-oorganisa ng impormasyon upang magsilbing mahalagang input para sa pagbuo ng kapsulang kaso ng negosyo. Ang mga kaso na ito ay magiging pangunahing bahagi sa paggabay sa pangangasiwa at patuloy na pagpapabuti ng CHEFS sa mga darating na taon. Ang inisyatibang ito sa pagsasama ng datos ay mahalaga para sa pagbibigay impormasyon sa mga kritikal na desisyon at pagsanay sa takbo ng CHEFS, tiyak na nagiging adaptable at epektibo sa pagsasaad sa mga nagbabagong pangangailangan at hamon.",
@@ -687,10 +732,12 @@
     "fetchSubmissionUsersErr": "May naganap na error habang sinusubukang kunin ang mga email ng tatanggap para sa pagsusumiteng ito.",
     "fetchSubmissionUsersConsErr": "Error sa pagkuha ng mga email ng tatanggap para sa",
     "assignSubmissnToFormReviewer": "Maaaring italaga ang mga pagsusumite sa Mga Tagasuri ng Form.<br /> Upang magdagdag ng higit pang mga miyembro ng koponan bilang Mga Tagasuri ng Form, pumunta sa pahina ng Pamahalaan para sa form na ito.",
+    "assignSubmissnToFormReviewerTenanted": "Maaaring italaga ang mga pagsusumite sa Mga Tagasuri ng Form. <br />Upang magdagdag o mag-update ng mga miyembro bilang Mga Tagasuri ng Form, pumunta sa CSTAR at i-update ang angkop na grupo.",
     "update": "I-UPDATE",
     "revise": "REVISE",
     "complete": "KUMPLETO",
-    "assign": "I-ASSIGN"
+    "assign": "I-ASSIGN",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "Naglo-load... Mangyaring maghintay",
@@ -829,6 +876,44 @@
     "setUserFormsErrMsg": "May naganap na error habang sinusubukang i-update ang mga tungkulin para sa isang user",
     "setUserFormsConsoleErrMsg": "Error sa pagtatakda ng mga tungkulin ng user para sa form na {formId}: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "Pamamahala ng grupo",
+    "manageForm": "Pamahalaan ang form",
+    "search": "Maghanap",
+    "loadingText": "Naglo-load... Mangyaring maghintay",
+    "noDataText": "Walang available na grupo para sa tenant na ito",
+    "noMatchingRecordText": "Walang nahanap na katugmang rekord",
+    "groupName": "Pangalan ng grupo",
+    "description": "Paglalarawan",
+    "associated": "Nauugnay",
+    "save": "I-save",
+    "cancel": "Kanselahin",
+    "confirmSave": "Kumpirmahin ang mga pagbabago",
+    "confirmSaveMsg": "Sigurado ka bang gusto mong i-update ang mga asosasyon ng grupo para sa form na ito?",
+    "saveSuccessMsg": "Matagumpay na na-update ang mga asosasyon ng grupo",
+    "saveErrMsg": "May naganap na error habang nagse-save ng mga asosasyon ng grupo",
+    "getGroupsErrMsg": "May naganap na error habang naglo-load ng mga grupo para sa form na ito",
+    "missingGroupsWarning": "{count} dating nauugnay na grupo ay wala na sa tenant na ito",
+    "availableGroups": "Mga available na grupo",
+    "assignedGroups": "Mga assigned na grupo",
+    "searchAvailable": "Maghanap ng mga available na grupo",
+    "searchAssigned": "Maghanap ng mga assigned na grupo",
+    "noAvailableGroups": "Walang available na grupo sa tenant na ito",
+    "noAssignedGroups": "Walang grupong assigned sa form na ito",
+    "addGroup": "Magdagdag ng grupo",
+    "removeGroup": "Alisin ang grupo",
+    "deleted": "Natanggal",
+    "noTenantAccess": "Ang pamamahala ng grupo ay available lamang para sa mga tenanted na form. Mangyaring pumili ng tenant para magpatuloy.",
+    "unsavedChangesWarning": "Mayroon kang hindi na-save na mga pagbabago sa grupo. Umalis nang hindi nag-se-save?",
+    "unsavedChangesTitle": "Hindi pa nai-save na mga pagbabago",
+    "leave": "Umalis",
+    "selectAll": "Piliin lahat",
+    "addSelected": "Idagdag ang napili",
+    "removeSelected": "Alisin ang napili",
+    "formAdminGroupRequired": "Hindi bababa sa isang nakatalagang grupo ang dapat may form_admin na papel.",
+    "invalidGroupIds": "Isa o higit pang napiling grupo ay hindi wasto para sa tenant na ito.",
+    "insufficientPermissions": "Wala kang pahintulot na pamahalaan ang mga asosasyon ng grupo."
+  },
   "floatButton": {
     "publish": "I-publish",
     "manage": "Pamahalaan",
@@ -895,10 +980,12 @@
   "bCGovNavBar": {
     "about": "Tungkol sa",
     "myForms": "Aking Mga Form",
+    "groupForms": "Mga Group Form",
     "createNewForm": "Gumawa ng Bagong Form",
     "help": "Tulong",
     "feedback": "Feedback",
-    "admin": "Admin"
+    "admin": "Admin",
+    "forms": "Mga porma"
   },
   "homePage": {
     "title": "Gumawa, mag-publish ng mga form, at tumanggap ng mga pagsusumite gamit ang Common Hosted Forms Service.",
@@ -917,7 +1004,23 @@
     "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS.",
     "getStartedToChefs": "Magsimula sa paggamit ng CHEFS",
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
-    "getStarted": "Magsimula"
+    "getStarted": "Magsimula",
+    "enterpriseSectionTitle": "Maranasan ang bagong Enterprise CHEFS",
+    "enterpriseSectionBody1": "Pinapalawak ng Enterprise CHEFS ang klasikong CHEFS (Common Hosted Forms Service) sa pamamagitan ng pakikipagtulungan sa CSTAR — Connected Services, Team Access, at Roles — upang lumikha ng isang shared, collaborative na workspace.",
+    "enterpriseSectionBody2": "Sa Enterprise CHEFS, ang mga koponan ay maaaring ligtas na magbahagi ng mga form, magtalaga ng mga tungkulin, at pamahalaan ang mga proyekto sa loob ng tenant ng kanilang organisasyon.",
+    "enterpriseSectionWelcome": "Maligayang pagdating sa Enterprise CHEFS, kung saan ang mga koponan sa buong gobyerno ay maaaring makipagtulungan nang ligtas at mahusay.",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "Sinusuportahan na ng CHEFS ang multi-tenancy!",
+    "multiTenancySubTitle": "Lumikha ng grupo para sa iyong proyekto o koponan at pamahalaan ang access sa mga shared na form para sa buong grupo sa isang lugar.",
+    "multiTenancyFitHeading": "Maaari itong maging angkop para sa iyong koponan kung kayo ay:",
+    "multiTenancyBullet1": "namamahala ng maraming form sa iba't ibang programa o kapaligiran",
+    "multiTenancyBullet2": "may maraming tagapangasiwa o tagasuri",
+    "multiTenancyBullet3": "nakakaranas ng madalas na pagbabago ng kawani",
+    "multiTenancyBullet4": "nagnanais ng sentralisadong pamamahala ng access",
+    "multiTenancyBullet5": "nag-aadopt ng iba pang konektadong serbisyo tulad ng Notify",
+    "multiTenancyFooter": "Ang mga lider ng koponan at tagapangasiwa ay maaaring gumamit ng CSTAR para lumikha ng tenant at pamahalaan ang access para sa kanilang koponan.",
+    "multiTenancyBtnLabel": "Mag-login sa CSTAR para magsimula"
   },
   "baseStepper": {
     "setUpForm": "I-set up ang Form",
@@ -1115,6 +1218,12 @@
       "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
       "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
       "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "May naganap na error habang kinukuha ang retention policy para sa form na ito.",
+      "getFormRetentionPolicyConsErrMsg": "Error sa pagkuha ng retention policy para sa form {formId}: {error}",
+      "configureFormRetentionPolicyErrMsg": "May naganap na error habang kino-configure ang retention policy para sa form na ito.",
+      "configureFormRetentionPolicyConsErrMsg": "Error sa pag-configure ng retention policy para sa form {formId}: {error}"
     }
   },
   "admin": {
@@ -1153,6 +1262,33 @@
     "editTitle": "I-edit ang Configuration ng Stream ng Event",
     "fetchError": "May naganap na error habang kinukuha ang Configuration ng Stream ng Kaganapan.",
     "save": "I-save"
+  },
+  "printConfig": {
+    "title": "Print Configuration",
+    "description": "I-configure kung paano maaaring mag-print ang mga user ng form submissions",
+    "typeDefault": "Default",
+    "typeDefaultDescription": "Maaaring pumili ang mga user ng paraan ng pag-print (browser print o template)",
+    "typeDirect": "Direct Print",
+    "typeDirectDescription": "Direktang nagpi-print ang mga user gamit ang pre-configured template (PDF output)",
+    "selectTemplate": "Pumili ng Template",
+    "save": "I-save ang Configuration",
+    "saving": "Sinasave...",
+    "saveSuccess": "Matagumpay na na-save ang print configuration",
+    "saveError": "May naganap na error habang sinasave ang print configuration",
+    "fetchError": "May naganap na error habang kinukuha ang print configuration",
+    "templateRequired": "Kailangan ang template kapag gumagamit ng Direct Print",
+    "noTemplatesAvailable": "Walang available na template. Pakisuri muna ang template.",
+    "templateDeleted": "Na-delete na ang dating napiling template. Pakisuri ang bagong template.",
+    "currentConfig": "Kasalukuyang Configuration",
+    "type": "Uri",
+    "template": "Template",
+    "reportNameLabel": "Output File Name",
+    "reportNameOptionFormName": "Gamitin ang Form Name",
+    "reportNameOptionFormNameDescription": "Gagamitin ang form name sa pagpapangalan ng output file",
+    "reportNameOptionCustom": "Gamitin ang Custom Name",
+    "reportNameOptionCustomDescription": "Maglagay ng custom name para sa output file",
+    "reportNameCustomInput": "Custom File Name",
+    "reportNameCustomInputHint": "Maglagay ng custom name para sa generated document"
   },
   "encryptionKey": {
     "info": "I-configure ang Mga Encryption Key para sa iyong form.",
@@ -1230,7 +1366,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
-    "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
+    "canShareGroupMessage": "Hindi mo maaaring ibahagi ang draft sa user na ito. Dapat silang miyembro ng isa sa mga awtorisadong grupo ng form na ito.",
+    "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang",
+    "shareDraftGroupMessage": "Ibahagi ang draft sa mga miyembro ng grupo ng form lamang",
+    "groupShareHint": "Ang mga miyembro lamang ng mga awtorisadong grupo ng form na ito ang maaaring idagdag."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "Ang serbisyong ito ay pansamantalang hindi available.",
@@ -1249,5 +1388,96 @@
     "shuttingDown": "Ang CHEFS ay nagsasara.",
     "notReady": "Hindi makakonekta ang CHEFS sa lahat ng kinakailangang serbisyo.",
     "unableToReachBackend": "Hindi maabot ang backend service."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "Gusto mo bang magtrabaho nang ligtas sa iyong koponan, maghatid ng mga form nang mas mabilis, at makipagtulungan sa gobyerno?",
+      "title": "Ipinapakilala ang Enterprise CHEFS at CSTAR!",
+      "enterpriseTitle": "Maranasan ang bagong Enterprise CHEFS",
+      "tenant": "tenant",
+      "description1": "Ang Enterprise CHEFS ay ang bagong bersyon ng CHEFS na sumusuporta sa multi-tenant access at pamamahala ng koponan sa pamamagitan ng CSTAR (Konektadong Serbisyo, Team Access at Roles).",
+      "description2": "Sa Enterprise CHEFS, ang iyong organisasyon ay maaaring:",
+      "description3": "Magtrabaho sa ",
+      "description4": " mode - Ang bawat tenant ay may sariling secure na espasyo na may ihiwalay na mga form, data, at pahintulot",
+      "description5": "Pamahalaan ang access ng koponan - Kontrolin kung sino ang maaaring tumingin, mag-edit, o pamahalaan ang mga form sa loob ng iyong tenant",
+      "description6": "Panatilihin ang seguridad ng data - Ang data ng bawat tenant ay ganap na ihiwalay mula sa ibang mga tenant",
+      "description7": "Ang Enterprise CHEFS ay sumasaklaw din sa lahat ng malakas na feature na alam at mahal mo mula sa Personal CHEFS, tulad ng drag-and-drop form builder, conditional logic, encrypted submissions, at API integrations.",
+      "loginButton": "Mag-login upang magsimula",
+      "goToChefs": "Pumunta sa CHEFS",
+      "learnMore": "Matuto pa"
+    },
+    "gettingStarted": {
+      "title": "Bago sa CHEFS at hindi alam kung saan magsisimula?",
+      "description": "Maaari kang magsimulang lumikha ng mga form sa ilang simpleng hakbang:",
+      "step1Title": "1. Mag-login gamit ang iyong IDIR o BCeID account",
+      "step2Title": "2. Lumikha ng bagong form o gumamit ng template",
+      "step3Title": "3. Idisenyo ang iyong form gamit ang aming drag-and-drop builder",
+      "step4Title": "4. I-publish at ibahagi ang iyong form sa iyong koponan o publiko",
+      "loginButton": "Mag-login upang magsimula",
+      "learnMore": "Matuto pa"
+    },
+    "examples": {
+      "demographicSurvey": "Halimbawa | Survey sa Pagkolekta ng Demographic Data",
+      "projectRequest": "Halimbawa | Kahilingan sa Proyekto",
+      "permitApplication": "Halimbawa | Aplikasyon para sa Permit"
+    },
+    "testimonials": {
+      "title": "Huwag lang magtiwala sa aming salita, pakinggan kung ano ang sinasabi ng aming mga user tungkol sa amin.",
+      "author": "May-akda",
+      "role": "Papel"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS User 1",
+        "role": "Program Analyst",
+        "quote": "\"Binago ng CHEFS ang paraan ng aming pagkolekta ng data. Pinapahintulutan kami ng multi-tenant system na panatilihing hiwalay ang mga proyekto habang nagbabahagi ng best practices sa buong aming departamento.\""
+      },
+      "testimonial2": {
+        "author": "CHEFS User 2",
+        "role": "Project Manager",
+        "quote": "\"Ang pagsasama sa CSTAR ay ginagawang mas madali ang pamamahala ng access ng koponan. Mabilis kong maidadagdag ang mga bagong miyembro ng koponan at eksaktong makokontrol kung ano ang maaari nilang gawin.\""
+      },
+      "testimonial3": {
+        "author": "CHEFS User 3",
+        "role": "IT Administrator",
+        "quote": "\"Pinahahalagahan namin ang matatag na seguridad at paghihiwalay ng data. Ang bawat tenant ay ganap na hiwalay, na nagbibigay sa amin ng kapayapaan ng isip kapag nagtatrabaho sa sensitibong data.\""
+      }
+    },
+    "finalCta": {
+      "title": "Simulan ang paggamit ng Enterprise CHEFS",
+      "description": "Lumikha ng mga online form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong workflow.",
+      "loginButton": "Mag-login upang magsimula"
+    },
+    "formViewer": {
+      "title": "Form Viewer",
+      "description": "I-preview kung ano ang hitsura ng iyong form",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "myForms": "Aking Mga Form",
+    "tenantLabel": "Nangungupahan:",
+    "infoTooltip": "Piliin ang iyong tenant upang ma-access ang Mga Group Form. Bumalik sa 'Aking Mga Form' anumang oras.",
+    "selectLabel": "Pumili ng tenant (bubukas sa Enterprise CHEFS)",
+    "placeholder": "Pumili mula sa available na mga tenant",
+    "noDataText": "Walang nahanap na tenant",
+    "switchToClassic": "Switch to My Forms",
+    "goToCstar": "Pumunta sa CSTAR (Konektadong Serbisyo, Team Access at Roles)",
+    "noTenantsAvailable": "Walang available na tenant",
+    "manageTenantsIn": "Pamahalaan ang mga tenant sa",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "Nangungupahan:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "Ang CSTAR ay pansamantalang hindi available. Ang pagpili ng nangungupahan ay kasalukuyang hindi pinagana.",
+    "errorFetchingTenants": "Error sa pagkuha ng mga nangungupahan"
   }
 }

@@ -1,4 +1,4 @@
-{
+﻿{
   "open": "열려 있는",
   "date": {
     "date": "yyyy-mm-dd"
@@ -21,6 +21,7 @@
   },
   "formsTable": {
     "myForms": "내 양식",
+    "groupForms": "그룹 양식",
     "createNewForm": "새 양식 만들기",
     "search": "찾다",
     "manage": "관리하다",
@@ -30,7 +31,12 @@
     "description": "설명",
     "Description": "설명:",
     "action": "행위",
-    "loadingText": "로딩 중 기다려주세요"
+    "loadingText": "로딩 중 기다려주세요",
+    "forms": "양식",
+    "deleteForm": "양식 삭제",
+    "manageForm": "양식 관리",
+    "viewSubmissions": "제출 보기",
+    "noDataText": "양식을 찾을 수 없습니다"
   },
   "preview": {
     "preview": "시사",
@@ -53,6 +59,7 @@
     "emailManagement": "이메일 관리",
     "viewSubmissions": "제출물 보기",
     "teamManagement": "팀 관리",
+    "groupManagement": "그룹 관리",
     "deleteForm": "양식 삭제",
     "confirmDeletion": "삭제 확인",
     "deleteMessageA": "삭제하시겠습니까?",
@@ -85,6 +92,8 @@
     "uploadError": "템플릿 업로드 중 오류가 발생했습니다.",
     "deleteSuccess": "템플릿이 성공적으로 삭제되었습니다.",
     "deleteError": "템플릿 삭제 중 오류가 발생했습니다.",
+    "deleteErrorInUse": "템플릿을 삭제할 수 없습니다: 템플릿이 현재 인쇄 구성에서 사용 중입니다. 먼저 인쇄 구성 설정을 업데이트하세요.",
+    "deleteDisabledTooltip": "이 템플릿은 현재 인쇄 구성에서 사용 중입니다. 먼저 인쇄 구성 설정을 업데이트하세요.",
     "fetchError": "템플릿 가져오기 중 오류가 발생했습니다.",
     "info": "공통 문서 생성 서비스(CDOGS)를 사용하기 위해 템플릿을 업로드하십시오",
     "fileSizeError": "파일 크기는 25MB 이하여야 합니다."
@@ -103,7 +112,9 @@
     "referenceGuideB": "사용자 가이드",
     "referenceGuideC": "를 참조하세요.",
     "specificTeamMembers": "특정 팀원",
+    "specificGroups": "특정 그룹",
     "teamMemberTooltip": "양식을 생성한 후에는 팀 관리 페이지에 접근하여 사용자를 추가하고 역할을 할당할 수 있습니다. 관리 양식 페이지에서 사람 아이콘을 찾으세요. ",
+    "groupAccessTooltip": "액세스는 CSTAR 그룹에 의해 제어됩니다. 양식을 만든 후 그룹 관리 페이지로 이동하여 CSTAR 그룹을 이 양식과 연결하세요. 해당 그룹에 속한 사용자만 액세스할 수 있습니다. 그룹에서 사용자를 추가하거나 제거하려면 CSTAR에서 그룹 멤버십을 관리하세요.",
     "formFunctionality": "양식 기능",
     "formSubmissinScheduleMsg": "양식 제출 일정은 양식이 게시된 후 양식 설정에서 사용할 수 있습니다.",
     "formSubmissionsSchedule": "양식 제출 일정",
@@ -123,6 +134,9 @@
     "emailNotificatnToTeamToolTip": "사용자가 이 양식을 제출하면 지정된 이메일 주소로 알림을 보냅니다.",
     "notificationEmailAddrs": "알림 이메일 주소",
     "addMoreValidEmailAddrs": "유효한 이메일 주소를 하나 이상 추가하세요.",
+    "emailPackage": "문서 템플릿과 함께 제출 패키지 이메일 전송",
+    "emailPackageTooltip": "완료 이메일에 생성된 제출 패키지를 포함하려면 문서 템플릿을 업로드하세요.",
+    "emailPackageDisabled": "제출 패키징을 활성화하려면 양식을 저장하세요",
     "formScheduleSettings": "양식 일정 설정",
     "opensubmissions": "공개 제출",
     "submissionsDeadline": "언제까지 제출물을 받기를 원하십니까?",
@@ -204,7 +218,38 @@
     "encryptionKeyUpdatedBy": "암호화 키 업데이트됨",
     "encryptionKeyCopySnackbar": "암호화 키가 클립보드에 복사되었습니다.",
     "encryptionKeyCopyTooltip": "암호화 키를 클립보드에 복사",
-    "encryptionKeyGenerate": "암호화 키 생성"
+    "encryptionKeyGenerate": "암호화 키 생성",
+    "dataRetention": "데이터 보존 정책",
+    "enableHardDeletion": "자동 완전 삭제 활성화",
+    "hardDeletionTooltip": "활성화하면 삭제로 표시된 제출물이 보존 기간 후 영구적으로 제거됩니다.",
+    "hardDeletionWarning": "완전 삭제는 영구적이며 취소할 수 없습니다.",
+    "permanentDeletion": "삭제 후 데이터는 복구할 수 없게 됩니다.",
+    "dataClassification": "데이터 분류",
+    "dataClassificationHint": "이 양식에서 수집하는 데이터 유형 분류",
+    "retentionPeriod": "보존 기간",
+    "retentionPeriodHint": "영구 삭제 전까지 삭제된 제출물을 보관하는 기간",
+    "classPublic": "공개",
+    "classInternal": "내부용",
+    "classSensitive": "민감함",
+    "classConfidential": "기밀",
+    "classProtected": "보호됨",
+    "classificationCustomHint": "필요한 경우 사용자 정의 분류를 입력할 수 있습니다",
+    "days30": "30일",
+    "days90": "90일",
+    "days180": "180일",
+    "year1": "1년 (365일)",
+    "years2": "2년 (730일)",
+    "years5": "5년 (1825일)",
+    "daysCustom": "사용자 정의 기간",
+    "customDaysLabel": "사용자 정의 보존 기간 (일)",
+    "customDaysHint": "1일에서 3650일(10년) 사이의 숫자를 입력하세요",
+    "classificationDescription": "분류 참고 사항",
+    "classificationDescriptionHint": "이 분류와 보존 기간을 선택한 이유에 대한 선택적 설명",
+    "retentionDaysUpdated": "보존 기간이 업데이트되었습니다",
+    "deletionDisclaimerWithDays": "경고: {days}일 후, 삭제로 표시된 제출물은 영구적으로 삭제되며 복구할 수 없습니다.",
+    "setRetentionPrompt": "데이터 보존 정책을 완료하려면 보존 기간을 설정하세요.",
+    "fetchRetentionClassificationListError": "보존 분류 목록을 가져오는 중 오류가 발생했습니다.",
+    "fetchRetentionClassificationListConsErrMsg": "보존 분류를 가져오는 중 오류가 발생했습니다: {error}"
   },
   "formProfile": {
     "message": "CHEFS 팀은 포괄적인 비즈니스 케이스를 작성하는 데 중요한 입력으로 사용될 정보를 수집하고 조직하고 있습니다. 이러한 케이스는 향후 몇 년 동안 CHEFS의 전략적 운영과 지속적인 개선을 안내하는 데 중추적인 역할을 할 것입니다. 데이터 수집을 위한 이 이니셔티브는 중요한 결정에 정보를 제공하고 CHEFS의 궤도를 형성하는 데 필수적입니다. 이를 통해 CHEFS가 변화하는 필요와 도전에 대응하여 적응성과 효과를 보장합니다.",
@@ -687,10 +732,12 @@
     "fetchSubmissionUsersErr": "이 제출에 대한 수신자 이메일을 가져오는 동안 오류가 발생했습니다.",
     "fetchSubmissionUsersConsErr": "에 대한 수신자 이메일을 가져오는 중 오류가 발생했습니다.",
     "assignSubmissnToFormReviewer": "제출물을 양식 검토자에게 할당할 수 있습니다.<br /> 더 많은 팀 구성원을 양식 검토자로 추가하려면 이 양식의 관리 페이지로 이동하십시오.",
+    "assignSubmissnToFormReviewerTenanted": "제출물을 양식 검토자에게 할당할 수 있습니다. <br />양식 검토자로 구성원을 추가하거나 업데이트하려면 CSTAR로 이동하여 적절한 그룹을 업데이트하십시오.",
     "update": "업데이트",
     "revise": "개정하다",
     "complete": "완벽한",
-    "assign": "양수인"
+    "assign": "양수인",
+    "assignedUserNotLoggedIn": "Assigned user must sign in to CHEFS at least once before they can be assigned a submission."
   },
   "statusTable": {
     "loadingText": "로딩 중 기다려주세요",
@@ -829,6 +876,44 @@
     "setUserFormsErrMsg": "사용자의 역할을 업데이트하는 동안 오류가 발생했습니다.",
     "setUserFormsConsoleErrMsg": "양식 {formId}에 대한 사용자 역할 설정 오류: {error}"
   },
+  "groupManagement": {
+    "groupManagement": "그룹 관리",
+    "manageForm": "양식 관리",
+    "search": "검색",
+    "loadingText": "로딩 중... 잠시 기다려 주세요",
+    "noDataText": "이 테넌트에 사용 가능한 그룹이 없습니다",
+    "noMatchingRecordText": "일치하는 레코드를 찾을 수 없습니다",
+    "groupName": "그룹 이름",
+    "description": "설명",
+    "associated": "연결됨",
+    "save": "저장",
+    "cancel": "취소",
+    "confirmSave": "변경 확인",
+    "confirmSaveMsg": "이 양식의 그룹 연결을 업데이트하시겠습니까?",
+    "saveSuccessMsg": "그룹 연결이 성공적으로 업데이트되었습니다",
+    "saveErrMsg": "그룹 연결을 저장하는 중 오류가 발생했습니다",
+    "getGroupsErrMsg": "이 양식의 그룹을 로드하는 중 오류가 발생했습니다",
+    "missingGroupsWarning": "이전에 연결된 {count}개의 그룹이 이 테넌트에 더 이상 존재하지 않습니다",
+    "availableGroups": "사용 가능한 그룹",
+    "assignedGroups": "할당된 그룹",
+    "searchAvailable": "사용 가능한 그룹 검색",
+    "searchAssigned": "할당된 그룹 검색",
+    "noAvailableGroups": "이 테넌트에 사용 가능한 그룹이 없습니다",
+    "noAssignedGroups": "이 양식에 할당된 그룹이 없습니다",
+    "addGroup": "그룹 추가",
+    "removeGroup": "그룹 제거",
+    "deleted": "삭제됨",
+    "noTenantAccess": "그룹 관리는 테넌트 양식에서만 사용할 수 있습니다. 계속하려면 테넌트를 선택하세요.",
+    "unsavedChangesWarning": "저장되지 않은 그룹 변경 사항이 있습니다. 저장하지 않고 나가시겠습니까?",
+    "unsavedChangesTitle": "저장되지 않은 변경사항",
+    "leave": "나가기",
+    "selectAll": "모두 선택",
+    "addSelected": "선택 항목 추가",
+    "removeSelected": "선택 항목 제거",
+    "formAdminGroupRequired": "할당된 그룹 중 하나 이상에 form_admin 역할이 있어야 합니다.",
+    "invalidGroupIds": "선택한 그룹 중 하나 이상이 이 테넌트에 유효하지 않습니다.",
+    "insufficientPermissions": "그룹 연결을 관리할 권한이 없습니다."
+  },
   "floatButton": {
     "publish": "게시",
     "manage": "관리하다",
@@ -895,10 +980,12 @@
   "bCGovNavBar": {
     "about": "에 대한",
     "myForms": "내 양식",
+    "groupForms": "그룹 양식",
     "createNewForm": "새 양식 만들기",
     "help": "돕다",
     "feedback": "피드백",
-    "admin": "관리자"
+    "admin": "관리자",
+    "forms": "양식"
   },
   "homePage": {
     "title": "Common Hosted Forms Service를 사용하여 양식을 만들고 게시하고 제출물을 받습니다.",
@@ -917,7 +1004,23 @@
     "chefsHowToSub": "빠른 시작 가이드는 CHEFS의 기본 기능 중 일부를 소개합니다.",
     "getStartedToChefs": "CHEFS를 사용하여 시작하기",
     "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오.",
-    "getStarted": "시작하다"
+    "getStarted": "시작하다",
+    "enterpriseSectionTitle": "새로운 Enterprise CHEFS 경험하기",
+    "enterpriseSectionBody1": "Enterprise CHEFS는 CSTAR(Connected Services, Team Access, Roles)와 협력하여 클래식 CHEFS(Common Hosted Forms Service)를 확장하고 공유된 협업 작업 공간을 만듭니다.",
+    "enterpriseSectionBody2": "Enterprise CHEFS를 사용하면 팀이 조직의 테넌트 내에서 안전하게 양식을 공유하고 역할을 할당하며 프로젝트를 관리할 수 있습니다.",
+    "enterpriseSectionWelcome": "Enterprise CHEFS에 오신 것을 환영합니다. 정부 전체의 팀이 안전하고 효율적으로 협업할 수 있는 곳입니다.",
+    "classicChefsLabel": "Personal CHEFS",
+    "enterpriseChefsLabel": "Enterprise CHEFS",
+    "multiTenancyTitle": "CHEFS가 이제 멀티 테넌시를 지원합니다!",
+    "multiTenancySubTitle": "프로젝트나 팀을 위한 그룹을 만들고 한 곳에서 그룹 전체의 공유 양식에 대한 액세스를 관리하세요.",
+    "multiTenancyFitHeading": "다음과 같은 경우 팀에 적합할 수 있습니다:",
+    "multiTenancyBullet1": "프로그램이나 환경 전반에 걸쳐 많은 양식을 관리하는 경우",
+    "multiTenancyBullet2": "여러 관리자 또는 검토자가 있는 경우",
+    "multiTenancyBullet3": "잦은 인원 변경을 경험하는 경우",
+    "multiTenancyBullet4": "중앙집중식 액세스 관리를 원하는 경우",
+    "multiTenancyBullet5": "Notify와 같은 다른 연결 서비스를 도입하는 경우",
+    "multiTenancyFooter": "팀 리더와 관리자는 CSTAR를 사용하여 테넌트를 생성하고 팀의 액세스를 관리할 수 있습니다.",
+    "multiTenancyBtnLabel": "CSTAR에 로그인하여 시작하기"
   },
   "baseStepper": {
     "setUpForm": "양식 설정",
@@ -1117,6 +1220,12 @@
       "saveSubscriptionSettingsNotifyMsg": "이 양식에 대한 구독 설정이 저장되었습니다.",
       "saveSubscriptionSettingsErrMsg": "구독 설정을 저장하는 동안 오류가 발생했습니다.",
       "saveSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정 저장 오류: {error}"
+    },
+    "recordsManagement": {
+      "getFormRetentionPolicyErrMsg": "이 양식의 보존 정책을 가져오는 동안 오류가 발생했습니다.",
+      "getFormRetentionPolicyConsErrMsg": "양식 {formId}에 대한 보존 정책 가져오기 오류: {error}",
+      "configureFormRetentionPolicyErrMsg": "이 양식의 보존 정책을 구성하는 동안 오류가 발생했습니다.",
+      "configureFormRetentionPolicyConsErrMsg": "양식 {formId}에 대한 보존 정책 구성 오류: {error}"
     }
   },
   "admin": {
@@ -1155,6 +1264,33 @@
     "editTitle": "이벤트 스트림 구성 편집",
     "fetchError": "이벤트 스트림 구성을 가져오는 동안 오류가 발생했습니다.",
     "save": "구하다"
+  },
+  "printConfig": {
+    "title": "인쇄 구성",
+    "description": "사용자가 양식 제출을 인쇄하는 방법을 구성합니다",
+    "typeDefault": "기본값",
+    "typeDefaultDescription": "사용자는 인쇄 방법을 선택할 수 있습니다 (브라우저 인쇄 또는 템플릿)",
+    "typeDirect": "직접 인쇄",
+    "typeDirectDescription": "사용자는 사전 구성된 템플릿을 사용하여 직접 인쇄합니다 (PDF 출력)",
+    "selectTemplate": "템플릿 선택",
+    "save": "구성 저장",
+    "saving": "저장 중...",
+    "saveSuccess": "인쇄 구성이 성공적으로 저장되었습니다",
+    "saveError": "인쇄 구성을 저장하는 동안 오류가 발생했습니다",
+    "fetchError": "인쇄 구성을 가져오는 동안 오류가 발생했습니다",
+    "templateRequired": "직접 인쇄를 사용할 때 템플릿이 필요합니다",
+    "noTemplatesAvailable": "사용 가능한 템플릿이 없습니다. 먼저 템플릿을 업로드하세요.",
+    "templateDeleted": "이전에 선택한 템플릿이 삭제되었습니다. 새 템플릿을 선택하세요.",
+    "currentConfig": "현재 구성",
+    "type": "유형",
+    "template": "템플릿",
+    "reportNameLabel": "출력 파일 이름",
+    "reportNameOptionFormName": "양식 이름 사용",
+    "reportNameOptionFormNameDescription": "출력 파일은 양식 이름을 사용하여 명명됩니다",
+    "reportNameOptionCustom": "사용자 정의 이름 사용",
+    "reportNameOptionCustomDescription": "출력 파일의 사용자 정의 이름을 입력하세요",
+    "reportNameCustomInput": "사용자 정의 파일 이름",
+    "reportNameCustomInputHint": "생성된 문서의 사용자 정의 이름을 입력하세요"
   },
   "encryptionKey": {
     "info": "양식에 대한 암호화 키를 구성합니다.",
@@ -1226,7 +1362,10 @@
   },
   "canShareDraft": {
     "canShareMessage": "양식에 추가되지 않은 사용자와 초안을 공유할 수 없습니다. 관리자에게 연락하여 추가하세요.",
-    "shareDraftMessage": "초안을 양식 팀원과만 공유하세요"
+    "canShareGroupMessage": "이 사용자와 초안을 공유할 수 없습니다. 이 양식의 승인된 그룹 중 하나의 구성원이어야 합니다.",
+    "shareDraftMessage": "초안을 양식 팀원과만 공유하세요",
+    "shareDraftGroupMessage": "양식 그룹 구성원과만 초안 공유",
+    "groupShareHint": "이 양식의 승인된 그룹 구성원만 추가할 수 있습니다."
   },
   "statusOverlay": {
     "chefsUnavailableHeader": "이 서비스는 일시적으로 사용할 수 없습니다.",
@@ -1245,5 +1384,96 @@
     "shuttingDown": "CHEFS가 종료되고 있습니다.",
     "notReady": "CHEFS가 필요한 모든 서비스에 연결할 수 없습니다.",
     "unableToReachBackend": "백엔드 서비스에 도달할 수 없습니다."
+  },
+  "landingPage": {
+    "hero": {
+      "subtitle": "팀과 안전하게 작업하고, 양식을 더 빠르게 제공하고, 정부에서 협업하고 싶으신가요?",
+      "title": "Enterprise CHEFS 및 CSTAR 소개!",
+      "enterpriseTitle": "새로운 Enterprise CHEFS 경험",
+      "tenant": "테넌트",
+      "description1": "Enterprise CHEFS는 CSTAR(연결된 서비스, 팀 액세스 및 역할)를 통해 다중 테넌트 액세스 및 팀 관리를 지원하는 CHEFS의 새 버전입니다.",
+      "description2": "Enterprise CHEFS를 사용하면 조직은 다음을 수행할 수 있습니다:",
+      "description3": "",
+      "description4": " 모드에서 작업 - 각 테넌트에는 격리된 양식, 데이터 및 권한이 있는 자체 보안 공간이 있습니다",
+      "description5": "팀 액세스 관리 - 테넌트 내에서 양식을 보고, 편집하거나 관리할 수 있는 사용자를 제어합니다",
+      "description6": "데이터 보안 유지 - 각 테넌트의 데이터는 다른 테넌트와 완전히 격리됩니다",
+      "description7": "Enterprise CHEFS에는 드래그 앤 드롭 양식 작성기, 조건부 논리, 암호화된 제출 및 API 통합과 같이 Personal CHEFS에서 알고 있고 좋아하는 모든 강력한 기능도 포함되어 있습니다.",
+      "loginButton": "로그인하여 시작",
+      "goToChefs": "CHEFS로 이동",
+      "learnMore": "자세히 알아보기"
+    },
+    "gettingStarted": {
+      "title": "CHEFS를 처음 사용하며 어디서부터 시작해야 할지 모르시나요?",
+      "description": "몇 가지 간단한 단계로 양식 만들기를 시작할 수 있습니다:",
+      "step1Title": "1. IDIR 또는 BCeID 계정으로 로그인",
+      "step2Title": "2. 새 양식을 만들거나 템플릿 사용",
+      "step3Title": "3. 드래그 앤 드롭 작성기로 양식 디자인",
+      "step4Title": "4. 양식을 게시하고 팀 또는 대중과 공유",
+      "loginButton": "로그인하여 시작",
+      "learnMore": "자세히 알아보기"
+    },
+    "examples": {
+      "demographicSurvey": "예시 | 인구통계 데이터 수집 설문조사",
+      "projectRequest": "예시 | 프로젝트 요청",
+      "permitApplication": "예시 | 허가 신청"
+    },
+    "testimonials": {
+      "title": "우리의 말만 믿지 마시고, 사용자들이 우리에 대해 무엇을 말하는지 들어보세요.",
+      "author": "저자",
+      "role": "역할"
+    },
+    "testimonialData": {
+      "testimonial1": {
+        "author": "CHEFS 사용자 1",
+        "role": "프로그램 분석가",
+        "quote": "\"CHEFS는 데이터 수집 방식을 변화시켰습니다. 다중 테넌트 시스템을 통해 프로젝트를 분리하면서 부서 전체에서 모범 사례를 공유할 수 있습니다.\""
+      },
+      "testimonial2": {
+        "author": "CHEFS 사용자 2",
+        "role": "프로젝트 관리자",
+        "quote": "\"CSTAR와의 통합으로 팀 액세스 관리가 훨씬 쉬워졌습니다. 새 팀원을 빠르게 온보딩하고 그들이 할 수 있는 작업을 정확하게 제어할 수 있습니다.\""
+      },
+      "testimonial3": {
+        "author": "CHEFS 사용자 3",
+        "role": "IT 관리자",
+        "quote": "\"강력한 보안 및 데이터 격리 기능에 감사드립니다. 각 테넌트가 완전히 분리되어 있어 민감한 데이터로 작업할 때 안심할 수 있습니다.\""
+      }
+    },
+    "finalCta": {
+      "title": "Enterprise CHEFS 사용 시작",
+      "description": "온라인 양식을 만들어 고객으로부터 정보를 수집하고 워크플로우를 개선하세요.",
+      "loginButton": "로그인하여 시작"
+    },
+    "formViewer": {
+      "title": "양식 뷰어",
+      "description": "양식 모양 미리보기",
+      "exampleFormUrl": "https://submit.digital.gov.bc.ca/app/form/submit?f=your-form-id"
+    }
+  },
+  "tenantDropdown": {
+    "myForms": "내 양식",
+    "tenantLabel": "테넌트:",
+    "infoTooltip": "그룹 양식에 액세스하려면 테넌트를 선택하세요. 언제든지 '내 양식'으로 다시 전환하세요.",
+    "selectLabel": "테넌트 선택 (Enterprise CHEFS에서 열림)",
+    "placeholder": "사용 가능한 테넌트에서 선택",
+    "noDataText": "테넌트를 찾을 수 없음",
+    "switchToClassic": "Switch to My Forms",
+    "goToCstar": "CSTAR로 이동 (연결된 서비스, 팀 액세스 및 역할)",
+    "noTenantsAvailable": "사용 가능한 테넌트 없음",
+    "manageTenantsIn": "테넌트 관리 위치",
+    "cstar": "CSTAR"
+  },
+  "app": {
+    "enterprise": "ENTERPRISE",
+    "personal": "PERSONAL",
+    "enterpriseSuffix": "Enterprise",
+    "personalSuffix": "Personal",
+    "enterpriseChefs": "Enterprise CHEFS",
+    "personalChefs": "Personal CHEFS",
+    "tenantLabel": "테넌트:"
+  },
+  "tenantStore": {
+    "cstarUnavailable": "CSTAR를 일시적으로 사용할 수 없습니다. 테넌트 선택이 현재 비활성화되어 있습니다.",
+    "errorFetchingTenants": "테넌트 가져오기 오류"
   }
 }

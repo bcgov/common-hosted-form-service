@@ -1,8 +1,10 @@
 const uuid = require('uuid');
-const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
+const { Form, FormGroup, FormSubmissionUserPermissions, PublicFormAccess, Role, SubmissionMetadata, User, UserFormAccess, UserLoginHistory } = require('../common/models');
+const log = require('../../components/log')(module.filename);
 const { queryUtils } = require('../common/utils');
 
 const idpService = require('../../components/idpService');
+const tenantService = require('../../components/tenantService');
 
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
 
@@ -90,17 +92,84 @@ const service = {
     };
   },
 
-  getUserForms: async (userInfo, params = {}) => {
+  populateItemWithTenantRoles: async (item, userGroups, allRoles) => {
+    const formGroups = await FormGroup.query().modify('filterFormId', item.formId);
+    const formGroupIds = formGroups.map((fg) => fg.groupId);
+    const formGroupIdSet = new Set(formGroupIds);
+    const matchingGroups = Array.isArray(userGroups) ? userGroups.filter((group) => formGroupIdSet.has(group.id)) : [];
+
+    const roles = [...new Set(matchingGroups.flatMap((group) => group.roles || []))];
+    const permissions = allRoles.filter((role) => roles.includes(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+
+    item.roles = roles;
+    item.permissions = [...new Set(permissions)];
+  },
+
+  getUserForms: async (userInfo, params = {}, headers = null) => {
     params = queryUtils.defaultActiveOnly(params);
     let items = [];
+
     if (userInfo && userInfo.public) {
       // if the user is 'public', then we can only fetch public accessible forms...
       items = await PublicFormAccess.query().modify('filterFormId', params.formId).modify('filterActive', params.active);
       // ignore any passed in accessLevel params, only return public
       return service.filterForms(userInfo, items, ['public']);
+    } else if (userInfo && userInfo.tenantId) {
+      // Tenant users require headers for API authentication
+      if (!headers) {
+        throw new Error('Headers required for tenant user form access');
+      }
+
+      items = await UserFormAccess.query()
+        .modify('filterUserId', userInfo.id)
+        .modify('filterFormId', params.formId)
+        .modify('filterActive', params.active)
+        .modify('filterTenantId', userInfo.tenantId);
+
+      let userGroups = [];
+      try {
+        userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, userInfo.tenantId);
+      } catch (err) {
+        log.error(`Failed to fetch tenant groups/roles for tenant ${userInfo.tenantId}`, err);
+      }
+      const allRoles = await Role.query().withGraphFetched('permissions');
+
+      for (const item of items) {
+        await service.populateItemWithTenantRoles(item, userGroups, allRoles);
+      }
+
+      return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
       items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
+
+      // For single-form permission checks (params.formId set, e.g. hasFormPermissions
+      // middleware on /form/submit, /user/draft, /user/view), resolve group-based roles
+      // using the form's own tenantId from form_tenant — not from the request header,
+      // since those routes never send x-tenant-id by design. This lets legitimate group
+      // members access the form regardless of which tenant is currently selected in the UI.
+      //
+      // For list-all calls (no formId, e.g. "My Forms"), skip resolution: group-only
+      // forms must only appear when that tenant is actively selected (branch above).
+      if (params.formId && headers) {
+        const userGroupsByTenant = new Map();
+        const allRoles = await Role.query().withGraphFetched('permissions');
+        for (const item of items) {
+          if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
+            if (!userGroupsByTenant.has(item.tenantId)) {
+              let userGroups = [];
+              try {
+                userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);
+              } catch (err) {
+                log.error(`Failed to fetch tenant groups/roles for form ${item.formId} (tenant ${item.tenantId})`, err);
+              }
+              userGroupsByTenant.set(item.tenantId, userGroups);
+            }
+            await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
+          }
+        }
+      }
+
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },
@@ -163,13 +232,39 @@ const service = {
     };
   },
 
+  recordLoginHistory: async (userId, idpCode) => {
+    if (idpCode !== 'public') {
+      try {
+        const throttleMs = 5 * 60 * 1000;
+        const threshold = new Date(Date.now() - throttleMs).toISOString();
+        await UserLoginHistory.query()
+          .insert({ userId, idpCode, lastLoginAt: new Date().toISOString() })
+          .onConflict(['userId', 'idpCode'])
+          .merge(['lastLoginAt'])
+          .whereRaw('"user_login_history"."lastLoginAt" < ?', [threshold]);
+      } catch (err) {
+        log.error('Failed to record login history', err);
+      }
+    }
+  },
+
   login: async (token) => {
     const userInfo = await idpService.parseToken(token);
     const idp = await idpService.findByIdp(userInfo.idp);
     userInfo.idp = idp.code;
     const user = await service.getUserId(userInfo);
+    const canonicalCode = idp.extra?.canonicalCode || idp.code;
+    // idpHint must match the idp field in form_identity_providers. For alias IDPs (e.g. azureidir),
+    // resolve to the canonical parent so alias users can access forms configured for the parent IDP.
+    const canonicalIdp = canonicalCode !== idp.code ? await idpService.findByCode(canonicalCode) : idp;
 
-    return { ...user, idpHint: idp.idp };
+    await service.recordLoginHistory(user.id, idp.code);
+
+    return {
+      ...user,
+      usernameIdp: idp.code === 'public' ? user.username : `${user.username}@${canonicalCode}`,
+      idpHint: canonicalIdp?.idp || idp.idp,
+    };
   },
 
   // -------------------------------------------------------------------------------------------------------------

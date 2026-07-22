@@ -28,28 +28,35 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         formsettings();
         
+    });
+    it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get('#heading-advanced').click();   
     }); 
     it('Form Submission and Updation', () => {
     cy.viewport(1000, 1800);
     cy.waitForLoad();
-    cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      
+      cy.get('[data-type="simpletextfieldadvanced"]')
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
+      .trigger('mousemove', coords.x, -250, { force: true })
       .trigger('mouseup', { force: true });
+      cy.get(':nth-child(3) > .nav-link').click();
+      //allow value propagation for copy submission
+      cy.get('input[name="data[validate.isUseForCopy]"]').check({ force: true });
       cy.get('.btn-success').click();
     });
-    //Multiline Text
+    //Checkbox field
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
-        
+        cy.get('[data-type="simplecheckboxadvanced"]')
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mousemove', coords.x, -600, { force: true })
         .trigger('mouseup', { force: true });
+        cy.get(':nth-child(3) > .nav-link').click();
+         //allow value propagation for copy submission
+        cy.get('input[name="data[validate.isUseForCopy]"]').check({ force: true });
         cy.get('.btn-success').click();
     });
     cy.wait(2000);
@@ -80,6 +87,7 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Alex');
+        cy.get('input[name="data[simplecheckboxadvanced]"]').check({ force: true });
          //form submission
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
@@ -91,8 +99,6 @@ describe('Form Designer', () => {
         cy.contains('h1', 'Your form has been submitted successfully');
         cy.wait(2000);
         //Update submission
-        cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-        cy.wait(2000);
         cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
         cy.wait(2000);
         cy.get('button').contains('Submit').should('be.visible');
@@ -137,8 +143,9 @@ describe('Form Designer', () => {
         cy.get('[data-test="showAssigneeList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').type('ch');
         cy.get('div').contains('CHEFS Testing').click();
         cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
-        cy.wait(2000);
+        cy.wait(1000);
         cy.get('.mdi-list-box-outline').click();
+        cy.wait(1000);
         cy.get('input[type="checkbox"]').then($el => {
           const rem1=$el[2];////Assigned to me checkbox
           rem1.click();
@@ -149,10 +156,10 @@ describe('Form Designer', () => {
         cy.wait(2000);
         cy.get('.mdi-arrow-down').should('exist');
         rem1.click();
+        });
         cy.wait(2000);
         cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
         cy.wait(2000);
-        });
         //Assign remaining statuses
         cy.get('.status-heading > .mdi-chevron-right').click();
         cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
@@ -184,17 +191,19 @@ describe('Form Designer', () => {
         cy.get('.mdi-list-box-outline').click();
         cy.waitForLoad();
         cy.location('search').then(search => {
-          //let pathName = fullUrl.pathname
         let arr = search.split('=');
-        cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
-        cy.waitForLoad();
+        cy.wait(1000);
         // Checks copy submission button enabled for user
         cy.visit(`/${depEnv}/user/submissions?f=${arr[1]}`);
         cy.get('.v-data-table-column--align-end > .d-flex > :nth-child(2) > a > .v-btn');
-        cy.get('.mdi-pencil-box-multiple');
+        //Copy submission
+        cy.get('button[title="Copy This Submission"]').eq(1).click();
+        cy.wait(1000);
+        //Verify value propagation for copy submission
+        cy.get('input[name="data[simpletextfieldadvanced]"]').should('have.value', 'Alex')
+        cy.get('input[name="data[simplecheckboxadvanced]"]').should('be.checked');
        //Delete Submission
         cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
-        cy.waitForLoad();
         cy.waitForLoad();
         cy.get('.mdi-list-box-outline').click();
         //Deselect Assigned to me checkbox
@@ -210,7 +219,7 @@ describe('Form Designer', () => {
         cy.wait(2000);
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
-        cy.get('#logoutButton > .v-btn__content > span').click();
+        cy.get('.mdi-logout').click();
         
         });
           
