@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
 @import url('https://fonts.googleapis.com/css?family=Material+Icons');
+@import '@bcgov/bc-sans/css/BCSans.css';
 @import '@mdi/font/css/materialdesignicons.css';
 @import '~font-awesome/css/font-awesome.min.css';
 @import '~formiojs/dist/formio.builder.min.css';
@@ -42,10 +43,14 @@ body {
 
 // Typography
 .v-application {
-  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
+  font-family: BCSans, -apple-system, BlinkMacSystemFont, Roboto, Verdana, Arial,
     sans-serif !important;
   line-height: 1.4;
   font-size: 0.875rem;
+}
+
+:root {
+  --bs-body-font-family: BCSans, -apple-system, BlinkMacSystemFont, Roboto, Verdana, Arial;
 }
 
 h1 {
