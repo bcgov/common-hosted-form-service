@@ -296,10 +296,14 @@ export default {
    * @param {Object} requestBody The form data for the submission
    * @returns {Promise} An axios response
    */
-  async createSubmission(formId, versionId, requestBody) {
+  async createSubmission(formId, versionId, requestBody, { dedupKey } = {}) {
+    const config = dedupKey
+      ? { headers: { 'Dedup-Key': dedupKey } }
+      : undefined;
     const response = await appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`,
-      requestBody
+      requestBody,
+      config
     );
     if (response.data?._accessToken && response.data?.id) {
       sessionStorage.setItem(

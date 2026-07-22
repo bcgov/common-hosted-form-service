@@ -272,6 +272,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterRevision = data.enableSubmitterRevision;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
+      obj.enableOfflineSubmission = data.enableOfflineSubmission;
       obj.enableTeamMemberDraftShare = data.enableTeamMemberDraftShare;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
@@ -379,6 +380,7 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterRevision: data.enableSubmitterRevision,
         enableSubmitterDraft: data.enableSubmitterDraft,
+        enableOfflineSubmission: data.enableOfflineSubmission,
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
         enableSubmissionUrlSharing: sharingOn,
@@ -859,16 +861,21 @@ const service = {
   listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query().where('formVersionId', formVersionId).modify('filterCreatedBy', params.createdBy).modify('orderDescending');
   },
-  createSubmission: async (formVersionId, data, currentUser) => {
+  createSubmission: async (formVersionId, data, currentUser, options = {}) => {
     let trx;
     let result;
+    const { dedupKey } = options;
+    // queuedAt is supplied by offline replays; live submissions leave it NULL.
+    const queuedAt = data.queuedAt || null;
     try {
       const formVersion = await service.readVersion(formVersionId);
       const form = await service.readForm(formVersion.formId);
       const { identityProviders } = form;
 
-      // Validate schedule before allowing submission
-      validateSubmissionSchedule(form.schedule);
+      // Skip schedule check on replays: they were on-time at queuedAt.
+      if (!queuedAt) {
+        validateSubmissionSchedule(form.schedule);
+      }
 
       trx = await FormSubmission.startTransaction();
 
@@ -877,12 +884,15 @@ const service = {
       const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
       const submissionId = uuid.v4();
+      // Body first; server-controlled fields below override.
       const obj = {
+        ...data,
         id: submissionId,
         formVersionId: formVersion.id,
         confirmationId: submissionId.substring(0, 8).toUpperCase(),
         createdBy: createdBy,
-        ...data,
+        queuedAt: queuedAt,
+        dedupKey: dedupKey || null,
       };
 
       await FormSubmission.query(trx).insert(obj);
