@@ -143,8 +143,9 @@ describe('Form Designer', () => {
         cy.wait(2000);
         cy.get('.mdi-list-box-outline').click();
         cy.get('input[type="checkbox"]').then($el => {
-          const rem1=$el[2];////Assigned to me checkbox
-          rem1.click();
+        const rem1=$el[2];////Assigned to me checkbox
+        rem1.click({force: true});
+        cy.wait(1000);
         cy.get('.v-data-table__tr > :nth-child(6)').should('exist');
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').should('exist');
         cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').click();
@@ -198,14 +199,15 @@ describe('Form Designer', () => {
        //Delete Submission
         cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
         cy.waitForLoad();
-        cy.waitForLoad();
         cy.get('.mdi-list-box-outline').click();
+        cy.wait(1000);
         //Deselect Assigned to me checkbox
         cy.contains('Assigned to me').click();
         cy.get('button[title="Delete Submission"]').then($el => {
           const rem=$el[0];
-          rem.click();
+          rem.click({force: true});
         });
+        cy.wait(1000);
         cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
         cy.get('.v-data-table__tbody > :nth-child(2) > :nth-child(2)').should('not.exist');
         //Delete form after test run
