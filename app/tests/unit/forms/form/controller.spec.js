@@ -4,6 +4,10 @@ const uuid = require('uuid');
 const controller = require('../../../../src/forms/form/controller');
 const exportService = require('../../../../src/forms/form/exportService');
 const service = require('../../../../src/forms/form/service');
+const docGenService = require('../../../../src/components/docGenService');
+const emailService = require('../../../../src/forms/email/emailService');
+const fileService = require('../../../../src/forms/file/service');
+const submissionTokenService = require('../../../../src/components/submissionTokenService');
 
 // Various strings that should produce 400 errors when used as UUIDs.
 const testCases400 = [[''], ['undefined'], ['{{oops}}'], [uuid.v4() + '.']];
@@ -74,6 +78,29 @@ describe('form controller', () => {
     expect(exportService._getForm).toBeCalledTimes(1);
     expect(exportService._getSubmissions).toBeCalledTimes(1);
     expect(formatDataSpy).toBeCalledTimes(1);
+  });
+});
+
+describe('readFormFields', () => {
+  it('returns the version metadata and strips the submit field', async () => {
+    service.readFormFields = jest.fn().mockResolvedValue({
+      versionId: 'v1',
+      published: true,
+      versions: [{ id: 'v1', version: 1, published: true }],
+      fields: ['simpletextfield', 'submit'],
+    });
+    const { res, next } = getMockRes();
+
+    await controller.readFormFields(getMockReq(req), res, next);
+
+    expect(service.readFormFields).toBeCalledWith(req.params.formId);
+    expect(res.json).toBeCalledWith({
+      versionId: 'v1',
+      published: true,
+      versions: [{ id: 'v1', version: 1, published: true }],
+      fields: ['simpletextfield'],
+    });
+    expect(next).not.toBeCalled();
   });
 });
 
@@ -255,5 +282,170 @@ describe('readFormOptions', () => {
     // Assert
     expect(service.readFormOptions).toBeCalled();
     expect(next).toBeCalledWith(error);
+  });
+});
+
+describe('draftTemplateUploadAndRender', () => {
+  const formId = uuid.v4();
+  const validBody = {
+    template: {
+      options: { convertTo: 'pdf', overwrite: true, reportName: 'draft' },
+      content: 'base64content',
+      encodingType: 'base64',
+      fileType: 'txt',
+    },
+    submission: {
+      data: { simpletextfield: 'firstName lastName' },
+    },
+  };
+  const expectedTemplateBody = {
+    ...validBody.template,
+    data: validBody.submission.data,
+  };
+  const mockResponse = {
+    data: {},
+    headers: { 'content-disposition': 'attachment; filename=draft.pdf' },
+    status: 200,
+  };
+
+  it('should pass the form id and template body to docGenService and stream the result', async () => {
+    docGenService.templateUploadAndRender = jest.fn().mockResolvedValue(mockResponse);
+    const req = getMockReq({ params: { formId }, body: validBody, currentUser: { tenantId: 'tenant-1' } });
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(docGenService.templateUploadAndRender).toBeCalledTimes(1);
+    expect(docGenService.templateUploadAndRender).toBeCalledWith(
+      expect.objectContaining({
+        formId,
+        tenantId: 'tenant-1',
+        templateBody: expectedTemplateBody,
+      })
+    );
+    expect(res.status).toBeCalledWith(200);
+    expect(res.set).toBeCalledWith(
+      expect.objectContaining({
+        'Content-Disposition': 'attachment; filename=draft.pdf',
+        'X-Content-Type-Options': 'nosniff',
+      })
+    );
+    expect(res.send).toBeCalledTimes(1);
+  });
+
+  it('should default the Content-Disposition when none is returned', async () => {
+    const response = { ...mockResponse, headers: {} };
+    docGenService.templateUploadAndRender = jest.fn().mockResolvedValue(response);
+    const req = getMockReq({ params: { formId }, body: validBody, currentUser: {} });
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(res.set).toBeCalledWith(expect.objectContaining({ 'Content-Disposition': 'attachment' }));
+    expect(res.status).toBeCalledWith(200);
+  });
+
+  it('should forward errors to next', async () => {
+    docGenService.templateUploadAndRender = jest.fn().mockReturnValue(mockResponse);
+    const req = getMockReq({ params: { formId } }); // missing body -> throws when reading submission.data
+    const { res, next } = getMockRes();
+
+    await controller.draftTemplateUploadAndRender(req, res, next);
+
+    expect(docGenService.templateUploadAndRender).toBeCalledTimes(0);
+    expect(res.send).toBeCalledTimes(0);
+    expect(next).toBeCalledWith(expect.any(TypeError));
+  });
+});
+
+describe('createSubmission access token attachment', () => {
+  const formIdLocal = uuid.v4();
+  const formVersionId = uuid.v4();
+  const submissionId = uuid.v4();
+  const createdSubmission = { id: submissionId, formVersionId };
+
+  const buildReq = ({ isPublic = true, draft = false } = {}) =>
+    getMockReq({
+      params: { formId: formIdLocal, formVersionId },
+      body: { draft },
+      currentUser: { public: isPublic, id: uuid.v4(), usernameIdp: 'public' },
+      headers: { referer: '' },
+    });
+
+  beforeEach(() => {
+    service.createSubmission = jest.fn().mockResolvedValue(createdSubmission);
+    emailService.submissionReceived = jest.fn().mockResolvedValue(undefined);
+    fileService.moveSubmissionFiles = jest.fn().mockResolvedValue(undefined);
+  });
+
+  test('on a sharing-off public form for an anonymous submitter, response includes _accessToken that verifies for the submission id', async () => {
+    service.readForm = jest.fn().mockResolvedValue({
+      id: formIdLocal,
+      enableSubmissionUrlSharing: false,
+      identityProviders: [{ code: 'public' }],
+    });
+    const req = buildReq();
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(res.status).toBeCalledWith(201);
+    const body = res.json.mock.calls[0][0];
+    expect(body.id).toBe(submissionId);
+    expect(typeof body._accessToken).toBe('string');
+    expect(submissionTokenService.verify(body._accessToken, submissionId)).toBe(true);
+  });
+
+  test('does not attach _accessToken when the form has enableSubmissionUrlSharing on', async () => {
+    service.readForm = jest.fn().mockResolvedValue({
+      id: formIdLocal,
+      enableSubmissionUrlSharing: true,
+      identityProviders: [{ code: 'public' }],
+    });
+    const req = buildReq();
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    const body = res.json.mock.calls[0][0];
+    expect(body._accessToken).toBeUndefined();
+  });
+
+  test('does not attach _accessToken for authenticated submitters', async () => {
+    service.readForm = jest.fn();
+    const req = buildReq({ isPublic: false });
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(service.readForm).not.toBeCalled();
+    const body = res.json.mock.calls[0][0];
+    expect(body._accessToken).toBeUndefined();
+  });
+
+  test('does not attach _accessToken for drafts', async () => {
+    service.readForm = jest.fn();
+    const req = buildReq({ draft: true });
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(service.readForm).not.toBeCalled();
+    const body = res.json.mock.calls[0][0];
+    expect(body._accessToken).toBeUndefined();
+  });
+
+  test('does not mutate the service-layer submission object', async () => {
+    service.readForm = jest.fn().mockResolvedValue({
+      id: formIdLocal,
+      enableSubmissionUrlSharing: false,
+      identityProviders: [{ code: 'public' }],
+    });
+    const req = buildReq();
+    const { res, next } = getMockRes();
+
+    await controller.createSubmission(req, res, next);
+
+    expect(createdSubmission._accessToken).toBeUndefined();
   });
 });

@@ -262,6 +262,11 @@ objects:
                     secretKeyRef:
                       key: mailapitoken
                       name: "chefs-${JOB_NAME}-secret"
+                - name: SUBMISSION_TOKEN_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: submissiontokenkey
+                      name: "chefs-${JOB_NAME}-secret"
                 - name: EVENTSTREAMSERVICE_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -301,6 +306,8 @@ objects:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
                 - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-cstar-config"
+                - configMapRef:
+                    name: "${APP_NAME}-${JOB_NAME}-features-config"
                 - configMapRef:
                     name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
                 - configMapRef:

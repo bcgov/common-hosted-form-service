@@ -1,0 +1,91 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  template: "chefs-app-features-template"
+metadata:
+  name: "chefs-app-features"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-${JOB_NAME}-features-config"
+    data:
+      FEATURES_OFFLINEFORMS_ENABLED: ${FEATURES_OFFLINEFORMS_ENABLED}
+      FEATURES_SUBMITTOEMAIL_ENABLED: ${FEATURES_SUBMITTOEMAIL_ENABLED}
+      FEATURES_SUBMITTOEMAIL_BATCHSIZE: ${FEATURES_SUBMITTOEMAIL_BATCHSIZE}
+      FEATURES_SUBMITTOEMAIL_DELIVERY: ${FEATURES_SUBMITTOEMAIL_DELIVERY}
+      FEATURES_SUBMITTOEMAIL_REPORTSIZELIMIT: ${FEATURES_SUBMITTOEMAIL_REPORTSIZELIMIT}
+      FEATURES_SUBMITTOEMAIL_ATTACHMENTSSIZELIMIT: ${FEATURES_SUBMITTOEMAIL_ATTACHMENTSSIZELIMIT}
+      FEATURES_SUBMITTOEMAIL_ATTACHMENTSCOUNTLIMIT: ${FEATURES_SUBMITTOEMAIL_ATTACHMENTSCOUNTLIMIT}
+      FEATURES_SUBMITTOEMAIL_STUCKTIMEOUTMINUTES: ${FEATURES_SUBMITTOEMAIL_STUCKTIMEOUTMINUTES}
+      FEATURES_SUBMITTOEMAIL_MAXATTEMPTS: ${FEATURES_SUBMITTOEMAIL_MAXATTEMPTS}
+      FEATURES_DOCUMENTGENERATIONV2_ENABLED: ${FEATURES_DOCUMENTGENERATIONV2_ENABLED}
+      FEATURES_DOCUMENTGENERATIONV3_ENABLED: ${FEATURES_DOCUMENTGENERATIONV3_ENABLED}
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: JOB_NAME
+    description: Job/Instance name
+    displayName: Job Name
+    required: true
+  - name: FEATURES_OFFLINEFORMS_ENABLED
+    description: Master switch for the Offline Forms feature
+    displayName: Offline Forms Enabled
+    required: true
+    value: "false"
+  - name: FEATURES_SUBMITTOEMAIL_ENABLED
+    description: Master switch for the Submit to Email feature
+    displayName: Submit to Email Enabled
+    required: true
+    value: "false"
+  - name: FEATURES_SUBMITTOEMAIL_BATCHSIZE
+    description: Max queued package jobs processed per drain pass
+    displayName: Submit to Email Batch Size
+    required: true
+    value: "25"
+  - name: FEATURES_SUBMITTOEMAIL_DELIVERY
+    description: Default delivery mode (attachment falls back to link by size; link always uses a stored zip + download link)
+    displayName: Submit to Email Delivery Mode
+    required: true
+    value: "attachment"
+  - name: FEATURES_SUBMITTOEMAIL_REPORTSIZELIMIT
+    description: Max rendered report size (bytes) to deliver inline before falling back to a download link
+    displayName: Submit to Email Report Size Limit
+    required: true
+    value: "5000000"
+  - name: FEATURES_SUBMITTOEMAIL_ATTACHMENTSSIZELIMIT
+    description: Max total attachments size (bytes) to deliver inline before falling back to a download link
+    displayName: Submit to Email Attachments Size Limit
+    required: true
+    value: "10000000"
+  - name: FEATURES_SUBMITTOEMAIL_ATTACHMENTSCOUNTLIMIT
+    description: Max number of attachments to deliver inline before falling back to a download link
+    displayName: Submit to Email Attachments Count Limit
+    required: true
+    value: "10"
+  - name: FEATURES_SUBMITTOEMAIL_STUCKTIMEOUTMINUTES
+    description: A PROCESSING job older than this (minutes) is considered stuck and reclaimable
+    displayName: Submit to Email Stuck Timeout Minutes
+    required: true
+    value: "30"
+  - name: FEATURES_SUBMITTOEMAIL_MAXATTEMPTS
+    description: Max processing attempts before a transient-failing job is marked failed
+    displayName: Submit to Email Max Attempts
+    required: true
+    value: "3"
+  - name: FEATURES_DOCUMENTGENERATIONV2_ENABLED
+    description: Master switch for Document Generation V2 (existing document generation)
+    displayName: Document Generation V2 Enabled
+    required: true
+    value: "true"
+  - name: FEATURES_DOCUMENTGENERATIONV3_ENABLED
+    description: Master switch for Document Generation V3
+    displayName: Document Generation V3 Enabled
+    required: true
+    value: "false"

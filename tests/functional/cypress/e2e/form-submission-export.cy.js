@@ -104,6 +104,7 @@ describe('Form Designer', () => {
       });
     //verify export button is enabled
     cy.get('.mb-5').should('be.enabled');
+    cy.get('.mb-5').click();
   });
   });
 
@@ -141,6 +142,7 @@ describe('Form Designer', () => {
     cy.get('.v-slide-group__content > [tabindex="-1"]').click();
     cy.get('[tabindex="-1"] > .v-btn__content').click();
     cy.waitForLoad();
+    //Remove the wrong file and upload the correct file
     cy.get('.mdi-close-circle').click();
     cy.get('input[type=file]').attachFile('test.docx');
     cy.waitForLoad();

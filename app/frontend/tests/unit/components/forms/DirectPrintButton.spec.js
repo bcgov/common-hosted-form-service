@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import DirectPrintButton from '~/components/forms/DirectPrintButton.vue';
 import * as printOptionsComposables from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import * as transformUtils from '~/utils/transformUtils';
@@ -179,7 +179,7 @@ describe('DirectPrintButton.vue', () => {
 
     const mocks = setupCommonMocks();
     const draftDocGenSpy = vi
-      .spyOn(utilsService, 'draftDocGen')
+      .spyOn(formService, 'draftDocGen')
       .mockResolvedValue(createDocGenResponse());
 
     const mountOptions = createMountOptions(pinia, {
@@ -196,6 +196,7 @@ describe('DirectPrintButton.vue', () => {
       'test-template-id'
     );
     expect(draftDocGenSpy).toHaveBeenCalledTimes(1);
+    expect(draftDocGenSpy.mock.calls[0][0]).toBe('test-form-id');
     expect(mocks.createDownloadSpy).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledWith(
       expect.objectContaining({
