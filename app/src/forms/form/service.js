@@ -482,7 +482,16 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .select(['id', 'name', 'description', 'enableSubmissionUrlSharing', 'showSubmissionConfirmation', 'enableSubmitterEmailReceipt', 'hideSubmissionContentOnSuccess'])
+      .select([
+        'id',
+        'name',
+        'description',
+        'enableSubmissionUrlSharing',
+        'showSubmissionConfirmation',
+        'enableSubmitterEmailReceipt',
+        'hideSubmissionContentOnSuccess',
+        'enableOfflineSubmission',
+      ])
       .allowGraph('[idpHints]')
       .withGraphFetched('idpHints')
       .throwIfNotFound()
