@@ -27,9 +27,11 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('BC Government').click();
+    cy.wait(1000);
   });
   it("Add IDIR User Component", () => {
     cy.viewport(1000, 1100);
+    cy.wait(1000);
     cy.get("div.formio-builder-form").then(($el) => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="idirusers"]')
