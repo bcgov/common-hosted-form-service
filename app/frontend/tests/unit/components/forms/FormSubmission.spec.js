@@ -12,6 +12,7 @@ vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
     push: () => {},
   })),
+  useRoute: vi.fn(() => ({ query: {} })),
 }));
 
 const STUBS = {

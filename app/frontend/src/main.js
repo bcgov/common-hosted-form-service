@@ -68,6 +68,7 @@ import BaseFilter from '~/components/base/BaseFilter.vue';
 import BaseImagePopout from '~/components/base/BaseImagePopout.vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
+import BaseOfflineControl from '~/components/base/BaseOfflineControl.vue';
 import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
 import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
 import BasePanel from '~/components/base/BasePanel.vue';
@@ -80,6 +81,7 @@ app.component('BaseFilter', BaseFilter);
 app.component('BaseImagePopout', BaseImagePopout);
 app.component('BaseInfoCard', BaseInfoCard);
 app.component('BaseInternationalization', BaseInternationalization);
+app.component('BaseOfflineControl', BaseOfflineControl);
 app.component('BaseNotificationBar', BaseNotificationBar);
 app.component('BaseNotificationContainer', BaseNotificationContainer);
 app.component('BasePanel', BasePanel);
@@ -119,6 +121,14 @@ function initializeApp(kcSuccess = false, basePath = '/') {
   app.mount('#app');
 
   axios.defaults.baseURL = import.meta.env.BASE_URL;
+
+  // Boot the offline-submission queue manager once the SPA is mounted.
+  // Hangs off window events and a poll timer; not tied to any route.
+  import('~/offline/offlineQueueManager').then(
+    ({ startOfflineQueueManager }) => {
+      startOfflineQueueManager();
+    }
+  );
 
   NProgress.done();
 }

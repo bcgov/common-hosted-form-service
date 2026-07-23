@@ -1460,6 +1460,15 @@ paths:
       parameters:
         - $ref: '#/components/parameters/formIdParam'
         - $ref: '#/components/parameters/formVersionIdParam'
+        - in: header
+          name: Dedup-Key
+          required: false
+          description: >-
+            Client-generated UUID for safe retries. Used by the offline-submission queue to replay
+            submissions.
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -1486,6 +1495,12 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          description: Dedup-Key was created by a different user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '503':
