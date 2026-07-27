@@ -1,5 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import getRouter from '~/router';
+
+vi.mock('~/services', () => ({
+  formService: {
+    getSubmissionStatuses: vi.fn(),
+  },
+}));
+
+import { formService } from '~/services';
 
 describe('router', () => {
   it('has base routes', () => {
@@ -59,6 +67,28 @@ describe('router', () => {
       expect(routes.filter(({ name }) => ROUTES.includes(name)).length).toBe(
         ROUTES.length
       );
+    });
+  });
+
+  describe('FormView beforeEnter guard', () => {
+    it('calls next() without redirect on 401 so the auth guard can handle login', async () => {
+      const router = getRouter();
+      const formRoute = router.options.routes.find(
+        ({ path }) => path === '/form'
+      );
+      const viewRoute = formRoute.children.find(
+        ({ name }) => name === 'FormView'
+      );
+
+      formService.getSubmissionStatuses.mockRejectedValue({
+        response: { status: 401 },
+      });
+      const next = vi.fn();
+
+      await viewRoute.beforeEnter({ query: { s: 'sub-123' } }, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+      expect(next).not.toHaveBeenCalledWith({ name: 'NotFound' });
     });
   });
 

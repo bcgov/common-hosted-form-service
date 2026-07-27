@@ -37,6 +37,9 @@ const endDateRules = ref([
 const exportFormat = ref('json');
 const formFieldsSearchFilter = ref('');
 const formVersions = ref([]);
+// Schema-free version metadata ({ id, version, published }) from the form fields
+// endpoint, so this works for reviewers who can't read versions via the form.
+const formVersionList = ref([]);
 // This has the form fields in the table
 // Table selection does not work if we use a computed value
 const items = ref([]);
@@ -69,10 +72,8 @@ const FILENAME = computed(
 );
 const FORM_UNPUBLISHED = computed(
   () =>
-    form.value &&
-    form.value.versions &&
-    form.value.versions.length > 0 &&
-    form.value.versions.every((version) => !version.published)
+    formVersionList.value.length > 0 &&
+    formVersionList.value.every((version) => !version.published)
 );
 const headers = computed(() => [
   {
@@ -117,10 +118,14 @@ watch(startDate, () => {
 
 onMounted(async () => {
   await formStore.fetchForm(properties.formId);
+  const formFieldData = await formStore.fetchSubmissionFields(
+    properties.formId
+  );
+  formVersionList.value = formFieldData?.versions ?? [];
 
   // The formVersions don't need to be updated, but the form fields should be..
-  if (form.value && Array.isArray(form.value.versions)) {
-    let versions = form.value.versions;
+  if (Array.isArray(formVersionList.value)) {
+    let versions = formVersionList.value;
     if (FORM_UNPUBLISHED.value) {
       versions.sort((a, b) =>
         a.version < b.version ? -1 : a.version > b.version ? 1 : 0

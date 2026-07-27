@@ -94,12 +94,15 @@
         "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
+      },
+      "cdogsV3": {
+        "endpoint": "https://chefs-cdogs.apps.silver.devops.gov.bc.ca"
       }
     }
   },
   "cstar": {
     "tenantFeatureEnabled": true,
-    "endpoint": "https://cstar-dev.apps.gold.devops.gov.bc.ca/api/v1/",
+    "endpoint": "https://dev.connect.digital.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
     "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
     "listGroupsForTenant": "tenants/{tenantId}/groups",

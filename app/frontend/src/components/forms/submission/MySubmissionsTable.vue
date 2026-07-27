@@ -198,12 +198,7 @@ const USER_PREFERENCES = computed(() => {
 
 onBeforeMount(async () => {
   await formStore.fetchForm(properties.formId);
-  if (form.value.versions?.length > 0) {
-    await formStore.fetchFormFields({
-      formId: properties.formId,
-      formVersionId: form.value.versions[0].id,
-    });
-  }
+  await formStore.fetchSubmissionFields(properties.formId);
   await populateSubmissionsTable();
 });
 

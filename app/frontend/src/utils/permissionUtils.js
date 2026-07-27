@@ -1,5 +1,6 @@
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useIdpStore } from '~/store/identityProviders';
 import {
@@ -112,15 +113,29 @@ export async function preFlightAuth(options, next) {
       : [];
   }
 
+  // CCP-4720: mirror the form's privacy flags into the store so Success.vue
+  // can decide what to render. Without this, genInitialForm defaults leak
+  // through (e.g. enableSubmitterEmailReceipt: true) and the static block
+  // shows widgets the designer turned off.
+  function applyFormOptions(form) {
+    const store = useFormStore().form;
+    store.enableSubmissionUrlSharing = form.enableSubmissionUrlSharing;
+    store.showSubmissionConfirmation = form.showSubmissionConfirmation;
+    store.enableSubmitterEmailReceipt = form.enableSubmitterEmailReceipt;
+    store.hideSubmissionContentOnSuccess = form.hideSubmissionContentOnSuccess;
+  }
+
   async function fetchIdpHints() {
     if (options.formId) {
       const { data } = await formService.readFormOptions(options.formId);
+      applyFormOptions(data);
       return getValidIdpHints(data.idpHints);
     }
     if (options.submissionId) {
       const { data } = await formService.getSubmissionOptions(
         options.submissionId
       );
+      applyFormOptions(data.form);
       return getValidIdpHints(data.form.idpHints);
     }
     throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));

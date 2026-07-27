@@ -1,10 +1,11 @@
 const { validate } = require('uuid');
 
-const emailService = require('../email/emailService');
+const docGenService = require('../../components/docGenService');
 const exportService = require('./exportService');
 const service = require('./service');
 const fileService = require('../file/service');
 const log = require('../../components/log')(module.filename);
+const submissionTokenService = require('../../components/submissionTokenService');
 
 module.exports = {
   export: async (req, res, next) => {
@@ -154,6 +155,17 @@ module.exports = {
       next(error);
     }
   },
+  readFormFields: async (req, res, next) => {
+    try {
+      const response = await service.readFormFields(req.params.formId);
+      res.status(200).json({
+        ...response,
+        fields: response.fields.filter((f) => f !== 'submit'),
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   publishVersion: async (req, res, next) => {
     try {
       const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.currentUser, req.query);
@@ -173,16 +185,22 @@ module.exports = {
   createSubmission: async (req, res, next) => {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
-      if (!req.body.draft) {
-        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch((error) => {
-          log.error('Failed to send submission received email', { error, submissionId: response.id, userId: req.currentUser.id });
-        });
-      }
+      // Submission-received email and submission-package job enqueue are handled
+      // inside service.createSubmission (post-commit, best-effort).
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
       fileService.moveSubmissionFiles(response.id, req.currentUser).catch((error) => {
         log.error('Failed to move submission files', { error, submissionId: response.id, userId: req.currentUser.id });
       });
-      res.status(201).json(response);
+
+      let accessToken;
+      if (req.currentUser.public && !req.body.draft) {
+        const form = await service.readForm(req.params.formId);
+        if (form.enableSubmissionUrlSharing === false && form.identityProviders.some((p) => p.code === 'public')) {
+          accessToken = submissionTokenService.mint(response.id);
+        }
+      }
+
+      res.status(201).json({ ...response, ...(accessToken && { _accessToken: accessToken }) });
     } catch (error) {
       next(error);
     }
@@ -357,6 +375,41 @@ module.exports = {
     try {
       const response = await service.createOrUpdateEmailTemplate(req.params.formId, req.body, req.currentUser);
       res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Takes an uploaded document template and an ad-hoc (draft) submission object and
+   * renders the template into a document. Used for previewing/printing before a
+   * submission is saved, so there is no submission id — the form id comes from the
+   * route. Gating and metrics are handled by docGenService.
+   *
+   * @param {Object} req the Express object representing the HTTP request.
+   * @param {Object} res the Express object representing the HTTP response.
+   * @param {Object} next the Express chaining function.
+   */
+  draftTemplateUploadAndRender: async (req, res, next) => {
+    try {
+      const templateBody = { ...req.body.template, data: req.body.submission.data };
+      const { data, headers, status } = await docGenService.templateUploadAndRender({
+        formId: req.params.formId,
+        tenantId: req.currentUser?.tenantId,
+        templateBody,
+        currentUser: req.currentUser,
+      });
+
+      const contentDisposition = headers['content-disposition'];
+
+      res
+        .status(status)
+        .set({
+          'Content-Disposition': contentDisposition || 'attachment',
+          'Content-Type': headers['content-type'],
+          'X-Content-Type-Options': 'nosniff',
+        })
+        .send(data);
     } catch (error) {
       next(error);
     }

@@ -1,6 +1,28 @@
 import { appAxios } from '~/services/interceptors';
 import { ApiRoutes } from '~/utils/constants';
 
+export const SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX = 'submissionAccessToken:';
+
+export function getValidSubmissionAccessToken(submissionId) {
+  if (!submissionId) return null;
+  const token = sessionStorage.getItem(
+    SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId
+  );
+  if (!token) return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const exp = Number(parts[1]);
+  if (!Number.isFinite(exp) || exp <= Date.now()) return null;
+  return token;
+}
+
+export function clearSubmissionAccessToken(submissionId) {
+  if (!submissionId) return;
+  sessionStorage.removeItem(
+    SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId
+  );
+}
+
 export default {
   //
   // Form calls
@@ -216,6 +238,18 @@ export default {
   },
 
   /**
+   * @function readFormFields
+   * Get the schema-free version list plus the field keys for the current
+   * (published, else latest) version. Available to users with submission read,
+   * so reviewers can populate the submissions column picker.
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readFormFields(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/fields`);
+  },
+
+  /**
    * @function publishVersion
    * Publish or unpublish a specific form version. Publishing a verison will unpublish all others.
    * @param {string} formId The form uuid
@@ -262,11 +296,19 @@ export default {
    * @param {Object} requestBody The form data for the submission
    * @returns {Promise} An axios response
    */
-  createSubmission(formId, versionId, requestBody) {
-    return appAxios().post(
+  async createSubmission(formId, versionId, requestBody) {
+    const response = await appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`,
       requestBody
     );
+    if (response.data?._accessToken && response.data?.id) {
+      sessionStorage.setItem(
+        SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + response.data.id,
+        response.data._accessToken
+      );
+      delete response.data._accessToken;
+    }
+    return response;
   },
 
   /**
@@ -522,6 +564,25 @@ export default {
   docGen(submissionId, body) {
     return appAxios().post(
       `${ApiRoutes.SUBMISSION}/${submissionId}/template/render`,
+      body,
+      {
+        responseType: 'arraybuffer', // Needed for binaries unless you want pain
+        timeout: 30000, // Override default timeout as this call could take a while
+      }
+    );
+  },
+
+  /**
+   * @function draftDocGen
+   * Upload a template and ad-hoc (draft) submission data to render a document for a
+   * form, before any submission has been saved.
+   * @param {string} formId The form identifier
+   * @param {Object} body The request body containing the template and submission data
+   * @returns {Promise} An axios response
+   */
+  draftDocGen(formId, body) {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/template/render`,
       body,
       {
         responseType: 'arraybuffer', // Needed for binaries unless you want pain

@@ -25,6 +25,7 @@ describe('AdminPage.vue', () => {
         stubs: {
           AdminFormsTable: true,
           AdminUsersTable: true,
+          AdminFeatureFlags: true,
           Developer: true,
           FormComponentsProactiveHelp: true,
           Metrics: true,
