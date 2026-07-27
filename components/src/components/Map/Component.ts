@@ -54,6 +54,11 @@ export default class Component extends (FieldComponent as any) {
 
   constructor(component, options, data) {
     super(component, options, data);
+
+    const mapOptions = this.options?.componentOptions?.map;
+    this.allowExistingFeatureChanges =
+      mapOptions?.allowExistingFeatureChanges === true;
+
     this.componentID = super.elementInfo().component.id;
   }
 
@@ -108,7 +113,6 @@ export default class Component extends (FieldComponent as any) {
 
   async loadMap() {
     this.mapContainer = document.getElementById(`map-${this.componentID}`);
-
     if (!this.mapContainer) {
       if (this.mapInitializationAttempts++ < this.maxInitializationAttempts) {
         setTimeout(() => this.loadMap(), 200);
@@ -181,6 +185,7 @@ export default class Component extends (FieldComponent as any) {
       ),
       availableBaseLayersCustom,
       recenterButton, // Pass recenter button setting to MapService
+      allowExistingFeatureChanges: this.allowExistingFeatureChanges,
     });
 
     // Now explicitly call async initialize outside constructor
