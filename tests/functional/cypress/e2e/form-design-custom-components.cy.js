@@ -61,8 +61,9 @@ describe("Form Designer", () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
-    
-    
+    // Update Form settings for offline forms
+    cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
+    cy.get('[data-test="enableOfflineSubmissionCheckbox)').click();
     //codogs file upload
     cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     let fileUploadInputField = cy.get('input[type=file]');
@@ -117,6 +118,10 @@ describe("Form Designer", () => {
     cy.get('[data-test="continue-btn-continue"]').click({ force: true });
     cy.wait(1000);
     cy.get('.selected-user-view > :nth-child(1)').contains('CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
+    cy.get('[data-test="onlineBadge"]').should('be.visible');
+    //cy.get('[data-test="offlineBadge"]').should('be.visible');
+    cy.get('.v-alert__content').contains('Submission created successfully').should('be.visible');
+    
     //Direct Print Verification
     cy.wait(2000);
     cy.get('.mdi-printer').should('be.visible').click();
