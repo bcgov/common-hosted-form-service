@@ -39,7 +39,17 @@ describe("Form Designer", () => {
       .trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
       cy.wait(1000);
-  });
+    });
+    cy.get('button').contains('Basic Fields').click();
+    cy.get('div.formio-builder-form').then($el => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Text Field')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('.btn-success').click();
+    });
   });
   it('Verify Direct Print Configuration', () => {
     let savedButton = cy.get('[data-cy=saveButton]');
@@ -59,8 +69,61 @@ describe("Form Designer", () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
-    
-    
+    //Go to admin panel for feature settings
+    cy.get('[data-cy="admin"]').click();
+    cy.get('[value="features"] > .v-btn__content').click();
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(1)').contains('Document Generation V2').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(2)').contains('Existing document generation. Available to all forms.').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(1)').contains('Document Generation V3').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(2)').contains('Next-generation document generation (Carbone Enterprise).').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(1)').contains('Offline Forms').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(2)').contains('Allow forms to be completed and submitted while offline, syncing when a connection returns.').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(1)').contains('Submit to Email').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(2)').contains('Allow form submissions to be delivered to a configured email address.').should('be.visible');
+    //Check all features enabled to every forms(Universal)
+    cy.get('input[type="checkbox"]').should('have.length', 5).each(($switch, index) => {
+    if (index !== 0) {
+      cy.wrap($switch).should('be.checked');
+    }
+    });
+    //Verify every feature is enabled on env
+    //cy.contains('.v-chip__content').should('have.length', 3);
+    //Manage button exist for all features
+    cy.get('[data-test="featureFlags-manage-documentGenerationV2"]').should('be.visible');
+    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').should('be.visible');
+    cy.get('[data-test="featureFlags-manage-offlineForms"]').should('be.visible');
+    cy.get('[data-test="featureFlags-manage-submitToEmail"]').should('be.visible');
+    //Set up a form to use DocumentGenerationV3
+    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
+    cy.get('[data-test="featureFlags-form-input"] input').type(arrayValues[0]);
+    cy.get('[data-test="featureFlags-form-add"]').click();
+    cy.get('code').contains(arrayValues[0]).should('be.visible');
+    //Save the formid as allowlist(not universal) for DocumentGenerationV3
+    cy.get('input[type="checkbox"]').eq(1).check({ force: true });
+    cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
+    //Remove added allowed list and make it universal back
+    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
+    cy.get('.mdi-delete').click({ multiple: true });
+    cy.contains(arrayValues[0]).should('not.exist');
+    //Revert back to Universal for DocumentGenerationV3
+    cy.get('input[type="checkbox"]').eq(0).check({force: true});
+    //Save the changes
+    cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
+    //Check all features enabled back to every forms(Universal)
+    cy.get('input[type="checkbox"]').should('have.length', 6).each(($switch, index) => {
+    if (index !== 0) {
+      cy.wrap($switch).should('be.checked');
+    }
+    });
+    //Configure submit to Email export
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.get('[data-test="canAllowEditFormSettings"]').click();
+    cy.get('[data-test="submission-package-email-test"]').should('be.visible').click();
+    cy.get('[data-test="submission-package-email-test"]').parent().find('input[type="text"]').eq(1).type('test@example.com').type('{enter}');
+    let SubmitToEmail = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    SubmitToEmail.attachFile('test.docx');
+    cy.get('[data-test="canEditForm"]').click({ force: true });
     //codogs file upload
     cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     let fileUploadInputField = cy.get('input[type=file]');
@@ -92,7 +155,6 @@ describe("Form Designer", () => {
     //Submit the form
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.wait(1000);
-    });
     cy.get('input[placeholder="Search by first name"]').type("CHEFS");
     cy.get('input[placeholder="Search by email"]').type("chefs.testing@gov.bc.ca");
     //Search button
@@ -120,6 +182,8 @@ describe("Form Designer", () => {
     cy.get('.mdi-printer').should('be.visible').click();
     cy.wait(1000);
     cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
+    });
+
    });
 
 });
