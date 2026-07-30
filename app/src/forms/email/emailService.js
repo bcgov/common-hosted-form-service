@@ -231,7 +231,7 @@ const service = {
    * @param {string} contexts
    * @returns The result of the email merge operation
    */
-  _sendEmailTemplate: (configData, contexts) => {
+  _sendEmailTemplate: async (configData, contexts) => {
     try {
       const mergedHtml = service._mergeEmailTemplate(configData.bodyTemplate);
       const data = {
@@ -247,7 +247,7 @@ const service = {
         // strategy). Omitted entirely when not provided.
         ...(configData.attachments && { attachments: configData.attachments }),
       };
-      return chesService.merge(data);
+      return await chesService.merge(data);
     } catch (err) {
       log.error(err.message, { function: '_sendEmailTemplate' });
       throw err;

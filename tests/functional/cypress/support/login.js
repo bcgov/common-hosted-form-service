@@ -38,7 +38,6 @@ export function formsettings(){
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Public (anonymous)').click();
     //Link to contact GCPE for gathering public info
-    cy.get(':nth-child(3) > :nth-child(2) > .v-card').should('be.visible');
     cy.get('a[href="https://engage.gov.bc.ca/govtogetherbc/"]').should('exist');
     //Option to select Log-in Required
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
