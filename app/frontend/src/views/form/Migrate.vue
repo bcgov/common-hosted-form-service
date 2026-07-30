@@ -474,19 +474,19 @@ defineExpose({
                 <v-table density="compact">
                   <thead>
                     <tr>
-                      <th class="col-name" :lang="locale">
+                      <th scope="col" class="col-name" :lang="locale">
                         {{ $t('trans.formMigration.colName') }}
                       </th>
-                      <th :lang="locale">
+                      <th scope="col" :lang="locale">
                         {{ $t('trans.formMigration.colRoles') }}
                       </th>
-                      <th :lang="locale">
+                      <th scope="col" :lang="locale">
                         {{ $t('trans.formMigration.colIdp') }}
                       </th>
-                      <th v-if="selectedTenantId" :lang="locale">
+                      <th v-if="selectedTenantId" scope="col" :lang="locale">
                         {{ $t('trans.formMigration.colTenantGroups') }}
                       </th>
-                      <th :lang="locale">
+                      <th scope="col" :lang="locale">
                         {{ $t('trans.formMigration.colStatus') }}
                       </th>
                     </tr>
