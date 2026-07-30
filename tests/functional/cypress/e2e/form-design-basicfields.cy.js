@@ -139,7 +139,7 @@ describe('Form Designer', () => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('[data-type="simpleemail"]')
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -40, { force: true })
+        .trigger('mousemove', coords.x, -30, { force: true })
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
