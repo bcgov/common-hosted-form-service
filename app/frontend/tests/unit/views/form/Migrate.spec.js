@@ -158,16 +158,63 @@ describe('Migrate.vue', () => {
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
       expect(wrapper.vm.canSubmit).toBe(false);
     });
 
-    it('is true when a tenant is selected and confirmed', async () => {
+    it('is false when confirmed but no assigned group has the Form Admin role', async () => {
       const wrapper = mountComponent();
       await flushPromises();
 
       wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
       wrapper.vm.confirmed = true;
+      wrapper.vm.assignedGroups = [{ id: 'g1', name: 'Group 1', isFormAdmin: false }];
+
+      expect(wrapper.vm.canSubmit).toBe(false);
+    });
+
+    it('is true when a tenant is selected, confirmed, and a Form Admin group is assigned', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.confirmed = true;
+      wrapper.vm.assignedGroups = [{ id: 'g1', name: 'Group 1', isFormAdmin: true }];
+
       expect(wrapper.vm.canSubmit).toBe(true);
+    });
+  });
+
+  describe('computed: showNoGroupsWarning', () => {
+    it('is false when no tenant is selected', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.showNoGroupsWarning).toBe(false);
+    });
+
+    it('is true when a tenant is selected and no assigned group has the Form Admin role', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.assignedGroups).toEqual([]);
+      expect(wrapper.vm.showNoGroupsWarning).toBe(true);
+    });
+
+    it('is false once a Form Admin group is assigned', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.assignedGroups = [{ id: 'g1', name: 'Group 1', isFormAdmin: true }];
+
+      expect(wrapper.vm.showNoGroupsWarning).toBe(false);
     });
   });
 

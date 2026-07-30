@@ -58,7 +58,23 @@ const availableGroups = computed(() => {
   return allTenantGroups.value.filter((g) => !assignedIds.has(g.id));
 });
 
-const canSubmit = computed(() => !!selectedTenantId.value && confirmed.value);
+const hasFormAdminGroupAssigned = computed(() =>
+  assignedGroups.value.some((g) => g.isFormAdmin)
+);
+
+const showNoGroupsWarning = computed(
+  () =>
+    !!selectedTenantId.value &&
+    !loadingGroups.value &&
+    !hasFormAdminGroupAssigned.value
+);
+
+const canSubmit = computed(
+  () =>
+    !!selectedTenantId.value &&
+    confirmed.value &&
+    hasFormAdminGroupAssigned.value
+);
 
 const teamRows = computed(() =>
   [...impact.value.team].sort((a, b) => {
@@ -232,6 +248,9 @@ defineExpose({
   impact,
   selectedTenantId,
   selectedTenant,
+  assignedGroups,
+  hasFormAdminGroupAssigned,
+  showNoGroupsWarning,
   canSubmit,
   hasBceidUsers,
   bceidCount,
@@ -373,6 +392,17 @@ defineExpose({
                 :loading="loadingGroups"
                 @update:assigned="assignedGroups = $event"
               />
+              <v-alert
+                v-if="showNoGroupsWarning"
+                type="warning"
+                variant="tonal"
+                density="compact"
+                class="mt-3"
+                icon="mdi:mdi-alert-outline"
+                :lang="locale"
+              >
+                {{ $t('trans.formMigration.noGroupsAssignedWarning') }}
+              </v-alert>
             </div>
           </v-expand-transition>
 
@@ -730,7 +760,7 @@ defineExpose({
             </v-expansion-panel>
           </v-expansion-panels>
 
-          <!-- ── Confirm & Transfer ──────────────────────────────── -->
+          <!-- ── Confirm & Migrate ──────────────────────────────── -->
           <v-divider class="mb-4" />
           <v-card variant="outlined" class="mb-2">
             <v-card-text class="pt-3 pb-4">
@@ -803,7 +833,7 @@ defineExpose({
   min-width: 160px;
 }
 
-/* Row tinting by transfer status */
+/* Row tinting by migration status */
 tr.row-retained {
   background: rgb(var(--v-theme-success), 0.05);
 }
