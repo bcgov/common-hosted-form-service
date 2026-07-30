@@ -45,7 +45,7 @@ const canManageGroups = computed(() => {
   return roles.includes(TenantRoles.FORM_ADMIN);
 });
 
-// Show Transfer to Tenant for personal forms when tenant feature is enabled and user is OWNER
+// Show Migrate to Tenant for personal forms when tenant feature is enabled and user is OWNER
 const canMigrateForm = computed(
   () =>
     tenantStore.isTenantFeatureEnabled &&

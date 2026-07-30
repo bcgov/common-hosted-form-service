@@ -218,6 +218,86 @@ describe('Migrate.vue', () => {
     });
   });
 
+  describe('Form Admin group check — via real GroupPicker UI', () => {
+    const GROUPS_WITH_FORM_ADMIN = {
+      data: {
+        groups: [
+          { id: 'g1', name: 'Admins', roles: ['form_admin'], isFormAdmin: true, isUserMember: true },
+          { id: 'g2', name: 'Reviewers', roles: ['reviewer'], isFormAdmin: false, isUserMember: true },
+        ],
+        preSelectedGroupIds: ['g1'],
+        teamMemberGroups: [],
+      },
+    };
+
+    function arrowButtons(wrapper) {
+      return wrapper.find('.arrows-col').findAll('button');
+    }
+
+    it('pre-selects the Form Admin group on initial load and allows submission', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(GROUPS_WITH_FORM_ADMIN);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
+      expect(wrapper.vm.hasFormAdminGroupAssigned).toBe(true);
+      expect(wrapper.vm.showNoGroupsWarning).toBe(false);
+    });
+
+    it('shows the warning and disables submit after removing the Form Admin group', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(GROUPS_WITH_FORM_ADMIN);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.confirmed = true;
+
+      // Select the assigned Form Admin group row, then click "remove selected".
+      await wrapper.find('.form-admin-row input[type="checkbox"]').trigger('click');
+      await flushPromises();
+      await arrowButtons(wrapper)[2].trigger('click'); // removeSelected
+      await flushPromises();
+
+      expect(wrapper.vm.assignedGroups).toEqual([]);
+      expect(wrapper.vm.hasFormAdminGroupAssigned).toBe(false);
+      expect(wrapper.vm.showNoGroupsWarning).toBe(true);
+      expect(wrapper.vm.canSubmit).toBe(false);
+    });
+
+    it('clears the warning and re-enables submit after re-adding the Form Admin group', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(GROUPS_WITH_FORM_ADMIN);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.confirmed = true;
+
+      // Remove it first.
+      await wrapper.find('.form-admin-row input[type="checkbox"]').trigger('click');
+      await flushPromises();
+      await arrowButtons(wrapper)[2].trigger('click'); // removeSelected
+      await flushPromises();
+      expect(wrapper.vm.hasFormAdminGroupAssigned).toBe(false);
+
+      // Now it's in the "Available" panel — select and add it back.
+      await wrapper.find('.form-admin-row input[type="checkbox"]').trigger('click');
+      await flushPromises();
+      await arrowButtons(wrapper)[0].trigger('click'); // addSelected
+      await flushPromises();
+
+      expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
+      expect(wrapper.vm.hasFormAdminGroupAssigned).toBe(true);
+      expect(wrapper.vm.showNoGroupsWarning).toBe(false);
+      expect(wrapper.vm.canSubmit).toBe(true);
+    });
+  });
+
   describe('computed: selectedTenant', () => {
     it('returns the matching tenant object from eligibleTenants', async () => {
       const wrapper = mountComponent();

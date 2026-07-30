@@ -65,7 +65,7 @@
   },
   "formMigration": {
     "pageTitle": "Migrate Form to Tenant",
-    "description": "Migrate this personal form to a tenant and assign it to tenant groups.",
+    "description": "Migrate this form to a tenant and assign it to tenant groups.",
     "selectTenant": "Select Tenant",
     "tenantPlaceholder": "Choose a tenant",
     "impactTitle": "Migration Impact",

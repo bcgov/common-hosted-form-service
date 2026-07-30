@@ -1531,6 +1531,75 @@ describe('TenantService', () => {
     });
   });
 
+  describe('getMigrationTenantGroups', () => {
+    const tenantId = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
+    const formId = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
+    const req = {
+      currentUser: { idpUserId: 'user-sso-id', usernameIdp: 'TEST@idir' },
+      headers: { authorization: 'Bearer token' },
+    };
+
+    beforeEach(() => {
+      FormTenant.knex = jest.fn().mockReturnValue({
+        raw: jest.fn().mockResolvedValue({ rows: [] }),
+      });
+    });
+
+    it('marks a group as isFormAdmin from the user-scoped listing even when the tenant-wide listing has no role details', async () => {
+      // Tenant-wide "list groups" endpoint returns groups with no sharedServiceRoles,
+      // matching CSTAR's real response shape for that endpoint.
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([
+        { id: 'group-admin-1', name: 'Form Admins' },
+        { id: 'group-2', name: 'Reviewers' },
+      ]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-admin-1', name: 'Form Admins', roles: ['form_admin'] }]);
+
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+      const adminGroup = result.groups.find((g) => g.id === 'group-admin-1');
+      const otherGroup = result.groups.find((g) => g.id === 'group-2');
+      expect(adminGroup.isFormAdmin).toBe(true);
+      expect(otherGroup.isFormAdmin).toBe(false);
+    });
+
+    it('does not mark a group as isFormAdmin when the user has no form_admin role there', async () => {
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([{ id: 'group-1', name: 'Reviewers' }]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Reviewers', roles: ['form_viewer'] }]);
+
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+      expect(result.groups.find((g) => g.id === 'group-1').isFormAdmin).toBe(false);
+    });
+
+    it("preSelectedGroupIds contains only the ids of the user's form_admin groups", async () => {
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([
+        { id: 'group-admin-1', name: 'Form Admins' },
+        { id: 'group-viewer-1', name: 'Viewers' },
+      ]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
+        { id: 'group-admin-1', name: 'Form Admins', roles: ['form_admin'] },
+        { id: 'group-viewer-1', name: 'Viewers', roles: ['form_viewer'] },
+      ]);
+
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+      expect(result.preSelectedGroupIds).toEqual(['group-admin-1']);
+    });
+
+    it('isUserMember reflects the user-scoped group listing', async () => {
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([
+        { id: 'group-1', name: 'Mine' },
+        { id: 'group-2', name: 'Not mine' },
+      ]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Mine', roles: [] }]);
+
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+      expect(result.groups.find((g) => g.id === 'group-1').isUserMember).toBe(true);
+      expect(result.groups.find((g) => g.id === 'group-2').isUserMember).toBe(false);
+    });
+  });
+
   describe('migrateFormToTenant', () => {
     const tenantId = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
     const formId = 'dddddddd-dddd-dddd-dddd-dddddddddddd';

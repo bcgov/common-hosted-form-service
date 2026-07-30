@@ -441,13 +441,16 @@ class TenantService {
     ]);
 
     const userGroupIds = new Set(userGroups.map((g) => g.id));
-    const preSelectedGroupIds = userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN)).map((g) => g.id);
+    // Tenant-wide group listing may not include role details, so form_admin
+    // status must be derived from the user-scoped group listing instead.
+    const userFormAdminGroupIds = new Set(userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN)).map((g) => g.id));
+    const preSelectedGroupIds = [...userFormAdminGroupIds];
 
     const groups = allTenantGroups.map((g) => ({
       id: g.id,
       name: g.name,
       roles: g.roles,
-      isFormAdmin: g.roles.includes(TenantRoles.FORM_ADMIN),
+      isFormAdmin: userFormAdminGroupIds.has(g.id),
       isUserMember: userGroupIds.has(g.id),
     }));
 
