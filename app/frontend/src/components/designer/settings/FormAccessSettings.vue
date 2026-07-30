@@ -167,7 +167,9 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
       Additional details regarding this change will be available in a Service
       Bulletin in late July. For Identity Service onboarding questions, please
       connect with
-      <a href="mailto:DT.Consulting@gov.bc.ca">DT.Consulting@gov.bc.ca</a>
+      <a style="color: lightblue" href="mailto:DT.Consulting@gov.bc.ca"
+        >DT.Consulting@gov.bc.ca</a
+      >
     </v-alert>
     <v-autocomplete
       ref="userTypeRef"
