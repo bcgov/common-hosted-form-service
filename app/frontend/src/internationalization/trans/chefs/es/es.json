@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "Habilitar notificación de recordatorio automático",
     "autoReminderNotificatnToolTip": "Envíe correos electrónicos de recordatorio con el enlace del formulario durante el período de envío.",
     "selectLoginType": "Por favor, seleccione al menos un proveedor de identidad.",
+    "idpDeprecatedWarning": "Este proveedor de identidad está obsoleto y ya no está disponible para nuevas selecciones. Si desactiva esta opción de inicio de sesión, no podrá volver a activarla.",
+    "idpDeprecatedDialog": "Este proveedor de identidad ya no está disponible para nuevas selecciones. Si lo elimina, es posible que no pueda volver a agregarlo.",
     "formDescriptnMaxChars": "La descripción del formulario debe tener 255 caracteres o menos",
     "formTitlemaxChars": "El título del formulario debe tener 255 caracteres o menos",
     "formTitleReq": "Se requiere el título del formulario",
