@@ -64,7 +64,16 @@ describe('Form Designer', () => {
     cy.get('[data-test="canSubmitterRevisionFormCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
     cy.get('[data-test="canUploadDraftCheckbox"]').find('input[type="checkbox"]').should("not.be.enabled");
     cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').find('input[type="checkbox"]').should('be.checked');
-    cy.get('[data-test="enableTeamMemberDraftShare"]').find('input[type="checkbox"]').should("not.be.enabled");    
+    cy.get('[data-test="enableTeamMemberDraftShare"]').find('input[type="checkbox"]').should("not.be.enabled");  
+    // Disable disable submission URL
+    cy.get('[data-test="enableSubmissionUrlSharingCheckbox"] input[type="checkbox"]').click();
+    //Enable confirmation ID for public form
+    cy.get('[data-test="canAllowSubmissionConfirmationCheckbox"] input[type="checkbox"]').click();
+    //Submitter email receipent option disabled for public form if URL sharing is disabled
+    cy.get('[data-test="enableSubmitterEmailReceiptCheckbox"] input[type="checkbox"]').should('not.be.enabled');
+    //Enable submission content on success page for public form
+    cy.get('[data-test="hideSubmissionContentOnSuccessCheckbox"] input[type="checkbox"]').click();
+    cy.wait(1000);
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
     cy.get('[data-test="canManageTeammembers"]').click();
@@ -101,26 +110,18 @@ describe('Form Designer', () => {
     //cy.get('[data-test="continue-btn-continue"]').click({force: true});
     cy.wait(2000);
     cy.get('label').contains('Text Field').should('be.visible');
-    cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
+    cy.wait(1000);
+    //Validate submission details are visible on success page for public form
+    cy.get('input[name="data[simpletextfield]"]').should( "have.value",  "Alex" );
+    //Validate confirmation ID is visible on success page for public form
+    cy.contains('Confirmation ID:').should('be.visible');
+    // Receipent email option validation for public form submission
+    cy.get('span').contains('Email a receipt of this submission').should('not.exist');
     //Recall submission not avaiable for public forms
     cy.get('button[title="Recall Submission"]').should('not.exist');
-    //Email notification
-    cy.get('button[title="Email a receipt of this submission"]').should('be.visible');
-    cy.get('button[title="Email a receipt of this submission"]').click();
-    cy.get('[data-test="text-form-to"]').find('input[type="text"]').type('testing@gov.bc.ca');
-    cy.wait(1000);
-    cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-    cy.contains('Normal').should('exist'); 
-    cy.contains('High').should('exist');
-    cy.contains('Low').should('exist');
-    cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-    cy.get('span').contains('SEND').should('be.visible');
-    cy.get('[data-test="continue-btn-cancel"]').click();
-    cy.get('button[title="Email a receipt of this submission"]').click();
-    cy.get('span').contains('SEND').click();
-    cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
+    
   });
   it('Verify public form submission', () => {
     cy.viewport(1000, 1100);

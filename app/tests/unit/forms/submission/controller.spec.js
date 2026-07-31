@@ -6,7 +6,9 @@ const documentTemplateService = require('../../../../src/forms/form/documentTemp
 const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
 const userService = require('../../../../src/forms/user/service');
-const cdogsService = require('../../../../src/components/cdogsService');
+const docGenService = require('../../../../src/components/docGenService');
+
+const TEST_FORM_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
 
 describe('addStatus', () => {
   const req = {
@@ -158,6 +160,9 @@ describe('template rendering', () => {
     version: {
       version: 1,
     },
+    form: {
+      id: TEST_FORM_ID,
+    },
   };
 
   const validCdogsRequest = {
@@ -201,82 +206,6 @@ describe('template rendering', () => {
     status: 200,
   };
 
-  describe('draftTemplateUploadAndRender', () => {
-    // A draft submission won't have an id or confirmationId.
-    const validDraftSubmission = structuredClone(validSubmission);
-    delete validDraftSubmission.submission.confirmationId;
-    delete validDraftSubmission.submission.id;
-
-    // A draft request won't have the custom "chefs" data.
-    const validDraftCdogsRequest = structuredClone(validCdogsRequest);
-    delete validDraftCdogsRequest.data.chefs;
-
-    const validRequest = {
-      body: {
-        template: {
-          ...validCdogsTemplate,
-        },
-        ...validDraftSubmission.submission,
-      },
-    };
-
-    describe('error response when', () => {
-      test('request is missing body', async () => {
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
-        const req = getMockReq();
-        const { res, next } = getMockRes();
-
-        await controller.draftTemplateUploadAndRender(req, res, next);
-
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(0);
-        expect(res.send).toBeCalledTimes(0);
-        expect(res.set).toBeCalledTimes(0);
-        expect(res.status).toBeCalledTimes(0);
-        expect(next).toBeCalledWith(expect.any(TypeError));
-      });
-    });
-
-    describe('200 response when', () => {
-      test('request is valid', async () => {
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
-        const req = getMockReq(validRequest);
-        const { res, next } = getMockRes();
-
-        await controller.draftTemplateUploadAndRender(req, res, next);
-
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
-        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validDraftCdogsRequest);
-        expect(res.send).toBeCalledTimes(1);
-        expect(res.set).toBeCalledWith(
-          expect.objectContaining({
-            'Content-Disposition': 'attachment; filename=template_hello_world.pdf',
-          })
-        );
-        expect(res.status).toBeCalledWith(200);
-      });
-
-      test('cdogs response has no content disposition', async () => {
-        const cdogsResponse = structuredClone(mockCdogsResponse);
-        delete cdogsResponse.headers['content-disposition'];
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
-        const req = getMockReq(validRequest);
-        const { res, next } = getMockRes();
-
-        await controller.draftTemplateUploadAndRender(req, res, next);
-
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
-        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validDraftCdogsRequest);
-        expect(res.send).toBeCalledTimes(1);
-        expect(res.set).toBeCalledWith(
-          expect.objectContaining({
-            'Content-Disposition': 'attachment',
-          })
-        );
-        expect(res.status).toBeCalledWith(200);
-      });
-    });
-  });
-
   describe('templateRender', () => {
     const validRequest = {
       body: {
@@ -291,13 +220,13 @@ describe('template rendering', () => {
       test('unsuccessful service call', async () => {
         const error = new Error();
         service.read = jest.fn().mockRejectedValue(error);
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        docGenService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
 
         await controller.templateRender(req, res, next);
 
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(0);
+        expect(docGenService.templateUploadAndRender).toBeCalledTimes(0);
         expect(res.send).toBeCalledTimes(0);
         expect(res.set).toBeCalledTimes(0);
         expect(res.status).toBeCalledTimes(0);
@@ -309,13 +238,13 @@ describe('template rendering', () => {
       test('request is valid', async () => {
         service.read = jest.fn().mockReturnValue(validSubmission);
         documentTemplateService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        docGenService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
         await controller.templateRender(req, res, next);
 
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
-        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(docGenService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(docGenService.templateUploadAndRender).toBeCalledWith(expect.objectContaining({ templateBody: validCdogsRequest, formId: TEST_FORM_ID }));
         expect(res.send).toBeCalledTimes(1);
         expect(res.set).toBeCalledWith(
           expect.objectContaining({
@@ -330,14 +259,14 @@ describe('template rendering', () => {
         documentTemplateService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
         const cdogsResponse = structuredClone(mockCdogsResponse);
         delete cdogsResponse.headers['content-disposition'];
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
+        docGenService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
 
         await controller.templateRender(req, res, next);
 
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
-        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(docGenService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(docGenService.templateUploadAndRender).toBeCalledWith(expect.objectContaining({ templateBody: validCdogsRequest, formId: TEST_FORM_ID }));
         expect(res.send).toBeCalledTimes(1);
         expect(res.set).toBeCalledWith(
           expect.objectContaining({
@@ -363,13 +292,13 @@ describe('template rendering', () => {
       test('unsuccessful service call', async () => {
         const error = new Error();
         service.read = jest.fn().mockRejectedValue(error);
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        docGenService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
 
         await controller.templateUploadAndRender(req, res, next);
 
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(0);
+        expect(docGenService.templateUploadAndRender).toBeCalledTimes(0);
         expect(res.send).toBeCalledTimes(0);
         expect(res.set).toBeCalledTimes(0);
         expect(res.status).toBeCalledTimes(0);
@@ -380,14 +309,14 @@ describe('template rendering', () => {
     describe('200 response when', () => {
       test('request is valid', async () => {
         service.read = jest.fn().mockReturnValue(validSubmission);
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        docGenService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
 
         await controller.templateUploadAndRender(req, res, next);
 
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
-        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(docGenService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(docGenService.templateUploadAndRender).toBeCalledWith(expect.objectContaining({ templateBody: validCdogsRequest, formId: TEST_FORM_ID }));
         expect(res.send).toBeCalledTimes(1);
         expect(res.set).toBeCalledWith(
           expect.objectContaining({
@@ -401,14 +330,14 @@ describe('template rendering', () => {
         service.read = jest.fn().mockReturnValue(validSubmission);
         const cdogsResponse = structuredClone(mockCdogsResponse);
         delete cdogsResponse.headers['content-disposition'];
-        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
+        docGenService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
         const req = getMockReq(validRequest);
         const { res, next } = getMockRes();
 
         await controller.templateUploadAndRender(req, res, next);
 
-        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
-        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(docGenService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(docGenService.templateUploadAndRender).toBeCalledWith(expect.objectContaining({ templateBody: validCdogsRequest, formId: TEST_FORM_ID }));
         expect(res.send).toBeCalledTimes(1);
         expect(res.set).toBeCalledWith(
           expect.objectContaining({

@@ -6,13 +6,13 @@
 export const ApiRoutes = Object.freeze({
   ADMIN: '/admin',
   APIKEY: '/apiKey',
+  FEATURES: '/features',
   FORMS: '/forms',
   RBAC: '/rbac',
   ROLES: '/roles',
   SUBMISSION: '/submissions',
   USERS: '/users',
   FILES: '/files',
-  UTILS: '/utils',
   FILES_API_ACCESS: '/filesApiAccess',
   PROXY: '/proxy',
   EXTERNAL_APIS: '/externalAPIs',
@@ -350,4 +350,8 @@ export const FormDesignerBuilderOptions = Object.freeze({
       idirusers: true,
     },
   },
+});
+
+export const DeprecatedIDPs = Object.freeze({
+  BCEID_BASIC: 'bceid-basic',
 });

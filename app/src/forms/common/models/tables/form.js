@@ -35,6 +35,7 @@ class Form extends Timestamps(Model) {
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
     const FormMetadata = require('./formMetadata');
+    const FormSubmissionPackageSettings = require('./formSubmissionPackageSettings');
     return {
       drafts: {
         relation: Model.HasManyRelation,
@@ -85,6 +86,14 @@ class Form extends Timestamps(Model) {
           to: 'form_metadata.formId',
         },
       },
+      submissionPackageSettings: {
+        relation: Model.HasOneRelation,
+        modelClass: FormSubmissionPackageSettings,
+        join: {
+          from: 'form.id',
+          to: 'form_submission_package_settings.formId',
+        },
+      },
     };
   }
 
@@ -131,8 +140,11 @@ class Form extends Timestamps(Model) {
       'active',
       'enableTeamMemberDraftShare',
       'allowSubmitterToUploadFile',
+      'enableSubmissionUrlSharing',
       'showAssigneeInSubmissionsTable',
       'showSubmissionConfirmation',
+      'enableSubmitterEmailReceipt',
+      'hideSubmissionContentOnSuccess',
       'enableDocumentTemplates',
       'enableStatusUpdates',
       'enableSubmitterRevision',
@@ -162,10 +174,13 @@ class Form extends Timestamps(Model) {
         active: { type: 'boolean' },
         enableTeamMemberDraftShare: { type: 'boolean' },
         allowSubmitterToUploadFile: { type: 'boolean' },
+        enableSubmissionUrlSharing: { type: 'boolean' },
         showAssigneeInSubmissionsTable: { type: 'boolean' },
         labels: { type: ['array', 'null'], items: { type: 'string' } },
         sendSubmissionReceivedEmail: { type: 'boolean' },
         showSubmissionConfirmation: { type: 'boolean' },
+        enableSubmitterEmailReceipt: { type: 'boolean' },
+        hideSubmissionContentOnSuccess: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableDocumentTemplates: { type: 'boolean' },
         enableStatusUpdates: { type: 'boolean' },

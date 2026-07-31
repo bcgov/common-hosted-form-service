@@ -3,6 +3,7 @@ const Problem = require('api-problem');
 const uuid = require('uuid');
 
 const jwtService = require('../../../components/jwtService');
+const submissionTokenService = require('../../../components/submissionTokenService');
 const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
@@ -414,6 +415,16 @@ const hasRoleModifyPermissions = async (req, _res, next) => {
  * @param {string[]} permissions the access the user needs for the submission.
  * @returns nothing
  */
+const isPublicReadRequest = (submissionForm, permissions) => {
+  if (permissions.length !== 1 || !permissions.includes(Permissions.SUBMISSION_READ)) return false;
+  return submissionForm.form.identityProviders.some((p) => p.code === 'public');
+};
+
+const hasValidSubmissionToken = (req, submissionId) => {
+  const presented = req.headers['x-submission-token'];
+  return presented && submissionTokenService.verify(presented, submissionId);
+};
+
 const hasSubmissionPermissions = (permissions) => {
   return async (req, _res, next) => {
     try {
@@ -462,12 +473,15 @@ const hasSubmissionPermissions = (permissions) => {
         });
       }
 
-      // Public (anonymous) forms are publicly viewable.
-      const publicAllowed = submissionForm.form.identityProviders.find((p) => p.code === 'public') !== undefined;
-      if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
-        next();
+      // Public (anonymous) form, SUBMISSION_READ only: publicly viewable when URL sharing is on (default),
+      // otherwise accept a valid X-Submission-Token minted at create time.
+      if (isPublicReadRequest(submissionForm, permissions)) {
+        const sharingOn = submissionForm.form.enableSubmissionUrlSharing !== false;
+        if (sharingOn || hasValidSubmissionToken(req, submissionId)) {
+          next();
 
-        return;
+          return;
+        }
       }
 
       // check against the submission level permissions assigned to the user...

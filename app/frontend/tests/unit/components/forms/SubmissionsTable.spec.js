@@ -59,7 +59,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -109,7 +109,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -161,7 +161,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -206,7 +206,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -251,7 +251,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -290,7 +290,7 @@ describe('SubmissionsTable.vue', () => {
     });
     const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
     fetchFormSpy.mockImplementation(() => Promise.resolve());
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -342,7 +342,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -394,7 +394,7 @@ describe('SubmissionsTable.vue', () => {
       formStore.form = require('../../fixtures/form.json');
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -446,7 +446,7 @@ describe('SubmissionsTable.vue', () => {
       formStore.form = require('../../fixtures/form.json');
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementationOnce(() => {
       formStore.formFields = [];
     });
@@ -567,7 +567,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementationOnce(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementationOnce(() => {
       formStore.formFields = ['firstName'];
     });
@@ -685,7 +685,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementationOnce(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementationOnce(() => {
       formStore.formFields = ['firstName'];
     });
@@ -757,7 +757,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -874,7 +874,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementationOnce(() => {
       formStore.formFields = ['firstName'];
     });
@@ -976,7 +976,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -1079,7 +1079,7 @@ describe('SubmissionsTable.vue', () => {
     fetchFormSpy.mockImplementation(() => {
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -1161,7 +1161,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1209,7 +1209,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1255,7 +1255,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1304,7 +1304,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1350,7 +1350,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1397,7 +1397,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1437,7 +1437,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1477,7 +1477,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1517,7 +1517,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = [];
     });
@@ -1555,7 +1555,7 @@ describe('SubmissionsTable.vue', () => {
       };
       return Promise.resolve();
     });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchSubmissionFields');
     fetchFormFieldsSpy.mockImplementation(() => {
       formStore.formFields = ['firstName'];
     });
@@ -1617,7 +1617,7 @@ describe('SubmissionsTable.vue', () => {
     vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
       Promise.resolve()
     );
-    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+    vi.spyOn(formStore, 'fetchSubmissionFields').mockImplementation(() => {});
 
     const wrapper = shallowMount(SubmissionsTable, {
       props: { formId },
@@ -1710,7 +1710,7 @@ describe('SubmissionsTable.vue', () => {
     vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
       Promise.resolve()
     );
-    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+    vi.spyOn(formStore, 'fetchSubmissionFields').mockImplementation(() => {});
     vi.spyOn(formStore, 'getFormRolesForUser').mockResolvedValue({});
     vi.spyOn(formStore, 'getFormPermissionsForUser').mockResolvedValue({});
 
@@ -1765,7 +1765,7 @@ describe('SubmissionsTable.vue', () => {
     vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
       Promise.resolve()
     );
-    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+    vi.spyOn(formStore, 'fetchSubmissionFields').mockImplementation(() => {});
     vi.spyOn(formStore, 'getFormRolesForUser').mockResolvedValue({});
     vi.spyOn(formStore, 'getFormPermissionsForUser').mockResolvedValue({});
 
@@ -1800,7 +1800,7 @@ describe('SubmissionsTable.vue', () => {
     vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
       Promise.resolve()
     );
-    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+    vi.spyOn(formStore, 'fetchSubmissionFields').mockImplementation(() => {});
     vi.spyOn(formStore, 'getFormRolesForUser').mockResolvedValue({});
     vi.spyOn(formStore, 'getFormPermissionsForUser').mockResolvedValue({});
 
