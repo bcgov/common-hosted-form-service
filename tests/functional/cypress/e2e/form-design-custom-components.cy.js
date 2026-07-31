@@ -83,13 +83,7 @@ describe("Form Designer", () => {
     cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(1)').contains('Submit to Email').should('be.visible');
     cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(2)').contains('Allow form submissions to be delivered to a configured email address.').should('be.visible');
     //Check all features enabled to every forms(Universal)
-    //cy.get('input[type="checkbox"]').should('have.length', 5).each(($switch, index) => {
-    //if (index !== 0) {
-    //  cy.wrap($switch).should('be.checked');
-    //}
-   // });
-    //Verify every feature is enabled on env
-    //cy.contains('.v-chip__content').should('have.length', 3);
+    cy.get('input[type="checkbox"]').should('have.length', 5);
     //Manage button exist for all features
     cy.get('[data-test="featureFlags-manage-documentGenerationV2"]').should('be.visible');
     cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').should('be.visible');
@@ -100,23 +94,18 @@ describe("Form Designer", () => {
     cy.get('[data-test="featureFlags-form-input"] input').type(arrayValues[0]);
     cy.get('[data-test="featureFlags-form-add"]').click();
     cy.get('code').contains(arrayValues[0]).should('be.visible');
-    //Save the formid as allowlist(not universal) for DocumentGenerationV3
-    cy.get('input[type="checkbox"]').eq(1).check({ force: true });
     cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
-    //Remove added allowed list and make it universal back
+    //Delete the form from DocumentGenerationV3 feature
     cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
     cy.get('.mdi-delete').click({ multiple: true });
     cy.contains(arrayValues[0]).should('not.exist');
-    //Revert back to Universal for DocumentGenerationV3
-    cy.get('input[type="checkbox"]').eq(0).check({force: true});
     //Save the changes
     cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
     //Check all features enabled back to every forms(Universal)
-    //cy.get('input[type="checkbox"]').should('have.length', 6).each(($switch, index) => {
-    //if (index !== 0) {
-    //  cy.wrap($switch).should('be.checked');
-   // }
-    //});
+    cy.get('input[type="checkbox"]').should('have.length', 6).each(($switch, index) => {
+    //Enable submit to email feature for the form
+    cy.get('input[type="checkbox"]').eq(5).check({ force: true });
+    });
     //Configure submit to Email export
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('[data-test="canAllowEditFormSettings"]').click();
@@ -128,7 +117,6 @@ describe("Form Designer", () => {
     cy.get('button[title="Upload"]').click({force: true});
     cy.wait(500);
     cy.contains('tr', 'test.docx').find('input[type="radio"]').check();
-    //cy.get('button[title="Save Configuration"]').click();
     cy.get('[data-test="canEditForm"]').click({ force: true });
     //Validate codogs file uploaded appears under cdogs section
     cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
