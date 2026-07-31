@@ -34,7 +34,7 @@
   "frontend": {
     "apiPath": "api/v1",
     "basePath": "/app",
-    "cstarBaseUrl": "https://cstar-dev.apps.gold.devops.gov.bc.ca",
+    "cstarBaseUrl": "https://dev.connect.digital.gov.bc.ca",
     "tenantFeatureEnabled": false,
     "oidc": {
       "clientId": "chefs-frontend-localhost-5300",
@@ -66,7 +66,8 @@
     },
     "encryption": {
       "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7"
-    }
+    },
+    "submissionTokenKey": "REPLACE_ME_WITH_32_PLUS_RANDOM_BYTES_e.g._openssl_rand_-hex_32"
   },
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",
@@ -98,6 +99,9 @@
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
       },
+      "cdogsV3": {
+        "endpoint": "https://chefs-cdogs.apps.silver.devops.gov.bc.ca/api"
+      },
       "css": {
         "endpoint": "https://api.loginproxy.gov.bc.ca/api",
         "tokenEndpoint": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
@@ -109,7 +113,7 @@
   },
   "cstar": {
     "tenantFeatureEnabled": false,
-    "endpoint": "https://cstar-dev.apps.gold.devops.gov.bc.ca/api/v1/",
+    "endpoint": "https://dev.connect.digital.gov.bc.ca/api/v1/",
     "listUserTenantsPath": "users/{userId}/tenants",
     "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
     "listGroupsForTenant": "tenants/{tenantId}/groups",
@@ -137,5 +141,25 @@
   },
   "gateway": {
     "jwtLifetime": "30m"
+  },
+  "features": {
+    "documentGenerationV2": {
+      "enabled": true
+    },
+    "offlineForms": {
+      "enabled": false
+    },
+    "submitToEmail": {
+      "enabled": true,
+      "batchSize": 25,
+      "delivery": "attachment",
+      "reportSizeLimit": 5000000,
+      "attachmentsSizeLimit": 10000000,
+      "attachmentsCountLimit": 10,
+      "stuckTimeoutMinutes": 30
+    },
+    "documentGenerationV3": {
+      "enabled": false
+    }
   }
 }

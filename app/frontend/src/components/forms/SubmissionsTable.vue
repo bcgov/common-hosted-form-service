@@ -512,14 +512,8 @@ async function refreshSubmissions() {
   Promise.all([
     formStore.getFormRolesForUser(properties.formId),
     formStore.getFormPermissionsForUser(properties.formId),
-    formStore.fetchForm(properties.formId).then(async () => {
-      if (form.value.versions?.length > 0) {
-        await formStore.fetchFormFields({
-          formId: properties.formId,
-          formVersionId: form.value.versions[0].id,
-        });
-      }
-    }),
+    formStore.fetchForm(properties.formId),
+    formStore.fetchSubmissionFields(properties.formId),
   ])
     .then(async () => {
       await populateSubmissionsTable();

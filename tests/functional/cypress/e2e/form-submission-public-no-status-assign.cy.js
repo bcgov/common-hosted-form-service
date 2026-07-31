@@ -63,6 +63,16 @@ describe('Form Designer', () => {
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Public (anonymous)').click();
+    cy.wait(1000);
+    //Validate the default privacy settings for public form
+    cy.get('[data-test="canAllowSubmissionConfirmationCheckbox"] input[type="checkbox"]').should('be.checked');
+    cy.get('[data-test="enableSubmitterEmailReceiptCheckbox"] input').then(($checkbox) => {expect($checkbox[0].checked).to.equal(true)});
+    cy.get('[data-test="hideSubmissionContentOnSuccessCheckbox"] input[type="checkbox"]').should('not.be.checked');
+    cy.get('[data-test="enableSubmissionUrlSharingCheckbox"] input[type="checkbox"]').should('be.checked');
+    //disable confirmation id
+    cy.get('[data-test="canAllowSubmissionConfirmationCheckbox"] input[type="checkbox"]').click();
+    //Hide  submission content on success page
+    cy.get('[data-test="hideSubmissionContentOnSuccessCheckbox"] input[type="checkbox"]').click();
     cy.waitForLoad();
     cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//uncheck for not able to update the status of the form
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').should("not.be.checked");
@@ -104,13 +114,31 @@ describe('Form Designer', () => {
     cy.get('.d-inline-block').should('not.exist');
     //form submission
     cy.get('button').contains('Submit').click();
-    cy.waitForLoad();
-    //cy.get('[data-test="continue-btn-continue"]').click({force: true});
     cy.wait(2000);
-    cy.get('label').contains('Text Field').should('be.visible');
-    cy.get('label').contains('Text Field').should('be.visible');
+    //Validate submission details are not visible on success page for public form
+    cy.get('label').contains('Text Field').should('not.exist');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
+    cy.wait(1000);
+    //Validate confirmation ID is not visible on success page for public form
+    cy.contains('Confirmation ID:').should('not.exist');
+    // Receipent email option validation for public form submission
+    cy.get('span').contains('Email a receipt of this submission').should('be.visible');
+    //Email notification
+    cy.get('button[title="Email a receipt of this submission"]').should('be.visible');
+    cy.get('button[title="Email a receipt of this submission"]').click();
+    cy.get('[data-test="text-form-to"]').find('input[type="text"]').type('testing@gov.bc.ca');
+    cy.wait(1000);
+    cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.contains('Normal').should('exist'); 
+    cy.contains('High').should('exist');
+    cy.contains('Low').should('exist');
+    cy.get('.v-form > .v-select > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.get('span').contains('SEND').should('be.visible');
+    cy.get('[data-test="continue-btn-cancel"]').click();
+    cy.get('button[title="Email a receipt of this submission"]').click();
+    cy.get('span').contains('SEND').click();
+    cy.get('.v-alert__content').contains('div','An email has been sent to testing@gov.bc.ca.').should('be.visible');
     //view submission
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/manage?f=${formId}`);

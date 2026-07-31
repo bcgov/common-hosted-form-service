@@ -123,6 +123,61 @@ describe('ManageForm.vue', () => {
     expect(wrapper.vm.currentVersion).toEqual('N/A');
   });
 
+  it('hides the Form Design History panel without DESIGN_READ (e.g. team_manager)', async () => {
+    formStore.permissions = [
+      FormPermissions.FORM_READ,
+      FormPermissions.TEAM_UPDATE,
+    ];
+    const wrapper = mount(ManageForm, {
+      global: {
+        plugins: [router, pinia],
+        mocks: {
+          $filters: {
+            formatDate: vi.fn().mockReturnValue('formatted date'),
+          },
+        },
+        provide: {
+          formDesigner: false,
+          draftId: '123-456',
+          formId: '123-456',
+        },
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(
+      wrapper.find('[data-test="canExpandFormDesignHistoryPanel"]').exists()
+    ).toBe(false);
+  });
+
+  it('shows the Form Design History panel with DESIGN_READ', async () => {
+    formStore.permissions = [FormPermissions.DESIGN_READ];
+    const wrapper = mount(ManageForm, {
+      global: {
+        plugins: [router, pinia],
+        mocks: {
+          $filters: {
+            formatDate: vi.fn().mockReturnValue('formatted date'),
+          },
+        },
+        provide: {
+          formDesigner: false,
+          draftId: '123-456',
+          formId: '123-456',
+        },
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    expect(
+      wrapper.find('[data-test="canExpandFormDesignHistoryPanel"]').exists()
+    ).toBe(true);
+  });
+
   it('currentVersion returns the current published version', async () => {
     formStore.form = ref({
       versions: [

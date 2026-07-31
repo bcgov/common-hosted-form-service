@@ -41,12 +41,25 @@ routes.put('/:formId/emailTemplate', hasFormPermissions([P.EMAIL_TEMPLATE_READ, 
   await controller.createOrUpdateEmailTemplate(req, res, next);
 });
 
+routes.post('/:formId/template/render', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.draftTemplateUploadAndRender(req, res, next);
+});
+
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
 });
 
 routes.get('/:formId/version', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readPublishedForm(req, res, next);
+});
+
+// Gated by FORM_READ only (not SUBMISSION_READ): this endpoint returns just the
+// field key names and schema-free version metadata, which is form design info
+// already exposed at FORM_READ via /:formId/versions/:formVersionId/fields. It
+// must stay accessible to form_submitters (who have form_read but not
+// submission_read) so the "My Submissions" column picker works for them.
+routes.get('/:formId/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.readFormFields(req, res, next);
 });
 
 routes.put('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {

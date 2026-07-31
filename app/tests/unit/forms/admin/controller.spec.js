@@ -126,3 +126,100 @@ describe('getExternalAPIStatusCodes', () => {
     expect(next).toBeCalledTimes(1);
   });
 });
+
+describe('feature flag controller', () => {
+  const featureService = require('../../../../src/forms/feature/service');
+  const validUuid = '11111111-1111-4111-8111-111111111111';
+  const currentUser = { usernameIdp: 'tester@idir' };
+
+  it('listFeatureFlags responds 200 with the admin catalog', async () => {
+    const { res, next } = getMockRes();
+    featureService.listAdmin = jest.fn().mockResolvedValue([{ code: 'offlineForms' }]);
+
+    await controller.listFeatureFlags({ params: {}, body: {} }, res, next);
+
+    expect(featureService.listAdmin).toBeCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('readFeatureFlag responds 200 with the feature detail', async () => {
+    const { res, next } = getMockRes();
+    featureService.readFeature = jest.fn().mockResolvedValue({ code: 'offlineForms' });
+
+    await controller.readFeatureFlag({ params: { code: 'offlineForms' } }, res, next);
+
+    expect(featureService.readFeature).toBeCalledWith('offlineForms');
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('updateFeatureFlag returns 422 when allowAll is not a boolean', async () => {
+    const { res, next } = getMockRes();
+    featureService.setAllowAll = jest.fn();
+
+    await controller.updateFeatureFlag({ params: { code: 'offlineForms' }, body: {}, currentUser }, res, next);
+
+    expect(featureService.setAllowAll).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 422 }));
+  });
+
+  it('updateFeatureFlag sets allowAll and responds 200', async () => {
+    const { res, next } = getMockRes();
+    featureService.setAllowAll = jest.fn().mockResolvedValue({ code: 'offlineForms', allowAll: true });
+
+    await controller.updateFeatureFlag({ params: { code: 'offlineForms' }, body: { allowAll: true }, currentUser }, res, next);
+
+    expect(featureService.setAllowAll).toBeCalledWith('offlineForms', true, currentUser);
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('addFeatureFlagForm returns 422 on an invalid formId', async () => {
+    const { res, next } = getMockRes();
+    featureService.addForm = jest.fn();
+
+    await controller.addFeatureFlagForm({ params: { code: 'offlineForms' }, body: { formId: 'bad' }, currentUser }, res, next);
+
+    expect(featureService.addForm).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 422 }));
+  });
+
+  it('addFeatureFlagForm responds 201 on a valid formId', async () => {
+    const { res, next } = getMockRes();
+    featureService.addForm = jest.fn().mockResolvedValue({ id: 'row' });
+
+    await controller.addFeatureFlagForm({ params: { code: 'offlineForms' }, body: { formId: validUuid }, currentUser }, res, next);
+
+    expect(featureService.addForm).toBeCalledWith('offlineForms', validUuid, currentUser);
+    expect(res.status).toHaveBeenCalledWith(201);
+  });
+
+  it('removeFeatureFlagForm responds 204', async () => {
+    const { res, next } = getMockRes();
+    featureService.removeForm = jest.fn().mockResolvedValue(1);
+
+    await controller.removeFeatureFlagForm({ params: { code: 'offlineForms', formId: validUuid } }, res, next);
+
+    expect(featureService.removeForm).toBeCalledWith('offlineForms', validUuid);
+    expect(res.status).toHaveBeenCalledWith(204);
+  });
+
+  it('addFeatureFlagTenant returns 422 on an invalid tenantId', async () => {
+    const { res, next } = getMockRes();
+    featureService.addTenant = jest.fn();
+
+    await controller.addFeatureFlagTenant({ params: { code: 'offlineForms' }, body: { tenantId: 'bad' }, currentUser }, res, next);
+
+    expect(featureService.addTenant).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 422 }));
+  });
+
+  it('removeFeatureFlagTenant returns 422 on an invalid tenantId', async () => {
+    const { res, next } = getMockRes();
+    featureService.removeTenant = jest.fn();
+
+    await controller.removeFeatureFlagTenant({ params: { code: 'offlineForms', tenantId: 'bad' } }, res, next);
+
+    expect(featureService.removeTenant).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 422 }));
+  });
+});

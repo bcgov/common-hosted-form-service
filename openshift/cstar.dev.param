@@ -1,3 +1,3 @@
 TENANT_FEATURE_ENABLED=true
-CSTAR_BASE_URL=https://cstar-dev.apps.gold.devops.gov.bc.ca
-CSTAR_ENDPOINT=https://cstar-dev.apps.gold.devops.gov.bc.ca/api/v1/
+CSTAR_BASE_URL=https://dev.connect.digital.gov.bc.ca
+CSTAR_ENDPOINT=https://dev.connect.digital.gov.bc.ca/api/v1/
