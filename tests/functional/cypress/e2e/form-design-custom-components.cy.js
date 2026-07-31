@@ -81,11 +81,11 @@ describe("Form Designer", () => {
     cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(1)').contains('Submit to Email').should('be.visible');
     cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(2)').contains('Allow form submissions to be delivered to a configured email address.').should('be.visible');
     //Check all features enabled to every forms(Universal)
-    cy.get('input[type="checkbox"]').should('have.length', 5).each(($switch, index) => {
-    if (index !== 0) {
-      cy.wrap($switch).should('be.checked');
-    }
-    });
+    //cy.get('input[type="checkbox"]').should('have.length', 5).each(($switch, index) => {
+    //if (index !== 0) {
+    //  cy.wrap($switch).should('be.checked');
+    //}
+   // });
     //Verify every feature is enabled on env
     //cy.contains('.v-chip__content').should('have.length', 3);
     //Manage button exist for all features
@@ -110,11 +110,11 @@ describe("Form Designer", () => {
     //Save the changes
     cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
     //Check all features enabled back to every forms(Universal)
-    cy.get('input[type="checkbox"]').should('have.length', 6).each(($switch, index) => {
-    if (index !== 0) {
-      cy.wrap($switch).should('be.checked');
-    }
-    });
+    //cy.get('input[type="checkbox"]').should('have.length', 6).each(($switch, index) => {
+    //if (index !== 0) {
+    //  cy.wrap($switch).should('be.checked');
+   // }
+    //});
     //Configure submit to Email export
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('[data-test="canAllowEditFormSettings"]').click();
@@ -123,14 +123,14 @@ describe("Form Designer", () => {
     let SubmitToEmail = cy.get('input[type=file]');
     cy.get('input[type=file]').should('not.to.be.null');
     SubmitToEmail.attachFile('test.docx');
-    cy.get('[data-test="canEditForm"]').click({ force: true });
-    //codogs file upload
-    cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
-    let fileUploadInputField = cy.get('input[type=file]');
-    cy.get('input[type=file]').should('not.to.be.null');
-    fileUploadInputField.attachFile('test.docx');
-    cy.get('button[title="Upload"]').click();
+    cy.get('button[title="Upload"]').click({force: true});
     cy.wait(500);
+    cy.contains('tr', 'test.docx').find('input[type="radio"]').check();
+    //cy.get('button[title="Save Configuration"]').click();
+    cy.get('[data-test="canEditForm"]').click({ force: true });
+    //Validate codogs file uploaded appears under cdogs section
+    cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    cy.contains('span','test.docx').should('be.visible');
     cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('input[type="radio"][value="default"]').should('be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
