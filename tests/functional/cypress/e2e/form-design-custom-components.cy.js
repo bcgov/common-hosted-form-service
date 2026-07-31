@@ -74,14 +74,23 @@ describe("Form Designer", () => {
     //Go to admin panel for feature settings
     cy.get('[data-cy="admin"]').click();
     cy.get('[value="features"] > .v-btn__content').click();
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(1)').contains('Document Generation V2').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(2)').contains('Existing document generation. Available to all forms.').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(1)').contains('Document Generation V3').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(2)').contains('Next-generation document generation (Carbone Enterprise).').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(1)').contains('Offline Forms').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(2)').contains('Allow forms to be completed and submitted while offline, syncing when a connection returns.').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(1)').contains('Submit to Email').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(2)').contains('Allow form submissions to be delivered to a configured email address.').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(1)').
+    contains('Document Generation V2').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(2)').
+    contains('Existing document generation. Available to all forms.').
+    should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(1)').
+    contains('Document Generation V3').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(2)').
+    contains('Next-generation document generation (Carbone Enterprise).').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(1)').
+    contains('Offline Forms').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(2)').
+    contains('Allow forms to be completed and submitted while offline, syncing when a connection returns.').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(1)').
+    contains('Submit to Email').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(2)').
+    contains('Allow form submissions to be delivered to a configured email address.').should('be.visible');
     //Check all features enabled to every forms(Universal)
     cy.get('input[type="checkbox"]').should('have.length', 5);
     //Manage button exist for all features
