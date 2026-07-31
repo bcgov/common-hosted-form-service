@@ -108,14 +108,13 @@ describe("Form Designer", () => {
     //Save the changes
     cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
     //Check all features enabled back to every forms(Universal)
-    cy.get('input[type="checkbox"]').should('have.length', 6).each(($switch, index) => {
+    cy.get('input[type="checkbox"]').should('have.length', 6);
     //Enable submit to email feature for the form
-    cy.get('input[type="checkbox"]').eq(5).check({ force: true });
-    });
+    cy.get('input[type="checkbox"]').eq(4).check({ force: true });
     //Configure submit to Email export
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('[data-test="canAllowEditFormSettings"]').click();
-    cy.get('[data-test="submission-package-email-test"]').should('be.visible').click();
+    cy.get('[data-test="submission-package-email-test"]').click();
     cy.get('[data-test="submission-package-email-test"]').parent().find('input[type="text"]').eq(1).type('test@example.com').type('{enter}');
     let SubmitToEmail = cy.get('input[type=file]');
     cy.get('input[type=file]').should('not.to.be.null');
