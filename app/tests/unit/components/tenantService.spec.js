@@ -229,6 +229,15 @@ describe('TenantService', () => {
       expect(jwtService.getBearerToken).toHaveBeenCalledWith(req);
     });
 
+    it('should apply the configured CSTAR request timeout so a slow/hung CSTAR call cannot hang indefinitely', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(200, { data: { groups: [] } });
+
+      await tenantService.getUserTenantGroupsAndRoles(req, tenantId);
+
+      expect(mockAxios.history.get[0].timeout).toBe(config.get('cstar.timeoutMs'));
+    });
+
     it('should include only non-deleted shared service roles', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       mockAxios.onGet(apiUrl).reply(200, {

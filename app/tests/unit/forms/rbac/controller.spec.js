@@ -757,6 +757,39 @@ describe('migrateForm', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+  it('should return 503 with CSTAR_TIMEOUT code when the CSTAR call times out', async () => {
+    const err = Object.assign(new Error('timeout of 15000ms exceeded'), { code: 'ECONNABORTED' });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it.each(['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'])('should return 503 with CSTAR_UNAVAILABLE code on %s network error', async (code) => {
+    const err = Object.assign(new Error('connect failed'), { code });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it.each([500, 502, 503, 504])('should return 503 with CSTAR_UNAVAILABLE code when CSTAR responds with %i', async (status) => {
+    const err = Object.assign(new Error('CSTAR error'), { response: { status } });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
   it('should call next for unknown errors', async () => {
     const err = new Error('unexpected DB error');
     tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);

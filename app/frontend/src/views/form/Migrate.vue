@@ -363,14 +363,6 @@ defineExpose({
                 <span class="text-subtitle-1 font-weight-medium" :lang="locale">
                   {{ $t('trans.formMigration.assignGroupsTitle') }}
                 </span>
-                <v-chip
-                  size="x-small"
-                  color="primary"
-                  variant="tonal"
-                  class="ml-2"
-                >
-                  {{ $t('trans.formMigration.optionalBadge') }}
-                </v-chip>
                 <v-progress-circular
                   v-if="loadingGroups"
                   indeterminate

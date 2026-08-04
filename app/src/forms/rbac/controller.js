@@ -384,7 +384,11 @@ module.exports = {
     } catch (error) {
       if (error.code === 'ALREADY_MIGRATED') return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
       if (error.code === 'FORM_ADMIN_GROUP_REQUIRED') return res.status(400).json({ detail: error.message, code: error.code });
+      if (error.code === 'ECONNABORTED')
+        return res.status(503).json({ detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' });
       const cstarStatus = error?.response?.status;
+      const isCstarNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error.code) || [500, 502, 503, 504].includes(cstarStatus);
+      if (isCstarNetworkError) return res.status(503).json({ detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' });
       if (cstarStatus === 401) return res.status(401).json({ detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' });
       if (cstarStatus === 403) return res.status(403).json({ detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' });
       next(error);

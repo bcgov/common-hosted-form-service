@@ -6,6 +6,7 @@ const log = require('./log')(module.filename);
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
+const CSTAR_TIMEOUT_MS = config.get('cstar.timeoutMs');
 const { TenantRoles } = require('../forms/common/constants');
 const { Role, User } = require('../forms/common/models');
 const Form = require('../forms/common/models/tables/form');
@@ -35,7 +36,7 @@ class TenantService {
     const url = `${endpoint}${listUserTenantsPath.replace('{userId}', req.currentUser.idpUserId)}`;
     const headers = this._getAuthHeaders(req);
     try {
-      const { data } = await axios.get(url, { headers });
+      const { data } = await axios.get(url, { headers, timeout: CSTAR_TIMEOUT_MS });
       const tenants = data?.data?.tenants || [];
       if (!Array.isArray(tenants) || tenants.length === 0) return [];
 
@@ -93,7 +94,7 @@ class TenantService {
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
     const headers = this._getAuthHeaders(req);
     try {
-      const { data } = await axios.get(url, { headers });
+      const { data } = await axios.get(url, { headers, timeout: CSTAR_TIMEOUT_MS });
       const groups = Array.isArray(data?.data?.groups) ? data.data.groups : [];
       return groups.map((group) => ({
         id: group.id,
@@ -124,7 +125,7 @@ class TenantService {
     const groupPath = config.get('cstar.listGroupsForTenant');
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId)}`;
     const headers = this._getAuthHeaders(req);
-    const { data } = await axios.get(url, { headers });
+    const { data } = await axios.get(url, { headers, timeout: CSTAR_TIMEOUT_MS });
     return Array.isArray(data?.data?.groups) ? data.data.groups : [];
   }
 
@@ -310,7 +311,7 @@ class TenantService {
       const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
       const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', formTenant.tenantId)}`;
       const groupIdsCsv = formGroups.map((fg) => fg.groupId).join(',');
-      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req), params: { groupIds: groupIdsCsv } });
+      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req), params: { groupIds: groupIdsCsv }, timeout: CSTAR_TIMEOUT_MS });
       const usersInGroups = data?.data?.users || data?.users || [];
       return usersInGroups.some((u) => u?.ssoUser?.ssoUserId === targetUser.idpUserId);
     } catch {
@@ -361,7 +362,7 @@ class TenantService {
     const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
     const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', req.currentUser.tenantId)}`;
     const headers = this._getAuthHeaders(req);
-    const { data } = await axios.get(url, { headers });
+    const { data } = await axios.get(url, { headers, timeout: CSTAR_TIMEOUT_MS });
     return data?.data?.users || data?.users || [];
   }
 
@@ -401,7 +402,7 @@ class TenantService {
     const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', ssoUserId)}`;
     try {
-      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req) });
+      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req), timeout: CSTAR_TIMEOUT_MS });
       return (data?.data?.groups || []).map((g) => ({ id: g.id, name: g.name }));
     } catch {
       return [];
