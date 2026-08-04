@@ -1,6 +1,28 @@
 import { appAxios } from '~/services/interceptors';
 import { ApiRoutes } from '~/utils/constants';
 
+export const SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX = 'submissionAccessToken:';
+
+export function getValidSubmissionAccessToken(submissionId) {
+  if (!submissionId) return null;
+  const token = sessionStorage.getItem(
+    SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId
+  );
+  if (!token) return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const exp = Number(parts[1]);
+  if (!Number.isFinite(exp) || exp <= Date.now()) return null;
+  return token;
+}
+
+export function clearSubmissionAccessToken(submissionId) {
+  if (!submissionId) return;
+  sessionStorage.removeItem(
+    SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + submissionId
+  );
+}
+
 export default {
   //
   // Form calls
@@ -274,11 +296,19 @@ export default {
    * @param {Object} requestBody The form data for the submission
    * @returns {Promise} An axios response
    */
-  createSubmission(formId, versionId, requestBody) {
-    return appAxios().post(
+  async createSubmission(formId, versionId, requestBody) {
+    const response = await appAxios().post(
       `${ApiRoutes.FORMS}/${formId}/versions/${versionId}/submissions`,
       requestBody
     );
+    if (response.data?._accessToken && response.data?.id) {
+      sessionStorage.setItem(
+        SUBMISSION_ACCESS_TOKEN_STORAGE_PREFIX + response.data.id,
+        response.data._accessToken
+      );
+      delete response.data._accessToken;
+    }
+    return response;
   },
 
   /**
