@@ -633,51 +633,47 @@ defineExpose({
                 {{ $t('trans.formMigration.submissionsImpactTitle') }}
               </v-card-title>
               <v-divider class="mt-2" />
-              <v-card-text class="py-3">
-                <div class="d-flex align-center gap-6 flex-wrap">
-                  <div class="text-center">
-                    <div class="text-h5 font-weight-bold text-primary">
-                      {{ impact.submissions.total }}
-                    </div>
-                    <div class="text-caption font-weight-medium" :lang="locale">
-                      {{ $t('trans.formMigration.totalSubmissionsLabel') }}
-                    </div>
-                    <div
-                      class="text-caption text-medium-emphasis"
-                      :lang="locale"
-                    >
-                      {{ $t('trans.formMigration.totalSubmissionsHint') }}
-                    </div>
+              <v-card-text class="stats-grid">
+                <div class="stat-col">
+                  <v-icon size="20" color="primary" class="stat-icon">
+                    mdi:mdi-file-document-outline
+                  </v-icon>
+                  <div class="text-h5 font-weight-bold text-primary">
+                    {{ impact.submissions.total }}
                   </div>
-                  <v-divider vertical class="my-1" style="height: 48px" />
-                  <div class="text-center">
-                    <div class="text-h5 font-weight-bold text-warning">
-                      {{ impact.submissions.drafts }}
-                    </div>
-                    <div class="text-caption font-weight-medium" :lang="locale">
-                      {{ $t('trans.formMigration.draftsLabel') }}
-                    </div>
-                    <div
-                      class="text-caption text-medium-emphasis"
-                      :lang="locale"
-                    >
-                      {{ $t('trans.formMigration.draftsHint') }}
-                    </div>
+                  <div class="text-caption font-weight-medium" :lang="locale">
+                    {{ $t('trans.formMigration.totalSubmissionsLabel') }}
                   </div>
-                  <v-divider vertical class="my-1" style="height: 48px" />
-                  <div class="text-center">
-                    <div class="text-h5 font-weight-bold text-info">
-                      {{ impact.submissions.withShareUsers }}
-                    </div>
-                    <div class="text-caption font-weight-medium" :lang="locale">
-                      {{ $t('trans.formMigration.sharedSubmissionsLabel') }}
-                    </div>
-                    <div
-                      class="text-caption text-medium-emphasis"
-                      :lang="locale"
-                    >
-                      {{ $t('trans.formMigration.sharedSubmissionsHint') }}
-                    </div>
+                  <div class="stat-hint text-medium-emphasis" :lang="locale">
+                    {{ $t('trans.formMigration.totalSubmissionsHint') }}
+                  </div>
+                </div>
+                <div class="stat-col">
+                  <v-icon size="20" color="warning" class="stat-icon">
+                    mdi:mdi-pencil-outline
+                  </v-icon>
+                  <div class="text-h5 font-weight-bold text-warning">
+                    {{ impact.submissions.drafts }}
+                  </div>
+                  <div class="text-caption font-weight-medium" :lang="locale">
+                    {{ $t('trans.formMigration.draftsLabel') }}
+                  </div>
+                  <div class="stat-hint text-medium-emphasis" :lang="locale">
+                    {{ $t('trans.formMigration.draftsHint') }}
+                  </div>
+                </div>
+                <div class="stat-col">
+                  <v-icon size="20" color="info" class="stat-icon">
+                    mdi:mdi-account-group-outline
+                  </v-icon>
+                  <div class="text-h5 font-weight-bold text-info">
+                    {{ impact.submissions.withShareUsers }}
+                  </div>
+                  <div class="text-caption font-weight-medium" :lang="locale">
+                    {{ $t('trans.formMigration.sharedSubmissionsLabel') }}
+                  </div>
+                  <div class="stat-hint text-medium-emphasis" :lang="locale">
+                    {{ $t('trans.formMigration.sharedSubmissionsHint') }}
                   </div>
                 </div>
               </v-card-text>
@@ -836,5 +832,59 @@ tr.row-error {
 
 tr.row-warning {
   background: rgb(var(--v-theme-warning), 0.06);
+}
+
+/* Submission stats grid — equal-width self-contained columns */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 16px 20px;
+}
+
+.stat-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-left: 1px solid rgb(var(--v-theme-on-surface), 0.12);
+  min-width: 0;
+}
+
+.stat-col:first-child {
+  border-left: none;
+  padding-left: 0;
+}
+
+.stat-icon {
+  margin-bottom: -4px;
+}
+
+.stat-hint {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin-top: 8px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 599px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 16px;
+  }
+
+  .stat-col {
+    border-left: none;
+    border-top: 1px solid rgb(var(--v-theme-on-surface), 0.12);
+    padding: 16px 0 0;
+  }
+
+  .stat-col:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
 }
 </style>
