@@ -8,6 +8,7 @@ import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useTenantStore } from '~/store/tenant';
 import { IdentityMode } from '~/utils/constants';
+import { schemaHasFileComponent } from '~/utils/transformUtils';
 
 const props = defineProps({
   disabled: { type: Boolean, default: false },
@@ -44,6 +45,10 @@ const primaryIdpUser = computed(() =>
   idpStore.isPrimary(identityProvider?.value?.code)
 );
 
+const hasFileComponent = computed(() =>
+  (form.value.versions || []).some((v) => schemaHasFileComponent(v?.schema))
+);
+
 //Centralized disabled states
 const disabledStates = computed(() => {
   const base = props.disabled;
@@ -54,6 +59,10 @@ const disabledStates = computed(() => {
     schedule: base || !formStore.isFormPublished,
     eventSubscription:
       base || primaryIdpUser.value === false || !formStore.isFormPublished,
+    offline:
+      base ||
+      form.value.userType === IdentityMode.PUBLIC ||
+      hasFileComponent.value,
   };
 });
 
@@ -99,6 +108,38 @@ defineExpose({
           :lang="locale"
           v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
         />
+      </template>
+    </v-checkbox>
+
+    <!-- Offline Submission -->
+    <v-checkbox
+      v-model="form.enableOfflineSubmission"
+      :disabled="disabledStates.offline"
+      hide-details="auto"
+      class="my-0"
+      data-test="enableOfflineSubmissionCheckbox"
+    >
+      <template #label>
+        <div :class="{ 'mr-2': isRTL }">
+          <span
+            :lang="locale"
+            v-html="$t('trans.formSettings.enableOfflineSubmissionLabel')"
+          />
+          <v-tooltip location="bottom">
+            <template #activator="slotProps">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="slotProps.props"
+                icon="mdi:mdi-flask"
+              />
+            </template>
+            <span :lang="locale">
+              {{ $t('trans.formSettings.enableOfflineSubmissionHelp') }}
+            </span>
+          </v-tooltip>
+        </div>
       </template>
     </v-checkbox>
 

@@ -123,6 +123,7 @@ export async function preFlightAuth(options, next) {
     store.showSubmissionConfirmation = form.showSubmissionConfirmation;
     store.enableSubmitterEmailReceipt = form.enableSubmitterEmailReceipt;
     store.hideSubmissionContentOnSuccess = form.hideSubmissionContentOnSuccess;
+    store.enableOfflineSubmission = form.enableOfflineSubmission;
   }
 
   async function fetchIdpHints() {

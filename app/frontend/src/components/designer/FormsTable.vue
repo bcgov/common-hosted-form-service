@@ -156,7 +156,13 @@ defineExpose({
         v-if="item.published"
         :to="{
           name: 'FormSubmit',
-          query: { f: item.id },
+          query: {
+            f: item.id,
+            ...(item.enableOfflineSubmission &&
+            checkFormManage(item.permissions)
+              ? { simulateOffline: '1' }
+              : {}),
+          },
         }"
         target="_blank"
         rel="noopener noreferrer"

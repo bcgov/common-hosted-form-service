@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import SubmitterRevision from '~/components/forms/submission/SubmitterRevision.vue';
 import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
+import { useSimulationToggle } from '~/offline/useSimulationToggle';
 import { FormPermissions } from '~/utils/constants';
 
 import { useFormStore } from '~/store/form';
@@ -72,6 +73,8 @@ const formStore = useFormStore();
 
 const { isRTL } = storeToRefs(formStore);
 
+const { online } = useSimulationToggle();
+
 const canSaveDraft = computed(() => !properties.readOnly);
 const showEditToggle = computed(
   () =>
@@ -107,6 +110,7 @@ watch(
       <v-btn
         color="primary"
         :loading="loading"
+        :disabled="!online"
         variant="outlined"
         :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
         @click="
@@ -119,7 +123,7 @@ watch(
         }}</span>
       </v-btn>
     </div>
-    <div class="ml-auto d-flex">
+    <div class="ml-auto d-flex align-center">
       <!-- Bulk button -->
       <span
         v-if="allowSubmitterToUploadFile && !block && !publicForm"
@@ -150,7 +154,11 @@ watch(
         </v-tooltip>
       </span>
       <!-- Submitter Revision -->
-      <SubmitterRevision :submission-id="submissionId" class="ml-2" />
+      <SubmitterRevision
+        v-if="submissionId"
+        :submission-id="submissionId"
+        class="ml-2"
+      />
       <!-- Wide layout button -->
       <span>
         <v-tooltip location="bottom">
