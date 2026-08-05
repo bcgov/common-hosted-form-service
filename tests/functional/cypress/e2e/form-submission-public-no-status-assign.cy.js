@@ -74,7 +74,7 @@ describe('Form Designer', () => {
     //Hide  submission content on success page
     cy.get('[data-test="hideSubmissionContentOnSuccessCheckbox"] input[type="checkbox"]').click();
     cy.waitForLoad();
-    cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//uncheck for not able to update the status of the form
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').find('input[type="checkbox"]').click(); //uncheck so the form cannot update status
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').should("not.be.checked");
     cy.contains('span','Display assignee column for reviewers').should("not.exist");
     cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').click();
