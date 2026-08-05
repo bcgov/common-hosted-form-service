@@ -2,7 +2,6 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
 
 import PendingSubmissionsModal from '~/components/forms/offline/PendingSubmissionsModal.vue';
 import { offlineQueue } from '~/offline/queue';
@@ -11,21 +10,18 @@ import { useFormStore } from '~/store/form';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
-const route = useRoute();
 const { form } = storeToRefs(useFormStore());
 const { networkOnline, canSimulateOffline, simulatingOffline } =
   useSimulationToggle();
 
-const OFFLINE_ROUTES = ['FormSubmit', 'FormSuccess'];
 const queuedCount = computed(() => offlineQueue.entries.value.length);
 const showPending = ref(false);
 
-// Only show when an offline-enabled form is actually being rendered. Login /
-// forms-list / admin / etc. must never see this control even when simulation
-// is on or the queue has items; those are unrelated contexts.
+// Visible whenever the device has queued entries (device-scoped), OR the
+// current form is offline-capable (form-scoped). Login/admin/unrelated
+// forms with an empty queue stay hidden.
 const visible = computed(
-  () =>
-    !!form.value.enableOfflineSubmission && OFFLINE_ROUTES.includes(route.name)
+  () => queuedCount.value > 0 || !!form.value.enableOfflineSubmission
 );
 
 const realOffline = computed(() => !networkOnline.value);

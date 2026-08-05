@@ -1611,6 +1611,14 @@
     "successPendingTitle": "Submission Saved",
     "successPendingMessage": "This submission is saved on your device and will be sent to CHEFS automatically when you are back online.",
     "successPendingStartAnother": "Return to Form",
-    "errorAtCap": "You have reached the offline submission limit ({cap}) for this form. Reconnect and sync before queuing more."
+    "errorAtCap": "You have reached the offline submission limit ({cap}) for this form. Reconnect and sync before queuing more.",
+    "reauthTitle": "Sign in to send saved submissions",
+    "reauthBody": "You have {count} submission(s) saved on this device. Your session has expired; please sign in again to send them.",
+    "reauthSignIn": "Sign In",
+    "reauthNotNow": "Not now",
+    "reauthDrainConfirmTitle": "Sign-in successful",
+    "reauthDrainConfirmBody": "Send {count} saved submission(s) now?",
+    "reauthDrainSend": "Send",
+    "reauthDrainCancel": "Cancel"
   }
 }

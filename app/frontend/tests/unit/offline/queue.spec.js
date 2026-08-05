@@ -64,6 +64,13 @@ describe('offline/queue', () => {
         offlineQueue.enqueue({ formId: 'f2', versionId: 'v1', userId: 'u1', body: {} })
       ).resolves.toBeDefined();
     });
+
+    it('clears the reauth-snooze sessionStorage key on enqueue', async () => {
+      const { offlineQueue } = await freshQueue();
+      sessionStorage.setItem('chefs_offline_reauth_snoozed', '1');
+      await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      expect(sessionStorage.getItem('chefs_offline_reauth_snoozed')).toBeNull();
+    });
   });
 
   describe('flush', () => {

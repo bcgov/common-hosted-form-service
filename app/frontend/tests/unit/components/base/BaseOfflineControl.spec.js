@@ -3,14 +3,9 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useRoute } from 'vue-router';
 
 import BaseOfflineControl from '~/components/base/BaseOfflineControl.vue';
 import { useFormStore } from '~/store/form';
-
-vi.mock('vue-router', () => ({
-  useRoute: vi.fn(),
-}));
 
 const state = vi.hoisted(() => ({
   networkOnline: { value: true },
@@ -56,10 +51,9 @@ describe('BaseOfflineControl.vue', () => {
     state.simulatingOffline.value = false;
     state.canSimulateOffline.value = true;
     state.queueEntries.value = [];
-    useRoute.mockReturnValue({ name: 'FormSubmit', query: {} });
   });
 
-  it('is not visible when the form is not offline-enabled', async () => {
+  it('is not visible when form is not offline-enabled and queue is empty', async () => {
     const store = useFormStore();
     store.form.enableOfflineSubmission = false;
 
@@ -69,15 +63,25 @@ describe('BaseOfflineControl.vue', () => {
     expect(wrapper.vm.visible).toBe(false);
   });
 
-  it('is not visible when route is not a form-submit page', async () => {
-    useRoute.mockReturnValue({ name: 'FormsList', query: {} });
+  it('is visible when queue has items even without an offline form', async () => {
+    state.queueEntries.value = [{}];
+    const store = useFormStore();
+    store.form.enableOfflineSubmission = false;
+
+    const wrapper = mountControl();
+    await flushPromises();
+
+    expect(wrapper.vm.visible).toBe(true);
+  });
+
+  it('is visible on any route when the form is offline-enabled', async () => {
     const store = useFormStore();
     store.form.enableOfflineSubmission = true;
 
     const wrapper = mountControl();
     await flushPromises();
 
-    expect(wrapper.vm.visible).toBe(false);
+    expect(wrapper.vm.visible).toBe(true);
   });
 
   it('renders the online state with chevron when simulation is available', async () => {
