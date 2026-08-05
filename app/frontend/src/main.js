@@ -120,6 +120,14 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 
   axios.defaults.baseURL = import.meta.env.BASE_URL;
 
+  // Boot the offline-submission queue manager once the SPA is mounted.
+  // Hangs off window events and a poll timer; not tied to any route.
+  import('~/offline/offlineQueueManager').then(
+    ({ startOfflineQueueManager }) => {
+      startOfflineQueueManager();
+    }
+  );
+
   NProgress.done();
 }
 

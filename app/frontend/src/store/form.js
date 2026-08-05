@@ -78,6 +78,7 @@ const genInitialSubmissionPackageSettings = () => ({
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
+  enableOfflineSubmission: false,
   enableStatusUpdates: false,
   enableSubmitterRevision: false,
   allowSubmitterToUploadFile: false,
@@ -144,6 +145,8 @@ export const useFormStore = defineStore('form', {
     mySubmissionPreferences: useLocalStorage('mySubmissionPreferences', {}),
     version: {},
     userLabels: [],
+    // In-session schema cache for offline "Start another submission".
+    schemaCache: {},
   }),
   getters: {
     isFormPublished: (state) =>
@@ -151,6 +154,23 @@ export const useFormStore = defineStore('form', {
       state.form.versions.some((v) => v.published),
   },
   actions: {
+    cacheFormSchema(formId, versionId, form, schema) {
+      if (!formId || !versionId) return;
+      this.schemaCache[`${formId}:${versionId}`] = { form, schema };
+    },
+    // With versionId: exact hit. Without: any cached version for the formId.
+    getCachedFormSchema(formId, versionId) {
+      if (!formId) return null;
+      if (versionId) {
+        return this.schemaCache[`${formId}:${versionId}`] || null;
+      }
+      const prefix = `${formId}:`;
+      const key = Object.keys(this.schemaCache).find((k) =>
+        k.startsWith(prefix)
+      );
+      if (!key) return null;
+      return { versionId: key.slice(prefix.length), ...this.schemaCache[key] };
+    },
     //
     // Current User
     //
@@ -169,6 +189,7 @@ export const useFormStore = defineStore('form', {
           description: f.formDescription,
           permissions: f.permissions,
           published: f.published,
+          enableOfflineSubmission: f.enableOfflineSubmission,
         }));
         this.formList = forms;
       } catch (error) {
@@ -515,6 +536,7 @@ export const useFormStore = defineStore('form', {
           name: this.form.name,
           description: this.form.description,
           enableSubmitterDraft: this.form.enableSubmitterDraft,
+          enableOfflineSubmission: this.form.enableOfflineSubmission,
           enableStatusUpdates: this.form.enableStatusUpdates,
           enableSubmitterRevision: this.form.enableSubmitterRevision,
           enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
