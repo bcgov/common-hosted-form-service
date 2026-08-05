@@ -1,7 +1,9 @@
 import mitt from 'mitt';
+import { watch } from 'vue';
 
 import formService from '~/services/formService';
 import { offlineQueue, QueueStatus } from '~/offline/queue';
+import { reachable, startReachabilityMonitor } from '~/offline/useReachability';
 import { useAuthStore } from '~/store/auth';
 
 const POLL_INTERVAL_MS = 30000;
@@ -68,6 +70,7 @@ async function postEntry(entry) {
 export async function tryDrain() {
   if (draining) return;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  if (!reachable.value) return;
   if (isSimulationActive()) return;
   if (offlineQueue.entries.value.length === 0) return;
 
@@ -154,6 +157,10 @@ export function startOfflineQueueManager() {
   if (started) return;
   started = true;
 
+  // Reachability probe is our source of truth for "can I reach the API";
+  // start it before the drain loop so tryDrain gates on real state.
+  startReachabilityMonitor();
+
   // Prime entries from IDB so chips are accurate before the first enqueue.
   offlineQueue.ensureLoaded().then(() => {
     checkReauthFollowup();
@@ -164,5 +171,12 @@ export function startOfflineQueueManager() {
       tryDrain();
     });
   }
+  // Drain immediately when the heartbeat flips back to reachable, without
+  // waiting for the next 30s tick.
+  watch(reachable, (isReachable) => {
+    if (!isReachable) return;
+    clearReauthSnooze();
+    tryDrain();
+  });
   tick();
 }

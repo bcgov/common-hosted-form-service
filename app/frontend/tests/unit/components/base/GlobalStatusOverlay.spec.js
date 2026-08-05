@@ -1,14 +1,19 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
 import GlobalStatusOverlay from '~/components/base/GlobalStatusOverlay.vue';
 
 describe('GlobalStatusOverlay', () => {
   let wrapper;
+  let pinia;
 
   beforeEach(() => {
+    pinia = createPinia();
+    setActivePinia(pinia);
     wrapper = mount(GlobalStatusOverlay, {
       props: { parentReady: false },
       global: {
+        plugins: [pinia],
         stubs: {
           'i18n-t': true,
         },

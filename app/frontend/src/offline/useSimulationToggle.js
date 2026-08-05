@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { SIMULATE_OFFLINE_SS_KEY } from '~/offline/offlineQueueManager';
+import { reachable } from '~/offline/useReachability';
 
 function readFlag() {
   try {
@@ -45,8 +46,20 @@ export function useSimulationToggle() {
   const canSimulateOffline = computed(
     () => route.query.simulateOffline === '1'
   );
-  const online = computed(
-    () => networkOnline.value && !simulatingOffline.value
+  // Real reachability: browser thinks we have a network AND the heartbeat
+  // probe most recently succeeded. Either failing means treat as offline.
+  const effectivelyOnline = computed(
+    () => networkOnline.value && reachable.value
   );
-  return { networkOnline, canSimulateOffline, simulatingOffline, online };
+  const online = computed(
+    () => effectivelyOnline.value && !simulatingOffline.value
+  );
+  return {
+    networkOnline,
+    reachable,
+    effectivelyOnline,
+    canSimulateOffline,
+    simulatingOffline,
+    online,
+  };
 }
