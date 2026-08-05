@@ -110,6 +110,7 @@ const showTenantDropdown = computed(() => {
         <div v-if="showTenantDropdown" class="tenant-dropdown-wrapper">
           <TenantDropdown />
         </div>
+        <BaseOfflineControl data-test="base-offline-control" />
         <BaseAuthButton data-test="base-auth-btn" />
         <BaseInternationalization data-test="base-internationalization" />
       </div>

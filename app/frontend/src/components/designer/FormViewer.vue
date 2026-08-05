@@ -118,7 +118,7 @@ const authStore = useAuthStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
-const { canSimulateOffline, simulatingOffline, online } = useSimulationToggle();
+const { canSimulateOffline, online } = useSimulationToggle();
 
 const { config } = storeToRefs(appStore);
 const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
@@ -1086,11 +1086,7 @@ async function uploadFile(file, config = {}) {
             :submission-id="submissionId"
             :wide-form-layout="form.wideFormLayout"
             :public-form="isFormPublic(form)"
-            :offline-enabled="!!form.enableOfflineSubmission"
-            :can-simulate-offline="canSimulateOffline"
-            :simulating-offline="simulatingOffline"
             class="d-print-none"
-            @toggle-simulate-offline="simulatingOffline = !simulatingOffline"
             @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
             @save-draft="saveDraft"
             @switchView="switchView"
@@ -1125,7 +1121,78 @@ async function uploadFile(file, config = {}) {
 
           <slot name="alert" :form="form" :class="{ 'dir-rtl': isRTL }" />
 
+          <v-dialog
+            v-if="form.enableOfflineSubmission && !online"
+            v-model="showSubmitConfirmDialog"
+            max-width="560"
+            persistent
+            @keydown.esc="showSubmitConfirmDialog = false"
+          >
+            <v-card class="offline-confirm-card" elevation="4">
+              <v-card-title
+                class="offline-confirm-title"
+                :class="{ 'dir-rtl': isRTL }"
+              >
+                <span :lang="locale">{{
+                  $t('trans.offlineSubmission.queueConfirmTitle')
+                }}</span>
+              </v-card-title>
+              <v-card-text
+                class="offline-confirm-body"
+                :class="{ 'dir-rtl': isRTL }"
+              >
+                <p class="offline-confirm-message" :lang="locale">
+                  {{ $t('trans.offlineSubmission.queueConfirmMessage') }}
+                </p>
+                <v-text-field
+                  v-model="queueNote"
+                  class="offline-confirm-note"
+                  density="comfortable"
+                  variant="outlined"
+                  hide-details
+                  :label="$t('trans.offlineSubmission.queueConfirmNoteLabel')"
+                  :placeholder="
+                    $t('trans.offlineSubmission.queueConfirmNotePlaceholder')
+                  "
+                  maxlength="100"
+                  :lang="locale"
+                />
+              </v-card-text>
+              <v-card-actions
+                class="offline-confirm-actions"
+                :class="{ 'dir-rtl': isRTL }"
+              >
+                <v-spacer />
+                <v-btn
+                  color="primary"
+                  variant="flat"
+                  rounded="lg"
+                  size="large"
+                  class="px-6"
+                  data-test="queue-confirm-submit"
+                  @click="continueSubmit"
+                >
+                  <span :lang="locale">{{
+                    $t('trans.offlineSubmission.queueConfirmQueue')
+                  }}</span>
+                </v-btn>
+                <v-btn
+                  variant="outlined"
+                  rounded="lg"
+                  size="large"
+                  class="px-6"
+                  data-test="queue-confirm-cancel"
+                  @click="showSubmitConfirmDialog = false"
+                >
+                  <span :lang="locale">{{
+                    $t('trans.baseDialog.cancel')
+                  }}</span>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <BaseDialog
+            v-else
             v-model="showSubmitConfirmDialog"
             type="CONTINUE"
             :enable-custom-button="canSaveDraft"
@@ -1139,31 +1206,11 @@ async function uploadFile(file, config = {}) {
             >
             <template #text>
               <span :lang="locale">{{
-                form.enableOfflineSubmission && !online
-                  ? $t('trans.offlineSubmission.queueConfirmMessage')
-                  : $t('trans.formViewer.submitFormWarningMsg')
+                $t('trans.formViewer.submitFormWarningMsg')
               }}</span>
-              <v-text-field
-                v-if="form.enableOfflineSubmission && !online"
-                v-model="queueNote"
-                class="mt-3"
-                density="compact"
-                variant="outlined"
-                hide-details
-                :label="$t('trans.offlineSubmission.queueConfirmNoteLabel')"
-                :placeholder="
-                  $t('trans.offlineSubmission.queueConfirmNotePlaceholder')
-                "
-                maxlength="100"
-                :lang="locale"
-              />
             </template>
             <template #button-text-continue>
-              <span :lang="locale">{{
-                form.enableOfflineSubmission && !online
-                  ? $t('trans.offlineSubmission.queueConfirmQueue')
-                  : $t('trans.formViewer.submit')
-              }}</span>
+              <span :lang="locale">{{ $t('trans.formViewer.submit') }}</span>
             </template>
           </BaseDialog>
 
@@ -1265,5 +1312,37 @@ async function uploadFile(file, config = {}) {
       border: 1px solid #606060;
     }
   }
+}
+
+.offline-confirm-card {
+  padding: 8px 4px;
+  border-radius: 14px !important;
+}
+.offline-confirm-title {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  padding: 20px 28px 8px !important;
+  line-height: 1.3 !important;
+  letter-spacing: normal !important;
+}
+.offline-confirm-body {
+  padding: 8px 28px 12px;
+  font-size: 1rem;
+}
+.offline-confirm-message {
+  margin: 0 0 20px;
+  color: rgba(0, 0, 0, 0.72);
+  line-height: 1.5;
+}
+.offline-confirm-note {
+  margin-top: 4px;
+
+  :deep(.v-field) {
+    border-radius: 8px;
+  }
+}
+.offline-confirm-actions {
+  padding: 8px 24px 20px;
+  gap: 12px;
 }
 </style>

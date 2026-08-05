@@ -2,7 +2,6 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { entryTitle } from '~/offline/entryDisplay';
 import { offlineQueueEvents } from '~/offline/offlineQueueManager';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -91,8 +90,20 @@ function close() {
 
 <template>
   <v-dialog v-model="visible" persistent max-width="560">
-    <v-card class="d-flex flex-column" style="max-height: 80vh">
-      <v-card-title class="d-flex align-center flex-shrink-0">
+    <v-card
+      class="d-flex flex-column"
+      style="max-height: 80vh; border-radius: 14px !important"
+    >
+      <v-card-title
+        class="d-flex align-center flex-shrink-0"
+        style="
+          font-size: 1.5rem !important;
+          font-weight: 700 !important;
+          padding: 20px 28px 8px !important;
+          line-height: 1.3 !important;
+          letter-spacing: normal !important;
+        "
+      >
         <span :lang="locale">{{
           t('trans.offlineSubmission.syncModalTitle')
         }}</span>
@@ -121,70 +132,131 @@ function close() {
           {{ t('trans.offlineSubmission.syncModalFailedSummary', { failed }) }}
         </p>
       </div>
-      <div
-        v-if="rows.length"
-        class="flex-shrink-0 px-6 pb-3"
-        style="max-height: 240px; overflow-y: auto"
-      >
-        <v-list density="compact">
-          <v-list-item v-for="row in rows" :key="row.dedupKey">
-            <template #prepend>
-              <v-icon
-                v-if="row.displayStatus === 'sent'"
-                color="success"
-                icon="mdi:mdi-check-circle"
-              />
-              <v-icon
-                v-else-if="row.displayStatus === 'failed'"
-                color="error"
-                icon="mdi:mdi-close-circle"
-              />
-              <v-icon
-                v-else
-                color="grey"
-                icon="mdi:mdi-clock-outline"
-                :title="t('trans.offlineSubmission.syncRowStillToSend')"
-              />
-            </template>
-            <v-list-item-title>{{ entryTitle(row, t) }}</v-list-item-title>
-            <div class="text-caption text-medium-emphasis" :lang="locale">
+      <div v-if="rows.length" class="sync-list-wrapper">
+        <div
+          v-for="row in rows"
+          :key="row.dedupKey"
+          class="sync-row d-flex align-start"
+        >
+          <v-icon
+            v-if="row.displayStatus === 'sent'"
+            color="success"
+            icon="mdi:mdi-check-circle"
+            size="24"
+            class="sync-row-icon"
+          />
+          <v-icon
+            v-else-if="row.displayStatus === 'failed'"
+            color="error"
+            icon="mdi:mdi-close-circle"
+            size="24"
+            class="sync-row-icon"
+          />
+          <v-icon
+            v-else
+            color="grey"
+            icon="mdi:mdi-clock-outline"
+            size="24"
+            class="sync-row-icon"
+            :title="t('trans.offlineSubmission.syncRowStillToSend')"
+          />
+          <div class="sync-row-body">
+            <div class="sync-row-title">
+              <template v-if="row.note">{{ row.note }}</template>
+              <i18n-t
+                v-else-if="row.formName"
+                keypath="trans.offlineSubmission.pendingDefaultDescription"
+                tag="span"
+              >
+                <template #formName>
+                  <strong>{{ row.formName }}</strong>
+                </template>
+              </i18n-t>
+              <template v-else>{{
+                t('trans.offlineSubmission.pendingDefaultDescriptionNoName')
+              }}</template>
+            </div>
+            <div class="sync-row-meta">
               {{
                 t('trans.offlineSubmission.syncRowQueuedAt', {
                   time: new Date(row.queuedAt).toLocaleString(),
                 })
               }}
             </div>
-            <div
-              v-if="row.sentAt"
-              class="text-caption text-medium-emphasis"
-              :lang="locale"
-            >
+            <div v-if="row.sentAt" class="sync-row-meta">
               {{
                 t('trans.offlineSubmission.syncRowSentAt', {
                   time: new Date(row.sentAt).toLocaleString(),
                 })
               }}
-              <template v-if="confirmationId(row)">
-                ·
-                {{
-                  t('trans.offlineSubmission.syncRowConfirmationId', {
-                    id: confirmationId(row),
-                  })
-                }}
-              </template>
-              <template v-else-if="row.displayStatus === 'failed'">
-                · {{ row.failReason }}
-              </template>
             </div>
-          </v-list-item>
-        </v-list>
+            <div v-if="confirmationId(row)" class="sync-row-meta">
+              {{
+                t('trans.offlineSubmission.syncRowConfirmationId', {
+                  id: confirmationId(row),
+                })
+              }}
+            </div>
+            <div
+              v-else-if="row.displayStatus === 'failed'"
+              class="sync-row-meta"
+            >
+              {{ row.failReason }}
+            </div>
+          </div>
+        </div>
       </div>
-      <v-card-actions v-if="done" class="flex-shrink-0">
+      <v-card-actions v-if="done" class="flex-shrink-0 sync-actions">
         <v-spacer />
-        <v-btn @click="close">{{
+        <v-btn variant="outlined" size="large" class="px-6" @click="close">{{
           t('trans.offlineSubmission.syncModalDoneClose')
         }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped lang="scss">
+.sync-list-wrapper {
+  flex-shrink: 0;
+  padding: 8px 28px 12px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.sync-row {
+  padding: 14px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  &:first-child {
+    border-top: 0;
+  }
+}
+.sync-row-icon {
+  flex: 0 0 auto;
+  margin-inline-end: 12px;
+  margin-top: 2px;
+}
+.sync-row-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.sync-row-meta {
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.6);
+  line-height: 1.4;
+}
+.sync-row-title {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.87);
+
+  :deep(strong),
+  :deep(b) {
+    font-weight: 700;
+  }
+}
+.sync-actions {
+  padding: 8px 24px 20px;
+}
+</style>
