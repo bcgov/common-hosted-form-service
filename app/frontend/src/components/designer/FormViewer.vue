@@ -166,6 +166,9 @@ const viewerOptions = computed(() => {
         getFile: getFile,
         uploadFile: uploadFile,
       },
+      map: {
+        allowExistingFeatureChanges: properties.isDuplicate,
+      },
     },
     evalContext: {
       token: tokenParsed.value,
