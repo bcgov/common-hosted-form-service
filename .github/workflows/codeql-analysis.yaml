@@ -23,15 +23,11 @@ on:
   schedule:
     - cron: "38 6 * * 5"
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       # Keep file coverage on PRs (opt out of April 2026 default to skip for performance)
       CODEQL_ACTION_FILE_COVERAGE_ON_PRS: "true"
     permissions:

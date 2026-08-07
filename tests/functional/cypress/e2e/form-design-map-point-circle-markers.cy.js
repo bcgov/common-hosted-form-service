@@ -214,7 +214,7 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       //
       //Delete form after test run
-      cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+      cy.get('[data-test="canRemoveForm"]').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('.mdi-logout').click();
   

@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "Paganahin ang awtomatikong paalala na abiso",
     "autoReminderNotificatnToolTip": "Magpadala ng mga email ng paalala kasama ang link ng form sa panahon ng pagsusumite.",
     "selectLoginType": "Pumili ng hindi bababa sa isang identity provider.",
+    "idpDeprecatedWarning": "Ang identity provider na ito ay hindi na ginagamit at hindi na available para sa mga bagong pagpili. Kung idi-disable mo ang opsyong ito sa pag-login, hindi mo na ito muling mae-enable.",
+    "idpDeprecatedDialog": "Ang identity provider na ito ay hindi na available para sa mga bagong pagpili. Kapag inalis mo ito, maaaring hindi mo na ito maidaragdag muli.",
     "formDescriptnMaxChars": "Ang Paglalarawan ng Form ay dapat na 255 character o mas kaunti",
     "formTitlemaxChars": "Ang Pamagat ng Form ay dapat na 255 character o mas kaunti",
     "formTitleReq": "Kinakailangan ang Pamagat ng Form",

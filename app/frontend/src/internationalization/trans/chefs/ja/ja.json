@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "自動リマインダー通知を有効にする",
     "autoReminderNotificatnToolTip": "提出期間中にフォームのリンクを含むリマインダーメールを送信します。",
     "selectLoginType": "少なくとも1つのIDプロバイダーを選択してください。",
+    "idpDeprecatedWarning": "この ID プロバイダーは非推奨となっており、新しい選択肢としては利用できません。このログイン オプションを無効にすると、再度有効にすることはできません。",
+    "idpDeprecatedDialog": "この ID プロバイダーは新しい選択肢として利用できません。削除すると、再度追加できない場合があります。",
     "formDescriptnMaxChars": "フォームの説明は 255 文字以下にする必要があります",
     "formTitlemaxChars": "フォームのタイトルは 255 文字以下である必要があります",
     "formTitleReq": "フォームのタイトルは必須です",
