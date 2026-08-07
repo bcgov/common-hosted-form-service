@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "Ativar notificação automática de lembrete",
     "autoReminderNotificatnToolTip": "Envie e-mails de lembrete com o link do formulário durante o período de envio.",
     "selectLoginType": "Por favor, selecione pelo menos um provedor de identidade.",
+    "idpDeprecatedWarning": "Этот поставщик удостоверений устарел и больше недоступен для новых выборов. Если вы отключите этот способ входа, вы не сможете включить его снова.",
+    "idpDeprecatedDialog": "Этот поставщик удостоверений больше недоступен для новых выборов. Если вы удалите его, возможно, вы не сможете добавить его снова.",
     "formDescriptnMaxChars": "A descrição do formulário deve ter 255 caracteres ou menos",
     "formTitlemaxChars": "O título do formulário deve ter 255 caracteres ou menos",
     "formTitleReq": "O título do formulário é obrigatório",
