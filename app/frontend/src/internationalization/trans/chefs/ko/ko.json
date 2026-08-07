@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "자동 알림 알림 활성화",
     "autoReminderNotificatnToolTip": "제출 기간 동안 양식 링크가 포함된 알림 이메일을 보냅니다.",
     "selectLoginType": "최소한 하나의 신원 제공자를 선택하세요.",
+    "idpDeprecatedWarning": "이 ID 공급자는 더 이상 사용되지 않으며 새 선택 항목으로는 사용할 수 없습니다. 이 로그인 옵션을 비활성화하면 다시 활성화할 수 없습니다.",
+    "idpDeprecatedDialog": "이 ID 공급자는 새 선택 항목으로 더 이상 사용할 수 없습니다. 제거하면 다시 추가하지 못할 수 있습니다.",
     "formDescriptnMaxChars": "양식 설명은 255자 이하여야 합니다.",
     "formTitlemaxChars": "양식 제목은 255자 이하여야 합니다.",
     "formTitleReq": "양식 제목이 필요합니다",

@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "Abilita la notifica automatica del promemoria",
     "autoReminderNotificatnToolTip": "Invia e-mail di promemoria con il collegamento al modulo durante il periodo di invio.",
     "selectLoginType": "Seleziona almeno un provider di identità.",
+    "idpDeprecatedWarning": "Questo provider di identità è deprecato e non è più disponibile per nuove selezioni. Se disabiliti questa opzione di accesso, non potrai riattivarla.",
+    "idpDeprecatedDialog": "Questo provider di identità non è più disponibile per nuove selezioni. Se lo rimuovi, potresti non essere in grado di aggiungerlo nuovamente.",
     "formDescriptnMaxChars": "La descrizione del modulo deve contenere al massimo 255 caratteri",
     "formTitlemaxChars": "Il titolo del modulo non deve superare i 255 caratteri",
     "formTitleReq": "Il titolo del modulo è obbligatorio",
