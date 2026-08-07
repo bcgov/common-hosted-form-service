@@ -179,7 +179,6 @@ class MapService {
         const isDesigner = form?.classList.contains('formbuilder') ?? false;
         const protectExistingFeatures =
           !isDesigner && !options.allowExistingFeatureChanges;
-        console.log(options);
 
         if (protectExistingFeatures) {
           e.layers.eachLayer((layer) => {
