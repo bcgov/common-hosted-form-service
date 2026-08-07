@@ -51,15 +51,11 @@ jobs:
           path: ${{ github.workspace }}/app/coverage
       - name: Monitor Coverage
         if: "! github.event.pull_request.head.repo.fork"
-        uses: slavcodev/coverage-monitor-action@v1
+        uses: MishaKav/jest-coverage-comment@v1
         with:
-          comment_mode: update
-          comment_footer: false
-          comment_context: Coverage Report (Application)
-          coverage_path: app/coverage/clover.xml
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          threshold_alert: 50
-          threshold_warning: 80
+          title: Coverage Report (Application)
+          unique-id-for-comment: app
+          coverage-summary-path: app/coverage/coverage-summary.json
   test-frontend:
     name: Unit Tests (Frontend)
     runs-on: ubuntu-latest
@@ -102,15 +98,11 @@ jobs:
           path: ${{ github.workspace }}/app/frontend/coverage
       - name: Monitor Coverage
         if: "! github.event.pull_request.head.repo.fork"
-        uses: slavcodev/coverage-monitor-action@v1
+        uses: MishaKav/jest-coverage-comment@v1
         with:
-          comment_mode: update
-          comment_footer: false
-          comment_context: Coverage Report (Frontend)
-          coverage_path: app/frontend/coverage/clover.xml
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          threshold_alert: 50
-          threshold_warning: 80
+          title: Coverage Report (Frontend)
+          unique-id-for-comment: frontend
+          coverage-summary-path: app/frontend/coverage/coverage-summary.json
   # test-coverage:
   #   name: Publish to Code Climate
   #   needs:
