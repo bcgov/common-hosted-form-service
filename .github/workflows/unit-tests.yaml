@@ -15,20 +15,16 @@ jobs:
     outputs:
       HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
-    strategy:
-      fail-fast: true
-      matrix:
-        version: [24]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
       - name: Check CodeClimate Secrets
         id: check-secrets
         run: echo "HAS_CC_SECRETS=${{ secrets.CC_TEST_REPORTER_ID != '' }}" >> $GITHUB_OUTPUT
-      - name: Use Node.js ${{ matrix.version }}
+      - name: Use Node.js 24
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.version }}
+          node-version: 24
       - name: Cache node modules
         uses: actions/cache@v5
         id: cache-app
@@ -49,13 +45,12 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.version == 24
         uses: actions/upload-artifact@v6
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
       - name: Monitor Coverage
-        if: "matrix.version == 24 && ! github.event.pull_request.head.repo.fork"
+        if: "! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
           comment_mode: update
@@ -74,17 +69,13 @@ jobs:
     outputs:
       HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
-    strategy:
-      fail-fast: true
-      matrix:
-        version: [24]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
-      - name: Use Node.js ${{ matrix.version }}
+      - name: Use Node.js 24
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.version }}
+          node-version: 24
       - name: Cache node modules
         uses: actions/cache@v5
         id: cache-frontend
@@ -105,13 +96,12 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.version == 24
         uses: actions/upload-artifact@v6
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
       - name: Monitor Coverage
-        if: "matrix.version == 24 && ! github.event.pull_request.head.repo.fork"
+        if: "! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
           comment_mode: update
