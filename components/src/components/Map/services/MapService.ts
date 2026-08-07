@@ -254,7 +254,6 @@ class MapService {
       selectedBaseLayer,
       availableBaseLayersCustom,
       recenterButton,
-      allowExistingFeatureChanges,
     } = options;
 
     if (drawOptions?.rectangle) {
