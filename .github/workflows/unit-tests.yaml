@@ -51,7 +51,7 @@ jobs:
           path: ${{ github.workspace }}/app/coverage
       - name: Monitor Coverage
         if: "! github.event.pull_request.head.repo.fork"
-        uses: MishaKav/jest-coverage-comment@v1
+        uses: MishaKav/jest-coverage-comment@642ef024cc554a34b7082cea12c7bf63575ae151 # v1.0.36
         with:
           title: Coverage Report (Application)
           unique-id-for-comment: app
@@ -98,7 +98,7 @@ jobs:
           path: ${{ github.workspace }}/app/frontend/coverage
       - name: Monitor Coverage
         if: "! github.event.pull_request.head.repo.fork"
-        uses: MishaKav/jest-coverage-comment@v1
+        uses: MishaKav/jest-coverage-comment@642ef024cc554a34b7082cea12c7bf63575ae151 # v1.0.36
         with:
           title: Coverage Report (Frontend)
           unique-id-for-comment: frontend
