@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { IdentityMode } from '~/utils/constants';
+import { IdentityMode, DeprecatedIDPs } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useTenantStore } from '~/store/tenant';
@@ -55,14 +55,62 @@ const idpStore = useIdpStore();
 const { form, isRTL } = storeToRefs(useFormStore());
 const { formAccessButtons } = storeToRefs(idpStore);
 
+const showDeprecatedIdpDialog = ref(false);
+const pendingDeprecatedIdp = ref(null);
+
+function cancelDeprecatedIdpRemoval() {
+  pendingDeprecatedIdp.value = null;
+  showDeprecatedIdpDialog.value = false;
+}
+
+function confirmDeprecatedIdpRemoval() {
+  const code = pendingDeprecatedIdp.value?.code;
+  idpType.value = idpType.value.filter((idp) => idp !== code);
+  filteredIDPs.value = filteredIDPs.value.filter((idp) => idp.code !== code);
+  pendingDeprecatedIdp.value = null;
+  showDeprecatedIdpDialog.value = false;
+}
+
+const deprecatedIDPs = Object.values(DeprecatedIDPs);
+
+const filteredIDPs = ref(
+  formAccessButtons.value
+    .filter(
+      (idp) =>
+        !deprecatedIDPs.includes(idp.code) || form.value.idps.includes(idp.code)
+    )
+    .map((idp) => ({
+      ...idp,
+      deprecated: deprecatedIDPs.includes(idp.code),
+    }))
+);
+function onIdpToggle(idp, checked) {
+  const isSelected = idpType.value.includes(idp.code);
+  const shouldBeChecked = checked === true;
+
+  if (idp.deprecated && isSelected && !shouldBeChecked) {
+    pendingDeprecatedIdp.value = idp;
+    showDeprecatedIdpDialog.value = true;
+    return;
+  }
+
+  if (shouldBeChecked && !isSelected) {
+    idpType.value = [...idpType.value, idp.code];
+  }
+
+  if (!shouldBeChecked && isSelected) {
+    idpType.value = idpType.value.filter((code) => code !== idp.code);
+  }
+}
+
 const ID_MODE = computed(() => IdentityMode);
 
 onBeforeMount(() => {
-  idpType.value = form?.value?.idps || [];
+  idpType.value = Array.isArray(form.value.idps) ? [...form.value.idps] : [];
 });
 
 watch(idpType, (val) => {
-  form.value.idps = val;
+  form.value.idps = [...val];
   if (userTypeRef.value) {
     userTypeRef.value.validate();
   }
@@ -113,13 +161,17 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
       lines="one"
       class="text-white mb-2"
     >
-      Basic BCeID is no longer onboarding new services to the identity solution.
+      Effective May 31, 2026, Connected Services BC (CSBC) stopped onboarding
+      new services to Basic BCeID. Instead, it is recommended to use the BC
+      Services Card app as the identity solution. This change reflects the
+      ongoing modernization of government digital identity services and the
+      adoption of identity solutions that support future service delivery needs.
       Existing services and current users of Basic BCeID are not affected by
       this change and existing integrations will continue to operate normally.
-      Additional details regarding this change will be available in a Service
-      Bulletin in late July. For Identity Service onboarding questions, please
-      connect with
-      <a href="mailto:DT.Consulting@gov.bc.ca">DT.Consulting@gov.bc.ca</a>
+      For Identity Service onboarding questions, please connect with
+      <a style="color: lightblue" href="mailto:DT.Consulting@gov.bc.ca"
+        >DT.Consulting@gov.bc.ca</a
+      >
     </v-alert>
     <v-autocomplete
       ref="userTypeRef"
@@ -159,17 +211,41 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
       <v-expand-transition>
         <div v-if="form.userType === ID_MODE.LOGIN" class="pl-6">
           <div>
-            <v-checkbox
-              v-for="btn in formAccessButtons"
-              :key="btn.code"
-              v-model="idpType"
-              :label="btn.display"
-              :value="btn.code"
-              class="my-0"
-              hide-details="auto"
-              :data-test="`idpType-${btn.hint}`"
-              :class="{ 'dir-rtl': isRTL }"
-            />
+            <div v-for="idp in filteredIDPs" :key="idp.code">
+              <v-checkbox
+                :model-value="idpType.includes(idp.code)"
+                :label="idp.display"
+                class="my-0"
+                hide-details="auto"
+                :data-test="`idpType-${idp.hint}`"
+                :class="{ 'dir-rtl': isRTL }"
+                @update:model-value="(checked) => onIdpToggle(idp, checked)"
+              />
+
+              <div v-if="idp.deprecated" class="text-error" :lang="locale">
+                {{ $t('trans.formSettings.idpDeprecatedWarning') }}
+              </div>
+            </div>
+            <BaseDialog
+              v-model="showDeprecatedIdpDialog"
+              type="CONTINUE"
+              @close-dialog="cancelDeprecatedIdpRemoval"
+              @continue-dialog="confirmDeprecatedIdpRemoval"
+            >
+              <template #title>
+                <span :lang="locale">Remove deprecated login option?</span>
+              </template>
+
+              <template #text>
+                <span :lang="locale">
+                  {{ $t('trans.formSettings.idpDeprecatedDialog') }}
+                </span>
+              </template>
+
+              <template #button-text-continue>
+                <span :lang="locale">Remove</span>
+              </template>
+            </BaseDialog>
           </div>
           <!-- Mandatory BCeID process notification -->
           <v-expand-transition>

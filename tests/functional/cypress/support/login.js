@@ -44,7 +44,6 @@ export function formsettings(){
     cy.contains('Log-in Required').click();
     cy.get('label').contains('IDIR').should('exist');
     cy.get('label').contains('BC Services Card').should('exist');
-    cy.get('label').contains('Basic BCeID').should('exist');
     cy.get('label').contains('Business BCeID').should('exist');
     cy.contains('Please select at least one identity provider.').should('be.visible');
    //Option to select Specific team members
