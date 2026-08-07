@@ -125,8 +125,6 @@ class MapService {
         this.options.defaultValue?.features &&
         this.options.defaultValue?.features.length > 0
       ) {
-        console.log('Adding default features');
-        console.log(this.options.defaultValue.features);
         this.defaultFeatures = this.arrayToFeatureGroup(
           this.options.defaultValue.features
         );
