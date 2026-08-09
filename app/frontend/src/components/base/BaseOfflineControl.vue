@@ -11,7 +11,7 @@ import { useFormStore } from '~/store/form';
 const { t, locale } = useI18n({ useScope: 'global' });
 
 const { form } = storeToRefs(useFormStore());
-const { networkOnline, canSimulateOffline, simulatingOffline } =
+const { effectivelyOnline, canSimulateOffline, simulatingOffline } =
   useSimulationToggle();
 
 const queuedCount = computed(() => offlineQueue.entries.value.length);
@@ -24,14 +24,16 @@ const visible = computed(
   () => queuedCount.value > 0 || !!form.value.enableOfflineSubmission
 );
 
-const realOffline = computed(() => !networkOnline.value);
+// "Really offline" = browser reports offline OR heartbeat probe is failing.
+const realOffline = computed(() => !effectivelyOnline.value);
 // Toggle button is visible when the URL grants the simulate gate OR whenever
 // the user is already simulating (so they can always exit even after
 // navigating away from a route that carried ?simulateOffline=1). Hidden
 // during real offline; there's no manual "go online" to flip to.
 const showChevron = computed(
   () =>
-    networkOnline.value && (canSimulateOffline.value || simulatingOffline.value)
+    effectivelyOnline.value &&
+    (canSimulateOffline.value || simulatingOffline.value)
 );
 
 const state = computed(() => {

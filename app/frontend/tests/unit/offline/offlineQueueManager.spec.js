@@ -27,6 +27,18 @@ vi.mock('~/offline/queue', () => ({
   },
 }));
 
+// Reachability probe would hit the network in happy-dom; stub it so the
+// module-level ref is present and startReachabilityMonitor is a no-op.
+const reachabilityState = vi.hoisted(() => ({
+  reachable: { value: true },
+}));
+vi.mock('~/offline/useReachability', () => ({
+  reachable: reachabilityState.reachable,
+  startReachabilityMonitor: vi.fn(),
+  probeReachability: vi.fn(async () => true),
+  useReachability: () => ({ reachable: reachabilityState.reachable }),
+}));
+
 async function freshManager() {
   vi.resetModules();
   sessionStorage.clear();
@@ -34,6 +46,7 @@ async function freshManager() {
   queueState.entries.value = [];
   queueState.ensureLoaded.mockClear();
   queueState.flush.mockClear();
+  reachabilityState.reachable.value = true;
   return await import('~/offline/offlineQueueManager');
 }
 
