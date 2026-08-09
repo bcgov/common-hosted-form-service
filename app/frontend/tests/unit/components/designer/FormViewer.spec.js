@@ -22,6 +22,7 @@ vi.mock('vue-router', () => ({
     push: () => {},
     replace: () => {},
   })),
+  useRoute: vi.fn(() => ({ query: {} })),
 }));
 
 const STUBS = {
@@ -333,7 +334,10 @@ describe('FormViewer.vue', () => {
       expect(readPublishedSpy).toBeCalledTimes(1);
       expect(getSubmissionSpy).toBeCalledTimes(0);
       expect(wrapper.vm.showModal).toBeTruthy();
-      expect(addEventListenerSpy).toBeCalledTimes(1);
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
     it('if submission id and it is not a duplicate, it should call getFormData', async () => {
@@ -357,7 +361,10 @@ describe('FormViewer.vue', () => {
       expect(readPublishedSpy).toBeCalledTimes(0);
       expect(getSubmissionSpy).toBeCalledTimes(1);
       expect(wrapper.vm.showModal).toBeFalsy();
-      expect(addEventListenerSpy).toBeCalledTimes(1);
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
   });
@@ -385,7 +392,10 @@ describe('FormViewer.vue', () => {
     expect(readPublishedSpy).toBeCalledTimes(1);
     expect(getSubmissionSpy).toBeCalledTimes(1);
     expect(wrapper.vm.showModal).toBeFalsy();
-    expect(addEventListenerSpy).toBeCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'beforeunload',
+      expect.any(Function)
+    );
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
@@ -409,7 +419,10 @@ describe('FormViewer.vue', () => {
     wrapper.unmount();
 
     await flushPromises();
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'beforeunload',
+      expect.any(Function)
+    );
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
