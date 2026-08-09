@@ -118,7 +118,7 @@ function toggleSimulate() {
       <template #activator="{ props: tipProps }">
         <v-badge
           :model-value="queuedCount > 0"
-          color="warning"
+          color="error"
           location="top end"
           offset-x="0"
           offset-y="0"
@@ -190,7 +190,15 @@ function toggleSimulate() {
   width: 32px !important;
   min-width: 32px !important;
   padding: 0 !important;
-  margin-inline-end: -4px;
+  margin-inline-end: 1rem;
+
+  @media (max-width: 599px) {
+    margin-inline-end: 0.5rem;
+  }
+}
+
+.offline-status-label {
+  color: #ffffff !important;
 }
 
 :deep(.v-badge__badge) {
