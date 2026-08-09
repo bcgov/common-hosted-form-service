@@ -1,5 +1,4 @@
 <script setup>
-import { useOnline } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, inject, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -7,21 +6,15 @@ import { useI18n } from 'vue-i18n';
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import SubmitterRevision from '~/components/forms/submission/SubmitterRevision.vue';
 import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
-import PendingSubmissionsModal from '~/components/forms/offline/PendingSubmissionsModal.vue';
-import { offlineQueue } from '~/offline/queue';
+import { useSimulationToggle } from '~/offline/useSimulationToggle';
 import { FormPermissions } from '~/utils/constants';
 
 import { useFormStore } from '~/store/form';
 
-const { t, locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
 const setWideLayout = inject('setWideLayout');
-defineEmits([
-  'save-draft',
-  'switchView',
-  'showdoYouWantToSaveTheDraftModal',
-  'toggle-simulate-offline',
-]);
+defineEmits(['save-draft', 'switchView', 'showdoYouWantToSaveTheDraftModal']);
 
 const properties = defineProps({
   block: {
@@ -72,18 +65,6 @@ const properties = defineProps({
     type: Boolean,
     default: false,
   },
-  offlineEnabled: {
-    type: Boolean,
-    default: false,
-  },
-  canSimulateOffline: {
-    type: Boolean,
-    default: false,
-  },
-  simulatingOffline: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const isWideLayout = ref(properties.wideFormLayout);
@@ -92,24 +73,7 @@ const formStore = useFormStore();
 
 const { isRTL } = storeToRefs(formStore);
 
-// offlineActive (real or simulated) replaces right-side controls with a
-// status chip. showSimulateToggle renders the green toggle when designer
-// gated and online. The two are mutually exclusive.
-const networkOnline = useOnline();
-const networkOffline = computed(() => !networkOnline.value);
-const offlineActive = computed(
-  () =>
-    properties.offlineEnabled &&
-    (networkOffline.value || properties.simulatingOffline)
-);
-const showSimulateToggle = computed(
-  () =>
-    properties.offlineEnabled &&
-    properties.canSimulateOffline &&
-    !networkOffline.value
-);
-const queuedCount = computed(() => offlineQueue.entries.value.length);
-const showPending = ref(false);
+const { online } = useSimulationToggle();
 
 const canSaveDraft = computed(() => !properties.readOnly);
 const showEditToggle = computed(
@@ -143,23 +107,10 @@ watch(
     :class="{ 'dir-rtl': isRTL }"
   >
     <div v-if="formId && !publicForm">
-      <v-chip
-        v-if="offlineActive"
-        color="warning"
-        variant="flat"
-        :disabled="queuedCount === 0"
-        data-test="offlineSubmissionsChip"
-        @click="queuedCount > 0 && (showPending = true)"
-      >
-        <v-icon start icon="mdi:mdi-cloud-upload-outline" />
-        <span :lang="locale">{{
-          t('trans.offlineSubmission.pendingChip', { count: queuedCount })
-        }}</span>
-      </v-chip>
       <v-btn
-        v-else
         color="primary"
         :loading="loading"
+        :disabled="!online"
         variant="outlined"
         :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
         @click="
@@ -172,61 +123,7 @@ watch(
         }}</span>
       </v-btn>
     </div>
-    <div v-if="offlineActive" class="ml-auto d-flex align-center">
-      <v-tooltip
-        v-if="canSimulateOffline"
-        location="bottom"
-        :text="t('trans.offlineSubmission.clickToGoOnline')"
-      >
-        <template #activator="{ props: tipProps }">
-          <v-chip
-            color="warning"
-            variant="flat"
-            data-test="simulateOfflineToggle"
-            v-bind="tipProps"
-            @click="$emit('toggle-simulate-offline')"
-          >
-            <v-icon start icon="mdi:mdi-cloud-off-outline" />
-            <span :lang="locale">{{
-              t('trans.offlineSubmission.simulatingBadge')
-            }}</span>
-          </v-chip>
-        </template>
-      </v-tooltip>
-      <v-chip
-        v-else
-        color="warning"
-        variant="outlined"
-        data-test="offlineBadge"
-      >
-        <v-icon start icon="mdi:mdi-cloud-off-outline" />
-        <span :lang="locale">{{
-          t('trans.offlineSubmission.offlineBadge')
-        }}</span>
-      </v-chip>
-    </div>
-    <div v-else class="ml-auto d-flex align-center">
-      <v-tooltip
-        v-if="showSimulateToggle"
-        location="bottom"
-        :text="t('trans.offlineSubmission.clickToSimulateOffline')"
-      >
-        <template #activator="{ props: tipProps }">
-          <v-chip
-            color="success"
-            variant="outlined"
-            class="mr-2"
-            data-test="simulateOfflineToggle"
-            v-bind="tipProps"
-            @click="$emit('toggle-simulate-offline')"
-          >
-            <v-icon start icon="mdi:mdi-cloud-check-outline" />
-            <span :lang="locale">{{
-              t('trans.offlineSubmission.simulatingOnlineBadge')
-            }}</span>
-          </v-chip>
-        </template>
-      </v-tooltip>
+    <div class="ml-auto d-flex align-center">
       <!-- Bulk button -->
       <span
         v-if="allowSubmitterToUploadFile && !block && !publicForm"
@@ -342,6 +239,5 @@ watch(
         />
       </span>
     </div>
-    <PendingSubmissionsModal v-model="showPending" />
   </div>
 </template>
