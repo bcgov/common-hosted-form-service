@@ -1427,7 +1427,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(replace).toBeCalledTimes(1);
   });
@@ -1462,7 +1462,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(createSubmissionSpy).toBeCalledTimes(1);
     expect(push).toBeCalledTimes(1);
   });
@@ -1507,7 +1507,7 @@ describe('FormViewer.vue', () => {
 
     addNotificationSpy.mockReset();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(createSubmissionSpy).toBeCalledTimes(0);
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(replace).toBeCalledTimes(0);

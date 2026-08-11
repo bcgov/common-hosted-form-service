@@ -90,14 +90,6 @@ describe('offlineQueueManager', () => {
       expect(queueState.flush).toHaveBeenCalledTimes(1);
     });
 
-    it('skips when the simulation flag is on', async () => {
-      const mod = await freshManager();
-      queueState.entries.value = [{ id: 'a', status: 'pending' }];
-      sessionStorage.setItem(mod.SIMULATE_OFFLINE_SS_KEY, '1');
-
-      await mod.tryDrain();
-      expect(queueState.flush).not.toHaveBeenCalled();
-    });
   });
 
   describe('clearReauthSnooze', () => {

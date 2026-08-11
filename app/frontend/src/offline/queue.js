@@ -35,6 +35,31 @@ async function ensureLoaded() {
   const stored = (await get(STORAGE_KEY)) || [];
   entries.value = Array.isArray(stored) ? stored : [];
   loaded = true;
+  await recoverStaleSyncing();
+}
+
+// A crash, tab close, or navigation mid-drain leaves entries stuck SYNCING,
+// which disables the edit affordance. Reset only when the drain lock is
+// available (no other tab is genuinely draining these entries).
+async function recoverStaleSyncing() {
+  const stale = entries.value.filter((e) => e.status === QueueStatus.SYNCING);
+  if (stale.length === 0) return;
+  const reset = () => {
+    for (const e of stale) e.status = QueueStatus.PENDING;
+    return persist();
+  };
+  if (typeof navigator === 'undefined' || !navigator.locks?.request) {
+    await reset();
+    return;
+  }
+  await navigator.locks.request(
+    LOCK_NAME,
+    { ifAvailable: true },
+    async (lock) => {
+      if (!lock) return;
+      await reset();
+    }
+  );
 }
 
 function persist() {
@@ -83,6 +108,19 @@ async function enqueue({
   } catch {
     // sessionStorage unavailable; nothing to clear.
   }
+  await persist();
+  return entry;
+}
+
+async function update(id, { body, note }) {
+  await ensureLoaded();
+  const entry = entries.value.find((e) => e.id === id);
+  if (!entry) return null;
+  if (entry.status === QueueStatus.SYNCING) return null;
+  entry.body = body;
+  entry.note = note ?? null;
+  entry.status = QueueStatus.PENDING;
+  entry.lastError = null;
   await persist();
   return entry;
 }
@@ -175,6 +213,7 @@ export const offlineQueue = {
   entries,
   ensureLoaded,
   enqueue,
+  update,
   remove,
   markFailed,
   flush,

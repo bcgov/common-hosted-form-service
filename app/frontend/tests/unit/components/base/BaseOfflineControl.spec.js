@@ -8,17 +8,19 @@ import BaseOfflineControl from '~/components/base/BaseOfflineControl.vue';
 import { useFormStore } from '~/store/form';
 
 const state = vi.hoisted(() => ({
-  effectivelyOnline: { value: true },
-  simulatingOffline: { value: false },
-  canSimulateOffline: { value: true },
+  online: { value: true },
   queueEntries: { value: [] },
+  routeName: 'FormSubmit',
 }));
 
-vi.mock('~/offline/useSimulationToggle', () => ({
-  useSimulationToggle: () => ({
-    effectivelyOnline: state.effectivelyOnline,
-    canSimulateOffline: state.canSimulateOffline,
-    simulatingOffline: state.simulatingOffline,
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ get name() { return state.routeName; } }),
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
+vi.mock('~/offline/useOnlineStatus', () => ({
+  useOnlineStatus: () => ({
+    online: state.online,
   }),
 }));
 
@@ -47,10 +49,9 @@ describe('BaseOfflineControl.vue', () => {
   beforeEach(() => {
     pinia = createPinia();
     setActivePinia(pinia);
-    state.effectivelyOnline.value = true;
-    state.simulatingOffline.value = false;
-    state.canSimulateOffline.value = true;
+    state.online.value = true;
     state.queueEntries.value = [];
+    state.routeName = 'FormSubmit';
   });
 
   it('is not visible when form is not offline-enabled and queue is empty', async () => {
@@ -74,7 +75,7 @@ describe('BaseOfflineControl.vue', () => {
     expect(wrapper.vm.visible).toBe(true);
   });
 
-  it('is visible on any route when the form is offline-enabled', async () => {
+  it('is visible on submitter routes when the form is offline-enabled', async () => {
     const store = useFormStore();
     store.form.enableOfflineSubmission = true;
 
@@ -84,7 +85,19 @@ describe('BaseOfflineControl.vue', () => {
     expect(wrapper.vm.visible).toBe(true);
   });
 
-  it('renders the online state with chevron when simulation is available', async () => {
+  it('is hidden on non-submitter routes (editor, list of forms, etc.)', async () => {
+    state.routeName = 'FormDesigner';
+    state.queueEntries.value = [{}];
+    const store = useFormStore();
+    store.form.enableOfflineSubmission = true;
+
+    const wrapper = mountControl();
+    await flushPromises();
+
+    expect(wrapper.vm.visible).toBe(false);
+  });
+
+  it('renders the online state when reachable', async () => {
     const store = useFormStore();
     store.form.enableOfflineSubmission = true;
 
@@ -93,11 +106,10 @@ describe('BaseOfflineControl.vue', () => {
 
     expect(wrapper.vm.visible).toBe(true);
     expect(wrapper.vm.state.label).toBe('trans.offlineSubmission.onlineBadge');
-    expect(wrapper.vm.showChevron).toBe(true);
   });
 
-  it('hides the chevron when unreachable (network down or heartbeat failing)', async () => {
-    state.effectivelyOnline.value = false;
+  it('renders the offline state when unreachable (network down or heartbeat failing)', async () => {
+    state.online.value = false;
     const store = useFormStore();
     store.form.enableOfflineSubmission = true;
 
@@ -105,21 +117,6 @@ describe('BaseOfflineControl.vue', () => {
     await flushPromises();
 
     expect(wrapper.vm.state.label).toBe('trans.offlineSubmission.offlineBadge');
-    expect(wrapper.vm.showChevron).toBe(false);
-  });
-
-  it('shows simulating-offline state when the toggle is on', async () => {
-    state.simulatingOffline.value = true;
-    const store = useFormStore();
-    store.form.enableOfflineSubmission = true;
-
-    const wrapper = mountControl();
-    await flushPromises();
-
-    expect(wrapper.vm.state.label).toBe(
-      'trans.offlineSubmission.simulatingBadge'
-    );
-    expect(wrapper.vm.state.variant).toBe('outlined');
   });
 
   it('reflects queue count', async () => {
@@ -143,19 +140,5 @@ describe('BaseOfflineControl.vue', () => {
     expect(wrapper.vm.showPending).toBe(false);
     wrapper.vm.openQueue();
     expect(wrapper.vm.showPending).toBe(true);
-  });
-
-  it('toggles simulatingOffline when toggleSimulate runs', async () => {
-    const store = useFormStore();
-    store.form.enableOfflineSubmission = true;
-
-    const wrapper = mountControl();
-    await flushPromises();
-
-    wrapper.vm.toggleSimulate();
-    expect(state.simulatingOffline.value).toBe(true);
-
-    wrapper.vm.toggleSimulate();
-    expect(state.simulatingOffline.value).toBe(false);
   });
 });

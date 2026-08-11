@@ -162,6 +162,18 @@ function close() {
           />
           <div class="sync-row-body">
             <div class="sync-row-title">
+              <v-chip
+                size="x-small"
+                variant="tonal"
+                :color="row.body?.draft ? 'warning' : 'primary'"
+                class="sync-row-chip"
+                :lang="locale"
+                >{{
+                  row.body?.draft
+                    ? t('trans.offlineSubmission.rowChipDraft')
+                    : t('trans.offlineSubmission.rowChipSubmission')
+                }}</v-chip
+              >
               <template v-if="row.note">{{ row.note }}</template>
               <i18n-t
                 v-else-if="row.formName"
@@ -255,6 +267,10 @@ function close() {
   :deep(b) {
     font-weight: 700;
   }
+}
+.sync-row-chip {
+  margin-inline-end: 8px;
+  vertical-align: middle;
 }
 .sync-actions {
   padding: 8px 24px 20px;
