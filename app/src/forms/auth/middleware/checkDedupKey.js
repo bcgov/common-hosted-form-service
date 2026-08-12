@@ -7,7 +7,7 @@ const log = require('../../../components/log')(module.filename);
 // Dedup-Key replay middleware. On hit: returns the cached 201, skipping the
 // controller (no email / file-move / event-stream re-fire). Identity mismatch
 // → 409. Missing header → next() with req.dedupKey unset.
-module.exports = async (req, res, next) => {
+module.exports = async function checkDedupKey(req, res, next) {
   try {
     const key = req.headers['dedup-key'];
     if (!key) return next();

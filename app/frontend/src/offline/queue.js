@@ -63,8 +63,9 @@ async function recoverStaleSyncing() {
 }
 
 function persist() {
-  // JSON round-trip strips Vue reactive Proxies (idb-keyval's structuredClone chokes on them).
-  return set(STORAGE_KEY, JSON.parse(JSON.stringify(entries.value)));
+  // JSON round-trip strips Vue reactive Proxies (structuredClone throws
+  // DataCloneError on nested Proxies; toRaw doesn't recurse).
+  return set(STORAGE_KEY, JSON.parse(JSON.stringify(entries.value))); // NOSONAR
 }
 
 function countForForm(formId) {
