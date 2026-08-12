@@ -1592,6 +1592,7 @@
     "pendingModalClose": "Close",
     "pendingDiscardButton": "Discard",
     "pendingEditButton": "Edit",
+    "pendingSendButton": "Send now",
     "editingBannerText": "Editing a queued offline submission.",
     "editingBannerTextDraft": "Editing a queued DRAFT offline submission.",
     "editingBannerCancel": "Close Edit",
