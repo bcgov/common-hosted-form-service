@@ -30,6 +30,21 @@ const STATUS_TO_FAILED = {
 const entries = ref([]);
 let loaded = false;
 
+// Entry ids open for edit in this tab; tryDrain skips while non-empty.
+const editingIds = new Set();
+
+function beginEdit(id) {
+  editingIds.add(id);
+}
+
+function endEdit(id) {
+  editingIds.delete(id);
+}
+
+function isEditing() {
+  return editingIds.size > 0;
+}
+
 async function ensureLoaded() {
   if (loaded) return;
   const stored = (await get(STORAGE_KEY)) || [];
@@ -218,4 +233,7 @@ export const offlineQueue = {
   remove,
   markFailed,
   flush,
+  beginEdit,
+  endEdit,
+  isEditing,
 };
