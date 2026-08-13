@@ -4,12 +4,16 @@ import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { flushPromises, shallowMount } from '@vue/test-utils';
 import { beforeEach, expect, vi } from 'vitest';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { nextTick, ref } from 'vue';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import templateExtensions from '~/plugins/templateExtensions';
 import { fileService, formService, rbacService } from '~/services';
+import {
+  offlineQueue as mockOfflineQueue,
+  QueueStatus as MockQueueStatus,
+} from '~/offline/queue';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -23,6 +27,27 @@ vi.mock('vue-router', () => ({
     replace: () => {},
   })),
   useRoute: vi.fn(() => ({ query: {} })),
+}));
+
+// Offline queue is a module singleton backed by IndexedDB; stub it so the
+// offline-edit path is deterministic and we can assert begin/endEdit.
+vi.mock('~/offline/queue', () => ({
+  QUEUE_SOFT_CAP: 50,
+  QueueStatus: { PENDING: 'pending', SYNCING: 'syncing' },
+  offlineQueue: {
+    entries: { value: [] },
+    ensureLoaded: vi.fn(async () => {}),
+    enqueue: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    beginEdit: vi.fn(),
+    endEdit: vi.fn(),
+    isEditing: vi.fn(() => false),
+  },
+}));
+
+vi.mock('~/offline/offlineQueueManager', () => ({
+  tryDrain: vi.fn(),
 }));
 
 const STUBS = {
@@ -3108,5 +3133,62 @@ describe('FormViewer.vue', () => {
 
     await wrapper.vm.uploadFile('this is a file object');
     expect(uploadFileSpy).toBeCalledTimes(1);
+  });
+
+  it('offline edit aborts cleanly when the schema cannot load, so Save cannot overwrite the queued entry', async () => {
+    const entryId = 'entry-abc';
+    const entry = {
+      id: entryId,
+      dedupKey: 'dk-1',
+      formId,
+      versionId: 'v-1',
+      status: MockQueueStatus.PENDING,
+      body: { draft: false, submission: { data: { field: 'value' } } },
+      note: null,
+    };
+    mockOfflineQueue.entries.value = [entry];
+    mockOfflineQueue.ensureLoaded.mockResolvedValue();
+    mockOfflineQueue.beginEdit.mockClear();
+    mockOfflineQueue.endEdit.mockClear();
+    mockOfflineQueue.update.mockClear();
+
+    // Enter edit mode for this entry, and give it a router.replace spy.
+    useRoute.mockReturnValueOnce({ query: { editOffline: entryId, f: formId } });
+    const replaceSpy = vi.fn();
+    useRouter.mockReturnValueOnce({ push: vi.fn(), replace: replaceSpy });
+
+    // Cache miss -> readVersion; simulate the offline fetch failing.
+    readVersionSpy.mockReset();
+    readVersionSpy.mockRejectedValue(new Error('Network Error'));
+
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Edit state is fully unwound: the banner never renders, so its Save
+    // (which would call offlineQueue.update with an empty submission) is
+    // unreachable.
+    expect(mockOfflineQueue.beginEdit).toHaveBeenCalledWith(entryId);
+    expect(mockOfflineQueue.endEdit).toHaveBeenCalledWith(entryId);
+    expect(wrapper.vm.editingEntry).toBeNull();
+    expect(mockOfflineQueue.update).not.toHaveBeenCalled();
+
+    // Routed back to a fresh form with the "unavailable" notice.
+    expect(replaceSpy).toHaveBeenCalledWith({
+      name: 'FormSubmit',
+      query: { f: formId },
+    });
+    expect(addNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: 'trans.offlineSubmission.editEntryUnavailable',
+      })
+    );
   });
 });
