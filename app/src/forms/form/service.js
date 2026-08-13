@@ -891,7 +891,7 @@ const service = {
     if (!rawQueuedAt) return null;
     if (!dedupKey || !form.enableOfflineSubmission) return null;
     const parsed = new Date(rawQueuedAt);
-    if (isNaN(parsed.getTime())) {
+    if (Number.isNaN(parsed.getTime())) {
       throw new Problem(422, { detail: 'queuedAt must be a valid timestamp.' });
     }
     if (parsed.getTime() > Date.now()) {

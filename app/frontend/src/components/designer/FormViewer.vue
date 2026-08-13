@@ -930,6 +930,7 @@ async function loadOfflineEntryForEdit(entryId) {
       editingEntry.value = null;
       notificationStore.addNotification({
         text: t('trans.offlineSubmission.editEntryUnavailable'),
+        consoleError: error,
       });
       await router.replace({
         name: 'FormSubmit',
