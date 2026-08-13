@@ -21,10 +21,17 @@ module.exports = async function checkDedupKey(req, res, next) {
     const existing = await FormSubmission.query().findOne({ dedupKey: key });
     if (!existing) return next();
 
+    // Replay returns the cached submission, which may contain PII, and the
+    // dedupKey lookup is global (not scoped to form or user). So only replay to
+    // the ORIGINAL authenticated creator — fail closed otherwise. Public /
+    // anonymous submissions store createdBy='public' with no real per-user
+    // identity to match, so they can never be safely replayed; and an anonymous
+    // caller (usernameIdp 'public') must never receive another user's row.
     const replayUser = req.currentUser?.usernameIdp;
-    if (existing.createdBy && replayUser && existing.createdBy !== replayUser) {
+    const isOriginalCreator = !!replayUser && existing.createdBy !== 'public' && existing.createdBy === replayUser;
+    if (!isOriginalCreator) {
       throw new Problem(409, {
-        detail: 'This Dedup-Key was created by a different user. The submission cannot be replayed under a different account.',
+        detail: 'This Dedup-Key cannot be replayed: it belongs to a different user or an anonymous submission.',
       });
     }
 
