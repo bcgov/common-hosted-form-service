@@ -3340,3 +3340,49 @@ describe('_setAllowSubmitterToUploadFile', () => {
     expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
   });
 });
+
+describe('_setEnableOfflineSubmission', () => {
+  it('preserves true for a non-public form', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(true);
+  });
+
+  it('forces false for a public form even when enableOfflineSubmission is true', () => {
+    const formData = {
+      identityProviders: [{ code: 'public' }],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('forces false for a public form combined with other identity providers', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }, { code: 'public' }],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('returns false for a non-public form when enableOfflineSubmission is false', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      enableOfflineSubmission: false,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('returns false for a non-public form when enableOfflineSubmission is missing', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('returns false when identityProviders is missing', () => {
+    const formData = { enableOfflineSubmission: true };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+});

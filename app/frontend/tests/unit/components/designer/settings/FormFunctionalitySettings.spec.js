@@ -557,4 +557,53 @@ describe('FormFunctionalitySettings.vue', () => {
     await nextTick();
     expect(formStore.form.enableSubmitterRevision).toBe(true);
   });
+
+  const offlineStubs = {
+    BaseInfoCard: {
+      name: 'BaseInfoCard',
+      template: '<div class="base-info-card-stub"><slot /></div>',
+    },
+    BasePanel: {
+      name: 'BasePanel',
+      template: '<div class="base-panel-stub"><slot /></div>',
+    },
+  };
+
+  it('clears enableOfflineSubmission when the form is switched to public', async () => {
+    formStore.form = ref(
+      createFormObject({
+        userType: IdentityMode.TEAM,
+        enableOfflineSubmission: true,
+      })
+    );
+
+    mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    expect(formStore.form.enableOfflineSubmission).toBe(true);
+
+    formStore.form.userType = IdentityMode.PUBLIC;
+    await nextTick();
+
+    expect(formStore.form.enableOfflineSubmission).toBe(false);
+  });
+
+  it('leaves enableOfflineSubmission enabled when switching between non-public identity types', async () => {
+    formStore.form = ref(
+      createFormObject({
+        userType: IdentityMode.TEAM,
+        enableOfflineSubmission: true,
+      })
+    );
+
+    mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    formStore.form.userType = IdentityMode.LOGIN;
+    await nextTick();
+
+    expect(formStore.form.enableOfflineSubmission).toBe(true);
+  });
 });
