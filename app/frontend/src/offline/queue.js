@@ -95,6 +95,9 @@ async function enqueue({
   body,
   note = null,
   showConfirmationId = false,
+  // Caller may supply the dedupKey minted for a prior online attempt so a
+  // lost-response retry replays instead of duplicating; else mint a fresh one.
+  dedupKey = uuidv4(),
 }) {
   await ensureLoaded();
   if (countForForm(formId) >= QUEUE_SOFT_CAP) {
@@ -104,7 +107,7 @@ async function enqueue({
   }
   const entry = {
     id: uuidv4(),
-    dedupKey: uuidv4(),
+    dedupKey,
     formId,
     formName,
     versionId,

@@ -50,6 +50,18 @@ vi.mock('~/offline/offlineQueueManager', () => ({
   tryDrain: vi.fn(),
 }));
 
+// Force a deterministic online state so the online-submit path is exercised
+// (happy-dom leaves navigator.onLine falsy, which would take the offline pre-empt).
+vi.mock('~/offline/useOnlineStatus', async () => {
+  const { ref } = await import('vue');
+  const online = ref(true);
+  const networkOnline = ref(true);
+  const reachable = ref(true);
+  return {
+    useOnlineStatus: () => ({ online, networkOnline, reachable }),
+  };
+});
+
 const STUBS = {
   BaseDialog: true,
   FormViewerMultiUpload: true,
@@ -3190,5 +3202,49 @@ describe('FormViewer.vue', () => {
         text: 'trans.offlineSubmission.editEntryUnavailable',
       })
     );
+  });
+
+  it('sends a dedupKey on the online submit and reuses the same key when a lost response falls back to the offline queue', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    // Offline-capable form, new submission, currently online, schedule not expired.
+    wrapper.vm.form = {
+      id: formId,
+      name: 'Form',
+      enableOfflineSubmission: true,
+      showSubmissionConfirmation: false,
+    };
+    wrapper.vm.isFormScheduleExpired = false;
+    await nextTick();
+
+    // The online create reaches the server but the response is lost (network error).
+    const networkErr = Object.assign(new Error('Network Error'), {
+      code: 'ERR_NETWORK',
+    });
+    createSubmissionSpy.mockReset();
+    createSubmissionSpy.mockRejectedValueOnce(networkErr);
+    mockOfflineQueue.enqueue.mockReset();
+    mockOfflineQueue.enqueue.mockResolvedValueOnce({ id: 'e1', dedupKey: 'x' });
+
+    await wrapper.vm.doSubmit({ data: {} });
+    await flushPromises();
+
+    // The online POST carried a Dedup-Key...
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(1);
+    const sentKey = createSubmissionSpy.mock.calls[0][3]?.dedupKey;
+    expect(sentKey).toBeTruthy();
+
+    // ...and the offline fallback reused the SAME key, so the eventual drain replays
+    // instead of creating a duplicate submission.
+    expect(mockOfflineQueue.enqueue).toHaveBeenCalledTimes(1);
+    expect(mockOfflineQueue.enqueue.mock.calls[0][0].dedupKey).toBe(sentKey);
   });
 });

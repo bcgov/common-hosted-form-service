@@ -45,6 +45,13 @@ describe('offline/queue', () => {
       expect(a.dedupKey).not.toBe(b.dedupKey);
     });
 
+    it('reuses a caller-supplied dedupKey (from a prior online attempt) instead of minting one', async () => {
+      const { offlineQueue } = await freshQueue();
+      const dedupKey = 'caller-supplied-key';
+      const entry = await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {}, dedupKey });
+      expect(entry.dedupKey).toBe(dedupKey);
+    });
+
     it('throws QUEUE_CAP when the per-form soft cap is reached', async () => {
       const { offlineQueue, QUEUE_SOFT_CAP } = await freshQueue();
       for (let i = 0; i < QUEUE_SOFT_CAP; i++) {

@@ -16,6 +16,7 @@ import { useRoute, useRouter } from 'vue-router';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
+import { v4 as uuidv4 } from 'uuid';
 import { offlineQueue, QueueStatus, QUEUE_SOFT_CAP } from '~/offline/queue';
 import { tryDrain } from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
@@ -589,9 +590,9 @@ function jsonManager() {
   }
 }
 
-async function queueDraftOffline(sub) {
+async function queueDraftOffline(sub, dedupKey) {
   try {
-    await queueSubmissionOffline(sub, true);
+    await queueSubmissionOffline(sub, true, dedupKey);
     await router.push({
       name: 'FormSubmit',
       query: {
@@ -659,13 +660,13 @@ async function routeAfterSaveDraftSuccess(response) {
   });
 }
 
-async function handleSaveDraftError(error, isNewSubmission) {
+async function handleSaveDraftError(error, isNewSubmission, dedupKey) {
   const canQueueOffline =
     form.value.enableOfflineSubmission &&
     isNewSubmission &&
     isNetworkError(error);
   if (canQueueOffline) {
-    const errMsg = await queueDraftOffline(submission.value);
+    const errMsg = await queueDraftOffline(submission.value, dedupKey);
     if (!errMsg) return;
     notificationStore.addNotification({
       text: errMsg,
@@ -688,18 +689,19 @@ async function handleSaveDraftError(error, isNewSubmission) {
 async function confirmSaveDraft() {
   showSaveDraftConfirmDialog.value = false;
   const isNewSubmission = !properties.submissionId || properties.isDuplicate;
+  const dedupKey = isNewSubmission ? uuidv4() : undefined;
   try {
     saving.value = true;
-    const response = await sendSubmission(true, submission.value);
+    const response = await sendSubmission(true, submission.value, dedupKey);
     await routeAfterSaveDraftSuccess(response);
     showSubmitConfirmDialog.value = false;
     saveDraftDialog.value = false;
   } catch (error) {
-    await handleSaveDraftError(error, isNewSubmission);
+    await handleSaveDraftError(error, isNewSubmission, dedupKey);
   }
 }
 
-async function sendSubmission(isDraft, sub) {
+async function sendSubmission(isDraft, sub, dedupKey) {
   submission.value.data.lateEntry =
     form.value?.schedule?.expire !== undefined &&
     form.value.schedule.expire === true
@@ -719,11 +721,13 @@ async function sendSubmission(isDraft, sub) {
       body
     );
   } else {
-    // Adding a new submission
+    // Adding a new submission. Send the dedupKey so a lost-response retry
+    // (online or via the offline queue) replays instead of creating a duplicate.
     response = await formService.createSubmission(
       properties.formId,
       versionIdToSubmitTo.value,
-      body
+      body,
+      { dedupKey }
     );
   }
 
@@ -1004,9 +1008,9 @@ function cancelOfflineEdit() {
 }
 
 // Queue offline; return undefined on success, an error message on failure.
-async function tryQueueOffline(sub) {
+async function tryQueueOffline(sub, dedupKey) {
   try {
-    await queueSubmissionOffline(sub);
+    await queueSubmissionOffline(sub, false, dedupKey);
     return undefined;
   } catch (queueError) {
     return queueError.code === 'QUEUE_CAP'
@@ -1015,7 +1019,7 @@ async function tryQueueOffline(sub) {
   }
 }
 
-async function queueSubmissionOffline(sub, isDraft = false) {
+async function queueSubmissionOffline(sub, isDraft = false, dedupKey) {
   const entry = await offlineQueue.enqueue({
     formId: properties.formId,
     formName: form.value?.name,
@@ -1030,6 +1034,9 @@ async function queueSubmissionOffline(sub, isDraft = false) {
     showConfirmationId: isDraft
       ? false
       : !!form.value?.showSubmissionConfirmation,
+    // Reuse the online attempt's key when present so a lost-response retry
+    // replays; enqueue mints a fresh one when this is undefined.
+    dedupKey,
   });
   notificationStore.addNotification({
     text: t(
@@ -1053,6 +1060,9 @@ async function doSubmit(sub) {
   // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
   const isNewSubmission = !properties.submissionId || properties.isDuplicate;
+  // Mint the dedupKey before the online attempt and reuse it if we fall back to
+  // the offline queue, so a lost-response retry replays instead of duplicating.
+  const dedupKey = isNewSubmission ? uuidv4() : undefined;
   try {
     // Validate schedule before submission
     if (isFormScheduleExpired.value && !isLateSubmissionAllowed.value) {
@@ -1068,9 +1078,9 @@ async function doSubmit(sub) {
       isNewSubmission &&
       !online.value
     ) {
-      return tryQueueOffline(sub);
+      return tryQueueOffline(sub, dedupKey);
     }
-    const response = await sendSubmission(false, sub);
+    const response = await sendSubmission(false, sub, dedupKey);
 
     if ([200, 201].includes(response.status)) {
       // all is good, flag no errors and carry on...
@@ -1089,7 +1099,7 @@ async function doSubmit(sub) {
       isNewSubmission &&
       isNetworkError(error)
     ) {
-      errMsg = await tryQueueOffline(sub);
+      errMsg = await tryQueueOffline(sub, dedupKey);
     } else {
       errMsg = extractErrorMessage(error);
     }
@@ -1210,9 +1220,9 @@ function notifyDraftSubmitError(error) {
   });
 }
 
-async function queueDraftAndLeave() {
+async function queueDraftAndLeave(dedupKey) {
   try {
-    await queueSubmissionOffline(submission.value, true);
+    await queueSubmissionOffline(submission.value, true, dedupKey);
     leaveThisPage();
   } catch (queueError) {
     notifyDraftSubmitError(queueError);
@@ -1223,15 +1233,16 @@ async function queueDraftAndLeave() {
 async function saveDraftFromModalNow() {
   const isNewSubmission = !properties.submissionId || properties.isDuplicate;
   const canQueueOffline = form.value.enableOfflineSubmission && isNewSubmission;
+  const dedupKey = isNewSubmission ? uuidv4() : undefined;
 
   // Offline pre-empt: user already asked to leave, so queue then leave.
   if (canQueueOffline && !online.value) {
-    await queueDraftAndLeave();
+    await queueDraftAndLeave(dedupKey);
     return;
   }
   try {
     saving.value = true;
-    await sendSubmission(true, submission.value);
+    await sendSubmission(true, submission.value, dedupKey);
     saving.value = false;
     // Creating a new submission in draft state
     // Go to the user form draft page
@@ -1240,7 +1251,7 @@ async function saveDraftFromModalNow() {
   } catch (error) {
     // Real-offline fallback: queue then leave.
     if (canQueueOffline && isNetworkError(error)) {
-      await queueDraftAndLeave();
+      await queueDraftAndLeave(dedupKey);
       return;
     }
     notifyDraftSubmitError(error);
