@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEY = 'chefs_offline_queue';
 const LOCK_NAME = 'chefs-offline-queue-drain';
+const CHANNEL_NAME = 'chefs-offline-queue';
+const EDIT_LOCK_PREFIX = 'chefs-offline-edit:';
 
 export const QUEUE_SOFT_CAP = 50;
 
@@ -29,20 +31,63 @@ const STATUS_TO_FAILED = {
 
 const entries = ref([]);
 let loaded = false;
+// Set while THIS tab is draining so we ignore other tabs' change broadcasts
+// (we own the authoritative state during our own drain).
+let localDraining = false;
+let channel = null;
+let crossTabInited = false;
 
 // Entry ids open for edit in this tab; tryDrain skips while non-empty.
 const editingIds = new Set();
+// id -> resolve fn for the held edit Web Lock (see beginEdit).
+const editLockReleasers = new Map();
 
 function beginEdit(id) {
   editingIds.add(id);
+  // Hold a Web Lock named for this entry so a drain in ANY tab skips it while
+  // it is open. The lock auto-releases if this tab closes, so there is no stale
+  // edit state to clean up.
+  if (typeof navigator === 'undefined' || !navigator.locks?.request) return;
+  if (editLockReleasers.has(id)) return;
+  navigator.locks
+    .request(
+      EDIT_LOCK_PREFIX + id,
+      () => new Promise((resolve) => editLockReleasers.set(id, resolve))
+    )
+    .catch(() => {
+      // lock request aborted; nothing held to release.
+    });
 }
 
 function endEdit(id) {
   editingIds.delete(id);
+  const release = editLockReleasers.get(id);
+  if (release) {
+    release();
+    editLockReleasers.delete(id);
+  }
 }
 
 function isEditing() {
   return editingIds.size > 0;
+}
+
+// Ids of entries open for edit in ANY tab, via held edit Web Locks. Falls back
+// to this tab's set when the Web Locks API is unavailable.
+async function lockedEditIds() {
+  if (typeof navigator === 'undefined' || !navigator.locks?.query) {
+    return new Set(editingIds);
+  }
+  try {
+    const { held } = await navigator.locks.query();
+    return new Set(
+      (held || [])
+        .filter((l) => l.name?.startsWith(EDIT_LOCK_PREFIX))
+        .map((l) => l.name.slice(EDIT_LOCK_PREFIX.length))
+    );
+  } catch {
+    return new Set(editingIds);
+  }
 }
 
 async function ensureLoaded() {
@@ -50,7 +95,42 @@ async function ensureLoaded() {
   const stored = (await get(STORAGE_KEY)) || [];
   entries.value = Array.isArray(stored) ? stored : [];
   loaded = true;
+  initCrossTab();
   await recoverStaleSyncing();
+}
+
+// Re-read the queue from IDB so this tab reflects changes another tab persisted.
+async function reloadFromStore() {
+  const stored = (await get(STORAGE_KEY)) || [];
+  entries.value = Array.isArray(stored) ? stored : [];
+}
+
+// Wire cross-tab sync: reload when another tab persists a change, and on focus.
+// Skipped while this tab is draining (it owns the authoritative state then).
+function initCrossTab() {
+  if (crossTabInited) return;
+  crossTabInited = true;
+  if (
+    typeof window !== 'undefined' &&
+    typeof BroadcastChannel !== 'undefined'
+  ) {
+    try {
+      // Can throw in restricted contexts (e.g. Firefox Private Browsing); the
+      // visibilitychange reload below still keeps tabs eventually consistent.
+      channel = new BroadcastChannel(CHANNEL_NAME);
+      channel.onmessage = () => {
+        if (!localDraining) reloadFromStore();
+      };
+    } catch {
+      channel = null;
+    }
+  }
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible' || localDraining) return;
+      reloadFromStore().then(recoverStaleSyncing);
+    });
+  }
 }
 
 // A crash, tab close, or navigation mid-drain leaves entries stuck SYNCING,
@@ -77,10 +157,16 @@ async function recoverStaleSyncing() {
   );
 }
 
-function persist() {
+async function persist() {
   // JSON round-trip strips Vue reactive Proxies (structuredClone throws
   // DataCloneError on nested Proxies; toRaw doesn't recurse).
-  return set(STORAGE_KEY, JSON.parse(JSON.stringify(entries.value))); // NOSONAR
+  await set(STORAGE_KEY, JSON.parse(JSON.stringify(entries.value))); // NOSONAR
+  // Nudge other tabs to reload so their chips/lists reflect this change.
+  try {
+    channel?.postMessage('changed');
+  } catch {
+    // channel closed; ignore.
+  }
 }
 
 function countForForm(formId) {
@@ -161,11 +247,16 @@ async function markFailed(id, status, lastError) {
 
 // httpPost resolves on 2xx (entry removed). On reject: 401 → failed-auth +
 // pause; mapped 4xx → failed-* (fires onEntryFailed) + continue; else pause.
-async function flush(httpPost, onProgress, onEntryFailed) {
+async function flush(httpPost, onProgress, onEntryFailed, onStart) {
   await ensureLoaded();
+  // Skip entries open for edit in any tab so a drain never sends a stale
+  // pre-edit body out from under an editor.
+  const editing = await lockedEditIds();
   const pending = entries.value.filter(
     (e) =>
-      e.status === QueueStatus.PENDING || e.status === QueueStatus.FAILED_AUTH
+      (e.status === QueueStatus.PENDING ||
+        e.status === QueueStatus.FAILED_AUTH) &&
+      !editing.has(e.id)
   );
   const total = pending.length;
   let sent = 0;
@@ -184,6 +275,9 @@ async function flush(httpPost, onProgress, onEntryFailed) {
   };
 
   const drain = async () => {
+    // Emit only now that we're actually draining (inside the lock, with work to
+    // do) so a tab that can't acquire the lock never opens a sync-progress modal.
+    onStart?.({ total, entries: pending });
     for (let i = 0; i < pending.length; i++) {
       const entry = pending[i];
       entry.status = QueueStatus.SYNCING;
@@ -219,7 +313,12 @@ async function flush(httpPost, onProgress, onEntryFailed) {
       async (lock) => {
         if (!lock)
           return { total, sent, failed, paused: true, lockUnavailable: true };
-        return drain();
+        localDraining = true;
+        try {
+          return await drain();
+        } finally {
+          localDraining = false;
+        }
       }
     );
   }
