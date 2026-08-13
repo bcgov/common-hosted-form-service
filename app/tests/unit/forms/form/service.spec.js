@@ -1921,14 +1921,67 @@ describe('createSubmission', () => {
     expect(MockTransaction.commit).not.toHaveBeenCalled();
   });
 
-  it('rejects a future queuedAt with a 422 and does not commit', async () => {
-    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm({ enabled: true }));
+  it('clamps a future queuedAt and still accepts the replay (schedule skipped, commits)', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(formSchedule));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
     service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
 
     const data = { draft: false, submission: { data: {} }, queuedAt: new Date(Date.now() + 3600000).toISOString() };
-    await expect(service.createSubmission('123', data, currentUser, dedupOptions)).rejects.toMatchObject({ status: 422 });
+    await service.createSubmission('123', data, currentUser, dedupOptions);
 
-    expect(MockTransaction.commit).not.toHaveBeenCalled();
+    // Future timestamp is clamped, not rejected: the replay is honoured (schedule skipped) and commits.
+    expect(validateSubmissionSchedule).not.toHaveBeenCalled();
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+});
+
+describe('_resolveQueuedAt', () => {
+  const offlineForm = { enableOfflineSubmission: true };
+  const dedupKey = '11111111-1111-4111-8111-111111111111';
+
+  it('returns null when queuedAt is absent', () => {
+    expect(service._resolveQueuedAt(undefined, dedupKey, offlineForm)).toBeNull();
+  });
+
+  it('returns null without a dedupKey (a live submission cannot skip the schedule)', () => {
+    expect(service._resolveQueuedAt(new Date().toISOString(), undefined, offlineForm)).toBeNull();
+  });
+
+  it('returns null when the form does not have offline submission enabled', () => {
+    expect(service._resolveQueuedAt(new Date().toISOString(), dedupKey, { enableOfflineSubmission: false })).toBeNull();
+  });
+
+  it('throws 422 for an unparseable timestamp', () => {
+    expect.assertions(1);
+    try {
+      service._resolveQueuedAt('not-a-date', dedupKey, offlineForm);
+    } catch (e) {
+      expect(e.status).toBe(422);
+    }
+  });
+
+  it('normalizes a valid past timestamp to an ISO string', () => {
+    const past = new Date(Date.now() - 60000);
+    const result = service._resolveQueuedAt(past.toISOString(), dedupKey, offlineForm);
+    expect(result).toBe(past.toISOString());
+    expect(typeof result).toBe('string');
+  });
+
+  it('normalizes a numeric (epoch ms) timestamp to an ISO string', () => {
+    const ms = Date.now() - 60000;
+    const result = service._resolveQueuedAt(ms, dedupKey, offlineForm);
+    expect(result).toBe(new Date(ms).toISOString());
+  });
+
+  it('clamps a future timestamp back to now', () => {
+    const before = Date.now();
+    const result = service._resolveQueuedAt(new Date(before + 3600000).toISOString(), dedupKey, offlineForm);
+    const resultMs = new Date(result).getTime();
+    expect(resultMs).toBeLessThanOrEqual(Date.now());
+    expect(resultMs).toBeGreaterThanOrEqual(before);
   });
 });
 
