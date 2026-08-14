@@ -1936,6 +1936,48 @@ describe('createSubmission', () => {
     expect(validateSubmissionSchedule).not.toHaveBeenCalled();
     expect(MockTransaction.commit).toBeCalledTimes(1);
   });
+
+  it('persists the resolved queuedAt and passed-in dedupKey on the FormSubmission row', async () => {
+    const past = pastQueuedAt();
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(null));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: past };
+    await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    // FormSubmission.insert is the first insert in the flow; the two subsequent
+    // inserts are FormSubmissionUser and FormSubmissionStatus, which use their
+    // own model mocks. Inspect the row shape here to prove the resolved
+    // queuedAt and passed-in dedupKey actually landed on the persisted row.
+    const submissionRow = FormSubmission.insert.mock.calls[0][0];
+    expect(submissionRow.queuedAt).toBe(past);
+    expect(submissionRow.dedupKey).toBe(dedupOptions.dedupKey);
+  });
+
+  it('persists a null queuedAt and null dedupKey on a live (non-replay) submission', async () => {
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: null,
+      enableOfflineSubmission: false,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    // A live submission with a stray queuedAt in the body: must be ignored.
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser);
+
+    const submissionRow = FormSubmission.insert.mock.calls[0][0];
+    expect(submissionRow.queuedAt).toBeNull();
+    expect(submissionRow.dedupKey).toBeNull();
+  });
 });
 
 describe('_resolveQueuedAt', () => {

@@ -190,4 +190,75 @@ describe('offline/queue', () => {
       expect(result.total).toBe(0);
     });
   });
+
+  describe('update', () => {
+    it('refuses to mutate a SYNCING entry (returns null, IDB unchanged)', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      const entry = await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: { data: { orig: true } } });
+      entry.status = QueueStatus.SYNCING;
+      const snapshotBefore = JSON.parse(JSON.stringify(store.get('chefs_offline_queue')));
+      // Force IDB to reflect the SYNCING flip so update() sees it too.
+      store.set('chefs_offline_queue', JSON.parse(JSON.stringify(offlineQueue.entries.value)));
+
+      const result = await offlineQueue.update(entry.id, { body: { data: { orig: false } }, note: 'new note' });
+
+      expect(result).toBeNull();
+      // The in-memory entry body must not have been swapped out under a running drain.
+      expect(offlineQueue.entries.value[0].body).toEqual({ data: { orig: true } });
+      // And the pre-update snapshot's body still matches (no mutation).
+      expect(snapshotBefore[0].body).toEqual({ data: { orig: true } });
+    });
+
+    it('preserves id / dedupKey / queuedAt / formId / versionId / userId / formName / showConfirmationId and resets status to PENDING', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      const original = await offlineQueue.enqueue({
+        formId: 'f1',
+        formName: 'Contact',
+        versionId: 'v1',
+        userId: 'u1',
+        body: { data: { a: 1 } },
+        showConfirmationId: true,
+        dedupKey: 'dk-abc',
+      });
+      // Push it to FAILED_VALIDATION to prove update() resets status back to PENDING.
+      await offlineQueue.markFailed(original.id, QueueStatus.FAILED_VALIDATION, 'boom');
+
+      const updated = await offlineQueue.update(original.id, { body: { data: { a: 2 } }, note: 'edited' });
+
+      expect(updated.id).toBe(original.id);
+      expect(updated.dedupKey).toBe(original.dedupKey);
+      expect(updated.queuedAt).toBe(original.queuedAt);
+      expect(updated.formId).toBe(original.formId);
+      expect(updated.formName).toBe(original.formName);
+      expect(updated.versionId).toBe(original.versionId);
+      expect(updated.userId).toBe(original.userId);
+      expect(updated.showConfirmationId).toBe(true);
+      // Only body / note / status / lastError change.
+      expect(updated.body).toEqual({ data: { a: 2 } });
+      expect(updated.note).toBe('edited');
+      expect(updated.status).toBe(QueueStatus.PENDING);
+      expect(updated.lastError).toBeNull();
+    });
+
+    it('returns null for an unknown id (no throw)', async () => {
+      const { offlineQueue } = await freshQueue();
+      await expect(offlineQueue.update('does-not-exist', { body: {}, note: null })).resolves.toBeNull();
+    });
+  });
+
+  describe('ensureLoaded', () => {
+    it('reads IDB only once across repeated calls', async () => {
+      const { offlineQueue } = await freshQueue();
+      const idb = await import('idb-keyval');
+      idb.get.mockClear();
+
+      await offlineQueue.ensureLoaded();
+      await offlineQueue.ensureLoaded();
+      await offlineQueue.ensureLoaded();
+
+      // A second read would re-init cross-tab handlers and race with any in-flight
+      // drain. The guard MUST be a one-shot.
+      expect(idb.get).toHaveBeenCalledTimes(1);
+    });
+  });
 });
