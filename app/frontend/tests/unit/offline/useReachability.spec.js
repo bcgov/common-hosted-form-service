@@ -21,36 +21,24 @@ afterEach(() => {
 
 describe('offline/useReachability', () => {
   describe('probeReachability', () => {
-    it('sets reachable=true on a 200', async () => {
-      fetchMock.mockResolvedValueOnce({ ok: true, status: 200 });
+    // 503 maps to reachable=true on purpose: /config is 503-exempt at the
+    // backend, and statusService returns 503 whenever ClamAV/NATS is unhealthy.
+    // Treating that as "offline" would trip offline mode on every sidecar
+    // hiccup, which is the exact bug the 503-is-still-reachable rule prevents.
+    it.each([
+      { desc: 'a 200', response: { ok: true, status: 200 }, expected: true },
+      { desc: 'a 503 (backend up; sidecar 503 is a valid liveness ping)', response: { ok: false, status: 503 }, expected: true },
+      { desc: 'a 500 (and other non-2xx / non-503)', response: { ok: false, status: 500 }, expected: false },
+      { desc: 'a network error (fetch rejects)', reject: true, expected: false },
+    ])('sets reachable=$expected on $desc', async ({ response, reject, expected }) => {
+      if (reject) {
+        fetchMock.mockRejectedValueOnce(new Error('offline'));
+      } else {
+        fetchMock.mockResolvedValueOnce(response);
+      }
       const { probeReachability, reachable } = await freshModule();
       await probeReachability();
-      expect(reachable.value).toBe(true);
-    });
-
-    it('sets reachable=true on a 503 (backend is up; sidecar 503 is a valid liveness ping)', async () => {
-      // /config is 503-exempt at the backend, and statusService returns 503
-      // whenever ClamAV/NATS is unhealthy. Treating that as "offline" would
-      // trip offline mode on every sidecar hiccup, which is the exact bug this
-      // 503-is-still-reachable rule is here to prevent.
-      fetchMock.mockResolvedValueOnce({ ok: false, status: 503 });
-      const { probeReachability, reachable } = await freshModule();
-      await probeReachability();
-      expect(reachable.value).toBe(true);
-    });
-
-    it('sets reachable=false on a 500 (and other non-2xx / non-503)', async () => {
-      fetchMock.mockResolvedValueOnce({ ok: false, status: 500 });
-      const { probeReachability, reachable } = await freshModule();
-      await probeReachability();
-      expect(reachable.value).toBe(false);
-    });
-
-    it('sets reachable=false when fetch rejects (network error)', async () => {
-      fetchMock.mockRejectedValueOnce(new Error('offline'));
-      const { probeReachability, reachable } = await freshModule();
-      await probeReachability();
-      expect(reachable.value).toBe(false);
+      expect(reachable.value).toBe(expected);
     });
 
     it('attaches an AbortController signal to the fetch call', async () => {
