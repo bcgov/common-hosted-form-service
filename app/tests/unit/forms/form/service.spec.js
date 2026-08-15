@@ -1978,6 +1978,59 @@ describe('createSubmission', () => {
     expect(submissionRow.queuedAt).toBeNull();
     expect(submissionRow.dedupKey).toBeNull();
   });
+
+  it('forces deleted:false and updatedBy:null even when the client sets them in the body (F12)', async () => {
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: null,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, deleted: true, updatedBy: 'attacker@idir' };
+    await service.createSubmission('123', data, currentUser);
+
+    const submissionRow = FormSubmission.insert.mock.calls[0][0];
+    expect(submissionRow.deleted).toBe(false);
+    expect(submissionRow.updatedBy).toBeNull();
+  });
+
+  it('replays the concurrent winner (returns its submission) when the dedupKey insert races into a unique violation (F11)', async () => {
+    const { UniqueViolationError } = require('objection');
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(null));
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    // The losing insert hits the unique(dedupKey) constraint.
+    FormSubmission.insert = jest.fn(() => {
+      throw new UniqueViolationError({ nativeError: new Error('duplicate dedupKey'), client: 'pg' });
+    });
+    // The concurrent winner's row, created by the SAME user.
+    FormSubmission.findOne = jest.fn().mockResolvedValueOnce({ id: 'winner-id', createdBy: currentUser.usernameIdp, dedupKey: dedupOptions.dedupKey });
+    const replayed = { id: 'winner-id', submission: { data: {} } };
+    service.readSubmission = jest.fn().mockResolvedValueOnce(replayed);
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    const result = await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    expect(result).toBe(replayed);
+    expect(MockTransaction.commit).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 on a dedupKey unique-violation race when the winner is a different user (F11 fail-closed)', async () => {
+    const { UniqueViolationError } = require('objection');
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(null));
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    FormSubmission.insert = jest.fn(() => {
+      throw new UniqueViolationError({ nativeError: new Error('duplicate dedupKey'), client: 'pg' });
+    });
+    FormSubmission.findOne = jest.fn().mockResolvedValueOnce({ id: 'x', createdBy: 'someone-else@idir', dedupKey: dedupOptions.dedupKey });
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await expect(service.createSubmission('123', data, currentUser, dedupOptions)).rejects.toMatchObject({ status: 409 });
+  });
 });
 
 describe('_resolveQueuedAt', () => {
