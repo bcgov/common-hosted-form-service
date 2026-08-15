@@ -3529,8 +3529,27 @@ describe('_setEnableOfflineSubmission', () => {
     expect(service._setEnableOfflineSubmission(formData)).toBe(false);
   });
 
-  it('returns false when identityProviders is missing', () => {
-    const formData = { enableOfflineSubmission: true };
+  it('preserves true for a team form (empty identityProviders array, i.e. "Specific People")', () => {
+    // Team forms legitimately carry an empty identityProviders array; offline
+    // submission must still persist on them. Regression: a stricter guard used to
+    // force this false, breaking offline for every "Specific Teams" form.
+    const formData = {
+      identityProviders: [],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(true);
+  });
+
+  it('returns false for a team form when enableOfflineSubmission is false', () => {
+    const formData = {
+      identityProviders: [],
+      enableOfflineSubmission: false,
+    };
     expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('honors the flag when identityProviders is missing (treated as non-public)', () => {
+    const formData = { enableOfflineSubmission: true };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(true);
   });
 });
