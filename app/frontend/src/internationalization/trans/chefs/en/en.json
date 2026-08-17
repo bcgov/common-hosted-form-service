@@ -1629,6 +1629,7 @@
     "reauthDrainConfirmTitle": "Sign-in successful",
     "reauthDrainConfirmBody": "Send {count} saved submission(s) now?",
     "reauthDrainSend": "Send",
-    "reauthDrainCancel": "Cancel"
+    "reauthDrainCancel": "Cancel",
+    "idbUnavailableNotice": "Offline submission isn't available in this browser (local storage is disabled). Submissions require an active connection."
   }
 }

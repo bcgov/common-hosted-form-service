@@ -144,6 +144,7 @@ watch(
               icon
               v-bind="props"
               size="x-small"
+              :disabled="!online"
               :title="
                 bulkFile
                   ? $t('trans.formViewerActions.switchSingleSubmssn')

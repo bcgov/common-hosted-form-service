@@ -31,6 +31,10 @@ const STATUS_TO_FAILED = {
 
 const entries = ref([]);
 let loaded = false;
+// Firefox Private Browsing and GPO-locked browsers can throw on IDB open, not
+// just on later ops; probe once at first ensureLoaded and expose the result so
+// callers can degrade the offline UX instead of silently failing.
+export const idbAvailable = ref(true);
 // Set while THIS tab is draining so we ignore other tabs' change broadcasts
 // (we own the authoritative state during our own drain).
 let localDraining = false;
@@ -92,9 +96,18 @@ async function lockedEditIds() {
 
 async function ensureLoaded() {
   if (loaded) return;
-  const stored = (await get(STORAGE_KEY)) || [];
-  entries.value = Array.isArray(stored) ? stored : [];
+  try {
+    const stored = (await get(STORAGE_KEY)) || [];
+    entries.value = Array.isArray(stored) ? stored : [];
+    idbAvailable.value = true;
+  } catch {
+    // IDB unavailable (Firefox Private Browsing, GPO-locked, quota=0);
+    // downstream callers gate on idbAvailable and surface a user notice.
+    idbAvailable.value = false;
+    entries.value = [];
+  }
   loaded = true;
+  if (!idbAvailable.value) return;
   initCrossTab();
   await recoverStaleSyncing();
 }
@@ -186,6 +199,11 @@ async function enqueue({
   dedupKey = uuidv4(),
 }) {
   await ensureLoaded();
+  if (!idbAvailable.value) {
+    const err = new Error('IndexedDB unavailable');
+    err.code = 'IDB_UNAVAILABLE';
+    throw err;
+  }
   if (countForForm(formId) >= QUEUE_SOFT_CAP) {
     const err = new Error('Offline submission cap reached');
     err.code = 'QUEUE_CAP';
@@ -329,6 +347,7 @@ async function flush(httpPost, onProgress, onEntryFailed, onStart) {
 // coordinated via Web Locks inside flush().
 export const offlineQueue = {
   entries,
+  idbAvailable,
   ensureLoaded,
   enqueue,
   update,
