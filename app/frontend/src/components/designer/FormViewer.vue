@@ -923,7 +923,18 @@ async function loadOfflineEntryForEdit(entryId) {
         formSchema.value
       );
     } catch (error) {
-      handleGetFormSchemaError(error);
+      // Schema couldn't load (e.g. offline with no cached schema). Abort the
+      // edit cleanly instead of leaving the banner over an empty form, where
+      // Save would overwrite the queued entry with no submission data.
+      offlineQueue.endEdit(entry.id);
+      editingEntry.value = null;
+      notificationStore.addNotification({
+        text: t('trans.offlineSubmission.editEntryUnavailable'),
+      });
+      await router.replace({
+        name: 'FormSubmit',
+        query: { f: properties.formId },
+      });
       return;
     }
   }
