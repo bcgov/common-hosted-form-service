@@ -1019,7 +1019,7 @@ async function tryQueueOffline(sub, dedupKey) {
   }
 }
 
-async function queueSubmissionOffline(sub, isDraft = false, dedupKey) {
+async function queueSubmissionOffline(sub, isDraft, dedupKey) {
   const entry = await offlineQueue.enqueue({
     formId: properties.formId,
     formName: form.value?.name,
