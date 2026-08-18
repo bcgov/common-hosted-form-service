@@ -212,6 +212,42 @@ exports.down = function (knex) {
         GROUP BY f.id, f.name, f.active, f.description, f.labels, f."createdAt", f."createdBy", f."updatedAt", f."updatedBy", fv.id, fv.version, fv.published, fv."updatedAt"`)
     )
     .then(() =>
+      knex.schema.raw(`CREATE OR REPLACE VIEW public.user_form_roles_vw
+      AS SELECT fru."userId",
+          fru."formId",
+          array_agg(DISTINCT fru.role) AS roles
+         FROM form_role_user fru
+        GROUP BY fru."userId", fru."formId"
+      UNION
+       SELECT u2.id AS "userId",
+          f2.id AS "formId",
+          '{}'::character varying[] AS roles
+         FROM form_vw f2,
+          "user" u2
+        WHERE NOT EXISTS (
+          SELECT 1 FROM form_role_user fru2
+          WHERE fru2."formId" = f2.id AND fru2."userId" = u2.id);`)
+    )
+    .then(() =>
+      knex.schema.raw(`CREATE OR REPLACE VIEW public.user_form_permissions_vw
+        AS SELECT fru."userId",
+            fru."formId",
+            array_agg(DISTINCT p.code) AS permissions
+           FROM form_role_user fru
+             JOIN role_permission rp ON fru.role::text = rp.role::text
+             JOIN permission p ON rp.permission::text = p.code::text
+          GROUP BY fru."userId", fru."formId"
+        UNION
+         SELECT u2.id AS "userId",
+            f2.id AS "formId",
+            '{submission_create,form_read}'::character varying[] AS permissions
+           FROM form_vw f2,
+            "user" u2
+          WHERE NOT EXISTS (
+            SELECT 1 FROM form_role_user fru2
+            WHERE fru2."formId" = f2.id AND fru2."userId" = u2.id);`)
+    )
+    .then(() =>
       knex.schema.raw(`CREATE OR REPLACE VIEW public.public_form_access_vw
       AS SELECT NULL::text AS "userId",
           NULL::text AS "idpUserId",
