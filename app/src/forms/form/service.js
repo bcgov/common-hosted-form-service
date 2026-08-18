@@ -215,6 +215,17 @@ const service = {
     const isPublicForm = formData.identityProviders && Array.isArray(formData.identityProviders) && formData.identityProviders.some((idp) => idp.code === 'public');
     return !isPublicForm && !falsey(formData.allowSubmitterToUploadFile);
   },
+  _setEnableOfflineSubmission: (formData) => {
+    // Offline submission requires an authenticated user to sync the queue, so it
+    // is never allowed on public forms. Force it off here so the persisted state
+    // is consistent regardless of how the row was written (UI, raw API call,
+    // hand-edited), and so a form switched to public can't retain a stale true.
+    // Fail closed: only enable when there is at least one identity provider and
+    // none of them is public.
+    const idps = Array.isArray(formData.identityProviders) ? formData.identityProviders : [];
+    const isPublicForm = idps.some((idp) => idp.code === 'public');
+    return idps.length > 0 && !isPublicForm && formData.enableOfflineSubmission === true;
+  },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -272,7 +283,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterRevision = data.enableSubmitterRevision;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
-      obj.enableOfflineSubmission = data.enableOfflineSubmission;
+      obj.enableOfflineSubmission = service._setEnableOfflineSubmission(data);
       obj.enableTeamMemberDraftShare = data.enableTeamMemberDraftShare;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
@@ -380,7 +391,7 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterRevision: data.enableSubmitterRevision,
         enableSubmitterDraft: data.enableSubmitterDraft,
-        enableOfflineSubmission: data.enableOfflineSubmission,
+        enableOfflineSubmission: service._setEnableOfflineSubmission(data),
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
         enableSubmissionUrlSharing: sharingOn,

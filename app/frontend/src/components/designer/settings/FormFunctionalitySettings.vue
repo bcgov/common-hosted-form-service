@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
@@ -65,6 +65,22 @@ const disabledStates = computed(() => {
       hasFileComponent.value,
   };
 });
+
+// Offline submission is invalid on public forms. If the form is switched to
+// public, clear the flag so the stored value matches the (now disabled)
+// checkbox instead of silently persisting a stale true. The server enforces
+// this on save too; this just keeps the UI honest beforehand.
+watch(
+  () => form.value.userType,
+  (userType) => {
+    if (
+      userType === IdentityMode.PUBLIC &&
+      form.value.enableOfflineSubmission
+    ) {
+      form.value.enableOfflineSubmission = false;
+    }
+  }
+);
 
 // Dependency handlers
 function enableSubmitterDraftChanged() {
