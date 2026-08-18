@@ -195,6 +195,16 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
+              // ?fresh=<ts> from "Start another"; skip preFlightAuth offline
+              // (FormViewer rehydrates schema from cache).
+              if (
+                to.query.fresh &&
+                typeof navigator !== 'undefined' &&
+                !navigator.onLine
+              ) {
+                next();
+                return;
+              }
               preFlightAuth({ formId: to.query.f }, next);
             },
           },
@@ -208,6 +218,14 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
+              // s=pending-<uuid> has no server submission yet; skip preFlightAuth.
+              const isPending =
+                typeof to.query.s === 'string' &&
+                to.query.s.startsWith('pending-');
+              if (isPending) {
+                next();
+                return;
+              }
               preFlightAuth({ submissionId: to.query.s }, next);
             },
           },
