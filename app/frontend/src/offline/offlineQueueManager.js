@@ -4,6 +4,7 @@ import { ref, watch } from 'vue';
 import { i18n } from '~/internationalization';
 import formService from '~/services/formService';
 import { offlineQueue } from '~/offline/queue';
+import { isPrimary, startPrimaryElection } from '~/offline/tabPrimary';
 import { reachable, startReachabilityMonitor } from '~/offline/useReachability';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
@@ -63,6 +64,9 @@ async function postEntry(entry) {
 }
 
 export async function tryDrain() {
+  // Only the primary (last-focused) tab drains, so SyncProgressModal,
+  // ReauthRequiredModal, and drain toasts surface in the tab the user is on.
+  if (!isPrimary.value) return;
   if (isDraining.value) return;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   if (!reachable.value) return;
@@ -161,6 +165,10 @@ export function startOfflineQueueManager() {
   if (started) return;
   started = true;
 
+  // Elect a primary tab so drain-side UI (progress, reauth prompt, toasts)
+  // only surfaces in the tab the user is looking at.
+  startPrimaryElection();
+
   // Reachability probe is our source of truth for "can I reach the API";
   // start it before the drain loop so tryDrain gates on real state.
   startReachabilityMonitor();
@@ -180,6 +188,12 @@ export function startOfflineQueueManager() {
   watch(reachable, (isReachable) => {
     if (!isReachable) return;
     clearReauthSnooze();
+    tryDrain();
+  });
+  // Drain immediately when this tab becomes primary (e.g. user just switched
+  // focus to us), so remaining entries don't sit until the next 30s tick.
+  watch(isPrimary, (primary) => {
+    if (!primary) return;
     tryDrain();
   });
   tick();

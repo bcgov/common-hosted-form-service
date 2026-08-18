@@ -17,7 +17,12 @@ import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
 import { v4 as uuidv4 } from 'uuid';
-import { offlineQueue, QueueStatus, QUEUE_SOFT_CAP } from '~/offline/queue';
+import {
+  offlineQueue,
+  QueueStatus,
+  QUEUE_SOFT_CAP,
+  idbAvailable,
+} from '~/offline/queue';
 import { tryDrain } from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
 import templateExtensions from '~/plugins/templateExtensions';
@@ -38,6 +43,9 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 const route = useRoute();
 const router = useRouter();
+
+const IDB_UNAVAILABLE_NOTICE_KEY =
+  'trans.offlineSubmission.idbUnavailableNotice';
 
 const emit = defineEmits(['submission-updated', 'access-denied']);
 
@@ -278,6 +286,13 @@ onMounted(async () => {
   }
   window.addEventListener('beforeunload', beforeWindowUnload);
   reRenderFormIo.value += 1;
+  await offlineQueue.ensureLoaded();
+  if (form.value?.enableOfflineSubmission && !idbAvailable.value) {
+    notificationStore.addNotification({
+      text: t(IDB_UNAVAILABLE_NOTICE_KEY),
+      ...NotificationTypes.WARNING,
+    });
+  }
 });
 
 onBeforeUnmount(() => {
@@ -602,6 +617,9 @@ async function queueDraftOffline(sub, dedupKey) {
     });
     return undefined;
   } catch (queueError) {
+    if (queueError.code === 'IDB_UNAVAILABLE') {
+      return t(IDB_UNAVAILABLE_NOTICE_KEY);
+    }
     return queueError.code === 'QUEUE_CAP'
       ? t('trans.offlineSubmission.errorAtCap', { cap: QUEUE_SOFT_CAP })
       : extractErrorMessage(queueError);
@@ -613,6 +631,13 @@ async function saveDraft() {
   if (isEditingOfflineEntry.value) return;
   const isNewSubmission = !properties.submissionId || properties.isDuplicate;
   if (form.value.enableOfflineSubmission && isNewSubmission && !online.value) {
+    if (!idbAvailable.value) {
+      notificationStore.addNotification({
+        text: t(IDB_UNAVAILABLE_NOTICE_KEY),
+        ...NotificationTypes.WARNING,
+      });
+      return;
+    }
     queueNote.value = '';
     queueConfirmIsDraft.value = true;
     showSubmitConfirmDialog.value = true;
@@ -762,6 +787,17 @@ function onSubmitButton(event) {
   if (isEditingOfflineEntry.value) return;
   // if form has drafts enabled in form settings, show 'confirm submit?' dialog.
   // Also show offline so the user knows their submission will be queued.
+  const idbBlocked =
+    form.value.enableOfflineSubmission && !online.value && !idbAvailable.value;
+  if (idbBlocked) {
+    notificationStore.addNotification({
+      text: t(IDB_UNAVAILABLE_NOTICE_KEY),
+      ...NotificationTypes.WARNING,
+    });
+    // Leave showSubmitConfirmDialog/confirmSubmit false so onBeforeSubmit's
+    // wait loop skips and it re-renders form.io to cancel the pending submit.
+    return;
+  }
   if (
     form.value.enableSubmitterDraft ||
     (form.value.enableOfflineSubmission && !online.value)
@@ -889,17 +925,22 @@ function isNetworkError(error) {
 async function loadOfflineEntryForEdit(entryId) {
   await offlineQueue.ensureLoaded();
   const entry = offlineQueue.entries.value.find((e) => e.id === entryId);
-  if (
-    !entry ||
-    entry.formId !== properties.formId ||
-    entry.status === QueueStatus.SYNCING
-  ) {
+  if (!entry || entry.status === QueueStatus.SYNCING) {
     notificationStore.addNotification({
       text: t('trans.offlineSubmission.editEntryUnavailable'),
     });
     await router.replace({
       name: 'FormSubmit',
       query: { f: properties.formId },
+    });
+    return;
+  }
+  if (entry.formId !== properties.formId) {
+    // Wrong form for this FormViewer instance; silently reroute to the entry's
+    // form so the Submit.vue :key remount picks it up with matching formId.
+    await router.replace({
+      name: 'FormSubmit',
+      query: { f: entry.formId, editOffline: entryId },
     });
     return;
   }
@@ -1013,6 +1054,9 @@ async function tryQueueOffline(sub, dedupKey) {
     await queueSubmissionOffline(sub, false, dedupKey);
     return undefined;
   } catch (queueError) {
+    if (queueError.code === 'IDB_UNAVAILABLE') {
+      return t(IDB_UNAVAILABLE_NOTICE_KEY);
+    }
     return queueError.code === 'QUEUE_CAP'
       ? t('trans.offlineSubmission.errorAtCap', { cap: QUEUE_SOFT_CAP })
       : extractErrorMessage(queueError);
