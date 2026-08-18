@@ -4,6 +4,7 @@ import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useAuthStore } from '~/store/auth';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
@@ -132,12 +133,14 @@ describe('FormFunctionalitySettings.vue', () => {
   setActivePinia(pinia);
 
   const authStore = useAuthStore(pinia);
+  const featureFlagStore = useFeatureFlagStore(pinia);
   const formStore = useFormStore(pinia);
   const idpStore = useIdpStore(pinia);
   const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     authStore.$reset();
+    featureFlagStore.$reset();
     formStore.$reset();
     idpStore.$reset();
     appStore.$reset();
@@ -632,5 +635,27 @@ describe('FormFunctionalitySettings.vue', () => {
     await nextTick();
 
     expect(formStore.form.enableOfflineSubmission).toBe(false);
+  });
+
+  it('does not render the offline submission checkbox when the offlineForms feature is not active', () => {
+    const wrapper = mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    expect(
+      wrapper.find('[data-test="enableOfflineSubmissionCheckbox"]').exists()
+    ).toBe(false);
+  });
+
+  it('renders the offline submission checkbox when offlineForms is active', () => {
+    featureFlagStore.active = { offlineForms: true };
+
+    const wrapper = mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    expect(
+      wrapper.find('[data-test="enableOfflineSubmissionCheckbox"]').exists()
+    ).toBe(true);
   });
 });

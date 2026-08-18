@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useTenantStore } from '~/store/tenant';
@@ -33,9 +34,18 @@ const githubLinkWideFormLayout = ref(
 );
 
 const authStore = useAuthStore();
+const featureFlagStore = useFeatureFlagStore();
 const formStore = useFormStore();
 const idpStore = useIdpStore();
 const tenantStore = useTenantStore();
+
+// Offline submission is experimental and staged behind the `offlineForms`
+// feature flag (enabled globally AND allowlisted for this form/tenant). The
+// FormDesigner calls resolveForContext() on load, so isActive() is populated
+// by the time this renders.
+const offlineFormsActive = computed(() =>
+  featureFlagStore.isActive('offlineForms')
+);
 
 const { identityProvider } = storeToRefs(authStore);
 const { form, isRTL } = storeToRefs(formStore);
@@ -126,8 +136,9 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Offline Submission -->
+    <!-- Offline Submission (experimental; gated by the offlineForms feature flag) -->
     <v-checkbox
+      v-if="offlineFormsActive"
       v-model="form.enableOfflineSubmission"
       :disabled="disabledStates.offline"
       hide-details="auto"
