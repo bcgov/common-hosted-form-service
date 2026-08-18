@@ -13,33 +13,25 @@ function setNavigatorOnline(value) {
 }
 
 describe('offline/useOnlineStatus', () => {
-  it('online === true only when both networkOnline and reachable are true', async () => {
-    setNavigatorOnline(true);
-    reachable.value = true;
-    await nextTick();
-    const { online } = useOnlineStatus();
-    expect(online.value).toBe(true);
-  });
-
-  it('online === false when networkOnline is true but reachable is false (WSL2/VPN regression)', async () => {
-    // This is the exact case the reachability probe exists to catch:
-    // navigator.onLine lies about "the interface is up" while the backend is
-    // unreachable. If the composition ignored `reachable`, the offline UX
-    // would never engage on WSL2 / VPN-attached machines.
-    setNavigatorOnline(true);
-    reachable.value = false;
-    await nextTick();
-    const { online } = useOnlineStatus();
-    expect(online.value).toBe(false);
-  });
-
-  it('online === false when the network is offline even if reachable is true', async () => {
-    setNavigatorOnline(false);
-    reachable.value = true;
-    await nextTick();
-    const { online } = useOnlineStatus();
-    expect(online.value).toBe(false);
-  });
+  // online is the logical AND of networkOnline and reachable. The
+  // (networkOnline=true, reachable=false) row is the exact WSL2/VPN regression
+  // the reachability probe exists to catch: navigator.onLine reports the
+  // interface is up while the backend is unreachable, so if the composition
+  // ignored `reachable` the offline UX would never engage.
+  it.each([
+    { net: true, reach: true, expected: true },
+    { net: true, reach: false, expected: false },
+    { net: false, reach: true, expected: false },
+  ])(
+    'online === $expected when networkOnline=$net and reachable=$reach',
+    async ({ net, reach, expected }) => {
+      setNavigatorOnline(net);
+      reachable.value = reach;
+      await nextTick();
+      const { online } = useOnlineStatus();
+      expect(online.value).toBe(expected);
+    }
+  );
 
   it('returns the SAME underlying refs across calls (shared module-scope state, not per-caller)', () => {
     // If each call returned its own refs, one component's reachable flip would
