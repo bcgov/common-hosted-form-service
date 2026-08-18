@@ -7,7 +7,7 @@ import { offlineQueue, QueueStatus } from '~/offline/queue';
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'edit']);
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -27,6 +27,11 @@ function close() {
 
 function promptDiscard(entry) {
   discardCandidate.value = entry;
+}
+
+function requestEdit(entry) {
+  emit('edit', entry);
+  close();
 }
 
 async function confirmDiscard() {
@@ -100,6 +105,18 @@ function statusLabel(status) {
           >
             <div class="pending-row-body">
               <div class="pending-row-title">
+                <v-chip
+                  size="x-small"
+                  variant="tonal"
+                  :color="entry.body?.draft ? 'warning' : 'primary'"
+                  class="pending-row-chip"
+                  :lang="locale"
+                  >{{
+                    entry.body?.draft
+                      ? t('trans.offlineSubmission.rowChipDraft')
+                      : t('trans.offlineSubmission.rowChipSubmission')
+                  }}</v-chip
+                >
                 <template v-if="entry.note">{{ entry.note }}</template>
                 <i18n-t
                   v-else-if="entry.formName"
@@ -119,6 +136,17 @@ function statusLabel(status) {
                 · {{ statusLabel(entry.status) }}
               </div>
             </div>
+            <v-btn
+              class="pending-row-edit"
+              icon="mdi:mdi-pencil-outline"
+              variant="text"
+              density="comfortable"
+              color="primary"
+              :disabled="entry.status === QueueStatus.SYNCING"
+              :title="t('trans.offlineSubmission.pendingEditButton')"
+              data-test="pending-edit"
+              @click="requestEdit(entry)"
+            />
             <v-btn
               class="pending-row-discard"
               icon="mdi:mdi-trash-can-outline"
@@ -164,6 +192,18 @@ function statusLabel(status) {
           class="pending-discard-target"
           :lang="locale"
         >
+          <v-chip
+            size="x-small"
+            variant="tonal"
+            :color="discardCandidate.body?.draft ? 'warning' : 'primary'"
+            class="pending-row-chip"
+            :lang="locale"
+            >{{
+              discardCandidate.body?.draft
+                ? t('trans.offlineSubmission.rowChipDraft')
+                : t('trans.offlineSubmission.rowChipSubmission')
+            }}</v-chip
+          >
           <template v-if="discardCandidate.note">{{
             discardCandidate.note
           }}</template>
@@ -253,9 +293,18 @@ function statusLabel(status) {
     font-weight: 700;
   }
 }
-.pending-row-discard {
+.pending-row-chip {
+  margin-inline-end: 8px;
+  vertical-align: middle;
+}
+.pending-row-edit {
   flex: 0 0 auto;
   margin-inline-start: 12px;
+  margin-top: 2px;
+}
+.pending-row-discard {
+  flex: 0 0 auto;
+  margin-inline-start: 4px;
   margin-top: 2px;
 }
 .pending-actions {

@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import SubmitterRevision from '~/components/forms/submission/SubmitterRevision.vue';
 import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
-import { useSimulationToggle } from '~/offline/useSimulationToggle';
+import { useOnlineStatus } from '~/offline/useOnlineStatus';
 import { FormPermissions } from '~/utils/constants';
 
 import { useFormStore } from '~/store/form';
@@ -33,11 +33,19 @@ const properties = defineProps({
     type: Boolean,
     default: false,
   },
+  enableOfflineSubmission: {
+    type: Boolean,
+    default: false,
+  },
   formId: {
     type: String,
     default: undefined,
   },
   isDraft: {
+    type: Boolean,
+    default: false,
+  },
+  isEditingOfflineEntry: {
     type: Boolean,
     default: false,
   },
@@ -73,7 +81,7 @@ const formStore = useFormStore();
 
 const { isRTL } = storeToRefs(formStore);
 
-const { online } = useSimulationToggle();
+const { online } = useOnlineStatus();
 
 const canSaveDraft = computed(() => !properties.readOnly);
 const showEditToggle = computed(
@@ -179,7 +187,10 @@ watch(
         </v-tooltip>
       </span>
       <!-- Print options -->
-      <span class="ml-2 d-print-none">
+      <span
+        class="ml-2 d-print-none"
+        :class="{ 'is-inert': isEditingOfflineEntry }"
+      >
         <PrintOptionsWrapper
           :submission="submission"
           :submission-id="submissionId"
@@ -192,7 +203,17 @@ watch(
         v-if="canSaveDraft && draftEnabled && !bulkFile && !publicForm"
         class="ml-2"
       >
-        <v-btn color="primary" variant="outlined" @click="$emit('save-draft')">
+        <v-btn
+          color="primary"
+          variant="outlined"
+          :disabled="isEditingOfflineEntry"
+          :title="
+            enableOfflineSubmission && !online
+              ? $t('trans.offlineSubmission.saveDraftOfflineHint')
+              : undefined
+          "
+          @click="$emit('save-draft')"
+        >
           <span :lang="locale">{{
             $t('trans.formViewerActions.saveAsDraft')
           }}</span>
@@ -231,7 +252,7 @@ watch(
       </span>
 
       <!-- Manage submission users -->
-      <span v-if="draftEnabled && !publicForm" class="ml-2">
+      <span v-if="draftEnabled && !publicForm && submissionId" class="ml-2">
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"
@@ -241,3 +262,10 @@ watch(
     </div>
   </div>
 </template>
+
+<style scoped>
+.is-inert {
+  opacity: 0.5;
+  pointer-events: none;
+}
+</style>

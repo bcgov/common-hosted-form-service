@@ -158,10 +158,6 @@ defineExpose({
           name: 'FormSubmit',
           query: {
             f: item.id,
-            ...(item.enableOfflineSubmission &&
-            checkFormManage(item.permissions)
-              ? { simulateOffline: '1' }
-              : {}),
           },
         }"
         target="_blank"

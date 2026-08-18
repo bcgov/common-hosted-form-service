@@ -8,25 +8,12 @@ import { useAuthStore } from '~/store/auth';
 
 const POLL_INTERVAL_MS = 30000;
 
-// Set while the simulating-offline toggle is on; tryDrain skips while set.
-export const SIMULATE_OFFLINE_SS_KEY = 'chefs_simulate_offline';
 // Suppresses the reauth modal until the user clicks Sign In or the queue
 // changes, so the 30s poll does not nag after Not now.
 export const REAUTH_SNOOZE_SS_KEY = 'chefs_offline_reauth_snoozed';
 // Set before Keycloak redirect; on return we prompt "Send N now?" instead of
 // silently draining.
 export const REAUTH_PENDING_SS_KEY = 'chefs_offline_pending_reauth_drain';
-
-function isSimulationActive() {
-  try {
-    return (
-      typeof sessionStorage !== 'undefined' &&
-      sessionStorage.getItem(SIMULATE_OFFLINE_SS_KEY) === '1'
-    );
-  } catch {
-    return false;
-  }
-}
 
 function isReauthSnoozed() {
   try {
@@ -63,6 +50,7 @@ async function postEntry(entry) {
   offlineQueueEvents.emit('synced', {
     dedupKey: entry.dedupKey,
     submissionId: response?.data?.id,
+    isDraft: !!entry.body?.draft,
   });
   return response;
 }
@@ -71,7 +59,6 @@ export async function tryDrain() {
   if (draining) return;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   if (!reachable.value) return;
-  if (isSimulationActive()) return;
   if (offlineQueue.entries.value.length === 0) return;
 
   const authStore = useAuthStore();

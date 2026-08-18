@@ -7,6 +7,7 @@ import { useRoute, useRouter } from 'vue-router';
 import FormViewer from '~/components/designer/FormViewer.vue';
 import RequestReceipt from '~/components/forms/RequestReceipt.vue';
 import { offlineQueueEvents } from '~/offline/offlineQueueManager';
+import { offlineQueue } from '~/offline/queue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import {
@@ -39,6 +40,17 @@ const pendingKey = computed(() => {
   return null;
 });
 
+// Look up the queued entry to render draft-flavored copy while the entry
+// still lives in IDB. After drain the entry is gone; onSynced's isDraft
+// payload takes over navigation.
+const pendingIsDraft = computed(() => {
+  if (!pendingKey.value) return false;
+  const entry = offlineQueue.entries.value.find(
+    (e) => e.dedupKey === pendingKey.value
+  );
+  return !!entry?.body?.draft;
+});
+
 // Static block: sharing off + no token (strict privacy) OR hide-content.
 // RequestReceipt is suppressed on the sharing-off path (forwarding it would
 // defeat the privacy protection).
@@ -59,9 +71,17 @@ const confirmationId = computed(() =>
   props.s ? props.s.substring(0, 8).toUpperCase() : ''
 );
 
-function onSynced({ dedupKey, submissionId }) {
+function onSynced({ dedupKey, submissionId, isDraft }) {
   if (!pendingKey.value || !submissionId) return;
   if (dedupKey !== pendingKey.value) return;
+  if (isDraft) {
+    // Drafts land in the user's drafts list; there is no canonical success view.
+    router.replace({
+      name: 'UserFormDraftEdit',
+      query: { s: submissionId, sv: true },
+    });
+    return;
+  }
   // Swap synthetic id for real one so reloads land on the canonical Success page.
   router.replace({
     name: 'FormSuccess',
@@ -75,9 +95,6 @@ function startAnother() {
     query: {
       f: route.query.f,
       fresh: Date.now(),
-      ...(route.query.simulateOffline
-        ? { simulateOffline: route.query.simulateOffline }
-        : {}),
     },
   });
 }
@@ -106,10 +123,18 @@ onBeforeUnmount(() => {
         color="warning"
         icon="mdi:mdi-cloud-upload-outline"
       ></v-icon>
-      {{ t('trans.offlineSubmission.successPendingTitle') }}
+      {{
+        pendingIsDraft
+          ? t('trans.offlineSubmission.successPendingDraftTitle')
+          : t('trans.offlineSubmission.successPendingTitle')
+      }}
     </h1>
     <p :lang="locale">
-      {{ t('trans.offlineSubmission.successPendingMessage') }}
+      {{
+        pendingIsDraft
+          ? t('trans.offlineSubmission.successPendingDraftMessage')
+          : t('trans.offlineSubmission.successPendingMessage')
+      }}
     </p>
     <v-btn color="primary" class="mt-4" @click="startAnother">
       {{ t('trans.offlineSubmission.successPendingStartAnother') }}

@@ -2,42 +2,47 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 
 import PendingSubmissionsModal from '~/components/forms/offline/PendingSubmissionsModal.vue';
 import { offlineQueue } from '~/offline/queue';
-import { useSimulationToggle } from '~/offline/useSimulationToggle';
+import { useOnlineStatus } from '~/offline/useOnlineStatus';
 import { useFormStore } from '~/store/form';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
+const route = useRoute();
+const router = useRouter();
 const { form } = storeToRefs(useFormStore());
-const { effectivelyOnline, canSimulateOffline, simulatingOffline } =
-  useSimulationToggle();
+const { online } = useOnlineStatus();
 
 const queuedCount = computed(() => offlineQueue.entries.value.length);
 const showPending = ref(false);
+// Suppress the pending-list opener while the user is editing a queued entry,
+// so they can't recursively open the list from the edit page.
+const isEditingOfflineEntry = computed(() => !!route?.query?.editOffline);
 
-// Visible whenever the device has queued entries (device-scoped), OR the
-// current form is offline-capable (form-scoped). Login/admin/unrelated
-// forms with an empty queue stay hidden.
+// Submitter-facing routes where the offline chip is meaningful. Excludes the
+// form editor, list of forms, and list of submissions/drafts pages.
+const OFFLINE_ROUTE_ALLOWLIST = new Set([
+  'FormSubmit',
+  'FormSuccess',
+  'UserFormDraftEdit',
+  'UserFormDuplicate',
+  'UserFormView',
+]);
+const isOfflineRoute = computed(() => OFFLINE_ROUTE_ALLOWLIST.has(route?.name));
+
+// Only show on submitter/form-related pages, and only when the current form
+// is offline-capable or the device has queued entries.
 const visible = computed(
-  () => queuedCount.value > 0 || !!form.value.enableOfflineSubmission
-);
-
-// "Really offline" = browser reports offline OR heartbeat probe is failing.
-const realOffline = computed(() => !effectivelyOnline.value);
-// Toggle button is visible when the URL grants the simulate gate OR whenever
-// the user is already simulating (so they can always exit even after
-// navigating away from a route that carried ?simulateOffline=1). Hidden
-// during real offline; there's no manual "go online" to flip to.
-const showChevron = computed(
   () =>
-    effectivelyOnline.value &&
-    (canSimulateOffline.value || simulatingOffline.value)
+    isOfflineRoute.value &&
+    (queuedCount.value > 0 || !!form.value.enableOfflineSubmission)
 );
 
 const state = computed(() => {
-  if (realOffline.value) {
+  if (!online.value) {
     return {
       color: 'white',
       variant: 'outlined',
@@ -45,16 +50,6 @@ const state = computed(() => {
       iconColor: 'warning',
       label: t('trans.offlineSubmission.offlineBadge'),
       dataTest: 'offlineBadge',
-    };
-  }
-  if (simulatingOffline.value) {
-    return {
-      color: 'white',
-      variant: 'outlined',
-      icon: 'mdi:mdi-cloud-off-outline',
-      iconColor: 'warning',
-      label: t('trans.offlineSubmission.simulatingBadge'),
-      dataTest: 'simulatingOfflineBadge',
     };
   }
   return {
@@ -67,43 +62,24 @@ const state = computed(() => {
   };
 });
 
-// External toggle icon shows the state you'll switch TO, not the current one.
-const toggleIcon = computed(() =>
-  simulatingOffline.value
-    ? 'mdi:mdi-cloud-check-outline'
-    : 'mdi:mdi-cloud-off-outline'
-);
-const toggleTooltip = computed(() =>
-  simulatingOffline.value
-    ? t('trans.offlineSubmission.goOnline')
-    : t('trans.offlineSubmission.goOffline')
-);
-
 function openQueue() {
+  if (isEditingOfflineEntry.value) return;
   showPending.value = true;
 }
 
-function toggleSimulate() {
-  simulatingOffline.value = !simulatingOffline.value;
+function onEditEntry(entry) {
+  router.push({
+    name: 'FormSubmit',
+    query: {
+      f: entry.formId,
+      editOffline: entry.id,
+    },
+  });
 }
 </script>
 
 <template>
   <div v-if="visible" class="offline-control d-flex align-center">
-    <v-tooltip v-if="showChevron" location="bottom" :text="toggleTooltip">
-      <template #activator="{ props: toggleProps }">
-        <v-btn
-          color="white"
-          variant="text"
-          class="offline-toggle-btn"
-          data-test="simulateOfflineToggle"
-          v-bind="toggleProps"
-          @click="toggleSimulate"
-        >
-          <v-icon :icon="toggleIcon" size="28" />
-        </v-btn>
-      </template>
-    </v-tooltip>
     <v-tooltip
       location="bottom"
       :text="
@@ -142,6 +118,7 @@ function toggleSimulate() {
             :color="state.color"
             :variant="state.variant"
             :data-test="state.dataTest"
+            :disabled="isEditingOfflineEntry"
             class="offline-status-btn"
             v-bind="tipProps"
             @click="openQueue"
@@ -161,7 +138,7 @@ function toggleSimulate() {
         </v-badge>
       </template>
     </v-tooltip>
-    <PendingSubmissionsModal v-model="showPending" />
+    <PendingSubmissionsModal v-model="showPending" @edit="onEditEntry" />
   </div>
 </template>
 
@@ -180,18 +157,6 @@ function toggleSimulate() {
     .offline-status-label {
       display: none;
     }
-  }
-}
-
-.offline-toggle-btn {
-  height: 32px !important;
-  width: 32px !important;
-  min-width: 32px !important;
-  padding: 0 !important;
-  margin-inline-end: 1rem;
-
-  @media (max-width: 599px) {
-    margin-inline-end: 0.5rem;
   }
 }
 
