@@ -225,7 +225,7 @@
     "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
     "enableSubmitterRevision": "Submitters can <strong>Revise their own submissions</strong> and resubmit",
     "enableOfflineSubmissionLabel": "Submitters can <strong>Submit while offline</strong> and sync on reconnect",
-    "enableOfflineSubmissionHelp": "Experimental feature. Authenticated submitters can fill and submit this form while their device is offline. Submissions are saved on the device and posted to CHEFS on reconnect. Not available for public forms or forms with file-upload components.",
+    "enableOfflineSubmissionHelp": "<strong>Experimental feature.</strong><br><br>Authenticated submitters can fill and submit this form while their device is offline. Submissions are saved on the device and posted to CHEFS on reconnect.<br><br><em>BC Government Custom components (File Upload, Map, etc.) will not function as expected when the user is offline.</em><br><br>Not available for public forms.",
     "displayAssigneeColumn": "Display assignee column for reviewers",
     "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
     "submissionConfirmationToolTip": "When checked, the success page displays the unique Confirmation ID for the submission.",
