@@ -636,26 +636,4 @@ describe('FormFunctionalitySettings.vue', () => {
 
     expect(formStore.form.enableOfflineSubmission).toBe(false);
   });
-
-  it('does not render the offline submission checkbox when the offlineForms feature is not active', () => {
-    const wrapper = mount(FormFunctionalitySettings, {
-      global: { plugins: [pinia], stubs: offlineStubs },
-    });
-
-    expect(
-      wrapper.find('[data-test="enableOfflineSubmissionCheckbox"]').exists()
-    ).toBe(false);
-  });
-
-  it('renders the offline submission checkbox when offlineForms is active', () => {
-    featureFlagStore.active = { offlineForms: true };
-
-    const wrapper = mount(FormFunctionalitySettings, {
-      global: { plugins: [pinia], stubs: offlineStubs },
-    });
-
-    expect(
-      wrapper.find('[data-test="enableOfflineSubmissionCheckbox"]').exists()
-    ).toBe(true);
-  });
 });

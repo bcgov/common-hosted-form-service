@@ -161,9 +161,11 @@ defineExpose({
                 icon="mdi:mdi-flask"
               />
             </template>
-            <span :lang="locale">
-              {{ $t('trans.formSettings.enableOfflineSubmissionHelp') }}
-            </span>
+            <span
+              :lang="locale"
+              style="display: block; max-width: 300px"
+              v-html="$t('trans.formSettings.enableOfflineSubmissionHelp')"
+            />
           </v-tooltip>
         </div>
       </template>
