@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { ref } = require('objection');
+const { ref, UniqueViolationError } = require('objection');
 const uuid = require('uuid');
 const { EmailTypes, ScheduleType, TenantRoles } = require('../common/constants');
 const eventService = require('../event/eventService');
@@ -906,9 +906,29 @@ const service = {
     const clampedMs = Math.min(parsed.getTime(), Date.now());
     return new Date(clampedMs).toISOString();
   },
+  // On a unique(dedupKey) violation from a concurrent duplicate insert, replay
+  // the winner's submission instead of surfacing a constraint-violation error.
+  // Same fail-closed identity rule as checkDedupKey: the original creator gets
+  // the cached result; a different or anonymous user gets 409. When the error
+  // isn't a dedupKey race, the original error is rethrown.
+  _replayDedupRaceOrThrow: async (err, dedupKey, createdBy) => {
+    if (dedupKey && err instanceof UniqueViolationError) {
+      const existing = await FormSubmission.query().findOne({ dedupKey });
+      if (existing) {
+        if (existing.createdBy !== 'public' && existing.createdBy === createdBy) {
+          return service.readSubmission(existing.id);
+        }
+        throw new Problem(409, {
+          detail: 'This Dedup-Key cannot be replayed: it belongs to a different user or an anonymous submission.',
+        });
+      }
+    }
+    throw err;
+  },
   createSubmission: async (formVersionId, data, currentUser, options = {}) => {
     let trx;
     let result;
+    let createdBy;
     const { dedupKey } = options;
     try {
       const formVersion = await service.readVersion(formVersionId);
@@ -928,10 +948,12 @@ const service = {
 
       // Ensure we only record the user if the form is not public facing
       const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
-      const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
+      createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
       const submissionId = uuid.v4();
-      // Body first; server-controlled fields below override.
+      // Body first; server-controlled fields below override so the client can't
+      // set them via the submission payload (e.g. deleted:true to hide the row,
+      // or a spoofed updatedBy).
       const obj = {
         ...data,
         id: submissionId,
@@ -940,6 +962,8 @@ const service = {
         createdBy: createdBy,
         queuedAt: queuedAt,
         dedupKey: dedupKey || null,
+        deleted: false,
+        updatedBy: null,
       };
 
       await FormSubmission.query(trx).insert(obj);
@@ -1018,7 +1042,9 @@ const service = {
       }
     } catch (err) {
       if (trx) await trx.rollback();
-      throw err;
+      // Concurrent-duplicate handling lives in a helper to keep this function's
+      // cognitive complexity flat; it replays the winner or rethrows.
+      return service._replayDedupRaceOrThrow(err, dedupKey, createdBy);
     }
     if (result) {
       await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.CREATED, result, data.draft);
