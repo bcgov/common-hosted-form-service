@@ -17,6 +17,7 @@ import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
 import { offlineQueue, QueueStatus, QUEUE_SOFT_CAP } from '~/offline/queue';
+import { tryDrain } from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
 import templateExtensions from '~/plugins/templateExtensions';
 import { fileService, formService, rbacService } from '~/services';
@@ -276,16 +277,15 @@ onMounted(async () => {
   }
   window.addEventListener('beforeunload', beforeWindowUnload);
   reRenderFormIo.value += 1;
-  // Prefetch Success.vue: post-queue router.push can't fetch a cold chunk
-  // once the user is offline (Firefox Work Offline hard-blocks it).
-  if (form.value?.enableOfflineSubmission && !properties.readOnly) {
-    import('~/views/form/Success.vue').catch(() => {});
-  }
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', beforeWindowUnload);
   clearTimeout(downloadTimeout.value);
+  if (editingEntry.value?.id) {
+    offlineQueue.endEdit(editingEntry.value.id);
+    tryDrain();
+  }
 });
 
 onBeforeUpdate(() => {
@@ -591,12 +591,12 @@ function jsonManager() {
 
 async function queueDraftOffline(sub) {
   try {
-    const entry = await queueSubmissionOffline(sub, true);
+    await queueSubmissionOffline(sub, true);
     await router.push({
-      name: 'FormSuccess',
+      name: 'FormSubmit',
       query: {
-        s: `pending-${entry.dedupKey}`,
         f: properties.formId,
+        fresh: Date.now(),
       },
     });
     return undefined;
@@ -900,6 +900,7 @@ async function loadOfflineEntryForEdit(entryId) {
     return;
   }
   editingEntry.value = entry;
+  offlineQueue.beginEdit(entry.id);
   const cached = formStore.getCachedFormSchema(entry.formId, entry.versionId);
   if (cached) {
     form.value = cached.form;
@@ -926,7 +927,12 @@ async function loadOfflineEntryForEdit(entryId) {
       return;
     }
   }
-  submission.value = entry.body?.submission ?? { data: {} };
+  // Deep-clone so Form.io keystrokes mutate our copy, not the queued entry
+  // (a mid-edit drain would otherwise POST the unsaved edits).
+  const cloned = entry.body?.submission
+    ? JSON.parse(JSON.stringify(entry.body.submission)) //NOSONAR
+    : { data: {} };
+  submission.value = cloned;
   queueNote.value = entry.note ?? '';
 }
 
@@ -1091,20 +1097,27 @@ async function onSubmitDone() {
   if (properties.staffEditMode) {
     // updating an existing submission on the staff side
     emit('submission-updated');
-  } else {
-    // Offline-queued submit: forward f=<formId> so "Start another" works after
-    // the entry has drained.
-    const isPending =
-      typeof submissionRecord.value.id === 'string' &&
-      submissionRecord.value.id.startsWith('pending-');
+    return;
+  }
+  const isPending =
+    typeof submissionRecord.value.id === 'string' &&
+    submissionRecord.value.id.startsWith('pending-');
+  if (isPending) {
     router.push({
-      name: 'FormSuccess',
+      name: 'FormSubmit',
       query: {
-        s: submissionRecord.value.id,
-        ...(isPending ? { f: properties.formId } : {}),
+        f: properties.formId,
+        fresh: Date.now(),
       },
     });
+    return;
   }
+  router.push({
+    name: 'FormSuccess',
+    query: {
+      s: submissionRecord.value.id,
+    },
+  });
 }
 
 // Custom Event triggered from buttons with Action type "Event"
@@ -1538,15 +1551,18 @@ async function uploadFile(file, config = {}) {
             class="mb-3 offline-edit-banner"
           >
             <div class="d-flex align-center" style="width: 100%">
-              <span :lang="locale">{{
-                editingEntry?.body?.draft
-                  ? $t('trans.offlineSubmission.editingBannerTextDraft')
-                  : $t('trans.offlineSubmission.editingBannerText')
-              }}</span>
+              <span :lang="locale">
+                {{
+                  editingEntry?.body?.draft
+                    ? $t('trans.offlineSubmission.editingBannerTextDraft')
+                    : $t('trans.offlineSubmission.editingBannerText')
+                }}
+                {{ $t('trans.offlineSubmission.editingBannerSyncPaused') }}
+              </span>
               <v-spacer />
               <v-btn
-                variant="outlined"
-                size="small"
+                color="primary"
+                variant="flat"
                 class="mr-2"
                 data-test="offline-edit-save"
                 @click="saveOfflineEntry"
@@ -1556,8 +1572,8 @@ async function uploadFile(file, config = {}) {
                 }}</span>
               </v-btn>
               <v-btn
+                color="primary"
                 variant="outlined"
-                size="small"
                 data-test="offline-edit-cancel"
                 @click="cancelOfflineEdit"
               >

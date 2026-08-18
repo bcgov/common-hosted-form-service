@@ -195,10 +195,10 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
-              // ?fresh=<ts> from "Start another"; skip preFlightAuth offline
-              // (FormViewer rehydrates schema from cache).
+              // Skip preFlightAuth offline; FormViewer rehydrates from cache.
+              const isOfflineFlow = to.query.fresh || to.query.editOffline;
               if (
-                to.query.fresh &&
+                isOfflineFlow &&
                 typeof navigator !== 'undefined' &&
                 !navigator.onLine
               ) {
@@ -218,14 +218,6 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
-              // s=pending-<uuid> has no server submission yet; skip preFlightAuth.
-              const isPending =
-                typeof to.query.s === 'string' &&
-                to.query.s.startsWith('pending-');
-              if (isPending) {
-                next();
-                return;
-              }
               preFlightAuth({ submissionId: to.query.s }, next);
             },
           },

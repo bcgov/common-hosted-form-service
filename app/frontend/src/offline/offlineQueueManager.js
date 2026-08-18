@@ -1,10 +1,13 @@
 import mitt from 'mitt';
 import { ref, watch } from 'vue';
 
+import { i18n } from '~/internationalization';
 import formService from '~/services/formService';
 import { offlineQueue, QueueStatus } from '~/offline/queue';
 import { reachable, startReachabilityMonitor } from '~/offline/useReachability';
 import { useAuthStore } from '~/store/auth';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
 
 const POLL_INTERVAL_MS = 30000;
 
@@ -40,6 +43,8 @@ export const offlineQueueEvents = mitt();
 export const isDraining = ref(false);
 
 let started = false;
+// Fires once per editing session so the 30s tick doesn't nag repeatedly.
+let syncPausedToastShown = false;
 
 async function postEntry(entry) {
   const response = await formService.createSubmission(
@@ -62,6 +67,19 @@ export async function tryDrain() {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   if (!reachable.value) return;
   if (offlineQueue.entries.value.length === 0) return;
+  // Hold off entirely while the user is editing any queued entry; the next
+  // tick (or the endEdit-triggered call) picks up once they close the editor.
+  if (offlineQueue.isEditing()) {
+    if (!syncPausedToastShown) {
+      syncPausedToastShown = true;
+      useNotificationStore().addNotification({
+        text: i18n.t('trans.offlineSubmission.syncPausedForEditToast'),
+        ...NotificationTypes.INFO,
+      });
+    }
+    return;
+  }
+  syncPausedToastShown = false;
 
   const authStore = useAuthStore();
   if (!authStore.authenticated) {

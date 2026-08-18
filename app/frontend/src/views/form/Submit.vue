@@ -15,7 +15,9 @@ const route = useRoute();
 
 <template>
   <FormViewer
-    :key="`${route.query.editOffline ?? 'new'}-${route.query.f ?? ''}`"
+    :key="`${route.query.editOffline ?? 'new'}-${route.query.f ?? ''}-${
+      route.query.fresh ?? ''
+    }`"
     :form-id="f"
     display-title
   />

@@ -8,6 +8,7 @@ const queueState = vi.hoisted(() => ({
   entries: { value: [] },
   ensureLoaded: vi.fn(async () => {}),
   flush: vi.fn(async () => ({ total: 0, sent: 0, failed: 0 })),
+  isEditing: vi.fn(() => false),
 }));
 
 vi.mock('~/store/auth', () => ({
