@@ -884,9 +884,14 @@ const service = {
   // queuedAt lets an offline replay keep its original submit time and skip the
   // schedule window. It is client-supplied, so only honour it on a real replay:
   // a Dedup-Key must be present and the form must have offline submission
-  // enabled, and it must be a valid, non-future timestamp. Otherwise it is
-  // ignored (returns null) so a live submission cannot use it to bypass the
-  // form's open/close schedule.
+  // enabled. Otherwise it is ignored (returns null) so a live submission cannot
+  // use it to bypass the form's open/close schedule.
+  //
+  // NOTE: gating on the form's *current* enableOfflineSubmission means work
+  // queued while the feature was on can be stranded if an admin later turns it
+  // off (or makes the form public). That is an accepted trade-off: keying off
+  // the client-supplied Dedup-Key alone would let any live submission forge a
+  // replay and reopen the schedule bypass.
   _resolveQueuedAt: (rawQueuedAt, dedupKey, form) => {
     if (!rawQueuedAt) return null;
     if (!dedupKey || !form.enableOfflineSubmission) return null;
@@ -894,10 +899,12 @@ const service = {
     if (Number.isNaN(parsed.getTime())) {
       throw new Problem(422, { detail: 'queuedAt must be a valid timestamp.' });
     }
-    if (parsed.getTime() > Date.now()) {
-      throw new Problem(422, { detail: 'queuedAt cannot be in the future.' });
-    }
-    return rawQueuedAt;
+    // Clamp a future timestamp back to now instead of rejecting it: offline-first
+    // devices often have skewed clocks, and clamping only ever tightens (never
+    // loosens) the schedule bypass. Normalize to an ISO string so the stored
+    // value is always a valid timestamp regardless of the client's input type.
+    const clampedMs = Math.min(parsed.getTime(), Date.now());
+    return new Date(clampedMs).toISOString();
   },
   createSubmission: async (formVersionId, data, currentUser, options = {}) => {
     let trx;

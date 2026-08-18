@@ -606,4 +606,31 @@ describe('FormFunctionalitySettings.vue', () => {
 
     expect(formStore.form.enableOfflineSubmission).toBe(true);
   });
+
+  it('clears enableOfflineSubmission when a file component is added to the form', async () => {
+    formStore.form = ref(
+      createFormObject({
+        userType: IdentityMode.TEAM,
+        enableOfflineSubmission: true,
+        versions: [{ schema: { components: [] } }],
+      })
+    );
+
+    mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    expect(formStore.form.enableOfflineSubmission).toBe(true);
+
+    formStore.form.versions = [
+      {
+        schema: {
+          components: [{ type: 'simplefile', key: 'file1', input: true }],
+        },
+      },
+    ];
+    await nextTick();
+
+    expect(formStore.form.enableOfflineSubmission).toBe(false);
+  });
 });

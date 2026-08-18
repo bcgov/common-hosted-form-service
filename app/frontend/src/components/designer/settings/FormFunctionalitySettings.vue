@@ -66,21 +66,20 @@ const disabledStates = computed(() => {
   };
 });
 
-// Offline submission is invalid on public forms. If the form is switched to
-// public, clear the flag so the stored value matches the (now disabled)
-// checkbox instead of silently persisting a stale true. The server enforces
-// this on save too; this just keeps the UI honest beforehand.
-watch(
-  () => form.value.userType,
-  (userType) => {
-    if (
-      userType === IdentityMode.PUBLIC &&
-      form.value.enableOfflineSubmission
-    ) {
-      form.value.enableOfflineSubmission = false;
-    }
-  }
+// Offline submission is invalid on public forms and on forms with a file
+// component (files can't be uploaded offline) — the same conditions that
+// disable the checkbox. If either becomes true, clear the flag so the stored
+// value matches the (now disabled) checkbox instead of silently persisting a
+// stale true. The server also forces it off for public forms on save; this
+// keeps the UI honest beforehand.
+const offlineDisallowed = computed(
+  () => form.value.userType === IdentityMode.PUBLIC || hasFileComponent.value
 );
+watch(offlineDisallowed, (disallowed) => {
+  if (disallowed && form.value.enableOfflineSubmission) {
+    form.value.enableOfflineSubmission = false;
+  }
+});
 
 // Dependency handlers
 function enableSubmitterDraftChanged() {
