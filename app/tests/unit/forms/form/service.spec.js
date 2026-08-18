@@ -1846,6 +1846,90 @@ describe('createSubmission', () => {
     expect(validateSubmissionSchedule).toHaveBeenCalledWith(null);
     expect(MockTransaction.commit).toBeCalledTimes(1);
   });
+
+  // queuedAt lets an offline replay keep its original submit time and skip the
+  // schedule window. It is client-supplied, so it must only be honoured on a
+  // genuine replay (Dedup-Key present + form has offline submission enabled).
+  const offlineReplayForm = (schedule) => ({
+    id: formId,
+    versions: [{ version: 1 }],
+    identityProviders: [],
+    schedule,
+    enableOfflineSubmission: true,
+  });
+  const pastQueuedAt = () => new Date(Date.now() - 60000).toISOString();
+  const dedupOptions = { dedupKey: '11111111-1111-4111-8111-111111111111' };
+
+  it('skips the schedule check for an offline replay (queuedAt + dedupKey on an offline-enabled form)', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(formSchedule));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    expect(validateSubmissionSchedule).not.toHaveBeenCalled();
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('still validates the schedule when queuedAt is present but there is no dedupKey', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(formSchedule));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('still validates the schedule when queuedAt is present on a form without offline submission enabled', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: formSchedule,
+      enableOfflineSubmission: false,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('rejects an unparseable queuedAt with a 422 and does not commit', async () => {
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm({ enabled: true }));
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: 'not-a-date' };
+    await expect(service.createSubmission('123', data, currentUser, dedupOptions)).rejects.toMatchObject({ status: 422 });
+
+    expect(MockTransaction.commit).not.toHaveBeenCalled();
+  });
+
+  it('rejects a future queuedAt with a 422 and does not commit', async () => {
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm({ enabled: true }));
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: new Date(Date.now() + 3600000).toISOString() };
+    await expect(service.createSubmission('123', data, currentUser, dedupOptions)).rejects.toMatchObject({ status: 422 });
+
+    expect(MockTransaction.commit).not.toHaveBeenCalled();
+  });
 });
 
 describe('Assignee Visibility Feature Tests', () => {

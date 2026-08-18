@@ -870,16 +870,36 @@ const service = {
   listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query().where('formVersionId', formVersionId).modify('filterCreatedBy', params.createdBy).modify('orderDescending');
   },
+  // queuedAt lets an offline replay keep its original submit time and skip the
+  // schedule window. It is client-supplied, so only honour it on a real replay:
+  // a Dedup-Key must be present and the form must have offline submission
+  // enabled, and it must be a valid, non-future timestamp. Otherwise it is
+  // ignored (returns null) so a live submission cannot use it to bypass the
+  // form's open/close schedule.
+  _resolveQueuedAt: (rawQueuedAt, dedupKey, form) => {
+    if (!rawQueuedAt) return null;
+    if (!dedupKey || !form.enableOfflineSubmission) return null;
+    const parsed = new Date(rawQueuedAt);
+    if (isNaN(parsed.getTime())) {
+      throw new Problem(422, { detail: 'queuedAt must be a valid timestamp.' });
+    }
+    if (parsed.getTime() > Date.now()) {
+      throw new Problem(422, { detail: 'queuedAt cannot be in the future.' });
+    }
+    return rawQueuedAt;
+  },
   createSubmission: async (formVersionId, data, currentUser, options = {}) => {
     let trx;
     let result;
     const { dedupKey } = options;
-    // queuedAt is supplied by offline replays; live submissions leave it NULL.
-    const queuedAt = data.queuedAt || null;
     try {
       const formVersion = await service.readVersion(formVersionId);
       const form = await service.readForm(formVersion.formId);
       const { identityProviders } = form;
+
+      // queuedAt is client-supplied; only trust it for a genuine offline replay
+      // (Dedup-Key present on an offline-enabled form). See _resolveQueuedAt.
+      const queuedAt = service._resolveQueuedAt(data.queuedAt, dedupKey, form);
 
       // Skip schedule check on replays: they were on-time at queuedAt.
       if (!queuedAt) {
