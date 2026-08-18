@@ -217,14 +217,15 @@ const service = {
   },
   _setEnableOfflineSubmission: (formData) => {
     // Offline submission requires an authenticated user to sync the queue, so it
-    // is never allowed on public forms. Force it off here so the persisted state
-    // is consistent regardless of how the row was written (UI, raw API call,
-    // hand-edited), and so a form switched to public can't retain a stale true.
-    // Fail closed: only enable when there is at least one identity provider and
-    // none of them is public.
+    // is never allowed on public forms. Force it off for public forms here so the
+    // persisted state is consistent regardless of how the row was written (UI,
+    // raw API call, hand-edited), and so a form switched to public can't retain a
+    // stale true. Team forms ("Specific People") legitimately carry an empty
+    // identityProviders array, so gate on the public check only — matching
+    // _setAllowSubmitterToUploadFile.
     const idps = Array.isArray(formData.identityProviders) ? formData.identityProviders : [];
     const isPublicForm = idps.some((idp) => idp.code === 'public');
-    return idps.length > 0 && !isPublicForm && formData.enableOfflineSubmission === true;
+    return !isPublicForm && formData.enableOfflineSubmission === true;
   },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
