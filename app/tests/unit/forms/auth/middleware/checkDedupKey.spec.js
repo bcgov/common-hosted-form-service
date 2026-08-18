@@ -89,19 +89,48 @@ describe('checkDedupKey', () => {
     expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 409 }));
   });
 
-  it('returns the cached 201 for a public-form replay (no createdBy mismatch)', async () => {
+  it('returns 409 for a public/anonymous replay instead of leaking the cached submission', async () => {
     const existing = { id: uuid.v4(), createdBy: 'public', dedupKey: validKey };
     const req = getMockReq({
       headers: { 'dedup-key': validKey },
-      currentUser: { public: true },
+      currentUser: { usernameIdp: 'public', public: true },
     });
     const { res, next } = getMockRes();
     mockFindOne(existing);
 
     await checkDedupKey(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(existing);
-    expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 409 }));
+  });
+
+  it('returns 409 (no PII leak) when an anonymous caller replays a key created by an authenticated user', async () => {
+    const existing = { id: uuid.v4(), createdBy: 'victim@idir', dedupKey: validKey };
+    const req = getMockReq({
+      headers: { 'dedup-key': validKey },
+      currentUser: { usernameIdp: 'public', public: true },
+    });
+    const { res, next } = getMockRes();
+    mockFindOne(existing);
+
+    await checkDedupKey(req, res, next);
+
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 409 }));
+  });
+
+  it('returns 409 when the caller has no identity at all (missing currentUser)', async () => {
+    const existing = { id: uuid.v4(), createdBy: 'victim@idir', dedupKey: validKey };
+    const req = getMockReq({ headers: { 'dedup-key': validKey } });
+    const { res, next } = getMockRes();
+    mockFindOne(existing);
+
+    await checkDedupKey(req, res, next);
+
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 409 }));
   });
 });
