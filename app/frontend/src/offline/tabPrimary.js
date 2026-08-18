@@ -19,7 +19,7 @@ function generateTabId() {
     crypto.getRandomValues(arr);
     return Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('');
   }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`; // NOSONAR - tab id, not a secret
 }
 
 const tabId = generateTabId();
@@ -91,7 +91,7 @@ export function startPrimaryElection() {
             // Small jitter so surviving tabs don't all claim in lockstep.
             setTimeout(() => {
               if (shouldClaim()) claim();
-            }, Math.floor(Math.random() * 100));
+            }, Math.floor(Math.random() * 100)); // NOSONAR - jitter delay, not a secret
           }
         }
       });

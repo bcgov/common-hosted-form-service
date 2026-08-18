@@ -45,6 +45,20 @@ vi.mock('~/offline/useReachability', async () => {
   };
 });
 
+// tryDrain now gates on isPrimary; pin this "tab" as primary so the drain path
+// runs in tests. Use a real Vue ref so any watch(isPrimary) fires on change.
+const primaryState = vi.hoisted(async () => {
+  const { ref } = await import('vue');
+  return { isPrimary: ref(true) };
+});
+vi.mock('~/offline/tabPrimary', async () => {
+  const state = await primaryState;
+  return {
+    isPrimary: state.isPrimary,
+    startPrimaryElection: vi.fn(),
+  };
+});
+
 async function freshManager() {
   vi.resetModules();
   sessionStorage.clear();
@@ -54,6 +68,7 @@ async function freshManager() {
   queueState.flush.mockClear();
   const state = await reachabilityState;
   state.reachable.value = true;
+  (await primaryState).isPrimary.value = true;
   return await import('~/offline/offlineQueueManager');
 }
 
