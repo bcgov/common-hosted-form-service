@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 
 import { i18n } from '~/internationalization';
 import formService from '~/services/formService';
-import { offlineQueue, QueueStatus } from '~/offline/queue';
+import { offlineQueue } from '~/offline/queue';
 import { reachable, startReachabilityMonitor } from '~/offline/useReachability';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
@@ -93,20 +93,6 @@ export async function tryDrain() {
 
   isDraining.value = true;
   try {
-    // Snapshot what flush will process so SyncProgressModal rows survive
-    // removal. JSON round-trip because entries are Vue reactive Proxies
-    // (structuredClone throws DataCloneError, toRaw doesn't recurse).
-    const pending = offlineQueue.entries.value.filter(
-      (e) =>
-        e.status === QueueStatus.PENDING || e.status === QueueStatus.FAILED_AUTH
-    );
-
-    const snapshot = JSON.parse(JSON.stringify(pending)); // NOSONAR
-    offlineQueueEvents.emit('drain-start', {
-      total: snapshot.length,
-      entries: snapshot,
-    });
-
     const result = await offlineQueue.flush(
       postEntry,
       (progress) => {
@@ -119,9 +105,20 @@ export async function tryDrain() {
           error:
             error?.response?.data?.detail || error?.message || String(error),
         });
+      },
+      // Fires inside the drain lock, so a tab that can't acquire the lock never
+      // opens the modal. Snapshot the rows so they survive flush's removals
+      // (entries are Vue reactive Proxies; toRaw doesn't recurse).
+      ({ total, entries }) => {
+        const snapshot = JSON.parse(JSON.stringify(entries)); // NOSONAR
+        offlineQueueEvents.emit('drain-start', { total, entries: snapshot });
       }
     );
-    offlineQueueEvents.emit('drain-end', result);
+    // If another tab held the lock, no drain-start was emitted; don't emit a
+    // misleading drain-end (which would show a "sync complete" summary).
+    if (!result?.lockUnavailable) {
+      offlineQueueEvents.emit('drain-end', result);
+    }
   } finally {
     isDraining.value = false;
   }

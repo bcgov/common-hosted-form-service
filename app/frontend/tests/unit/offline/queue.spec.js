@@ -130,5 +130,64 @@ describe('offline/queue', () => {
       expect(onEntryFailed).not.toHaveBeenCalled();
       expect(offlineQueue.entries.value[0].status).toBe(QueueStatus.PENDING);
     });
+
+    it('skips entries that are open for edit and drains the rest', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      const a = await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      const b = await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      // 'a' is open for edit (no Web Locks in the test env, so this falls back
+      // to the local editing set — the same ids the drain must skip).
+      offlineQueue.beginEdit(a.id);
+
+      const posted = [];
+      const post = vi.fn(async (entry) => {
+        posted.push(entry.id);
+        return { data: { id: 'x' } };
+      });
+      await offlineQueue.flush(post);
+
+      expect(posted).toEqual([b.id]);
+      expect(offlineQueue.entries.value.map((e) => e.id)).toEqual([a.id]);
+      expect(offlineQueue.entries.value[0].status).toBe(QueueStatus.PENDING);
+    });
+
+    it('skips entries locked for edit in ANOTHER tab via navigator.locks.query', async () => {
+      const { offlineQueue } = await freshQueue();
+      const a = await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      const b = await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      // Simulate another tab holding the edit lock for `a` (query-only, so flush
+      // still drains inline but the cross-tab edit filter excludes `a`).
+      globalThis.navigator.locks = {
+        query: async () => ({ held: [{ name: `chefs-offline-edit:${a.id}` }] }),
+      };
+      try {
+        const posted = [];
+        const post = vi.fn(async (entry) => {
+          posted.push(entry.id);
+          return { data: { id: 'x' } };
+        });
+        await offlineQueue.flush(post);
+        expect(posted).toEqual([b.id]);
+      } finally {
+        delete globalThis.navigator.locks;
+      }
+    });
+
+    it('invokes onStart once with the pending set when a drain begins', async () => {
+      const { offlineQueue } = await freshQueue();
+      await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      const onStart = vi.fn();
+      await offlineQueue.flush(async () => ({ data: { id: 'x' } }), undefined, undefined, onStart);
+      expect(onStart).toHaveBeenCalledTimes(1);
+      expect(onStart.mock.calls[0][0].total).toBe(1);
+    });
+
+    it('does not invoke onStart when there is nothing to drain', async () => {
+      const { offlineQueue } = await freshQueue();
+      const onStart = vi.fn();
+      const result = await offlineQueue.flush(async () => {}, undefined, undefined, onStart);
+      expect(onStart).not.toHaveBeenCalled();
+      expect(result.total).toBe(0);
+    });
   });
 });
