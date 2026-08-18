@@ -161,12 +161,14 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
       lines="one"
       class="text-white mb-2"
     >
-      Basic BCeID is no longer onboarding new services to the identity solution.
+      Effective May 31, 2026, Connected Services BC (CSBC) stopped onboarding
+      new services to Basic BCeID. Instead, it is recommended to use the BC
+      Services Card app as the identity solution. This change reflects the
+      ongoing modernization of government digital identity services and the
+      adoption of identity solutions that support future service delivery needs.
       Existing services and current users of Basic BCeID are not affected by
       this change and existing integrations will continue to operate normally.
-      Additional details regarding this change will be available in a Service
-      Bulletin in late July. For Identity Service onboarding questions, please
-      connect with
+      For Identity Service onboarding questions, please connect with
       <a style="color: lightblue" href="mailto:DT.Consulting@gov.bc.ca"
         >DT.Consulting@gov.bc.ca</a
       >
