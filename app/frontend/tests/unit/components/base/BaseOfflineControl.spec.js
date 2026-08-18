@@ -8,7 +8,7 @@ import BaseOfflineControl from '~/components/base/BaseOfflineControl.vue';
 import { useFormStore } from '~/store/form';
 
 const state = vi.hoisted(() => ({
-  networkOnline: { value: true },
+  effectivelyOnline: { value: true },
   simulatingOffline: { value: false },
   canSimulateOffline: { value: true },
   queueEntries: { value: [] },
@@ -16,7 +16,7 @@ const state = vi.hoisted(() => ({
 
 vi.mock('~/offline/useSimulationToggle', () => ({
   useSimulationToggle: () => ({
-    networkOnline: state.networkOnline,
+    effectivelyOnline: state.effectivelyOnline,
     canSimulateOffline: state.canSimulateOffline,
     simulatingOffline: state.simulatingOffline,
   }),
@@ -47,7 +47,7 @@ describe('BaseOfflineControl.vue', () => {
   beforeEach(() => {
     pinia = createPinia();
     setActivePinia(pinia);
-    state.networkOnline.value = true;
+    state.effectivelyOnline.value = true;
     state.simulatingOffline.value = false;
     state.canSimulateOffline.value = true;
     state.queueEntries.value = [];
@@ -96,8 +96,8 @@ describe('BaseOfflineControl.vue', () => {
     expect(wrapper.vm.showChevron).toBe(true);
   });
 
-  it('hides the chevron when real network is offline', async () => {
-    state.networkOnline.value = false;
+  it('hides the chevron when unreachable (network down or heartbeat failing)', async () => {
+    state.effectivelyOnline.value = false;
     const store = useFormStore();
     store.form.enableOfflineSubmission = true;
 
