@@ -3,6 +3,12 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { offlineQueue, QueueStatus } from '~/offline/queue';
+import {
+  clearReauthSnooze,
+  isDraining,
+  tryDrain,
+} from '~/offline/offlineQueueManager';
+import { useOnlineStatus } from '~/offline/useOnlineStatus';
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -12,6 +18,11 @@ const emit = defineEmits(['update:modelValue', 'edit']);
 const { t, locale } = useI18n({ useScope: 'global' });
 
 const entries = computed(() => offlineQueue.entries.value);
+const { online } = useOnlineStatus();
+
+const canSend = computed(
+  () => online.value && entries.value.length > 0 && !isDraining.value
+);
 
 const discardCandidate = ref(null);
 const showDiscardDialog = computed({
@@ -32,6 +43,16 @@ function promptDiscard(entry) {
 function requestEdit(entry) {
   emit('edit', entry);
   close();
+}
+
+function sendNow() {
+  if (!canSend.value) return;
+  // Clear the "Not now" snooze so tryDrain will re-prompt for auth if the
+  // session has expired, and close the modal so ReauthRequiredModal /
+  // SyncProgressModal can take over.
+  clearReauthSnooze();
+  close();
+  tryDrain();
 }
 
 async function confirmDiscard() {
@@ -161,9 +182,27 @@ function statusLabel(status) {
       </v-card-text>
       <v-card-actions class="pending-actions">
         <v-spacer />
-        <v-btn variant="outlined" size="large" class="px-6" @click="close">{{
-          t('trans.offlineSubmission.pendingModalClose')
-        }}</v-btn>
+        <v-btn
+          variant="outlined"
+          size="large"
+          class="px-6"
+          data-test="pending-close"
+          @click="close"
+          >{{ t('trans.offlineSubmission.pendingModalClose') }}</v-btn
+        >
+        <v-btn
+          color="primary"
+          variant="flat"
+          size="large"
+          class="px-6"
+          :disabled="!canSend"
+          data-test="pending-send"
+          @click="sendNow"
+        >
+          <span :lang="locale">{{
+            t('trans.offlineSubmission.pendingSendButton')
+          }}</span>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

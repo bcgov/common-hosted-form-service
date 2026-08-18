@@ -1,5 +1,5 @@
 import mitt from 'mitt';
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 
 import formService from '~/services/formService';
 import { offlineQueue, QueueStatus } from '~/offline/queue';
@@ -36,8 +36,10 @@ export function clearReauthSnooze() {
 
 export const offlineQueueEvents = mitt();
 
+// Exposed so UI can gate a manual Send button while a drain is in flight.
+export const isDraining = ref(false);
+
 let started = false;
-let draining = false;
 
 async function postEntry(entry) {
   const response = await formService.createSubmission(
@@ -56,7 +58,7 @@ async function postEntry(entry) {
 }
 
 export async function tryDrain() {
-  if (draining) return;
+  if (isDraining.value) return;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   if (!reachable.value) return;
   if (offlineQueue.entries.value.length === 0) return;
@@ -71,7 +73,7 @@ export async function tryDrain() {
     return;
   }
 
-  draining = true;
+  isDraining.value = true;
   try {
     // Snapshot what flush will process so SyncProgressModal rows survive
     // removal. JSON round-trip because entries are Vue reactive Proxies
@@ -103,7 +105,7 @@ export async function tryDrain() {
     );
     offlineQueueEvents.emit('drain-end', result);
   } finally {
-    draining = false;
+    isDraining.value = false;
   }
 }
 
