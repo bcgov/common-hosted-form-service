@@ -73,20 +73,20 @@ export async function tryDrain() {
 
   draining = true;
   try {
-    // Snapshot what flush will process so SyncProgressModal rows survive removal.
-    const snapshot = JSON.parse(
-      JSON.stringify(
-        offlineQueue.entries.value.filter(
-          (e) =>
-            e.status === QueueStatus.PENDING ||
-            e.status === QueueStatus.FAILED_AUTH
-        )
-      )
+    // Snapshot what flush will process so SyncProgressModal rows survive
+    // removal. JSON round-trip because entries are Vue reactive Proxies
+    // (structuredClone throws DataCloneError, toRaw doesn't recurse).
+    const pending = offlineQueue.entries.value.filter(
+      (e) =>
+        e.status === QueueStatus.PENDING || e.status === QueueStatus.FAILED_AUTH
     );
+
+    const snapshot = JSON.parse(JSON.stringify(pending)); // NOSONAR
     offlineQueueEvents.emit('drain-start', {
       total: snapshot.length,
       entries: snapshot,
     });
+
     const result = await offlineQueue.flush(
       postEntry,
       (progress) => {

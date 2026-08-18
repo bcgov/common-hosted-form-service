@@ -250,7 +250,8 @@ function disableSubmitButtons(components) {
 const renderedSchema = computed(() => {
   const schema = formSchema.value;
   if (!schema || !isEditingOfflineEntry.value) return schema;
-  const clone = JSON.parse(JSON.stringify(schema));
+  // Proxy chokes on structuredClone()
+  const clone = JSON.parse(JSON.stringify(schema)); //NOSONAR
   disableSubmitButtons(clone.components);
   return clone;
 });
@@ -580,8 +581,10 @@ function jsonManager() {
   if (chefForm.value?.formio) {
     formElement.value = chefForm.value.formio;
     json_csv.value.data = [
-      JSON.parse(JSON.stringify(formElement.value._data)),
-      JSON.parse(JSON.stringify(formElement.value._data)),
+      JSON.parse(JSON.stringify(formElement.value._data)), // NOSONAR
+      // FormIO _data contains non-cloneable references
+      JSON.parse(JSON.stringify(formElement.value._data)), // NOSONAR
+      // FormIO _data contains non-cloneable references
     ];
   }
 }
@@ -635,65 +638,64 @@ async function saveDraft() {
   showSaveDraftConfirmDialog.value = true;
 }
 
+async function routeAfterSaveDraftSuccess(response) {
+  const isEditingExisting =
+    properties.submissionId &&
+    properties.submissionId !== null &&
+    !properties.isDuplicate;
+  if (isEditingExisting) {
+    if (!properties.saved) {
+      await router.replace({
+        name: 'UserFormDraftEdit',
+        query: { ...router.currentRoute.value.query, sv: true },
+      });
+    }
+    saving.value = false;
+    return;
+  }
+  await router.push({
+    name: 'UserFormDraftEdit',
+    query: { s: response.data.id, sv: true },
+  });
+}
+
+async function handleSaveDraftError(error, isNewSubmission) {
+  const canQueueOffline =
+    form.value.enableOfflineSubmission &&
+    isNewSubmission &&
+    isNetworkError(error);
+  if (canQueueOffline) {
+    const errMsg = await queueDraftOffline(submission.value);
+    if (!errMsg) return;
+    notificationStore.addNotification({
+      text: errMsg,
+      consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
+        submissionId: properties.submissionId,
+        error: errMsg,
+      }),
+    });
+    return;
+  }
+  notificationStore.addNotification({
+    text: t('trans.formViewer.savingDraftErrMsg'),
+    consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
+      submissionId: properties.submissionId,
+      error: error,
+    }),
+  });
+}
+
 async function confirmSaveDraft() {
   showSaveDraftConfirmDialog.value = false;
   const isNewSubmission = !properties.submissionId || properties.isDuplicate;
   try {
     saving.value = true;
-
     const response = await sendSubmission(true, submission.value);
-    if (
-      properties.submissionId &&
-      properties.submissionId !== null &&
-      !properties.isDuplicate
-    ) {
-      // Editing an existing draft
-      // Update this route with saved flag
-      if (!properties.saved) {
-        await router.replace({
-          name: 'UserFormDraftEdit',
-          query: { ...router.currentRoute.value.query, sv: true },
-        });
-      }
-      saving.value = false;
-    } else {
-      // Creating a new submission in draft state (fresh form or copied submission)
-      // Go to the user form draft page with the new draft's ID
-      await router.push({
-        name: 'UserFormDraftEdit',
-        query: {
-          s: response.data.id,
-          sv: true,
-        },
-      });
-    }
+    await routeAfterSaveDraftSuccess(response);
     showSubmitConfirmDialog.value = false;
     saveDraftDialog.value = false;
   } catch (error) {
-    // Real-offline network failure fallback: queue the draft.
-    if (
-      form.value.enableOfflineSubmission &&
-      isNewSubmission &&
-      isNetworkError(error)
-    ) {
-      const errMsg = await queueDraftOffline(submission.value);
-      if (!errMsg) return;
-      notificationStore.addNotification({
-        text: errMsg,
-        consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
-          submissionId: properties.submissionId,
-          error: errMsg,
-        }),
-      });
-      return;
-    }
-    notificationStore.addNotification({
-      text: t('trans.formViewer.savingDraftErrMsg'),
-      consoleError: t('trans.formViewer.fecthingFormConsoleErrMsg', {
-        submissionId: properties.submissionId,
-        error: error,
-      }),
-    });
+    await handleSaveDraftError(error, isNewSubmission);
   }
 }
 
@@ -1170,26 +1172,36 @@ async function saveDraftFromModal(event) {
   }
 }
 
+function notifyDraftSubmitError(error) {
+  notificationStore.addNotification({
+    text:
+      error?.code === 'QUEUE_CAP'
+        ? t('trans.offlineSubmission.errorAtCap', { cap: QUEUE_SOFT_CAP })
+        : t('trans.formViewer.submittingDraftErrMsg'),
+    consoleError: t('trans.formViewer.submittingDraftConsErrMsg', {
+      submissionId: properties.submissionId,
+      error: error,
+    }),
+  });
+}
+
+async function queueDraftAndLeave() {
+  try {
+    await queueSubmissionOffline(submission.value, true);
+    leaveThisPage();
+  } catch (queueError) {
+    notifyDraftSubmitError(queueError);
+  }
+}
+
 // Custom Event triggered from buttons with Action type "Event"
 async function saveDraftFromModalNow() {
   const isNewSubmission = !properties.submissionId || properties.isDuplicate;
+  const canQueueOffline = form.value.enableOfflineSubmission && isNewSubmission;
+
   // Offline pre-empt: user already asked to leave, so queue then leave.
-  if (form.value.enableOfflineSubmission && isNewSubmission && !online.value) {
-    try {
-      await queueSubmissionOffline(submission.value, true);
-      leaveThisPage();
-    } catch (queueError) {
-      notificationStore.addNotification({
-        text:
-          queueError.code === 'QUEUE_CAP'
-            ? t('trans.offlineSubmission.errorAtCap', { cap: QUEUE_SOFT_CAP })
-            : t('trans.formViewer.submittingDraftErrMsg'),
-        consoleError: t('trans.formViewer.submittingDraftConsErrMsg', {
-          submissionId: properties.submissionId,
-          error: queueError,
-        }),
-      });
-    }
+  if (canQueueOffline && !online.value) {
+    await queueDraftAndLeave();
     return;
   }
   try {
@@ -1202,38 +1214,11 @@ async function saveDraftFromModalNow() {
     showSubmitConfirmDialog.value = false;
   } catch (error) {
     // Real-offline fallback: queue then leave.
-    if (
-      form.value.enableOfflineSubmission &&
-      isNewSubmission &&
-      isNetworkError(error)
-    ) {
-      try {
-        await queueSubmissionOffline(submission.value, true);
-        leaveThisPage();
-        return;
-      } catch (queueError) {
-        notificationStore.addNotification({
-          text:
-            queueError.code === 'QUEUE_CAP'
-              ? t('trans.offlineSubmission.errorAtCap', {
-                  cap: QUEUE_SOFT_CAP,
-                })
-              : t('trans.formViewer.submittingDraftErrMsg'),
-          consoleError: t('trans.formViewer.submittingDraftConsErrMsg', {
-            submissionId: properties.submissionId,
-            error: queueError,
-          }),
-        });
-        return;
-      }
+    if (canQueueOffline && isNetworkError(error)) {
+      await queueDraftAndLeave();
+      return;
     }
-    notificationStore.addNotification({
-      text: t('trans.formViewer.submittingDraftErrMsg'),
-      consoleError: t('trans.formViewer.submittingDraftConsErrMsg', {
-        submissionId: properties.submissionId,
-        error: error,
-      }),
-    });
+    notifyDraftSubmitError(error);
   }
 }
 
@@ -1554,7 +1539,9 @@ async function uploadFile(file, config = {}) {
           >
             <div class="d-flex align-center" style="width: 100%">
               <span :lang="locale">{{
-                $t('trans.offlineSubmission.editingBannerText')
+                editingEntry?.body?.draft
+                  ? $t('trans.offlineSubmission.editingBannerTextDraft')
+                  : $t('trans.offlineSubmission.editingBannerText')
               }}</span>
               <v-spacer />
               <v-btn

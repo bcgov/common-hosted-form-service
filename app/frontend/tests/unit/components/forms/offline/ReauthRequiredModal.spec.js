@@ -82,7 +82,7 @@ describe('ReauthRequiredModal.vue', () => {
       '1'
     );
     expect(authMocks.login).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.mode).toBe(null);
+    expect(wrapper.vm.mode).toBeNull();
   });
 
   it('notNow sets the snooze flag and closes without calling login', async () => {
@@ -94,7 +94,7 @@ describe('ReauthRequiredModal.vue', () => {
 
     expect(sessionStorage.getItem('chefs_offline_reauth_snoozed')).toBe('1');
     expect(authMocks.login).not.toHaveBeenCalled();
-    expect(wrapper.vm.mode).toBe(null);
+    expect(wrapper.vm.mode).toBeNull();
   });
 
   it('opens the confirm prompt on reauth-drain-confirm and Send calls tryDrain', async () => {
@@ -108,6 +108,6 @@ describe('ReauthRequiredModal.vue', () => {
     wrapper.vm.send();
 
     expect(managerMocks.tryDrain).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.mode).toBe(null);
+    expect(wrapper.vm.mode).toBeNull();
   });
 });

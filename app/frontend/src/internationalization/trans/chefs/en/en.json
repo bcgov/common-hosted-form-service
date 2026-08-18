@@ -1593,6 +1593,7 @@
     "pendingDiscardButton": "Discard",
     "pendingEditButton": "Edit",
     "editingBannerText": "Editing a queued offline submission.",
+    "editingBannerTextDraft": "Editing a queued DRAFT offline submission.",
     "editingBannerCancel": "Close Edit",
     "editingBannerSave": "Save",
     "editedToastMessage": "Offline submission updated. It will be sent when you are back online.",
