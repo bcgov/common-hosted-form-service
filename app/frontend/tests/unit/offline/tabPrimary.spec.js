@@ -155,6 +155,6 @@ describe('offline/tabPrimary', () => {
     const count = MockBroadcastChannel.instances.length;
     mod.startPrimaryElection();
 
-    expect(MockBroadcastChannel.instances.length).toBe(count);
+    expect(MockBroadcastChannel.instances).toHaveLength(count);
   });
 });
