@@ -5,6 +5,7 @@ import BCGovEnterpriseBanner from '~/components/bcgov/BCGovEnterpriseBanner.vue'
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
 import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
+import ReauthRequiredModal from '~/components/forms/offline/ReauthRequiredModal.vue';
 import SyncProgressModal from '~/components/forms/offline/SyncProgressModal.vue';
 import { computed, provide, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
@@ -105,6 +106,7 @@ onMounted(async () => {
       </RouterView>
       <BCGovFooter :form-submit-mode="isFormSubmitMode" />
       <SyncProgressModal />
+      <ReauthRequiredModal />
     </v-main>
   </v-layout>
 </template>

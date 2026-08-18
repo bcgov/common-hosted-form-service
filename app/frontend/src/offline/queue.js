@@ -76,6 +76,13 @@ async function enqueue({
     showConfirmationId,
   };
   entries.value.push(entry);
+  // A fresh queued item is evidence the user wants to send; clear the
+  // reauth-snooze so the next tick will re-prompt if the session is dead.
+  try {
+    sessionStorage.removeItem('chefs_offline_reauth_snoozed');
+  } catch {
+    // sessionStorage unavailable; nothing to clear.
+  }
   await persist();
   return entry;
 }
