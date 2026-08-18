@@ -246,7 +246,7 @@ describe('FormDesigner.vue', () => {
       expect(readDraftSpy).toBeCalledTimes(1);
     });
 
-    it('onMounted, with no formId resolves an empty feature-flag context (so allowlist-gated features are denied on a new form) and does not fetchForm', async () => {
+    it('onMounted, with no formId does not fetchForm and does not resolve feature flags (Create.vue owns the new-form context resolution)', async () => {
       shallowMount(FormDesigner, {
         props: {},
         global: {
@@ -258,8 +258,7 @@ describe('FormDesigner.vue', () => {
       await flushPromises();
 
       expect(fetchFormSpy).toBeCalledTimes(0);
-      expect(resolveForContextSpy).toBeCalledTimes(1);
-      expect(resolveForContextSpy).toBeCalledWith({});
+      expect(resolveForContextSpy).not.toBeCalled();
     });
   });
 
