@@ -69,7 +69,16 @@ describe("Form Designer", () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
+    cy.get('[data-cy="admin"]').click();
+    cy.get('[value="features"] > .v-btn__content').click();
+    //Make sure the feature flag is enabled for offline forms
+    cy.get('[data-test="featureFlags-allowAll-offlineForms"] input[type="checkbox"]').then(($checkbox) => {
+    if (!$checkbox.is(':checked')) {
+      cy.wrap($checkbox).check({ force: true });
+    }
+    });
     // Update Form settings for offline forms
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
     cy.wait(1000);
     let enableOfflineSubmissionCheckbox = cy.get('[data-test="enableOfflineSubmissionCheckbox"] input[type="checkbox"]');
