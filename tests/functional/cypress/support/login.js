@@ -94,7 +94,7 @@ export function formsettings(){
     cy.contains("Citizens' Services (CITZ)").click();
     cy.get('.mb-4 > .mdi-help-circle-outline').click();
     cy.contains('If you do not see your specific use case, contact the CHEFS team to discuss further options').should('be.visible');
-    cy.get('[data-test="case-select"]').click();
+    cy.get('[data-test="case-select"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click({force: true});
     cy.get('.v-list').should('contain','Applications that will be evaluated followed');
     cy.get('.v-list').should('contain','Collection of Datasets, data submission');
     cy.get('.v-list').should('contain','Registrations or Sign up - no evaluation');
