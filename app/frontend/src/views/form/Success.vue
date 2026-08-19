@@ -14,7 +14,7 @@ import {
 
 const { locale } = useI18n({ useScope: 'global' });
 
-const properties = defineProps({
+const props = defineProps({
   s: {
     type: String,
     required: true,
@@ -31,7 +31,7 @@ const isSharingDisabled = computed(
   () => form.value.enableSubmissionUrlSharing === false
 );
 const hasValidToken = computed(
-  () => getValidSubmissionAccessToken(properties.s) !== null
+  () => getValidSubmissionAccessToken(props.s) !== null
 );
 const urlLeakage = computed(
   () => isSharingDisabled.value && !hasValidToken.value
@@ -41,13 +41,17 @@ const hideContent = computed(
 );
 const useStaticPath = computed(() => urlLeakage.value || hideContent.value);
 const confirmationId = computed(() =>
-  properties.s ? properties.s.substring(0, 8).toUpperCase() : ''
+  props.s ? props.s.substring(0, 8).toUpperCase() : ''
 );
 
 // Wipe the token on navigation so later URL reloads fall back to static.
 // pagehide covers browser-level navigation; onBeforeUnmount covers SPA routes.
-const wipeToken = () => clearSubmissionAccessToken(properties.s);
-onMounted(() => globalThis.addEventListener('pagehide', wipeToken));
+const wipeToken = () => clearSubmissionAccessToken(props.s);
+
+onMounted(() => {
+  globalThis.addEventListener('pagehide', wipeToken);
+});
+
 onBeforeUnmount(() => {
   globalThis.removeEventListener('pagehide', wipeToken);
   wipeToken();
