@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "Aktivieren Sie die automatische Erinnerungsbenachrichtigung",
     "autoReminderNotificatnToolTip": "Senden Sie während des Einreichungszeitraums Erinnerungs-E-Mails mit dem Formularlink.",
     "selectLoginType": "Bitte wählen Sie mindestens einen Identitätsanbieter aus.",
+    "idpDeprecatedWarning": "Dieser Identitätsanbieter ist veraltet und steht für neue Auswahlen nicht mehr zur Verfügung. Wenn Sie diese Anmeldeoption deaktivieren, können Sie sie nicht erneut aktivieren.",
+    "idpDeprecatedDialog": "Dieser Identitätsanbieter steht für neue Auswahlen nicht mehr zur Verfügung. Wenn Sie ihn entfernen, können Sie ihn möglicherweise nicht erneut hinzufügen.",
     "formDescriptnMaxChars": "Die Formularbeschreibung darf maximal 255 Zeichen lang sein",
     "formTitlemaxChars": "Der Formulartitel darf maximal 255 Zeichen lang sein",
     "formTitleReq": "Der Formulartitel ist erforderlich",

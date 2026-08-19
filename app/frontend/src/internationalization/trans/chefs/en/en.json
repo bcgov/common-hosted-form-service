@@ -272,6 +272,8 @@
     "autoReminderNotificatn": "Enable automatic reminder notification",
     "autoReminderNotificatnToolTip": "Send reminder email/s with the form link during the submission period.",
     "selectLoginType": "Please select at least one identity provider.",
+    "idpDeprecatedWarning": "This identity provider is deprecated and is no longer available for new selections. If you disable this login option, you will be unable to re-enable it.",
+    "idpDeprecatedDialog": "This identity provider is no longer available for new selections. If you remove it, you may not be able to add it back.",
     "formDescriptnMaxChars": "Form Description must be 255 characters or less",
     "formTitlemaxChars": "Form Title must be 255 characters or less",
     "formTitleReq": "Form Title is required",
