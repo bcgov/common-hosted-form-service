@@ -175,6 +175,8 @@
     "autoReminderNotificatn": "启用自动提醒通知",
     "autoReminderNotificatnToolTip": "在提交期间发送带有表单链接的提醒电子邮件。",
     "selectLoginType": "请选择至少一个身份提供者。",
+    "idpDeprecatedWarning": "此身份提供程序已弃用，不再可供新选择。如果您禁用此登录选项，将无法再次启用。",
+    "idpDeprecatedDialog": "此身份提供程序不再可供新选择。如果您将其移除，可能无法再次添加。",
     "formDescriptnMaxChars": "表单描述不得超过 255 个字符",
     "formTitlemaxChars": "表单标题不得超过 255 个字符",
     "formTitleReq": "表格标题为必填项",
