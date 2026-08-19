@@ -50,7 +50,8 @@ body {
 }
 
 :root {
-  --bs-body-font-family: BCSans, -apple-system, BlinkMacSystemFont, Roboto, Verdana, Arial;
+  --bs-body-font-family: BCSans, -apple-system, BlinkMacSystemFont, Roboto,
+    Verdana, Arial;
 }
 
 h1 {
@@ -145,6 +146,9 @@ a,
 
 .v-tooltip > .v-overlay__content {
   background: rgba(97, 97, 97, 0.9) !important;
+  max-width: 50ch !important;
+  width: fit-content !important;
+  overflow-wrap: break-word;
 }
 
 // Customized expand/collapse section

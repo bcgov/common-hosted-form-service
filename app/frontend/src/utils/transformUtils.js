@@ -51,6 +51,13 @@ export function parseIdps(identityProviders) {
  * Attaches attributes to <a> Link tags to open in a new tab
  * @param {Object[]} formSchemaComponents An array of Components
  */
+export function schemaHasFileComponent(schema) {
+  const components = schema?.components || schema || [];
+  return (
+    formioUtils.searchComponents(components, { type: 'simplefile' }).length > 0
+  );
+}
+
 export function attachAttributesToLinks(formSchemaComponents) {
   const simpleContentComponents = formioUtils.searchComponents(
     formSchemaComponents,
