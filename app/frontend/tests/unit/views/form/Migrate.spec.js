@@ -218,6 +218,79 @@ describe('Migrate.vue', () => {
     });
   });
 
+  describe('BCeID Basic vs Business — access impact', () => {
+    const TEAM_WITH_MIXED_IDPS = [
+      { email: 'basic@example.com', fullName: 'Basic User', idpCode: 'bceid-basic', isBceid: true, isBceidBasic: true, roles: ['form_submitter'] },
+      { email: 'biz@example.com', fullName: 'Business User', idpCode: 'bceid-business', isBceid: true, isBceidBasic: false, roles: ['form_submitter'] },
+      { email: 'idir@example.com', fullName: 'IDIR User', idpCode: 'idir', isBceid: false, isBceidBasic: false, roles: ['owner'] },
+    ];
+
+    function mockPrepareWithTeam(team) {
+      rbacService.getMigrationPreview.mockResolvedValue({
+        data: {
+          eligibleTenants: [MOCK_TENANT],
+          impact: { team, submissions: { total: 0, drafts: 0, withShareUsers: 0 } },
+        },
+      });
+    }
+
+    it('only BCeID Basic members are unconditionally flagged as losing access', async () => {
+      mockPrepareWithTeam(TEAM_WITH_MIXED_IDPS);
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      const statuses = Object.fromEntries(
+        wrapper.vm.teamRowsWithStatus.map((m) => [m.email, m.transferStatus])
+      );
+      expect(statuses['basic@example.com']).toBe('loses_access');
+      expect(statuses['biz@example.com']).not.toBe('loses_access');
+      expect(statuses['idir@example.com']).not.toBe('loses_access');
+    });
+
+    it('BCeID Business follows the same group-membership logic as IDIR once a tenant is selected', async () => {
+      mockPrepareWithTeam(TEAM_WITH_MIXED_IDPS);
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [{ id: 'g1', name: 'Admins', isFormAdmin: true }],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [
+            { email: 'biz@example.com', groupIds: ['g1'] },
+            { email: 'idir@example.com', groupIds: ['g1'] },
+          ],
+        },
+      });
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      const statuses = Object.fromEntries(
+        wrapper.vm.teamRowsWithStatus.map((m) => [m.email, m.transferStatus])
+      );
+      expect(statuses['biz@example.com']).toBe('retained');
+      expect(statuses['idir@example.com']).toBe('retained');
+      expect(statuses['basic@example.com']).toBe('loses_access');
+    });
+
+    it('hasBceidBasicUsers / bceidBasicCount only count BCeID Basic, not Business', async () => {
+      mockPrepareWithTeam(TEAM_WITH_MIXED_IDPS);
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.hasBceidBasicUsers).toBe(true);
+      expect(wrapper.vm.bceidBasicCount).toBe(1);
+    });
+
+    it('hasBceidBasicUsers is false when the team has BCeID Business but no BCeID Basic members', async () => {
+      mockPrepareWithTeam(TEAM_WITH_MIXED_IDPS.filter((m) => m.email !== 'basic@example.com'));
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.hasBceidBasicUsers).toBe(false);
+      expect(wrapper.vm.bceidBasicCount).toBe(0);
+    });
+  });
+
   describe('Form Admin group check — via real GroupPicker UI', () => {
     const GROUPS_WITH_FORM_ADMIN = {
       data: {
@@ -295,6 +368,126 @@ describe('Migrate.vue', () => {
       expect(wrapper.vm.hasFormAdminGroupAssigned).toBe(true);
       expect(wrapper.vm.showNoGroupsWarning).toBe(false);
       expect(wrapper.vm.canSubmit).toBe(true);
+    });
+  });
+
+  describe('refreshTenantGroups', () => {
+    it('does nothing when no tenant is selected', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      rbacService.getMigrationTenantGroups.mockClear();
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(rbacService.getMigrationTenantGroups).not.toHaveBeenCalled();
+    });
+
+    it('re-fetches groups for the currently selected tenant without clearing it', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [{ id: 'g1', name: 'Admins', isFormAdmin: true }],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [],
+        },
+      });
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      rbacService.getMigrationTenantGroups.mockClear();
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [
+            { id: 'g1', name: 'Admins', isFormAdmin: true },
+            { id: 'g3', name: 'New Group', isFormAdmin: false },
+          ],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [],
+        },
+      });
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(rbacService.getMigrationTenantGroups).toHaveBeenCalledWith(FORM_ID, 'tenant-1');
+      expect(wrapper.vm.selectedTenantId).toBe('tenant-1');
+      expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
+    });
+
+    it('drops assigned groups no longer present and sets staleGroupsRemoved', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [
+            { id: 'g1', name: 'Admins', isFormAdmin: true },
+            { id: 'g2', name: 'Reviewers', isFormAdmin: false },
+          ],
+          preSelectedGroupIds: ['g1', 'g2'],
+          teamMemberGroups: [],
+        },
+      });
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.confirmed = true;
+
+      expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1', 'g2']);
+      expect(wrapper.vm.staleGroupsRemoved).toBe(false);
+
+      // g2 has since been deleted from the tenant.
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [{ id: 'g1', name: 'Admins', isFormAdmin: true }],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [],
+        },
+      });
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
+      expect(wrapper.vm.staleGroupsRemoved).toBe(true);
+      expect(wrapper.vm.confirmed).toBe(false);
+    });
+
+    it('does not flag staleGroupsRemoved when nothing was dropped', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [{ id: 'g1', name: 'Admins', isFormAdmin: true }],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [],
+        },
+      });
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(wrapper.vm.staleGroupsRemoved).toBe(false);
+      expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
+    });
+
+    it('sets error and leaves current data intact when the refresh call fails', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [{ id: 'g1', name: 'Admins', isFormAdmin: true }],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [],
+        },
+      });
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      rbacService.getMigrationTenantGroups.mockRejectedValueOnce({
+        response: { data: { detail: 'CSTAR unavailable' } },
+      });
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(wrapper.vm.error).toBe('CSTAR unavailable');
+      expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
+      expect(wrapper.vm.refreshingGroups).toBe(false);
     });
   });
 

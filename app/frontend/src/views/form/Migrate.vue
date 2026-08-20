@@ -42,6 +42,8 @@ const impact = ref({ ...EMPTY_IMPACT });
 const selectedTenantId = ref(null);
 
 const loadingGroups = ref(false);
+const refreshingGroups = ref(false);
+const staleGroupsRemoved = ref(false);
 const allTenantGroups = ref([]);
 const assignedGroups = ref([]);
 const teamMemberGroups = ref([]);
@@ -90,9 +92,13 @@ const teamRows = computed(() =>
   })
 );
 
-const hasBceidUsers = computed(() => impact.value.team.some((u) => u.isBceid));
-const bceidCount = computed(
-  () => impact.value.team.filter((u) => u.isBceid).length
+// Only BCeID Basic cannot authenticate in tenant mode — BCeID Business
+// authenticates normally and follows the same group-membership rules as IDIR.
+const hasBceidBasicUsers = computed(() =>
+  impact.value.team.some((u) => u.isBceidBasic)
+);
+const bceidBasicCount = computed(
+  () => impact.value.team.filter((u) => u.isBceidBasic).length
 );
 
 const teamMemberGroupMap = computed(() => {
@@ -109,7 +115,7 @@ const teamRowsWithStatus = computed(() => {
   const tenantLoaded = teamMemberGroups.value.length > 0;
 
   return teamRows.value.map((member) => {
-    if (member.isBceid) {
+    if (member.isBceidBasic) {
       return { ...member, transferStatus: 'loses_access', memberGroups: [] };
     }
     if (!tenantLoaded) {
@@ -133,7 +139,7 @@ const teamRowsWithStatus = computed(() => {
   });
 });
 
-// Count members losing access — used for the BCeID warning chip
+// Count members losing or needing to re-establish access — used for the "at risk" chip
 const atRiskCount = computed(
   () =>
     teamRowsWithStatus.value.filter(
@@ -162,6 +168,19 @@ function roleLabel(role) {
     form_submitter: t('trans.formMigration.roleFormSubmitter'),
   };
   return map[role] || role;
+}
+
+// BCeID Basic cannot authenticate in tenant mode (loses access outright);
+// BCeID Business authenticates normally and follows the same
+// group-membership rules as IDIR — so each gets its own badge.
+function idpBadgeLabel(member) {
+  if (member.isBceidBasic) return t('trans.formMigration.idpBadgeBceidBasic');
+  if (member.isBceid) return t('trans.formMigration.idpBadgeBceidBusiness');
+  return t('trans.formMigration.idpBadgeIdir');
+}
+
+function idpBadgeColor(member) {
+  return member.isBceidBasic ? 'warning' : 'info';
 }
 
 onMounted(async () => {
@@ -212,6 +231,36 @@ async function loadTenantGroups(tenantId) {
   }
 }
 
+// Re-fetches tenant groups and team memberships for the currently selected
+// tenant without losing the user's in-progress selection — unlike
+// loadTenantGroups (used on initial tenant pick), this does NOT reset
+// assignedGroups to the server's pre-selected defaults. Groups the user had
+// assigned that no longer exist are dropped, and the user is warned.
+async function refreshTenantGroups() {
+  if (!selectedTenantId.value) return;
+  refreshingGroups.value = true;
+  staleGroupsRemoved.value = false;
+  try {
+    const res = await rbacService.getMigrationTenantGroups(
+      props.f,
+      selectedTenantId.value
+    );
+    allTenantGroups.value = res.data.groups || [];
+    teamMemberGroups.value = res.data.teamMemberGroups || [];
+
+    const freshIds = new Set(allTenantGroups.value.map((g) => g.id));
+    const stillValid = assignedGroups.value.filter((g) => freshIds.has(g.id));
+    staleGroupsRemoved.value = stillValid.length < assignedGroups.value.length;
+    assignedGroups.value = stillValid;
+
+    confirmed.value = false;
+  } catch (err) {
+    error.value = err.response?.data?.detail || err.message;
+  } finally {
+    refreshingGroups.value = false;
+  }
+}
+
 async function submitMigration() {
   submitting.value = true;
   error.value = null;
@@ -243,6 +292,7 @@ async function submitMigration() {
 defineExpose({
   loading,
   submitting,
+  error,
   confirmed,
   eligibleTenants,
   impact,
@@ -252,10 +302,14 @@ defineExpose({
   hasFormAdminGroupAssigned,
   showNoGroupsWarning,
   canSubmit,
-  hasBceidUsers,
-  bceidCount,
+  hasBceidBasicUsers,
+  bceidBasicCount,
   teamRows,
   teamRowsWithStatus,
+  loadingGroups,
+  refreshingGroups,
+  staleGroupsRemoved,
+  refreshTenantGroups,
   submitMigration,
 });
 </script>
@@ -364,13 +418,30 @@ defineExpose({
                   {{ $t('trans.formMigration.assignGroupsTitle') }}
                 </span>
                 <v-progress-circular
-                  v-if="loadingGroups"
+                  v-if="loadingGroups || refreshingGroups"
                   indeterminate
                   color="primary"
                   size="18"
                   width="2"
                   class="ml-3"
                 />
+                <v-spacer />
+                <v-tooltip
+                  :text="$t('trans.formMigration.refreshGroups')"
+                  location="top"
+                >
+                  <template #activator="{ props: tip }">
+                    <v-btn
+                      v-bind="tip"
+                      icon="mdi:mdi-refresh"
+                      size="small"
+                      variant="text"
+                      :disabled="loadingGroups || refreshingGroups"
+                      :aria-label="$t('trans.formMigration.refreshGroups')"
+                      @click="refreshTenantGroups"
+                    />
+                  </template>
+                </v-tooltip>
               </div>
               <p
                 class="text-caption text-medium-emphasis mb-3 ml-10"
@@ -384,6 +455,19 @@ defineExpose({
                 :loading="loadingGroups"
                 @update:assigned="assignedGroups = $event"
               />
+              <v-alert
+                v-if="staleGroupsRemoved"
+                type="info"
+                variant="tonal"
+                density="compact"
+                class="mt-3"
+                icon="mdi:mdi-information-outline"
+                closable
+                :lang="locale"
+                @click:close="staleGroupsRemoved = false"
+              >
+                {{ $t('trans.formMigration.groupsRemovedOnRefresh') }}
+              </v-alert>
               <v-alert
                 v-if="showNoGroupsWarning"
                 type="warning"
@@ -411,13 +495,14 @@ defineExpose({
                 {{ $t('trans.formMigration.impactTitle') }}
               </span>
               <v-chip
-                v-if="hasBceidUsers"
+                v-if="hasBceidBasicUsers"
                 size="x-small"
                 color="warning"
                 variant="tonal"
                 class="ml-2"
               >
-                {{ bceidCount }} BCeID
+                {{ bceidBasicCount }}
+                {{ $t('trans.formMigration.bceidBasicLabel') }}
               </v-chip>
               <v-chip
                 v-if="atRiskCount > 0 && selectedTenantId"
@@ -513,10 +598,11 @@ defineExpose({
                       <td>
                         <v-chip
                           size="x-small"
-                          :color="member.isBceid ? 'warning' : 'info'"
+                          :color="idpBadgeColor(member)"
                           variant="tonal"
+                          :lang="locale"
                         >
-                          {{ member.isBceid ? 'BCeID' : 'IDIR' }}
+                          {{ idpBadgeLabel(member) }}
                         </v-chip>
                       </td>
                       <!-- Tenant Groups — only after tenant selected -->
@@ -727,7 +813,7 @@ defineExpose({
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item
-                    v-if="hasBceidUsers"
+                    v-if="hasBceidBasicUsers"
                     prepend-icon="mdi:mdi-close-circle-outline"
                     color="error"
                   >

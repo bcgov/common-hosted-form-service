@@ -577,14 +577,14 @@ describe('getMigrationPreview', () => {
     expect(res.json).toHaveBeenCalledWith({
       eligibleTenants,
       impact: {
-        team: [{ email: 'a@a.com', fullName: 'Alice', idpCode: 'idir', isBceid: false, roles: ['owner'] }],
+        team: [{ email: 'a@a.com', fullName: 'Alice', idpCode: 'idir', isBceid: false, isBceidBasic: false, roles: ['owner'] }],
         submissions: { total: 5, drafts: 2, withShareUsers: 3 },
       },
     });
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should flag bceid-basic and bceid-business users as isBceid: true', async () => {
+  it('should flag bceid-basic and bceid-business users as isBceid: true, but only bceid-basic as isBceidBasic: true', async () => {
     FormTenant.query.mockReturnValue({
       where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
     });
@@ -600,8 +600,11 @@ describe('getMigrationPreview', () => {
 
     const { team } = res.json.mock.calls[0][0].impact;
     expect(team.find((u) => u.email === 'bceid@example.com').isBceid).toBe(true);
+    expect(team.find((u) => u.email === 'bceid@example.com').isBceidBasic).toBe(true);
     expect(team.find((u) => u.email === 'biz@example.com').isBceid).toBe(true);
+    expect(team.find((u) => u.email === 'biz@example.com').isBceidBasic).toBe(false);
     expect(team.find((u) => u.email === 'idir@example.com').isBceid).toBe(false);
+    expect(team.find((u) => u.email === 'idir@example.com').isBceidBasic).toBe(false);
   });
 
   it('should deduplicate users who appear multiple times with different roles', async () => {

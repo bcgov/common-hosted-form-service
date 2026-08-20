@@ -6,6 +6,7 @@ const userService = require('../user/service');
 const { FormTenant, FormSubmissionUser } = require('../common/models');
 
 const BCEID_IDP_CODES = new Set(['bceid-basic', 'bceid-business']);
+const BCEID_BASIC_IDP_CODE = 'bceid-basic';
 
 // Shared mapping for a raw CSTAR user object → RBAC response shape.
 async function _mapCstarUser(user) {
@@ -342,6 +343,7 @@ module.exports = {
             fullName: m.fullName,
             idpCode: m.user_idpCode || null,
             isBceid: BCEID_IDP_CODES.has(m.user_idpCode),
+            isBceidBasic: m.user_idpCode === BCEID_BASIC_IDP_CODE,
             roleSet: new Set(),
           });
         }
