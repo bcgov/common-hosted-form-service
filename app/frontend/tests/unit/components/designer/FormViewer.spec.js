@@ -289,6 +289,7 @@ describe('FormViewer.vue', () => {
       props: {
         formId: formId,
         displayTitle: true,
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -313,6 +314,9 @@ describe('FormViewer.vue', () => {
       },
       // pass in options for custom components to use
       componentOptions: {
+        map: {
+          allowExistingFeatureChanges: false,
+        },
         simplefile: {
           config: appStore.config,
           chefsToken: wrapper.vm.getCurrentAuthHeader,
