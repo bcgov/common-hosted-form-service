@@ -41,6 +41,15 @@ describe('ExportSubmissions.vue', () => {
     formStore.$reset();
     appStore.$reset();
     addNotificationSpy.mockReset();
+    // The component now sources its version list from the form fields endpoint
+    // (so reviewers without design access can export). Echo whatever versions
+    // the test placed on the form so existing expectations keep working.
+    vi.spyOn(formStore, 'fetchSubmissionFields').mockImplementation(async () => ({
+      versionId: null,
+      published: false,
+      versions: formStore.form?.versions ?? [],
+      fields: formStore.formFields ?? [],
+    }));
   });
 
   it('renders', async () => {

@@ -25,7 +25,7 @@ describe('MySubmissionsTable.vue', () => {
 
   const fetchFormSpy = vi.spyOn(formStore, 'fetchForm').mockResolvedValue({});
   const fetchFormFieldsSpy = vi
-    .spyOn(formStore, 'fetchFormFields')
+    .spyOn(formStore, 'fetchSubmissionFields')
     .mockImplementation(() => []);
 
   beforeEach(() => {

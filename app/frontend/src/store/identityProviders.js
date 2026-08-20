@@ -23,6 +23,22 @@ export const useIdpStore = defineStore('idps', {
       }
       return result.sort((a, b) => a.order - b.order);
     },
+    formAccessButtons: (state) => {
+      const result = [];
+      if (state.providers) {
+        for (const p of state.providers) {
+          if (p.login && !p.extra?.canonicalCode) {
+            result.push({
+              code: p.code,
+              display: p.display,
+              hint: p.idp,
+              order: getOrder(p),
+            });
+          }
+        }
+      }
+      return result.sort((a, b) => a.order - b.order);
+    },
     loginIdpHints: (state) => {
       const result = [];
       if (state.providers) {
@@ -41,11 +57,29 @@ export const useIdpStore = defineStore('idps', {
       }
       return result;
     },
+    primaryIdpLoginHints: (state) => {
+      if (!state.providers) return [];
+      const primary = state.providers.find((x) => x.primary);
+      if (!primary) return [];
+      const canonicalCode = primary.extra?.canonicalCode || primary.code;
+      return state.providers
+        .filter(
+          (p) =>
+            p.login &&
+            (p.code === canonicalCode ||
+              p.extra?.canonicalCode === canonicalCode)
+        )
+        .map((p) => p.idp);
+    },
     addTeamMemberButtons: (state) => {
       const result = [];
       if (state.providers) {
         for (const p of state.providers) {
-          if (p.login && (p.primary || p.extra?.addTeamMemberSearch)) {
+          if (
+            p.login &&
+            !p.extra?.canonicalCode &&
+            (p.primary || p.extra?.addTeamMemberSearch)
+          ) {
             result.push({
               code: p.code,
               display: p.display,
@@ -135,7 +169,7 @@ export const useIdpStore = defineStore('idps', {
         const idp = this.providers.find((x) => x.code === code);
         if (idp) {
           return {
-            code: idp.code,
+            code: idp.extra?.canonicalCode || idp.code,
             display: idp.display,
             hint: idp.idp,
             order: getOrder(idp),
@@ -149,9 +183,9 @@ export const useIdpStore = defineStore('idps', {
         const idp = this.providers.find((x) => x.idp === hint);
         if (idp) {
           return {
-            code: idp.code,
+            code: idp.extra?.canonicalCode || idp.code,
             display: idp.display,
-            hint: idp.idp,
+            hint: idp.extra?.canonicalCode || idp.idp,
             order: getOrder(idp),
           };
         }

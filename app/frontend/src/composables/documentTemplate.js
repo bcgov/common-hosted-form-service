@@ -22,20 +22,20 @@ export async function getDocumentTemplate(formId, templateId, filename) {
   if (!data) throw new Error('There was no data in the document.');
 
   const base64EncodedData = data.template.data
-    .map((byte) => String.fromCharCode(byte))
+    .map((byte) => String.fromCodePoint(byte))
     .join('');
   // Decode the base64 string to binary data
   const binaryString = atob(base64EncodedData);
   const len = binaryString.length;
   const bytes = new Uint8Array(len);
   for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
+    bytes[i] = binaryString.codePointAt(i);
   }
   const blob = new Blob([bytes], {
     type: getMimeType(filename),
   });
 
-  return window.URL.createObjectURL(blob);
+  return globalThis.URL.createObjectURL(blob);
 }
 
 export function getMimeType(filename) {

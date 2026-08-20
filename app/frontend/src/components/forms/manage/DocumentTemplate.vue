@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import {
@@ -9,7 +9,7 @@ import {
   readFile,
 } from '~/composables/documentTemplate';
 import { useFormStore } from '~/store/form';
-import { formService } from '~/services';
+import { formService, printConfigService } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
@@ -19,7 +19,11 @@ let cdogsTemplate = ref(null);
 const documentTemplates = ref([]);
 const enablePreview = ref(false);
 const fileInput = ref(null);
-const headers = ref([
+const printConfig = ref(null);
+const headers = computed(() => [
+  ...(props.formSettingsMode
+    ? [{ title: '', key: 'selected', width: '60px' }]
+    : []),
   { title: 'File Name', key: 'filename' },
   { title: 'Date Created', key: 'createdAt' },
   { title: 'Actions', key: 'actions', align: 'end' },
@@ -32,7 +36,14 @@ const techdocsLinkTemplateUpload = ref(
   'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/'
 );
 let uploadedFile = null; // File uploaded into the File Input
-const validFileExtensions = ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'];
+const validFileExtensions = new Set([
+  'txt',
+  'docx',
+  'html',
+  'odt',
+  'pptx',
+  'xlsx',
+]);
 
 const notificationStore = useNotificationStore();
 
@@ -43,15 +54,88 @@ const validationRules = computed(() => [
   isValidFile.value || t('trans.documentTemplate.invalidFileMessage'),
 ]);
 
-onMounted(async () => {
-  await fetchTemplates();
+const isTemplateInUse = (templateId) => {
+  return printConfig.value?.templateId === templateId;
+};
+
+const props = defineProps({
+  formSettingsMode: {
+    type: Boolean,
+    default: false,
+  },
+  selectedTemplateId: {
+    type: String,
+    default: null,
+  },
 });
+
+const emit = defineEmits(['update:selectedTemplateId']);
+
+function handleTemplateSelection(templateId) {
+  emit('update:selectedTemplateId', templateId);
+}
+
+function handlePrintConfigUpdate(event) {
+  // Only refresh if it's for this form
+  if (event.detail.formId === form.value.id) {
+    fetchPrintConfig();
+  }
+}
+
+onMounted(async () => {
+  await Promise.all([fetchTemplates(), fetchPrintConfig()]);
+
+  // Listen for print config updates
+  globalThis.addEventListener('print-config-updated', handlePrintConfigUpdate);
+});
+
+onUnmounted(() => {
+  globalThis.removeEventListener(
+    'print-config-updated',
+    handlePrintConfigUpdate
+  );
+});
+
+async function fetchPrintConfig() {
+  try {
+    const response = await printConfigService.readPrintConfig(form.value.id);
+    if (response.data) {
+      printConfig.value = response.data;
+    }
+  } catch (e) {
+    // Config doesn't exist (404) - this is fine, template not in use
+    if (e.response?.status === 404) {
+      printConfig.value = null;
+    } else {
+      // Handle unexpected errors - set to null and let component continue
+      printConfig.value = null;
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.debug('Error fetching print config:', e);
+      }
+    }
+  }
+}
 
 async function fetchTemplates() {
   loading.value = true;
   try {
     documentTemplates.value = [];
     documentTemplates.value = await fetchDocumentTemplates(form.value.id);
+
+    // In form-settings mode, if the selected template no longer exists (e.g. it
+    // was just deleted, or was removed since the form was saved), clear the
+    // selection so the form doesn't keep referencing a non-existent template.
+    if (
+      props.formSettingsMode &&
+      props.selectedTemplateId &&
+      !documentTemplates.value.some(
+        (template) => template.templateId === props.selectedTemplateId
+      )
+    ) {
+      handleTemplateSelection(null);
+    }
+
     // disable preview for microsoft docs
     if (documentTemplates.value.length > 0) {
       // get file extension
@@ -95,7 +179,7 @@ function handleFileInput(event) {
 
     // validate file extension
     const fileExtension = event[0].name.split('.').pop();
-    if (validFileExtensions.includes(fileExtension)) {
+    if (validFileExtensions.has(fileExtension)) {
       isValidFile.value = true;
     } else {
       isValidFile.value = false;
@@ -122,6 +206,13 @@ async function handleFileUpload() {
     cdogsTemplate.value = result.data;
 
     await fetchTemplates();
+
+    // Emit custom event to notify other components
+    globalThis.dispatchEvent(
+      new CustomEvent('document-templates-updated', {
+        detail: { formId: form.value.id },
+      })
+    );
 
     // Reset the file input
     if (fileInput.value) {
@@ -157,17 +248,32 @@ async function handleDelete(item) {
   try {
     await formService.documentTemplateDelete(form.value.id, item.templateId);
     await fetchTemplates();
+
+    // Emit custom event to notify other components
+    globalThis.dispatchEvent(
+      new CustomEvent('document-templates-updated', {
+        detail: { formId: form.value.id },
+      })
+    );
+
     notificationStore.addNotification({
       text: t('trans.documentTemplate.deleteSuccess'),
       ...NotificationTypes.SUCCESS,
     });
   } catch (e) {
-    notificationStore.addNotification({
-      text: t('trans.documentTemplate.deleteError'),
-      consoleError: t('trans.documentTemplate.deleteError', {
-        error: e.message,
-      }),
-    });
+    if (e.response?.status === 409) {
+      notificationStore.addNotification({
+        text: t('trans.documentTemplate.deleteErrorInUse'),
+        ...NotificationTypes.ERROR,
+      });
+    } else {
+      notificationStore.addNotification({
+        text: t('trans.documentTemplate.deleteError'),
+        consoleError: t('trans.documentTemplate.deleteError', {
+          error: e.message,
+        }),
+      });
+    }
   } finally {
     loading.value = false;
   }
@@ -184,8 +290,8 @@ async function handleFileAction(item, action) {
 
     if (action === 'preview') {
       // Open the file in a new tab
-      window.open(url, '_blank');
-      window.URL.revokeObjectURL(url);
+      window.open(url, '_blank', 'noopener,noreferrer');
+      globalThis.URL.revokeObjectURL(url);
     } else if (action === 'download') {
       // Create an anchor element and trigger download
       const a = document.createElement('a');
@@ -193,7 +299,7 @@ async function handleFileAction(item, action) {
       a.download = item.filename;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      globalThis.URL.revokeObjectURL(url);
       a.remove();
     }
   } catch (e) {
@@ -228,12 +334,12 @@ defineExpose({
       <div style="display: inline-flex; align-items: center">
         {{ $t('trans.documentTemplate.info') }}
         <v-tooltip location="bottom">
-          <template #activator="{ props }">
+          <template #activator="{ props: tooltipProps }">
             <v-icon
               color="primary"
               class="ml-2"
               :class="{ 'mr-2': isRTL }"
-              v-bind="props"
+              v-bind="tooltipProps"
               icon="mdi:mdi-help-circle-outline"
             ></v-icon>
           </template>
@@ -242,6 +348,7 @@ defineExpose({
               :href="techdocsLinkTemplateUpload"
               class="preview_info_link_field_white"
               target="_blank"
+              rel="noopener noreferrer"
               :lang="locale"
             >
               {{ $t('trans.formSettings.learnMore') }}
@@ -268,10 +375,10 @@ defineExpose({
       <template #item.filename="{ item }">
         <span v-if="!enablePreview">{{ item.filename }}</span>
         <v-tooltip v-if="enablePreview" location="bottom">
-          <template #activator="{ props }">
+          <template #activator="{ props: tooltipProps }">
             <a
               href="#"
-              v-bind="props"
+              v-bind="tooltipProps"
               @click="handleFileAction(item, 'preview')"
             >
               {{ item.filename }}
@@ -288,10 +395,10 @@ defineExpose({
       <template #item.actions="{ item }">
         <div class="icon-container">
           <v-tooltip location="bottom">
-            <template #activator="{ props }">
+            <template #activator="{ props: tooltipProps }">
               <v-icon
                 color="primary"
-                v-bind="props"
+                v-bind="tooltipProps"
                 class="action-icon"
                 @click="handleFileAction(item, 'download')"
               >
@@ -301,19 +408,34 @@ defineExpose({
             <span>{{ $t('trans.documentTemplate.download') }}</span>
           </v-tooltip>
           <v-tooltip location="bottom">
-            <template #activator="{ props }">
+            <template #activator="{ props: tooltipProps }">
               <v-icon
-                color="red"
-                v-bind="props"
+                :color="isTemplateInUse(item.templateId) ? 'grey' : 'red'"
+                v-bind="tooltipProps"
                 class="action-icon"
-                @click="handleDelete(item)"
+                :class="{ 'disabled-icon': isTemplateInUse(item.templateId) }"
+                @click="!isTemplateInUse(item.templateId) && handleDelete(item)"
               >
                 mdi-minus-circle
               </v-icon>
             </template>
-            <span>{{ $t('trans.documentTemplate.delete') }}</span>
+            <span v-if="isTemplateInUse(item.templateId)">
+              {{ $t('trans.documentTemplate.deleteDisabledTooltip') }}
+            </span>
+            <span v-else>{{ $t('trans.documentTemplate.delete') }}</span>
           </v-tooltip>
         </div>
+      </template>
+
+      <!-- Select Template (for sending packaged emails)-->
+      <template v-if="props.formSettingsMode" #item.selected="{ item }">
+        <v-radio
+          :model-value="props.selectedTemplateId"
+          :value="item.templateId"
+          color="primary"
+          hide-details
+          @click="handleTemplateSelection(item.templateId)"
+        />
       </template>
 
       <!-- Empty footer, remove if allowing multiple templates -->
@@ -367,6 +489,11 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.disabled-icon {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .submissions-table {

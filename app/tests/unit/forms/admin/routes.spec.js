@@ -436,3 +436,80 @@ describe(`${basePath}/users/:userId`, () => {
     expect(validateParameter.validateUserId).toBeCalledTimes(1);
   });
 });
+
+describe(`${basePath}/features`, () => {
+  const path = `${basePath}/features`;
+
+  it('GET is admin-protected and calls listFeatureFlags', async () => {
+    controller.listFeatureFlags = jest.fn((_req, res) => res.sendStatus(200));
+
+    await appRequest.get(path);
+
+    expect(controller.listFeatureFlags).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+  });
+});
+
+describe(`${basePath}/features/:code`, () => {
+  const path = `${basePath}/features/offlineForms`;
+
+  it('GET is admin-protected and calls readFeatureFlag', async () => {
+    controller.readFeatureFlag = jest.fn((_req, res) => res.sendStatus(200));
+
+    await appRequest.get(path);
+
+    expect(controller.readFeatureFlag).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+  });
+
+  it('PATCH is admin-protected and calls updateFeatureFlag', async () => {
+    controller.updateFeatureFlag = jest.fn((_req, res) => res.sendStatus(200));
+
+    await appRequest.patch(path).send({ allowAll: true });
+
+    expect(controller.updateFeatureFlag).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+  });
+});
+
+describe(`${basePath}/features/:code/forms`, () => {
+  it('POST is admin-protected and calls addFeatureFlagForm', async () => {
+    controller.addFeatureFlagForm = jest.fn((_req, res) => res.sendStatus(201));
+
+    await appRequest.post(`${basePath}/features/offlineForms/forms`).send({ formId: uuid.v4() });
+
+    expect(controller.addFeatureFlagForm).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+  });
+
+  it('DELETE validates formId and calls removeFeatureFlagForm', async () => {
+    controller.removeFeatureFlagForm = jest.fn((_req, res) => res.sendStatus(204));
+
+    await appRequest.delete(`${basePath}/features/offlineForms/forms/${uuid.v4()}`);
+
+    expect(controller.removeFeatureFlagForm).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+  });
+});
+
+describe(`${basePath}/features/:code/tenants`, () => {
+  it('POST is admin-protected and calls addFeatureFlagTenant', async () => {
+    controller.addFeatureFlagTenant = jest.fn((_req, res) => res.sendStatus(201));
+
+    await appRequest.post(`${basePath}/features/offlineForms/tenants`).send({ tenantId: uuid.v4() });
+
+    expect(controller.addFeatureFlagTenant).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+  });
+
+  it('DELETE is admin-protected and calls removeFeatureFlagTenant', async () => {
+    controller.removeFeatureFlagTenant = jest.fn((_req, res) => res.sendStatus(204));
+
+    await appRequest.delete(`${basePath}/features/offlineForms/tenants/${uuid.v4()}`);
+
+    expect(controller.removeFeatureFlagTenant).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+  });
+});

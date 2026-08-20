@@ -4,12 +4,16 @@ import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { flushPromises, shallowMount } from '@vue/test-utils';
 import { beforeEach, expect, vi } from 'vitest';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { nextTick, ref } from 'vue';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import templateExtensions from '~/plugins/templateExtensions';
 import { fileService, formService, rbacService } from '~/services';
+import {
+  offlineQueue as mockOfflineQueue,
+  QueueStatus as MockQueueStatus,
+} from '~/offline/queue';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -22,7 +26,41 @@ vi.mock('vue-router', () => ({
     push: () => {},
     replace: () => {},
   })),
+  useRoute: vi.fn(() => ({ query: {} })),
 }));
+
+// Offline queue is a module singleton backed by IndexedDB; stub it so the
+// offline-edit path is deterministic and we can assert begin/endEdit.
+vi.mock('~/offline/queue', () => ({
+  QUEUE_SOFT_CAP: 50,
+  QueueStatus: { PENDING: 'pending', SYNCING: 'syncing' },
+  offlineQueue: {
+    entries: { value: [] },
+    ensureLoaded: vi.fn(async () => {}),
+    enqueue: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    beginEdit: vi.fn(),
+    endEdit: vi.fn(),
+    isEditing: vi.fn(() => false),
+  },
+}));
+
+vi.mock('~/offline/offlineQueueManager', () => ({
+  tryDrain: vi.fn(),
+}));
+
+// Force a deterministic online state so the online-submit path is exercised
+// (happy-dom leaves navigator.onLine falsy, which would take the offline pre-empt).
+vi.mock('~/offline/useOnlineStatus', async () => {
+  const { ref } = await import('vue');
+  const online = ref(true);
+  const networkOnline = ref(true);
+  const reachable = ref(true);
+  return {
+    useOnlineStatus: () => ({ online, networkOnline, reachable }),
+  };
+});
 
 const STUBS = {
   BaseDialog: true,
@@ -251,6 +289,7 @@ describe('FormViewer.vue', () => {
       props: {
         formId: formId,
         displayTitle: true,
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -275,6 +314,9 @@ describe('FormViewer.vue', () => {
       },
       // pass in options for custom components to use
       componentOptions: {
+        map: {
+          allowExistingFeatureChanges: false,
+        },
         simplefile: {
           config: appStore.config,
           chefsToken: wrapper.vm.getCurrentAuthHeader,
@@ -333,7 +375,10 @@ describe('FormViewer.vue', () => {
       expect(readPublishedSpy).toBeCalledTimes(1);
       expect(getSubmissionSpy).toBeCalledTimes(0);
       expect(wrapper.vm.showModal).toBeTruthy();
-      expect(addEventListenerSpy).toBeCalledTimes(1);
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
     it('if submission id and it is not a duplicate, it should call getFormData', async () => {
@@ -357,7 +402,10 @@ describe('FormViewer.vue', () => {
       expect(readPublishedSpy).toBeCalledTimes(0);
       expect(getSubmissionSpy).toBeCalledTimes(1);
       expect(wrapper.vm.showModal).toBeFalsy();
-      expect(addEventListenerSpy).toBeCalledTimes(1);
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
   });
@@ -385,7 +433,10 @@ describe('FormViewer.vue', () => {
     expect(readPublishedSpy).toBeCalledTimes(1);
     expect(getSubmissionSpy).toBeCalledTimes(1);
     expect(wrapper.vm.showModal).toBeFalsy();
-    expect(addEventListenerSpy).toBeCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'beforeunload',
+      expect.any(Function)
+    );
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
@@ -409,7 +460,10 @@ describe('FormViewer.vue', () => {
     wrapper.unmount();
 
     await flushPromises();
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'beforeunload',
+      expect.any(Function)
+    );
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
@@ -433,6 +487,94 @@ describe('FormViewer.vue', () => {
     expect(wrapper.vm.getCurrentAuthHeader()).toEqual(
       `Bearer ${authStore.keycloak.token}`
     );
+  });
+
+  describe('setProxyHeaders', () => {
+    it('sets sessionStorage item X-CHEFS-PROXY-DATA on successful call', async () => {
+      const sessionStorageSetItemSpy = vi.spyOn(
+        globalThis.sessionStorage,
+        'setItem'
+      );
+      sessionStorageSetItemSpy.mockImplementation(() => {});
+
+      getProxyHeadersSpy.mockReset();
+      getProxyHeadersSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            'X-CHEFS-PROXY-DATA': 'proxy-data-value',
+          },
+        };
+      });
+
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      // Reset spy to ignore the call from onMounted
+      getProxyHeadersSpy.mockReset();
+      getProxyHeadersSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            'X-CHEFS-PROXY-DATA': 'proxy-data-value',
+          },
+        };
+      });
+
+      await wrapper.vm.setProxyHeaders();
+
+      expect(getProxyHeadersSpy).toBeCalledTimes(1);
+      expect(sessionStorageSetItemSpy).toBeCalledWith(
+        'X-CHEFS-PROXY-DATA',
+        'proxy-data-value'
+      );
+
+      sessionStorageSetItemSpy.mockRestore();
+    });
+
+    it('gracefully handles errors without breaking', async () => {
+      getProxyHeadersSpy.mockReset();
+      getProxyHeadersSpy.mockImplementationOnce(() => {
+        throw new Error('Proxy headers error');
+      });
+
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      // Reset spy to ignore the call from onMounted
+      getProxyHeadersSpy.mockReset();
+      getProxyHeadersSpy.mockImplementationOnce(() => {
+        throw new Error('Proxy headers error');
+      });
+
+      await expect(wrapper.vm.setProxyHeaders()).resolves.not.toThrow();
+
+      expect(getProxyHeadersSpy).toBeCalledTimes(1);
+    });
   });
 
   it('getFormData calls getSubmission and getUserSubmissions', async () => {
@@ -599,6 +741,240 @@ describe('FormViewer.vue', () => {
     });
 
     await wrapper.vm.getFormData();
+  });
+
+  describe('getFormData schedule status handling', () => {
+    it('sets isFormScheduleExpired to true when form.schedule.expire is true', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+          submissionId: '123',
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      getSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            submission: {
+              submission: {
+                data: {
+                  submit: false,
+                  state: 'draft',
+                },
+              },
+              draft: true,
+            },
+            form: {
+              schedule: {
+                expire: true,
+                allowLateSubmissions: false,
+              },
+              identityProviders: [
+                {
+                  code: IdentityMode.TEAM,
+                },
+              ],
+            },
+            version: {
+              id: '123',
+              schema: {
+                components: [],
+              },
+              version: 1,
+            },
+          },
+        };
+      });
+
+      await wrapper.vm.getFormData();
+
+      expect(wrapper.vm.isFormScheduleExpired).toBe(true);
+    });
+
+    it('sets isLateSubmissionAllowed to true when form.schedule.allowLateSubmissions is true', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+          submissionId: '123',
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      getSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            submission: {
+              submission: {
+                data: {
+                  submit: false,
+                  state: 'draft',
+                },
+              },
+              draft: true,
+            },
+            form: {
+              schedule: {
+                expire: true,
+                allowLateSubmissions: true,
+              },
+              identityProviders: [
+                {
+                  code: IdentityMode.TEAM,
+                },
+              ],
+            },
+            version: {
+              id: '123',
+              schema: {
+                components: [],
+              },
+              version: 1,
+            },
+          },
+        };
+      });
+
+      await wrapper.vm.getFormData();
+
+      expect(wrapper.vm.isLateSubmissionAllowed).toBe(true);
+    });
+
+    it('resets both flags to false when form.schedule exists but expire is false', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+          submissionId: '123',
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.isFormScheduleExpired = true;
+      wrapper.vm.isLateSubmissionAllowed = true;
+
+      getSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            submission: {
+              submission: {
+                data: {
+                  submit: false,
+                  state: 'draft',
+                },
+              },
+              draft: true,
+            },
+            form: {
+              schedule: {
+                expire: false,
+                allowLateSubmissions: false,
+              },
+              identityProviders: [
+                {
+                  code: IdentityMode.TEAM,
+                },
+              ],
+            },
+            version: {
+              id: '123',
+              schema: {
+                components: [],
+              },
+              version: 1,
+            },
+          },
+        };
+      });
+
+      await wrapper.vm.getFormData();
+
+      expect(wrapper.vm.isFormScheduleExpired).toBe(false);
+      expect(wrapper.vm.isLateSubmissionAllowed).toBe(false);
+    });
+
+    it('resets both flags to false when form.schedule is undefined', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+          submissionId: '123',
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.isFormScheduleExpired = true;
+      wrapper.vm.isLateSubmissionAllowed = true;
+
+      getSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            submission: {
+              submission: {
+                data: {
+                  submit: false,
+                  state: 'draft',
+                },
+              },
+              draft: true,
+            },
+            form: {
+              identityProviders: [
+                {
+                  code: IdentityMode.TEAM,
+                },
+              ],
+            },
+            version: {
+              id: '123',
+              schema: {
+                components: [],
+              },
+              version: 1,
+            },
+          },
+        };
+      });
+
+      await wrapper.vm.getFormData();
+
+      expect(wrapper.vm.isFormScheduleExpired).toBe(false);
+      expect(wrapper.vm.isLateSubmissionAllowed).toBe(false);
+    });
   });
 
   it('calls readPublished by default', async () => {
@@ -922,6 +1298,147 @@ describe('FormViewer.vue', () => {
     });
   });
 
+  describe('jsonManager', () => {
+    it('sets json_csv.value.file_name with form name and timestamp', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.form = {
+        name: 'Test Form',
+      };
+
+      wrapper.vm.chefForm = {
+        formio: {
+          _data: {
+            field1: 'value1',
+            field2: 'value2',
+          },
+        },
+      };
+
+      wrapper.vm.jsonManager();
+
+      expect(wrapper.vm.json_csv.file_name).toMatch(/^template_Test Form_\d+$/);
+    });
+
+    it('sets formElement.value to chefForm.formio', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      const formioData = {
+        _data: {
+          field1: 'value1',
+          field2: 'value2',
+        },
+      };
+
+      wrapper.vm.form = {
+        name: 'Test Form',
+      };
+
+      wrapper.vm.chefForm = {
+        formio: formioData,
+      };
+
+      wrapper.vm.jsonManager();
+
+      expect(wrapper.vm.formElement).toEqual(formioData);
+    });
+
+    it('sets json_csv.value.data with two copies of form data', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      const formData = {
+        field1: 'value1',
+        field2: 'value2',
+      };
+
+      wrapper.vm.form = {
+        name: 'Test Form',
+      };
+
+      wrapper.vm.chefForm = {
+        formio: {
+          _data: formData,
+        },
+      };
+
+      wrapper.vm.jsonManager();
+
+      expect(wrapper.vm.json_csv.data).toHaveLength(2);
+      expect(wrapper.vm.json_csv.data[0]).toEqual(formData);
+      expect(wrapper.vm.json_csv.data[1]).toEqual(formData);
+    });
+
+    it('handles gracefully when chefForm.formio is undefined', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          displayTitle: true,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.form = {
+        name: 'Test Form',
+      };
+
+      wrapper.vm.chefForm = {
+        formio: undefined,
+      };
+
+      expect(() => wrapper.vm.jsonManager()).not.toThrow();
+    });
+  });
+
   it('saveDraft will call updateSubmission and replace the route if there is a submission id and it is not a duplicate', async () => {
     const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
     updateSubmissionSpy.mockImplementationOnce(() => {});
@@ -951,7 +1468,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(replace).toBeCalledTimes(1);
   });
@@ -986,7 +1503,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(createSubmissionSpy).toBeCalledTimes(1);
     expect(push).toBeCalledTimes(1);
   });
@@ -1031,7 +1548,7 @@ describe('FormViewer.vue', () => {
 
     addNotificationSpy.mockReset();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(createSubmissionSpy).toBeCalledTimes(0);
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(replace).toBeCalledTimes(0);
@@ -1326,6 +1843,420 @@ describe('FormViewer.vue', () => {
 
       expect(errMsg).toEqual('trans.formViewer.errMsg');
     });
+
+    it('blocks submission when form schedule is expired and late submissions not allowed', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          submissionId: '123',
+          isDuplicate: false,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.isFormScheduleExpired = true;
+      wrapper.vm.isLateSubmissionAllowed = false;
+      wrapper.vm.form = {
+        schedule: {
+          message: 'Form has expired',
+        },
+      };
+
+      addNotificationSpy.mockReset();
+
+      const errMsg = await wrapper.vm.doSubmit({
+        data: {
+          lateEntry: false,
+        },
+      });
+
+      expect(errMsg).toEqual('Form has expired');
+      expect(addNotificationSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledWith({
+        text: 'Form has expired',
+        consoleError: 'Submission blocked: Form has expired',
+      });
+      expect(updateSubmissionSpy).toBeCalledTimes(0);
+    });
+
+    it('allows submission when form schedule is expired but late submissions allowed', async () => {
+      updateSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          status: 200,
+          data: {
+            submission: { testKey: 'testValue' },
+          },
+        };
+      });
+
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          submissionId: '123',
+          isDuplicate: false,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.isFormScheduleExpired = true;
+      wrapper.vm.isLateSubmissionAllowed = true;
+
+      const errMsg = await wrapper.vm.doSubmit({
+        data: {
+          lateEntry: false,
+        },
+      });
+
+      expect(errMsg).toBeUndefined();
+      expect(updateSubmissionSpy).toBeCalledTimes(1);
+    });
+
+    it('allows submission normally when form schedule is not expired', async () => {
+      updateSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          status: 200,
+          data: {
+            submission: { testKey: 'testValue' },
+          },
+        };
+      });
+
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          submissionId: '123',
+          isDuplicate: false,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.isFormScheduleExpired = false;
+      wrapper.vm.isLateSubmissionAllowed = false;
+
+      const errMsg = await wrapper.vm.doSubmit({
+        data: {
+          lateEntry: false,
+        },
+      });
+
+      expect(errMsg).toBeUndefined();
+      expect(updateSubmissionSpy).toBeCalledTimes(1);
+    });
+
+    it('renders FormViewerActions when expired and read-only', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId,
+          submissionId: '123',
+          readOnly: true,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.isFormScheduleExpired = true;
+      wrapper.vm.isLateSubmissionAllowed = false;
+
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.findComponent({ name: 'Form' }).exists()).toBe(true);
+    });
+
+    it('does not render FormViewerActions when expired and editable', async () => {
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId,
+          submissionId: '123',
+          readOnly: false,
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.isFormScheduleExpired = true;
+      wrapper.vm.isLateSubmissionAllowed = false;
+
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.findComponent({ name: 'Form' }).exists()).toBe(false);
+    });
+  });
+
+  it('extractSubmissionData returns response.data when submissionId exists and isDuplicate is true', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+        isDuplicate: true,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const response = {
+      data: { id: 'submission-123', testKey: 'testValue' },
+    };
+
+    const result = wrapper.vm.extractSubmissionData(response);
+
+    expect(result).toEqual({ id: 'submission-123', testKey: 'testValue' });
+  });
+
+  it('extractSubmissionData returns response.data.submission when submissionId exists and isDuplicate is false', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+        isDuplicate: false,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const response = {
+      data: {
+        submission: { id: 'submission-123', testKey: 'testValue' },
+      },
+    };
+
+    const result = wrapper.vm.extractSubmissionData(response);
+
+    expect(result).toEqual({ id: 'submission-123', testKey: 'testValue' });
+  });
+
+  it('extractSubmissionData returns response.data when submissionId is null/undefined', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const response = {
+      data: { id: 'submission-123', testKey: 'testValue' },
+    };
+
+    const result = wrapper.vm.extractSubmissionData(response);
+
+    expect(result).toEqual({ id: 'submission-123', testKey: 'testValue' });
+  });
+
+  it('extractErrorMessage returns schedule expiration message when error.response.status is 403', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.form = {
+      schedule: {
+        message: 'Form has expired',
+      },
+    };
+
+    const error = {
+      response: {
+        status: 403,
+        data: {
+          detail: 'Schedule expired detail',
+        },
+      },
+    };
+
+    const result = wrapper.vm.extractErrorMessage(error);
+
+    expect(result).toEqual('Schedule expired detail');
+  });
+
+  it('extractErrorMessage returns formScheduleExpireMessage when error.response.status is 403 and no detail/message', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.form = {
+      schedule: {
+        message: 'Form has expired',
+      },
+    };
+
+    const error = {
+      response: {
+        status: 403,
+        data: {},
+      },
+    };
+
+    const result = wrapper.vm.extractErrorMessage(error);
+
+    expect(result).toEqual('Form has expired');
+  });
+
+  it('extractErrorMessage returns error.response.data.detail when it exists', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const error = {
+      response: {
+        status: 500,
+        data: {
+          detail: 'Error detail message',
+        },
+      },
+    };
+
+    const result = wrapper.vm.extractErrorMessage(error);
+
+    expect(result).toEqual('Error detail message');
+  });
+
+  it('extractErrorMessage returns error.response.data.message when detail does not exist', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const error = {
+      response: {
+        status: 500,
+        data: {
+          message: 'Error message',
+        },
+      },
+    };
+
+    const result = wrapper.vm.extractErrorMessage(error);
+
+    expect(result).toEqual('Error message');
+  });
+
+  it('extractErrorMessage returns default error message translation when none of the above exist', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const error = {
+      response: {
+        status: 500,
+        data: {},
+      },
+    };
+
+    const result = wrapper.vm.extractErrorMessage(error);
+
+    expect(result).toEqual('trans.formViewer.errMsg');
   });
 
   describe('onSubmit', () => {
@@ -1432,6 +2363,98 @@ describe('FormViewer.vue', () => {
       });
 
       expect(addNotificationSpy).toBeCalledTimes(1);
+    });
+
+    it('increments reRenderFormIo and shows notification when doSubmit returns error, does NOT emit submitDone', async () => {
+      // override default implementation
+      updateSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          status: 500,
+          data: {
+            submission: { testKey: 'testValue' },
+          },
+        };
+      });
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          submissionId: '123',
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.reRenderFormIo = 0;
+      const emit = vi.fn();
+
+      wrapper.vm.currentForm = {
+        events: {
+          emit: emit,
+        },
+      };
+
+      addNotificationSpy.mockReset();
+
+      await wrapper.vm.onSubmit({
+        data: {
+          lateEntry: false,
+        },
+      });
+
+      expect(wrapper.vm.reRenderFormIo).toEqual(1);
+      expect(addNotificationSpy).toBeCalledTimes(1);
+      expect(emit).toBeCalledTimes(0);
+    });
+
+    it('emits submitDone event when doSubmit succeeds', async () => {
+      // override default implementation
+      updateSubmissionSpy.mockImplementationOnce(() => {
+        return {
+          status: 200,
+          data: {
+            submission: { testKey: 'testValue' },
+          },
+        };
+      });
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId: formId,
+          submissionId: '123',
+        },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      const emit = vi.fn();
+
+      wrapper.vm.currentForm = {
+        events: {
+          emit: emit,
+        },
+      };
+
+      await wrapper.vm.onSubmit({
+        data: {
+          lateEntry: false,
+        },
+      });
+
+      expect(emit).toBeCalledTimes(1);
+      expect(emit).toBeCalledWith('formio.submitDone');
     });
   });
 
@@ -2049,6 +3072,62 @@ describe('FormViewer.vue', () => {
     expect(getDispositionSpy).toBeCalledTimes(1);
   });
 
+  it('getFile will download json file as blob', async () => {
+    const jsonBlob = new Blob([JSON.stringify({ testKey: 'testValue' })], {
+      type: 'application/json',
+    });
+
+    const createObjectURLSpy = vi
+      .spyOn(window.URL, 'createObjectURL')
+      .mockReturnValue('blob:test-url');
+
+    const revokeObjectURLSpy = vi
+      .spyOn(window.URL, 'revokeObjectURL')
+      .mockImplementation(() => {});
+
+    downloadFileSpy.mockImplementationOnce(() => {
+      formStore.downloadedFile = {
+        headers: {
+          'content-type': 'application/json',
+          'content-disposition': 'attachment; filename="test.json"',
+        },
+        data: jsonBlob,
+      };
+    });
+
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.getFile('asdf');
+
+    expect(downloadFileSpy).toBeCalledTimes(1);
+    expect(downloadFileSpy).toHaveBeenCalledWith('asdf', expect.anything());
+
+    expect(createObjectURLSpy).toHaveBeenCalledTimes(1);
+    expect(createObjectURLSpy).toHaveBeenCalledWith(jsonBlob);
+
+    expect(getDispositionSpy).toBeCalledTimes(1);
+    expect(getDispositionSpy).toHaveBeenCalledWith(
+      'attachment; filename="test.json"'
+    );
+
+    createObjectURLSpy.mockRestore();
+    revokeObjectURLSpy.mockRestore();
+  });
+
   it('uploadFile will call fileServices uploadFile', async () => {
     const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
     uploadFileSpy.mockImplementation(() => {});
@@ -2070,5 +3149,106 @@ describe('FormViewer.vue', () => {
 
     await wrapper.vm.uploadFile('this is a file object');
     expect(uploadFileSpy).toBeCalledTimes(1);
+  });
+
+  it('offline edit aborts cleanly when the schema cannot load, so Save cannot overwrite the queued entry', async () => {
+    const entryId = 'entry-abc';
+    const entry = {
+      id: entryId,
+      dedupKey: 'dk-1',
+      formId,
+      versionId: 'v-1',
+      status: MockQueueStatus.PENDING,
+      body: { draft: false, submission: { data: { field: 'value' } } },
+      note: null,
+    };
+    mockOfflineQueue.entries.value = [entry];
+    mockOfflineQueue.ensureLoaded.mockResolvedValue();
+    mockOfflineQueue.beginEdit.mockClear();
+    mockOfflineQueue.endEdit.mockClear();
+    mockOfflineQueue.update.mockClear();
+
+    // Enter edit mode for this entry, and give it a router.replace spy.
+    useRoute.mockReturnValueOnce({ query: { editOffline: entryId, f: formId } });
+    const replaceSpy = vi.fn();
+    useRouter.mockReturnValueOnce({ push: vi.fn(), replace: replaceSpy });
+
+    // Cache miss -> readVersion; simulate the offline fetch failing.
+    readVersionSpy.mockReset();
+    readVersionSpy.mockRejectedValue(new Error('Network Error'));
+
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Edit state is fully unwound: the banner never renders, so its Save
+    // (which would call offlineQueue.update with an empty submission) is
+    // unreachable.
+    expect(mockOfflineQueue.beginEdit).toHaveBeenCalledWith(entryId);
+    expect(mockOfflineQueue.endEdit).toHaveBeenCalledWith(entryId);
+    expect(wrapper.vm.editingEntry).toBeNull();
+    expect(mockOfflineQueue.update).not.toHaveBeenCalled();
+
+    // Routed back to a fresh form with the "unavailable" notice.
+    expect(replaceSpy).toHaveBeenCalledWith({
+      name: 'FormSubmit',
+      query: { f: formId },
+    });
+    expect(addNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: 'trans.offlineSubmission.editEntryUnavailable',
+      })
+    );
+  });
+
+  it('sends a dedupKey on the online submit and reuses the same key when a lost response falls back to the offline queue', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    // Offline-capable form, new submission, currently online, schedule not expired.
+    wrapper.vm.form = {
+      id: formId,
+      name: 'Form',
+      enableOfflineSubmission: true,
+      showSubmissionConfirmation: false,
+    };
+    wrapper.vm.isFormScheduleExpired = false;
+    await nextTick();
+
+    // The online create reaches the server but the response is lost (network error).
+    const networkErr = Object.assign(new Error('Network Error'), {
+      code: 'ERR_NETWORK',
+    });
+    createSubmissionSpy.mockReset();
+    createSubmissionSpy.mockRejectedValueOnce(networkErr);
+    mockOfflineQueue.enqueue.mockReset();
+    mockOfflineQueue.enqueue.mockResolvedValueOnce({ id: 'e1', dedupKey: 'x' });
+
+    await wrapper.vm.doSubmit({ data: {} });
+    await flushPromises();
+
+    // The online POST carried a Dedup-Key...
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(1);
+    const sentKey = createSubmissionSpy.mock.calls[0][3]?.dedupKey;
+    expect(sentKey).toBeTruthy();
+
+    // ...and the offline fallback reused the SAME key, so the eventual drain replays
+    // instead of creating a duplicate submission.
+    expect(mockOfflineQueue.enqueue).toHaveBeenCalledTimes(1);
+    expect(mockOfflineQueue.enqueue.mock.calls[0][0].dedupKey).toBe(sentKey);
   });
 });

@@ -8,6 +8,7 @@ import StatusPanel from '~/components/forms/submission/StatusPanel.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useTenantStore } from '~/store/tenant';
 import { formService } from '~/services';
 import { rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
@@ -55,6 +56,7 @@ describe('StatusPanel', () => {
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
   const appStore = useAppStore(pinia);
+  const tenantStore = useTenantStore(pinia);
 
   const addNotificationSpy = vi
     .spyOn(notificationStore, 'addNotification')
@@ -67,6 +69,7 @@ describe('StatusPanel', () => {
     formStore.$reset();
     notificationStore.$reset();
     appStore.$reset();
+    tenantStore.$reset();
 
     addNotificationSpy.mockReset();
     getFormUsersSpy.mockReset();
@@ -1325,6 +1328,66 @@ describe('StatusPanel', () => {
     expect(getSubmissionStatusesSpy).toBeCalledTimes(0);
     expect(getStatusCodesSpy).toBeCalledTimes(0);
     expect(addNotificationSpy).toBeCalledTimes(1);
+  });
+
+  it('isTenanted is false when selectedTenant is null', async () => {
+    getFormUsersSpy.mockImplementationOnce(() => ({ data: [] }));
+    getStatusCodesSpy.mockImplementationOnce(() => ({
+      data: [
+        {
+          code: 'SUBMITTED',
+          statusCode: {
+            code: 'SUBMITTED',
+            display: 'Submitted',
+            nextCodes: ['ASSIGNED', 'COMPLETED', 'REVISING'],
+          },
+        },
+      ],
+    }));
+    vi.spyOn(formService, 'getSubmissionStatuses').mockImplementationOnce(() => ({
+      data: [{ code: 'SUBMITTED' }],
+    }));
+
+    tenantStore.selectedTenant = null;
+
+    const wrapper = shallowMount(StatusPanel, {
+      props: { formId: FORM_ID, submissionId: SUBMISSION_ID },
+      global: { plugins: [pinia], stubs: STUBS },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.isTenanted).toBe(false);
+  });
+
+  it('isTenanted is true when selectedTenant is set', async () => {
+    getFormUsersSpy.mockImplementationOnce(() => ({ data: [] }));
+    getStatusCodesSpy.mockImplementationOnce(() => ({
+      data: [
+        {
+          code: 'SUBMITTED',
+          statusCode: {
+            code: 'SUBMITTED',
+            display: 'Submitted',
+            nextCodes: ['ASSIGNED', 'COMPLETED', 'REVISING'],
+          },
+        },
+      ],
+    }));
+    vi.spyOn(formService, 'getSubmissionStatuses').mockImplementationOnce(() => ({
+      data: [{ code: 'SUBMITTED' }],
+    }));
+
+    tenantStore.selectedTenant = { id: 'tenant-1', name: 'Test Tenant' };
+
+    const wrapper = shallowMount(StatusPanel, {
+      props: { formId: FORM_ID, submissionId: SUBMISSION_ID },
+      global: { plugins: [pinia], stubs: STUBS },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.isTenanted).toBe(true);
   });
 
   it('updateStatus will throw an error if there is data when adding note', async () => {

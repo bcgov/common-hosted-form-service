@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import getRouter from '~/router';
 import { useIdpStore } from '~/store/identityProviders';
 import { useAppStore } from '~/store/app';
+import { useTenantStore } from '~/store/tenant';
 import { rbacService } from '../services';
 
 /**
@@ -111,7 +112,10 @@ export const useAuthStore = defineStore('auth', {
               lastName: user.lastName,
               fullName: user.fullName,
               email: user.email,
-              idp: idpObject,
+              idp: {
+                ...idpObject,
+                idpCode: user.idp,
+              },
               public: user.public,
             };
           })
@@ -120,6 +124,8 @@ export const useAuthStore = defineStore('auth', {
           });
       } else {
         this.currentUser = defaultUser;
+        const tenantStore = useTenantStore();
+        tenantStore.clearTenantState();
       }
     },
     async login(idpHint) {
@@ -163,6 +169,10 @@ export const useAuthStore = defineStore('auth', {
     },
     logout() {
       if (this.ready) {
+        // Clear tenant selection before logging out
+        const tenantStore = useTenantStore();
+        tenantStore.resetTenant();
+
         // if we have not specified a logoutUrl, then use default
         if (!this.logoutUrl) {
           window.location.replace(

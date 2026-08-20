@@ -1,12 +1,15 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useTenantStore } from '~/store/tenant';
 import { IdentityMode } from '~/utils/constants';
+import { schemaHasFileComponent } from '~/utils/transformUtils';
 
 const props = defineProps({
   disabled: { type: Boolean, default: false },
@@ -31,14 +34,29 @@ const githubLinkWideFormLayout = ref(
 );
 
 const authStore = useAuthStore();
+const featureFlagStore = useFeatureFlagStore();
 const formStore = useFormStore();
 const idpStore = useIdpStore();
+const tenantStore = useTenantStore();
+
+// Offline submission is experimental and staged behind the `offlineForms`
+// feature flag (enabled globally AND allowlisted for this form/tenant). The
+// FormDesigner calls resolveForContext() on load, so isActive() is populated
+// by the time this renders.
+const offlineFormsActive = computed(() =>
+  featureFlagStore.isActive('offlineForms')
+);
 
 const { identityProvider } = storeToRefs(authStore);
 const { form, isRTL } = storeToRefs(formStore);
+const { selectedTenant } = storeToRefs(tenantStore);
 
 const primaryIdpUser = computed(() =>
   idpStore.isPrimary(identityProvider?.value?.code)
+);
+
+const hasFileComponent = computed(() =>
+  (form.value.versions || []).some((v) => schemaHasFileComponent(v?.schema))
 );
 
 //Centralized disabled states
@@ -51,7 +69,26 @@ const disabledStates = computed(() => {
     schedule: base || !formStore.isFormPublished,
     eventSubscription:
       base || primaryIdpUser.value === false || !formStore.isFormPublished,
+    offline:
+      base ||
+      form.value.userType === IdentityMode.PUBLIC ||
+      hasFileComponent.value,
   };
+});
+
+// Offline submission is invalid on public forms and on forms with a file
+// component (files can't be uploaded offline) — the same conditions that
+// disable the checkbox. If either becomes true, clear the flag so the stored
+// value matches the (now disabled) checkbox instead of silently persisting a
+// stale true. The server also forces it off for public forms on save; this
+// keeps the UI honest beforehand.
+const offlineDisallowed = computed(
+  () => form.value.userType === IdentityMode.PUBLIC || hasFileComponent.value
+);
+watch(offlineDisallowed, (disallowed) => {
+  if (disallowed && form.value.enableOfflineSubmission) {
+    form.value.enableOfflineSubmission = false;
+  }
 });
 
 // Dependency handlers
@@ -96,6 +133,41 @@ defineExpose({
           :lang="locale"
           v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
         />
+      </template>
+    </v-checkbox>
+
+    <!-- Offline Submission (experimental; gated by the offlineForms feature flag) -->
+    <v-checkbox
+      v-if="offlineFormsActive"
+      v-model="form.enableOfflineSubmission"
+      :disabled="disabledStates.offline"
+      hide-details="auto"
+      class="my-0"
+      data-test="enableOfflineSubmissionCheckbox"
+    >
+      <template #label>
+        <div :class="{ 'mr-2': isRTL }">
+          <span
+            :lang="locale"
+            v-html="$t('trans.formSettings.enableOfflineSubmissionLabel')"
+          />
+          <v-tooltip location="bottom">
+            <template #activator="slotProps">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="slotProps.props"
+                icon="mdi:mdi-flask"
+              />
+            </template>
+            <span
+              :lang="locale"
+              style="display: block; max-width: 300px"
+              v-html="$t('trans.formSettings.enableOfflineSubmissionHelp')"
+            />
+          </v-tooltip>
+        </div>
       </template>
     </v-checkbox>
 
@@ -182,6 +254,7 @@ defineExpose({
                 :href="githubLinkBulkUpload"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -230,6 +303,7 @@ defineExpose({
                 :href="githubLinkScheduleAndReminderFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -272,6 +346,7 @@ defineExpose({
                 :href="githubLinkCopyFromExistingFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -314,6 +389,7 @@ defineExpose({
                 :href="githubLinkEventSubscriptionFeature"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -328,7 +404,7 @@ defineExpose({
     <!-- Wide Form Layout -->
     <v-checkbox
       v-model="form.wideFormLayout"
-      :disabled="disabledStates.public"
+      :disabled="disabledStates.general"
       hide-details="auto"
       class="my-0"
       data-test="canAllowWideFormLayoutCheckbox"
@@ -356,6 +432,7 @@ defineExpose({
                 :href="githubLinkWideFormLayout"
                 class="preview_info_link_field_white"
                 target="_blank"
+                rel="noopener noreferrer"
                 :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
@@ -367,7 +444,6 @@ defineExpose({
       </template>
     </v-checkbox>
 
-    <!-- Share Draft -->
     <v-checkbox
       v-model="form.enableTeamMemberDraftShare"
       :disabled="disabledStates.draftShare"
@@ -380,7 +456,11 @@ defineExpose({
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
-          v-html="$t('trans.canShareDraft.shareDraftMessage')"
+          v-html="
+            selectedTenant
+              ? $t('trans.canShareDraft.shareDraftGroupMessage')
+              : $t('trans.canShareDraft.shareDraftMessage')
+          "
         />
       </template>
     </v-checkbox>

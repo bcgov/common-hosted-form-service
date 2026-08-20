@@ -68,7 +68,13 @@ describe('BaseAuthButton.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toEqual('trans.baseAuthButton.login');
+    // Button label may be text (lg+) or icon-only (mdAndDown) — assert on
+    // the aria-label which is set in both modes.
+    const loginButton = wrapper.find('#loginButton');
+    expect(loginButton.exists()).toBeTruthy();
+    expect(loginButton.attributes('aria-label')).toEqual(
+      'trans.baseAuthButton.login'
+    );
   });
 
   it('renders logout when authenticated', () => {
@@ -80,7 +86,11 @@ describe('BaseAuthButton.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toEqual('trans.baseAuthButton.logout');
+    const logoutButton = wrapper.find('#logoutButton');
+    expect(logoutButton.exists()).toBeTruthy();
+    expect(logoutButton.attributes('aria-label')).toEqual(
+      'trans.baseAuthButton.logout'
+    );
   });
 
   it('renders nothing if keycloak is not ready', () => {

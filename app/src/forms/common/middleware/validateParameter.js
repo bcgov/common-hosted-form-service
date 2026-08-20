@@ -6,6 +6,7 @@ const externalApiService = require('../../form/externalApi/service');
 const formService = require('../../form/service');
 const submissionService = require('../../submission/service');
 const encryptionKeyService = require('../../form/encryptionKey/service');
+const documentTemplateService = require('../../form/documentTemplate/service');
 
 /**
  * Throws a 400 problem if the parameter is not a valid UUID.
@@ -67,7 +68,7 @@ const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) =
       formId = submission.form.id;
     }
 
-    const documentTemplate = await formService.documentTemplateRead(documentTemplateId);
+    const documentTemplate = await documentTemplateService.documentTemplateRead(documentTemplateId);
     if (!documentTemplate || documentTemplate.formId !== formId) {
       throw new Problem(404, {
         detail: 'documentTemplateId does not exist on this form',

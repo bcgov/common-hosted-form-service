@@ -43,27 +43,32 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install OpenShift CLI tools
-      uses: redhat-actions/openshift-tools-installer@v1
-      with:
-        oc: "4.14"
+    - name: Install OpenShift CLI (oc)
+      shell: bash
+      run: |
+        OC_VERSION="4.14.62"
+        OC_DIR="${HOME}/oc-bin"
+        mkdir -p "${OC_DIR}"
+        curl -sL "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz" | tar -xzf - -C "${OC_DIR}" oc
+        echo "${OC_DIR}" >> "${GITHUB_PATH}"
     - name: Checkout repository from pull request
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: ${{ inputs.ref }}
       if: ${{ inputs.ref != '' }}
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       if: ${{ inputs.ref == '' }}
 
     - name: Login to OpenShift Cluster
-      uses: redhat-actions/oc-login@v1
-
-      with:
-        openshift_server_url: ${{ inputs.openshift_server }}
-        openshift_token: ${{ inputs.openshift_token }}
-        insecure_skip_tls_verify: true
-        namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+      shell: bash
+      env:
+        OC_TOKEN: ${{ inputs.openshift_token }}
+        OC_SERVER: ${{ inputs.openshift_server }}
+        OC_NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+      run: |
+        oc login --token="${OC_TOKEN}" --server="${OC_SERVER}" --insecure-skip-tls-verify
+        oc project "${OC_NAMESPACE}"
 
     - name: Deploy Patroni Secret
       shell: bash
@@ -86,8 +91,21 @@ runs:
 
     - name: Deploy App Secret
       shell: bash
-      run: >-
-        oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret chefs-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.secret.yaml -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+      env:
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        JOB_NAME: ${{ inputs.job_name }}
+      run: |
+        set -euo pipefail
+
+        SECRET_NAME="chefs-${JOB_NAME}-secret"
+        if ! oc get --namespace "${NAMESPACE}" secret "${SECRET_NAME}" >/dev/null 2>&1; then
+          oc process --namespace "${NAMESPACE}" -f openshift/app.secret.yaml -p INSTANCE="${JOB_NAME}" | oc create --namespace "${NAMESPACE}" -f -
+        fi
+
+        SUBMISSION_TOKEN_KEY="$(oc get --namespace "${NAMESPACE}" secret "${SECRET_NAME}" -o jsonpath='{.data.submissiontokenkey}' | base64 -d || true)"
+        if [[ ${#SUBMISSION_TOKEN_KEY} -lt 32 ]]; then
+          oc patch --namespace "${NAMESPACE}" secret "${SECRET_NAME}" --type merge -p "{\"stringData\":{\"submissiontokenkey\":\"$(openssl rand -hex 32)\"}}"
+        fi
 
     - name: Deploy app ConfigMaps
       shell: bash
@@ -110,6 +128,34 @@ runs:
           oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/clamav.cm.yaml -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} --param-file=openshift/clamav.dev.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
         else
           oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/clamav.cm.yaml -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} --param-file=openshift/clamav.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        fi
+
+    - name: Deploy CSTAR ConfigMaps
+      shell: bash
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        NAMESPACE_PREFIX: ${{ inputs.namespace_prefix }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
+        ACRONYM: ${{ inputs.acronym }}
+      run: |
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/cstar.pr.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+        else
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/cstar.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/cstar.${NAMESPACE_ENVIRONMENT}.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+        fi
+
+    - name: Deploy Feature Flag ConfigMaps
+      shell: bash
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        NAMESPACE_PREFIX: ${{ inputs.namespace_prefix }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
+        ACRONYM: ${{ inputs.acronym }}
+      run: |
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/features.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/features.pr.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+        else
+          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/features.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/features.${NAMESPACE_ENVIRONMENT}.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
         fi
 
     - name: Delete pre-job if it exists
@@ -138,5 +184,70 @@ runs:
 
     - name: Create Cron Jobs
       shell: bash
+      env:
+        NAMESPACE_PREFIX: ${{ inputs.namespace_prefix }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
+        JOB_NAME: ${{ inputs.job_name }}
+        ACRONYM: ${{ inputs.acronym }}
+        ROUTE_PATH: ${{ inputs.route_path }}
       run: |
-        oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.cronjob.yaml -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/app.cronjob.yaml -p JOB_NAME=${JOB_NAME} -p NAMESPACE=${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -p APP_NAME=${ACRONYM} -p NAMESPACE_ENVIRONMENT=${NAMESPACE_ENVIRONMENT} -p ROUTE_PATH=${ROUTE_PATH} -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
+
+    # Introduced as part of PR-1785 and commit e08f669. Disabling it for future modifications if needed by the dev
+    # - name: Get first pod from deployment
+    #   id: pod
+    #   shell: bash
+    #   env:
+    #     NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+    #     DEPLOYMENT_NAME: ${{ inputs.acronym }}-app-${{ inputs.job_name }}
+    #   run: |
+    #     echo "Looking for pods in deployment: $DEPLOYMENT_NAME"
+    #
+    #     POD_NAME=$(oc get pods \
+    #       -n "$NAMESPACE" \
+    #       -l "app.kubernetes.io/name=$DEPLOYMENT_NAME",role=app \
+    #       --field-selector=status.phase=Running \
+    #       -o jsonpath='{.items[0].metadata.name}')
+    #
+    #     if [ -z "$POD_NAME" ]; then
+    #       echo "No pods found for deployment: $DEPLOYMENT_NAME"
+    #       exit 1
+    #     fi
+    #
+    #     echo "Found pod: $POD_NAME"
+    #     echo "pod_name=$POD_NAME" >> "$GITHUB_OUTPUT"
+
+    # - name: Run integration tests on pod
+    #   shell: bash
+    #   env:
+    #     NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+    #     POD_NAME: ${{ steps.pod.outputs.pod_name }}
+    #   run: |
+    #     echo "Running integration tests on pod: $POD_NAME"
+    #
+    #     oc exec -n "$NAMESPACE" "$POD_NAME" -- npm run test:integration
+    #
+    #     if [ $? -eq 0 ]; then
+    #       echo "Integration tests passed successfully"
+    #     else
+    #       echo "Integration tests failed"
+    #       exit 1
+    #     fi
+
+    # - name: Run integration tests on deployment
+    #   shell: bash
+    #   env:
+    #     NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+    #     DEPLOYMENT_NAME: ${{ inputs.acronym }}-app-${{ inputs.job_name }}
+    #   run: |
+    #
+    #     oc rollout status \
+    #       -n "$NAMESPACE" \
+    #       "deployment/$DEPLOYMENT_NAME" \
+    #       --timeout=5m
+    #
+    #     oc exec \
+    #       -n "$NAMESPACE" \
+    #       --pod-running-timeout=5m \
+    #       "deployment/$DEPLOYMENT_NAME" \
+    #       -- npm run test:integration

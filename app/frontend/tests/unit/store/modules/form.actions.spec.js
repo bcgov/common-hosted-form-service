@@ -172,6 +172,38 @@ describe('form actions', () => {
       expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));
     });
 
+    it('fetchSubmissionFields should set formFields and return the payload', async () => {
+      const payload = {
+        versionId: 'vid',
+        published: true,
+        versions: [{ id: 'vid', version: 1, published: true }],
+        fields: ['simpletextfield'],
+      };
+      formService.readFormFields.mockResolvedValue({ data: payload });
+      mockStore.formFields = undefined;
+
+      const result = await mockStore.fetchSubmissionFields('fId');
+
+      expect(formService.readFormFields).toHaveBeenCalledWith('fId');
+      expect(mockStore.formFields).toEqual(['simpletextfield']);
+      expect(result).toEqual(payload);
+    });
+
+    it('fetchSubmissionFields should notify and return empty payload on error', async () => {
+      formService.readFormFields.mockRejectedValue('');
+
+      const result = await mockStore.fetchSubmissionFields('fId');
+
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({
+        versionId: null,
+        published: false,
+        versions: [],
+        fields: [],
+      });
+    });
+
     it('fetchDrafts should commit to SET_DRAFTS', async () => {
       formService.listDrafts.mockResolvedValue({ data: [] });
       mockStore.drafts = undefined;
@@ -239,7 +271,7 @@ describe('form actions', () => {
       formService.deleteSubmission.mockResolvedValue({
         data: { submission: {}, form: {} },
       });
-      await mockStore.deleteSubmission('sId');
+      await mockStore.deleteSubmission('fId', 'sId');
 
       expect(formService.deleteSubmission).toHaveBeenCalledTimes(1);
       expect(formService.deleteSubmission).toHaveBeenCalledWith('sId');
@@ -247,7 +279,7 @@ describe('form actions', () => {
 
     it('deleteSubmission should dispatch to notifications/addNotification', async () => {
       formService.deleteSubmission.mockRejectedValue('');
-      await mockStore.deleteSubmission('sId');
+      await mockStore.deleteSubmission('fId', 'sId');
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));

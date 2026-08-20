@@ -8,6 +8,13 @@ import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useAppStore } from '~/store/app';
+import { rbacService } from '~/services';
+
+vi.mock('~/services', () => ({
+  rbacService: {
+    getCurrentUser: vi.fn(),
+  },
+}));
 
 describe('auth actions', () => {
   let router = getRouter();
@@ -101,6 +108,36 @@ describe('auth actions', () => {
     //   expect(replaceSpy).toHaveBeenCalledTimes(0);
     //   expect(mockStore.getters.createLoginUrl).toHaveBeenCalledTimes(0);
     // });
+  });
+
+  describe('updateKeycloak', () => {
+    beforeEach(() => {
+      mockStore.$reset();
+    });
+
+    it('should normalize azureidir code to idir via canonicalCode', async () => {
+      rbacService.getCurrentUser.mockResolvedValue({
+        data: { idpUserId: 'guid', username: 'testuser', firstName: 'Test', lastName: 'User', fullName: 'Test User', email: 'test@test.com', idp: 'azureidir', public: false },
+      });
+
+      mockStore.updateKeycloak({}, true);
+      await vi.waitFor(() => expect(mockStore.currentUser.idp.code).toBe('idir'));
+
+      expect(mockStore.currentUser.idp.code).toBe('idir');
+      expect(mockStore.currentUser.idp.idpCode).toBe('azureidir');
+    });
+
+    it('should set code and idpCode to idir for regular IDIR login', async () => {
+      rbacService.getCurrentUser.mockResolvedValue({
+        data: { idpUserId: 'guid', username: 'testuser', firstName: 'Test', lastName: 'User', fullName: 'Test User', email: 'test@test.com', idp: 'idir', public: false },
+      });
+
+      mockStore.updateKeycloak({}, true);
+      await vi.waitFor(() => expect(mockStore.currentUser.idp.code).toBe('idir'));
+
+      expect(mockStore.currentUser.idp.code).toBe('idir');
+      expect(mockStore.currentUser.idp.idpCode).toBe('idir');
+    });
   });
 
   describe('logout', () => {

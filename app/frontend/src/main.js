@@ -14,8 +14,11 @@ import { formatDate, formatDateLong } from '~/filters';
 import i18n from '~/internationalization';
 import vuetify from '~/plugins/vuetify';
 import getRouter from '~/router';
+import { reachable } from '~/offline/useReachability';
 import { useAuthStore } from '~/store/auth';
 import { useAppStore } from '~/store/app';
+import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 import { assertOptions, getConfig, sanitizeConfig } from '~/utils/keycloak';
 import { rbacService } from './services';
 import { useIdpStore } from '~/store/identityProviders';
@@ -67,6 +70,7 @@ import BaseFilter from '~/components/base/BaseFilter.vue';
 import BaseImagePopout from '~/components/base/BaseImagePopout.vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
+import BaseOfflineControl from '~/components/base/BaseOfflineControl.vue';
 import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
 import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
 import BasePanel from '~/components/base/BasePanel.vue';
@@ -79,26 +83,27 @@ app.component('BaseFilter', BaseFilter);
 app.component('BaseImagePopout', BaseImagePopout);
 app.component('BaseInfoCard', BaseInfoCard);
 app.component('BaseInternationalization', BaseInternationalization);
+app.component('BaseOfflineControl', BaseOfflineControl);
 app.component('BaseNotificationBar', BaseNotificationBar);
 app.component('BaseNotificationContainer', BaseNotificationContainer);
 app.component('BasePanel', BasePanel);
 app.component('BasePrintButton', BasePrintButton);
 app.component('BaseSecure', BaseSecure);
 
-(async () => {
-  // IE11 Detection (https://stackoverflow.com/a/21825207)
-  if (!!window.MSInputMethodContext && !!document.documentMode) {
-    document.write(`<div style="padding-top: 5em; text-align: center;">
+// IE11 Detection (https://stackoverflow.com/a/21825207)
+if (!!window.MSInputMethodContext && !!document.documentMode) {
+  document.write(`<div style="padding-top: 5em; text-align: center;">
       <h1>We're sorry but ${
         import.meta.env.VITE_TITLE
       } is not supported in Internet Explorer.</h1>
       <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
     </div>`);
-    NProgress.done();
-  } else {
+  NProgress.done();
+} else {
+  (async () => {
     await loadConfig();
-  }
-})();
+  })();
+}
 
 /**
  * @function initializeApp
@@ -119,6 +124,14 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 
   axios.defaults.baseURL = import.meta.env.BASE_URL;
 
+  // Boot the offline-submission queue manager once the SPA is mounted.
+  // Hangs off window events and a poll timer; not tied to any route.
+  import('~/offline/offlineQueueManager').then(
+    ({ startOfflineQueueManager }) => {
+      startOfflineQueueManager();
+    }
+  );
+
   NProgress.done();
 }
 
@@ -136,6 +149,8 @@ async function loadIdentityProviders() {
     }
     return true;
   } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(`loadIdentityProviders:error ${err}`);
     idpStore.providers = undefined;
     return false;
   }
@@ -198,8 +213,13 @@ function loadKeycloak(config) {
     init: { onLoad: 'login-required' },
   };
 
-  const options = Object.assign({}, defaultParams, {
-    init: { pkceMethod: 'S256', checkLoginIframe: false, onLoad: 'check-sso' },
+  const options = {
+    ...defaultParams,
+    init: {
+      pkceMethod: 'S256',
+      checkLoginIframe: false,
+      onLoad: 'check-sso',
+    },
     config: {
       clientId: config.oidc.clientId,
       realm: config.oidc.realm,
@@ -212,7 +232,7 @@ function loadKeycloak(config) {
       console.error('Keycloak failed to initialize'); // eslint-disable-line no-console
       console.error(error); // eslint-disable-line no-console
     },
-  });
+  };
 
   if (assertOptions(options).hasError)
     throw new Error(`Invalid options given: ${assertOptions(options).error}`);
@@ -237,6 +257,14 @@ function loadKeycloak(config) {
       let expiredTokenInterval;
 
       function updateToken(seconds) {
+        // Skip token refresh while offline on an offline-capable form. The
+        // request would fail and onAuthRefreshError would flip the user to
+        // unauthenticated mid-session, kicking them out of the offline form.
+        // When the network comes back the next 10s tick refreshes normally.
+        const formStore = useFormStore();
+        if (formStore.form?.enableOfflineSubmission && !reachable.value) {
+          return;
+        }
         keycloak
           .updateToken(seconds)
           .then((refreshed) => {
@@ -273,6 +301,26 @@ function loadKeycloak(config) {
       };
       keycloak.onAuthRefreshSuccess = () => {
         authStore.updateKeycloak(keycloak, true);
+      };
+      keycloak.onAuthRefreshError = () => {
+        // Refresh failed. This could mean the SSO session is gone, OR it could
+        // be a transient network blip / race on reload. Distinguish the two by
+        // checking whether the access token itself is expired:
+        //   - access token dead → session is truly gone, save restore context
+        //     and flip auth state so BaseSecure shows the login prompt
+        //   - access token still valid → refresh will retry, don't disrupt the
+        //     user; the interval keeps running and will either recover or
+        //     eventually come back through this path once the token does expire
+        const tokenDead =
+          !keycloak.authenticated ||
+          (typeof keycloak.isTokenExpired === 'function' &&
+            keycloak.isTokenExpired());
+        if (!tokenDead) return;
+
+        const tenantStore = useTenantStore();
+        tenantStore.saveSessionRestore();
+        authStore.redirectUri = location.toString();
+        authStore.updateKeycloak(keycloak, false);
       };
       keycloak.onAuthLogout = () => {
         authStore.updateKeycloak(keycloak, false);

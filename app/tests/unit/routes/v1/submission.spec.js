@@ -28,7 +28,7 @@ userAccess.hasSubmissionPermissions = jest.fn(() => {
 //
 const service = require('../../../../src/forms/submission/service');
 
-const cdogsService = require('../../../../src/components/cdogsService');
+const docGenService = require('../../../../src/components/docGenService');
 const emailService = require('../../../../src/forms/email/emailService');
 
 //
@@ -542,10 +542,11 @@ describe(`${basePath}/:formSubmissionId/status`, () => {
     it('should return 200', async () => {
       const statRes = { code: 'SUBMITTED', user: {} };
       // mock a success return value...
-      service.changeStatusState = jest.fn().mockReturnValue(statRes);
+      service.changeStatusState = jest.fn().mockResolvedValue(statRes);
+      service.read = jest.fn().mockResolvedValue({ form: { id: 'formId' } });
       emailService.statusAssigned = jest.fn().mockReturnValue(true);
 
-      const response = await appRequest.post(path, { code: 'SUBMITTED', user: {} });
+      const response = await appRequest.post(path).send({ code: 'SUBMITTED', user: {} }).set('Authorization', bearerAuth);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeTruthy();
@@ -593,13 +594,16 @@ describe(`${basePath}/:formSubmissionId/template/render`, () => {
         version: {
           version: 1,
         },
+        form: {
+          id: uuid.v4(),
+        },
       };
       const renderResponse = {
         headers: {},
         status: 200,
       };
       service.read = jest.fn().mockReturnValue(readResponse);
-      cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(renderResponse);
+      docGenService.templateUploadAndRender = jest.fn().mockReturnValue(renderResponse);
 
       const response = await appRequest.post(path, {});
 

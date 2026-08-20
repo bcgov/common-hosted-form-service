@@ -12,6 +12,7 @@ module.exports = Object.freeze({
     STATUS_REVISING: 'statusRevising',
     SUBMISSION_RECEIVED: 'submissionReceived',
     SUBMISSION_CONFIRMATION: 'submissionConfirmation',
+    SUBMISSION_PACKAGE: 'submissionPackage',
     REMINDER_FORM_OPEN: 'formOpen',
     REMINDER_FORM_WILL_CLOSE: 'formWillClose',
     REMINDER_FORM_NOT_FILL: 'formNotFill',
@@ -49,6 +50,9 @@ module.exports = Object.freeze({
     SUBMISSION_APPROVER: 'submission_approver',
     SUBMISSION_REVIEWER: 'submission_reviewer',
     TEAM_MANAGER: 'team_manager',
+  },
+  TenantRoles: {
+    FORM_ADMIN: 'form_admin',
   },
   Regex: {
     CONFIRMATION_ID: '^[0-9A-Fa-f]{8}$',
@@ -111,5 +115,21 @@ module.exports = Object.freeze({
     PENDING: 'PENDING',
     APPROVED: 'APPROVED',
     DENIED: 'DENIED',
+  },
+  PrintConfigTypes: {
+    DEFAULT: 'default',
+    DIRECT: 'direct',
+  },
+  RetentionAction: {
+    DISABLE: 'DISABLE',
+    CREATE: 'CREATE',
+    RECALCUALTE: 'RECALCULATE',
+  },
+  PackageJobStatuses: {
+    QUEUED: 'queued',
+    PROCESSING: 'processing',
+    COMPLETED: 'completed',
+    SKIPPED: 'skipped',
+    FAILED: 'failed',
   },
 });

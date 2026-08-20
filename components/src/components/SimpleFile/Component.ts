@@ -9,6 +9,34 @@ import uniqueName = Utils.uniqueName;
 const ID = 'simplefile';
 const DISPLAY = 'File Upload';
 
+/**
+ * Removes leading and trailing slashes and whitespace from a string
+ * @param s - The string to clean
+ * @returns The cleaned string
+ */
+function remSlash(s: string) {
+  if (!s) return '';
+  let result = s.trim();
+  while (result.startsWith('/')) result = result.slice(1);
+  while (result.endsWith('/')) result = result.slice(0, -1);
+  return result;
+}
+
+/**
+ * Builds a URL path from multiple path segments
+ * @param segments - Array of path segments to join
+ * @returns The joined path with proper slashes
+ */
+function buildUrlPath(...segments: string[]) {
+  return (
+    '/' +
+    segments
+      .map((segment) => remSlash(segment))
+      .filter(Boolean)
+      .join('/')
+  );
+}
+
 export default class Component extends ParentComponent {
   static schema(...extend) {
     return ParentComponent.schema(
@@ -59,17 +87,21 @@ export default class Component extends ParentComponent {
       this.component.options = { ...this.component.options, ...opts };
       // the config.uploads object will say what size our server can handle and what path to use.
       if (opts?.config?.uploads) {
-        const remSlash = (s) => s.replace(/^(\s*\/?\s*)$|^(\s*\/?\s*)$/gm, '');
-
         const cfg = opts.config;
         const uploads = cfg.uploads;
 
         this.component.fileMinSize = uploads.fileMinSize;
         this.component.fileMaxSize = uploads.fileMaxSize;
         // set the default url to be for uploads.
-        this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
-          cfg.apiPath
-        )}/${remSlash(uploads.path)}`;
+        if (uploads.webcomponents && uploads.url) {
+          this.component.url = uploads.url;
+        } else {
+          this.component.url = buildUrlPath(
+            cfg.basePath,
+            cfg.apiPath,
+            uploads.path
+          );
+        }
         // no idea what to do with this yet...
         this._enabled = uploads.enabled;
       }
@@ -218,7 +250,7 @@ export default class Component extends ParentComponent {
             .uploadFile(formData, {
               onUploadProgress: (evt) => {
                 fileUpload.status = 'progress';
-                const p = (100.0 * evt.loaded) / evt.total;
+                const p = (100 * evt.loaded) / evt.total;
                 // @ts-ignore
                 fileUpload.progress = p;
                 delete fileUpload.message;
@@ -251,19 +283,22 @@ export default class Component extends ParentComponent {
               this.redraw();
               this.triggerChange();
             })
-            .catch((response) => {
+            .catch((error_) => {
               fileUpload.status = 'error';
               // we do not get API Problem objects, only http error
               // not much information to provide our users.
               let message = 'An unexpected error occured during file upload.';
-              if (response.status === 409 || response.detail.includes('409')) {
+
+              // Add defensive checks for response.detail
+              const detail = error_?.detail || '';
+              const status = error_?.status || 0;
+
+              if (status === 409 || detail.includes('409')) {
                 message = 'File did not pass the virus scanner.';
-              } else if (
-                response.status === 400 ||
-                response.detail.includes('400')
-              ) {
+              } else if (status === 400 || detail.includes('400')) {
                 message = 'File could not be uploaded.';
               }
+
               fileUpload.message = this.t(message);
               // @ts-ignore
               delete fileUpload.progress;
@@ -277,10 +312,10 @@ export default class Component extends ParentComponent {
   getFile(fileInfo) {
     const fileId = fileInfo?.data?.id ?? fileInfo.id;
     const { options = {} } = this.component;
-    options.getFile(fileId, { responseType: 'blob' }).catch((response) => {
+    options.getFile(fileId, { responseType: 'blob' }).catch((error_) => {
       // Is alert the best way to do this?
       // User is expecting an immediate notification due to attempting to download a file.
-      alert(response);
+      alert(error_);
     });
   }
 }

@@ -6,6 +6,7 @@ const yaml = require('js-yaml');
 
 const admin = require('../forms/admin');
 const bcgeoaddress = require('../forms/bcgeoaddress');
+const feature = require('../forms/feature');
 const file = require('../forms/file');
 const form = require('../forms/form');
 const permission = require('../forms/permission');
@@ -13,14 +14,16 @@ const rbac = require('../forms/rbac');
 const role = require('../forms/role');
 const user = require('../forms/user');
 const submission = require('../forms/submission');
-const utils = require('../forms/utils');
 const index = require('../forms/public');
 const proxy = require('../forms/proxy');
+const commonServices = require('../forms/commonServices');
+const recordsManagement = require('../forms/recordsManagement');
 
 const statusService = require('../components/statusService');
 
 admin.mount(router);
 const bcaddress = bcgeoaddress.mount(router);
+const featurePath = feature.mount(router);
 const filePath = file.mount(router);
 const formPath = form.mount(router);
 const permissionPath = permission.mount(router);
@@ -28,9 +31,10 @@ const rbacPath = rbac.mount(router);
 const rolePath = role.mount(router);
 const userPath = user.mount(router);
 const submissionPath = submission.mount(router);
-const utilsPath = utils.mount(router);
 const publicPath = index.mount(router);
 const proxyPath = proxy.mount(router);
+const commonServicesPath = commonServices.mount(router);
+const recordsManagementPath = recordsManagement.mount(router);
 
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
@@ -43,7 +47,23 @@ const getSpec = () => {
 // Base v1 Responder
 router.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: ['/docs', '/status', proxyPath, filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath],
+    endpoints: [
+      '/docs',
+      '/status',
+      proxyPath,
+      filePath,
+      formPath,
+      permissionPath,
+      rbacPath,
+      rolePath,
+      submissionPath,
+      userPath,
+      bcaddress,
+      featurePath,
+      publicPath,
+      commonServicesPath,
+      recordsManagementPath,
+    ],
   });
 });
 

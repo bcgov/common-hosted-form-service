@@ -1,4 +1,5 @@
 const moment = require('moment-timezone');
+const Problem = require('api-problem');
 const { ScheduleType } = require('./constants');
 
 /**
@@ -320,6 +321,50 @@ const checkIsFormExpired = (formSchedule = {}) => {
 
   return updatedResult;
 };
+
+/**
+ * Validates if a submission is allowed based on schedule
+ * Throws Problem if submission is not allowed
+ * @param {Object} formSchedule - The form's schedule configuration (raw or processed)
+ * @throws {Problem} 403 error if submission is not allowed
+ */
+const validateSubmissionSchedule = (formSchedule = {}) => {
+  if (!formSchedule || !formSchedule.enabled) {
+    return; // No schedule restrictions
+  }
+
+  const scheduleStatus = checkIsFormExpired(formSchedule);
+
+  if (scheduleStatus.expire && !scheduleStatus.allowLateSubmissions) {
+    throw new Problem(403, scheduleStatus.message || 'Form submission period has expired');
+  }
+};
+
+/**
+ * Validates submission schedule from form object
+ * Handles both raw schedule (needs processing) and processed schedule (has expire property)
+ * @param {Object} form - Form object with schedule property
+ * @throws {Problem} 403 error if submission is not allowed
+ */
+const validateFormSubmissionSchedule = (form) => {
+  if (!form?.schedule) {
+    return;
+  }
+
+  // If schedule is already processed (has expire property), validate directly
+  if (form.schedule.expire !== undefined) {
+    if (form.schedule.expire && !form.schedule.allowLateSubmissions) {
+      throw new Problem(403, form.schedule.message || 'Form submission period has expired');
+    }
+    return;
+  }
+
+  // Otherwise, process it first using validateSubmissionSchedule
+  if (form.schedule.enabled) {
+    validateSubmissionSchedule(form.schedule);
+  }
+};
+
 /**
  * Helper function to calculate a closing date from PERIOD form settings
  * Used for backward compatibility with legacy forms
@@ -522,6 +567,10 @@ module.exports = {
   checkIsFormExpired,
   calculateCloseDateFromPeriod,
   isWithinGracePeriod,
+
+  // Form submission validation
+  validateSubmissionSchedule,
+  validateFormSubmissionSchedule,
 
   // Form structure and validation
   extractScheduleDates,

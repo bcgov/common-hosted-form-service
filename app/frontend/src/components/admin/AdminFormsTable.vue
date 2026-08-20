@@ -195,6 +195,7 @@ async function handleSearch(value) {
             query: { f: item.id },
           }"
           target="_blank"
+          rel="noopener noreferrer"
           :title="$t('trans.adminFormsTable.launch')"
         >
           <v-icon class="mr-1" icon="mdi:mdi-note-plus"></v-icon>

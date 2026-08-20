@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { onBeforeUnmount, computed, ref, watch, nextTick } from 'vue';
 
 import { createDownload } from '~/composables/printOptions';
-import { formService, utilsService } from '~/services';
+import { useOnlineStatus } from '~/offline/useOnlineStatus';
+import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
@@ -62,6 +63,8 @@ const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
 const { isRTL, form } = storeToRefs(formStore);
+
+const { online } = useOnlineStatus();
 
 const files = computed(() => templateForm.value.files);
 const formId = computed(() => (properties.f ? properties.f : form.value.id));
@@ -187,7 +190,7 @@ async function generate() {
         template: body,
         submission: properties.submission,
       };
-      response = await utilsService.draftDocGen(draftData);
+      response = await formService.draftDocGen(formId.value, draftData);
     }
     // create file to download
     const filename = getDisposition(response.headers['content-disposition']);
@@ -368,9 +371,12 @@ defineExpose({
             <v-tab value="tab-1">{{
               $t('trans.printOptions.browserPrint')
             }}</v-tab>
-            <v-tab value="tab-2" @click="fetchDefaultTemplate">{{
-              $t('trans.printOptions.templatePrint')
-            }}</v-tab>
+            <v-tab
+              value="tab-2"
+              :disabled="!online"
+              @click="fetchDefaultTemplate"
+              >{{ $t('trans.printOptions.templatePrint') }}</v-tab
+            >
           </v-tabs>
           <v-window v-model="tab">
             <v-window-item value="tab-1">
@@ -405,6 +411,7 @@ defineExpose({
                 <a
                   href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Printing-from-a-browser/"
                   target="_blank"
+                  rel="noopener noreferrer"
                   class="more-info-link"
                   :lang="locale"
                 >
@@ -537,6 +544,7 @@ defineExpose({
                       <a
                         href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/"
                         target="_blank"
+                        rel="noopener noreferrer"
                         class="more-info-link"
                         :lang="locale"
                         :title="$t('trans.printOptions.moreInfo')"

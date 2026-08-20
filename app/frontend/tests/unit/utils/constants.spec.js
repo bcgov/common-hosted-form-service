@@ -7,18 +7,20 @@ describe('Constants', () => {
       ADMIN: '/admin',
       APIKEY: '/apiKey',
       EXTERNAL_APIS: '/externalAPIs',
+      FEATURES: '/features',
       FILES: '/files',
       FORMS: '/forms',
       RBAC: '/rbac',
       ROLES: '/roles',
       SUBMISSION: '/submissions',
       USERS: '/users',
-      UTILS: '/utils',
       FILES_API_ACCESS: '/filesApiAccess',
+      PRINT_CONFIG: '/printConfig',
       PROXY: '/proxy',
       FORM_METADATA: '/formMetadata',
       ENCRYPTION_KEY: '/encryptionKey',
       EVENT_STREAM_CONFIG: '/eventStreamConfig',
+      RECORDS_MANAGEMENT: '/recordsManagement',
     });
   });
 
@@ -87,6 +89,7 @@ describe('Constants', () => {
       VIEWS_FORM_PREVIEW: 'views_form_preview',
       VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
       VIEWS_FORM_TEAMS: 'views_form_teams',
+      VIEWS_FORM_GROUPS: 'views_form_groups',
       VIEWS_FORM_VIEW: 'views_form_view',
       VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
     });

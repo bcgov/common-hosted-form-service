@@ -4,6 +4,7 @@ const { parse } = require('path');
 const Transport = require('winston-transport');
 const { createLogger, format, transports } = require('winston');
 const { logger } = require('express-winston');
+const clsRtracer = require('cls-rtracer');
 
 /**
  * Class representing a winston transport writing to null
@@ -21,6 +22,17 @@ class NullTransport extends Transport {
 }
 
 /**
+ * Format that adds correlationId from cls-rtracer to every log entry when available
+ */
+const correlationIdFormat = format((info) => {
+  const correlationId = clsRtracer.id();
+  if (correlationId) {
+    info.correlationId = correlationId;
+  }
+  return info;
+});
+
+/**
  * Main Winston Logger
  * @returns {object} Winston Logger
  */
@@ -29,6 +41,7 @@ const log = createLogger({
   format: format.combine(
     format.errors({ stack: true }), // Force errors to show stacktrace
     format.timestamp(), // Add ISO timestamp to each entry
+    correlationIdFormat(), // Add correlationId when in request context
     format.json() // Force output to be in JSON format
   ),
   level: config.get('server.logLevel'),
@@ -70,6 +83,7 @@ const httpLogger = logger({
     return {
       azp: (token && token.azp) || undefined,
       contentLength: res.get('content-length'),
+      correlationId: clsRtracer.id() || undefined,
       formId: (req.auth && req.auth.user) || undefined,
       httpVersion: req.httpVersion,
       ip: req.ip,

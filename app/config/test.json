@@ -13,7 +13,7 @@
       "path": "files"
     },
     "permanent": "localStorage",
-    "localStorage" : {
+    "localStorage": {
       "path": ""
     },
     "objectStorage": {
@@ -29,12 +29,21 @@
     "oidc": {
       "clientSecret": "password"
     },
-    "logLevel": "silent"
+    "logLevel": "silent",
+    "submissionTokenKey": "test-only-submission-token-key-32-bytes-min-do-not-use-anywhere-else"
   },
   "serviceClient": {
     "commonServices": {
       "username": "username",
       "password": "password"
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": ""
+    }
+  },
+  "gateway": {
+    "jwtLifetime": "30m"
   }
 }

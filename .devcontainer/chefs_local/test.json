@@ -94,8 +94,19 @@
         "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
         "clientId": "CDOGS_CLIENT_ID",
         "clientSecret": "CDOGS_CLIENT_SECRET"
+      },
+      "cdogsV3": {
+        "endpoint": "https://chefs-cdogs.apps.silver.devops.gov.bc.ca"
       }
     }
+  },
+  "cstar": {
+    "tenantFeatureEnabled": true,
+    "endpoint": "https://dev.connect.digital.gov.bc.ca/api/v1/",
+    "listUserTenantsPath": "users/{userId}/tenants",
+    "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
+    "listGroupsForTenant": "tenants/{tenantId}/groups",
+    "listTenantUsersPath": "tenants/{tenantId}/users"
   },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",
@@ -111,5 +122,13 @@
       "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
       "precisionPoints": 100
     }
+  },
+  "webcomponents": {
+    "assets": {
+      "roots": "/workspaces/common-hosted-form-service/app/webcomponents/v1/assets"
+    }
+  },
+  "gateway": {
+    "jwtLifetime": "30m"
   }
 }

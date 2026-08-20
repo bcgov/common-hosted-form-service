@@ -112,6 +112,7 @@ defineExpose({ dialog, formLink, downloadQr });
                     :href="formLink"
                     color="primary"
                     target="_blank"
+                    rel="noopener noreferrer"
                     v-bind="props"
                     size="x-small"
                     density="default"

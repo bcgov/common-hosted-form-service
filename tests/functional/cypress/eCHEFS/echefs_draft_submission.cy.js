@@ -1,0 +1,193 @@
+import 'cypress-keycloak-commands';
+import { formsettings } from '../support/echefs_login.js';
+
+const depEnv = Cypress.env('depEnv');
+
+Cypress.Commands.add('waitForLoad', () => {
+  const loaderTimeout = 60000;
+
+  cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
+});
+describe('Form Designer', () => {
+
+  beforeEach(()=>{
+    
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Form.io throws an uncaught exception for missing projectid
+      // Cypress catches it as undefined: undefined so we can't get the text
+      console.log(err);
+      return false;
+    });
+  });
+  it('Visits the form settings page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    formsettings();
+    cy.checkA11yPage();
+  });  
+  it('Getting page', () => {
+    
+    cy.viewport(1000, 1100);
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
+    cy.get('button').contains('Basic Fields').click();
+  });
+// Publish a simple form 
+it('Verify draft submission', () => {
+    cy.viewport(1000, 1100);
+    cy.wait(2000);
+    cy.get('div.formio-builder-form').then($el => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Text Field')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -150, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('.btn-success').click();
+    });
+    
+  // Form saving
+    let savedButton = cy.get('[data-cy=saveButton]');
+    expect(savedButton).to.not.be.null;
+    savedButton.should('be.visible').trigger('click');
+    cy.wait(2000);
+  // Filter the newly created form
+    cy.location('search').then(search => {
+      //let pathName = fullUrl.pathname
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
+    const formId_new = `${arrayValues[0]}`;
+    cy.log(formId_new);
+    let formId;
+    cy.writeFile('cypress/fixtures/formId.json', { formId: formId_new });
+    //Publish the form
+    cy.get('.v-label > span').click();
+    cy.get('span').contains('Publish Version 1');
+    cy.contains('Continue').should('be.visible');
+    cy.contains('Continue').trigger('click');
+    //Select specific groups option
+    cy.get('[data-test="canAllowEditFormSettings"]').click();
+    cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('Specific Groups').should('exist');
+    cy.contains('Specific Groups').click();
+    //validate share draft with team is enabled
+    cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
+    cy.get('[data-test="enableTeamMemberDraftShare"]').click();
+    //Update form settings
+    cy.get('[data-test="canEditForm"]').click();
+    //Add group mangement and verify
+    cy.get('[data-test="canManageGroups"]').click();
+    cy.get('div.v-list-item-title').contains('Test_admin').should('exist');
+    cy.get('div.v-list-item-title').contains('Test_reviewer').should('exist');
+    cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item > .v-list-item__content > .v-list-item-title').contains('Test_admin').should('exist');
+    cy.wait(1000);
+    //Removing default one and save
+    cy.get(':nth-child(3) > .v-card > .v-card-text > .group-list-container > .v-list > .v-list-item > .v-list-item__append > .v-btn').click();
+    //Save Group lists afterremoving default one
+    cy.get('.v-col > .v-btn > .v-btn__content').click();
+    //validate error message
+    cy.get('.v-card-actions > .text-primary > .v-btn__content').click();
+    cy.get('.v-alert__content').contains('At least one assigned group must have the form_admin role.').should('be.visible');
+    //Add form_admin group back and save
+    cy.get(':nth-child(2) > .v-list-item__append > .v-btn > .v-btn__content > .mdi-chevron-right').click();
+    cy.get('.v-col > .v-btn > .v-btn__content').click();
+    cy.get('.v-card-actions > .text-primary > .v-btn__content').click();
+    cy.waitForLoad();
+      //Draft submission and verification
+    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
+    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
+    cy.waitForLoad();
+    cy.get('button').contains('Submit').should('be.visible');
+    cy.waitForLoad();
+    cy.waitForLoad();
+    cy.contains('Text Field').click();
+    cy.contains('Text Field').type('Alex');
+    //Draft manage button existence
+    cy.get('.d-inline-block').should('not.be.enabled').and('exist');
+    cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
+    //cy.get('div > .bg-primary').click();
+    cy.get('.v-card-actions > div > .bg-primary').click();
+    cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT');
+    //Verify draft delete button exist
+    cy.get('[icon-size="x-small"] > .v-btn').should('be.exist');
+    //View column management
+    cy.get('.mdi-view-column').click();
+    cy.get('[data-test="filter-search"]').type('Status');
+    //Remove Status column from draft submission table
+    cy.get('input[type="checkbox"]').then($el => {
+
+      const rem=$el[1];
+      cy.get(rem).click();
+
+    });
+    //Verify Status column is removed from submission table
+    cy.get('[data-test="save-btn"] > .v-btn__content').click();
+    cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT').should('not.exist');
+    cy.get('.mdi-pencil').click();
+    cy.get(':nth-child(4) > .v-btn').click();
+    cy.waitForLoad();
+    cy.get('.v-alert__content > div').contains('Draft Saved');
+    // Edit draft submission
+    cy.wait(2000);
+    cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
+    cy.get('.mdi-pencil').click();
+    cy.waitForLoad();
+    //Form submission
+    cy.contains('Text Field').click();
+    cy.contains('Text Field').type('{selectall}{backspace}');
+    cy.contains('Text Field').type('Nancy');
+    cy.get('button').contains('Submit').click();
+    cy.waitForLoad();
+    cy.get('[data-test="continue-btn-continue"]').click({force: true});
+    cy.waitForLoad();
+    cy.location('pathname').should('eq', `/${depEnv}/form/success`);
+    cy.contains('h1', 'Your form has been submitted successfully');
+    cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
+    //Verify status column removed
+    cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED').should('not.exist');
+    //Verify multiple draft upload functionality
+    cy.visit(`/${depEnv}/form/submit?f=${formId}`);
+    cy.waitForLoad();
+    });
+    cy.get('button').contains('Submit').should('be.visible');
+    cy.waitForLoad();
+    cy.waitForLoad();
+    cy.get('button[title="Switch to multiple submissions"]').click();
+    cy.get('h1').contains('Select JSON file to upload').click();
+    let fileUploadInputField = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('test_schema.json');
+    cy.get('.v-alert__content').contains('Wrong json file format').should('be.visible');
+    cy.get('h1').contains('Select JSON file to upload').click();
+    cy.get('input[type=file]').attachFile('test_submissions.json');
+    cy.wait(1000);
+    //Upload sucessful message
+    cy.get('.v-alert__content').contains('Your multiple draft upload has been successful!').should('be.visible');
+    cy.wait(1000);
+    //Verify download template link
+    cy.get('i[class="mdi-download mdi v-icon notranslate v-theme--chefsTheme v-icon--size-default mr-1"]').should('exist');
+    //Verify Draft upload
+    cy.contains('p',' Your multiple draft upload has been successful!').should('exist');
+    cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
+    //Verify draft uploaded
+    cy.get('button[title="Edit This Draft"]').then($el => {
+      const rem=$el[0];
+      cy.get(rem).click();
+    })
+    //Edit the uploaded draft
+    cy.get('input[name="data[simpletextfield]"]').should('have.value', 'simple').should('exist');
+    cy.contains('Text Field').type('{selectall}{backspace}');
+    cy.contains("Text Field").type("Edit uploaded draft");
+      //form submission
+    cy.get("button").contains("Submit").click();
+    cy.waitForLoad();
+    cy.get('[data-test="continue-btn-continue"]').click({ force: true });
+    cy.wait(2000);
+    });
+
+  });
+    
+});

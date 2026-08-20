@@ -4,11 +4,11 @@ const { FormSubmissionUser, Permission } = require('../common/models');
 
 const service = {
   list: async () => {
-    return Permission.query().allowGraph('[roles]').withGraphFetched('roles(orderDefault)').modify('orderDefault');
+    return Permission.query().allowGraph('[roles]').withGraphFetched('roles(orderDefault, classicOnly)').modify('orderDefault');
   },
 
   read: async (code) => {
-    return Permission.query().findOne('code', code).allowGraph('[roles]').withGraphFetched('roles(orderDefault)').throwIfNotFound();
+    return Permission.query().findOne('code', code).allowGraph('[roles]').withGraphFetched('roles(orderDefault, classicOnly)').throwIfNotFound();
   },
 
   /**

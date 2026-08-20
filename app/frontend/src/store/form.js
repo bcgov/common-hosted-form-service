@@ -9,7 +9,9 @@ import {
   userService,
   encryptionKeyService,
   eventStreamConfigService,
+  recordsManagementService,
 } from '~/services';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
@@ -67,12 +69,21 @@ const genInitialFormMetadata = () => ({
   formId: null,
   metadata: {},
 });
+
+const genInitialSubmissionPackageSettings = () => ({
+  enabled: false,
+  templateId: null,
+  emails: [],
+});
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
+  enableOfflineSubmission: false,
   enableStatusUpdates: false,
   enableSubmitterRevision: false,
   allowSubmitterToUploadFile: false,
+  enableSubmissionUrlSharing: true,
+  hideSubmissionContentOnSuccess: false,
   showAssigneeInSubmissionsTable: false,
   id: '',
   idps: [],
@@ -80,6 +91,7 @@ const genInitialForm = () => ({
   name: '',
   sendSubmissionReceivedEmail: false,
   showSubmissionConfirmation: true,
+  enableSubmitterEmailReceipt: true,
   snake: '',
   submissionReceivedEmails: [],
   reminder_enabled: false,
@@ -97,6 +109,7 @@ const genInitialForm = () => ({
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
+  submissionPackageSettings: genInitialSubmissionPackageSettings(),
 });
 
 export const useFormStore = defineStore('form', {
@@ -132,6 +145,8 @@ export const useFormStore = defineStore('form', {
     mySubmissionPreferences: useLocalStorage('mySubmissionPreferences', {}),
     version: {},
     userLabels: [],
+    // In-session schema cache for offline "Start another submission".
+    schemaCache: {},
   }),
   getters: {
     isFormPublished: (state) =>
@@ -139,6 +154,23 @@ export const useFormStore = defineStore('form', {
       state.form.versions.some((v) => v.published),
   },
   actions: {
+    cacheFormSchema(formId, versionId, form, schema) {
+      if (!formId || !versionId) return;
+      this.schemaCache[`${formId}:${versionId}`] = { form, schema };
+    },
+    // With versionId: exact hit. Without: any cached version for the formId.
+    getCachedFormSchema(formId, versionId) {
+      if (!formId) return null;
+      if (versionId) {
+        return this.schemaCache[`${formId}:${versionId}`] || null;
+      }
+      const prefix = `${formId}:`;
+      const key = Object.keys(this.schemaCache).find((k) =>
+        k.startsWith(prefix)
+      );
+      if (!key) return null;
+      return { versionId: key.slice(prefix.length), ...this.schemaCache[key] };
+    },
     //
     // Current User
     //
@@ -157,9 +189,12 @@ export const useFormStore = defineStore('form', {
           description: f.formDescription,
           permissions: f.permissions,
           published: f.published,
+          enableOfflineSubmission: f.enableOfflineSubmission,
         }));
         this.formList = forms;
       } catch (error) {
+        // Clear form list on error to show empty state
+        this.formList = [];
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.getCurrUserFormsErrMsg'),
@@ -370,7 +405,19 @@ export const useFormStore = defineStore('form', {
         if (!data.formMetadata) {
           data.formMetadata = genInitialFormMetadata();
         }
-        const evntSrvCfg = await this.fetchEventStreamConfig(formId);
+        if (!data.submissionPackageSettings) {
+          data.submissionPackageSettings =
+            genInitialSubmissionPackageSettings();
+        }
+        // Event stream config and feature-flag resolution both only need formId
+        // and are independent of each other, so run them concurrently. Both
+        // handle their own errors (resolveForContext fails safe), so neither
+        // rejects here. resolveForContext populates the active map used by
+        // gated settings UIs (e.g. the submission package email controls).
+        const [evntSrvCfg] = await Promise.all([
+          this.fetchEventStreamConfig(formId),
+          useFeatureFlagStore().resolveForContext({ formId }),
+        ]);
         data.eventStreamConfig = evntSrvCfg;
 
         // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
@@ -405,6 +452,24 @@ export const useFormStore = defineStore('form', {
             error: error,
           }),
         });
+      }
+    },
+    async fetchSubmissionFields(formId) {
+      try {
+        this.formFields = [];
+        const { data } = await formService.readFormFields(formId);
+        this.formFields = data?.fields ?? [];
+        return data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+        return { versionId: null, published: false, versions: [], fields: [] };
       }
     },
     async publishDraft({ formId, draftId }) {
@@ -471,6 +536,7 @@ export const useFormStore = defineStore('form', {
           name: this.form.name,
           description: this.form.description,
           enableSubmitterDraft: this.form.enableSubmitterDraft,
+          enableOfflineSubmission: this.form.enableOfflineSubmission,
           enableStatusUpdates: this.form.enableStatusUpdates,
           enableSubmitterRevision: this.form.enableSubmitterRevision,
           enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
@@ -482,8 +548,12 @@ export const useFormStore = defineStore('form', {
             userType: this.form.userType,
           }),
           showSubmissionConfirmation: this.form.showSubmissionConfirmation,
+          enableSubmitterEmailReceipt: this.form.enableSubmitterEmailReceipt,
           sendSubmissionReceivedEmail: this.form.sendSubmissionReceivedEmail,
           submissionReceivedEmails: this.form.submissionReceivedEmails,
+          enableSubmissionUrlSharing: this.form.enableSubmissionUrlSharing,
+          hideSubmissionContentOnSuccess:
+            this.form.hideSubmissionContentOnSuccess,
           schedule: schedule,
           subscribe: subscribe,
           allowSubmitterToUploadFile: this.form.allowSubmitterToUploadFile,
@@ -500,6 +570,7 @@ export const useFormStore = defineStore('form', {
             : false,
           formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
+          submissionPackageSettings: this.form.submissionPackageSettings,
         });
 
         // update user labels with any new added labels
@@ -525,10 +596,14 @@ export const useFormStore = defineStore('form', {
     //
     // Submission
     //
-    async deleteSubmission(submissionId) {
+    async deleteSubmission(formId, submissionId) {
       try {
         // Get this submission
         await formService.deleteSubmission(submissionId);
+        await recordsManagementService.scheduleSubmissionDeletion(
+          submissionId,
+          formId
+        );
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionNotifyMsg'),
@@ -552,6 +627,12 @@ export const useFormStore = defineStore('form', {
         await formService.deleteMultipleSubmissions(submissionIds[0], formId, {
           data: { submissionIds: submissionIds },
         });
+        for (let subId of submissionIds) {
+          await recordsManagementService.scheduleSubmissionDeletion(
+            subId,
+            formId
+          );
+        }
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,
@@ -573,6 +654,9 @@ export const useFormStore = defineStore('form', {
         await formService.restoreMultipleSubmissions(submissionIds[0], formId, {
           submissionIds: submissionIds,
         });
+        for (let subId of submissionIds) {
+          await recordsManagementService.restoreMultipleSubmissions(subId);
+        }
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.restoreSubmissionsNotiMsg'),
           ...NotificationTypes.SUCCESS,
@@ -595,6 +679,9 @@ export const useFormStore = defineStore('form', {
       try {
         // Get this submission
         await formService.restoreSubmission(submissionId, { deleted });
+        await recordsManagementService.cancelScheduledSubmissionDeletion(
+          submissionId
+        );
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
           ...NotificationTypes.SUCCESS,

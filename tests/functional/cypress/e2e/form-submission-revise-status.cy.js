@@ -25,30 +25,36 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
-  });  
+  }); 
+  it('Getting page ready', () => {
+    cy.viewport(1000, 1100);
+    cy.get('button').contains('Basic Fields').click();  
+        
+  }); 
 // Publish a simple form 
 it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    cy.get('button').contains('Basic Fields').click();
-    cy.get('div.formio-builder-form').then($el => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -110, { force: true })
-      .trigger('mouseup', { force: true });
-      cy.get('.btn-success').click();
-    });
-    //Multiline Text
+    cy.wait(2000);
+    //Phone Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Multi-line Text')
+        cy.get('span.btn').contains('Phone Number')
         
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -410, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('.btn-success').click();
+    });
+    //Text field
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Text Field')
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -110, { force: true })
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
+    cy.wait(1000);
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
@@ -67,16 +73,6 @@ it('Verify draft submission', () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
-    //Share link verification
-    let shareFormButton = cy.get('[data-cy=shareFormButton]');
-    expect(shareFormButton).to.not.be.null;
-    shareFormButton.trigger('click').then(()=>{
-      //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
-      cy.get('.mx-2 > .v-btn').click();
-    })
       //Draft submission and verification
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.waitForLoad();
@@ -116,6 +112,7 @@ it('Submission revise status Assignment', () => {
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('{selectall}{backspace}');
     cy.contains('Text Field').type('Nancy');
+    cy.get('label').contains('Phone Number').should('be.visible');
     cy.get('button').contains('Submit').click();
     cy.waitForLoad();
     cy.get('[data-test="continue-btn-continue"]').click({force: true});
@@ -157,10 +154,8 @@ it('Submission revise status Assignment', () => {
     cy.contains('REVISING').click();
     //cy.get('.v-selection-control > .v-label').click();
     cy.get('.v-chip__content').contains('chefs.testing@gov.bc.ca').should('be.visible');
-    cy.get('input[type="text"]').then($el => {
-      const text_btn=$el[2];
-    cy.get(text_btn).type('NI');
-    });
+    //Add a team member for revise status assignment
+    cy.contains('.v-chip__content', 'chefs.testing@gov.bc.ca').closest('.v-field').find('input').click().type('ZX');
     //Verify validation message to add another member for revise status assignment
     cy.contains('No results found. Please add team members in the draft/submission manage page.').should('be.visible');
     cy.get('[data-test="showRecipientEmail"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
@@ -168,7 +163,6 @@ it('Submission revise status Assignment', () => {
     cy.get('[data-test="canAttachCommentToEmail"] > .v-input__control > .v-selection-control > .v-label').click();
     cy.get('textarea[rows="1"]').type('some comments');
     cy.get('button').contains('REVISE').click();
-    cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
     cy.wait(2000);
     //Verify Edit submission button is disabled
     cy.get('button[title="Edit This Submission"]').should('be.disabled');
@@ -177,7 +171,7 @@ it('Submission revise status Assignment', () => {
     cy.waitForLoad();
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('.mdi-logout').click();
     
     });
 });

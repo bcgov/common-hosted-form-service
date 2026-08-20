@@ -1,0 +1,24 @@
+# Pod to mount the backup PVC in dev for review or manual pruning.
+# Usage:
+#   oc apply -f tools/backup-review-pod-dev.yaml -n a12c97-dev
+#   oc rsh pvc-cleanup -n a12c97-dev
+#   # ... run du -h /mnt/*, ls, or pruning commands ...
+#   oc delete pod pvc-cleanup -n a12c97-dev
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-cleanup
+  namespace: a12c97-dev
+spec:
+  containers:
+    - name: cleanup
+      image: registry.access.redhat.com/ubi8/ubi
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - mountPath: /mnt
+          name: target
+  volumes:
+    - name: target
+      persistentVolumeClaim:
+        claimName: backup-a12c97-dev

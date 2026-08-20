@@ -5,6 +5,7 @@ export { default as rbacService } from './rbacService';
 export { default as roleService } from './roleService';
 export { default as userService } from './userService';
 export { default as fileService } from './fileService';
-export { default as utilsService } from './utilsService';
 export { default as encryptionKeyService } from './encryptionKeyService';
 export { default as eventStreamConfigService } from './eventStreamConfigService';
+export { default as recordsManagementService } from './recordsManagementService';
+export { default as printConfigService } from './printConfigService';

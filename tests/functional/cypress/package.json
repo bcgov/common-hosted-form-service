@@ -5,7 +5,7 @@
   "description": "Cypress functional test suite for CHEFS",
   "main": "index.js",
   "scripts": {
-    "clean": "rm -rf **/screenshots **/videos",
+    "clean": "rm -rf **/screenshots **/videos **/axe-reports",
     "purge": "rm -rf node_modules",
     "test": "cypress run",
     "test:allbrowsers": "npm run test:chrome && npm run test:edge && npm run test:firefox",
@@ -24,7 +24,10 @@
     "date-fns": "^2.26.0"
   },
   "devDependencies": {
+    "axe-core": "^4.11.0",
     "cypress": "14.2.0",
+    "cypress-axe": "^1.7.0",
+    "cypress-axe-reporter": "^1.3.0",
     "cypress-file-upload": "^5.0.8",
     "cypress-keycloak-commands": "^1.2.0"
   }
