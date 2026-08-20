@@ -156,7 +156,9 @@ defineExpose({
         v-if="item.published"
         :to="{
           name: 'FormSubmit',
-          query: { f: item.id },
+          query: {
+            f: item.id,
+          },
         }"
         target="_blank"
         rel="noopener noreferrer"

@@ -195,6 +195,16 @@ export default function getRouter(basePath = '/') {
             },
             props: createProps,
             beforeEnter(to, _from, next) {
+              // Skip preFlightAuth offline; FormViewer rehydrates from cache.
+              const isOfflineFlow = to.query.fresh || to.query.editOffline;
+              if (
+                isOfflineFlow &&
+                typeof navigator !== 'undefined' &&
+                !navigator.onLine
+              ) {
+                next();
+                return;
+              }
               preFlightAuth({ formId: to.query.f }, next);
             },
           },
