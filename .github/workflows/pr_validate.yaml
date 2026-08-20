@@ -21,12 +21,6 @@ jobs:
     runs-on: ubuntu-24.04
     if: ${{ !github.event.pull_request.draft }}
     steps:
-      - name: Reject forks
-        if: github.event.pull_request.head.repo.full_name != github.repository
-        run: |
-          echo "::error::Pull requests from forks are not accepted. Please create a branch in this repository and open your PR from there."
-          exit 1
-
       - name: Validate PR title
         uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
         env:
