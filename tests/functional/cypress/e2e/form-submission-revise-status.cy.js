@@ -96,8 +96,9 @@ it('Submission revise status Assignment', () => {
         let arrayValues = arr[1].split('&');
         cy.log(arrayValues[0]);
     cy.get('.mdi-pencil').click();
-    cy.get(':nth-child(4) > .v-btn').click();
+    cy.get('span').contains('Save as Draft').click();
     cy.waitForLoad();
+    cy.get('[data-test="continue-btn-continue"]').click({force: true});
     cy.get('.v-alert__content > div').contains('Draft Saved');
     //Manage  members for draft management
     cy.get('.mdi-account-multiple').click();
@@ -168,7 +169,66 @@ it('Submission revise status Assignment', () => {
     cy.get('button[title="Edit This Submission"]').should('be.disabled');
     //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.get('[data-cy="admin"]').click();
+    cy.get('[value="features"] > .v-btn__content').click();
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(1)').
+    contains('Document Generation V2').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(2)').
+    contains('Existing document generation. Available to all forms.').
+    should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(1)').
+    contains('Document Generation V3').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(2)').
+    contains('Next-generation document generation (Carbone Enterprise).').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(1)').
+    contains('Offline Forms').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(2)').
+    contains('Allow forms to be completed and submitted while offline, syncing when a connection returns.').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(1)').
+    contains('Submit to Email').should('be.visible');
+    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(2)').
+    contains('Allow form submissions to be delivered to a configured email address.').should('be.visible');
+    //Check all features enabled to every forms(Universal)
+    cy.get('input[type="checkbox"]').should('have.length', 5);
+    //Manage button exist for all features
+    cy.get('[data-test="featureFlags-manage-documentGenerationV2"]').should('be.visible');
+    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').should('be.visible');
+    cy.get('[data-test="featureFlags-manage-offlineForms"]').should('be.visible');
+    cy.get('[data-test="featureFlags-manage-submitToEmail"]').should('be.visible');
+    //Set up a form to use DocumentGenerationV3
+    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
+    cy.get('[data-test="featureFlags-form-input"] input').type(arrayValues[0]);
+    cy.get('[data-test="featureFlags-form-add"]').click();
+    cy.get('code').contains(arrayValues[0]).should('be.visible');
+    cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
+    //Delete the form from DocumentGenerationV3 feature
+    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
+    cy.get('.mdi-delete').click({ multiple: true });
+    cy.contains(arrayValues[0]).should('not.exist');
+    //Save the changes
+    cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
+    //Check all features enabled back to every forms(Universal)
+    cy.get('input[type="checkbox"]').should('have.length', 6);
+    //Enable submit to email feature for the form
+    cy.get('input[type="checkbox"]').eq(4).check({ force: true });
+    //Configure submit to Email export
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.get('[data-test="canAllowEditFormSettings"]').click();
+    cy.get('[data-test="submission-package-email-test"]').click();
+    cy.get('[data-test="submission-package-email-test"]').parent().find('input[type="text"]').eq(1).type('test@example.com').type('{enter}');
+    let SubmitToEmail = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    SubmitToEmail.attachFile('test.docx');
+    cy.get('button[title="Upload"]').click({force: true});
+    cy.wait(500);
+    cy.contains('tr', 'test.docx').find('input[type="radio"]').check();
+    cy.get('[data-test="canEditForm"]').click({ force: true });
+    //Validate codogs file uploaded appears under cdogs section
+    cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    cy.contains('span','test.docx').should('be.visible');
     cy.waitForLoad();
+    //Delete the form after test run
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('.mdi-logout').click();
