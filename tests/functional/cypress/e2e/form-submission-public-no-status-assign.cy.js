@@ -105,9 +105,8 @@ describe('Form Designer', () => {
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     });
-    cy.waitForLoad();
-    cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
+    cy.get('button').contains('Submit').should('be.visible');
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     //Draft manage button existence
