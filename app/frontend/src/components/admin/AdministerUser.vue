@@ -38,6 +38,7 @@ async function updateStale(stale) {
     <h3>{{ user.fullName }}</h3>
     <h4 :lang="locale">{{ $t('trans.administerUser.userDetails') }}</h4>
     <v-switch
+      v-if="['idir', 'azureidir'].includes(user.idpCode)"
       data-test="stale-user-switch"
       color="warning"
       :disabled="updatingStale"
