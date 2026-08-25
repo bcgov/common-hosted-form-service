@@ -3,7 +3,8 @@ kind: ConfigMap
 metadata:
   name: {{ include "clamav.fullname" . }}
   namespace: {{ .Release.Namespace }}
-  labels: {{- include "clamav.labels" . | nindent 4 }}
+  labels:
+    {{- include "clamav.labels" . | nindent 4 }}
 data:
   clamd.conf: |
     ##
