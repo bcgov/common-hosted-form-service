@@ -435,6 +435,23 @@ describe(`${basePath}/users/:userId`, () => {
     expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(1);
   });
+
+  it('should have correct middleware for PATCH', async () => {
+    userController.update = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.patch(path).send({ stale: true });
+
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userController.update).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(1);
+  });
 });
 
 describe(`${basePath}/features`, () => {

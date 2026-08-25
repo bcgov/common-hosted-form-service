@@ -67,6 +67,10 @@ routes.get('/users/:userId', async (req, res, next) => {
   await userController.read(req, res, next);
 });
 
+routes.patch('/users/:userId', async (req, res, next) => {
+  await userController.update(req, res, next);
+});
+
 //
 // External APIs
 //

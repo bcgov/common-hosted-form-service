@@ -126,6 +126,7 @@ async function searchUsers(input) {
   isLoading.value = true;
   try {
     let params = {};
+    params.stale = false;
     params.idpCode = selectedIdp.value;
     let teamMembershipConfig = idpStore.teamMembershipSearch(selectedIdp.value);
     if (teamMembershipConfig) {

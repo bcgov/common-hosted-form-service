@@ -1,7 +1,7 @@
 const service = require('../../../../src/forms/auth/service');
 const idpService = require('../../../../src/components/idpService');
 const tenantService = require('../../../../src/components/tenantService');
-const { UserFormAccess, FormGroup, Role, UserLoginHistory } = require('../../../../src/forms/common/models');
+const { User, UserFormAccess, FormGroup, Role, UserLoginHistory } = require('../../../../src/forms/common/models');
 const { queryUtils } = require('../../../../src/forms/common/utils');
 
 afterEach(() => {
@@ -293,5 +293,37 @@ describe('getUserForms', () => {
 
     expect(filterFormsSpy).toHaveBeenCalledWith(userInfo, items, normalizedParams.accessLevels);
     expect(result).toEqual(['filtered']);
+  });
+});
+
+describe('updateUser', () => {
+  it('clears stale when an existing user logs in', async () => {
+    const trx = {
+      commit: jest.fn().mockResolvedValue(),
+      rollback: jest.fn().mockResolvedValue(),
+    };
+    const patchAndFetchById = jest.fn().mockResolvedValue({});
+    const startTransactionSpy = jest.spyOn(User, 'startTransaction').mockResolvedValue(trx);
+    const querySpy = jest.spyOn(User, 'query').mockReturnValue({ patchAndFetchById });
+    const readUserSpy = jest.spyOn(service, 'readUser').mockResolvedValue({});
+    const data = {
+      idpUserId: 'idir-guid',
+      keycloakId: 'keycloak-guid',
+      username: 'testuser',
+      fullName: 'Test User',
+      email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User',
+      idp: 'idir',
+    };
+
+    await service.updateUser('user-id', data);
+
+    expect(patchAndFetchById).toHaveBeenCalledWith('user-id', expect.objectContaining({ idpCode: 'idir', stale: false }));
+    expect(trx.commit).toHaveBeenCalledTimes(1);
+
+    startTransactionSpy.mockRestore();
+    querySpy.mockRestore();
+    readUserSpy.mockRestore();
   });
 });

@@ -143,6 +143,19 @@ export default {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
   },
 
+  /**
+   * Update a user's administrable fields.
+   * @param {string} userId The user GUID
+   * @param {{stale: boolean}} data The user fields to update
+   * @returns {Promise} An axios response
+   */
+  updateUser(userId, data) {
+    return appAxios().patch(
+      `${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`,
+      data
+    );
+  },
+
   //
   // External API calls
   //

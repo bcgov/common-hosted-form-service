@@ -131,6 +131,15 @@ describe('Admin Service', () => {
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });
+
+    it('calls patch endpoint', async () => {
+      mockAxios.onPatch(endpoint).reply(200);
+
+      const result = await adminService.updateUser(zeroUuid, { stale: true });
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.patch).toHaveLength(1);
+      expect(JSON.parse(mockAxios.history.patch[0].data)).toEqual({ stale: true });
+    });
   });
 
   //
