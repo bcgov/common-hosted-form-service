@@ -18,12 +18,11 @@ data:
     # LogFile must be writable for the user running daemon.
     # A full path is required.
     # Default: disabled
-    # /dev/stdout is intentionally NOT used here: clamd's log-open logic
-    # fails to resolve it through OpenShift/CRI-O's symlink chain
-    # ("Too many levels of symbolic links"), crashing the container on
-    # startup. Foreground is enabled below so clamd's own output still
-    # reaches the container's stdout/stderr without this directive.
-    # LogFile /dev/stdout
+    # /dev/stdout is NOT used here: clamd's log-open logic fails to resolve
+    # it through OpenShift/CRI-O's symlink chain ("Too many levels of
+    # symbolic links"), crashing the container on startup. run.sh tails
+    # this file to stdout instead so logs remain visible in `oc logs`.
+    LogFile /var/log/clamav/clamav.log
 
     # By default the log file is locked for writing - the lock protects against
     # running clamd multiple times (if want to run another clamd, please
@@ -638,7 +637,8 @@ data:
 
     # Path to the log file (make sure it has proper permissions)
     # Default: disabled
-    #UpdateLogFile /dev/stdout
+    # /dev/stdout is NOT used here, see clamd.conf's LogFile comment.
+    UpdateLogFile /var/log/clamav/freshclam.log
 
     # Maximum size of the log file.
     # Value of 0 disables the limit.

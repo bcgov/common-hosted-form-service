@@ -25,6 +25,10 @@ RUN chmod -R ug+rwx /opt/app-root/src
 COPY clamdcheck.sh /opt/app-root
 RUN chmod ug+rwx /opt/app-root/clamdcheck.sh
 
+# copy launcher script that tails log files to stdout
+COPY run.sh /opt/app-root/run.sh
+RUN chmod ug+rwx /opt/app-root/run.sh
+
 # # To fix check permissions error for clamAV
 RUN mkdir /var/log/clamav
 RUN touch /var/log/clamav/clamav.log
@@ -38,4 +42,4 @@ USER 1001
 
 EXPOSE 3310
 
-CMD freshclam && clamd
+CMD ["/opt/app-root/run.sh"]
