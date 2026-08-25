@@ -230,6 +230,7 @@ const service = {
       versionUpdatedAt: item.versionUpdatedAt,
       roles: item.roles,
       permissions: item.permissions,
+      enableOfflineSubmission: item.enableOfflineSubmission,
     };
   },
 

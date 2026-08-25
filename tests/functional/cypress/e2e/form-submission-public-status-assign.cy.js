@@ -49,7 +49,7 @@ describe('Form Designer', () => {
     cy.wait(2000);
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
-    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//Check to update the status of the form
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').find('input[type="checkbox"]').click(); //check to update the status of the form
     cy.wait(1000);
     cy.contains('span','Display assignee column for reviewers').should('exist');
     cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').find('input[type="checkbox"]').click();

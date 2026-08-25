@@ -13,7 +13,6 @@ import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
-import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormDesignerBuilderOptions } from '~/utils/constants';
@@ -72,7 +71,6 @@ const savedStatus = ref(properties.isSavedStatus);
 const saving = ref(false);
 
 const authStore = useAuthStore();
-const featureFlagStore = useFeatureFlagStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
@@ -102,12 +100,9 @@ onMounted(async () => {
   await setProxyHeaders();
   if (!properties.formId) {
     // We are creating a new form, so we obtain the original schema here.
+    // Feature flags for the empty (new-form) context are resolved up front by
+    // Create.vue, so no allowlist-gated control leaks in from a prior form.
     patch.value.originalSchema = deepClone(formSchema.value);
-    // Resolve feature flags with no form context. A brand-new form is not
-    // allowlisted, so allowlist-gated features (e.g. submitToEmail) resolve
-    // inactive. Without this, a stale active map from a previously-opened
-    // allowlisted form would leak in and show gated controls on a new form.
-    await featureFlagStore.resolveForContext({});
   }
 });
 
@@ -409,6 +404,7 @@ async function schemaCreateNew() {
     }),
     sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
     enableSubmitterDraft: form.value.enableSubmitterDraft,
+    enableOfflineSubmission: form.value.enableOfflineSubmission,
     enableTeamMemberDraftShare: form.value.enableTeamMemberDraftShare,
     allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,

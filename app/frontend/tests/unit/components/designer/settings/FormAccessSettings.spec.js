@@ -213,4 +213,156 @@ describe('FormAccessSettings.vue', () => {
     expect(formStore.form.idps).toContain('bceid-basic');
     expect(formStore.form.idps.length).toBe(2);
   });
+
+  it('confirms removal of a deprecated IDP and removes it from the available options', async () => {
+    formStore.form = ref({
+      userType: IdentityMode.LOGIN,
+      idps: ['idir', 'bceid-basic'],
+    });
+
+    const wrapper = mount(FormAccessSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+          BaseDialog: {
+            name: 'BaseDialog',
+            props: ['modelValue'],
+            emits: ['update:modelValue', 'close-dialog', 'continue-dialog'],
+            template: `
+              <div v-if="modelValue" data-test="deprecated-idp-dialog">
+                <slot name="title" />
+                <slot name="text" />
+  
+                <button
+                  data-test="confirm-deprecated-idp-removal"
+                  @click="$emit('continue-dialog')"
+                >
+                  Confirm
+                </button>
+  
+                <button
+                  data-test="cancel-deprecated-idp-removal"
+                  @click="$emit('close-dialog')"
+                >
+                  Cancel
+                </button>
+              </div>
+            `,
+          },
+        },
+      },
+    });
+
+    await flushPromises();
+
+    const deprecatedCheckbox = wrapper.findComponent(
+      '[data-test="idpType-bceidbasic"]'
+    );
+
+    expect(deprecatedCheckbox.exists()).toBe(true);
+    expect(wrapper.vm.idpType).toContain('bceid-basic');
+
+    await deprecatedCheckbox.vm.$emit('update:modelValue', false);
+    await nextTick();
+
+    // Selection should remain until the user confirms.
+    expect(wrapper.vm.idpType).toContain('bceid-basic');
+    expect(wrapper.find('[data-test="deprecated-idp-dialog"]').exists()).toBe(
+      true
+    );
+
+    await wrapper
+      .find('[data-test="confirm-deprecated-idp-removal"]')
+      .trigger('click');
+
+    await nextTick();
+
+    expect(wrapper.vm.idpType).not.toContain('bceid-basic');
+    expect(formStore.form.idps).not.toContain('bceid-basic');
+
+    // The deprecated option should no longer be displayed.
+    expect(
+      wrapper.findComponent('[data-test="idpType-bceidbasic"]').exists()
+    ).toBe(false);
+
+    expect(wrapper.find('[data-test="deprecated-idp-dialog"]').exists()).toBe(
+      false
+    );
+  });
+  it('keeps a deprecated IDP selected when removal is cancelled', async () => {
+    formStore.form = ref({
+      userType: IdentityMode.LOGIN,
+      idps: ['bceid-basic'],
+    });
+
+    const wrapper = mount(FormAccessSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+          BaseDialog: {
+            name: 'BaseDialog',
+            props: ['modelValue'],
+            emits: ['update:modelValue', 'close-dialog', 'continue-dialog'],
+            template: `
+              <div v-if="modelValue" data-test="deprecated-idp-dialog">
+                <button
+                  data-test="confirm-deprecated-idp-removal"
+                  @click="$emit('continue-dialog')"
+                >
+                  Confirm
+                </button>
+  
+                <button
+                  data-test="cancel-deprecated-idp-removal"
+                  @click="$emit('close-dialog')"
+                >
+                  Cancel
+                </button>
+              </div>
+            `,
+          },
+        },
+      },
+    });
+
+    await flushPromises();
+
+    const deprecatedCheckbox = wrapper.findComponent(
+      '[data-test="idpType-bceidbasic"]'
+    );
+
+    await deprecatedCheckbox.vm.$emit('update:modelValue', false);
+    await nextTick();
+
+    await wrapper
+      .find('[data-test="cancel-deprecated-idp-removal"]')
+      .trigger('click');
+
+    await nextTick();
+
+    expect(wrapper.vm.idpType).toContain('bceid-basic');
+    expect(formStore.form.idps).toContain('bceid-basic');
+    expect(
+      wrapper.findComponent('[data-test="idpType-bceidbasic"]').exists()
+    ).toBe(true);
+    expect(wrapper.find('[data-test="deprecated-idp-dialog"]').exists()).toBe(
+      false
+    );
+  });
 });

@@ -248,7 +248,7 @@ it('Checks the Button', () => {
     cy.contains("Continue").should("be.visible");
     cy.contains("Continue").trigger("click");
     //Delete form after test run
-    cy.get(":nth-child(5) > .v-btn > .v-btn__content > .mdi-delete").click();
+    cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
   });
   it("Validate admin tab", () => {
@@ -262,6 +262,6 @@ it('Checks the Button', () => {
     cy.get('[value="dashboard"] > .v-btn__content').should("exist");
     cy.wait(2000);
     //Logout after test run
-            cy.get('.mdi-logout').click();
+    cy.get('.mdi-logout').click();
   });
 });
