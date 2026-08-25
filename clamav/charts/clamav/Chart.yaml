@@ -3,7 +3,7 @@ name: clamav
 description: Chart for deploying a Clam AV on kubernetes
 type: application
 version: 1.0.0
-appVersion: 1.0.5
+appVersion: 1.4.6
 keywords:
   - clamav
 maintainers:

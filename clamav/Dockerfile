@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi9/ubi
-ARG VERSION=1.4.5
+ARG VERSION=1.4.6
 
-LABEL name="ubi8-clamav" \
+LABEL name="ubi9-clamav" \
       vendor="Red Hat" \
       version="${VERSION}" \
       release="1" \
