@@ -491,6 +491,100 @@ describe('Migrate.vue', () => {
     });
   });
 
+  describe('Team Members table reactivity to group assignment changes', () => {
+    function arrows(wrapper) {
+      return wrapper.find('.arrows-col').findAll('button');
+    }
+
+    beforeEach(() => {
+      rbacService.getMigrationPreview.mockResolvedValue({
+        data: {
+          eligibleTenants: [MOCK_TENANT],
+          impact: {
+            team: [{ email: 'member@example.com', fullName: 'Team Member', idpCode: 'idir', isBceid: false, isBceidBasic: false, roles: ['form_submitter'] }],
+            submissions: { total: 0, drafts: 0, withShareUsers: 0 },
+          },
+        },
+      });
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [
+            { id: 'g1', name: 'Admins', isFormAdmin: true },
+            { id: 'g2', name: 'Reviewers', isFormAdmin: false },
+          ],
+          preSelectedGroupIds: ['g1'],
+          // member@example.com belongs to g2 in this tenant, not the pre-selected g1.
+          teamMemberGroups: [{ email: 'member@example.com', groupIds: ['g2'] }],
+        },
+      });
+    });
+
+    it('updates memberGroups.isAssigned and transferStatus live when a group moves via the real picker UI', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      // Initially: g1 assigned (pre-selected), member belongs to g2 (not assigned) -> needs_assignment.
+      let row = wrapper.vm.teamRowsWithStatus.find((m) => m.email === 'member@example.com');
+      expect(row.transferStatus).toBe('needs_assignment');
+      expect(row.memberGroups).toEqual([{ id: 'g2', name: 'Reviewers', isAssigned: false }]);
+
+      // Move g2 (currently in Available) into Assigned via the real GroupPicker UI.
+      const g2Row = wrapper.findAll('.picker-list .v-list-item').find((el) => el.text().includes('Reviewers'));
+      await g2Row.find('input[type="checkbox"]').trigger('click');
+      await flushPromises();
+      await arrows(wrapper)[0].trigger('click'); // Add Selected
+      await flushPromises();
+
+      row = wrapper.vm.teamRowsWithStatus.find((m) => m.email === 'member@example.com');
+      expect(row.transferStatus).toBe('retained');
+      expect(row.memberGroups).toEqual([{ id: 'g2', name: 'Reviewers', isAssigned: true }]);
+
+      // Move g2 back out to Available (unassign).
+      const assignedG2Row = wrapper.findAll('.picker-list .v-list-item').find((el) => el.text().includes('Reviewers'));
+      await assignedG2Row.find('input[type="checkbox"]').trigger('click');
+      await flushPromises();
+      await arrows(wrapper)[2].trigger('click'); // Remove Selected
+      await flushPromises();
+
+      row = wrapper.vm.teamRowsWithStatus.find((m) => m.email === 'member@example.com');
+      expect(row.transferStatus).toBe('needs_assignment');
+      expect(row.memberGroups).toEqual([{ id: 'g2', name: 'Reviewers', isAssigned: false }]);
+    });
+
+    it('updates the table after refreshTenantGroups() picks up new server-side membership data', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      let row = wrapper.vm.teamRowsWithStatus.find((m) => m.email === 'member@example.com');
+      expect(row.transferStatus).toBe('needs_assignment');
+
+      // Simulate: elsewhere in CSTAR, the member got added to g1 (the assigned group) too.
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [
+            { id: 'g1', name: 'Admins', isFormAdmin: true },
+            { id: 'g2', name: 'Reviewers', isFormAdmin: false },
+          ],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [{ email: 'member@example.com', groupIds: ['g1', 'g2'] }],
+        },
+      });
+      await wrapper.vm.refreshTenantGroups();
+      await flushPromises();
+
+      row = wrapper.vm.teamRowsWithStatus.find((m) => m.email === 'member@example.com');
+      expect(row.transferStatus).toBe('retained');
+      expect(row.memberGroups.sort((a, b) => a.id.localeCompare(b.id))).toEqual([
+        { id: 'g1', name: 'Admins', isAssigned: true },
+        { id: 'g2', name: 'Reviewers', isAssigned: false },
+      ]);
+    });
+  });
+
   describe('computed: selectedTenant', () => {
     it('returns the matching tenant object from eligibleTenants', async () => {
       const wrapper = mountComponent();
