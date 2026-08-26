@@ -74,7 +74,7 @@ describe('Form Designer', () => {
     //Hide  submission content on success page
     cy.get('[data-test="hideSubmissionContentOnSuccessCheckbox"] input[type="checkbox"]').click();
     cy.waitForLoad();
-    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//uncheck for not able to update the status of the form
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').find('input[type="checkbox"]').click(); //uncheck so the form cannot update status
     cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').should("not.be.checked");
     cy.contains('span','Display assignee column for reviewers').should("not.exist");
     cy.get('[data-test="canScheduleFormSubmissionCheckbox"]').find('input[type="checkbox"]').click();
@@ -105,9 +105,8 @@ describe('Form Designer', () => {
     cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
     });
-    cy.waitForLoad();
-    cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
+    cy.get('button').contains('Submit').should('be.visible');
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     //Draft manage button existence

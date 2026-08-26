@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { ref } = require('objection');
+const { ref, UniqueViolationError } = require('objection');
 const uuid = require('uuid');
 const { EmailTypes, ScheduleType, TenantRoles } = require('../common/constants');
 const eventService = require('../event/eventService');
@@ -215,6 +215,18 @@ const service = {
     const isPublicForm = formData.identityProviders && Array.isArray(formData.identityProviders) && formData.identityProviders.some((idp) => idp.code === 'public');
     return !isPublicForm && !falsey(formData.allowSubmitterToUploadFile);
   },
+  _setEnableOfflineSubmission: (formData) => {
+    // Offline submission requires an authenticated user to sync the queue, so it
+    // is never allowed on public forms. Force it off for public forms here so the
+    // persisted state is consistent regardless of how the row was written (UI,
+    // raw API call, hand-edited), and so a form switched to public can't retain a
+    // stale true. Team forms ("Specific People") legitimately carry an empty
+    // identityProviders array, so gate on the public check only — matching
+    // _setAllowSubmitterToUploadFile.
+    const idps = Array.isArray(formData.identityProviders) ? formData.identityProviders : [];
+    const isPublicForm = idps.some((idp) => idp.code === 'public');
+    return !isPublicForm && formData.enableOfflineSubmission === true;
+  },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -272,6 +284,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterRevision = data.enableSubmitterRevision;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
+      obj.enableOfflineSubmission = service._setEnableOfflineSubmission(data);
       obj.enableTeamMemberDraftShare = data.enableTeamMemberDraftShare;
       obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
@@ -379,6 +392,7 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterRevision: data.enableSubmitterRevision,
         enableSubmitterDraft: data.enableSubmitterDraft,
+        enableOfflineSubmission: service._setEnableOfflineSubmission(data),
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
         enableSubmissionUrlSharing: sharingOn,
@@ -480,7 +494,16 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .select(['id', 'name', 'description', 'enableSubmissionUrlSharing', 'showSubmissionConfirmation', 'enableSubmitterEmailReceipt', 'hideSubmissionContentOnSuccess'])
+      .select([
+        'id',
+        'name',
+        'description',
+        'enableSubmissionUrlSharing',
+        'showSubmissionConfirmation',
+        'enableSubmitterEmailReceipt',
+        'hideSubmissionContentOnSuccess',
+        'enableOfflineSubmission',
+      ])
       .allowGraph('[idpHints]')
       .withGraphFetched('idpHints')
       .throwIfNotFound()
@@ -859,30 +882,89 @@ const service = {
   listSubmissions: async (formVersionId, params) => {
     return FormSubmission.query().where('formVersionId', formVersionId).modify('filterCreatedBy', params.createdBy).modify('orderDescending');
   },
-  createSubmission: async (formVersionId, data, currentUser) => {
+  // queuedAt lets an offline replay keep its original submit time and skip the
+  // schedule window. It is client-supplied, so only honour it on a real replay:
+  // a Dedup-Key must be present and the form must have offline submission
+  // enabled. Otherwise it is ignored (returns null) so a live submission cannot
+  // use it to bypass the form's open/close schedule.
+  //
+  // NOTE: gating on the form's *current* enableOfflineSubmission means work
+  // queued while the feature was on can be stranded if an admin later turns it
+  // off (or makes the form public). That is an accepted trade-off: keying off
+  // the client-supplied Dedup-Key alone would let any live submission forge a
+  // replay and reopen the schedule bypass.
+  _resolveQueuedAt: (rawQueuedAt, dedupKey, form) => {
+    if (!rawQueuedAt) return null;
+    if (!dedupKey || !form.enableOfflineSubmission) return null;
+    const parsed = new Date(rawQueuedAt);
+    if (Number.isNaN(parsed.getTime())) {
+      throw new Problem(422, { detail: 'queuedAt must be a valid timestamp.' });
+    }
+    // Clamp a future timestamp back to now instead of rejecting it: offline-first
+    // devices often have skewed clocks, and clamping only ever tightens (never
+    // loosens) the schedule bypass. Normalize to an ISO string so the stored
+    // value is always a valid timestamp regardless of the client's input type.
+    const clampedMs = Math.min(parsed.getTime(), Date.now());
+    return new Date(clampedMs).toISOString();
+  },
+  // On a unique(dedupKey) violation from a concurrent duplicate insert, replay
+  // the winner's submission instead of surfacing a constraint-violation error.
+  // Same fail-closed identity rule as checkDedupKey: the original creator gets
+  // the cached result; a different or anonymous user gets 409. When the error
+  // isn't a dedupKey race, the original error is rethrown.
+  _replayDedupRaceOrThrow: async (err, dedupKey, createdBy) => {
+    if (dedupKey && err instanceof UniqueViolationError) {
+      const existing = await FormSubmission.query().findOne({ dedupKey });
+      if (existing) {
+        if (existing.createdBy !== 'public' && existing.createdBy === createdBy) {
+          return service.readSubmission(existing.id);
+        }
+        throw new Problem(409, {
+          detail: 'This Dedup-Key cannot be replayed: it belongs to a different user or an anonymous submission.',
+        });
+      }
+    }
+    throw err;
+  },
+  createSubmission: async (formVersionId, data, currentUser, options = {}) => {
     let trx;
     let result;
+    let createdBy;
+    const { dedupKey } = options;
     try {
       const formVersion = await service.readVersion(formVersionId);
       const form = await service.readForm(formVersion.formId);
       const { identityProviders } = form;
 
-      // Validate schedule before allowing submission
-      validateSubmissionSchedule(form.schedule);
+      // queuedAt is client-supplied; only trust it for a genuine offline replay
+      // (Dedup-Key present on an offline-enabled form). See _resolveQueuedAt.
+      const queuedAt = service._resolveQueuedAt(data.queuedAt, dedupKey, form);
+
+      // Skip schedule check on replays: they were on-time at queuedAt.
+      if (!queuedAt) {
+        validateSubmissionSchedule(form.schedule);
+      }
 
       trx = await FormSubmission.startTransaction();
 
       // Ensure we only record the user if the form is not public facing
       const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
-      const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
+      createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
       const submissionId = uuid.v4();
+      // Body first; server-controlled fields below override so the client can't
+      // set them via the submission payload (e.g. deleted:true to hide the row,
+      // or a spoofed updatedBy).
       const obj = {
+        ...data,
         id: submissionId,
         formVersionId: formVersion.id,
         confirmationId: submissionId.substring(0, 8).toUpperCase(),
         createdBy: createdBy,
-        ...data,
+        queuedAt: queuedAt,
+        dedupKey: dedupKey || null,
+        deleted: false,
+        updatedBy: null,
       };
 
       await FormSubmission.query(trx).insert(obj);
@@ -961,7 +1043,9 @@ const service = {
       }
     } catch (err) {
       if (trx) await trx.rollback();
-      throw err;
+      // Concurrent-duplicate handling lives in a helper to keep this function's
+      // cognitive complexity flat; it replays the winner or rethrows.
+      return service._replayDedupRaceOrThrow(err, dedupKey, createdBy);
     }
     if (result) {
       await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.CREATED, result, data.draft);

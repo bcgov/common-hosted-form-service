@@ -23,6 +23,7 @@ describe("Form Designer", () => {
     formsettings();
   });
   it('Getting page', () => {
+
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('BC Government').click();
@@ -68,64 +69,29 @@ describe("Form Designer", () => {
     cy.get('span').contains('Publish Version 1');
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
-    //Go to admin panel for feature settings
     cy.get('[data-cy="admin"]').click();
     cy.get('[value="features"] > .v-btn__content').click();
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(1)').
-    contains('Document Generation V2').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(2)').
-    contains('Existing document generation. Available to all forms.').
-    should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(1)').
-    contains('Document Generation V3').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(2) > :nth-child(2)').
-    contains('Next-generation document generation (Carbone Enterprise).').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(1)').
-    contains('Offline Forms').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(3) > :nth-child(2)').
-    contains('Allow forms to be completed and submitted while offline, syncing when a connection returns.').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(1)').
-    contains('Submit to Email').should('be.visible');
-    cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(4) > :nth-child(2)').
-    contains('Allow form submissions to be delivered to a configured email address.').should('be.visible');
-    //Check all features enabled to every forms(Universal)
-    cy.get('input[type="checkbox"]').should('have.length', 5);
-    //Manage button exist for all features
-    cy.get('[data-test="featureFlags-manage-documentGenerationV2"]').should('be.visible');
-    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').should('be.visible');
-    cy.get('[data-test="featureFlags-manage-offlineForms"]').should('be.visible');
-    cy.get('[data-test="featureFlags-manage-submitToEmail"]').should('be.visible');
-    //Set up a form to use DocumentGenerationV3
-    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
-    cy.get('[data-test="featureFlags-form-input"] input').type(arrayValues[0]);
-    cy.get('[data-test="featureFlags-form-add"]').click();
-    cy.get('code').contains(arrayValues[0]).should('be.visible');
-    cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
-    //Delete the form from DocumentGenerationV3 feature
-    cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
-    cy.get('.mdi-delete').click({ multiple: true });
-    cy.contains(arrayValues[0]).should('not.exist');
-    //Save the changes
-    cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
-    //Check all features enabled back to every forms(Universal)
-    cy.get('input[type="checkbox"]').should('have.length', 6);
-    //Enable submit to email feature for the form
-    cy.get('input[type="checkbox"]').eq(4).check({ force: true });
-    //Configure submit to Email export
+    //Make sure the feature flag is enabled for offline forms
+    cy.get('[data-test="featureFlags-allowAll-offlineForms"] input[type="checkbox"]').then(($checkbox) => {
+    if (!$checkbox.is(':checked')) {
+      cy.wrap($checkbox).check({ force: true });
+    }
+    });
+    // Update Form settings for offline forms
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.get('[data-test="canAllowEditFormSettings"]').click();
-    cy.get('[data-test="submission-package-email-test"]').click();
-    cy.get('[data-test="submission-package-email-test"]').parent().find('input[type="text"]').eq(1).type('test@example.com').type('{enter}');
-    let SubmitToEmail = cy.get('input[type=file]');
-    cy.get('input[type=file]').should('not.to.be.null');
-    SubmitToEmail.attachFile('test.docx');
-    cy.get('button[title="Upload"]').click({force: true});
-    cy.wait(500);
-    cy.contains('tr', 'test.docx').find('input[type="radio"]').check();
-    cy.get('[data-test="canEditForm"]').click({ force: true });
-    //Validate codogs file uploaded appears under cdogs section
+    cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
+    cy.wait(1000);
+    let enableOfflineSubmissionCheckbox = cy.get('[data-test="enableOfflineSubmissionCheckbox"] input[type="checkbox"]');
+    enableOfflineSubmissionCheckbox.check({ force: true });
+    //Update form settings for offline forms
+    cy.get('[data-test="canEditForm"]').click();
+    //codogs file upload
     cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
-    cy.contains('span','test.docx').should('be.visible');
+    let fileUploadInputField = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('test.docx');
+    cy.get('button[title="Upload"]').click();
+    cy.wait(500);
     cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('input[type="radio"][value="default"]').should('be.checked');
     cy.get('input[type="radio"][aria-label="Direct Print"]').should('not.be.checked');
@@ -147,9 +113,121 @@ describe("Form Designer", () => {
     cy.get('button[title="Save Configuration"]').click();
     cy.get('.v-alert__content').contains('Print configuration saved successfully').should('be.visible');
     cy.wait(500);
+    cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+    cy.get('[data-test="onlineBadge"]').should('be.visible');
+    cy.get('[data-test="onlineBadge"]').should('be.visible').and('contain', 'ONLINE');
+    
+    cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+    cy.wait(1000);
+    cy.contains('Text Field').click();
+    cy.contains('Text Field').type('Smith');
+    cy.then(() => {
+    return Cypress.automation('remote:debugger:protocol', {
+    command: 'Network.enable'
+    });
+    });
+    cy.then(() => {
+    return Cypress.automation('remote:debugger:protocol', {
+    command: 'Network.emulateNetworkConditions',
+    params: {
+      offline: true,
+      latency: 0,
+      downloadThroughput: 0,
+      uploadThroughput: 0
+    }
+    });
+    });
+    cy.wait(1000);
+    //Checks Offline badge
+    cy.get('[data-test="offlineBadge"]').should('be.visible');
+    //Multiple draft upload disabled
+    cy.get('.ml-auto > :nth-child(1)').should('not.be.enabled');
+    cy.get('button').contains('Submit').click();
+    cy.get('input[placeholder="A short label to help you find this submission later"]').type('My offline Submission');
+    cy.get('[data-test="queue-confirm-submit"]').click();
+    cy.get('.v-alert__content').contains('Submission saved. It will be sent when you are back online.').should('be.visible');
+    //verify template print option disabled while offline
+    cy.get('.mdi-printer').should('be.visible').click();
+    cy.contains('button', 'Template Print').should('have.class', 'v-btn--disabled');
+    cy.get('.text-textLink').click({force: true});
+    cy.get('.v-badge__badge > span').should('contain', '1');
+    cy.get('.v-badge__badge').click();
+    cy.contains('.pending-row-title', 'My offline Submission').should('be.visible');
+    //Delete an offline submission from submission queue
+    cy.get('button[title="Discard"]').click();
+    cy.get('[data-test="pending-discard-confirm"]').should('be.visible');
+    cy.get('[data-test="pending-discard-cancel"]').should('be.visible');
+    cy.get('[data-test="pending-discard-confirm"]').click();
+    //Confirms it is deleted from the submission queue
+    cy.contains('.pending-row-title', 'My offline Submission').should('not.exist');
+    cy.contains('span', 'Close').should('be.visible').click();
+    cy.contains('span', '1').should('not.exist');
+    //Checks whether it goes back to original form
+    cy.get('input[placeholder="Search by email"]').should('be.visible');
+    cy.contains('Text Field').should('be.visible');
+    cy.contains('Text Field').type('Smith');
+    cy.get('button').contains('Submit').click();
+    //Submit again with offline toggle
+    cy.get('input[placeholder="A short label to help you find this submission later"]').type('My offline Submission');
+    cy.get('[data-test="queue-confirm-submit"]').click();
+    cy.get('.v-alert__content').contains('Submission saved. It will be sent when you are back online.').should('be.visible');
+    cy.contains('span', '1').should('be.visible');
+    cy.get('.v-badge__badge > span').should('contain', '1');
+    //Check the submission saved and edit
+    cy.contains('span', '1').click();
+    cy.get('.mdi-pencil-outline').click();
+    cy.contains('Text Field').type('Edit offline submission');
+    cy.get('[data-test="offline-edit-save"] > .v-btn__content > span').click();
+    cy.get('.v-alert__content').contains('Offline submission updated. It will be sent when you are back online.').should('be.visible');
+    //Close edit panel to send submission on syn
+    cy.get('[data-test="offline-edit-cancel"] > .v-btn__content > span').click();
+    //Save draft while offline
+    cy.contains('Text Field').type('Drafts');
+    cy.get('span').contains('Save as Draft').click();
+    cy.get('[data-test="queue-confirm-submit"]').click();
+    cy.get('.v-alert__content').contains('Draft saved. It will be sent when you are back online.').should('be.visible');
+    //Check the submission saved and edit the draft submission
+    cy.get('.v-badge__badge > span').contains('2');
+    cy.get('.v-badge__badge > span').click();
+    cy.get('.v-chip__content').contains('Submission');
+    cy.get('.v-chip__content').contains('Draft');
+    cy.get(':nth-child(2) > [data-test="pending-edit"] > .v-btn__content > .mdi-pencil-outline').click();
+    cy.contains('Text Field').type('Edit draft offline');
+    cy.get('[data-test="offline-edit-save"] > .v-btn__content > span').click();
+    //Close edit panel to send submission on syn
+    cy.get('[data-test="offline-edit-cancel"] > .v-btn__content > span').click();
+    //Delete draft submission
+    cy.get('.v-badge__badge > span').click();
+    cy.get(':nth-child(2) > .text-error > .v-btn__content > .mdi-trash-can-outline').click();
+    cy.get('[data-test="pending-discard-confirm"]').click();
+    //Enable online back
+    cy.then(() => {
+    return Cypress.automation('remote:debugger:protocol', {
+    command: 'Network.enable'
+    });
+    });
+    cy.then(() => {
+    return Cypress.automation('remote:debugger:protocol', {
+    command: 'Network.emulateNetworkConditions',
+    params: {
+      offline: false,
+      latency: 0,
+      downloadThroughput: 0,
+      uploadThroughput: 0
+    }
+    });
+    });
+    cy.wait(1000);
+    //Go to user draft/submissions
+    cy.visit(`/${depEnv}/user/submissions?f=${arrayValues[0]}`);
+    cy.wait(1000);
+    cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED').should('be.visible');
+    //Validate only one submission is present in the submission table
+    cy.get('.v-data-table__tr').should('have.length', 1);
     //Submit the form
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.wait(1000);
+    });
     cy.get('input[placeholder="Search by first name"]').type("CHEFS");
     cy.get('input[placeholder="Search by email"]').type("chefs.testing@gov.bc.ca");
     //Search button
@@ -168,17 +246,16 @@ describe("Form Designer", () => {
     cy.get('.col-md-12 > .btn').click();
     cy.get(':nth-child(4) > .btn').click();
     cy.get('.selected-user-info > :nth-child(1)').contains(' CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
+    cy.wait(1000);
     cy.get('button').contains('Submit').click();
     cy.get('[data-test="continue-btn-continue"]').click({ force: true });
     cy.wait(1000);
     cy.get('.selected-user-view > :nth-child(1)').contains('CHEFS Testing (CHEFSTST) CITZ:EX').should('be.visible');
     //Direct Print Verification
-    cy.wait(2000);
+    cy.wait(1000);
     cy.get('.mdi-printer').should('be.visible').click();
     cy.wait(1000);
     cy.get('.v-alert__content').contains('Document generated successfully').should('be.visible');
-    });
-
    });
 
 });

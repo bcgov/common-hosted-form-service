@@ -184,7 +184,7 @@ module.exports = {
   },
   createSubmission: async (req, res, next) => {
     try {
-      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
+      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser, { dedupKey: req.dedupKey });
       // Submission-received email and submission-package job enqueue are handled
       // inside service.createSubmission (post-commit, best-effort).
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?

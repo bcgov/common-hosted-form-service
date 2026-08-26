@@ -81,7 +81,7 @@ describe('Form Designer', () => {
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     //Draft manage button existence
-    cy.get('.d-inline-block').should('not.be.enabled').and('exist');
+    cy.get('.mdi-account-multiple').should('not.exist');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //cy.get('div > .bg-primary').click();
     cy.get('.v-card-actions > div > .bg-primary').click();
@@ -102,8 +102,9 @@ describe('Form Designer', () => {
     cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT').should('not.exist');
     cy.get('.mdi-pencil').click();
-    cy.get(':nth-child(4) > .v-btn').click();
+    cy.get('span').contains('Save as Draft').click();
     cy.waitForLoad();
+    cy.get('[data-test="continue-btn-continue"]').click({force: true});
     cy.get('.v-alert__content > div').contains('Draft Saved');
     // Edit draft submission
     cy.wait(2000);
