@@ -82,7 +82,7 @@ class TenantService {
    * @returns {Promise<{ belongs: boolean, degraded: boolean }>}
    */
   async verifyTenantMembership(req, tenantId) {
-    if (!req || !req.currentUser) {
+    if (!req?.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.idpUserId) {
