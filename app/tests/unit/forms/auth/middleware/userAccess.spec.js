@@ -49,7 +49,6 @@ describe('currentUser', () => {
   // Bearer token and its authorization header.
   const bearerToken = Math.random().toString(36).substring(2);
   const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
-  const otherTenantId = '1d3f5d5f-1a2b-4c3d-9e8f-112233445567';
 
   // Default mock of the token validation.
   jwtService.getBearerToken = jest.fn().mockReturnValue(bearerToken);
@@ -68,7 +67,7 @@ describe('currentUser', () => {
 
       return undefined;
     });
-    jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([{ id: tenantId }]);
+    jest.spyOn(tenantService, 'verifyTenantMembership').mockResolvedValue({ belongs: true, degraded: false });
   });
 
   describe('401 response when', () => {
@@ -169,7 +168,7 @@ describe('currentUser', () => {
 
     expect(req.currentUser).toBeDefined();
     expect(req.currentUser.tenantId).toBe(tenantId);
-    expect(tenantService.getCurrentUserTenants).toHaveBeenCalledWith(req);
+    expect(tenantService.verifyTenantMembership).toHaveBeenCalledWith(req, tenantId);
     expect(next).toBeCalledTimes(1);
     expect(next).toBeCalledWith();
   });
@@ -193,7 +192,7 @@ describe('currentUser', () => {
   });
 
   it('rejects a tenantId not owned by the current user', async () => {
-    tenantService.getCurrentUserTenants.mockResolvedValueOnce([{ id: otherTenantId }]);
+    tenantService.verifyTenantMembership.mockResolvedValueOnce({ belongs: false, degraded: false });
     const req = getMockReq({
       headers: { 'x-tenant-id': tenantId },
     });
@@ -213,10 +212,7 @@ describe('currentUser', () => {
   });
 
   it('returns 503 when tenant service is degraded', async () => {
-    tenantService.getCurrentUserTenants.mockImplementationOnce((req) => {
-      req._tenantServiceDegraded = true;
-      return Promise.resolve([]);
-    });
+    tenantService.verifyTenantMembership.mockResolvedValueOnce({ belongs: false, degraded: true });
     const req = getMockReq({
       headers: { 'x-tenant-id': tenantId },
     });
