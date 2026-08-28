@@ -437,7 +437,8 @@
     "developer": "开发商",
     "infoLinks": "信息链接",
     "metrics": "指标",
-    "apis": "蜜蜂"
+    "apis": "蜜蜂",
+    "duplicateUsers": "重复用户"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1477,5 +1478,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR 暂时不可用。租户选择当前已禁用。",
     "errorFetchingTenants": "获取租户时出错"
+  },
+  "adminDuplicateUsers": {
+    "title": "重复用户审核",
+    "description": "审核用户名或电子邮件地址相同的用户。将重复记录标记为过期，直到只保留应继续启用的记录。",
+    "refresh": "刷新重复用户",
+    "groupsPerPage": "每页组数",
+    "empty": "未找到尚未解决的重复用户。",
+    "matchedBy": "按 {type} 匹配",
+    "records": "共 {count} 条记录，{active} 条有效",
+    "user": "用户",
+    "identityProvider": "身份提供商",
+    "lastActivity": "最近活动",
+    "status": "状态",
+    "actions": "操作",
+    "active": "有效",
+    "stale": "过期",
+    "markStale": "标记为过期",
+    "confirmTitle": "将重复用户标记为过期？",
+    "confirmMessage": "将 {name}（{username}）标记为过期？该用户将不再被视为此重复组中的有效记录。",
+    "cancel": "取消",
+    "confirm": "标记为过期"
   }
 }

@@ -437,7 +437,8 @@
     "developer": "Developer",
     "infoLinks": "Mga Link ng Impormasyon",
     "metrics": "Mga sukatan",
-    "apis": "Mga API"
+    "apis": "Mga API",
+    "duplicateUsers": "Mga dobleng user"
   },
   "adminUsersTable": {
     "search": "Maghanap",
@@ -1481,5 +1482,26 @@
   "tenantStore": {
     "cstarUnavailable": "Ang CSTAR ay pansamantalang hindi available. Ang pagpili ng nangungupahan ay kasalukuyang hindi pinagana.",
     "errorFetchingTenants": "Error sa pagkuha ng mga nangungupahan"
+  },
+  "adminDuplicateUsers": {
+    "title": "Pagsusuri ng mga dobleng user",
+    "description": "Suriin ang mga user na may parehong username o email address. Markahan bilang luma ang mga dobleng record hanggang ang record na dapat panatilihin na lamang ang aktibo.",
+    "refresh": "I-refresh ang mga dobleng user",
+    "groupsPerPage": "Mga grupo bawat pahina",
+    "empty": "Walang nakitang hindi pa nalulutas na dobleng user.",
+    "matchedBy": "Tugma ayon sa {type}",
+    "records": "{count} record, {active} aktibo",
+    "user": "User",
+    "identityProvider": "Tagapagbigay ng pagkakakilanlan",
+    "lastActivity": "Huling aktibidad",
+    "status": "Katayuan",
+    "actions": "Mga aksyon",
+    "active": "Aktibo",
+    "stale": "Luma",
+    "markStale": "Markahan bilang luma",
+    "confirmTitle": "Markahan bilang luma ang dobleng user?",
+    "confirmMessage": "Markahan bilang luma si {name} ({username})? Hindi na ito ituturing na aktibong record ng grupong ito ng mga duplicate.",
+    "cancel": "Kanselahin",
+    "confirm": "Markahan bilang luma"
   }
 }
