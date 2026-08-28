@@ -15,6 +15,7 @@ export const useAdminStore = defineStore('admin', {
     user: {},
     userList: [],
     userTotal: undefined,
+    duplicateUserList: [],
     externalAPIList: [],
     apiTotal: undefined,
     externalAPIStatusCodes: [],
@@ -181,6 +182,21 @@ export const useAdminStore = defineStore('admin', {
           this.userList = response.data;
           this.userTotal = response.data.length;
         }
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getUsersErrMsg'),
+          consoleError: i18n.t('trans.store.admin.getUsersConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
+    async getDuplicateUsers() {
+      try {
+        this.duplicateUserList = [];
+        const response = await adminService.listDuplicateUsers();
+        this.duplicateUserList = response.data;
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

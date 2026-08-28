@@ -225,6 +225,17 @@ describe('admin actions', () => {
       });
     });
 
+    it('getDuplicateUsers stores unresolved duplicate users', async () => {
+      const duplicateUsers = [{ userId: 'duplicate-user' }];
+      adminService.listDuplicateUsers.mockResolvedValue({
+        data: duplicateUsers,
+      });
+
+      await mockStore.getDuplicateUsers();
+
+      expect(mockStore.duplicateUserList).toEqual(duplicateUsers);
+    });
+
     it('readUser should commit to SET_USER', async () => {
       mockStore.user = undefined;
       adminService.readUser.mockResolvedValue({ data: {} });

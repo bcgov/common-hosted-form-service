@@ -134,6 +134,14 @@ export default {
   },
 
   /**
+   * List unresolved duplicate user records.
+   * @returns {Promise} An axios response
+   */
+  listDuplicateUsers() {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/duplicates`);
+  },
+
+  /**
    * @function readUser
    * Read a user in the DB
    * @param {string} userId The GUID
