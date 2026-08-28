@@ -4,6 +4,7 @@ const service = require('../../../../src/forms/admin/service');
 jest.mock('../../../../src/forms/common/models/tables/externalAPI', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/externalAPIStatusCode', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/adminExternalAPI', () => MockModel);
+jest.mock('../../../../src/forms/common/models/views/userDuplicates', () => MockModel);
 
 beforeEach(() => {
   MockModel.mockReset();
@@ -15,6 +16,14 @@ afterEach(() => {
 });
 
 describe('Admin service', () => {
+  it('gets unresolved duplicate users from the database view', async () => {
+    await service.getDuplicateUsers();
+
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenNthCalledWith(1, 'filterResolved', false);
+    expect(MockModel.modify).toHaveBeenNthCalledWith(2, 'orderDefault');
+  });
+
   it('createFormComponentsProactiveHelp()', async () => {
     const formComponentsHelpInfo = {
       componentName: 'Content',

@@ -63,6 +63,10 @@ routes.get('/users', async (req, res, next) => {
   await controller.getUsers(req, res, next);
 });
 
+routes.get('/users/duplicates', async (req, res, next) => {
+  await controller.getDuplicateUsers(req, res, next);
+});
+
 routes.get('/users/:userId', async (req, res, next) => {
   await userController.read(req, res, next);
 });
