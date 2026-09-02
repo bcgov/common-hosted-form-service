@@ -32,27 +32,24 @@ const { v4: uuidv4 } = require('uuid');
 // with a success exit code.
 
 const MARKER = 'seed-duplicate-users';
-const LOCAL_HOSTS = ['localhost', '127.0.0.1', '::1', 'postgres', 'db'];
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', 'postgres', 'db']);
 
 /** Sample records. Each case exercises one behaviour of the view. */
 function buildRows() {
-  const row = (o) =>
-    Object.assign(
-      {
-        id: uuidv4(),
-        createdBy: MARKER,
-        keycloakId: uuidv4(),
-        idpUserId: uuidv4(),
-        firstName: null,
-        lastName: null,
-        fullName: null,
-        email: null,
-        stale: false,
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
-      },
-      o
-    );
+  const row = (obj) => ({
+    id: uuidv4(),
+    createdBy: MARKER,
+    keycloakId: uuidv4(),
+    idpUserId: uuidv4(),
+    firstName: null,
+    lastName: null,
+    fullName: null,
+    email: null,
+    stale: false,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+    ...obj,
+  });
 
   return [
     // Outstanding: two active records sharing a username.
@@ -102,7 +99,7 @@ function buildRows() {
 
 function connect() {
   const host = config.get('db.host');
-  const isLocal = LOCAL_HOSTS.includes(host);
+  const isLocal = LOCAL_HOSTS.has(host);
   if (!isLocal && process.env.ALLOW_REMOTE !== '1') {
     throw new Error(`Refusing to run against host "${host}". Set ALLOW_REMOTE=1 to override.`);
   }
@@ -203,11 +200,11 @@ async function verify(knex) {
   check('unique record absent', !rows.some((r) => r.username === 'dupe.unique'));
 
   const multi = rows.find((r) => r.username === 'dupe.multi' && r.matchType === 'email');
-  check('groupsForThisUser counts both groups', multi && multi.groupsForThisUser === 2);
+  check('groupsForThisUser counts both groups', multi?.groupsForThisUser === 2);
 
   const filtered = await knex('user_duplicates_vw').where('matchType', 'email').whereIn('userId', seededIds(knex));
   const multiFiltered = filtered.find((r) => r.username === 'dupe.multi');
-  check('groupsForThisUser survives a filter on the view', multiFiltered && multiFiltered.groupsForThisUser === 2);
+  check('groupsForThisUser survives a filter on the view', multiFiltered?.groupsForThisUser === 2);
 
   const outstanding = await knex('user_duplicates_vw').where('isResolved', false).whereIn('userId', seededIds(knex));
   check('isResolved toggle hides resolved groups', outstanding.every((r) => r.isResolved === false) && outstanding.length < rows.length);

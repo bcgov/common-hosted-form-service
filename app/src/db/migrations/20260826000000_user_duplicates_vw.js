@@ -50,7 +50,7 @@
 //   IDIR recycles usernames, so a username match can be two different people.
 //   Names in different Unicode normalization forms do not match; closing that
 //   requires normalize(), which needs PostgreSQL 13.
-const CREATE_USER_DUPLICATES_VW = `CREATE OR REPLACE VIEW public.user_duplicates_vw AS
+const CREATE_USER_DUPLICATES_VW = String.raw`CREATE OR REPLACE VIEW public.user_duplicates_vw AS
 WITH idp AS (
   SELECT code, COALESCE(extra->>'canonicalCode', code) AS canonical_code
     FROM identity_provider
@@ -65,8 +65,8 @@ WITH idp AS (
     u."createdAt",
     i.canonical_code AS "canonicalIdp",
     GREATEST(COALESCE(lh."lastLoginAt", '-infinity'::timestamptz), u."updatedAt", u."createdAt") AS last_activity,
-    nullif(nullif(lower(btrim(regexp_replace(regexp_replace(COALESCE(u.username, ''), '[\\u200b\\u2060\\ufeff]', '', 'g'), '[\\s\\u00a0\\u0085\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]+', ' ', 'g'))), ''), 'anonymous') AS username_key,
-    nullif(lower(btrim(regexp_replace(regexp_replace(COALESCE(u.email, ''), '[\\u200b\\u2060\\ufeff]', '', 'g'), '[\\s\\u00a0\\u0085\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]+', ' ', 'g'))), '') AS email_key
+    nullif(nullif(lower(btrim(regexp_replace(regexp_replace(COALESCE(u.username, ''), '[\u200b\u2060\ufeff]', '', 'g'), '[\s\u00a0\u0085\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+', ' ', 'g'))), ''), 'anonymous') AS username_key,
+    nullif(lower(btrim(regexp_replace(regexp_replace(COALESCE(u.email, ''), '[\u200b\u2060\ufeff]', '', 'g'), '[\s\u00a0\u0085\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+', ' ', 'g'))), '') AS email_key
    FROM "user" u
      JOIN idp i ON i.code = u."idpCode"
      LEFT JOIN (
