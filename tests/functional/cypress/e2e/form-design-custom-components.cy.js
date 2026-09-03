@@ -27,6 +27,8 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('BC Government').click();
+    //Verify footer version number is displayed
+    cy.get('.text-label-medium').should('be.visible').invoke('text').should('match', /^Version:\s*\d+\.\d+\.\d+$/);
     cy.wait(1000);
   });
   it("Add IDIR User Component", () => {
@@ -116,7 +118,6 @@ describe("Form Designer", () => {
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.get('[data-test="onlineBadge"]').should('be.visible');
     cy.get('[data-test="onlineBadge"]').should('be.visible').and('contain', 'ONLINE');
-    
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.wait(1000);
     cy.contains('Text Field').click();

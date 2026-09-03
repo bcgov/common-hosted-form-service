@@ -35,22 +35,22 @@ describe('Form Designer', () => {
 it('Verify draft submission', () => {
     cy.viewport(1000, 1100);
     cy.wait(2000);
-    //Phone Number
-    cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Phone Number')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -410, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('.btn-success').click();
-    });
     //Text field
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Text Field')
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -110, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('.btn-success').click();
+    });
+    //Phone Number
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Phone Number')
+        
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -350, { force: true })
         .trigger('mouseup', { force: true });
         cy.get('.btn-success').click();
     });
