@@ -30,6 +30,7 @@ describe('TenantService', () => {
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
     jwtService.getBearerToken.mockReset();
+    tenantService._clearListTenantsCache();
   });
 
   afterEach(() => {
@@ -177,6 +178,158 @@ describe('TenantService', () => {
       });
 
       await tenantService.getCurrentUserTenants(req);
+    });
+  });
+
+  describe('verifyTenantMembership', () => {
+    const userId = 'user-verify';
+    const tenantId = '0d3f5d5f-1a2b-4c3d-9e8f-112233445566';
+    const otherTenantId = '1d3f5d5f-1a2b-4c3d-9e8f-112233445567';
+    const req = {
+      currentUser: { idpUserId: userId },
+      headers: { authorization: 'Bearer testtoken' },
+    };
+    const apiUrl = `${endpoint}${listUserTenantsPath.replace('{userId}', userId)}`;
+
+    it('returns belongs=true without fanning out to groups/roles', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      const rolesSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles');
+      mockAxios.onGet(apiUrl).reply(200, { data: { tenants: [{ id: tenantId }, { id: otherTenantId }] } });
+
+      const result = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(result).toEqual({ belongs: true, degraded: false });
+      expect(rolesSpy).not.toHaveBeenCalled();
+    });
+
+    it('returns belongs=false when tenantId is not in the user list', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(200, { data: { tenants: [{ id: otherTenantId }] } });
+
+      const result = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(result).toEqual({ belongs: false, degraded: false });
+    });
+
+    it('returns degraded=true on CSTAR 503', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(503, { error: 'Service unavailable' });
+
+      const result = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(result).toEqual({ belongs: false, degraded: true });
+    });
+
+    it('returns degraded=true on CSTAR 500', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(500, { error: 'Internal' });
+
+      const result = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(result).toEqual({ belongs: false, degraded: true });
+    });
+
+    it('returns degraded=true on network error (ECONNREFUSED)', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(() => Promise.reject(Object.assign(new Error('connect ECONNREFUSED'), { code: 'ECONNREFUSED' })));
+
+      const result = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(result).toEqual({ belongs: false, degraded: true });
+    });
+
+    it('throws on 401', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
+
+      await expect(tenantService.verifyTenantMembership(req, tenantId)).rejects.toThrow();
+    });
+
+    it('throws on 403', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(403, { error: 'Forbidden' });
+
+      await expect(tenantService.verifyTenantMembership(req, tenantId)).rejects.toThrow();
+    });
+
+    it('throws if no currentUser', async () => {
+      await expect(tenantService.verifyTenantMembership({}, tenantId)).rejects.toThrow('TenantService: missing currentUser');
+    });
+
+    it('throws if no idpUserId', async () => {
+      await expect(tenantService.verifyTenantMembership({ currentUser: {} }, tenantId)).rejects.toThrow('TenantService: missing currentUser.idpUserId');
+    });
+
+    it('caches a successful list so back-to-back calls make one CSTAR call', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      let hits = 0;
+      mockAxios.onGet(apiUrl).reply(() => {
+        hits += 1;
+        return [200, { data: { tenants: [{ id: tenantId }] } }];
+      });
+
+      const first = await tenantService.verifyTenantMembership(req, tenantId);
+      const second = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(first).toEqual({ belongs: true, degraded: false });
+      expect(second).toEqual({ belongs: true, degraded: false });
+      expect(hits).toBe(1);
+    });
+
+    it('coalesces concurrent in-flight calls onto one CSTAR call', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      let hits = 0;
+      let resolveAxios;
+      const gate = new Promise((r) => (resolveAxios = r));
+      mockAxios.onGet(apiUrl).reply(async () => {
+        hits += 1;
+        await gate;
+        return [200, { data: { tenants: [{ id: tenantId }] } }];
+      });
+
+      const p1 = tenantService.verifyTenantMembership(req, tenantId);
+      const p2 = tenantService.verifyTenantMembership(req, tenantId);
+      const p3 = tenantService.verifyTenantMembership(req, tenantId);
+      resolveAxios();
+      const [r1, r2, r3] = await Promise.all([p1, p2, p3]);
+
+      expect(r1).toEqual({ belongs: true, degraded: false });
+      expect(r2).toEqual({ belongs: true, degraded: false });
+      expect(r3).toEqual({ belongs: true, degraded: false });
+      expect(hits).toBe(1);
+    });
+
+    it('does not cache degraded results (next call retries)', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      let call = 0;
+      mockAxios.onGet(apiUrl).reply(() => {
+        call += 1;
+        if (call === 1) return [503, { error: 'Service unavailable' }];
+        return [200, { data: { tenants: [{ id: tenantId }] } }];
+      });
+
+      const first = await tenantService.verifyTenantMembership(req, tenantId);
+      const second = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(first).toEqual({ belongs: false, degraded: true });
+      expect(second).toEqual({ belongs: true, degraded: false });
+      expect(call).toBe(2);
+    });
+
+    it('does not cache thrown errors (next call retries)', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      let call = 0;
+      mockAxios.onGet(apiUrl).reply(() => {
+        call += 1;
+        if (call === 1) return [401, { error: 'Unauthorized' }];
+        return [200, { data: { tenants: [{ id: tenantId }] } }];
+      });
+
+      await expect(tenantService.verifyTenantMembership(req, tenantId)).rejects.toThrow();
+      const second = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(second).toEqual({ belongs: true, degraded: false });
+      expect(call).toBe(2);
     });
   });
 

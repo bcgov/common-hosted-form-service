@@ -125,6 +125,15 @@ const hasFormAccessSettings = computed(() => {
   });
 });
 
+const hasBceidBasicAccessSettings = computed(() => {
+  if (!idpType.value) {
+    return false;
+  }
+  return idpType?.value.some((type) => {
+    return idpStore.hasFormAccessSettings(type, 'bceid-basic');
+  });
+});
+
 function userTypeChanged() {
   // if they checked enable drafts then went back to public, uncheck it
   if (form.value.userType === ID_MODE.value.PUBLIC) {
@@ -275,6 +284,36 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
                   >{{ $t('trans.formSettings.referenceGuideB') }}</a
                 >
                 {{ $t('trans.formSettings.referenceGuideC') }}.
+              </p>
+            </BaseInfoCard>
+          </v-expand-transition>
+          <!-- Basic BCeID onboarding halted notification -->
+          <v-expand-transition>
+            <BaseInfoCard
+              v-if="hasBceidBasicAccessSettings"
+              class="mr-4"
+              :class="{ 'dir-rtl': isRTL }"
+              data-test="bceid-basic-halted-info"
+            >
+              <h4 class="text-primary" :lang="locale">
+                <v-icon color="primary" icon="mdi:mdi-information" />
+                {{ $t('trans.formSettings.bceidBasicHalted') }}
+              </h4>
+              <p class="my-2" :lang="locale">
+                {{ $t('trans.formSettings.bceidBasicHaltedA') }} (<a
+                  href="https://ociomysc.service-now.com/sp?id=kb_article&amp;sys_id=4221c6932b1a8b9083eaf885d391bfb8&amp;spa=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :lang="locale"
+                  >{{ $t('trans.formSettings.bceidBasicBulletin') }}</a
+                >{{ $t('trans.formSettings.bceidBasicHaltedB') }}
+              </p>
+              <p class="mt-2 mb-0" :lang="locale">
+                {{ $t('trans.formSettings.bceidBasicExemptionA') }}
+                <a href="mailto:DTConsulting@gov.bc.ca"
+                  >DTConsulting@gov.bc.ca</a
+                >
+                {{ $t('trans.formSettings.bceidBasicExemptionB') }}
               </p>
             </BaseInfoCard>
           </v-expand-transition>
