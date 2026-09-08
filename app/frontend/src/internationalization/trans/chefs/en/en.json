@@ -540,6 +540,7 @@
   "adminPage": {
     "forms": "Forms",
     "users": "Users",
+    "duplicateUsers": "Duplicate users",
     "apis": "APIs",
     "features": "Features",
     "developer": "Developer",
@@ -593,6 +594,27 @@
     "userID": "User ID",
     "created": "Created",
     "actions": "Actions"
+  },
+  "adminDuplicateUsers": {
+    "title": "Duplicate user review",
+    "description": "Review users that share a username or email address. Mark duplicate records as stale until only the record that should remain active is left.",
+    "refresh": "Refresh duplicate users",
+    "groupsPerPage": "Groups per page",
+    "empty": "No unresolved duplicate users were found.",
+    "matchedBy": "Matched by {type}",
+    "records": "{count} records, {active} active",
+    "user": "User",
+    "identityProvider": "Identity provider",
+    "lastActivity": "Last activity",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "stale": "Stale",
+    "markStale": "Mark stale",
+    "confirmTitle": "Mark duplicate user as stale?",
+    "confirmMessage": "Mark {name} ({username}) as stale? They will no longer be treated as the active record for this duplicate group.",
+    "cancel": "Cancel",
+    "confirm": "Mark stale"
   },
   "adminVersions": {
     "exportDesign": "Export Design",

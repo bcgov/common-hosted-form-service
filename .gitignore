@@ -88,5 +88,12 @@ dummy
 # Ignore Windows reserved device files anywhere
 **/nul
 
+# Core dumps. Paths are anchored rather than a bare "core" so that a source
+# directory of that name is still tracked.
+/core
+/core.*
+/app/core
+/app/core.*
+
 # Claude Code configuration
 .claude/

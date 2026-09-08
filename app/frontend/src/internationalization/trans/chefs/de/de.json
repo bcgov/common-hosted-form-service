@@ -437,7 +437,8 @@
     "developer": "Entwickler",
     "infoLinks": "Info-Links",
     "metrics": "Metriken",
-    "apis": "APIs"
+    "apis": "APIs",
+    "duplicateUsers": "Doppelte Benutzer"
   },
   "adminUsersTable": {
     "search": "Suchen",
@@ -1477,5 +1478,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR ist vorübergehend nicht verfügbar. Die Mandantenauswahl ist derzeit deaktiviert.",
     "errorFetchingTenants": "Fehler beim Abrufen der Mandanten"
+  },
+  "adminDuplicateUsers": {
+    "title": "Doppelte Benutzer überprüfen",
+    "description": "Überprüfen Sie Benutzer mit demselben Benutzernamen oder derselben E-Mail-Adresse. Markieren Sie doppelte Datensätze als veraltet, bis nur noch der Datensatz aktiv ist, der beibehalten werden soll.",
+    "refresh": "Doppelte Benutzer aktualisieren",
+    "groupsPerPage": "Gruppen pro Seite",
+    "empty": "Es wurden keine ungelösten doppelten Benutzer gefunden.",
+    "matchedBy": "Übereinstimmung nach {type}",
+    "records": "{count} Datensätze, {active} aktiv",
+    "user": "Benutzer",
+    "identityProvider": "Identitätsanbieter",
+    "lastActivity": "Letzte Aktivität",
+    "status": "Status",
+    "actions": "Aktionen",
+    "active": "Aktiv",
+    "stale": "Veraltet",
+    "markStale": "Als veraltet markieren",
+    "confirmTitle": "Doppelten Benutzer als veraltet markieren?",
+    "confirmMessage": "{name} ({username}) als veraltet markieren? Dieser Benutzer wird dann nicht mehr als aktiver Datensatz dieser Duplikatgruppe behandelt.",
+    "cancel": "Abbrechen",
+    "confirm": "Als veraltet markieren"
   }
 }

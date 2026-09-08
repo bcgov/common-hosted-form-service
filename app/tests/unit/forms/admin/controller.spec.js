@@ -81,6 +81,39 @@ describe('getExternalAPIs', () => {
   });
 });
 
+describe('getDuplicateUsers', () => {
+  it('returns unresolved duplicate users', async () => {
+    const { res, next } = getMockRes();
+    const duplicateUsers = [
+      {
+        canonicalIdp: 'idir',
+        matchType: 'email',
+        matchKey: 'duplicate@gov.bc.ca',
+        groupSize: 2,
+        activeInGroup: 2,
+        isResolved: false,
+        groupsForThisUser: 1,
+        userId: '11111111-1111-4111-8111-111111111111',
+        username: 'duplicate.user',
+        fullName: 'Duplicate User',
+        email: 'duplicate@gov.bc.ca',
+        idpCode: 'idir',
+        stale: false,
+        lastActivityAt: '2026-05-01T00:00:00.000Z',
+        createdAt: '2024-01-01T00:00:00.000Z',
+      },
+    ];
+    service.getDuplicateUsers = jest.fn().mockResolvedValue(duplicateUsers);
+
+    await controller.getDuplicateUsers(req, res, next);
+
+    expect(service.getDuplicateUsers).toBeCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(duplicateUsers);
+    expect(next).not.toHaveBeenCalled();
+  });
+});
+
 describe('updateExternalAPI', () => {
   it('should  call service', async () => {
     const { res, next } = getMockRes();

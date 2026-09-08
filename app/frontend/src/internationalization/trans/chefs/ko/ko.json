@@ -437,7 +437,8 @@
     "developer": "개발자",
     "infoLinks": "정보 링크",
     "metrics": "측정항목",
-    "apis": "아피스"
+    "apis": "아피스",
+    "duplicateUsers": "중복 사용자"
   },
   "adminUsersTable": {
     "search": "찾다",
@@ -1477,5 +1478,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR를 일시적으로 사용할 수 없습니다. 테넌트 선택이 현재 비활성화되어 있습니다.",
     "errorFetchingTenants": "테넌트 가져오기 오류"
+  },
+  "adminDuplicateUsers": {
+    "title": "중복 사용자 검토",
+    "description": "사용자 이름이나 이메일 주소가 같은 사용자를 검토합니다. 유지할 레코드만 활성 상태로 남을 때까지 중복 레코드를 오래된 레코드로 표시하세요.",
+    "refresh": "중복 사용자 새로고침",
+    "groupsPerPage": "페이지당 그룹 수",
+    "empty": "해결되지 않은 중복 사용자가 없습니다.",
+    "matchedBy": "{type}(으)로 일치",
+    "records": "레코드 {count}개, 활성 {active}개",
+    "user": "사용자",
+    "identityProvider": "ID 공급자",
+    "lastActivity": "마지막 활동",
+    "status": "상태",
+    "actions": "작업",
+    "active": "활성",
+    "stale": "오래됨",
+    "markStale": "오래됨으로 표시",
+    "confirmTitle": "중복 사용자를 오래됨으로 표시하시겠습니까?",
+    "confirmMessage": "{name}({username})을(를) 오래됨으로 표시하시겠습니까? 이 중복 그룹의 활성 레코드로 더 이상 취급되지 않습니다.",
+    "cancel": "취소",
+    "confirm": "오래됨으로 표시"
   }
 }

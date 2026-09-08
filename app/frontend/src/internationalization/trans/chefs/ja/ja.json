@@ -437,7 +437,8 @@
     "developer": "デベロッパー",
     "infoLinks": "情報リンク",
     "metrics": "メトリクス",
-    "apis": "APIについて"
+    "apis": "APIについて",
+    "duplicateUsers": "重複ユーザー"
   },
   "adminUsersTable": {
     "search": "検索",
@@ -1477,5 +1478,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTARは一時的に利用できません。テナント選択は現在無効になっています。",
     "errorFetchingTenants": "テナントの取得中にエラーが発生しました"
+  },
+  "adminDuplicateUsers": {
+    "title": "重複ユーザーの確認",
+    "description": "同じユーザー名またはメールアドレスを持つユーザーを確認します。残すべきレコードだけがアクティブになるまで、重複レコードを古いレコードとしてマークしてください。",
+    "refresh": "重複ユーザーを更新",
+    "groupsPerPage": "1ページあたりのグループ数",
+    "empty": "未解決の重複ユーザーは見つかりませんでした。",
+    "matchedBy": "{type}で一致",
+    "records": "{count}件のレコード、{active}件がアクティブ",
+    "user": "ユーザー",
+    "identityProvider": "IDプロバイダー",
+    "lastActivity": "最終アクティビティ",
+    "status": "ステータス",
+    "actions": "操作",
+    "active": "アクティブ",
+    "stale": "古い",
+    "markStale": "古いレコードとしてマーク",
+    "confirmTitle": "重複ユーザーを古いレコードとしてマークしますか？",
+    "confirmMessage": "{name}（{username}）を古いレコードとしてマークしますか？この重複グループのアクティブなレコードとして扱われなくなります。",
+    "cancel": "キャンセル",
+    "confirm": "古いレコードとしてマーク"
   }
 }

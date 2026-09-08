@@ -437,7 +437,8 @@
     "developer": "Développeur",
     "infoLinks": "Liens d'information",
     "metrics": "Métrique",
-    "apis": "Apis"
+    "apis": "Apis",
+    "duplicateUsers": "Utilisateurs en double"
   },
   "adminUsersTable": {
     "search": "Recherche",
@@ -1507,5 +1508,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR est temporairement indisponible. La sélection du locataire est actuellement désactivée.",
     "errorFetchingTenants": "Erreur lors de la récupération des locataires"
+  },
+  "adminDuplicateUsers": {
+    "title": "Examen des utilisateurs en double",
+    "description": "Examinez les utilisateurs qui partagent un nom d’utilisateur ou une adresse courriel. Marquez les enregistrements en double comme obsolètes jusqu’à ce que seul l’enregistrement à conserver demeure actif.",
+    "refresh": "Actualiser les utilisateurs en double",
+    "groupsPerPage": "Groupes par page",
+    "empty": "Aucun utilisateur en double non résolu n’a été trouvé.",
+    "matchedBy": "Correspondance par {type}",
+    "records": "{count} enregistrements, {active} actifs",
+    "user": "Utilisateur",
+    "identityProvider": "Fournisseur d’identité",
+    "lastActivity": "Dernière activité",
+    "status": "État",
+    "actions": "Actions",
+    "active": "Actif",
+    "stale": "Obsolète",
+    "markStale": "Marquer comme obsolète",
+    "confirmTitle": "Marquer l’utilisateur en double comme obsolète?",
+    "confirmMessage": "Marquer {name} ({username}) comme obsolète? Cet utilisateur ne sera plus considéré comme l’enregistrement actif de ce groupe de doublons.",
+    "cancel": "Annuler",
+    "confirm": "Marquer comme obsolète"
   }
 }

@@ -94,6 +94,23 @@ describe(`${basePath}/externalAPIs`, () => {
   });
 });
 
+describe(`${basePath}/users/duplicates`, () => {
+  const path = `${basePath}/users/duplicates`;
+
+  it('has admin middleware and calls the duplicate users controller', async () => {
+    controller.getDuplicateUsers = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(controller.getDuplicateUsers).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
+  });
+});
+
 describe(`${basePath}/externalAPIs/:externalApiId`, () => {
   const externalApiId = uuid.v4();
   const path = `${basePath}/externalAPIs/${externalApiId}`;
@@ -429,6 +446,23 @@ describe(`${basePath}/users/:userId`, () => {
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userController.read).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(1);
+  });
+
+  it('should have correct middleware for PATCH', async () => {
+    userController.update = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.patch(path).send({ stale: true });
+
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userController.update).toBeCalledTimes(1);
     expect(validateParameter.validateComponentId).toBeCalledTimes(0);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);

@@ -437,7 +437,8 @@
     "developer": "Desenvolvedor",
     "infoLinks": "Links de informações",
     "metrics": "Métricas",
-    "apis": "APIs"
+    "apis": "APIs",
+    "duplicateUsers": "Usuários duplicados"
   },
   "adminUsersTable": {
     "search": "Procurar",
@@ -1477,5 +1478,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR está temporariamente indisponível. A seleção de tenant está atualmente desabilitada.",
     "errorFetchingTenants": "Erro ao buscar tenants"
+  },
+  "adminDuplicateUsers": {
+    "title": "Revisão de usuários duplicados",
+    "description": "Revise os usuários que compartilham um nome de usuário ou endereço de e-mail. Marque os registros duplicados como obsoletos até que apenas o registro que deve ser mantido permaneça ativo.",
+    "refresh": "Atualizar usuários duplicados",
+    "groupsPerPage": "Grupos por página",
+    "empty": "Nenhum usuário duplicado não resolvido foi encontrado.",
+    "matchedBy": "Correspondência por {type}",
+    "records": "{count} registros, {active} ativos",
+    "user": "Usuário",
+    "identityProvider": "Provedor de identidade",
+    "lastActivity": "Última atividade",
+    "status": "Status",
+    "actions": "Ações",
+    "active": "Ativo",
+    "stale": "Obsoleto",
+    "markStale": "Marcar como obsoleto",
+    "confirmTitle": "Marcar o usuário duplicado como obsoleto?",
+    "confirmMessage": "Marcar {name} ({username}) como obsoleto? Ele não será mais considerado o registro ativo deste grupo de duplicados.",
+    "cancel": "Cancelar",
+    "confirm": "Marcar como obsoleto"
   }
 }

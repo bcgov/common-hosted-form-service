@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AdminFormsTable from '~/components/admin/AdminFormsTable.vue';
 import AdminUsersTable from '~/components/admin/AdminUsersTable.vue';
+import AdminDuplicateUsers from '~/components/admin/AdminDuplicateUsers.vue';
 import AdminAPIsTable from '~/components/admin/AdminAPIsTable.vue';
 import AdminFeatureFlags from '~/components/admin/AdminFeatureFlags.vue';
 import Dashboard from '~/components/admin/Dashboard.vue';
@@ -39,6 +40,9 @@ watch(isRTL, () => {
     <v-tab value="users" :lang="locale">{{
       $t('trans.adminPage.users')
     }}</v-tab>
+    <v-tab value="duplicateUsers" :lang="locale">{{
+      $t('trans.adminPage.duplicateUsers')
+    }}</v-tab>
     <v-tab value="apis" :lang="locale">{{ $t('trans.adminPage.apis') }}</v-tab>
     <v-tab value="features" :lang="locale">{{
       $t('trans.adminPage.features')
@@ -61,6 +65,9 @@ watch(isRTL, () => {
       </v-window-item>
       <v-window-item value="users">
         <AdminUsersTable />
+      </v-window-item>
+      <v-window-item value="duplicateUsers">
+        <AdminDuplicateUsers />
       </v-window-item>
       <v-window-item value="apis">
         <AdminAPIsTable />

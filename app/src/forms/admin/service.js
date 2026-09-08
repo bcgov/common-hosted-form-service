@@ -1,8 +1,9 @@
 const { ExternalAPIStatuses } = require('../common/constants');
-const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess, UserDuplicates, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
 const { queryUtils, typeUtils } = require('../common/utils');
 const moment = require('moment');
 const uuid = require('uuid');
+
 const service = {
   //
   // Forms
@@ -113,6 +114,8 @@ const service = {
     }
     return query;
   },
+
+  getDuplicateUsers: () => UserDuplicates.query().modify('filterResolved', false).modify('orderDefault'),
 
   /**
    * @function getFormUserRoles

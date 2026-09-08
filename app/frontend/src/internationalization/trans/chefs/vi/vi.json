@@ -437,7 +437,8 @@
     "developer": "nhà phát triển",
     "infoLinks": "Liên kết thông tin",
     "metrics": "số liệu",
-    "apis": "API"
+    "apis": "API",
+    "duplicateUsers": "Người dùng trùng lặp"
   },
   "adminUsersTable": {
     "search": "Tìm kiếm",
@@ -1481,5 +1482,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR tạm thời không khả dụng. Lựa chọn người thuê hiện đã bị tắt.",
     "errorFetchingTenants": "Lỗi khi tải người thuê"
+  },
+  "adminDuplicateUsers": {
+    "title": "Xem xét người dùng trùng lặp",
+    "description": "Xem xét những người dùng có cùng tên người dùng hoặc địa chỉ email. Đánh dấu các bản ghi trùng lặp là cũ cho đến khi chỉ còn bản ghi cần giữ ở trạng thái hoạt động.",
+    "refresh": "Làm mới người dùng trùng lặp",
+    "groupsPerPage": "Số nhóm mỗi trang",
+    "empty": "Không tìm thấy người dùng trùng lặp chưa được xử lý.",
+    "matchedBy": "Khớp theo {type}",
+    "records": "{count} bản ghi, {active} đang hoạt động",
+    "user": "Người dùng",
+    "identityProvider": "Nhà cung cấp danh tính",
+    "lastActivity": "Hoạt động gần nhất",
+    "status": "Trạng thái",
+    "actions": "Thao tác",
+    "active": "Đang hoạt động",
+    "stale": "Cũ",
+    "markStale": "Đánh dấu là cũ",
+    "confirmTitle": "Đánh dấu người dùng trùng lặp là cũ?",
+    "confirmMessage": "Đánh dấu {name} ({username}) là cũ? Người dùng này sẽ không còn được xem là bản ghi hoạt động của nhóm trùng lặp này.",
+    "cancel": "Hủy",
+    "confirm": "Đánh dấu là cũ"
   }
 }

@@ -54,6 +54,7 @@ const service = {
         firstName: data.firstName,
         lastName: data.lastName,
         idpCode: data.idp,
+        stale: false,
       };
 
       await User.query(trx).patchAndFetchById(id, update);

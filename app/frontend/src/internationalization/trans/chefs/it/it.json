@@ -437,7 +437,8 @@
     "developer": "Sviluppatore",
     "infoLinks": "Collegamenti informativi",
     "metrics": "Metrica",
-    "apis": "API"
+    "apis": "API",
+    "duplicateUsers": "Utenti duplicati"
   },
   "adminUsersTable": {
     "search": "Ricerca",
@@ -1477,5 +1478,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR è temporaneamente non disponibile. La selezione del tenant è attualmente disabilitata.",
     "errorFetchingTenants": "Errore nel recupero dei tenant"
+  },
+  "adminDuplicateUsers": {
+    "title": "Revisione degli utenti duplicati",
+    "description": "Esamina gli utenti che condividono un nome utente o un indirizzo email. Contrassegna i record duplicati come obsoleti finché rimane attivo solo il record da conservare.",
+    "refresh": "Aggiorna utenti duplicati",
+    "groupsPerPage": "Gruppi per pagina",
+    "empty": "Non sono stati trovati utenti duplicati non risolti.",
+    "matchedBy": "Corrispondenza per {type}",
+    "records": "{count} record, {active} attivi",
+    "user": "Utente",
+    "identityProvider": "Provider di identità",
+    "lastActivity": "Ultima attività",
+    "status": "Stato",
+    "actions": "Azioni",
+    "active": "Attivo",
+    "stale": "Obsoleto",
+    "markStale": "Contrassegna come obsoleto",
+    "confirmTitle": "Contrassegnare l’utente duplicato come obsoleto?",
+    "confirmMessage": "Contrassegnare {name} ({username}) come obsoleto? Non sarà più considerato il record attivo di questo gruppo di duplicati.",
+    "cancel": "Annulla",
+    "confirm": "Contrassegna come obsoleto"
   }
 }
