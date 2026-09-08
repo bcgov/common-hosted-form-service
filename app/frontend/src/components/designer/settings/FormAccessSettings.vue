@@ -237,8 +237,8 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
                     <v-chip
                       v-if="idp.restricted"
                       size="x-small"
-                      class="ml-2"
-                      variant="outlined"
+                      class="ml-2 restricted-chip"
+                      variant="flat"
                     >
                       Restricted
                     </v-chip>
@@ -368,5 +368,12 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
   align-items: center;
   font-weight: 700;
   color: #313132;
+}
+
+.restricted-chip {
+  background-color: #fff4cc !important;
+  border: 1px solid #d6b64c !important;
+  color: #313132 !important;
+  font-weight: 600;
 }
 </style>
