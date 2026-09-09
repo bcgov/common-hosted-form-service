@@ -99,6 +99,8 @@
     "fileSizeError": "文件大小必须小于25MB。"
   },
   "formSettings": {
+    "restrictedIDP": "受限",
+    "bceidDeprecationAlert": "自2026年5月31日起，Connected Services BC（CSBC）已停止将新服务接入 Basic BCeID。建议改用 BC Services Card 应用程序作为身份认证解决方案。此变更体现了政府数字身份服务的持续现代化，以及采用能够满足未来服务交付需求的身份认证解决方案。现有服务和 Basic BCeID 的当前用户不受此变更影响，现有集成将继续正常运行。如有身份服务接入方面的问题，请联系",
     "pressToAddMultiEmail": "按<kbd>Enter</kbd>或<kbd>,</kbd>或<kbd>空格键</kbd>添加多个电子邮件地址",
     "allowMultiDraft": "允许上传<strong>多个草稿</strong>",
     "formTitle": "表格标题",

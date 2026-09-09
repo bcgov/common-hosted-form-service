@@ -189,6 +189,8 @@
     "userTokenFieldRequired": "Required when 'Send User Token' selected."
   },
   "formSettings": {
+    "restrictedIDP": "Restricted",
+    "bceidDeprecationAlert": "Effective May 31, 2026, Connected Services BC (CSBC) stopped onboarding new services to Basic BCeID. Instead, it is recommended to use the BC Services Card app as the identity solution. This change reflects the ongoing modernization of government digital identity services and the adoption of identity solutions that support future service delivery needs. Existing services and current users of Basic BCeID are not affected by this change and existing integrations will continue to operate normally. For Identity Service onboarding questions, please connect with",
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
     "allowMultiDraft": "Allow <strong> multiple draft</strong> upload",
     "enableSubmissionUrlSharing": "Enable <strong>Submission URL Sharing</strong>",

@@ -99,6 +99,8 @@
     "fileSizeError": "Kích thước tệp phải nhỏ hơn 25MB."
   },
   "formSettings": {
+    "restrictedIDP": "Bị hạn chế",
+    "bceidDeprecationAlert": "Kể từ ngày 31 tháng 5 năm 2026, Connected Services BC (CSBC) đã ngừng tiếp nhận các dịch vụ mới tích hợp với Basic BCeID. Thay vào đó, ứng dụng BC Services Card được khuyến nghị sử dụng làm giải pháp định danh. Thay đổi này phản ánh quá trình hiện đại hóa liên tục các dịch vụ định danh số của chính phủ và việc áp dụng các giải pháp định danh đáp ứng nhu cầu cung cấp dịch vụ trong tương lai. Các dịch vụ hiện có và người dùng hiện tại của Basic BCeID không bị ảnh hưởng bởi thay đổi này, và các tích hợp hiện có sẽ tiếp tục hoạt động bình thường. Nếu có câu hỏi về việc tích hợp với dịch vụ định danh, vui lòng liên hệ",
     "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
     "allowMultiDraft": "Cho phép tải lên <strong>nhiều bản nháp</strong>",
     "formTitle": "Tiêu đề mẫu",

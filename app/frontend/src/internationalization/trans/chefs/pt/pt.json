@@ -99,6 +99,8 @@
     "fileSizeError": "O tamanho do arquivo deve ser menor que 25 MB."
   },
   "formSettings": {
+    "restrictedIDP": "Restrito",
+    "bceidDeprecationAlert": "Desde 31 de maio de 2026, a Connected Services BC (CSBC) deixou de integrar novos serviços ao Basic BCeID. Em vez disso, recomenda-se utilizar o aplicativo BC Services Card como solução de identidade. Essa mudança reflete a modernização contínua dos serviços governamentais de identidade digital e a adoção de soluções de identidade que atendam às necessidades futuras de prestação de serviços. Os serviços existentes e os usuários atuais do Basic BCeID não são afetados por essa mudança, e as integrações existentes continuarão funcionando normalmente. Para dúvidas sobre a integração aos serviços de identidade, entre em contato com",
     "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
     "allowMultiDraft": "Permitir upload <strong>de vários rascunhos</strong>",
     "formTitle": "Título do formulário",
