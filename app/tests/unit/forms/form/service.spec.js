@@ -19,6 +19,8 @@ const tenantService = require('../../../../src/components/tenantService');
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
 const eventService = require('../../../../src/forms//event/eventService');
+const submitToEmailJobService = require('../../../../src/forms/feature/submitToEmail/jobService');
+const emailService = require('../../../../src/forms/email/emailService');
 const { validateSubmissionSchedule } = require('../../../../src/forms/common/scheduleService');
 
 const {
@@ -214,6 +216,18 @@ jest.mock('../../../../src/forms/form/formMetadata/service', () => ({
 
 jest.mock('../../../../src/forms/form/eventStreamConfig/service', () => ({
   upsert: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('../../../../src/forms/feature/submitToEmail/settingsService', () => ({
+  upsert: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('../../../../src/forms/feature/submitToEmail/jobService', () => ({
+  enqueueForSubmission: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock('../../../../src/forms/email/emailService', () => ({
+  submissionReceived: jest.fn().mockResolvedValue({}),
 }));
 
 jest.mock('../../../../src/forms/event/eventService', () => ({
@@ -1252,6 +1266,116 @@ describe('createForm', () => {
     );
   });
 
+  it('should default enableSubmissionUrlSharing to true when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: true }));
+  });
+
+  it('should persist enableSubmissionUrlSharing false in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], enableSubmissionUrlSharing: false };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: false }));
+  });
+
+  it('should default enableSubmitterEmailReceipt to true when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmitterEmailReceipt: true }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt false in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: false };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should force enableSubmitterEmailReceipt to false in createForm when enableSubmissionUrlSharing is false, even if the payload says true', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Test Form',
+      identityProviders: [{ code: 'public' }],
+      enableSubmissionUrlSharing: false,
+      enableSubmitterEmailReceipt: true,
+    };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ enableSubmissionUrlSharing: false, enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should default hideSubmissionContentOnSuccess to false when undefined in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }] };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ hideSubmissionContentOnSuccess: false }));
+  });
+
+  it('should persist hideSubmissionContentOnSuccess true in createForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Test Form', identityProviders: [{ code: 'public' }], hideSubmissionContentOnSuccess: true };
+    const mockInsert = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ insert: mockInsert });
+
+    await service.createForm(data, currentUser);
+
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ hideSubmissionContentOnSuccess: true }));
+  });
+
   it('should throw when tenant form creation is attempted without headers', async () => {
     service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
     service.readForm = jest.fn().mockResolvedValueOnce({});
@@ -1386,6 +1510,116 @@ describe('updateForm', () => {
       })
     );
   });
+
+  it('should default enableSubmissionUrlSharing to true when undefined in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }] };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: true }));
+  });
+
+  it('should persist enableSubmissionUrlSharing false in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmissionUrlSharing: false };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: false }));
+  });
+
+  it('should default enableSubmitterEmailReceipt to false in updateForm when the payload omits it (strict-on-update; prevents accidental opt-in)', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }] };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt true in updateForm when the payload says true and sharing is on', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: true };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: true }));
+  });
+
+  it('should persist enableSubmitterEmailReceipt false in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], enableSubmitterEmailReceipt: false };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should force enableSubmitterEmailReceipt to false in updateForm when enableSubmissionUrlSharing is false, even if the payload says true', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = {
+      name: 'Form',
+      identityProviders: [{ code: 'public' }],
+      enableSubmissionUrlSharing: false,
+      enableSubmitterEmailReceipt: true,
+    };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ enableSubmissionUrlSharing: false, enableSubmitterEmailReceipt: false }));
+  });
+
+  it('should persist hideSubmissionContentOnSuccess true in updateForm', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockResolvedValue({ id: formId });
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { name: 'Form', identityProviders: [{ code: 'public' }], hideSubmissionContentOnSuccess: true };
+    const mockPatchAndFetchById = jest.fn().mockResolvedValue({ id: formId });
+    Form.query = jest.fn().mockReturnValue({ patchAndFetchById: mockPatchAndFetchById });
+
+    await service.updateForm(formId, data, currentUser);
+
+    expect(mockPatchAndFetchById).toHaveBeenCalledWith(formId, expect.objectContaining({ hideSubmissionContentOnSuccess: true }));
+  });
 });
 
 describe('deleteForm', () => {
@@ -1484,6 +1718,8 @@ describe('createSubmission', () => {
     MockTransaction.mockReset();
     resetModels();
     validateSubmissionSchedule.mockClear();
+    submitToEmailJobService.enqueueForSubmission.mockClear();
+    emailService.submissionReceived.mockClear();
     // Reset to default implementation that handles null/undefined gracefully
     validateSubmissionSchedule.mockImplementation((schedule) => {
       // validateSubmissionSchedule should not throw for null/undefined/disabled schedules
@@ -1511,6 +1747,38 @@ describe('createSubmission', () => {
     expect(eventService.formSubmissionEventReceived).toBeCalledTimes(1);
     expect(eventStreamService.onSubmit).toBeCalledTimes(1);
     expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('enqueues a submission package job and sends the received email for a non-draft submission', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }], identityProviders: [] });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledTimes(1);
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledWith(expect.objectContaining({ formId, draft: false }));
+    expect(emailService.submissionReceived).toBeCalledTimes(1);
+  });
+
+  it('does not send the received email for a draft submission (but still calls the gated enqueue)', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }], identityProviders: [] });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: true, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    // enqueue is always called; it no-ops internally for drafts.
+    expect(submitToEmailJobService.enqueueForSubmission).toBeCalledWith(expect.objectContaining({ draft: true }));
+    expect(emailService.submissionReceived).not.toBeCalled();
   });
 
   it('should validate schedule before allowing submission', async () => {
@@ -1577,6 +1845,238 @@ describe('createSubmission', () => {
 
     expect(validateSubmissionSchedule).toHaveBeenCalledWith(null);
     expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  // queuedAt lets an offline replay keep its original submit time and skip the
+  // schedule window. It is client-supplied, so it must only be honoured on a
+  // genuine replay (Dedup-Key present + form has offline submission enabled).
+  const offlineReplayForm = (schedule) => ({
+    id: formId,
+    versions: [{ version: 1 }],
+    identityProviders: [],
+    schedule,
+    enableOfflineSubmission: true,
+  });
+  const pastQueuedAt = () => new Date(Date.now() - 60000).toISOString();
+  const dedupOptions = { dedupKey: '11111111-1111-4111-8111-111111111111' };
+
+  it('skips the schedule check for an offline replay (queuedAt + dedupKey on an offline-enabled form)', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(formSchedule));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    expect(validateSubmissionSchedule).not.toHaveBeenCalled();
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('still validates the schedule when queuedAt is present but there is no dedupKey', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(formSchedule));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('still validates the schedule when queuedAt is present on a form without offline submission enabled', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: formSchedule,
+      enableOfflineSubmission: false,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    expect(validateSubmissionSchedule).toHaveBeenCalledWith(formSchedule);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('rejects an unparseable queuedAt with a 422 and does not commit', async () => {
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm({ enabled: true }));
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: 'not-a-date' };
+    await expect(service.createSubmission('123', data, currentUser, dedupOptions)).rejects.toMatchObject({ status: 422 });
+
+    expect(MockTransaction.commit).not.toHaveBeenCalled();
+  });
+
+  it('clamps a future queuedAt and still accepts the replay (schedule skipped, commits)', async () => {
+    const formSchedule = { enabled: true, scheduleType: ScheduleType.CLOSINGDATE };
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(formSchedule));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: new Date(Date.now() + 3600000).toISOString() };
+    await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    // Future timestamp is clamped, not rejected: the replay is honoured (schedule skipped) and commits.
+    expect(validateSubmissionSchedule).not.toHaveBeenCalled();
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('persists the resolved queuedAt and passed-in dedupKey on the FormSubmission row', async () => {
+    const past = pastQueuedAt();
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(null));
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: past };
+    await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    // FormSubmission.insert is the first insert in the flow; the two subsequent
+    // inserts are FormSubmissionUser and FormSubmissionStatus, which use their
+    // own model mocks. Inspect the row shape here to prove the resolved
+    // queuedAt and passed-in dedupKey actually landed on the persisted row.
+    const submissionRow = FormSubmission.insert.mock.calls[0][0];
+    expect(submissionRow.queuedAt).toBe(past);
+    expect(submissionRow.dedupKey).toBe(dedupOptions.dedupKey);
+  });
+
+  it('persists a null queuedAt and null dedupKey on a live (non-replay) submission', async () => {
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: null,
+      enableOfflineSubmission: false,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    // A live submission with a stray queuedAt in the body: must be ignored.
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await service.createSubmission('123', data, currentUser);
+
+    const submissionRow = FormSubmission.insert.mock.calls[0][0];
+    expect(submissionRow.queuedAt).toBeNull();
+    expect(submissionRow.dedupKey).toBeNull();
+  });
+
+  it('forces deleted:false and updatedBy:null even when the client sets them in the body (F12)', async () => {
+    service.readForm = jest.fn().mockReturnValueOnce({
+      id: formId,
+      versions: [{ version: 1 }],
+      identityProviders: [],
+      schedule: null,
+    });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} }, deleted: true, updatedBy: 'attacker@idir' };
+    await service.createSubmission('123', data, currentUser);
+
+    const submissionRow = FormSubmission.insert.mock.calls[0][0];
+    expect(submissionRow.deleted).toBe(false);
+    expect(submissionRow.updatedBy).toBeNull();
+  });
+
+  it('replays the concurrent winner (returns its submission) when the dedupKey insert races into a unique violation (F11)', async () => {
+    const { UniqueViolationError } = require('objection');
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(null));
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    // The losing insert hits the unique(dedupKey) constraint.
+    FormSubmission.insert = jest.fn(() => {
+      throw new UniqueViolationError({ nativeError: new Error('duplicate dedupKey'), client: 'pg' });
+    });
+    // The concurrent winner's row, created by the SAME user.
+    FormSubmission.findOne = jest.fn().mockResolvedValueOnce({ id: 'winner-id', createdBy: currentUser.usernameIdp, dedupKey: dedupOptions.dedupKey });
+    const replayed = { id: 'winner-id', submission: { data: {} } };
+    service.readSubmission = jest.fn().mockResolvedValueOnce(replayed);
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    const result = await service.createSubmission('123', data, currentUser, dedupOptions);
+
+    expect(result).toBe(replayed);
+    expect(MockTransaction.commit).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 on a dedupKey unique-violation race when the winner is a different user (F11 fail-closed)', async () => {
+    const { UniqueViolationError } = require('objection');
+    service.readForm = jest.fn().mockReturnValueOnce(offlineReplayForm(null));
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    FormSubmission.insert = jest.fn(() => {
+      throw new UniqueViolationError({ nativeError: new Error('duplicate dedupKey'), client: 'pg' });
+    });
+    FormSubmission.findOne = jest.fn().mockResolvedValueOnce({ id: 'x', createdBy: 'someone-else@idir', dedupKey: dedupOptions.dedupKey });
+
+    const data = { draft: false, submission: { data: {} }, queuedAt: pastQueuedAt() };
+    await expect(service.createSubmission('123', data, currentUser, dedupOptions)).rejects.toMatchObject({ status: 409 });
+  });
+});
+
+describe('_resolveQueuedAt', () => {
+  const offlineForm = { enableOfflineSubmission: true };
+  const dedupKey = '11111111-1111-4111-8111-111111111111';
+
+  it('returns null when queuedAt is absent', () => {
+    expect(service._resolveQueuedAt(undefined, dedupKey, offlineForm)).toBeNull();
+  });
+
+  it('returns null without a dedupKey (a live submission cannot skip the schedule)', () => {
+    expect(service._resolveQueuedAt(new Date().toISOString(), undefined, offlineForm)).toBeNull();
+  });
+
+  it('returns null when the form does not have offline submission enabled', () => {
+    expect(service._resolveQueuedAt(new Date().toISOString(), dedupKey, { enableOfflineSubmission: false })).toBeNull();
+  });
+
+  it('throws 422 for an unparseable timestamp', () => {
+    expect.assertions(1);
+    try {
+      service._resolveQueuedAt('not-a-date', dedupKey, offlineForm);
+    } catch (e) {
+      expect(e.status).toBe(422);
+    }
+  });
+
+  it('normalizes a valid past timestamp to an ISO string', () => {
+    const past = new Date(Date.now() - 60000);
+    const result = service._resolveQueuedAt(past.toISOString(), dedupKey, offlineForm);
+    expect(result).toBe(past.toISOString());
+    expect(typeof result).toBe('string');
+  });
+
+  it('normalizes a numeric (epoch ms) timestamp to an ISO string', () => {
+    const ms = Date.now() - 60000;
+    const result = service._resolveQueuedAt(ms, dedupKey, offlineForm);
+    expect(result).toBe(new Date(ms).toISOString());
+  });
+
+  it('clamps a future timestamp back to now', () => {
+    const before = Date.now();
+    const result = service._resolveQueuedAt(new Date(before + 3600000).toISOString(), dedupKey, offlineForm);
+    const resultMs = new Date(result).getTime();
+    expect(resultMs).toBeLessThanOrEqual(Date.now());
+    expect(resultMs).toBeGreaterThanOrEqual(before);
   });
 });
 
@@ -2986,5 +3486,70 @@ describe('_setAllowSubmitterToUploadFile', () => {
       identityProviders: [{ code: 'idir' }],
     };
     expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+  });
+});
+
+describe('_setEnableOfflineSubmission', () => {
+  it('preserves true for a non-public form', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(true);
+  });
+
+  it('forces false for a public form even when enableOfflineSubmission is true', () => {
+    const formData = {
+      identityProviders: [{ code: 'public' }],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('forces false for a public form combined with other identity providers', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }, { code: 'public' }],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('returns false for a non-public form when enableOfflineSubmission is false', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+      enableOfflineSubmission: false,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('returns false for a non-public form when enableOfflineSubmission is missing', () => {
+    const formData = {
+      identityProviders: [{ code: 'idir' }],
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('preserves true for a team form (empty identityProviders array, i.e. "Specific People")', () => {
+    // Team forms legitimately carry an empty identityProviders array; offline
+    // submission must still persist on them. Regression: a stricter guard used to
+    // force this false, breaking offline for every "Specific Teams" form.
+    const formData = {
+      identityProviders: [],
+      enableOfflineSubmission: true,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(true);
+  });
+
+  it('returns false for a team form when enableOfflineSubmission is false', () => {
+    const formData = {
+      identityProviders: [],
+      enableOfflineSubmission: false,
+    };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(false);
+  });
+
+  it('honors the flag when identityProviders is missing (treated as non-public)', () => {
+    const formData = { enableOfflineSubmission: true };
+    expect(service._setEnableOfflineSubmission(formData)).toBe(true);
   });
 });

@@ -62,7 +62,8 @@
   //"remoteUser": "root",
 
   "containerEnv": {
-    "NODE_CONFIG_DIR": "${containerWorkspaceFolder}/.devcontainer/chefs_local"
+    "NODE_CONFIG_DIR": "${containerWorkspaceFolder}/.devcontainer/chefs_local",
+    "APITOKEN": "local-dev-token"
   },
   "portsAttributes": {
     "4222": {

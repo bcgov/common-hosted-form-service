@@ -29,7 +29,7 @@ export function appAxios(timeout = 60000) {
       }
 
       // Add tenant ID header if tenant is selected
-      // EXCLUDE all requests from public/submitter routes — these pages operate
+      // EXCLUDE all requests from public/submitter routes; these pages operate
       // outside tenant scope (form submission, submission viewing, draft editing)
       const noTenantHeaderPaths = [
         '/form/submit',
@@ -45,6 +45,19 @@ export function appAxios(timeout = 60000) {
       if (tenantStore?.selectedTenant?.id && !isNoTenantRoute) {
         cfg.headers['x-tenant-id'] = tenantStore.selectedTenant.id;
       }
+
+      const submissionIdMatch = cfg.url?.match(
+        /\/submissions\/([0-9a-f-]{36})(?:\/|\?|$)/i
+      );
+      if (submissionIdMatch) {
+        const token = sessionStorage.getItem(
+          'submissionAccessToken:' + submissionIdMatch[1]
+        );
+        if (token) {
+          cfg.headers['X-Submission-Token'] = token;
+        }
+      }
+
       return Promise.resolve(cfg);
     },
     (error) => {

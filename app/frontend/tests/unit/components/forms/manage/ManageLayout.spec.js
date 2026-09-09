@@ -7,6 +7,7 @@ import { beforeEach, expect, vi } from 'vitest';
 import getRouter from '~/router';
 import ManageLayout from '~/components/forms/manage/ManageLayout.vue';
 import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 import { FormPermissions } from '~/utils/constants';
 import { ref } from 'vue';
 import { useAppStore } from '~/store/app';
@@ -126,5 +127,40 @@ describe('ManageLayout.vue', () => {
     expect(fetchFormSpy).toHaveBeenCalledTimes(1);
     expect(getFormPermissionsForUserSpy).toHaveBeenCalledTimes(1);
     expect(fetchDraftsSpy).toHaveBeenCalledTimes(1);
+  });
+
+  // Regression: CCP-5326. The backend omits the `versions` list for non-designer
+  // roles (e.g. team_manager, who lack design_create), so the fetched form has no
+  // `versions` key. That must not be treated as "no permission" — the user is
+  // already authorized by BaseSecure + backend form_read middleware to be here.
+  it('loads permissions and shows no unauthorized alert when the form has no versions', async () => {
+    formStore.fetchForm.mockImplementation(() => {
+      // Mimic readForm returning a form payload without a `versions` key.
+      formStore.form = { id: 'f', name: 'myForm' };
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    const notificationStore = useNotificationStore(pinia);
+    const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+
+    mount(ManageLayout, {
+      props: {
+        f: 'f',
+      },
+      global: {
+        plugins: [router, pinia],
+        stubs: {
+          ManageFormActions: true,
+          ManageForm: true,
+        },
+      },
+    });
+
+    await flushPromises();
+
+    expect(getFormPermissionsForUserSpy).toHaveBeenCalledTimes(1);
+    expect(addNotificationSpy).not.toHaveBeenCalled();
   });
 });

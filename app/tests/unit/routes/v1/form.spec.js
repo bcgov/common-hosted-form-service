@@ -51,7 +51,6 @@ service.readVersion = jest.fn().mockReturnValue({
   id: formVersionId,
 });
 
-const emailService = require('../../../../src/forms/email/emailService');
 const exportService = require('../../../../src/forms/form/exportService');
 const fileService = require('../../../../src/forms/file/service');
 
@@ -1345,40 +1344,13 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
     it('should return 201', async () => {
       // mock a success return value...
       service.createSubmission = jest.fn().mockResolvedValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
       fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
       const response = await appRequest.post(path).send({}).set('Authorization', bearerAuth);
 
-      expect(emailService.submissionReceived).toBeCalledTimes(1);
-      expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should not call email service if it is a draft', async () => {
-      // mock a success return value...
-      service.createSubmission = jest.fn().mockResolvedValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
-      fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
-
-      const response = await appRequest.post(path).send({ draft: true }).set('Authorization', bearerAuth);
-
-      expect(emailService.submissionReceived).toBeCalledTimes(0);
-      expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should call email service if draft is provided and false', async () => {
-      // mock a success return value...
-      service.createSubmission = jest.fn().mockReturnValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
-      fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
-
-      const response = await appRequest.post(path).send({ draft: false }).set('Authorization', bearerAuth);
-
-      expect(emailService.submissionReceived).toBeCalledTimes(1);
+      // Submission-received email and submission-package enqueue now happen
+      // inside service.createSubmission (tested at the service layer); the
+      // controller only moves files and returns 201.
       expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
       expect(response.statusCode).toBe(201);
       expect(response.body).toBeTruthy();
@@ -1389,7 +1361,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
       service.createSubmission = jest.fn(() => {
         throw new Problem(401);
       });
-      emailService.submissionReceived = jest.fn().mockReturnValue(true);
       fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
       const response = await appRequest.post(path).set('Authorization', bearerAuth);
@@ -1403,7 +1374,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
       service.createSubmission = jest.fn(() => {
         throw new Error();
       });
-      emailService.submissionReceived = jest.fn().mockReturnValue(true);
       fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
       const response = await appRequest.post(path).set('Authorization', bearerAuth);
@@ -1412,10 +1382,9 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
       expect(response.body).toBeTruthy();
     });
 
-    it('should handle error from email service gracefully', async () => {
+    it('should handle error from file service gracefully', async () => {
       service.createSubmission = jest.fn().mockResolvedValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.reject({}));
-      fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
+      fileService.moveSubmissionFiles = jest.fn(() => Promise.reject({}));
 
       const response = await appRequest.post(path).send({}).set('Authorization', bearerAuth);
 
@@ -1423,15 +1392,70 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
       expect(response.body).toBeTruthy();
     });
 
-    it('should handle error from file service gracefully', async () => {
-      service.createSubmission = jest.fn().mockResolvedValue(createSubmissionResult);
-      emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
-      fileService.moveSubmissionFiles = jest.fn(() => Promise.reject({}));
+    // Prove the checkDedupKey middleware is actually wired on this route and
+    // that the replay short-circuit stops the controller from running.
+    describe('Dedup-Key header (checkDedupKey middleware)', () => {
+      const { FormSubmission } = require('../../../../src/forms/common/models');
+      const validKey = '11111111-1111-4111-8111-111111111111';
 
-      const response = await appRequest.post(path).send({}).set('Authorization', bearerAuth);
+      beforeEach(() => {
+        FormSubmission.query = jest.fn().mockReturnThis();
+        FormSubmission.findOne = jest.fn();
+        // The router captured userAccess.currentUser at import time. Reassigning
+        // it here would not affect the captured reference; instead swap the
+        // implementation on the existing jest.fn so the middleware call site
+        // populates usernameIdp for the dedup identity check.
+        userAccess.currentUser.mockImplementation((req, _res, next) => {
+          req.currentUser = { id: '123', usernameIdp: 'alice@idir' };
+          next();
+        });
+      });
 
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toBeTruthy();
+      it('populates req.dedupKey and invokes the controller when no cached submission exists', async () => {
+        FormSubmission.findOne.mockResolvedValueOnce(null);
+        service.createSubmission = jest.fn().mockResolvedValue(createSubmissionResult);
+        fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
+
+        const response = await appRequest.post(path).set('Dedup-Key', validKey).send({}).set('Authorization', bearerAuth);
+
+        expect(response.statusCode).toBe(201);
+        expect(service.createSubmission).toBeCalledTimes(1);
+        // The controller receives req.dedupKey and threads it into the service options arg (4th param).
+        expect(service.createSubmission).toBeCalledWith(expect.anything(), expect.anything(), expect.anything(), expect.objectContaining({ dedupKey: validKey }));
+      });
+
+      it('short-circuits to the cached 201 and does NOT invoke the controller for a same-user replay', async () => {
+        const cachedRow = { id: 'cached-id', createdBy: 'alice@idir', dedupKey: validKey };
+        FormSubmission.findOne.mockResolvedValueOnce(cachedRow);
+        service.createSubmission = jest.fn();
+
+        const response = await appRequest.post(path).set('Dedup-Key', validKey).send({}).set('Authorization', bearerAuth);
+
+        expect(response.statusCode).toBe(201);
+        expect(response.body).toEqual(cachedRow);
+        // Load-bearing: the controller must not run on a replay (no email / file-move / event-stream re-fire).
+        expect(service.createSubmission).not.toBeCalled();
+      });
+
+      it('returns 409 for a replay attempt by a different user', async () => {
+        FormSubmission.findOne.mockResolvedValueOnce({ id: 'x', createdBy: 'bob@idir', dedupKey: validKey });
+        service.createSubmission = jest.fn();
+
+        const response = await appRequest.post(path).set('Dedup-Key', validKey).send({}).set('Authorization', bearerAuth);
+
+        expect(response.statusCode).toBe(409);
+        expect(service.createSubmission).not.toBeCalled();
+      });
+
+      it('returns 400 for a malformed Dedup-Key header', async () => {
+        service.createSubmission = jest.fn();
+
+        const response = await appRequest.post(path).set('Dedup-Key', 'not-a-uuid').send({}).set('Authorization', bearerAuth);
+
+        expect(response.statusCode).toBe(400);
+        expect(FormSubmission.findOne).not.toBeCalled();
+        expect(service.createSubmission).not.toBeCalled();
+      });
     });
   });
 });

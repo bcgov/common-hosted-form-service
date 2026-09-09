@@ -15,6 +15,7 @@ const {
 } = require('../../../../../src/forms/auth/middleware/userAccess');
 
 const jwtService = require('../../../../../src/components/jwtService');
+const submissionTokenService = require('../../../../../src/components/submissionTokenService');
 const rbacService = require('../../../../../src/forms/rbac/service');
 const tenantService = require('../../../../../src/components/tenantService');
 
@@ -1337,6 +1338,187 @@ describe('hasSubmissionPermissions', () => {
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
+    });
+
+    test('public form with enableSubmissionUrlSharing true and read permission', async () => {
+      service.getSubmissionForm.mockReturnValueOnce({
+        form: {
+          id: formId,
+          identityProviders: [{ code: 'public' }],
+          enableSubmissionUrlSharing: true,
+        },
+        submission: { deleted: false, id: formSubmissionId },
+      });
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: [],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formSubmissionId: formSubmissionId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('public form with enableSubmissionUrlSharing false but user has form submission_read', async () => {
+      service.getSubmissionForm.mockReturnValueOnce({
+        form: {
+          id: formId,
+          identityProviders: [{ code: 'public' }],
+          enableSubmissionUrlSharing: false,
+        },
+        submission: { deleted: false, id: formSubmissionId },
+      });
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: ['submission_read'],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formSubmissionId: formSubmissionId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+  });
+
+  describe('with enableSubmissionUrlSharing gate closed', () => {
+    const expectedStatus = { status: 401 };
+
+    const mockLockedPublicForm = () => {
+      service.getSubmissionForm.mockReturnValueOnce({
+        form: {
+          id: formId,
+          identityProviders: [{ code: 'public' }],
+          enableSubmissionUrlSharing: false,
+        },
+        submission: { deleted: false, id: formSubmissionId },
+      });
+      service.getUserForms.mockReturnValueOnce([{ formId: formId, permissions: [] }]);
+    };
+
+    test('public form with enableSubmissionUrlSharing false blocks anonymous read', async () => {
+      service.checkSubmissionPermission.mockReturnValueOnce(false);
+      mockLockedPublicForm();
+      const req = getMockReq({
+        currentUser: {},
+        params: { formSubmissionId: formSubmissionId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('a valid X-Submission-Token unlocks anonymous read without consulting checkSubmissionPermission', async () => {
+      mockLockedPublicForm();
+      const token = submissionTokenService.mint(formSubmissionId);
+      const req = getMockReq({
+        currentUser: {},
+        params: { formSubmissionId: formSubmissionId },
+        headers: { 'x-submission-token': token },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('a token for a different submission id falls through to 401', async () => {
+      service.checkSubmissionPermission.mockReturnValueOnce(false);
+      mockLockedPublicForm();
+      const wrongIdToken = submissionTokenService.mint(uuid.v4());
+      const req = getMockReq({
+        currentUser: {},
+        params: { formSubmissionId: formSubmissionId },
+        headers: { 'x-submission-token': wrongIdToken },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('a token with a forged signature falls through to 401', async () => {
+      service.checkSubmissionPermission.mockReturnValueOnce(false);
+      mockLockedPublicForm();
+      const real = submissionTokenService.mint(formSubmissionId);
+      const [id, exp] = real.split('.');
+      const forged = `${id}.${exp}.${'a'.repeat(64)}`;
+      const req = getMockReq({
+        currentUser: {},
+        params: { formSubmissionId: formSubmissionId },
+        headers: { 'x-submission-token': forged },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('an expired token falls through to 401', async () => {
+      service.checkSubmissionPermission.mockReturnValueOnce(false);
+      mockLockedPublicForm();
+      const real = submissionTokenService.mint(formSubmissionId);
+      const [, , sig] = real.split('.');
+      const expired = `${formSubmissionId}.${Date.now() - 1000}.${sig}`;
+      const req = getMockReq({
+        currentUser: {},
+        params: { formSubmissionId: formSubmissionId },
+        headers: { 'x-submission-token': expired },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('a valid token does not unlock SUBMISSION_UPDATE or other non-read permissions', async () => {
+      service.checkSubmissionPermission.mockReturnValueOnce(false);
+      mockLockedPublicForm();
+      const token = submissionTokenService.mint(formSubmissionId);
+      const req = getMockReq({
+        currentUser: {},
+        params: { formSubmissionId: formSubmissionId },
+        headers: { 'x-submission-token': token },
+      });
+      const { res, next } = getMockRes();
+
+      await hasSubmissionPermissions(['submission_update'])(req, res, next);
+
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 });

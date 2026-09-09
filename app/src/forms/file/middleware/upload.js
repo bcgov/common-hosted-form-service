@@ -8,7 +8,20 @@ const log = require('../../../components/log')(module.filename);
 
 const Problem = require('api-problem');
 
-let fileUploadsDir = os.tmpdir();
+// Multer stages uploads in a dedicated subdirectory of the OS temp dir (rather
+// than the shared temp root) so the upload cleanup sweeper can safely target
+// only CHEFS upload temp files and never touch unrelated files in /tmp.
+const UPLOADS_SUBDIR = 'chefs-uploads';
+
+// The default staging directory: a dedicated subdir of the OS temp dir. Shared
+// by fileSetup() and getFileUploadsDir() so the resolved path is identical
+// whether it is read before or after init().
+const defaultUploadsDir = () => path.join(fs.realpathSync(os.tmpdir()), UPLOADS_SUBDIR);
+
+// Resolved lazily by getFileUploadsDir() (or explicitly by fileSetup via init()).
+// Left unset so a read before init() still returns the correct default rather
+// than the bare OS temp dir.
+let fileUploadsDir;
 let maxFileSize = bytes.parse('25MB');
 let maxFileCount = 1;
 
@@ -61,7 +74,7 @@ const sanitizeFilename = (filename) => {
 };
 
 const fileSetup = (options) => {
-  fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
+  fileUploadsDir = options?.dir || process.env.FILE_UPLOADS_DIR || defaultUploadsDir();
   try {
     fs.ensureDirSync(fileUploadsDir);
   } catch (error) {
@@ -69,13 +82,13 @@ const fileSetup = (options) => {
     throw new Error(`Could not create file uploads directory '${fileUploadsDir}'.`);
   }
 
-  maxFileSize = (options && options.maxFileSize) || process.env.FILE_UPLOADS_MAX_FILE_SIZE || '25MB';
+  maxFileSize = options?.maxFileSize || process.env.FILE_UPLOADS_MAX_FILE_SIZE || '25MB';
   maxFileSize = bytes.parse(maxFileSize);
   if (maxFileSize === null) {
     throw new Error('Could not determine max file size (bytes) for file uploads.');
   }
 
-  maxFileCount = (options && options.maxFileCount) || process.env.FILE_UPLOADS_MAX_FILE_COUNT || '1';
+  maxFileCount = options?.maxFileCount || process.env.FILE_UPLOADS_MAX_FILE_COUNT || '1';
   maxFileCount = parseInt(maxFileCount);
   if (isNaN(maxFileCount)) {
     maxFileCount = 1;
@@ -88,7 +101,7 @@ const fileUpload = {
   init(options) {
     let { fileUploadsDir, maxFileSize, maxFileCount } = fileSetup(options);
 
-    const formFieldName = (options && options.fieldName) || process.env.FILE_UPLOADS_FIELD_NAME || 'files';
+    const formFieldName = options?.fieldName || process.env.FILE_UPLOADS_FIELD_NAME || 'files';
 
     storage = multer.diskStorage({
       destination: function (_req, _file, callback) {
@@ -130,6 +143,14 @@ const fileUpload = {
    * @returns the file uploads directory.
    */
   getFileUploadsDir() {
+    // Fall back to the default if read before init() so callers never receive
+    // the bare OS temp dir (which the sweeper would not be scoped to). Also
+    // ensure the directory exists: temp-file writers (CSV export, submitToEmail
+    // packaging) may call this before init() runs its own mkdir.
+    if (!fileUploadsDir) {
+      fileUploadsDir = defaultUploadsDir();
+      fs.ensureDirSync(fileUploadsDir);
+    }
     return fileUploadsDir;
   },
 

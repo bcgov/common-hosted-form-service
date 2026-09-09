@@ -113,7 +113,7 @@ describe('public methods', () => {
   const body_low = { priority: 'low', to: 'a@b.com' };
   const body_normal = { priority: 'normal', to: 'a@b.com' };
   const emailContent = 'Email Content';
-  const baseUrl = 'http://localhost/app';
+  const baseUrl = 'http://localhost:5173/app';
   const allFormSubmissionUrl = `${baseUrl}/user/submissions?f=xxx-yyy`;
 
   afterEach(() => {
@@ -251,7 +251,7 @@ describe('public methods', () => {
           form: form_idir,
           messageLinkText: `Thank you for your ${form_idir.name} submission. You can view your submission details by visiting the following links:`,
           messageLinkUrl: `${baseUrl}/form/success?s=${form_idir.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `${form_idir.name} Accepted`,
         },
         to: ['a@b.com'],
@@ -296,7 +296,7 @@ describe('public methods', () => {
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
           messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `${form.name} Accepted`,
         },
         to: ['a@b.com'],
@@ -341,7 +341,7 @@ describe('public methods', () => {
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
           messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `${form.name} Accepted`,
         },
         to: ['a@b.com'],
@@ -386,7 +386,7 @@ describe('public methods', () => {
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
           messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `${form.name} Accepted`,
         },
         to: ['a@b.com'],
@@ -431,7 +431,7 @@ describe('public methods', () => {
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission regarding . You can view your submission details by visiting the following links:`,
           messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `${form.name} Accepted`,
         },
         to: ['a@b.com'],
@@ -481,7 +481,7 @@ describe('public methods', () => {
           form: form,
           messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
           messageLinkUrl: `${baseUrl}/form/view?s=${form.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `${form.name} Submission`,
         },
         to: ['a@b.com', 'z@y.com'],
@@ -522,7 +522,7 @@ describe('public methods', () => {
           form: form,
           messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
           messageLinkUrl: `${baseUrl}/user/view?s=${form.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `Uninvited From ${form.name} Draft`,
         },
         to: ['x@y.com'],
@@ -560,7 +560,7 @@ describe('public methods', () => {
           form: form,
           messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
           messageLinkUrl: `${baseUrl}/user/view?s=${form.name}`,
-          revisionNotificationEmailContent: undefined,
+          emailContent: undefined,
           title: `Invited to ${form.name} Draft`,
         },
         to: ['x@y.com'],

@@ -101,10 +101,14 @@ describe('Form Designer', () => {
         cy.log(rem);
         const remname = rem + "_submissions.csv";
         cy.get(".ml-1").contains(remname);
-      });
     //verify export button is enabled
     cy.get('.mb-5').should('be.enabled');
-  });
+    cy.get('.mb-5').click();
+    const path = require("path");
+    const downloadsFolder=Cypress.config("downloadsFolder");
+    cy.readFile(path.join(downloadsFolder, remname)).should('exist');
+    });
+    });
   });
 
   it("Verify print template functionality", () => {
