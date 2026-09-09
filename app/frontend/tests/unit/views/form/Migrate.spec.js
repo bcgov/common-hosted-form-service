@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRouter } from 'vue-router';
 
 import rbacService from '~/services/rbacService';
+import { useAuthStore } from '~/store/auth';
 import { useTenantStore } from '~/store/tenant';
 import Migrate from '~/views/form/Migrate.vue';
 
@@ -57,6 +58,7 @@ describe('Migrate.vue', () => {
   setActivePinia(pinia);
 
   const tenantStore = useTenantStore(pinia);
+  const authStore = useAuthStore(pinia);
 
   const MOCK_GROUPS_RESPONSE = {
     data: { groups: [], preSelectedGroupIds: [], teamMemberGroups: [] },
@@ -673,6 +675,75 @@ describe('Migrate.vue', () => {
       await wrapper.vm.submitMigration();
 
       expect(wrapper.vm.submitting).toBe(false);
+    });
+  });
+
+  describe('requestMigration / confirmMigration — final confirmation dialog', () => {
+    it('opens the confirm dialog without submitting', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.requestMigration();
+
+      expect(wrapper.vm.showConfirmDialog).toBe(true);
+      expect(rbacService.executeMigration).not.toHaveBeenCalled();
+    });
+
+    it('closes the dialog and submits on confirm', async () => {
+      rbacService.executeMigration.mockResolvedValue({});
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.requestMigration();
+      await wrapper.vm.confirmMigration();
+
+      expect(wrapper.vm.showConfirmDialog).toBe(false);
+      expect(rbacService.executeMigration).toHaveBeenCalledWith(FORM_ID, {
+        tenantId: 'tenant-1',
+      });
+    });
+  });
+
+  describe('submitMigration — CSTAR session-expiry recovery', () => {
+    beforeEach(() => {
+      authStore.keycloak = { updateToken: vi.fn() };
+    });
+
+    it('offers an in-place retry (no reload) when the Keycloak token can be refreshed', async () => {
+      rbacService.executeMigration.mockRejectedValueOnce({
+        response: { data: { code: 'SESSION_EXPIRED' } },
+      });
+      authStore.keycloak.updateToken.mockResolvedValue(true);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      await wrapper.vm.submitMigration();
+
+      expect(authStore.keycloak.updateToken).toHaveBeenCalledWith(30);
+      expect(wrapper.vm.showRetryButton).toBe(true);
+      expect(wrapper.vm.error).toBe(
+        'trans.formMigration.sessionExpiredRetry'
+      );
+    });
+
+    it('falls back to the reload prompt when the Keycloak token cannot be refreshed', async () => {
+      rbacService.executeMigration.mockRejectedValueOnce({
+        response: { data: { code: 'SESSION_EXPIRED' } },
+      });
+      authStore.keycloak.updateToken.mockRejectedValue(new Error('refresh failed'));
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      await wrapper.vm.submitMigration();
+
+      expect(wrapper.vm.showRetryButton).toBe(false);
+      expect(wrapper.vm.error).toBe('trans.formMigration.sessionExpired');
     });
   });
 });

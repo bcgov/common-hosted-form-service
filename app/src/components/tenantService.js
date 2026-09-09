@@ -489,7 +489,7 @@ class TenantService {
     }
 
     const reqContext = { ...req, currentUser: { ...req.currentUser, tenantId } };
-    const userGroups = await this.getUserTenantGroupsAndRoles(reqContext, tenantId, { rethrowOnAuthError: true });
+    const userGroups = await this._getUserTenantGroupsAndRolesWithRetry(reqContext, tenantId);
     const adminGroups = userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN));
 
     if (adminGroups.length === 0) {
@@ -514,6 +514,35 @@ class TenantService {
       await FormGroup.query(trx).insert(finalGroupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
       await FormMigrationLog.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
     });
+  }
+
+  /**
+   * Wraps getUserTenantGroupsAndRoles(..., { rethrowOnAuthError: true }) with a single
+   * retry on a CSTAR 401. The submit path is the only caller that treats a CSTAR auth
+   * error as fatal (surfaced to the user as SESSION_EXPIRED), so a borderline-fresh
+   * bearer token that CHEFS already accepted but CSTAR momentarily rejects — e.g. clock
+   * skew between services, or the user lingering on the review step near the token's
+   * expiry — gets one short retry before we tell the user their session is gone.
+   * @param {object} reqContext - Request context with currentUser.tenantId set
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {number} retriesLeft - Remaining retry attempts (internal use)
+   * @returns {Promise<Array>}
+   */
+  async _getUserTenantGroupsAndRolesWithRetry(reqContext, tenantId, retriesLeft = 1) {
+    try {
+      return await this.getUserTenantGroupsAndRoles(reqContext, tenantId, { rethrowOnAuthError: true });
+    } catch (error) {
+      const status = error?.response?.status;
+      if (status === 401 && retriesLeft > 0) {
+        log.warn(`${SERVICE}: CSTAR rejected bearer token as unauthorized during migration submit, retrying once`, { tenantId });
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return this._getUserTenantGroupsAndRolesWithRetry(reqContext, tenantId, retriesLeft - 1);
+      }
+      if (status === 401) {
+        log.warn(`${SERVICE}: CSTAR bearer token unauthorized during migration submit after retry, giving up`, { tenantId });
+      }
+      throw error;
+    }
   }
 }
 

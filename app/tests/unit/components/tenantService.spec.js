@@ -1694,6 +1694,44 @@ describe('TenantService', () => {
       await expect(tenantService.migrateFormToTenant(req, formId, tenantId)).rejects.toMatchObject({
         response: { status: 401 },
       });
+      expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledTimes(2);
+    });
+
+    it('recovers from a transient CSTAR 401 by retrying once before failing the migration', async () => {
+      FormTenant.query.mockReturnValueOnce({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue(null),
+        }),
+      });
+      const authError = Object.assign(new Error('Unauthorized'), { response: { status: 401 } });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValueOnce(authError).mockResolvedValueOnce(adminGroups);
+
+      const insertTenant = jest.fn().mockResolvedValue({});
+      const insertGroup = jest.fn().mockResolvedValue([]);
+      const insertLog = jest.fn().mockResolvedValue({});
+      FormTenant.query.mockReturnValueOnce({ insert: insertTenant });
+      FormGroup.query.mockReturnValue({ insert: insertGroup });
+      FormMigrationLog.query.mockReturnValue({ insert: insertLog });
+
+      await tenantService.migrateFormToTenant(req, formId, tenantId);
+
+      expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledTimes(2);
+      expect(insertTenant).toHaveBeenCalledWith(expect.objectContaining({ formId, tenantId, createdBy: 'TEST@idir' }));
+    });
+
+    it('does not retry non-401 errors from the CSTAR group lookup', async () => {
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue(null),
+        }),
+      });
+      const serverError = Object.assign(new Error('Bad Gateway'), { response: { status: 502 } });
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(serverError);
+
+      await expect(tenantService.migrateFormToTenant(req, formId, tenantId)).rejects.toMatchObject({
+        response: { status: 502 },
+      });
+      expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledTimes(1);
     });
   });
 });

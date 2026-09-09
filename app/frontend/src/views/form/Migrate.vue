@@ -5,11 +5,13 @@ import { useRouter } from 'vue-router';
 
 import GroupPicker from '~/components/forms/migrate/GroupPicker.vue';
 import rbacService from '~/services/rbacService';
+import { useAuthStore } from '~/store/auth';
 import { useTenantStore } from '~/store/tenant';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
 const tenantStore = useTenantStore();
+const authStore = useAuthStore();
 
 const props = defineProps({
   f: {
@@ -36,6 +38,8 @@ const loading = ref(true);
 const submitting = ref(false);
 const error = ref(null);
 const showRefreshButton = ref(false);
+const showRetryButton = ref(false);
+const showConfirmDialog = ref(false);
 
 const eligibleTenants = ref([]);
 const impact = ref({ ...EMPTY_IMPACT });
@@ -261,10 +265,32 @@ async function refreshTenantGroups() {
   }
 }
 
+function requestMigration() {
+  showConfirmDialog.value = true;
+}
+
+async function confirmMigration() {
+  showConfirmDialog.value = false;
+  await submitMigration();
+}
+
+// On a CSTAR-side session expiry, try a silent token refresh before telling the
+// user to reload — a reload would discard the tenant/group selections they just
+// made. If Keycloak can refresh the token, offer an in-place retry instead.
+async function attemptSessionRecovery() {
+  try {
+    await authStore.keycloak.updateToken(30);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function submitMigration() {
   submitting.value = true;
   error.value = null;
   showRefreshButton.value = false;
+  showRetryButton.value = false;
   try {
     const groupIds =
       assignedGroups.value.length > 0
@@ -279,8 +305,14 @@ async function submitMigration() {
   } catch (err) {
     const code = err.response?.data?.code;
     if (code === 'SESSION_EXPIRED') {
-      error.value = t('trans.formMigration.sessionExpired');
-      showRefreshButton.value = true;
+      const recovered = await attemptSessionRecovery();
+      if (recovered) {
+        error.value = t('trans.formMigration.sessionExpiredRetry');
+        showRetryButton.value = true;
+      } else {
+        error.value = t('trans.formMigration.sessionExpired');
+        showRefreshButton.value = true;
+      }
     } else {
       error.value = err.response?.data?.detail || err.message;
     }
@@ -309,7 +341,11 @@ defineExpose({
   loadingGroups,
   refreshingGroups,
   staleGroupsRemoved,
+  showConfirmDialog,
+  showRetryButton,
   refreshTenantGroups,
+  requestMigration,
+  confirmMigration,
   submitMigration,
 });
 </script>
@@ -358,7 +394,19 @@ defineExpose({
         @click:close="error = null"
       >
         {{ error }}
-        <template v-if="showRefreshButton" #append>
+        <template v-if="showRetryButton" #append>
+          <v-btn
+            size="small"
+            variant="outlined"
+            class="ml-2"
+            :loading="submitting"
+            :lang="locale"
+            @click="submitMigration"
+          >
+            {{ $t('trans.formMigration.tryAgain') }}
+          </v-btn>
+        </template>
+        <template v-else-if="showRefreshButton" #append>
           <v-btn
             size="small"
             variant="outlined"
@@ -853,7 +901,7 @@ defineExpose({
                   :disabled="!canSubmit"
                   :loading="submitting"
                   :lang="locale"
-                  @click="submitMigration"
+                  @click="requestMigration"
                 >
                   {{ $t('trans.formMigration.transferButton') }}
                 </v-btn>
@@ -869,6 +917,39 @@ defineExpose({
           </v-card>
         </template>
       </template>
+
+      <!-- Final confirmation — last checkpoint before an irreversible migration -->
+      <v-dialog v-model="showConfirmDialog" max-width="500" persistent>
+        <v-card>
+          <v-card-title class="d-flex align-center" :lang="locale">
+            <v-icon color="error" class="mr-2">
+              mdi:mdi-alert-circle-outline
+            </v-icon>
+            {{ $t('trans.formMigration.confirmTitle') }}
+          </v-card-title>
+          <v-card-text :lang="locale">
+            {{ $t('trans.formMigration.confirmMessage') }}
+          </v-card-text>
+          <v-card-actions class="justify-end pb-4 px-4">
+            <v-btn
+              variant="outlined"
+              :disabled="submitting"
+              :lang="locale"
+              @click="showConfirmDialog = false"
+            >
+              {{ $t('trans.formMigration.cancelButton') }}
+            </v-btn>
+            <v-btn
+              color="error"
+              :loading="submitting"
+              :lang="locale"
+              @click="confirmMigration"
+            >
+              {{ $t('trans.formMigration.confirmButton') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </BaseSecure>
 </template>
