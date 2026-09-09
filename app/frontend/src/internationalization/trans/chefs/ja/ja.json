@@ -99,6 +99,8 @@
     "fileSizeError": "ファイルサイズは25MB以下でなければなりません。"
   },
   "formSettings": {
+    "restrictedIDP": "制限付き",
+    "bceidDeprecationAlert": "2026年5月31日をもって、Connected Services BC（CSBC）は Basic BCeID への新規サービスの導入受付を終了しました。代わりに、本人確認ソリューションとして BC Services Card アプリの使用を推奨しています。この変更は、政府のデジタル本人確認サービスの継続的な近代化と、将来のサービス提供のニーズに対応する本人確認ソリューションの採用を反映したものです。既存のサービスおよび現在の Basic BCeID 利用者はこの変更の影響を受けず、既存の連携は引き続き通常どおり機能します。本人確認サービスの導入に関するご質問は、次の連絡先までお問い合わせください：",
     "pressToAddMultiEmail": "<kbd>Enter</kbd>または<kbd>、</kbd>または<kbd>スペース</kbd>を押して複数の電子メール アドレスを追加します",
     "allowMultiDraft": "<strong>複数の下書きの</strong>アップロードを許可する",
     "formTitle": "フォームのタイトル",

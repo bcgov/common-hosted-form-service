@@ -99,6 +99,8 @@
     "fileSizeError": "Ang laki ng file ay dapat mas mababa sa 25MB."
   },
   "formSettings": {
+    "restrictedIDP": "Limitado",
+    "bceidDeprecationAlert": "Simula Mayo 31, 2026, itinigil ng Connected Services BC (CSBC) ang pagtanggap ng mga bagong serbisyo sa Basic BCeID. Sa halip, inirerekomendang gamitin ang BC Services Card app bilang solusyon sa pagkakakilanlan. Ipinapakita ng pagbabagong ito ang patuloy na modernisasyon ng mga serbisyo ng pamahalaan para sa digital na pagkakakilanlan at ang paggamit ng mga solusyon sa pagkakakilanlan na tumutugon sa mga pangangailangan sa paghahatid ng serbisyo sa hinaharap. Hindi apektado ng pagbabagong ito ang mga kasalukuyang serbisyo at gumagamit ng Basic BCeID, at patuloy na gagana nang normal ang mga kasalukuyang integrasyon. Para sa mga tanong tungkol sa pagsali sa mga serbisyo sa pagkakakilanlan, mangyaring makipag-ugnayan sa",
     "pressToAddMultiEmail": "Pindutin <kbd>ang enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
     "allowMultiDraft": "Payagan <strong>ang maramihang pag-upload ng draft</strong>",
     "formTitle": "Pamagat ng Form",
