@@ -1,5 +1,8 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
+import versionInfo from '../../../package.json';
+
+const appVersion = versionInfo.version;
 
 const { locale } = useI18n({ useScope: 'global' });
 
@@ -77,6 +80,8 @@ defineProps({
       >
         <span :lang="locale">{{ $t('trans.bCGovFooter.contactUs') }}</span>
       </v-btn>
+      <v-spacer></v-spacer>
+      <div class="text-label-medium">Version: {{ appVersion }}</div>
     </v-row>
   </v-footer>
 </template>
@@ -92,7 +97,14 @@ defineProps({
   padding-bottom: 0;
   padding-top: 0;
 
-  a {
+  div {
+    height: calc(var(--v-btn-height) + 0px);
+    display: flex;
+    align-items: center;
+  }
+
+  a,
+  div {
     color: #ffffff;
     font-size: 1rem;
     &:focus {
