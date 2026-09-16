@@ -357,6 +357,12 @@ describe('policy/inline', () => {
       expect(result).toEqual({ kind: 'submissionFromForm', params: { formId: 'form-123', submissionId: 'sub-456' } });
     });
 
+    it('should infer submission resource from formSubmissionId param', () => {
+      const req = { params: { formId: 'form-123', formSubmissionId: 'sub-456' } };
+      const result = inferResourceSpec(req);
+      expect(result).toEqual({ kind: 'submissionFromForm', params: { formId: 'form-123', submissionId: 'sub-456' } });
+    });
+
     it('should infer submission resource from submissionId query', () => {
       const req = { params: { formId: 'form-123' }, query: { submissionId: 'sub-456' } };
       const result = inferResourceSpec(req);

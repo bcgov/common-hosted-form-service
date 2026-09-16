@@ -11,6 +11,11 @@ const { generateCurrentUserFromActor, isApiUser } = require('./auth/utils/curren
 const { validatePermissionsLogic } = require('./auth/utils/validatePermissions');
 const securityLog = require('./logger');
 
+function isOutsideCredentialForm(actor, resource) {
+  if (!actor || !isApiUser(actor) || !resource?.form) return false;
+  return String(resource.form.id).toLowerCase() !== String(actor.formId).toLowerCase();
+}
+
 module.exports = function makeOrchestrator({ deps, policyStore, authRegistry, resolver, enrichRBAC }) {
   const { clock = { now: () => Date.now() } } = deps;
   const orchestratorLogger = securityLog.orchestrator;
@@ -39,6 +44,18 @@ module.exports = function makeOrchestrator({ deps, policyStore, authRegistry, re
       const resource = await resolver.resolve(req, deps, policy);
       if (!resource) throw new Problem(HTTP_STATUS.NOT_FOUND, { detail: ERRORS.RESOURCE_NOT_FOUND });
       tRes = clock.now() - t0r;
+
+      // API keys and gateway tokens are scoped to one form. 404 so other form ids are not confirmed.
+      if (isOutsideCredentialForm(who?.actor, resource)) {
+        orchestratorLogger.warn({
+          event: 'api_credential_form_mismatch',
+          credentialFormId: who.actor.formId,
+          resourceFormId: resource.form.id,
+          method: req.method,
+          path: req.path,
+        });
+        throw new Problem(HTTP_STATUS.NOT_FOUND, { detail: ERRORS.RESOURCE_NOT_FOUND });
+      }
 
       // 3.5) Backward compatibility: Set req.currentUser and req.apiUser
       if (who?.actor) {

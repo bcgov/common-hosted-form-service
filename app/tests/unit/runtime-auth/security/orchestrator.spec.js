@@ -446,6 +446,67 @@ describe('orchestrator', () => {
     });
   });
 
+  describe('api credential form binding', () => {
+    const buildOrchestrator = () =>
+      makeOrchestrator({
+        deps: mockDeps,
+        policyStore: mockPolicyStore,
+        authRegistry: mockAuthRegistry,
+        resolver: mockResolver,
+        enrichRBAC: mockEnrichRBAC,
+      });
+
+    beforeEach(() => {
+      mockPolicyStore.match.mockReturnValue({ allowedAuth: [], requiredPermissions: [] });
+      mockEnrichRBAC.mockResolvedValue({ permissions: [], decisions: [] });
+    });
+
+    it('should return 404 when the resource form differs from the credential form', async () => {
+      const req = { method: 'GET', path: '/form-b/schema', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'gateway', id: 'gateway-user', formId: 'form-a' } });
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-b' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: HTTP_STATUS.NOT_FOUND, detail: ERRORS.RESOURCE_NOT_FOUND }));
+      expect(mockEnrichRBAC).not.toHaveBeenCalled();
+    });
+
+    it('should continue when the resource form matches the credential form', async () => {
+      const req = { method: 'GET', path: '/form-a/schema', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'gateway', id: 'gateway-user', formId: 'form-a' } });
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-a' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should continue when the resource has no form', async () => {
+      const req = { method: 'GET', path: '/files/file-1', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'gateway', id: 'gateway-user', formId: 'form-a' } });
+      mockResolver.resolve.mockResolvedValue({ form: null, file: { id: 'file-1' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should not apply to non-api actors', async () => {
+      const req = { method: 'GET', path: '/form-b/schema', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'user', id: 'user-1' } });
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-b' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+  });
+
   describe('permission validation', () => {
     it('should allow when user has all required permissions', async () => {
       const orchestrator = makeOrchestrator({

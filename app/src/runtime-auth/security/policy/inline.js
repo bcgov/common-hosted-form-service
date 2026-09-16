@@ -50,7 +50,7 @@ function inferResourceSpec(req) {
   const p = req.params || {};
   const q = req.query || {};
   const formId = p.formId ?? q.formId;
-  const submissionId = p.submissionId ?? q.submissionId;
+  const submissionId = p.submissionId ?? p.formSubmissionId ?? q.submissionId;
   const fileId = p.fileId ?? q.fileId;
 
   if (fileId) return { kind: 'file', params: { fileId } };
