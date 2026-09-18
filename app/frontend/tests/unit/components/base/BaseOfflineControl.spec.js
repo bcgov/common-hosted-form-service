@@ -97,28 +97,6 @@ describe('BaseOfflineControl.vue', () => {
     expect(wrapper.vm.visible).toBe(false);
   });
 
-  it('renders the online state when reachable', async () => {
-    const store = useFormStore();
-    store.form.enableOfflineSubmission = true;
-
-    const wrapper = mountControl();
-    await flushPromises();
-
-    expect(wrapper.vm.visible).toBe(true);
-    expect(wrapper.vm.state.label).toBe('trans.offlineSubmission.onlineBadge');
-  });
-
-  it('renders the offline state when unreachable (network down or heartbeat failing)', async () => {
-    state.online.value = false;
-    const store = useFormStore();
-    store.form.enableOfflineSubmission = true;
-
-    const wrapper = mountControl();
-    await flushPromises();
-
-    expect(wrapper.vm.state.label).toBe('trans.offlineSubmission.offlineBadge');
-  });
-
   it('reflects queue count', async () => {
     state.queueEntries.value = [{}, {}, {}];
     const store = useFormStore();

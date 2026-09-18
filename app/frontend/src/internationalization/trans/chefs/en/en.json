@@ -1599,8 +1599,10 @@
     }
   },
   "offlineSubmission": {
-    "offlineBadge": "Offline",
-    "onlineBadge": "ONLINE",
+    "headerButtonLabel": "OFFLINE SUBMISSION",
+    "offlineIconTooltip": "You are offline",
+    "offlineBannerTitle": "You are now offline",
+    "offlineBannerMessage": "Form Submissions will be saved locally and sent to the server when you come back online.",
     "headerButtonTooltip": "You have no pending offline submissions | Show your {count} pending submission | Show your {count} pending submissions",
     "queueConfirmTitle": "Confirm Offline Submission",
     "queueConfirmMessage": "Your submission will be saved on this device and sent when you are back online. Continue?",
@@ -1625,7 +1627,7 @@
     "pendingSendButton": "Send now",
     "editingBannerText": "Editing a queued offline submission.",
     "editingBannerTextDraft": "Editing a queued DRAFT offline submission.",
-    "editingBannerCancel": "Close Edit",
+    "editingBannerCancel": "Return",
     "editingBannerSave": "Save",
     "editingBannerSyncPaused": "Sync is paused while editing.",
     "syncPausedForEditToast": "Saved offline submissions will not be sent while you are editing a queued entry. Sync will resume when you close the editor.",

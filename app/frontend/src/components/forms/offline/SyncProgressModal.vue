@@ -3,8 +3,10 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { offlineQueueEvents } from '~/offline/offlineQueueManager';
+import { useOnlineStatus } from '~/offline/useOnlineStatus';
 
 const { t, locale } = useI18n({ useScope: 'global' });
+const { online } = useOnlineStatus();
 
 const visible = ref(false);
 const total = ref(0);
@@ -15,13 +17,24 @@ const done = ref(false);
 // 'entry-failed' events update displayStatus ('pending'|'sent'|'failed').
 const rows = ref([]);
 
-const percent = computed(() =>
-  total.value === 0 ? 0 : Math.round((sent.value / total.value) * 100)
+// On the tick the dialog opens, off on drain-end or offline drop.
+const spinnerVisible = computed(
+  () => visible.value && !done.value && online.value
 );
 
 function confirmationId(row) {
   if (!row.showConfirmationId || !row.submissionId) return null;
   return row.submissionId.substring(0, 8).toUpperCase();
+}
+
+// Open on drain-pending so the spinner is up before lock/httpPost latency.
+function onPending({ total: t0 }) {
+  total.value = t0 || 0;
+  sent.value = 0;
+  failed.value = 0;
+  done.value = false;
+  rows.value = [];
+  visible.value = true;
 }
 
 function onStart({ total: t0, entries = [] }) {
@@ -68,6 +81,7 @@ function onEnd(result) {
 }
 
 onMounted(() => {
+  offlineQueueEvents.on('drain-pending', onPending);
   offlineQueueEvents.on('drain-start', onStart);
   offlineQueueEvents.on('drain-progress', onProgress);
   offlineQueueEvents.on('drain-end', onEnd);
@@ -76,6 +90,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  offlineQueueEvents.off('drain-pending', onPending);
   offlineQueueEvents.off('drain-start', onStart);
   offlineQueueEvents.off('drain-progress', onProgress);
   offlineQueueEvents.off('drain-end', onEnd);
@@ -117,20 +132,37 @@ function close() {
           @click="close"
         />
       </v-card-title>
-      <div class="flex-shrink-0 px-6">
-        <p :lang="locale">
-          {{ t('trans.offlineSubmission.syncModalSubtitle') }}
-        </p>
-        <p v-if="!done" class="mt-3 mb-1" :lang="locale">
-          {{ t('trans.offlineSubmission.syncModalProgress', { sent, total }) }}
-        </p>
-        <p v-else class="mt-3 mb-1" :lang="locale">
-          {{ t('trans.offlineSubmission.syncModalDoneSummary', { sent }) }}
-        </p>
-        <v-progress-linear :model-value="percent" height="10" rounded />
-        <p v-if="done && failed > 0" class="mt-3 text-error" :lang="locale">
-          {{ t('trans.offlineSubmission.syncModalFailedSummary', { failed }) }}
-        </p>
+      <div class="flex-shrink-0 px-6 d-flex align-center">
+        <div class="flex-grow-0">
+          <p :lang="locale">
+            {{ t('trans.offlineSubmission.syncModalSubtitle') }}
+          </p>
+          <p v-if="!done" class="mt-3 mb-1" :lang="locale">
+            {{
+              t('trans.offlineSubmission.syncModalProgress', { sent, total })
+            }}
+          </p>
+          <p v-else class="mt-3 mb-1" :lang="locale">
+            {{ t('trans.offlineSubmission.syncModalDoneSummary', { sent }) }}
+          </p>
+          <p v-if="done && failed > 0" class="mt-3 text-error" :lang="locale">
+            {{
+              t('trans.offlineSubmission.syncModalFailedSummary', { failed })
+            }}
+          </p>
+        </div>
+        <div
+          v-if="spinnerVisible"
+          class="d-flex justify-center flex-grow-1"
+          style="min-width: 96px"
+        >
+          <v-progress-circular
+            indeterminate
+            color="primary"
+            size="48"
+            width="4"
+          />
+        </div>
       </div>
       <div v-if="rows.length" class="sync-list-wrapper">
         <div
