@@ -169,6 +169,8 @@
     "fileSizeError": "O tamanho do arquivo deve ser menor que 25 MB."
   },
   "formSettings": {
+    "restrictedIDP": "Restrito",
+    "bceidDeprecationAlert": "Desde 31 de maio de 2026, a Connected Services BC (CSBC) deixou de integrar novos serviços ao Basic BCeID. Em vez disso, recomenda-se utilizar o aplicativo BC Services Card como solução de identidade. Essa mudança reflete a modernização contínua dos serviços governamentais de identidade digital e a adoção de soluções de identidade que atendam às necessidades futuras de prestação de serviços. Os serviços existentes e os usuários atuais do Basic BCeID não são afetados por essa mudança, e as integrações existentes continuarão funcionando normalmente. Para dúvidas sobre a integração aos serviços de identidade, entre em contato com",
     "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
     "allowMultiDraft": "Permitir upload <strong>de vários rascunhos</strong>",
     "formTitle": "Título do formulário",
@@ -507,7 +509,8 @@
     "developer": "Desenvolvedor",
     "infoLinks": "Links de informações",
     "metrics": "Métricas",
-    "apis": "APIs"
+    "apis": "APIs",
+    "duplicateUsers": "Usuários duplicados"
   },
   "adminUsersTable": {
     "search": "Procurar",
@@ -1547,5 +1550,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR está temporariamente indisponível. A seleção de tenant está atualmente desabilitada.",
     "errorFetchingTenants": "Erro ao buscar tenants"
+  },
+  "adminDuplicateUsers": {
+    "title": "Revisão de usuários duplicados",
+    "description": "Revise os usuários que compartilham um nome de usuário ou endereço de e-mail. Marque os registros duplicados como obsoletos até que apenas o registro que deve ser mantido permaneça ativo.",
+    "refresh": "Atualizar usuários duplicados",
+    "groupsPerPage": "Grupos por página",
+    "empty": "Nenhum usuário duplicado não resolvido foi encontrado.",
+    "matchedBy": "Correspondência por {type}",
+    "records": "{count} registros, {active} ativos",
+    "user": "Usuário",
+    "identityProvider": "Provedor de identidade",
+    "lastActivity": "Última atividade",
+    "status": "Status",
+    "actions": "Ações",
+    "active": "Ativo",
+    "stale": "Obsoleto",
+    "markStale": "Marcar como obsoleto",
+    "confirmTitle": "Marcar o usuário duplicado como obsoleto?",
+    "confirmMessage": "Marcar {name} ({username}) como obsoleto? Ele não será mais considerado o registro ativo deste grupo de duplicados.",
+    "cancel": "Cancelar",
+    "confirm": "Marcar como obsoleto"
   }
 }

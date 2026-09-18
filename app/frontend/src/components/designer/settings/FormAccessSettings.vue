@@ -4,7 +4,11 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { IdentityMode, DeprecatedIDPs } from '~/utils/constants';
+import {
+  IdentityMode,
+  DeprecatedIDPs,
+  RestrictedIDPs,
+} from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useTenantStore } from '~/store/tenant';
@@ -72,6 +76,7 @@ function confirmDeprecatedIdpRemoval() {
 }
 
 const deprecatedIDPs = Object.values(DeprecatedIDPs);
+const restrictedIDPs = Object.values(RestrictedIDPs);
 
 const filteredIDPs = ref(
   formAccessButtons.value
@@ -81,6 +86,7 @@ const filteredIDPs = ref(
     )
     .map((idp) => ({
       ...idp,
+      restricted: restrictedIDPs.includes(idp.code),
       deprecated: deprecatedIDPs.includes(idp.code),
     }))
 );
@@ -125,6 +131,10 @@ const hasFormAccessSettings = computed(() => {
   });
 });
 
+const hasBceidBasicAccessSettings = computed(() =>
+  idpType.value.includes(RestrictedIDPs.BCEID_BASIC)
+);
+
 function userTypeChanged() {
   // if they checked enable drafts then went back to public, uncheck it
   if (form.value.userType === ID_MODE.value.PUBLIC) {
@@ -161,14 +171,7 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
       lines="one"
       class="text-white mb-2"
     >
-      Effective May 31, 2026, Connected Services BC (CSBC) stopped onboarding
-      new services to Basic BCeID. Instead, it is recommended to use the BC
-      Services Card app as the identity solution. This change reflects the
-      ongoing modernization of government digital identity services and the
-      adoption of identity solutions that support future service delivery needs.
-      Existing services and current users of Basic BCeID are not affected by
-      this change and existing integrations will continue to operate normally.
-      For Identity Service onboarding questions, please connect with
+      {{ $t('trans.formSettings.bceidDeprecationAlert') }}
       <a style="color: lightblue" href="mailto:DT.Consulting@gov.bc.ca"
         >DT.Consulting@gov.bc.ca</a
       >
@@ -214,13 +217,27 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
             <div v-for="idp in filteredIDPs" :key="idp.code">
               <v-checkbox
                 :model-value="idpType.includes(idp.code)"
-                :label="idp.display"
                 class="my-0"
                 hide-details="auto"
                 :data-test="`idpType-${idp.hint}`"
                 :class="{ 'dir-rtl': isRTL }"
                 @update:model-value="(checked) => onIdpToggle(idp, checked)"
-              />
+              >
+                <template #label>
+                  <span class="d-flex align-center">
+                    <span>{{ idp.display }}</span>
+
+                    <v-chip
+                      v-if="idp.restricted"
+                      size="x-small"
+                      class="ml-2 restricted-chip"
+                      variant="flat"
+                    >
+                      {{ $t('trans.formSettings.restrictedIDP') }}
+                    </v-chip>
+                  </span>
+                </template>
+              </v-checkbox>
 
               <div v-if="idp.deprecated" class="text-error" :lang="locale">
                 {{ $t('trans.formSettings.idpDeprecatedWarning') }}
@@ -250,7 +267,7 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
           <!-- Mandatory BCeID process notification -->
           <v-expand-transition>
             <BaseInfoCard
-              v-if="hasFormAccessSettings"
+              v-if="hasFormAccessSettings && !hasBceidBasicAccessSettings"
               class="mr-4"
               :class="{ 'dir-rtl': isRTL }"
             >
@@ -278,6 +295,36 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
               </p>
             </BaseInfoCard>
           </v-expand-transition>
+          <!-- Basic BCeID onboarding halted notification -->
+          <v-expand-transition>
+            <BaseInfoCard
+              v-if="hasBceidBasicAccessSettings"
+              class="mr-4 bceid-basic-warning"
+              :class="{ 'dir-rtl': isRTL }"
+              data-test="bceid-basic-halted-info"
+            >
+              <h4 class="bceid-basic-warning__title" :lang="locale">
+                <v-icon class="mr-3" color="primary" icon="mdi:mdi-alert" />
+                {{ $t('trans.formSettings.bceidBasicHalted') }}
+              </h4>
+              <p class="my-2" :lang="locale">
+                {{ $t('trans.formSettings.bceidBasicHaltedA') }} (<a
+                  href="https://ociomysc.service-now.com/sp?id=kb_article&amp;sys_id=4221c6932b1a8b9083eaf885d391bfb8&amp;spa=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :lang="locale"
+                  >{{ $t('trans.formSettings.bceidBasicBulletin') }}</a
+                >{{ $t('trans.formSettings.bceidBasicHaltedB') }}
+              </p>
+              <p class="mt-2 mb-0" :lang="locale">
+                {{ $t('trans.formSettings.bceidBasicExemptionA') }}
+                <a href="mailto:DTConsulting@gov.bc.ca"
+                  >DTConsulting@gov.bc.ca</a
+                >
+                {{ $t('trans.formSettings.bceidBasicExemptionB') }}
+              </p>
+            </BaseInfoCard>
+          </v-expand-transition>
         </div>
       </v-expand-transition>
       <v-expand-transition>
@@ -301,3 +348,25 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
     </div>
   </BasePanel>
 </template>
+<style scoped>
+.bceid-basic-warning {
+  background-color: #fff4d6;
+  border: 1px solid #e0b547;
+  border-left: 6px solid #e0a800;
+  border-radius: 4px;
+}
+
+.bceid-basic-warning__title {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: #313132;
+}
+
+.restricted-chip {
+  background-color: #fff4cc !important;
+  border: 1px solid #d6b64c !important;
+  color: #313132 !important;
+  font-weight: 600;
+}
+</style>

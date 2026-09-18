@@ -117,15 +117,13 @@ const currentUser = async (req, _res, next) => {
     }
 
     if (tenantId) {
-      const userTenants = await tenantService.getCurrentUserTenants(req);
-      if (req._tenantServiceDegraded) {
+      const { belongs, degraded } = await tenantService.verifyTenantMembership(req, tenantId);
+      if (degraded) {
         throw new Problem(503, {
           detail: 'Tenant service unavailable.',
         });
       }
-
-      const tenantBelongsToUser = Array.isArray(userTenants) && userTenants.some((tenant) => tenant?.id === tenantId);
-      if (!tenantBelongsToUser) {
+      if (!belongs) {
         throw new Problem(403, {
           detail: 'Tenant not accessible for current user.',
         });

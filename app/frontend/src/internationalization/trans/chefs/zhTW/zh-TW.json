@@ -169,6 +169,8 @@
     "fileSizeError": "檔案大小必須小於25MB。"
   },
   "formSettings": {
+    "restrictedIDP": "受限",
+    "bceidDeprecationAlert": "自2026年5月31日起，Connected Services BC（CSBC）已停止將新服務接入 Basic BCeID。建議改用 BC Services Card 應用程式作為身分驗證解決方案。此變更反映了政府數位身分服務的持續現代化，以及採用能夠滿足未來服務提供需求的身分驗證解決方案。現有服務和 Basic BCeID 的目前使用者不受此變更影響，現有整合將繼續正常運作。如有身分服務接入方面的問題，請聯絡",
     "pressToAddMultiEmail": "按<kbd>Enter</kbd>或<kbd>,</kbd>或<kbd>空格鍵</kbd>添加多個電子郵件地址",
     "allowMultiDraft": "允許上傳<strong>多個草稿</strong>",
     "formTitle": "表格標題",
@@ -507,7 +509,8 @@
     "developer": "開發商",
     "infoLinks": "信息鏈接",
     "metrics": "指標",
-    "apis": "蜜蜂"
+    "apis": "蜜蜂",
+    "duplicateUsers": "重複用戶"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1547,5 +1550,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR 暫時無法使用。租戶選擇目前已停用。",
     "errorFetchingTenants": "獲取租戶時出錯"
+  },
+  "adminDuplicateUsers": {
+    "title": "重複用戶審核",
+    "description": "審核使用相同用戶名稱或電郵地址的用戶。將重複記錄標示為過期，直到只保留應繼續啟用的記錄。",
+    "refresh": "重新整理重複用戶",
+    "groupsPerPage": "每頁群組數",
+    "empty": "找不到尚未解決的重複用戶。",
+    "matchedBy": "按 {type} 配對",
+    "records": "共 {count} 筆記錄，{active} 筆有效",
+    "user": "用戶",
+    "identityProvider": "身分提供者",
+    "lastActivity": "最近活動",
+    "status": "狀態",
+    "actions": "操作",
+    "active": "有效",
+    "stale": "過期",
+    "markStale": "標示為過期",
+    "confirmTitle": "將重複用戶標示為過期？",
+    "confirmMessage": "將 {name}（{username}）標示為過期？此用戶將不再被視為此重複群組中的有效記錄。",
+    "cancel": "取消",
+    "confirm": "標示為過期"
   }
 }

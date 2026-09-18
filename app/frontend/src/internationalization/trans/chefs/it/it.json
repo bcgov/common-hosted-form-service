@@ -169,6 +169,8 @@
     "fileSizeError": "La dimensione del file deve essere inferiore a 25 MB."
   },
   "formSettings": {
+    "restrictedIDP": "Limitato",
+    "bceidDeprecationAlert": "Dal 31 maggio 2026, Connected Services BC (CSBC) ha interrotto l’integrazione di nuovi servizi con Basic BCeID. Si consiglia invece di utilizzare l’app BC Services Card come soluzione di identità. Questa modifica riflette la continua modernizzazione dei servizi governativi di identità digitale e l’adozione di soluzioni di identità che supportano le esigenze future di erogazione dei servizi. I servizi esistenti e gli attuali utenti di Basic BCeID non sono interessati da questa modifica e le integrazioni esistenti continueranno a funzionare normalmente. Per domande sull’integrazione con i servizi di identità, contattare",
     "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
     "allowMultiDraft": "Consenti il caricamento <strong>di più bozze</strong>",
     "formTitle": "Titolo del modulo",
@@ -507,7 +509,8 @@
     "developer": "Sviluppatore",
     "infoLinks": "Collegamenti informativi",
     "metrics": "Metrica",
-    "apis": "API"
+    "apis": "API",
+    "duplicateUsers": "Utenti duplicati"
   },
   "adminUsersTable": {
     "search": "Ricerca",
@@ -1547,5 +1550,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR è temporaneamente non disponibile. La selezione del tenant è attualmente disabilitata.",
     "errorFetchingTenants": "Errore nel recupero dei tenant"
+  },
+  "adminDuplicateUsers": {
+    "title": "Revisione degli utenti duplicati",
+    "description": "Esamina gli utenti che condividono un nome utente o un indirizzo email. Contrassegna i record duplicati come obsoleti finché rimane attivo solo il record da conservare.",
+    "refresh": "Aggiorna utenti duplicati",
+    "groupsPerPage": "Gruppi per pagina",
+    "empty": "Non sono stati trovati utenti duplicati non risolti.",
+    "matchedBy": "Corrispondenza per {type}",
+    "records": "{count} record, {active} attivi",
+    "user": "Utente",
+    "identityProvider": "Provider di identità",
+    "lastActivity": "Ultima attività",
+    "status": "Stato",
+    "actions": "Azioni",
+    "active": "Attivo",
+    "stale": "Obsoleto",
+    "markStale": "Contrassegna come obsoleto",
+    "confirmTitle": "Contrassegnare l’utente duplicato come obsoleto?",
+    "confirmMessage": "Contrassegnare {name} ({username}) come obsoleto? Non sarà più considerato il record attivo di questo gruppo di duplicati.",
+    "cancel": "Annulla",
+    "confirm": "Contrassegna come obsoleto"
   }
 }

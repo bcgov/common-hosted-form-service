@@ -261,6 +261,8 @@
     "userTokenFieldRequired": "Required when 'Send User Token' selected."
   },
   "formSettings": {
+    "restrictedIDP": "Restricted",
+    "bceidDeprecationAlert": "Effective May 31, 2026, Connected Services BC (CSBC) stopped onboarding new services to Basic BCeID. Instead, it is recommended to use the BC Services Card app as the identity solution. This change reflects the ongoing modernization of government digital identity services and the adoption of identity solutions that support future service delivery needs. Existing services and current users of Basic BCeID are not affected by this change and existing integrations will continue to operate normally. For Identity Service onboarding questions, please connect with",
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
     "allowMultiDraft": "Allow <strong> multiple draft</strong> upload",
     "enableSubmissionUrlSharing": "Enable <strong>Submission URL Sharing</strong>",
@@ -272,6 +274,12 @@
     "important": "IMPORTANT",
     "idimNotifyA": "You <strong>MUST</strong> notify the Identity Information Management (IDIM) team by email",
     "idimNotifyB": "your intent to leverage BCeID or BC Services Card to verify the identities of your form submitters.",
+    "bceidBasicHalted": "Basic BCeID is not accepting new integrations",
+    "bceidBasicHaltedA": "Onboarding of the new services to the Basic BCeID was halted on June 1, 2026",
+    "bceidBasicBulletin": "Service Bulletin 1749",
+    "bceidBasicHaltedB": ", July 30, 2026). Requests are approved only for services with an exemption.",
+    "bceidBasicExemptionA": "You can keep this option selected. Please contact",
+    "bceidBasicExemptionB": "to review a possible exemption.",
     "referenceGuideA": "Please reference our",
     "referenceGuideB": "user guide",
     "referenceGuideC": "for more details",
@@ -606,6 +614,7 @@
   "adminPage": {
     "forms": "Forms",
     "users": "Users",
+    "duplicateUsers": "Duplicate users",
     "apis": "APIs",
     "features": "Features",
     "developer": "Developer",
@@ -659,6 +668,27 @@
     "userID": "User ID",
     "created": "Created",
     "actions": "Actions"
+  },
+  "adminDuplicateUsers": {
+    "title": "Duplicate user review",
+    "description": "Review users that share a username or email address. Mark duplicate records as stale until only the record that should remain active is left.",
+    "refresh": "Refresh duplicate users",
+    "groupsPerPage": "Groups per page",
+    "empty": "No unresolved duplicate users were found.",
+    "matchedBy": "Matched by {type}",
+    "records": "{count} records, {active} active",
+    "user": "User",
+    "identityProvider": "Identity provider",
+    "lastActivity": "Last activity",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "stale": "Stale",
+    "markStale": "Mark stale",
+    "confirmTitle": "Mark duplicate user as stale?",
+    "confirmMessage": "Mark {name} ({username}) as stale? They will no longer be treated as the active record for this duplicate group.",
+    "cancel": "Cancel",
+    "confirm": "Mark stale"
   },
   "adminVersions": {
     "exportDesign": "Export Design",
