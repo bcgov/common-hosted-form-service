@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { offlineQueueEvents } from '~/offline/offlineQueueManager';
@@ -17,9 +17,41 @@ const done = ref(false);
 // 'entry-failed' events update displayStatus ('pending'|'sent'|'failed').
 const rows = ref([]);
 
-// On the tick the dialog opens, off on drain-end or offline drop.
-const spinnerVisible = computed(
-  () => visible.value && !done.value && online.value
+// Hold the spinner on-screen for at least MIN_SPINNER_MS so fast drains
+// (sub-second) are still perceptible; go off on drain-end or offline drop
+// once the minimum has elapsed.
+const MIN_SPINNER_MS = 2000;
+const spinnerVisible = ref(false);
+let spinnerOnAt = 0;
+let hideTimer = null;
+
+function updateSpinner(shouldShow) {
+  if (shouldShow) {
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+    if (!spinnerVisible.value) {
+      spinnerVisible.value = true;
+      spinnerOnAt = Date.now();
+    }
+    return;
+  }
+  const remaining = MIN_SPINNER_MS - (Date.now() - spinnerOnAt);
+  if (remaining <= 0) {
+    spinnerVisible.value = false;
+    return;
+  }
+  hideTimer = setTimeout(() => {
+    spinnerVisible.value = false;
+    hideTimer = null;
+  }, remaining);
+}
+
+watch(
+  [visible, done, online],
+  () => updateSpinner(visible.value && !done.value && online.value),
+  { immediate: true }
 );
 
 function confirmationId(row) {
@@ -134,7 +166,7 @@ function close() {
       </v-card-title>
       <div class="flex-shrink-0 px-6 d-flex align-center">
         <div class="flex-grow-0">
-          <p :lang="locale">
+          <p v-if="!done" :lang="locale">
             {{ t('trans.offlineSubmission.syncModalSubtitle') }}
           </p>
           <p v-if="!done" class="mt-3 mb-1" :lang="locale">

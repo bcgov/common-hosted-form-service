@@ -1599,7 +1599,7 @@
     }
   },
   "offlineSubmission": {
-    "headerButtonLabel": "OFFLINE SUBMISSION",
+    "headerButtonLabel": "OFFLINE SUBMISSIONS",
     "offlineIconTooltip": "You are offline",
     "offlineBannerTitle": "You are now offline",
     "offlineBannerMessage": "Form Submissions will be saved locally and sent to the server when you come back online.",

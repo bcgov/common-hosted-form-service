@@ -94,7 +94,7 @@ function onEditEntry(entry) {
         <v-icon
           v-bind="iconProps"
           icon="mdi:mdi-cloud-off-outline"
-          color="warning"
+          color="white"
           size="28"
           class="offline-cloud-icon"
           data-test="offlineCloudIcon"
@@ -141,14 +141,14 @@ function onEditEntry(entry) {
 </template>
 
 <style scoped lang="scss">
-.offline-cloud-icon {
-  margin-inline-end: 12px;
-}
-
 .offline-status-btn {
   height: 40px !important;
   padding-inline: 16px !important;
   letter-spacing: 0;
+}
+
+.offline-cloud-icon {
+  margin-inline-end: 12px;
 }
 
 .offline-status-label {
