@@ -100,6 +100,12 @@ class UserFormAccess extends Model {
           query.where('tenantId', value);
         }
       },
+      // Restricts to forms with no tenant association. Note this is NOT the inverse of
+      // filterTenantId, which is a deliberate no-op when given no tenant — use this when
+      // "no tenant selected" must mean "personal forms only" rather than "all forms".
+      filterNoTenant(query) {
+        query.whereNull('tenantId');
+      },
       orderFormNameAscending(builder) {
         builder.orderByRaw('lower("formName")');
       },

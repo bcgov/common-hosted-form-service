@@ -274,6 +274,8 @@ describe(`${basePath}/:formId`, () => {
     it('should return 200', async () => {
       // mock a success return value...
       service.readForm = jest.fn().mockReturnValue([]);
+      // Tenancy is attached by the controller on top of the form payload.
+      service.readFormTenancy = jest.fn().mockResolvedValue({ tenantId: null, migration: null });
 
       const response = await appRequest.get(path);
 

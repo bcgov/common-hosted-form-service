@@ -389,8 +389,11 @@ class TenantService {
    * required — this works from the submit view where tenant context is absent.
    *
    * Returns null for classic CHEFS forms (no FormTenant record); caller should
-   * fall back to the regular getFormUsers path. Tenanted forms — with or without
-   * specific group assignments — return all tenant users.
+   * fall back to the regular getFormUsers path. When the form restricts access to
+   * specific groups the result is scoped to the members of those groups, so that the
+   * people offered here are exactly the people isUserInFormGroups will later accept —
+   * otherwise a user can be picked from the list and then rejected on save. A tenanted
+   * form with no group restrictions returns all tenant users.
    *
    * @param {object} req    - Express request (headers used for CSTAR auth)
    * @param {string} formId - UUID of the form
@@ -408,15 +411,18 @@ class TenantService {
       currentUser: { ...req.currentUser, tenantId: formTenant.tenantId },
       headers: req.headers,
     };
-    return this.getTenantUsers(reqForTenant);
+    const groupIds = formGroups.map((fg) => fg.groupId);
+    return this.getTenantUsers(reqForTenant, groupIds.length ? groupIds : null);
   }
 
   /**
-   * Get users for a specific tenant from CSTAR
+   * Get users for a specific tenant from CSTAR, optionally restricted to the members of
+   * specific groups.
    * @param {object} req - Express request object with currentUser and headers
+   * @param {string[]|null} groupIds - Optional group IDs to restrict membership to
    * @returns {Promise<Array>} Array of user objects
    */
-  async getTenantUsers(req) {
+  async getTenantUsers(req, groupIds = null) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
     }
@@ -427,7 +433,11 @@ class TenantService {
     const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
     const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', req.currentUser.tenantId)}`;
     const headers = this._getAuthHeaders(req);
-    const { data } = await axios.get(url, { headers, timeout: CSTAR_TIMEOUT_MS });
+    const requestConfig = { headers, timeout: CSTAR_TIMEOUT_MS };
+    if (Array.isArray(groupIds) && groupIds.length) {
+      requestConfig.params = { groupIds: groupIds.join(',') };
+    }
+    const { data } = await axios.get(url, requestConfig);
     return data?.data?.users || data?.users || [];
   }
   /**

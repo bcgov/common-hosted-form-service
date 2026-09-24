@@ -1,3 +1,4 @@
+const Problem = require('api-problem');
 const uuid = require('uuid');
 const { Form, FormGroup, FormSubmissionUserPermissions, PublicFormAccess, Role, SubmissionMetadata, User, UserFormAccess, UserLoginHistory } = require('../common/models');
 const log = require('../../components/log')(module.filename);
@@ -93,6 +94,30 @@ const service = {
     };
   },
 
+  /**
+   * Fetch the user's CSTAR group roles for a tenant.
+   *
+   * A failed lookup must NOT be silently treated as "the user is in no groups". For a
+   * tenanted form that collapses every permission to [], which the caller then reports
+   * as "you do not have access to this form" — an authorization error for what is
+   * actually a service outage. Fail loudly instead.
+   *
+   * @param {object} userInfo the current user
+   * @param {object} headers request headers, forwarded to CSTAR for auth
+   * @param {string} tenantId the tenant whose groups to read
+   * @param {string} context describes the caller, for the log line only
+   */
+  fetchTenantGroupRoles: async (userInfo, headers, tenantId, context) => {
+    try {
+      return await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, tenantId);
+    } catch (err) {
+      log.error(`Failed to fetch tenant groups/roles for ${context} (tenant ${tenantId})`, err);
+      throw new Problem(503, {
+        detail: 'Unable to verify your group membership right now. Please try again in a moment.',
+      });
+    }
+  },
+
   populateItemWithTenantRoles: async (item, userGroups, allRoles) => {
     const formGroups = await FormGroup.query().modify('filterFormId', item.formId);
     const formGroupIds = formGroups.map((fg) => fg.groupId);
@@ -127,12 +152,7 @@ const service = {
         .modify('filterActive', params.active)
         .modify('filterTenantId', userInfo.tenantId);
 
-      let userGroups = [];
-      try {
-        userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, userInfo.tenantId);
-      } catch (err) {
-        log.error(`Failed to fetch tenant groups/roles for tenant ${userInfo.tenantId}`, err);
-      }
+      const userGroups = await service.fetchTenantGroupRoles(userInfo, headers, userInfo.tenantId, 'selected tenant');
       const allRoles = await Role.query().withGraphFetched('permissions');
 
       for (const item of items) {
@@ -142,7 +162,18 @@ const service = {
       return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
+      const query = UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
+
+      // A form associated to a tenant is governed by that tenant's groups and belongs in
+      // the tenant's form list, not the personal "My Forms" list. Migration is additive —
+      // it leaves form_role_user and form_identity_provider in place — so without this the
+      // original owner and every matching-IDP user keep seeing a migrated form here.
+      // Single-form permission checks (params.formId set) still need tenanted rows, so
+      // only exclude them on list-all calls.
+      if (!params.formId) {
+        query.modify('filterNoTenant');
+      }
+      items = await query;
 
       // For single-form permission checks (params.formId set, e.g. hasFormPermissions
       // middleware on /form/submit, /user/draft, /user/view), resolve group-based roles
@@ -150,20 +181,18 @@ const service = {
       // since those routes never send x-tenant-id by design. This lets legitimate group
       // members access the form regardless of which tenant is currently selected in the UI.
       //
-      // For list-all calls (no formId, e.g. "My Forms"), skip resolution: group-only
-      // forms must only appear when that tenant is actively selected (branch above).
+      // The trigger is the form's tenant association alone. It must NOT also require
+      // `idps.length === 0`: idps govern who may submit, groups govern who may manage, and
+      // a form migrated into a tenant keeps its original idps. Gating on empty idps meant
+      // group roles were never resolved for migrated forms, so group members fell through
+      // to the default {submission_create, form_read} row and were denied submission_read.
       if (params.formId && headers) {
         const userGroupsByTenant = new Map();
         const allRoles = await Role.query().withGraphFetched('permissions');
         for (const item of items) {
-          if (item && item.tenantId && Array.isArray(item.idps) && item.idps.length === 0) {
+          if (item && item.tenantId) {
             if (!userGroupsByTenant.has(item.tenantId)) {
-              let userGroups = [];
-              try {
-                userGroups = await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, item.tenantId);
-              } catch (err) {
-                log.error(`Failed to fetch tenant groups/roles for form ${item.formId} (tenant ${item.tenantId})`, err);
-              }
+              const userGroups = await service.fetchTenantGroupRoles(userInfo, headers, item.tenantId, `form ${item.formId}`);
               userGroupsByTenant.set(item.tenantId, userGroups);
             }
             await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
@@ -231,6 +260,7 @@ const service = {
       roles: item.roles,
       permissions: item.permissions,
       enableOfflineSubmission: item.enableOfflineSubmission,
+      tenantId: item.tenantId,
     };
   },
 

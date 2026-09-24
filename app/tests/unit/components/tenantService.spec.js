@@ -1578,10 +1578,12 @@ describe('TenantService', () => {
 
       const result = await tenantService.getUsersForForm(req, formId);
 
+      // No group restrictions on the form → any tenant user is allowed, so no scoping.
       expect(tenantService.getTenantUsers).toHaveBeenCalledWith(
         expect.objectContaining({
           currentUser: expect.objectContaining({ tenantId }),
-        })
+        }),
+        null
       );
       expect(result).toEqual(users);
     });
@@ -1619,10 +1621,13 @@ describe('TenantService', () => {
 
       const result = await tenantService.getUsersForForm(req, formId);
 
+      // Scoped to the form's assigned groups so the picker offers exactly the users
+      // isUserInFormGroups will accept on save.
       expect(tenantService.getTenantUsers).toHaveBeenCalledWith(
         expect.objectContaining({
           currentUser: expect.objectContaining({ tenantId }),
-        })
+        }),
+        ['group-1']
       );
       expect(result).toEqual(users);
     });

@@ -24,6 +24,7 @@ const {
   FormSubscription,
   FormTenant,
   FormGroup,
+  FormMigrationLog,
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
@@ -487,6 +488,28 @@ const service = {
       query.withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)');
     }
     return query.throwIfNotFound();
+  },
+
+  /**
+   * Where the form lives, and — when it got there by migration — the audit row.
+   * The UI needs both: tenantId drives the "lives in a tenant" indicator, and the
+   * migration record is the only trace of an action the user cannot undo.
+   *
+   * Kept out of readForm deliberately: readForm is called internally on hot paths
+   * such as listFormSubmissions, which must not pay for two extra queries.
+   *
+   * @param {string} formId
+   * @returns {Promise<{tenantId: string|null, migration: object|null}>}
+   */
+  readFormTenancy: async (formId) => {
+    const [formTenant, migration] = await Promise.all([
+      FormTenant.query().where({ formId }).first(),
+      FormMigrationLog.query().where({ formId }).orderBy('createdAt', 'desc').first(),
+    ]);
+    return {
+      tenantId: formTenant ? formTenant.tenantId : null,
+      migration: migration ? { migratedAt: migration.createdAt, migratedBy: migration.createdBy, tenantId: migration.tenantId } : null,
+    };
   },
 
   readFormOptions: (formId, params = {}) => {

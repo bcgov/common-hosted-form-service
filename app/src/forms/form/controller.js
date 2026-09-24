@@ -55,7 +55,11 @@ module.exports = {
   readForm: async (req, res, next) => {
     try {
       const response = await service.readForm(req.params.formId, req.query, req.apiUser ? null : req.currentUser, req.headers);
-      res.status(200).json(response);
+      // Tenancy is attached here rather than inside readForm: readForm is reused on hot
+      // internal paths (listFormSubmissions) that must not pay for the extra queries.
+      const tenancy = await service.readFormTenancy(req.params.formId);
+      const body = typeof response?.toJSON === 'function' ? response.toJSON() : response;
+      res.status(200).json({ ...body, ...tenancy });
     } catch (error) {
       next(error);
     }
