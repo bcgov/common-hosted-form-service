@@ -30,7 +30,13 @@ const loginRequiredRules = ref([
 const idpType = ref([]);
 const IdpTypeList = computed(() => {
   const tenantStore = useTenantStore();
-  const isEnterprise = !!tenantStore.selectedTenant;
+  const formStore = useFormStore();
+  // Key off the form's own tenant association, not just the session's selected tenant —
+  // otherwise a migrated form is described as "Specific Team Members" whenever the
+  // user happens to have no tenant selected, which is not how its access works.
+  const isEnterprise = !!(
+    formStore.form?.tenantId || tenantStore.selectedTenant
+  );
 
   // if we want it sorted...
   // return items.sort((a, b) => a.text.localeCompare(b.text));

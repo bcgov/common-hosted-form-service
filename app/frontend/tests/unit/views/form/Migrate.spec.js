@@ -634,7 +634,9 @@ describe('Migrate.vue', () => {
       expect(tenantStore.selectTenant).toHaveBeenCalledWith(MOCK_TENANT);
     });
 
-    it('redirects to UserForms on success', async () => {
+    it('shows the result screen on success instead of redirecting away', async () => {
+      // Migration is irreversible and reassigns access — the user needs to be told what
+      // happened and who still needs a group, not silently dropped on another page.
       const push = vi.fn();
       useRouter.mockImplementationOnce(() => ({ replace: vi.fn(), push }));
 
@@ -645,7 +647,24 @@ describe('Migrate.vue', () => {
       await flushPromises();
       await wrapper.vm.submitMigration();
 
-      expect(push).toHaveBeenCalledWith({ name: 'UserForms' });
+      expect(push).not.toHaveBeenCalled();
+      expect(wrapper.vm.migrated).toBe(true);
+      expect(wrapper.vm.migrationResult).toMatchObject({
+        tenantName: MOCK_TENANT.name,
+        submissions: MOCK_IMPACT.submissions,
+      });
+    });
+
+    it('still switches the session to the migrated tenant before showing the result', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      await wrapper.vm.submitMigration();
+
+      expect(tenantStore.selectTenant).toHaveBeenCalledWith(MOCK_TENANT);
+      expect(wrapper.vm.migrated).toBe(true);
     });
 
     it('sets error and does not redirect on executeMigration failure', async () => {

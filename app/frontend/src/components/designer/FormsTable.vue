@@ -174,6 +174,17 @@ defineExpose({
         </v-tooltip>
       </router-link>
       <span v-else>{{ item.name }}</span>
+      <v-chip
+        v-if="item.tenantId"
+        size="x-small"
+        color="primary"
+        variant="tonal"
+        class="ml-2"
+        prepend-icon="mdi:mdi-account-group"
+        :lang="locale"
+      >
+        {{ $t('trans.formsTable.groupAccessChip') }}
+      </v-chip>
       <v-icon
         v-if="item.description?.trim()"
         size="small"

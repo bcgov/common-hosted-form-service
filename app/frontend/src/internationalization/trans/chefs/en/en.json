@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "My Forms",
     "groupForms": "Group Forms",
+    "groupAccessChip": "Group access",
     "createNewForm": "Create a New Form",
     "search": "Search",
     "manage": "Manage",
@@ -39,7 +40,11 @@
     "noDataText": "No forms found"
   },
   "manageLayout": {
-    "manageForm": "Manage Form"
+    "manageForm": "Manage Form",
+    "tenantChip": "Group access",
+    "tenantChipTooltip": "Access to this form is controlled by tenant groups.",
+    "migratedChip": "Migrated",
+    "migratedChipTooltip": "Migrated to this tenant on {date} by {by}. Access is now controlled by tenant groups."
   },
   "shareForm": {
     "shareForm": "Share Form",
@@ -124,6 +129,16 @@
     "sessionExpiredRetry": "Your session needed to be refreshed. Please try again.",
     "reloadPage": "Reload Page",
     "tryAgain": "Try Again",
+    "resultTitle": "Form migrated",
+    "resultSubtitle": "This form now belongs to {tenant} and its access is controlled by that tenant's groups.",
+    "resultSubmissionsKept": "{total} submissions kept, including {drafts} open drafts.",
+    "resultSharesKept": "{count} existing submission shares still work.",
+    "resultRetained": "{count} team members keep access through their groups.",
+    "resultNeedsGroup": "{count} team members need to be added to a group before they can work on this form.",
+    "resultLosesAccess": "{count} BCeID Basic members can no longer sign in to this form.",
+    "resultActionNeeded": "Assign the people listed above to a group to restore their access.",
+    "resultManageGroups": "Manage Groups",
+    "resultBackToForm": "Back to Form",
     "colTenantGroups": "Tenant Groups",
     "noTenantGroups": "None",
     "statusRetained": "Will retain access",

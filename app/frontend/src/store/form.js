@@ -190,6 +190,7 @@ export const useFormStore = defineStore('form', {
           permissions: f.permissions,
           published: f.published,
           enableOfflineSubmission: f.enableOfflineSubmission,
+          tenantId: f.tenantId,
         }));
         this.formList = forms;
       } catch (error) {

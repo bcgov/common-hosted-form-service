@@ -40,6 +40,8 @@ const error = ref(null);
 const showRefreshButton = ref(false);
 const showRetryButton = ref(false);
 const showConfirmDialog = ref(false);
+const migrated = ref(false);
+const migrationResult = ref(null);
 
 const eligibleTenants = ref([]);
 const impact = ref({ ...EMPTY_IMPACT });
@@ -300,8 +302,27 @@ async function submitMigration() {
       tenantId: selectedTenantId.value,
       ...(groupIds ? { groupIds } : {}),
     });
+    // Capture the outcome before switching tenants — the impact data is what the
+    // result screen reports, and selecting the tenant re-scopes everything.
+    migrationResult.value = {
+      tenantName: selectedTenant.value?.name,
+      groupNames: assignedGroups.value.map((g) => g.name),
+      submissions: { ...impact.value.submissions },
+      retained: teamRowsWithStatus.value.filter(
+        (m) => m.transferStatus === 'retained'
+      ).length,
+      needsGroup: teamRowsWithStatus.value.filter(
+        (m) =>
+          m.transferStatus === 'needs_assignment' ||
+          m.transferStatus === 'no_membership' ||
+          m.transferStatus === 'needs_group'
+      ).length,
+      losesAccess: teamRowsWithStatus.value.filter(
+        (m) => m.transferStatus === 'loses_access'
+      ).length,
+    };
     tenantStore.selectTenant(selectedTenant.value);
-    router.push({ name: 'UserForms' });
+    migrated.value = true;
   } catch (err) {
     const code = err.response?.data?.code;
     if (code === 'SESSION_EXPIRED') {
@@ -343,6 +364,8 @@ defineExpose({
   staleGroupsRemoved,
   showConfirmDialog,
   showRetryButton,
+  migrated,
+  migrationResult,
   refreshTenantGroups,
   requestMigration,
   confirmMigration,
@@ -373,8 +396,9 @@ defineExpose({
         </div>
       </div>
 
-      <!-- Permanent-action warning banner -->
+      <!-- Permanent-action warning banner — irrelevant once the action is done -->
       <v-alert
+        v-if="!migrated"
         type="error"
         variant="tonal"
         density="compact"
@@ -419,8 +443,132 @@ defineExpose({
         </template>
       </v-alert>
 
+      <!-- ── RESULT — shown once the migration has actually happened ────────── -->
+      <template v-if="migrated && migrationResult">
+        <v-card variant="outlined" class="mb-4">
+          <v-card-text class="pa-6">
+            <div class="d-flex align-start ga-3 mb-5">
+              <v-icon size="36" color="success" class="flex-shrink-0">
+                mdi:mdi-check-circle
+              </v-icon>
+              <div>
+                <h2 class="text-h6 mb-1" :lang="locale">
+                  {{ $t('trans.formMigration.resultTitle') }}
+                </h2>
+                <p class="text-body-2 text-medium-emphasis mb-0" :lang="locale">
+                  {{
+                    $t('trans.formMigration.resultSubtitle', {
+                      tenant: migrationResult.tenantName,
+                    })
+                  }}
+                </p>
+              </div>
+            </div>
+
+            <v-list density="compact" class="py-0 mb-4">
+              <v-list-item
+                prepend-icon="mdi:mdi-check-circle-outline"
+                base-color="success"
+              >
+                <v-list-item-title class="text-body-2" :lang="locale">
+                  {{
+                    $t('trans.formMigration.resultSubmissionsKept', {
+                      total: migrationResult.submissions.total,
+                      drafts: migrationResult.submissions.drafts,
+                    })
+                  }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                prepend-icon="mdi:mdi-check-circle-outline"
+                base-color="success"
+              >
+                <v-list-item-title class="text-body-2" :lang="locale">
+                  {{
+                    $t('trans.formMigration.resultSharesKept', {
+                      count: migrationResult.submissions.withShareUsers,
+                    })
+                  }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                v-if="migrationResult.retained > 0"
+                prepend-icon="mdi:mdi-account-check-outline"
+                base-color="success"
+              >
+                <v-list-item-title class="text-body-2" :lang="locale">
+                  {{
+                    $t('trans.formMigration.resultRetained', {
+                      count: migrationResult.retained,
+                    })
+                  }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                v-if="migrationResult.needsGroup > 0"
+                prepend-icon="mdi:mdi-account-alert-outline"
+                base-color="warning"
+              >
+                <v-list-item-title class="text-body-2" :lang="locale">
+                  {{
+                    $t('trans.formMigration.resultNeedsGroup', {
+                      count: migrationResult.needsGroup,
+                    })
+                  }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                v-if="migrationResult.losesAccess > 0"
+                prepend-icon="mdi:mdi-close-circle-outline"
+                base-color="error"
+              >
+                <v-list-item-title class="text-body-2" :lang="locale">
+                  {{
+                    $t('trans.formMigration.resultLosesAccess', {
+                      count: migrationResult.losesAccess,
+                    })
+                  }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+
+            <v-alert
+              v-if="
+                migrationResult.needsGroup > 0 ||
+                migrationResult.losesAccess > 0
+              "
+              type="warning"
+              variant="tonal"
+              density="compact"
+              class="mb-4"
+              icon="mdi:mdi-alert-outline"
+              :lang="locale"
+            >
+              {{ $t('trans.formMigration.resultActionNeeded') }}
+            </v-alert>
+
+            <div class="d-flex ga-3 flex-wrap">
+              <v-btn
+                color="primary"
+                :lang="locale"
+                :to="{ name: 'FormGroups', query: { f } }"
+              >
+                {{ $t('trans.formMigration.resultManageGroups') }}
+              </v-btn>
+              <v-btn
+                variant="outlined"
+                :lang="locale"
+                :to="{ name: 'FormManage', query: { f } }"
+              >
+                {{ $t('trans.formMigration.resultBackToForm') }}
+              </v-btn>
+            </div>
+          </v-card-text>
+        </v-card>
+      </template>
+
       <!-- Initial page load spinner -->
-      <div v-if="loading" class="d-flex justify-center my-10">
+      <div v-else-if="loading" class="d-flex justify-center my-10">
         <v-progress-circular indeterminate color="primary" />
       </div>
 
