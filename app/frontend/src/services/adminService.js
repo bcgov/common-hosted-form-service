@@ -134,6 +134,14 @@ export default {
   },
 
   /**
+   * List unresolved duplicate user records.
+   * @returns {Promise} An axios response
+   */
+  listDuplicateUsers() {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/duplicates`);
+  },
+
+  /**
    * @function readUser
    * Read a user in the DB
    * @param {string} userId The GUID
@@ -141,6 +149,19 @@ export default {
    */
   readUser(userId) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
+  },
+
+  /**
+   * Update a user's administrable fields.
+   * @param {string} userId The user GUID
+   * @param {{stale: boolean}} data The user fields to update
+   * @returns {Promise} An axios response
+   */
+  updateUser(userId, data) {
+    return appAxios().patch(
+      `${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`,
+      data
+    );
   },
 
   //

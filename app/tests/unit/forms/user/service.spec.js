@@ -31,13 +31,14 @@ describe('list', () => {
       search: 'search',
       username: 'username',
       idpCode: 'idp',
+      stale: false,
     };
 
     await service.list(params);
 
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledWith();
-    expect(MockModel.modify).toBeCalledTimes(9);
+    expect(MockModel.modify).toBeCalledTimes(10);
     expect(MockModel.modify).toBeCalledWith('filterIdpUserId', params.idpUserId);
     expect(MockModel.modify).toBeCalledWith('filterIdpCodes', [params.idpCode]);
     expect(MockModel.modify).toBeCalledWith('filterUsername', params.username, false, false);
@@ -47,6 +48,7 @@ describe('list', () => {
     expect(MockModel.modify).toBeCalledWith('filterEmail', params.email, false, false);
     expect(MockModel.modify).toBeCalledWith('filterSearch', params.search);
     expect(MockModel.modify).toBeCalledWith('orderLastFirstAscending');
+    expect(MockModel.modify).toBeCalledWith('filterStale', params.stale);
   });
 });
 
@@ -84,6 +86,29 @@ describe('readByKeycloakId', () => {
     expect(MockModel.modify).toBeCalledWith('filterKeycloakId', keycloakId);
     expect(MockModel.first).toBeCalledTimes(1);
     expect(MockModel.first).toBeCalledWith();
+  });
+});
+
+describe('update', () => {
+  it('updates only the stale status and returns the safe user fields', async () => {
+    const safeUser = { id: userId, idpCode: 'idir', stale: true };
+    const readSafeSpy = jest.spyOn(service, 'readSafe').mockResolvedValue(safeUser);
+
+    const result = await service.update(userId, { stale: true }, { usernameIdp: 'admin@idir' });
+
+    expect(MockModel.patchAndFetchById).toBeCalledWith(userId, {
+      stale: true,
+      updatedBy: 'admin@idir',
+    });
+    expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
+    expect(readSafeSpy).toHaveBeenCalledWith(userId);
+    expect(result).toEqual(safeUser);
+    readSafeSpy.mockRestore();
+  });
+
+  it('rejects updates containing other user fields', async () => {
+    await expect(service.update(userId, { stale: true, fullName: 'Changed' }, { usernameIdp: 'admin@idir' })).rejects.toThrow();
+    expect(MockModel.patchAndFetchById).not.toBeCalled();
   });
 });
 

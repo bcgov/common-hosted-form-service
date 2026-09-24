@@ -1,0 +1,19 @@
+{
+  "branches": ["release/sprint-*", "main", "develop"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "cd app && npm version ${nextRelease.version} --no-git-tag-version && cd frontend && npm version ${nextRelease.version} --no-git-tag-version"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["**/*"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
+}
