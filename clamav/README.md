@@ -38,10 +38,18 @@ helm uninstall chefs-clamav
 
 Each namespace and instance will have different resource allocation that we need to tune.
 You can specify the '--values'/'-f' flag multiple times. The priority will be given to the last (right-most) file specified.
-The values file is configured for productionl overrides exist for dev and test.
+The values file holds the shared defaults; overrides exist for dev, test and prod.
 
 ```
 helm upgrade --install chefs-clamav ./charts/clamav -f ./charts/clamav/values.yaml -f ./charts/clamav/values-test.yaml
 ```
 
 This would apply our default values file (`values.yaml`) with any overrides found in `values-test.yaml` taking priority.
+
+Prod runs 3 replicas (dev and test run 1) and pins the image tag, so always include `values-prod.yaml`. Upgrading prod with `values.yaml` alone asks for a single pod.
+
+```
+helm upgrade --install chefs-clamav ./charts/clamav -f ./charts/clamav/values.yaml -f ./charts/clamav/values-prod.yaml
+```
+
+To move prod to a newer image, set `clamav.tag` in `values-prod.yaml` to that build's `sha-<short commit>` tag.
