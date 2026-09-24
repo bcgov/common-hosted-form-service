@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import SubmitterRevision from '~/components/forms/submission/SubmitterRevision.vue';
 import PrintOptionsWrapper from '~/components/forms/PrintOptionsWrapper.vue';
+import { useOnlineStatus } from '~/offline/useOnlineStatus';
 import { FormPermissions } from '~/utils/constants';
 
 import { useFormStore } from '~/store/form';
@@ -32,11 +33,19 @@ const properties = defineProps({
     type: Boolean,
     default: false,
   },
+  enableOfflineSubmission: {
+    type: Boolean,
+    default: false,
+  },
   formId: {
     type: String,
     default: undefined,
   },
   isDraft: {
+    type: Boolean,
+    default: false,
+  },
+  isEditingOfflineEntry: {
     type: Boolean,
     default: false,
   },
@@ -71,6 +80,8 @@ const isWideLayout = ref(properties.wideFormLayout);
 const formStore = useFormStore();
 
 const { isRTL } = storeToRefs(formStore);
+
+const { online } = useOnlineStatus();
 
 const canSaveDraft = computed(() => !properties.readOnly);
 const showEditToggle = computed(
@@ -107,6 +118,7 @@ watch(
       <v-btn
         color="primary"
         :loading="loading"
+        :disabled="!online"
         variant="outlined"
         :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
         @click="
@@ -119,7 +131,7 @@ watch(
         }}</span>
       </v-btn>
     </div>
-    <div class="ml-auto d-flex">
+    <div class="ml-auto d-flex align-center">
       <!-- Bulk button -->
       <span
         v-if="allowSubmitterToUploadFile && !block && !publicForm"
@@ -132,6 +144,7 @@ watch(
               icon
               v-bind="props"
               size="x-small"
+              :disabled="!online"
               :title="
                 bulkFile
                   ? $t('trans.formViewerActions.switchSingleSubmssn')
@@ -150,7 +163,11 @@ watch(
         </v-tooltip>
       </span>
       <!-- Submitter Revision -->
-      <SubmitterRevision :submission-id="submissionId" class="ml-2" />
+      <SubmitterRevision
+        v-if="submissionId"
+        :submission-id="submissionId"
+        class="ml-2"
+      />
       <!-- Wide layout button -->
       <span>
         <v-tooltip location="bottom">
@@ -171,7 +188,10 @@ watch(
         </v-tooltip>
       </span>
       <!-- Print options -->
-      <span class="ml-2 d-print-none">
+      <span
+        class="ml-2 d-print-none"
+        :class="{ 'is-inert': isEditingOfflineEntry }"
+      >
         <PrintOptionsWrapper
           :submission="submission"
           :submission-id="submissionId"
@@ -184,7 +204,17 @@ watch(
         v-if="canSaveDraft && draftEnabled && !bulkFile && !publicForm"
         class="ml-2"
       >
-        <v-btn color="primary" variant="outlined" @click="$emit('save-draft')">
+        <v-btn
+          color="primary"
+          variant="outlined"
+          :disabled="isEditingOfflineEntry"
+          :title="
+            enableOfflineSubmission && !online
+              ? $t('trans.offlineSubmission.saveDraftOfflineHint')
+              : undefined
+          "
+          @click="$emit('save-draft')"
+        >
           <span :lang="locale">{{
             $t('trans.formViewerActions.saveAsDraft')
           }}</span>
@@ -223,7 +253,7 @@ watch(
       </span>
 
       <!-- Manage submission users -->
-      <span v-if="draftEnabled && !publicForm" class="ml-2">
+      <span v-if="draftEnabled && !publicForm && submissionId" class="ml-2">
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"
@@ -233,3 +263,10 @@ watch(
     </div>
   </div>
 </template>
+
+<style scoped>
+.is-inert {
+  opacity: 0.5;
+  pointer-events: none;
+}
+</style>

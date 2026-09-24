@@ -1,4 +1,4 @@
-FROM docker.io/node:20.18.3-alpine3.21
+FROM docker.io/node:24-alpine
 ENV NO_UPDATE_NOTIFIER=true
 WORKDIR /opt/app-root/src/app
 COPY . /opt/app-root/src

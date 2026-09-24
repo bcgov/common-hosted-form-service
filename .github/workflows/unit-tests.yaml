@@ -5,35 +5,26 @@ on:
   push:
   pull_request:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   test-app:
     name: Unit Tests (App)
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     defaults:
       run:
         working-directory: app
     outputs:
       HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
-    strategy:
-      fail-fast: true
-      matrix:
-        version: [20]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
       - name: Check CodeClimate Secrets
         id: check-secrets
         run: echo "HAS_CC_SECRETS=${{ secrets.CC_TEST_REPORTER_ID != '' }}" >> $GITHUB_OUTPUT
-      - name: Use Node.js ${{ matrix.version }}
+      - name: Use Node.js 24
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.version }}
+          node-version: 24
       - name: Cache node modules
         uses: actions/cache@v5
         id: cache-app
@@ -54,44 +45,33 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.version == 20
         uses: actions/upload-artifact@v6
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
       - name: Monitor Coverage
-        if: "matrix.version == 20 && ! github.event.pull_request.head.repo.fork"
-        uses: slavcodev/coverage-monitor-action@v1
+        if: "! github.event.pull_request.head.repo.fork"
+        uses: MishaKav/jest-coverage-comment@642ef024cc554a34b7082cea12c7bf63575ae151 # v1.0.36
         with:
-          comment_mode: update
-          comment_footer: false
-          comment_context: Coverage Report (Application)
-          coverage_path: app/coverage/clover.xml
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          threshold_alert: 50
-          threshold_warning: 80
+          title: Coverage Report (Application)
+          unique-id-for-comment: app
+          coverage-summary-path: app/coverage/coverage-summary.json
   test-frontend:
     name: Unit Tests (Frontend)
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     defaults:
       run:
         working-directory: app/frontend
     outputs:
       HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
-    strategy:
-      fail-fast: true
-      matrix:
-        version: [20]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
-      - name: Use Node.js ${{ matrix.version }}
+      - name: Use Node.js 24
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.version }}
+          node-version: 24
       - name: Cache node modules
         uses: actions/cache@v5
         id: cache-frontend
@@ -112,22 +92,17 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.version == 20
         uses: actions/upload-artifact@v6
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
       - name: Monitor Coverage
-        if: "matrix.version == 20 && ! github.event.pull_request.head.repo.fork"
-        uses: slavcodev/coverage-monitor-action@v1
+        if: "! github.event.pull_request.head.repo.fork"
+        uses: MishaKav/jest-coverage-comment@642ef024cc554a34b7082cea12c7bf63575ae151 # v1.0.36
         with:
-          comment_mode: update
-          comment_footer: false
-          comment_context: Coverage Report (Frontend)
-          coverage_path: app/frontend/coverage/clover.xml
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          threshold_alert: 50
-          threshold_warning: 80
+          title: Coverage Report (Frontend)
+          unique-id-for-comment: frontend
+          coverage-summary-path: app/frontend/coverage/coverage-summary.json
   # test-coverage:
   #   name: Publish to Code Climate
   #   needs:

@@ -4,7 +4,11 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { IdentityMode } from '~/utils/constants';
+import {
+  IdentityMode,
+  DeprecatedIDPs,
+  RestrictedIDPs,
+} from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useTenantStore } from '~/store/tenant';
@@ -26,7 +30,13 @@ const loginRequiredRules = ref([
 const idpType = ref([]);
 const IdpTypeList = computed(() => {
   const tenantStore = useTenantStore();
-  const isEnterprise = !!tenantStore.selectedTenant;
+  const formStore = useFormStore();
+  // Key off the form's own tenant association, not just the session's selected tenant —
+  // otherwise a migrated form is described as "Specific Team Members" whenever the
+  // user happens to have no tenant selected, which is not how its access works.
+  const isEnterprise = !!(
+    formStore.form?.tenantId || tenantStore.selectedTenant
+  );
 
   // if we want it sorted...
   // return items.sort((a, b) => a.text.localeCompare(b.text));
@@ -55,14 +65,64 @@ const idpStore = useIdpStore();
 const { form, isRTL } = storeToRefs(useFormStore());
 const { formAccessButtons } = storeToRefs(idpStore);
 
+const showDeprecatedIdpDialog = ref(false);
+const pendingDeprecatedIdp = ref(null);
+
+function cancelDeprecatedIdpRemoval() {
+  pendingDeprecatedIdp.value = null;
+  showDeprecatedIdpDialog.value = false;
+}
+
+function confirmDeprecatedIdpRemoval() {
+  const code = pendingDeprecatedIdp.value?.code;
+  idpType.value = idpType.value.filter((idp) => idp !== code);
+  filteredIDPs.value = filteredIDPs.value.filter((idp) => idp.code !== code);
+  pendingDeprecatedIdp.value = null;
+  showDeprecatedIdpDialog.value = false;
+}
+
+const deprecatedIDPs = Object.values(DeprecatedIDPs);
+const restrictedIDPs = Object.values(RestrictedIDPs);
+
+const filteredIDPs = ref(
+  formAccessButtons.value
+    .filter(
+      (idp) =>
+        !deprecatedIDPs.includes(idp.code) || form.value.idps.includes(idp.code)
+    )
+    .map((idp) => ({
+      ...idp,
+      restricted: restrictedIDPs.includes(idp.code),
+      deprecated: deprecatedIDPs.includes(idp.code),
+    }))
+);
+function onIdpToggle(idp, checked) {
+  const isSelected = idpType.value.includes(idp.code);
+  const shouldBeChecked = checked === true;
+
+  if (idp.deprecated && isSelected && !shouldBeChecked) {
+    pendingDeprecatedIdp.value = idp;
+    showDeprecatedIdpDialog.value = true;
+    return;
+  }
+
+  if (shouldBeChecked && !isSelected) {
+    idpType.value = [...idpType.value, idp.code];
+  }
+
+  if (!shouldBeChecked && isSelected) {
+    idpType.value = idpType.value.filter((code) => code !== idp.code);
+  }
+}
+
 const ID_MODE = computed(() => IdentityMode);
 
 onBeforeMount(() => {
-  idpType.value = form?.value?.idps || [];
+  idpType.value = Array.isArray(form.value.idps) ? [...form.value.idps] : [];
 });
 
 watch(idpType, (val) => {
-  form.value.idps = val;
+  form.value.idps = [...val];
   if (userTypeRef.value) {
     userTypeRef.value.validate();
   }
@@ -76,6 +136,10 @@ const hasFormAccessSettings = computed(() => {
     return idpStore.hasFormAccessSettings(type, 'idim');
   });
 });
+
+const hasBceidBasicAccessSettings = computed(() =>
+  idpType.value.includes(RestrictedIDPs.BCEID_BASIC)
+);
 
 function userTypeChanged() {
   // if they checked enable drafts then went back to public, uncheck it
@@ -107,6 +171,17 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
         $t('trans.formSettings.formAccess')
       }}</span></template
     >
+    <v-alert
+      color="primary"
+      icon="mdi-alert"
+      lines="one"
+      class="text-white mb-2"
+    >
+      {{ $t('trans.formSettings.bceidDeprecationAlert') }}
+      <a style="color: lightblue" href="mailto:DT.Consulting@gov.bc.ca"
+        >DT.Consulting@gov.bc.ca</a
+      >
+    </v-alert>
     <v-autocomplete
       ref="userTypeRef"
       v-model="form.userType"
@@ -145,22 +220,60 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
       <v-expand-transition>
         <div v-if="form.userType === ID_MODE.LOGIN" class="pl-6">
           <div>
-            <v-checkbox
-              v-for="btn in formAccessButtons"
-              :key="btn.code"
-              v-model="idpType"
-              :label="btn.display"
-              :value="btn.code"
-              class="my-0"
-              hide-details="auto"
-              :data-test="`idpType-${btn.hint}`"
-              :class="{ 'dir-rtl': isRTL }"
-            />
+            <div v-for="idp in filteredIDPs" :key="idp.code">
+              <v-checkbox
+                :model-value="idpType.includes(idp.code)"
+                class="my-0"
+                hide-details="auto"
+                :data-test="`idpType-${idp.hint}`"
+                :class="{ 'dir-rtl': isRTL }"
+                @update:model-value="(checked) => onIdpToggle(idp, checked)"
+              >
+                <template #label>
+                  <span class="d-flex align-center">
+                    <span>{{ idp.display }}</span>
+
+                    <v-chip
+                      v-if="idp.restricted"
+                      size="x-small"
+                      class="ml-2 restricted-chip"
+                      variant="flat"
+                    >
+                      {{ $t('trans.formSettings.restrictedIDP') }}
+                    </v-chip>
+                  </span>
+                </template>
+              </v-checkbox>
+
+              <div v-if="idp.deprecated" class="text-error" :lang="locale">
+                {{ $t('trans.formSettings.idpDeprecatedWarning') }}
+              </div>
+            </div>
+            <BaseDialog
+              v-model="showDeprecatedIdpDialog"
+              type="CONTINUE"
+              @close-dialog="cancelDeprecatedIdpRemoval"
+              @continue-dialog="confirmDeprecatedIdpRemoval"
+            >
+              <template #title>
+                <span :lang="locale">Remove deprecated login option?</span>
+              </template>
+
+              <template #text>
+                <span :lang="locale">
+                  {{ $t('trans.formSettings.idpDeprecatedDialog') }}
+                </span>
+              </template>
+
+              <template #button-text-continue>
+                <span :lang="locale">Remove</span>
+              </template>
+            </BaseDialog>
           </div>
           <!-- Mandatory BCeID process notification -->
           <v-expand-transition>
             <BaseInfoCard
-              v-if="hasFormAccessSettings"
+              v-if="hasFormAccessSettings && !hasBceidBasicAccessSettings"
               class="mr-4"
               :class="{ 'dir-rtl': isRTL }"
             >
@@ -188,6 +301,36 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
               </p>
             </BaseInfoCard>
           </v-expand-transition>
+          <!-- Basic BCeID onboarding halted notification -->
+          <v-expand-transition>
+            <BaseInfoCard
+              v-if="hasBceidBasicAccessSettings"
+              class="mr-4 bceid-basic-warning"
+              :class="{ 'dir-rtl': isRTL }"
+              data-test="bceid-basic-halted-info"
+            >
+              <h4 class="bceid-basic-warning__title" :lang="locale">
+                <v-icon class="mr-3" color="primary" icon="mdi:mdi-alert" />
+                {{ $t('trans.formSettings.bceidBasicHalted') }}
+              </h4>
+              <p class="my-2" :lang="locale">
+                {{ $t('trans.formSettings.bceidBasicHaltedA') }} (<a
+                  href="https://ociomysc.service-now.com/sp?id=kb_article&amp;sys_id=4221c6932b1a8b9083eaf885d391bfb8&amp;spa=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :lang="locale"
+                  >{{ $t('trans.formSettings.bceidBasicBulletin') }}</a
+                >{{ $t('trans.formSettings.bceidBasicHaltedB') }}
+              </p>
+              <p class="mt-2 mb-0" :lang="locale">
+                {{ $t('trans.formSettings.bceidBasicExemptionA') }}
+                <a href="mailto:DTConsulting@gov.bc.ca"
+                  >DTConsulting@gov.bc.ca</a
+                >
+                {{ $t('trans.formSettings.bceidBasicExemptionB') }}
+              </p>
+            </BaseInfoCard>
+          </v-expand-transition>
         </div>
       </v-expand-transition>
       <v-expand-transition>
@@ -211,3 +354,25 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
     </div>
   </BasePanel>
 </template>
+<style scoped>
+.bceid-basic-warning {
+  background-color: #fff4d6;
+  border: 1px solid #e0b547;
+  border-left: 6px solid #e0a800;
+  border-radius: 4px;
+}
+
+.bceid-basic-warning__title {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: #313132;
+}
+
+.restricted-chip {
+  background-color: #fff4cc !important;
+  border: 1px solid #d6b64c !important;
+  color: #313132 !important;
+  font-weight: 600;
+}
+</style>

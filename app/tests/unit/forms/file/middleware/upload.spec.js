@@ -49,13 +49,15 @@ describe('fileSetup', () => {
     fs.realpathSync.mockReturnValue(mockOsTmpDir);
   });
 
-  test('should use os.tmpdir when no config or environment variable is provided', () => {
+  test('should default to a dedicated subdir of os.tmpdir when no config or environment variable is provided', () => {
+    const expectedDir = `${mockOsTmpDir}/chefs-uploads`;
+
     const result = fileSetup();
 
-    expect(result.fileUploadsDir).toBe(mockOsTmpDir);
+    expect(result.fileUploadsDir).toBe(expectedDir);
     expect(result.maxFileSize).toBe(26214400); // Default 25MB in bytes
     expect(result.maxFileCount).toBe(1);
-    expect(fs.ensureDirSync).toHaveBeenCalledWith(mockOsTmpDir);
+    expect(fs.ensureDirSync).toHaveBeenCalledWith(expectedDir);
   });
 
   test('should use environment variable for fileUploadsDir when no config is provided', () => {
@@ -136,14 +138,25 @@ describe('fileSetup', () => {
 describe('fileUpload.getFileUploadsDir', () => {
   const mockOs = '/mock_os_tmpdir';
 
-  test('uses os.tmpdir when there is no config or environment variable', async () => {
+  test('defaults to a dedicated subdir of os.tmpdir when there is no config or environment variable', async () => {
     fs.realpathSync.mockReturnValueOnce(mockOs);
     os.tmpdir.mockReturnValueOnce(mockOs);
     fileUpload.init();
 
     const result = fileUpload.getFileUploadsDir();
 
-    expect(result).toBe(mockOs);
+    expect(result).toBe(`${mockOs}/chefs-uploads`);
+  });
+
+  test('resolves the default subdir even when read before init()', async () => {
+    fs.realpathSync.mockReturnValue(mockOs);
+    os.tmpdir.mockReturnValue(mockOs);
+
+    // init() intentionally NOT called - a read before init must still be scoped
+    // to the subdir, never the bare OS temp dir.
+    const result = fileUpload.getFileUploadsDir();
+
+    expect(result).toBe(`${mockOs}/chefs-uploads`);
   });
 });
 

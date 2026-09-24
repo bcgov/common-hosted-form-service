@@ -81,9 +81,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { appAxios } from '~/services/interceptors';
+import { reachable } from '~/offline/useReachability';
+import { useFormStore } from '~/store/form';
 
 const { t } = useI18n({ useScope: 'global' });
 
@@ -102,6 +105,12 @@ const rocketChatUrl = import.meta.env.VITE_ROCKETCHAT_URL || '';
 let intervalId;
 
 const defaultStatusMessage = t('trans.statusOverlay.defaultStatusMessage');
+
+// Only suppress the overlay on forms that opt into offline submission; other
+// views (admin, non-offline forms, login) still need the real "backend
+// unavailable" warning when they can't reach the server.
+const { form } = storeToRefs(useFormStore());
+const offlineFormActive = computed(() => !!form.value?.enableOfflineSubmission);
 
 function setStatusOverlay(data, errorMsg = null) {
   // Handles both status objects and error data
@@ -133,6 +142,14 @@ async function pollStatus() {
   if (!props.parentReady) {
     return;
   }
+  // Client is offline AND we're on a form that supports offline submission:
+  // the offline chip already communicates this, and a network-error catch
+  // here would show "service unavailable" on top of a healthy backend. Skip.
+  // Non-offline forms and other views keep the normal behavior; they have no
+  // offline UX to defer to.
+  if (!reachable.value && offlineFormActive.value) {
+    return;
+  }
   try {
     const { data } = await appAxios().get('/status');
     setStatusOverlay(data);
@@ -141,10 +158,26 @@ async function pollStatus() {
   }
 }
 
+function handleReachabilityChange(isReachable) {
+  if (!isReachable) {
+    // Only defer to the offline chip on offline-enabled forms; elsewhere the
+    // overlay is still the right signal for "we can't reach the backend".
+    if (offlineFormActive.value) {
+      showOverlay.value = false;
+      msg.value = '';
+    }
+    return;
+  }
+  // Reachability restored: refresh status so a real backend problem is caught
+  // without waiting for the next 60s tick.
+  pollStatus();
+}
+
 onMounted(() => {
   pollStatus();
   intervalId = setInterval(pollStatus, 60 * 1000); // Poll every 10 seconds
   window.addEventListener('service-unavailable', handleServiceUnavailable);
+  watch(reachable, handleReachabilityChange);
 });
 
 onUnmounted(() => {

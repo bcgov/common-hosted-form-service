@@ -1,4 +1,4 @@
-ARG VARIANT="20.18.3-bookworm"
+ARG VARIANT="24-bookworm"
 FROM node:${VARIANT}
 
 # Layer 1: Install basic system utilities (rarely change)

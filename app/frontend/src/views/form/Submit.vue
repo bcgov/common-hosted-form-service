@@ -1,4 +1,6 @@
 <script setup>
+import { useRoute } from 'vue-router';
+
 import FormViewer from '~/components/designer/FormViewer.vue';
 
 defineProps({
@@ -7,8 +9,16 @@ defineProps({
     required: true,
   },
 });
+
+const route = useRoute();
 </script>
 
 <template>
-  <FormViewer :form-id="f" display-title />
+  <FormViewer
+    :key="`${route.query.editOffline ?? 'new'}-${route.query.f ?? ''}-${
+      route.query.fresh ?? ''
+    }`"
+    :form-id="f"
+    display-title
+  />
 </template>

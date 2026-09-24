@@ -1,3 +1,5 @@
+import UseForCopy from '../../Common/UseForCopy';
+
 export default {
   key: 'customData',
   label: 'Data',
@@ -11,6 +13,7 @@ export default {
       tableView: false,
       label: 'Text/Images',
     },
+    UseForCopy,
     {
       type: 'map',
       label: 'Default Value',

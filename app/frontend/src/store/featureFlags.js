@@ -46,6 +46,10 @@ export const useFeatureFlagStore = defineStore('featureFlag', {
      * @returns {Promise<Object>} the resolved active map
      */
     async resolveForContext({ formId, tenantId } = {}) {
+      // Clear immediately so a stale active map from a previously-opened form
+      // cannot leak into the UI while the (async) re-resolution is in flight —
+      // e.g. an allowlisted feature briefly showing on a brand-new form.
+      this.active = {};
       try {
         const params = {};
         if (formId) params.formId = formId;

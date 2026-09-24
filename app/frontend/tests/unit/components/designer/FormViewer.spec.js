@@ -4,12 +4,16 @@ import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { flushPromises, shallowMount } from '@vue/test-utils';
 import { beforeEach, expect, vi } from 'vitest';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { nextTick, ref } from 'vue';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import templateExtensions from '~/plugins/templateExtensions';
 import { fileService, formService, rbacService } from '~/services';
+import {
+  offlineQueue as mockOfflineQueue,
+  QueueStatus as MockQueueStatus,
+} from '~/offline/queue';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -22,7 +26,41 @@ vi.mock('vue-router', () => ({
     push: () => {},
     replace: () => {},
   })),
+  useRoute: vi.fn(() => ({ query: {} })),
 }));
+
+// Offline queue is a module singleton backed by IndexedDB; stub it so the
+// offline-edit path is deterministic and we can assert begin/endEdit.
+vi.mock('~/offline/queue', () => ({
+  QUEUE_SOFT_CAP: 50,
+  QueueStatus: { PENDING: 'pending', SYNCING: 'syncing' },
+  offlineQueue: {
+    entries: { value: [] },
+    ensureLoaded: vi.fn(async () => {}),
+    enqueue: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    beginEdit: vi.fn(),
+    endEdit: vi.fn(),
+    isEditing: vi.fn(() => false),
+  },
+}));
+
+vi.mock('~/offline/offlineQueueManager', () => ({
+  tryDrain: vi.fn(),
+}));
+
+// Force a deterministic online state so the online-submit path is exercised
+// (happy-dom leaves navigator.onLine falsy, which would take the offline pre-empt).
+vi.mock('~/offline/useOnlineStatus', async () => {
+  const { ref } = await import('vue');
+  const online = ref(true);
+  const networkOnline = ref(true);
+  const reachable = ref(true);
+  return {
+    useOnlineStatus: () => ({ online, networkOnline, reachable }),
+  };
+});
 
 const STUBS = {
   BaseDialog: true,
@@ -251,6 +289,7 @@ describe('FormViewer.vue', () => {
       props: {
         formId: formId,
         displayTitle: true,
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -275,6 +314,9 @@ describe('FormViewer.vue', () => {
       },
       // pass in options for custom components to use
       componentOptions: {
+        map: {
+          allowExistingFeatureChanges: false,
+        },
         simplefile: {
           config: appStore.config,
           chefsToken: wrapper.vm.getCurrentAuthHeader,
@@ -333,7 +375,10 @@ describe('FormViewer.vue', () => {
       expect(readPublishedSpy).toBeCalledTimes(1);
       expect(getSubmissionSpy).toBeCalledTimes(0);
       expect(wrapper.vm.showModal).toBeTruthy();
-      expect(addEventListenerSpy).toBeCalledTimes(1);
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
     it('if submission id and it is not a duplicate, it should call getFormData', async () => {
@@ -357,7 +402,10 @@ describe('FormViewer.vue', () => {
       expect(readPublishedSpy).toBeCalledTimes(0);
       expect(getSubmissionSpy).toBeCalledTimes(1);
       expect(wrapper.vm.showModal).toBeFalsy();
-      expect(addEventListenerSpy).toBeCalledTimes(1);
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
   });
@@ -385,7 +433,10 @@ describe('FormViewer.vue', () => {
     expect(readPublishedSpy).toBeCalledTimes(1);
     expect(getSubmissionSpy).toBeCalledTimes(1);
     expect(wrapper.vm.showModal).toBeFalsy();
-    expect(addEventListenerSpy).toBeCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'beforeunload',
+      expect.any(Function)
+    );
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
@@ -409,7 +460,10 @@ describe('FormViewer.vue', () => {
     wrapper.unmount();
 
     await flushPromises();
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'beforeunload',
+      expect.any(Function)
+    );
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
@@ -1414,7 +1468,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(replace).toBeCalledTimes(1);
   });
@@ -1449,7 +1503,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(createSubmissionSpy).toBeCalledTimes(1);
     expect(push).toBeCalledTimes(1);
   });
@@ -1494,7 +1548,7 @@ describe('FormViewer.vue', () => {
 
     addNotificationSpy.mockReset();
 
-    await wrapper.vm.saveDraft();
+    await wrapper.vm.confirmSaveDraft();
     expect(createSubmissionSpy).toBeCalledTimes(0);
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(replace).toBeCalledTimes(0);
@@ -3095,5 +3149,106 @@ describe('FormViewer.vue', () => {
 
     await wrapper.vm.uploadFile('this is a file object');
     expect(uploadFileSpy).toBeCalledTimes(1);
+  });
+
+  it('offline edit aborts cleanly when the schema cannot load, so Save cannot overwrite the queued entry', async () => {
+    const entryId = 'entry-abc';
+    const entry = {
+      id: entryId,
+      dedupKey: 'dk-1',
+      formId,
+      versionId: 'v-1',
+      status: MockQueueStatus.PENDING,
+      body: { draft: false, submission: { data: { field: 'value' } } },
+      note: null,
+    };
+    mockOfflineQueue.entries.value = [entry];
+    mockOfflineQueue.ensureLoaded.mockResolvedValue();
+    mockOfflineQueue.beginEdit.mockClear();
+    mockOfflineQueue.endEdit.mockClear();
+    mockOfflineQueue.update.mockClear();
+
+    // Enter edit mode for this entry, and give it a router.replace spy.
+    useRoute.mockReturnValueOnce({ query: { editOffline: entryId, f: formId } });
+    const replaceSpy = vi.fn();
+    useRouter.mockReturnValueOnce({ push: vi.fn(), replace: replaceSpy });
+
+    // Cache miss -> readVersion; simulate the offline fetch failing.
+    readVersionSpy.mockReset();
+    readVersionSpy.mockRejectedValue(new Error('Network Error'));
+
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Edit state is fully unwound: the banner never renders, so its Save
+    // (which would call offlineQueue.update with an empty submission) is
+    // unreachable.
+    expect(mockOfflineQueue.beginEdit).toHaveBeenCalledWith(entryId);
+    expect(mockOfflineQueue.endEdit).toHaveBeenCalledWith(entryId);
+    expect(wrapper.vm.editingEntry).toBeNull();
+    expect(mockOfflineQueue.update).not.toHaveBeenCalled();
+
+    // Routed back to a fresh form with the "unavailable" notice.
+    expect(replaceSpy).toHaveBeenCalledWith({
+      name: 'FormSubmit',
+      query: { f: formId },
+    });
+    expect(addNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: 'trans.offlineSubmission.editEntryUnavailable',
+      })
+    );
+  });
+
+  it('sends a dedupKey on the online submit and reuses the same key when a lost response falls back to the offline queue', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+    await flushPromises();
+
+    // Offline-capable form, new submission, currently online, schedule not expired.
+    wrapper.vm.form = {
+      id: formId,
+      name: 'Form',
+      enableOfflineSubmission: true,
+      showSubmissionConfirmation: false,
+    };
+    wrapper.vm.isFormScheduleExpired = false;
+    await nextTick();
+
+    // The online create reaches the server but the response is lost (network error).
+    const networkErr = Object.assign(new Error('Network Error'), {
+      code: 'ERR_NETWORK',
+    });
+    createSubmissionSpy.mockReset();
+    createSubmissionSpy.mockRejectedValueOnce(networkErr);
+    mockOfflineQueue.enqueue.mockReset();
+    mockOfflineQueue.enqueue.mockResolvedValueOnce({ id: 'e1', dedupKey: 'x' });
+
+    await wrapper.vm.doSubmit({ data: {} });
+    await flushPromises();
+
+    // The online POST carried a Dedup-Key...
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(1);
+    const sentKey = createSubmissionSpy.mock.calls[0][3]?.dedupKey;
+    expect(sentKey).toBeTruthy();
+
+    // ...and the offline fallback reused the SAME key, so the eventual drain replays
+    // instead of creating a duplicate submission.
+    expect(mockOfflineQueue.enqueue).toHaveBeenCalledTimes(1);
+    expect(mockOfflineQueue.enqueue.mock.calls[0][0].dedupKey).toBe(sentKey);
   });
 });

@@ -1,7 +1,7 @@
 const service = require('../../../../src/forms/auth/service');
 const idpService = require('../../../../src/components/idpService');
 const tenantService = require('../../../../src/components/tenantService');
-const { UserFormAccess, FormGroup, Role, UserLoginHistory } = require('../../../../src/forms/common/models');
+const { User, UserFormAccess, FormGroup, Role, UserLoginHistory } = require('../../../../src/forms/common/models');
 const { queryUtils } = require('../../../../src/forms/common/utils');
 
 afterEach(() => {
@@ -41,7 +41,16 @@ describe('formAccessToForm', () => {
       permissions: 12,
     };
     const result = service.formAccessToForm(form);
-    expect(result).toEqual(form);
+    expect(result).toMatchObject(form);
+  });
+
+  // Regression: whitelist mapper silently drops new fields if not added here.
+  it('projects enableOfflineSubmission', () => {
+    const out = service.formAccessToForm({ enableOfflineSubmission: true });
+    expect(out.enableOfflineSubmission).toBe(true);
+
+    const off = service.formAccessToForm({ enableOfflineSubmission: false });
+    expect(off.enableOfflineSubmission).toBe(false);
   });
 });
 
@@ -148,7 +157,7 @@ describe('getUserForms', () => {
     return queryObj;
   };
 
-  it('personal path returns all forms without a whereNull filter', async () => {
+  it('personal path excludes tenanted forms from the list-all (My Forms) query', async () => {
     const userInfo = { id: 'user-1' };
     const items = [{ formId: 'personal-form', tenantId: null, idps: ['idir'], roles: [], permissions: [] }];
 
@@ -161,9 +170,64 @@ describe('getUserForms', () => {
     const result = await service.getUserForms(userInfo, {});
 
     expect(queryObj.modify).toHaveBeenCalledWith('filterUserId', userInfo.id);
-    expect(queryObj.modify).not.toHaveBeenCalledWith('whereNull', 'tenantId');
+    // Migration is additive, so a migrated form keeps its roles and idps. Without this
+    // the original owner (and every matching-IDP user) keeps seeing it in My Forms.
+    expect(queryObj.modify).toHaveBeenCalledWith('filterNoTenant');
     expect(filterFormsSpy).toHaveBeenCalledWith(userInfo, items, undefined);
     expect(result).toEqual(['personal-form']);
+  });
+
+  it('personal path does NOT exclude tenanted forms on a single-form permission check', async () => {
+    const userInfo = { id: 'user-1' };
+    const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'group-form', active: true });
+    const queryObj = makeQueryObj(items);
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    jest.spyOn(service, 'filterForms').mockReturnValue(['group-form']);
+
+    await service.getUserForms(userInfo, { formId: 'group-form' });
+
+    expect(queryObj.modify).not.toHaveBeenCalledWith('filterNoTenant');
+  });
+
+  it('personal path: MIGRATED form (tenanted, idps retained) still resolves tenant group roles', async () => {
+    // Regression for the migrated-form 401: group resolution used to require
+    // idps.length === 0, which is never true for a form migrated out of classic CHEFS,
+    // so group members fell through to {submission_create, form_read} and were denied.
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [{ formId: 'migrated-form', tenantId: 'tenant-1', idps: ['idir'], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'migrated-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({
+      withGraphFetched: jest.fn().mockResolvedValue([{ code: 'submission_reviewer', permissions: [{ code: 'submission_read' }] }]),
+    });
+    jest.spyOn(FormGroup, 'query').mockReturnValue({ modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', roles: ['submission_reviewer'] }]);
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    const result = await service.getUserForms(userInfo, { formId: 'migrated-form' }, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-1');
+    expect(result[0].permissions).toContain('submission_read');
+  });
+
+  it('surfaces a 503 rather than silently denying access when the group lookup fails', async () => {
+    // A failed lookup must not be read as "user is in no groups" — that collapses every
+    // permission and reports a service outage as an authorization error.
+    const userInfo = { id: 'user-1' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'group-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(new Error('CSTAR unreachable'));
+
+    await expect(service.getUserForms(userInfo, { formId: 'group-form' }, headers)).rejects.toMatchObject({ status: 503 });
   });
 
   it('personal path: tenanted form with IDIR IDP is included in query results when no tenant header', async () => {
@@ -293,5 +357,37 @@ describe('getUserForms', () => {
 
     expect(filterFormsSpy).toHaveBeenCalledWith(userInfo, items, normalizedParams.accessLevels);
     expect(result).toEqual(['filtered']);
+  });
+});
+
+describe('updateUser', () => {
+  it('clears stale when an existing user logs in', async () => {
+    const trx = {
+      commit: jest.fn().mockResolvedValue(),
+      rollback: jest.fn().mockResolvedValue(),
+    };
+    const patchAndFetchById = jest.fn().mockResolvedValue({});
+    const startTransactionSpy = jest.spyOn(User, 'startTransaction').mockResolvedValue(trx);
+    const querySpy = jest.spyOn(User, 'query').mockReturnValue({ patchAndFetchById });
+    const readUserSpy = jest.spyOn(service, 'readUser').mockResolvedValue({});
+    const data = {
+      idpUserId: 'idir-guid',
+      keycloakId: 'keycloak-guid',
+      username: 'testuser',
+      fullName: 'Test User',
+      email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User',
+      idp: 'idir',
+    };
+
+    await service.updateUser('user-id', data);
+
+    expect(patchAndFetchById).toHaveBeenCalledWith('user-id', expect.objectContaining({ idpCode: 'idir', stale: false }));
+    expect(trx.commit).toHaveBeenCalledTimes(1);
+
+    startTransactionSpy.mockRestore();
+    querySpy.mockRestore();
+    readUserSpy.mockRestore();
   });
 });

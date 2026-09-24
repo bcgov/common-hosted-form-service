@@ -29,7 +29,8 @@
       "runtimeExecutable": "npm",
       "type": "node",
       "env": {
-        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local"
+        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local",
+        "APITOKEN": "local-dev-token"
       }
     },
     {

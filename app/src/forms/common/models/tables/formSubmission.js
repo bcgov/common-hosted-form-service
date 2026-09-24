@@ -37,6 +37,8 @@ class FormSubmission extends Timestamps(Model) {
         draft: { type: 'boolean' },
         deleted: { type: 'boolean' },
         submission: { type: 'object' },
+        queuedAt: { type: ['string', 'null'] },
+        dedupKey: { type: ['string', 'null'], pattern: Regex.UUID },
         ...stamps,
       },
       additionalProperties: false,

@@ -146,13 +146,13 @@ describe('Form Designer', () => {
     cy.get('.v-card-text > .v-select > .v-input__control > .v-field > .v-field__append-inner').click();
     cy.get('.v-card-text > .v-btn').click();
     //Verify Submission table has only search results
-    cy.get('.v-data-table__tr > :nth-child(7)').contains('Nancy').should('be.visible');
-    cy.get('.v-data-table__tbody > :nth-child(1) > :nth-child(7)').contains('Edit uploaded draft').should('not.exist');
+    cy.get('.v-data-table__tbody').contains('Nancy').should('be.visible');
+    cy.get('.v-data-table__tbody').contains('Edit uploaded draft').should('not.exist');
     //Clear search results
     cy.get('.v-btn--density-compact > .v-btn__content').click();
     //Verify all submissions exist
-    cy.get('.v-data-table__tr > :nth-child(7)').contains('Edit uploaded draft').should('exist');
-    cy.get('.v-data-table__tbody > :nth-child(4) > :nth-child(7)').contains('Nancy').should('exist');
+    cy.get('.v-data-table__tbody').contains('Edit uploaded draft').should('exist');
+    cy.get('.v-data-table__tbody').contains('Nancy').should('exist');
     });
     //Delete form after test run
     cy.get('.mdi-cog').click();

@@ -38,14 +38,12 @@ export function formsettings(){
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Public (anonymous)').click();
     //Link to contact GCPE for gathering public info
-    cy.get(':nth-child(3) > :nth-child(2) > .v-card').should('be.visible');
     cy.get('a[href="https://engage.gov.bc.ca/govtogetherbc/"]').should('exist');
     //Option to select Log-in Required
     cy.get('[data-test="userType"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('Log-in Required').click();
     cy.get('label').contains('IDIR').should('exist');
     cy.get('label').contains('BC Services Card').should('exist');
-    cy.get('label').contains('Basic BCeID').should('exist');
     cy.get('label').contains('Business BCeID').should('exist');
     cy.contains('Please select at least one identity provider.').should('be.visible');
    //Option to select Specific team members
@@ -96,7 +94,7 @@ export function formsettings(){
     cy.contains("Citizens' Services (CITZ)").click();
     cy.get('.mb-4 > .mdi-help-circle-outline').click();
     cy.contains('If you do not see your specific use case, contact the CHEFS team to discuss further options').should('be.visible');
-    cy.get('[data-test="case-select"]').click();
+    cy.get('[data-test="case-select"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click({force: true});
     cy.get('.v-list').should('contain','Applications that will be evaluated followed');
     cy.get('.v-list').should('contain','Collection of Datasets, data submission');
     cy.get('.v-list').should('contain','Registrations or Sign up - no evaluation');

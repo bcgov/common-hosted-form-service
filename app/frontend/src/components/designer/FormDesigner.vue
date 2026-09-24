@@ -100,6 +100,8 @@ onMounted(async () => {
   await setProxyHeaders();
   if (!properties.formId) {
     // We are creating a new form, so we obtain the original schema here.
+    // Feature flags for the empty (new-form) context are resolved up front by
+    // Create.vue, so no allowlist-gated control leaks in from a prior form.
     patch.value.originalSchema = deepClone(formSchema.value);
   }
 });
@@ -402,6 +404,7 @@ async function schemaCreateNew() {
     }),
     sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
     enableSubmitterDraft: form.value.enableSubmitterDraft,
+    enableOfflineSubmission: form.value.enableOfflineSubmission,
     enableTeamMemberDraftShare: form.value.enableTeamMemberDraftShare,
     allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
@@ -410,7 +413,11 @@ async function schemaCreateNew() {
     enableSubmitterRevision: form.value.enableSubmitterRevision,
     showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
     showSubmissionConfirmation: form.value.showSubmissionConfirmation,
+    enableSubmitterEmailReceipt: form.value.enableSubmitterEmailReceipt,
+    enableSubmissionUrlSharing: form.value.enableSubmissionUrlSharing,
+    hideSubmissionContentOnSuccess: form.value.hideSubmissionContentOnSuccess,
     submissionReceivedEmails: form.value.submissionReceivedEmails,
+    submissionPackageSettings: form.value.submissionPackageSettings,
     reminder_enabled: false,
     deploymentLevel: form.value.deploymentLevel,
     ministry: form.value.ministry,

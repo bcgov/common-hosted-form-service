@@ -8,6 +8,7 @@ import FormDesigner from '~/components/designer/FormDesigner.vue';
 import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import FormProfile from '~/components/designer/FormProfile.vue';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { AppPermissions, IdentityMode } from '~/utils/constants';
 
@@ -22,6 +23,12 @@ const disclaimerCheckbox = ref(false);
 const disclaimerRules = [(v) => !!v || t('trans.create.agreementErrMsg')];
 
 const formStore = useFormStore();
+
+// A brand-new form has no context, so resolve feature flags for the empty
+// context up front. resolveForContext clears the active map immediately, so any
+// stale flags carried over from a previously-opened (allowlisted) form can't
+// leak into the settings panel and wrongly show gated, allowlist-only controls.
+useFeatureFlagStore().resolveForContext({});
 
 const { form, isRTL } = storeToRefs(formStore);
 const APP_PERMS = computed(() => AppPermissions);

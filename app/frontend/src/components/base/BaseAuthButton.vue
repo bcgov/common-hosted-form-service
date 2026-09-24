@@ -5,11 +5,13 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
+import { useOnlineStatus } from '~/offline/useOnlineStatus';
 
 const { locale } = useI18n({ useScope: 'global' });
 
 const authStore = useAuthStore();
 const { authenticated, ready } = storeToRefs(authStore);
+const { online } = useOnlineStatus();
 
 const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
 </script>
@@ -17,20 +19,33 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
 <template>
   <div v-if="ready" class="d-print-none">
     <!-- Logout: icon-only on tablet/mobile (< lg), full text on lg+ desktop -->
-    <v-btn
+    <v-tooltip
       v-if="authenticated"
-      id="logoutButton"
-      color="white"
-      variant="outlined"
-      :title="$t('trans.baseAuthButton.logout')"
-      :aria-label="$t('trans.baseAuthButton.logout')"
-      @click="authStore.logout"
+      location="bottom"
+      :text="
+        online
+          ? $t('trans.baseAuthButton.logout')
+          : $t('trans.baseAuthButton.logoutOfflineHint')
+      "
     >
-      <v-icon>mdi-logout</v-icon>
-      <span :lang="locale" class="d-none d-lg-flex">{{
-        $t('trans.baseAuthButton.logout')
-      }}</span>
-    </v-btn>
+      <template #activator="{ props: tipProps }">
+        <span v-bind="tipProps">
+          <v-btn
+            id="logoutButton"
+            color="white"
+            variant="outlined"
+            :disabled="!online"
+            :aria-label="$t('trans.baseAuthButton.logout')"
+            @click="authStore.logout"
+          >
+            <v-icon>mdi-logout</v-icon>
+            <span :lang="locale" class="d-none d-lg-flex">{{
+              $t('trans.baseAuthButton.logout')
+            }}</span>
+          </v-btn>
+        </span>
+      </template>
+    </v-tooltip>
     <!-- Login: same responsive pattern -->
     <v-btn
       v-else-if="hasLogin"

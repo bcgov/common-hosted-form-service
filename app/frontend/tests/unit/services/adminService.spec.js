@@ -121,6 +121,18 @@ describe('Admin Service', () => {
     });
   });
 
+  describe('admin/users/duplicates', () => {
+    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.USERS}/duplicates`;
+
+    it('gets unresolved duplicate users', async () => {
+      mockAxios.onGet(endpoint).reply(200, []);
+
+      const result = await adminService.listDuplicateUsers();
+      expect(result.data).toEqual([]);
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
   describe('admin/users/{userId}', () => {
     const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${zeroUuid}`;
 
@@ -130,6 +142,15 @@ describe('Admin Service', () => {
       const result = await adminService.readUser(zeroUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
+    });
+
+    it('calls patch endpoint', async () => {
+      mockAxios.onPatch(endpoint).reply(200);
+
+      const result = await adminService.updateUser(zeroUuid, { stale: true });
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.patch).toHaveLength(1);
+      expect(JSON.parse(mockAxios.history.patch[0].data)).toEqual({ stale: true });
     });
   });
 

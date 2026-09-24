@@ -19,7 +19,11 @@ data:
     # LogFile must be writable for the user running daemon.
     # A full path is required.
     # Default: disabled
-    LogFile /dev/stdout
+    # /dev/stdout is NOT used here: clamd's log-open logic fails to resolve
+    # it through OpenShift/CRI-O's symlink chain ("Too many levels of
+    # symbolic links"), crashing the container on startup. run.sh tails
+    # this file to stdout instead so logs remain visible in `oc logs`.
+    LogFile /var/log/clamav/clamav.log
 
     # By default the log file is locked for writing - the lock protects against
     # running clamd multiple times (if want to run another clamd, please
@@ -380,70 +384,70 @@ data:
     #
     # Default: no
     #HeuristicScanPrecedence yes
-    
-    
+
+
     ##
     ## Data Loss Prevention (DLP)
     ##
-    
+
     # Enable the DLP module
     # Default: No
     #StructuredDataDetection yes
-    
+
     # This option sets the lowest number of Credit Card numbers found in a file
     # to generate a detect.
     # Default: 3
     #StructuredMinCreditCardCount 5
-    
+
     # This option sets the lowest number of Social Security Numbers found
     # in a file to generate a detect.
     # Default: 3
     #StructuredMinSSNCount 5
-    
+
     # With this option enabled the DLP module will search for valid
     # SSNs formatted as xxx-yy-zzzz
     # Default: yes
     #StructuredSSNFormatNormal yes
-    
+
     # With this option enabled the DLP module will search for valid
     # SSNs formatted as xxxyyzzzz
     # Default: no
     #StructuredSSNFormatStripped yes
-    
-    
+
+
     ##
     ## HTML
     ##
-    
+
     # Perform HTML normalisation and decryption of MS Script Encoder code.
     # Default: yes
     # If you turn off this option, the original files will still be scanned, but
     # without additional processing.
     #ScanHTML yes
-    
-    
+
+
     ##
     ## Archives
     ##
-    
+
     # ClamAV can scan within archives and compressed files.
     # If you turn off this option, the original files will still be scanned, but
     # without unpacking and additional processing.
     # Default: yes
     #ScanArchive yes
-    
+
     # Mark encrypted archives as viruses (Encrypted.Zip, Encrypted.RAR).
     # Default: no
     #ArchiveBlockEncrypted no
-    
-    
+
+
     ##
     ## Limits
     ##
-    
+
     # The options below protect your system against Denial of Service attacks
     # using archive bombs.
-    
+
     # This option sets the maximum amount of data to be scanned for each input file.
     # Archives and other containers are recursively extracted and scanned up to this
     # value.
@@ -452,7 +456,7 @@ data:
     # to the system.
     # Default: 100M
     #MaxScanSize 150M
-    
+
     # Files larger than this limit won't be scanned. Affects the input file itself
     # as well as files contained inside it (when the input file is an archive, a
     # document or some other kind of container).
@@ -461,14 +465,14 @@ data:
     # to the system.
     # Default: 25M
     MaxFileSize {{.Values.clamav.limits.fileSize}}M
-    
+
     # Nested archives are scanned recursively, e.g. if a Zip archive contains a RAR
     # file, all files within it will also be scanned. This options specifies how
     # deeply the process should be continued.
     # Note: setting this limit too high may result in severe damage to the system.
     # Default: 16
     #MaxRecursion 10
-    
+
     # Number of files to be scanned within an archive, a document, or any other
     # container file.
     # Value of 0 disables the limit.
@@ -476,98 +480,98 @@ data:
     # to the system.
     # Default: 10000
     #MaxFiles 15000
-    
+
     # Maximum size of a file to check for embedded PE. Files larger than this value
     # will skip the additional analysis step.
     # Note: disabling this limit or setting it too high may result in severe damage
     # to the system.
     # Default: 10M
     #MaxEmbeddedPE 10M
-    
+
     # Maximum size of a HTML file to normalize. HTML files larger than this value
     # will not be normalized or scanned.
     # Note: disabling this limit or setting it too high may result in severe damage
     # to the system.
     # Default: 10M
     #MaxHTMLNormalize 10M
-    
+
     # Maximum size of a normalized HTML file to scan. HTML files larger than this
     # value after normalization will not be scanned.
     # Note: disabling this limit or setting it too high may result in severe damage
     # to the system.
     # Default: 2M
     #MaxHTMLNoTags 2M
-    
+
     # Maximum size of a script file to normalize. Script content larger than this
     # value will not be normalized or scanned.
     # Note: disabling this limit or setting it too high may result in severe damage
     # to the system.
     # Default: 5M
     #MaxScriptNormalize 5M
-    
+
     # Maximum size of a ZIP file to reanalyze type recognition. ZIP files larger
     # than this value will skip the step to potentially reanalyze as PE.
     # Note: disabling this limit or setting it too high may result in severe damage
     # to the system.
     # Default: 1M
     #MaxZipTypeRcg 1M
-    
+
     # This option sets the maximum number of partitions of a raw disk image to be scanned.
     # Raw disk images with more partitions than this value will have up to the value number
     # partitions scanned. Negative values are not allowed.
     # Note: setting this limit too high may result in severe damage or impact performance.
     # Default: 50
     #MaxPartitions 128
-    
+
     # This option sets the maximum number of icons within a PE to be scanned.
     # PE files with more icons than this value will have up to the value number icons scanned.
     # Negative values are not allowed.
     # WARNING: setting this limit too high may result in severe damage or impact performance.
     # Default: 100
     #MaxIconsPE 200
-    
+
     ##
     ## On-access Scan Settings
     ##
-    
+
     # Enable on-access scanning. Currently, this is supported via fanotify.
     # Clamuko/Dazuko support has been deprecated.
     # Default: no
     #ScanOnAccess yes
-    
+
     # Don't scan files larger than OnAccessMaxFileSize
     # Value of 0 disables the limit.
     # Default: 5M
     #OnAccessMaxFileSize 10M
-    
+
     # Set the include paths (all files inside them will be scanned). You can have
     # multiple OnAccessIncludePath directives but each directory must be added
     # in a separate line. (On-access scan only)
     # Default: disabled
     #OnAccessIncludePath /home
     #OnAccessIncludePath /students
-    
+
     # Set the exclude paths. All subdirectories are also excluded.
     # (On-access scan only)
     # Default: disabled
     #OnAccessExcludePath /home/bofh
-    
+
     # With this option you can whitelist specific UIDs. Processes with these UIDs
     # will be able to access all files.
     # This option can be used multiple times (one per line).
     # Default: disabled
     #OnAccessExcludeUID 0
-    
-    
+
+
     ##
     ## Bytecode
     ##
-    
+
     # With this option enabled ClamAV will load bytecode from the database.
     # It is highly recommended you keep this option on, otherwise you'll miss detections for many new viruses.
     # Default: yes
     #Bytecode yes
-    
+
     # Bytecode mode
     #
     # This option has been set to 'ForceInterpreter' in Fedora due to
@@ -577,7 +581,7 @@ data:
     #
     # Default: ForceInterpreter
     #ByteCodeMode ForceInterpreter
-    
+
     # Set bytecode security level.
     # Possible values:
     #       None - no security at all, meant for debugging. DO NOT USE THIS ON PRODUCTION SYSTEMS
@@ -591,33 +595,32 @@ data:
     #
     # Default: TrustSigned
     #BytecodeSecurity TrustSigned
-    
+
     # Set bytecode timeout in miliseconds.
     #
     # Default: 5000
     # BytecodeTimeout 1000
-    
+
     ##
     ## Statistics gathering and submitting
     ##
-    
+
     # Enable statistical reporting.
     # Default: no
     #StatsEnabled yes
-    
+
     # Disable submission of individual PE sections for files flagged as malware.
     # Default: no
     #StatsPEDisabled yes
-    
+
     # HostID in the form of an UUID to use when submitting statistical information.
     # Default: auto
     #StatsHostID auto
-    
+
     # Time in seconds to wait for the stats server to come back with a response
     # Default: 10
     #StatsTimeout 10
     TCPSocket 3310
-
 
   freshclam.conf: |
     ##
@@ -635,7 +638,8 @@ data:
 
     # Path to the log file (make sure it has proper permissions)
     # Default: disabled
-    #UpdateLogFile /dev/stdout
+    # /dev/stdout is NOT used here, see clamd.conf's LogFile comment.
+    UpdateLogFile /var/log/clamav/freshclam.log
 
     # Maximum size of the log file.
     # Value of 0 disables the limit.

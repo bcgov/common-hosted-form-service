@@ -1,11 +1,10 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
-import { useNotificationStore } from '~/store/notification';
 import { useFormStore } from '~/store/form';
 import { useRecordsManagementStore } from '~/store/recordsManagement';
 import { FormPermissions } from '~/utils/constants';
@@ -21,27 +20,35 @@ const properties = defineProps({
 
 const loading = ref(true);
 
-const notificationStore = useNotificationStore();
 const recordsManagementStore = useRecordsManagementStore();
 
 const { form, permissions, isRTL } = storeToRefs(useFormStore());
+
+// A migrated form carries an audit row; a tenant-native one does not. Say which it is,
+// since migration is irreversible and this record is its only trace.
+const tenancyTooltip = computed(() => {
+  const migratedAt = form.value?.migration?.migratedAt;
+  if (!migratedAt) return t('trans.manageLayout.tenantChipTooltip');
+  return t('trans.manageLayout.migratedChipTooltip', {
+    date: new Date(migratedAt).toLocaleDateString(),
+    by: form.value.migration.migratedBy,
+  });
+});
 
 onMounted(async () => {
   loading.value = true;
 
   const formStore = useFormStore();
 
-  await formStore.fetchForm(properties.f);
-
-  if (formStore.form.versions) {
-    await formStore.getFormPermissionsForUser(properties.f);
-  } else {
-    notificationStore.addNotification({
-      text: t('trans.baseSecure.401UnAuthorizedErrMsg'),
-    });
-  }
-
-  await recordsManagementStore.getFormRetentionPolicy(properties.f);
+  // Access to this page is already enforced by BaseSecure (IDP permission) and
+  // the backend form_read middleware, so anyone who reaches here is authorized.
+  // Load the user's form permissions unconditionally; the version list is only
+  // returned to designers, so it must not be used as an authorization signal.
+  await Promise.all([
+    formStore.fetchForm(properties.f),
+    formStore.getFormPermissionsForUser(properties.f),
+    recordsManagementStore.getFormRetentionPolicy(properties.f),
+  ]);
 
   if (permissions.value.includes(FormPermissions.DESIGN_READ))
     await formStore.fetchDrafts(properties.f);
@@ -58,7 +65,28 @@ onMounted(async () => {
       <!-- page title -->
       <div>
         <h1 :lang="locale">{{ $t('trans.manageLayout.manageForm') }}</h1>
-        <h3>{{ form.name }}</h3>
+        <div class="d-flex align-center flex-wrap ga-2">
+          <h3>{{ form.name }}</h3>
+          <v-tooltip v-if="form.tenantId" location="bottom">
+            <template #activator="{ props: tip }">
+              <v-chip
+                v-bind="tip"
+                size="small"
+                color="primary"
+                variant="tonal"
+                prepend-icon="mdi:mdi-account-group"
+                :lang="locale"
+              >
+                {{
+                  form.migration
+                    ? $t('trans.manageLayout.migratedChip')
+                    : $t('trans.manageLayout.tenantChip')
+                }}
+              </v-chip>
+            </template>
+            <span :lang="locale">{{ tenancyTooltip }}</span>
+          </v-tooltip>
+        </div>
       </div>
       <!-- buttons -->
       <div>
