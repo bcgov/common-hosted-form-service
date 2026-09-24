@@ -225,6 +225,17 @@ describe('admin actions', () => {
       });
     });
 
+    it('getDuplicateUsers stores unresolved duplicate users', async () => {
+      const duplicateUsers = [{ userId: 'duplicate-user' }];
+      adminService.listDuplicateUsers.mockResolvedValue({
+        data: duplicateUsers,
+      });
+
+      await mockStore.getDuplicateUsers();
+
+      expect(mockStore.duplicateUserList).toEqual(duplicateUsers);
+    });
+
     it('readUser should commit to SET_USER', async () => {
       mockStore.user = undefined;
       adminService.readUser.mockResolvedValue({ data: {} });
@@ -244,6 +255,16 @@ describe('admin actions', () => {
       });
     });
 
+    it('updateUser should replace the current user', async () => {
+      const updatedUser = { id: 'userId', stale: true };
+      adminService.updateUser.mockResolvedValue({ data: updatedUser });
+
+      await mockStore.updateUser('userId', { stale: true });
+
+      expect(adminService.updateUser).toHaveBeenCalledWith('userId', { stale: true });
+      expect(mockStore.user).toEqual(updatedUser);
+
+    });
     it('addFCProactiveHelp should commit to SET_FCPROACTIVEHELP', async () => {
       mockStore.fcProactiveHelp = undefined;
       adminService.addFCProactiveHelp.mockResolvedValue({ data: {} });

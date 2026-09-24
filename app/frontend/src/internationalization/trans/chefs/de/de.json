@@ -99,6 +99,8 @@
     "fileSizeError": "Die Dateigröße muss weniger als 25 MB betragen."
   },
   "formSettings": {
+    "restrictedIDP": "Eingeschränkt",
+    "bceidDeprecationAlert": "Seit dem 31. Mai 2026 nimmt Connected Services BC (CSBC) keine neuen Dienste mehr in Basic BCeID auf. Stattdessen wird empfohlen, die BC Services Card-App als Identitätslösung zu verwenden. Diese Änderung spiegelt die laufende Modernisierung der staatlichen Dienste für digitale Identitäten sowie die Einführung von Identitätslösungen wider, die zukünftige Anforderungen an die Bereitstellung von Diensten unterstützen. Bestehende Dienste und derzeitige Nutzer von Basic BCeID sind von dieser Änderung nicht betroffen, und bestehende Integrationen funktionieren weiterhin wie gewohnt. Bei Fragen zur Anbindung an Identitätsdienste wenden Sie sich bitte an",
     "pressToAddMultiEmail": "Drücken Sie <kbd>die Eingabetaste</kbd> oder <kbd>die Leertaste</kbd> oder <kbd>,</kbd> um mehrere E-Mail-Adressen hinzuzufügen",
     "allowMultiDraft": "Erlauben Sie das Hochladen <strong>mehrerer Entwürfe</strong>",
     "formTitle": "Formulartitel",
@@ -437,7 +439,8 @@
     "developer": "Entwickler",
     "infoLinks": "Info-Links",
     "metrics": "Metriken",
-    "apis": "APIs"
+    "apis": "APIs",
+    "duplicateUsers": "Doppelte Benutzer"
   },
   "adminUsersTable": {
     "search": "Suchen",
@@ -1477,5 +1480,26 @@
   "tenantStore": {
     "cstarUnavailable": "CSTAR ist vorübergehend nicht verfügbar. Die Mandantenauswahl ist derzeit deaktiviert.",
     "errorFetchingTenants": "Fehler beim Abrufen der Mandanten"
+  },
+  "adminDuplicateUsers": {
+    "title": "Doppelte Benutzer überprüfen",
+    "description": "Überprüfen Sie Benutzer mit demselben Benutzernamen oder derselben E-Mail-Adresse. Markieren Sie doppelte Datensätze als veraltet, bis nur noch der Datensatz aktiv ist, der beibehalten werden soll.",
+    "refresh": "Doppelte Benutzer aktualisieren",
+    "groupsPerPage": "Gruppen pro Seite",
+    "empty": "Es wurden keine ungelösten doppelten Benutzer gefunden.",
+    "matchedBy": "Übereinstimmung nach {type}",
+    "records": "{count} Datensätze, {active} aktiv",
+    "user": "Benutzer",
+    "identityProvider": "Identitätsanbieter",
+    "lastActivity": "Letzte Aktivität",
+    "status": "Status",
+    "actions": "Aktionen",
+    "active": "Aktiv",
+    "stale": "Veraltet",
+    "markStale": "Als veraltet markieren",
+    "confirmTitle": "Doppelten Benutzer als veraltet markieren?",
+    "confirmMessage": "{name} ({username}) als veraltet markieren? Dieser Benutzer wird dann nicht mehr als aktiver Datensatz dieser Duplikatgruppe behandelt.",
+    "cancel": "Abbrechen",
+    "confirm": "Als veraltet markieren"
   }
 }
