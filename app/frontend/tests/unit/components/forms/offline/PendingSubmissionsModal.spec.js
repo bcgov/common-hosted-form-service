@@ -27,13 +27,22 @@ vi.mock('~/offline/queue', () => ({
 const managerMocks = vi.hoisted(() => ({
   tryDrain: vi.fn(),
   clearReauthSnooze: vi.fn(),
-  isDraining: { value: false },
+  isDraining: null,
+  events: null,
 }));
-vi.mock('~/offline/offlineQueueManager', () => ({
-  tryDrain: managerMocks.tryDrain,
-  clearReauthSnooze: managerMocks.clearReauthSnooze,
-  isDraining: managerMocks.isDraining,
-}));
+vi.mock('~/offline/offlineQueueManager', async () => {
+  const mitt = (await import('mitt')).default;
+  const { ref } = await import('vue');
+  // Real ref + emitter so reactive/event-driven behaviour is actually exercised.
+  managerMocks.isDraining = ref(false);
+  managerMocks.events = mitt();
+  return {
+    tryDrain: managerMocks.tryDrain,
+    clearReauthSnooze: managerMocks.clearReauthSnooze,
+    isDraining: managerMocks.isDraining,
+    offlineQueueEvents: managerMocks.events,
+  };
+});
 
 const onlineMocks = vi.hoisted(() => ({ online: { value: true } }));
 vi.mock('~/offline/useOnlineStatus', () => ({
@@ -82,6 +91,8 @@ describe('PendingSubmissionsModal.vue', () => {
     setActivePinia(createPinia());
     queueMocks.remove.mockClear();
     onlineMocks.online.value = true;
+    managerMocks.isDraining.value = false;
+    managerMocks.events.all.clear();
     queueMocks.entries.value = [
       {
         id: PENDING_ID,
@@ -170,5 +181,35 @@ describe('PendingSubmissionsModal.vue', () => {
 
     expect(queueMocks.remove).toHaveBeenCalledTimes(1);
     expect(queueMocks.remove).toHaveBeenCalledWith(PENDING_ID);
+  });
+
+  it('closes when a drain actually starts, so the sync modal is not stacked on it', async () => {
+    const wrapper = mountModal();
+    await flushPromises();
+
+    managerMocks.events.emit('drain-start', { total: 1, entries: [] });
+    await flushPromises();
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[false]]);
+  });
+
+  it('stays open through a background poll that sends nothing (isDraining flips, no drain-start)', async () => {
+    const wrapper = mountModal();
+    await flushPromises();
+
+    managerMocks.isDraining.value = true;
+    await flushPromises();
+    managerMocks.isDraining.value = false;
+    await flushPromises();
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined();
+  });
+
+  it('stops listening for drain-start after unmount', async () => {
+    const wrapper = mountModal();
+    await flushPromises();
+    wrapper.unmount();
+
+    expect(managerMocks.events.all.get('drain-start') ?? []).toHaveLength(0);
   });
 });

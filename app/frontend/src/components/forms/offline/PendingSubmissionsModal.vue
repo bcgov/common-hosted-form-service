@@ -1,11 +1,12 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { offlineQueue, QueueStatus } from '~/offline/queue';
 import {
   clearReauthSnooze,
   isDraining,
+  offlineQueueEvents,
   tryDrain,
 } from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
@@ -36,9 +37,19 @@ function close() {
   emit('update:modelValue', false);
 }
 
-// Auto-close so SyncProgressModal isn't stacked on top of this one.
-watch(isDraining, (draining) => {
-  if (draining && props.modelValue) close();
+// Auto-close so SyncProgressModal isn't stacked on top of this one. Keyed on
+// drain-start (not isDraining) so background polls with nothing to send, or
+// that lose the lock to another tab, leave the list open.
+function onDrainStart() {
+  if (props.modelValue) close();
+}
+
+onMounted(() => {
+  offlineQueueEvents.on('drain-start', onDrainStart);
+});
+
+onBeforeUnmount(() => {
+  offlineQueueEvents.off('drain-start', onDrainStart);
 });
 
 function promptDiscard(entry) {

@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { offlineQueueEvents } from '~/offline/offlineQueueManager';
@@ -17,58 +17,32 @@ const done = ref(false);
 // 'entry-failed' events update displayStatus ('pending'|'sent'|'failed').
 const rows = ref([]);
 
-// Hold the spinner on-screen for at least MIN_SPINNER_MS so fast drains
-// (sub-second) are still perceptible; go off on drain-end or offline drop
-// once the minimum has elapsed.
+// For MIN_SPINNER_MS after a drain opens the modal, the spinner stays up and
+// rows (and the sent count) hold at "pending", so a sub-second drain still
+// reads as work happening. After that, rows flip to sent/failed live and the
+// spinner stops once the drain ends (or the connection drops).
 const MIN_SPINNER_MS = 2000;
-const spinnerVisible = ref(false);
-let spinnerOnAt = 0;
-let hideTimer = null;
+const minElapsed = ref(false);
+let minTimer = null;
 
-function updateSpinner(shouldShow) {
-  if (shouldShow) {
-    if (hideTimer) {
-      clearTimeout(hideTimer);
-      hideTimer = null;
-    }
-    if (!spinnerVisible.value) {
-      spinnerVisible.value = true;
-      spinnerOnAt = Date.now();
-    }
-    return;
-  }
-  const remaining = MIN_SPINNER_MS - (Date.now() - spinnerOnAt);
-  if (remaining <= 0) {
-    spinnerVisible.value = false;
-    return;
-  }
-  hideTimer = setTimeout(() => {
-    spinnerVisible.value = false;
-    hideTimer = null;
-  }, remaining);
-}
-
-watch(
-  [visible, done, online],
-  () => updateSpinner(visible.value && !done.value && online.value),
-  { immediate: true }
+const spinnerVisible = computed(
+  () => visible.value && (!minElapsed.value || (!done.value && online.value))
 );
+// The done summary and close buttons wait for the spinner.
+const showResults = computed(() => done.value && !spinnerVisible.value);
+const shownSent = computed(() => (minElapsed.value ? sent.value : 0));
+
+function rowStatus(row) {
+  return minElapsed.value ? row.displayStatus : 'pending';
+}
 
 function confirmationId(row) {
   if (!row.showConfirmationId || !row.submissionId) return null;
   return row.submissionId.substring(0, 8).toUpperCase();
 }
 
-// Open on drain-pending so the spinner is up before lock/httpPost latency.
-function onPending({ total: t0 }) {
-  total.value = t0 || 0;
-  sent.value = 0;
-  failed.value = 0;
-  done.value = false;
-  rows.value = [];
-  visible.value = true;
-}
-
+// drain-start fires inside the drain lock, only when there is work to send, and
+// before the first httpPost, so the spinner is up before any network latency.
 function onStart({ total: t0, entries = [] }) {
   total.value = t0;
   sent.value = 0;
@@ -81,6 +55,11 @@ function onStart({ total: t0, entries = [] }) {
     failReason: null,
     sentAt: null,
   }));
+  clearTimeout(minTimer);
+  minElapsed.value = false;
+  minTimer = setTimeout(() => {
+    minElapsed.value = true;
+  }, MIN_SPINNER_MS);
   visible.value = true;
 }
 
@@ -109,11 +88,10 @@ function onEnd(result) {
   sent.value = result?.sent ?? sent.value;
   failed.value = result?.failed ?? failed.value;
   done.value = true;
-  // While draining (done=false), v-dialog persistent + no Close button rendered.
+  // Until showResults (done + spinner off), v-dialog persistent + no Close button rendered.
 }
 
 onMounted(() => {
-  offlineQueueEvents.on('drain-pending', onPending);
   offlineQueueEvents.on('drain-start', onStart);
   offlineQueueEvents.on('drain-progress', onProgress);
   offlineQueueEvents.on('drain-end', onEnd);
@@ -122,7 +100,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  offlineQueueEvents.off('drain-pending', onPending);
+  clearTimeout(minTimer);
   offlineQueueEvents.off('drain-start', onStart);
   offlineQueueEvents.off('drain-progress', onProgress);
   offlineQueueEvents.off('drain-end', onEnd);
@@ -156,7 +134,7 @@ function close() {
         }}</span>
         <v-spacer />
         <v-btn
-          v-if="done"
+          v-if="showResults"
           icon="mdi:mdi-close"
           variant="text"
           density="comfortable"
@@ -166,18 +144,25 @@ function close() {
       </v-card-title>
       <div class="flex-shrink-0 px-6 d-flex align-center">
         <div class="flex-grow-0">
-          <p v-if="!done" :lang="locale">
+          <p v-if="!showResults" :lang="locale">
             {{ t('trans.offlineSubmission.syncModalSubtitle') }}
           </p>
-          <p v-if="!done" class="mt-3 mb-1" :lang="locale">
+          <p v-if="!showResults" class="mt-3 mb-1" :lang="locale">
             {{
-              t('trans.offlineSubmission.syncModalProgress', { sent, total })
+              t('trans.offlineSubmission.syncModalProgress', {
+                sent: shownSent,
+                total,
+              })
             }}
           </p>
           <p v-else class="mt-3 mb-1" :lang="locale">
             {{ t('trans.offlineSubmission.syncModalDoneSummary', { sent }) }}
           </p>
-          <p v-if="done && failed > 0" class="mt-3 text-error" :lang="locale">
+          <p
+            v-if="showResults && failed > 0"
+            class="mt-3 text-error"
+            :lang="locale"
+          >
             {{
               t('trans.offlineSubmission.syncModalFailedSummary', { failed })
             }}
@@ -203,14 +188,14 @@ function close() {
           class="sync-row d-flex align-start"
         >
           <v-icon
-            v-if="row.displayStatus === 'sent'"
+            v-if="rowStatus(row) === 'sent'"
             color="success"
             icon="mdi:mdi-check-circle"
             size="24"
             class="sync-row-icon"
           />
           <v-icon
-            v-else-if="row.displayStatus === 'failed'"
+            v-else-if="rowStatus(row) === 'failed'"
             color="error"
             icon="mdi:mdi-close-circle"
             size="24"
@@ -259,30 +244,33 @@ function close() {
                 })
               }}
             </div>
-            <div v-if="row.sentAt" class="sync-row-meta">
+            <div
+              v-if="rowStatus(row) !== 'pending' && row.sentAt"
+              class="sync-row-meta"
+            >
               {{
                 t('trans.offlineSubmission.syncRowSentAt', {
                   time: new Date(row.sentAt).toLocaleString(),
                 })
               }}
             </div>
-            <div v-if="confirmationId(row)" class="sync-row-meta">
+            <div
+              v-if="rowStatus(row) === 'sent' && confirmationId(row)"
+              class="sync-row-meta"
+            >
               {{
                 t('trans.offlineSubmission.syncRowConfirmationId', {
                   id: confirmationId(row),
                 })
               }}
             </div>
-            <div
-              v-else-if="row.displayStatus === 'failed'"
-              class="sync-row-meta"
-            >
+            <div v-else-if="rowStatus(row) === 'failed'" class="sync-row-meta">
               {{ row.failReason }}
             </div>
           </div>
         </div>
       </div>
-      <v-card-actions v-if="done" class="flex-shrink-0 sync-actions">
+      <v-card-actions v-if="showResults" class="flex-shrink-0 sync-actions">
         <v-spacer />
         <v-btn variant="outlined" size="large" class="px-6" @click="close">{{
           t('trans.offlineSubmission.syncModalDoneClose')

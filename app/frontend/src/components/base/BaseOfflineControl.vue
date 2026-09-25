@@ -44,14 +44,16 @@ const visible = computed(
     (queuedCount.value > 0 || !!form.value.enableOfflineSubmission)
 );
 
-// Persistent offline notification on online>offline, plus initial-load case.
+// Persistent offline notification while offline on an offline-capable page.
+// Raised on entering that state (going offline, initial load, or navigating
+// in while already offline) and cleared on leaving it (back online, or
+// navigating away) so it never goes stale.
+const OFFLINE_BANNER_TEXT = 'trans.offlineSubmission.offlineBannerMessage';
+const showOfflineBanner = computed(() => visible.value && !online.value);
+
 watch(
-  [online, visible],
-  ([isOnline, isVisible], oldVals) => {
-    if (!isVisible || isOnline) return;
-    const wasOnline = oldVals ? oldVals[0] : true;
-    if (wasOnline) raiseOfflineNotification();
-  },
+  showOfflineBanner,
+  (show) => (show ? raiseOfflineNotification() : clearOfflineNotification()),
   { immediate: true }
 );
 
@@ -59,11 +61,17 @@ function raiseOfflineNotification() {
   notificationStore.addNotification({
     ...NotificationTypes.INFO,
     title: 'trans.offlineSubmission.offlineBannerTitle',
-    text: 'trans.offlineSubmission.offlineBannerMessage',
+    text: OFFLINE_BANNER_TEXT,
     translate: true,
     retain: true,
     unique: true,
   });
+}
+
+function clearOfflineNotification() {
+  notificationStore.notifications
+    .filter((n) => n.text === OFFLINE_BANNER_TEXT)
+    .forEach((n) => notificationStore.deleteNotification(n));
 }
 
 function openQueue() {
@@ -97,6 +105,7 @@ function onEditEntry(entry) {
           color="white"
           size="28"
           class="offline-cloud-icon"
+          :class="{ 'offline-cloud-icon--merged': queuedCount > 0 }"
           data-test="offlineCloudIcon"
         />
       </template>
@@ -126,9 +135,21 @@ function onEditEntry(entry) {
             :disabled="isEditingOfflineEntry"
             class="offline-status-btn"
             data-test="offlineSubmissionButton"
+            :aria-label="t('trans.offlineSubmission.headerButtonLabel')"
             v-bind="tipProps"
             @click="openQueue"
           >
+            <!-- Icon stands in for the label on phones (see media query), and
+                 carries the offline state so the standalone icon can drop out. -->
+            <v-icon
+              :icon="
+                online
+                  ? 'mdi:mdi-cloud-upload-outline'
+                  : 'mdi:mdi-cloud-off-outline'
+              "
+              size="24"
+              class="offline-status-icon"
+            />
             <span :lang="locale" class="offline-status-label">{{
               t('trans.offlineSubmission.headerButtonLabel')
             }}</span>
@@ -151,8 +172,35 @@ function onEditEntry(entry) {
   margin-inline-end: 12px;
 }
 
+.offline-status-icon {
+  display: none;
+  color: #ffffff;
+}
+
 .offline-status-label {
   color: #ffffff !important;
   font-weight: 600;
+}
+
+// Phones: the header can't fit the full label next to logout + language, so
+// collapse to icon + badge (the button keeps its name via aria-label). When the
+// button is shown it also carries the offline state, so the standalone cloud
+// icon is dropped to keep the header within the viewport.
+@media (max-width: 599px) {
+  .offline-cloud-icon {
+    margin-inline-end: 4px;
+  }
+
+  .offline-cloud-icon--merged {
+    display: none;
+  }
+
+  .offline-status-icon {
+    display: inline-flex;
+  }
+
+  .offline-status-label {
+    display: none;
+  }
 }
 </style>

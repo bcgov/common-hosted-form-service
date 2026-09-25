@@ -96,10 +96,6 @@ export async function tryDrain() {
   }
 
   isDraining.value = true;
-  // Fired before flush() so the sync modal opens ahead of lock/httpPost latency.
-  offlineQueueEvents.emit('drain-pending', {
-    total: offlineQueue.entries.value.length,
-  });
   try {
     const result = await offlineQueue.flush(
       postEntry,
