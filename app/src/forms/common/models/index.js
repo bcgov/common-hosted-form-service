@@ -52,4 +52,5 @@ module.exports = {
   UserFormAccess: require('./views/userFormAccess'),
   UserSubmissions: require('./views/userSubmissions'),
   AdminExternalAPI: require('./views/adminExternalAPI'),
+  UserDuplicates: require('./views/userDuplicates'),
 };

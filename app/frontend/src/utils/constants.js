@@ -353,5 +353,9 @@ export const FormDesignerBuilderOptions = Object.freeze({
 });
 
 export const DeprecatedIDPs = Object.freeze({
+  // BCEID_BASIC: 'bceid-basic',
+});
+
+export const RestrictedIDPs = Object.freeze({
   BCEID_BASIC: 'bceid-basic',
 });

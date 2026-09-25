@@ -22,6 +22,15 @@ module.exports = {
     }
   },
 
+  markStaleUsers: async (_req, res, next) => {
+    try {
+      const markedStale = await service.markStaleUsers();
+      res.status(200).json({ markedStale });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   update: async (req, res, next) => {
     try {
       const response = await service.update(req.params.userId, req.body, req.currentUser);
