@@ -1,11 +1,12 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { offlineQueue, QueueStatus } from '~/offline/queue';
 import {
   clearReauthSnooze,
   isDraining,
+  offlineQueueEvents,
   tryDrain,
 } from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
@@ -35,6 +36,21 @@ const showDiscardDialog = computed({
 function close() {
   emit('update:modelValue', false);
 }
+
+// Auto-close so SyncProgressModal isn't stacked on top of this one. Keyed on
+// drain-start (not isDraining) so background polls with nothing to send, or
+// that lose the lock to another tab, leave the list open.
+function onDrainStart() {
+  if (props.modelValue) close();
+}
+
+onMounted(() => {
+  offlineQueueEvents.on('drain-start', onDrainStart);
+});
+
+onBeforeUnmount(() => {
+  offlineQueueEvents.off('drain-start', onDrainStart);
+});
 
 function promptDiscard(entry) {
   discardCandidate.value = entry;
@@ -153,7 +169,9 @@ function statusLabel(status) {
                 }}</template>
               </div>
               <div class="pending-row-meta">
-                {{ new Date(entry.queuedAt).toLocaleString() }}
+                {{
+                  new Date(entry.updatedAt || entry.queuedAt).toLocaleString()
+                }}
                 · {{ statusLabel(entry.status) }}
               </div>
             </div>
@@ -191,6 +209,7 @@ function statusLabel(status) {
           >{{ t('trans.offlineSubmission.pendingModalClose') }}</v-btn
         >
         <v-btn
+          v-if="online"
           color="primary"
           variant="flat"
           size="large"

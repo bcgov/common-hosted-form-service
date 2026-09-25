@@ -209,6 +209,7 @@ async function enqueue({
     err.code = 'QUEUE_CAP';
     throw err;
   }
+  const now = new Date().toISOString();
   const entry = {
     id: uuidv4(),
     dedupKey,
@@ -217,7 +218,8 @@ async function enqueue({
     versionId,
     userId,
     body,
-    queuedAt: new Date().toISOString(),
+    queuedAt: now,
+    updatedAt: now,
     lastError: null,
     status: QueueStatus.PENDING,
     note,
@@ -244,6 +246,7 @@ async function update(id, { body, note }) {
   entry.note = note ?? null;
   entry.status = QueueStatus.PENDING;
   entry.lastError = null;
+  entry.updatedAt = new Date().toISOString();
   await persist();
   return entry;
 }
