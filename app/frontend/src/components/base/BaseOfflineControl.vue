@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -8,6 +8,8 @@ import PendingSubmissionsModal from '~/components/forms/offline/PendingSubmissio
 import { offlineQueue } from '~/offline/queue';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
 import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -15,6 +17,7 @@ const route = useRoute();
 const router = useRouter();
 const { form } = storeToRefs(useFormStore());
 const { online } = useOnlineStatus();
+const notificationStore = useNotificationStore();
 
 const queuedCount = computed(() => offlineQueue.entries.value.length);
 const showPending = ref(false);
@@ -41,26 +44,35 @@ const visible = computed(
     (queuedCount.value > 0 || !!form.value.enableOfflineSubmission)
 );
 
-const state = computed(() => {
-  if (!online.value) {
-    return {
-      color: 'white',
-      variant: 'outlined',
-      icon: 'mdi:mdi-cloud-off-outline',
-      iconColor: 'warning',
-      label: t('trans.offlineSubmission.offlineBadge'),
-      dataTest: 'offlineBadge',
-    };
-  }
-  return {
-    color: 'white',
-    variant: 'outlined',
-    icon: 'mdi:mdi-cloud-check-outline',
-    iconColor: '#00e676',
-    label: t('trans.offlineSubmission.onlineBadge'),
-    dataTest: 'onlineBadge',
-  };
-});
+// Persistent offline notification while offline on an offline-capable page.
+// Raised on entering that state (going offline, initial load, or navigating
+// in while already offline) and cleared on leaving it (back online, or
+// navigating away) so it never goes stale.
+const OFFLINE_BANNER_TEXT = 'trans.offlineSubmission.offlineBannerMessage';
+const showOfflineBanner = computed(() => visible.value && !online.value);
+
+watch(
+  showOfflineBanner,
+  (show) => (show ? raiseOfflineNotification() : clearOfflineNotification()),
+  { immediate: true }
+);
+
+function raiseOfflineNotification() {
+  notificationStore.addNotification({
+    ...NotificationTypes.INFO,
+    title: 'trans.offlineSubmission.offlineBannerTitle',
+    text: OFFLINE_BANNER_TEXT,
+    translate: true,
+    retain: true,
+    unique: true,
+  });
+}
+
+function clearOfflineNotification() {
+  notificationStore.notifications
+    .filter((n) => n.text === OFFLINE_BANNER_TEXT)
+    .forEach((n) => notificationStore.deleteNotification(n));
+}
 
 function openQueue() {
   if (isEditingOfflineEntry.value) return;
@@ -81,6 +93,25 @@ function onEditEntry(entry) {
 <template>
   <div v-if="visible" class="offline-control d-flex align-center">
     <v-tooltip
+      v-if="!online"
+      location="bottom"
+      :text="t('trans.offlineSubmission.offlineIconTooltip')"
+      :open-delay="400"
+    >
+      <template #activator="{ props: iconProps }">
+        <v-icon
+          v-bind="iconProps"
+          icon="mdi:mdi-cloud-off-outline"
+          color="white"
+          size="28"
+          class="offline-cloud-icon"
+          :class="{ 'offline-cloud-icon--merged': queuedCount > 0 }"
+          data-test="offlineCloudIcon"
+        />
+      </template>
+    </v-tooltip>
+    <v-tooltip
+      v-if="queuedCount > 0"
       location="bottom"
       :text="
         t('trans.offlineSubmission.headerButtonTooltip', queuedCount, {
@@ -91,48 +122,36 @@ function onEditEntry(entry) {
     >
       <template #activator="{ props: tipProps }">
         <v-badge
-          :model-value="queuedCount > 0"
           color="error"
           location="top end"
           offset-x="0"
           offset-y="0"
+          :content="queuedCount"
           data-test="offlineSubmissionsBadge"
         >
-          <template #badge>
-            <v-tooltip
-              location="bottom"
-              :text="
-                t('trans.offlineSubmission.headerButtonTooltip', queuedCount, {
-                  count: queuedCount,
-                })
-              "
-            >
-              <template #activator="{ props: badgeTipProps }">
-                <span v-bind="badgeTipProps" @click="openQueue">{{
-                  queuedCount
-                }}</span>
-              </template>
-            </v-tooltip>
-          </template>
           <v-btn
-            :color="state.color"
-            :variant="state.variant"
-            :data-test="state.dataTest"
+            color="white"
+            variant="outlined"
             :disabled="isEditingOfflineEntry"
             class="offline-status-btn"
+            data-test="offlineSubmissionButton"
+            :aria-label="t('trans.offlineSubmission.headerButtonLabel')"
             v-bind="tipProps"
             @click="openQueue"
           >
-            <template #prepend>
-              <v-icon
-                :color="state.iconColor"
-                :icon="state.icon"
-                size="28"
-                class="offline-status-icon"
-              />
-            </template>
+            <!-- Icon stands in for the label on phones (see media query), and
+                 carries the offline state so the standalone icon can drop out. -->
+            <v-icon
+              :icon="
+                online
+                  ? 'mdi:mdi-cloud-upload-outline'
+                  : 'mdi:mdi-cloud-off-outline'
+              "
+              size="24"
+              class="offline-status-icon"
+            />
             <span :lang="locale" class="offline-status-label">{{
-              state.label
+              t('trans.offlineSubmission.headerButtonLabel')
             }}</span>
           </v-btn>
         </v-badge>
@@ -145,26 +164,43 @@ function onEditEntry(entry) {
 <style scoped lang="scss">
 .offline-status-btn {
   height: 40px !important;
-  width: 120px;
-  min-width: 120px;
-  padding-inline: 12px !important;
+  padding-inline: 16px !important;
   letter-spacing: 0;
+}
 
-  @media (max-width: 599px) {
-    min-width: 40px;
-    padding-inline: 8px !important;
+.offline-cloud-icon {
+  margin-inline-end: 12px;
+}
 
-    .offline-status-label {
-      display: none;
-    }
-  }
+.offline-status-icon {
+  display: none;
+  color: #ffffff;
 }
 
 .offline-status-label {
   color: #ffffff !important;
+  font-weight: 600;
 }
 
-:deep(.v-badge__badge) {
-  cursor: pointer;
+// Phones: the header can't fit the full label next to logout + language, so
+// collapse to icon + badge (the button keeps its name via aria-label). When the
+// button is shown it also carries the offline state, so the standalone cloud
+// icon is dropped to keep the header within the viewport.
+@media (max-width: 599px) {
+  .offline-cloud-icon {
+    margin-inline-end: 4px;
+  }
+
+  .offline-cloud-icon--merged {
+    display: none;
+  }
+
+  .offline-status-icon {
+    display: inline-flex;
+  }
+
+  .offline-status-label {
+    display: none;
+  }
 }
 </style>
