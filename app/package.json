@@ -54,7 +54,8 @@
     "migrate:rollback:all": "knex migrate:rollback --all",
     "migrate:up": "knex migrate:up",
     "seed:run": "knex seed:run",
-    "dev:reset-db": "npm run migrate:rollback:all && npm run migrate"
+    "dev:reset-db": "npm run migrate:rollback:all && npm run migrate",
+    "release": "semantic-release"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1007.0",
@@ -108,6 +109,10 @@
     "nodemon": "^3.1.0",
     "prettier": "^2.8.8",
     "prettier-eslint": "^15.0.1",
+    "semantic-release": "^24.2.1",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "supertest": "^7.2.2"
   }
 }
