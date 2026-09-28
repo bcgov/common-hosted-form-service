@@ -156,6 +156,44 @@ describe('offlineQueueManager', () => {
     });
   });
 
+  // SyncProgressModal opens only on drain-start (fired by flush inside the lock
+  // when there is work). tryDrain must not emit anything ahead of flush that
+  // could open it for a drain that never happens.
+  describe('sync modal events', () => {
+    it('emits nothing when another tab holds the drain lock', async () => {
+      const mod = await freshManager();
+      queueState.entries.value = [{ id: 'a', dedupKey: 'dk-1', status: 'pending' }];
+      queueState.flush.mockImplementationOnce(async () => ({
+        total: 1,
+        sent: 0,
+        failed: 0,
+        paused: true,
+        lockUnavailable: true,
+      }));
+
+      const events = [];
+      mod.offlineQueueEvents.on('*', (type) => events.push(type));
+      await mod.tryDrain();
+
+      expect(queueState.flush).toHaveBeenCalledTimes(1);
+      expect(events).toEqual([]);
+    });
+
+    it('does not emit drain-start when only non-sendable entries are queued', async () => {
+      const mod = await freshManager();
+      queueState.entries.value = [{ id: 'a', dedupKey: 'dk-1', status: 'failed-validation' }];
+      // Real flush filters these out and returns before onStart.
+      queueState.flush.mockImplementationOnce(async () => ({ total: 0, sent: 0, failed: 0 }));
+
+      const events = [];
+      mod.offlineQueueEvents.on('*', (type) => events.push(type));
+      await mod.tryDrain();
+
+      expect(events).not.toContain('drain-start');
+      expect(events).toEqual(['drain-end']);
+    });
+  });
+
   describe('entry-failed relay', () => {
     it('emits entry-failed with the dedupKey, status, and error detail when flush reports a permanent 4xx', async () => {
       const mod = await freshManager();

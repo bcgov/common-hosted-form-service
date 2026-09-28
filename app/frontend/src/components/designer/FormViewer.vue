@@ -1613,14 +1613,13 @@ async function uploadFile(file, config = {}) {
             @isProcessingMultiUpload="isProcessingMultiUpload"
           />
 
-          <v-alert
-            v-if="isEditingOfflineEntry"
-            type="info"
-            variant="tonal"
-            density="compact"
-            class="mb-3 offline-edit-banner"
-          >
-            <div class="d-flex align-center" style="width: 100%">
+          <template v-if="isEditingOfflineEntry">
+            <v-alert
+              type="info"
+              variant="tonal"
+              density="compact"
+              class="mb-3 offline-edit-banner"
+            >
               <span :lang="locale">
                 {{
                   editingEntry?.body?.draft
@@ -1629,7 +1628,8 @@ async function uploadFile(file, config = {}) {
                 }}
                 {{ $t('trans.offlineSubmission.editingBannerSyncPaused') }}
               </span>
-              <v-spacer />
+            </v-alert>
+            <div class="d-flex mb-3">
               <v-btn
                 color="primary"
                 variant="flat"
@@ -1652,7 +1652,7 @@ async function uploadFile(file, config = {}) {
                 }}</span>
               </v-btn>
             </div>
-          </v-alert>
+          </template>
 
           <Form
             v-if="!bulkFile"

@@ -90,8 +90,13 @@ class User extends Timestamps(Model) {
           });
         }
       },
+      filterStale(query, value) {
+        if (value !== undefined) {
+          query.where('stale', value);
+        }
+      },
       safeSelect(query) {
-        query.select('id', 'idpUserId', 'keycloakId', 'idpCode');
+        query.select('id', 'idpUserId', 'keycloakId', 'idpCode', 'stale');
       },
       orderLastFirstAscending(builder) {
         builder.orderByRaw('lower("lastName"), lower("firstName")');
@@ -113,6 +118,7 @@ class User extends Timestamps(Model) {
         fullName: { type: ['string', 'null'], maxLength: 255 },
         email: { type: ['string', 'null'], maxLength: 255 },
         idpCode: { type: ['string', 'null'], maxLength: 255 },
+        stale: { type: 'boolean' },
         ...stamps,
       },
       additionalProperties: false,
