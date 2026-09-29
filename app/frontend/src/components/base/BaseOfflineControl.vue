@@ -164,6 +164,9 @@ function onEditEntry(entry) {
 <style scoped lang="scss">
 .offline-status-btn {
   height: 40px !important;
+  // Bound width so long locale labels don't sprawl.
+  min-width: 200px;
+  max-width: 220px;
   padding-inline: 16px !important;
   letter-spacing: 0;
 }
@@ -180,6 +183,9 @@ function onEditEntry(entry) {
 .offline-status-label {
   color: #ffffff !important;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // Phones: the header can't fit the full label next to logout + language, so
