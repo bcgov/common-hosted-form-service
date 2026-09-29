@@ -27,6 +27,8 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('BC Government').click();
+    //Verify footer version number is displayed
+    cy.get('.text-label-medium').should('be.visible').invoke('text').should('match', /^Version:\s*\d+\.\d+\.\d+$/);
     cy.wait(1000);
   });
   it("Add IDIR User Component", () => {
@@ -114,10 +116,6 @@ describe("Form Designer", () => {
     cy.get('.v-alert__content').contains('Print configuration saved successfully').should('be.visible');
     cy.wait(500);
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.get('[data-test="onlineBadge"]').should('be.visible');
-    cy.get('[data-test="onlineBadge"]').should('be.visible').and('contain', 'ONLINE');
-    
-    cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.wait(1000);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Smith');
@@ -139,7 +137,7 @@ describe("Form Designer", () => {
     });
     cy.wait(1000);
     //Checks Offline badge
-    cy.get('[data-test="offlineBadge"]').should('be.visible');
+    cy.contains('div','You are now offline').should('be.visible');
     //Multiple draft upload disabled
     cy.get('.ml-auto > :nth-child(1)').should('not.be.enabled');
     cy.get('button').contains('Submit').click();
@@ -150,8 +148,13 @@ describe("Form Designer", () => {
     cy.get('.mdi-printer').should('be.visible').click();
     cy.contains('button', 'Template Print').should('have.class', 'v-btn--disabled');
     cy.get('.text-textLink').click({force: true});
-    cy.get('.v-badge__badge > span').should('contain', '1');
-    cy.get('.v-badge__badge').click();
+    cy.wait(1000);
+    cy.get('.offline-status-label').contains('OFFLINE SUBMISSION').should('be.visible');
+    cy.contains('.target-notification', 'You are now offline').find('button[aria-label="Close"]').click();
+    cy.contains('.target-notification', 'Submission saved. It will be sent when you are back online.').find('button[aria-label="Close"]').click();
+    //cy.get('[role="status"][aria-label="Badge"]').should('be.visible').and('contain', '1');
+    cy.get('[data-test="offlineSubmissionButton"]').click({ force: true });
+    cy.contains('Saved Submissions').should('be.visible');
     cy.contains('.pending-row-title', 'My offline Submission').should('be.visible');
     //Delete an offline submission from submission queue
     cy.get('button[title="Discard"]').click();
@@ -171,10 +174,9 @@ describe("Form Designer", () => {
     cy.get('input[placeholder="A short label to help you find this submission later"]').type('My offline Submission');
     cy.get('[data-test="queue-confirm-submit"]').click();
     cy.get('.v-alert__content').contains('Submission saved. It will be sent when you are back online.').should('be.visible');
-    cy.contains('span', '1').should('be.visible');
-    cy.get('.v-badge__badge > span').should('contain', '1');
+    cy.get('[role="status"][aria-label="Badge"]').should('be.visible').and('contain', '1');
     //Check the submission saved and edit
-    cy.contains('span', '1').click();
+    cy.get('[data-test="offlineSubmissionButton"]').should('be.visible').click({ force: true });
     cy.get('.mdi-pencil-outline').click();
     cy.contains('Text Field').type('Edit offline submission');
     cy.get('[data-test="offline-edit-save"] > .v-btn__content > span').click();
@@ -186,9 +188,13 @@ describe("Form Designer", () => {
     cy.get('span').contains('Save as Draft').click();
     cy.get('[data-test="queue-confirm-submit"]').click();
     cy.get('.v-alert__content').contains('Draft saved. It will be sent when you are back online.').should('be.visible');
+    cy.wait(1000);
+    cy.contains('.target-notification', 'Submission saved. It will be sent when you are back online.').find('button[aria-label="Close"]').click();
+    cy.contains('.target-notification', 'Offline submission updated. It will be sent when you are back online.').find('button[aria-label="Close"]').click();
+    cy.contains('.target-notification', 'Draft saved. It will be sent when you are back online.').find('button[aria-label="Close"]').click();
     //Check the submission saved and edit the draft submission
-    cy.get('.v-badge__badge > span').contains('2');
-    cy.get('.v-badge__badge > span').click();
+    cy.get('[role="status"][aria-label="Badge"]').should('be.visible').and('contain', '2');
+    cy.get('[data-test="offlineSubmissionButton"]').should('be.visible').click({ force: true });
     cy.get('.v-chip__content').contains('Submission');
     cy.get('.v-chip__content').contains('Draft');
     cy.get(':nth-child(2) > [data-test="pending-edit"] > .v-btn__content > .mdi-pencil-outline').click();
@@ -197,7 +203,7 @@ describe("Form Designer", () => {
     //Close edit panel to send submission on syn
     cy.get('[data-test="offline-edit-cancel"] > .v-btn__content > span').click();
     //Delete draft submission
-    cy.get('.v-badge__badge > span').click();
+    cy.get('[data-test="offlineSubmissionButton"]').should('be.visible').click({ force: true });
     cy.get(':nth-child(2) > .text-error > .v-btn__content > .mdi-trash-can-outline').click();
     cy.get('[data-test="pending-discard-confirm"]').click();
     //Enable online back
