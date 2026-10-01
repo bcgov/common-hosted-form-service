@@ -40,7 +40,7 @@ const templateForm = ref({
   outputFileName: '',
   outputFileType: null,
 });
-const expandedText = ref(false);
+const expandedText = ref(true);
 const timeout = ref(undefined);
 const tab = ref('tab-1');
 const selectedOption = ref('upload');

@@ -150,9 +150,13 @@ describe('PrintOptions.vue', () => {
         global: { plugins: [pinia], stubs: STUBS },
       });
       await flushPromises();
-      wrapper.vm.expandedText = true;
       return wrapper;
     }
+
+    it('defaults "Expand text fields" to checked', async () => {
+      const wrapper = await mountAndExpand();
+      expect(wrapper.vm.expandedText).toBe(true);
+    });
 
     function appendToBody(tag, { type, className, value, parent } = {}) {
       const el = document.createElement(tag);
