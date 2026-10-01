@@ -127,6 +127,9 @@ class ChesService extends AxiosService {
         log.error(`Error During ${SERVICE}.${endpoint} . ${SERVICE} returned status = ${e.response.status} ${msgId ? 'messageID: ' + msgId : ''} - ${errorData}`);
       }
       throw new Problem(status, e.response.data);
+    } else {
+      log.error(`Unknown error calling ${SERVICE}.${endpoint}: ${e.message}${msgId ? ' - messageID: ' + msgId : ''}`);
+      throw new Problem(502, `Unknown ${SERVICE} Error`, { detail: e.message });
     }
   }
 }
