@@ -114,11 +114,10 @@ watch(
     class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     :class="{ 'dir-rtl': isRTL }"
   >
-    <div v-if="formId && !publicForm">
+    <div v-if="formId && !publicForm && online">
       <v-btn
         color="primary"
         :loading="loading"
-        :disabled="!online"
         variant="outlined"
         :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
         @click="

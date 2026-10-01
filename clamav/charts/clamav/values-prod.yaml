@@ -1,0 +1,5 @@
+clamav:
+  replicaCount: 3
+  # pinned rather than :latest so every pod runs the same image, even when one is
+  # rescheduled onto a node that has a different :latest cached
+  tag: sha-7855e41
