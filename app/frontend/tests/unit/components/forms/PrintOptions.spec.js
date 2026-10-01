@@ -140,6 +140,90 @@ describe('PrintOptions.vue', () => {
     expect(wrapper.vm.timeout).not.toBeNull();
   });
 
+  describe('printBrowser', () => {
+    let elements;
+
+    async function mountAndExpand() {
+      formStore.form = { id: 0, name: 'This is a form title' };
+      const wrapper = mount(PrintOptions, {
+        props: { submissionId, submission: undefined, f: '0' },
+        global: { plugins: [pinia], stubs: STUBS },
+      });
+      await flushPromises();
+      wrapper.vm.expandedText = true;
+      return wrapper;
+    }
+
+    function appendToBody(tag, { type, className, value, parent } = {}) {
+      const el = document.createElement(tag);
+      if (type) el.type = type;
+      if (className) el.className = className;
+      if (value !== undefined) el.value = value;
+      (parent || document.body).appendChild(el);
+      elements.push(el);
+      return el;
+    }
+
+    function divWithText(text) {
+      return [...document.body.querySelectorAll('div')].find((div) => div.textContent === text);
+    }
+
+    beforeEach(() => {
+      vi.spyOn(window, 'print').mockImplementation(() => {});
+      elements = [];
+    });
+
+    afterEach(() => {
+      window.onafterprint = null;
+      elements.forEach((el) => el.remove());
+    });
+
+    it('expands textareas, swaps plain text inputs, skips select helper inputs, and restores on afterprint', async () => {
+      const wrapper = await mountAndExpand();
+
+      const textarea = appendToBody('textarea', { value: 'line one\nline two' });
+      Object.defineProperty(textarea, 'offsetHeight', { value: 80, configurable: true });
+      const textInput = appendToBody('input', { type: 'text', value: 'plain text value' });
+      const choicesInput = appendToBody('input', { type: 'text', className: 'choices__input' });
+      const autocompleteInput = appendToBody('input', { type: 'text', className: 'formio-select-autocomplete-input' });
+
+      await wrapper.vm.printBrowser();
+
+      // Textarea and plain input are swapped for divs preserving their value
+      expect(document.body.contains(textarea)).toBe(false);
+      expect(document.body.contains(textInput)).toBe(false);
+      const textareaDiv = divWithText('line one\nline two');
+      expect(textareaDiv.style.whiteSpace).toBe('pre-wrap');
+      expect(textareaDiv.style.minHeight).toBe('80px');
+      expect(divWithText('plain text value')).toBeTruthy();
+
+      // Helper inputs inside select components are left untouched
+      expect(document.body.contains(choicesInput)).toBe(true);
+      expect(document.body.contains(autocompleteInput)).toBe(true);
+
+      // Restoration via onafterprint puts the original fields back
+      window.onafterprint();
+      expect(document.body.contains(textarea)).toBe(true);
+      expect(document.body.contains(textInput)).toBe(true);
+      expect(divWithText('line one\nline two')).toBeFalsy();
+    });
+
+    it('lets the replacement div share a flex row instead of forcing full width', async () => {
+      const wrapper = await mountAndExpand();
+
+      const flexParent = appendToBody('div');
+      flexParent.style.display = 'flex';
+      appendToBody('input', { type: 'text', value: 'date value', parent: flexParent });
+
+      await wrapper.vm.printBrowser();
+
+      const flexDiv = flexParent.querySelector('div');
+      expect(flexDiv.style.flex).toBe('1 1 auto');
+      expect(flexDiv.style.minWidth).toBe('0');
+      expect(flexDiv.style.width).not.toBe('100%');
+    });
+  });
+
   it('createBody should generate a valid object given some data', async () => {
     let submission = undefined;
     formStore.form = {

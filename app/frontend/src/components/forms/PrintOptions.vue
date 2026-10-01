@@ -120,8 +120,10 @@ async function printBrowser() {
     // printed, so they're swapped out the same way as text inputs.
     // Excludes hidden helper inputs inside select components (Choices.js
     // search clone and Form.io autofill decoy) that would print as empty boxes.
-    let inputs = document.querySelectorAll(
-      'textarea, input[type="text"]:not(.choices__input):not(.formio-select-autocomplete-input)'
+    let inputs = Array.from(
+      document.querySelectorAll(
+        'textarea, input[type="text"]:not(.choices__input):not(.formio-select-autocomplete-input)'
+      )
     );
 
     // Create arrays to store original fields and new divs
