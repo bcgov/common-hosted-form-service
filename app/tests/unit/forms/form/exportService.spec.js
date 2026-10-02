@@ -1059,12 +1059,21 @@ describe('_submissionCSVExport email export (background flow)', () => {
   const currentUser = { usernameIdp: 'PAT_TEST', email: 'pat.test@gov.bc.ca' };
   const data = [{ a: '1', b: '2' }];
 
-  afterEach(() => {
+  // Mocks don't actually remove; track and clean the real on-disk csvs.
+  const tempPaths = [];
+
+  afterEach(async () => {
     jest.restoreAllMocks();
+    while (tempPaths.length) {
+      await fs.remove(tempPaths.pop()).catch(() => {});
+    }
   });
 
   it('uploads the export then emails the download link', async () => {
-    fileService.create = jest.fn().mockResolvedValue({ id: 'file-1' });
+    fileService.create = jest.fn().mockImplementation(async (file) => {
+      tempPaths.push(file.path);
+      return { id: 'file-1' };
+    });
     let emailResolve;
     const emailCalled = new Promise((resolve) => (emailResolve = resolve));
     emailService.submissionExportLink = jest.fn().mockImplementation(async (...args) => emailResolve(args));
@@ -1093,7 +1102,8 @@ describe('_submissionCSVExport email export (background flow)', () => {
 
   it('does not send the email when the upload fails, and leaves cleanup to fileService.create', async () => {
     const created = createSignal();
-    fileService.create = jest.fn().mockImplementation(async () => {
+    fileService.create = jest.fn().mockImplementation(async (file) => {
+      tempPaths.push(file.path);
       // Signal AFTER the rejection has had a chance to be observed by the awaiter.
       setImmediate(created.resolve);
       throw new Error('upload boom');
@@ -1126,6 +1136,7 @@ describe('_submissionCSVExport email export (background flow)', () => {
     emailService.submissionExportLink = jest.fn().mockResolvedValue();
     const cleaned = createSignal();
     const removeSpy = jest.spyOn(uploadCleanup, 'removeUploadedFile').mockImplementation(async (p, reason) => {
+      tempPaths.push(p);
       cleaned.resolve({ p, reason });
       return true;
     });

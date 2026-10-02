@@ -64,7 +64,7 @@ const safeRollback = async (trx, fileId) => {
   try {
     await trx.rollback();
   } catch (rollbackErr) {
-    log.warn('FileStorage rollback failed', { fileId, err: rollbackErr.message });
+    log.warn('FileStorage rollback failed', { fileId, err: rollbackErr?.message });
   }
 };
 
