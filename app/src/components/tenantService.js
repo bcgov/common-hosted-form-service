@@ -505,17 +505,22 @@ class TenantService {
    * @returns {Promise<Array<{ssoUserId, userName, displayName, firstName, lastName, email, idpType}>>}
    */
   async getGroupMembers(req, tenantId, groupId) {
-    const getGroupPath = config.get('cstar.getGroupPath');
-    const url = `${endpoint}${getGroupPath.replace('{tenantId}', tenantId).replace('{groupId}', groupId)}`;
+    // Read membership by filtering the tenant's user list to one group, rather than
+    // GET /tenants/{id}/groups/{groupId}?expand=groupUsers. That endpoint looks like the
+    // natural fit but CSTAR guards it with checkJwt() without sharedServiceAccess, so it
+    // enforces the TMS audience and rejects CHEFS's own token with invalid_audience on
+    // every call. The tenant-users route allows shared-service tokens.
+    const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
+    const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', tenantId)}`;
     const { data } = await axios.get(url, {
       headers: this._getAuthHeaders(req),
-      params: { expand: 'groupUsers' },
+      params: { groupIds: groupId },
       timeout: CSTAR_TIMEOUT_MS,
     });
-    const groupUsers = data?.data?.group?.users || [];
-    return groupUsers
-      .filter((gu) => !gu?.isDeleted)
-      .map((gu) => gu?.user?.ssoUser)
+    const users = data?.data?.users || data?.users || [];
+    return users
+      .filter((u) => u?.isDeleted !== true)
+      .map((u) => u?.ssoUser)
       .filter((ssoUser) => !!ssoUser?.ssoUserId)
       .map((ssoUser) => ({
         ssoUserId: ssoUser.ssoUserId,
@@ -546,7 +551,16 @@ class TenantService {
         try {
           return [groupId, await this.getGroupMembers(req, tenantId, groupId)];
         } catch (err) {
-          log.error(`${SERVICE}: failed to read members of group ${groupId} in tenant ${tenantId}`, err);
+          // Log the status and CSTAR's own reason — a bare stack hid that every call was
+          // failing identically on an audience check rather than intermittently.
+          log.error(`${SERVICE}: failed to read members of group ${groupId} in tenant ${tenantId}`, {
+            groupId,
+            tenantId,
+            status: err?.response?.status,
+            cstarReason: err?.response?.data?.reason || err?.response?.data?.error,
+            code: err?.code,
+            message: err?.message,
+          });
           return null;
         }
       })
@@ -596,6 +610,15 @@ class TenantService {
     // Tenant-wide group listing may not include role details, so form_admin
     // status must be derived from the user-scoped group listing instead.
     const userFormAdminGroupIds = new Set(userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN)).map((g) => g.id));
+
+    // Eligibility is exactly "holds form_admin in this tenant", which the listing above
+    // already answers. Asking getEligibleTenantsForMigration instead would re-derive it
+    // for every tenant the user belongs to — a list call plus a role call per tenant —
+    // to decide a question about this one.
+    if (userFormAdminGroupIds.size === 0) {
+      throw Object.assign(new Error('You do not have the Form Admin role in this tenant.'), { code: 'TENANT_NOT_ELIGIBLE' });
+    }
+
     const preSelectedGroupIds = [...userFormAdminGroupIds];
 
     // One membership read per group, in parallel, instead of one per team member.
@@ -656,6 +679,9 @@ class TenantService {
     if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
     if (!tenantId) throw new TypeError(`${SERVICE}: missing tenantId`);
 
+    // Cheap pre-check so the common case fails fast with a clear error. It is NOT the
+    // guard against concurrent migrations — that is the row lock plus the unique
+    // constraint inside the transaction below.
     const existing = await FormTenant.query().where({ formId }).first();
     if (existing) {
       throw Object.assign(new Error(`${SERVICE}: form already migrated`), { code: 'ALREADY_MIGRATED' });
@@ -671,22 +697,69 @@ class TenantService {
 
     let finalGroupIds;
     if (Array.isArray(groupIds) && groupIds.length > 0) {
+      const uniqueGroupIds = [...new Set(groupIds)];
+
+      const malformed = uniqueGroupIds.filter((id) => typeof id !== 'string' || !uuid.validate(id));
+      if (malformed.length > 0) {
+        throw Object.assign(new Error('One or more group IDs are not valid identifiers.'), { code: 'INVALID_GROUP' });
+      }
+
+      // Membership of a form_admin group proves the user may migrate, but says nothing
+      // about the other IDs in the list. Without checking them against the target tenant,
+      // a group from another tenant (or any random UUID) lands in form_group and later
+      // surfaces as "Group no longer available".
+      const tenantGroups = await this.getGroupsForCurrentTenant(reqContext);
+      const tenantGroupIds = new Set(tenantGroups.map((g) => g.id));
+      const foreign = uniqueGroupIds.filter((id) => !tenantGroupIds.has(id));
+      if (foreign.length > 0) {
+        throw Object.assign(new Error('One or more groups do not belong to the selected tenant.'), { code: 'INVALID_GROUP' });
+      }
+
       const adminGroupIds = new Set(adminGroups.map((g) => g.id));
-      if (!groupIds.some((id) => adminGroupIds.has(id))) {
+      if (!uniqueGroupIds.some((id) => adminGroupIds.has(id))) {
         throw Object.assign(new Error(`${SERVICE}: at least one assigned group must have form_admin role`), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
       }
-      finalGroupIds = [...new Set(groupIds)];
+      finalGroupIds = uniqueGroupIds;
     } else {
       finalGroupIds = adminGroups.map((g) => g.id);
     }
 
     const createdBy = req.currentUser.usernameIdp || req.currentUser.username;
 
-    await FormGroup.transaction(async (trx) => {
-      await FormTenant.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
-      await FormGroup.query(trx).insert(finalGroupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
-      await FormMigrationLog.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
-    });
+    try {
+      await FormGroup.transaction(async (trx) => {
+        // Serialise concurrent migrations of the same form: the second transaction waits
+        // here until the first commits, then sees its form_tenant row.
+        await Form.query(trx).findById(formId).forUpdate();
+
+        const alreadyMigrated = await FormTenant.query(trx).where({ formId }).first();
+        if (alreadyMigrated) {
+          throw Object.assign(new Error(`${SERVICE}: form already migrated`), { code: 'ALREADY_MIGRATED' });
+        }
+
+        await FormTenant.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
+        await FormGroup.query(trx).insert(finalGroupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
+        await FormMigrationLog.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
+      });
+    } catch (error) {
+      // Backstop for anything the lock does not serialise (a replica, a lock timeout):
+      // the unique constraint on form_tenant.formId still refuses the second row, and a
+      // "form is already migrated" answer is more useful than a raw constraint error.
+      if (this._isUniqueViolation(error)) {
+        throw Object.assign(new Error(`${SERVICE}: form already migrated`), { code: 'ALREADY_MIGRATED' });
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * True for a Postgres unique-violation, however the driver surfaces it.
+   * Objection wraps pg errors, so the code can sit on the error or its cause.
+   * @param {Error} error
+   */
+  _isUniqueViolation(error) {
+    const PG_UNIQUE_VIOLATION = '23505';
+    return error?.nativeError?.code === PG_UNIQUE_VIOLATION || error?.code === PG_UNIQUE_VIOLATION || error?.name === 'UniqueViolationError';
   }
 
   /**

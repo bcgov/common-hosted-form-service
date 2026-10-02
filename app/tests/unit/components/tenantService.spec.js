@@ -1768,7 +1768,11 @@ describe('TenantService', () => {
 
     it('does not mark a group as isFormAdmin when the user has no form_admin role there', async () => {
       jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([{ id: 'group-1', name: 'Reviewers' }]);
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Reviewers', roles: ['form_viewer'] }]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
+        { id: 'group-1', name: 'Reviewers', roles: ['form_viewer'] },
+        // Reaching this endpoint at all requires form_admin somewhere in the tenant.
+        { id: 'group-admin', name: 'Admins', roles: ['form_admin'] },
+      ]);
 
       const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
 
@@ -1795,12 +1799,23 @@ describe('TenantService', () => {
         { id: 'group-1', name: 'Mine' },
         { id: 'group-2', name: 'Not mine' },
       ]);
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Mine', roles: [] }]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', name: 'Mine', roles: ['form_admin'] }]);
 
       const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
 
       expect(result.groups.find((g) => g.id === 'group-1').isUserMember).toBe(true);
       expect(result.groups.find((g) => g.id === 'group-2').isUserMember).toBe(false);
+    });
+
+    it('rejects a tenant where the user holds no form_admin role', async () => {
+      // Eligibility is decided from the group listing this method already fetches, so it
+      // costs no extra CSTAR calls — unlike re-deriving it across every tenant.
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([{ id: 'g1', name: 'Readers' }]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'g1', name: 'Readers', roles: ['form_viewer'] }]);
+
+      const err = await tenantService.getMigrationTenantGroups(req, formId, tenantId).catch((e) => e);
+
+      expect(err.code).toBe('TENANT_NOT_ELIGIBLE');
     });
 
     describe('CSTAR group → member mapping', () => {
@@ -1809,7 +1824,7 @@ describe('TenantService', () => {
 
       function arrangeGroups(groups, membersByGroup) {
         jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue(groups);
-        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([]);
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'g1', name: 'Admins', roles: ['form_admin'] }]);
         tenantService.getMembersByGroup.mockResolvedValue(membersByGroup);
       }
 
@@ -1898,39 +1913,33 @@ describe('TenantService', () => {
   describe('getGroupMembers / getMembersByGroup', () => {
     const tenantId = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
     const req = { currentUser: { idpUserId: 'user-sso-id' }, headers: { authorization: 'Bearer token' } };
-    const groupUrl = (gid) => `${endpoint}tenants/${tenantId}/groups/${gid}`;
+    const usersUrl = `${endpoint}tenants/${tenantId}/users`;
 
-    it('requests expand=groupUsers and maps the nested sso users out', async () => {
+    it('reads membership from the tenant-users route filtered to one group', async () => {
+      // CSTAR guards GET /tenants/:id/groups/:groupId with checkJwt() (no
+      // sharedServiceAccess), so it enforces the TMS audience and rejects CHEFS's own
+      // token on every call. The tenant-users route permits shared-service tokens.
       jwtService.getBearerToken.mockReturnValue('testtoken');
-      mockAxios.onGet(groupUrl('g1')).reply(200, {
+      mockAxios.onGet(usersUrl).reply(200, {
         data: {
-          group: {
-            id: 'g1',
-            users: [
-              { isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-ann', displayName: 'Ann Lee', email: 'ann@gov.bc.ca', idpType: 'idir' } } },
-              { isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-bob', displayName: 'Bob Roy', email: 'bob@gov.bc.ca', idpType: 'idir' } } },
-            ],
-          },
+          users: [
+            { isDeleted: false, ssoUser: { ssoUserId: 'sso-ann', displayName: 'Ann Lee', email: 'ann@gov.bc.ca', idpType: 'idir' } },
+            { isDeleted: false, ssoUser: { ssoUserId: 'sso-bob', displayName: 'Bob Roy', email: 'bob@gov.bc.ca', idpType: 'idir' } },
+          ],
         },
       });
 
       const members = await tenantService.getGroupMembers(req, tenantId, 'g1');
 
-      expect(mockAxios.history.get[0].params).toEqual({ expand: 'groupUsers' });
+      expect(mockAxios.history.get[0].params).toEqual({ groupIds: 'g1' });
       expect(members.map((m) => m.ssoUserId)).toEqual(['sso-ann', 'sso-bob']);
     });
 
     it('skips removed memberships and entries with no sso user', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
-      mockAxios.onGet(groupUrl('g1')).reply(200, {
+      mockAxios.onGet(usersUrl).reply(200, {
         data: {
-          group: {
-            users: [
-              { isDeleted: true, user: { ssoUser: { ssoUserId: 'sso-gone' } } },
-              { isDeleted: false, user: {} },
-              { isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-ann' } } },
-            ],
-          },
+          users: [{ isDeleted: true, ssoUser: { ssoUserId: 'sso-gone' } }, { isDeleted: false }, { isDeleted: false, ssoUser: { ssoUserId: 'sso-ann' } }],
         },
       });
 
@@ -1941,19 +1950,20 @@ describe('TenantService', () => {
 
     it('returns an empty array for a group with no members', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
-      mockAxios.onGet(groupUrl('g1')).reply(200, { data: { group: { users: [] } } });
+      mockAxios.onGet(usersUrl).reply(200, { data: { users: [] } });
 
       await expect(tenantService.getGroupMembers(req, tenantId, 'g1')).resolves.toEqual([]);
     });
 
     it('getMembersByGroup omits groups it could not read but keeps the rest', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
-      mockAxios.onGet(groupUrl('g1')).reply(200, { data: { group: { users: [{ isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-ann' } } }] } } });
-      mockAxios.onGet(groupUrl('g2')).reply(500, { error: 'boom' });
+      mockAxios.onGet(usersUrl).reply((cfg) => {
+        if (cfg.params?.groupIds === 'g2') return [500, { error: 'boom' }];
+        return [200, { data: { users: [{ isDeleted: false, ssoUser: { ssoUserId: 'sso-ann' } }] } }];
+      });
 
       const map = await tenantService.getMembersByGroup(req, tenantId, ['g1', 'g2']);
 
-      expect(map.has('g1')).toBe(true);
       expect(map.get('g1').map((m) => m.ssoUserId)).toEqual(['sso-ann']);
       expect(map.has('g2')).toBe(false);
     });
@@ -1961,9 +1971,9 @@ describe('TenantService', () => {
     it('deduplicates repeated group ids into a single read', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       let hits = 0;
-      mockAxios.onGet(groupUrl('g1')).reply(() => {
+      mockAxios.onGet(usersUrl).reply(() => {
         hits += 1;
-        return [200, { data: { group: { users: [] } } }];
+        return [200, { data: { users: [] } }];
       });
 
       await tenantService.getMembersByGroup(req, tenantId, ['g1', 'g1', 'g1']);
@@ -1982,8 +1992,26 @@ describe('TenantService', () => {
     const adminGroups = [{ id: 'group-admin-1', name: 'Form Admins', roles: ['form_admin'] }];
 
     beforeEach(() => {
+      // mockReset, not clearAllMocks: queued mockReturnValueOnce implementations survive
+      // mockClear and would otherwise leak into the next test's form_tenant lookups.
+      FormTenant.query.mockReset();
+      Form.query.mockReset();
       FormGroup.transaction = jest.fn().mockImplementation(async (fn) => fn({}));
+      // The transaction locks the form row, then re-checks form_tenant inside the lock.
+      Form.query.mockReturnValue({
+        findById: jest.fn().mockReturnValue({ forUpdate: jest.fn().mockResolvedValue({ id: formId }) }),
+      });
+      // Group IDs are validated against the target tenant's groups.
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([{ id: 'group-admin-1', name: 'Form Admins' }]);
     });
+
+    // Both the pre-check (outside the transaction) and the in-transaction re-check read
+    // form_tenant; `inTransaction` is what the locked re-check should see.
+    function mockFormTenantLookups({ preCheck = null, inTransaction = null } = {}) {
+      FormTenant.query
+        .mockReturnValueOnce({ where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(preCheck) }) })
+        .mockReturnValueOnce({ where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(inTransaction) }) });
+    }
 
     it('throws TypeError when currentUser is missing', async () => {
       await expect(tenantService.migrateFormToTenant({}, formId, tenantId)).rejects.toThrow(TypeError);
@@ -2023,11 +2051,7 @@ describe('TenantService', () => {
     });
 
     it('inserts form_tenant, form_group, and form_migration_log in a transaction on success', async () => {
-      FormTenant.query.mockReturnValueOnce({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue(null),
-        }),
-      });
+      mockFormTenantLookups({ preCheck: null, inTransaction: null });
       jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
 
       const insertTenant = jest.fn().mockResolvedValue({});
@@ -2046,11 +2070,7 @@ describe('TenantService', () => {
     });
 
     it('rethrows CSTAR auth errors so callers surface 401/403 rather than a misleading group error', async () => {
-      FormTenant.query.mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue(null),
-        }),
-      });
+      mockFormTenantLookups({ preCheck: null, inTransaction: null });
       const authError = Object.assign(new Error('Unauthorized'), { response: { status: 401 } });
       jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(authError);
 
@@ -2061,11 +2081,7 @@ describe('TenantService', () => {
     });
 
     it('recovers from a transient CSTAR 401 by retrying once before failing the migration', async () => {
-      FormTenant.query.mockReturnValueOnce({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue(null),
-        }),
-      });
+      mockFormTenantLookups({ preCheck: null, inTransaction: null });
       const authError = Object.assign(new Error('Unauthorized'), { response: { status: 401 } });
       jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValueOnce(authError).mockResolvedValueOnce(adminGroups);
 
@@ -2090,11 +2106,7 @@ describe('TenantService', () => {
       expressLikeReq.currentUser = { idpUserId: 'user-sso-id', usernameIdp: 'TEST@idir' };
       expect(Object.prototype.hasOwnProperty.call(expressLikeReq, 'headers')).toBe(false);
 
-      FormTenant.query.mockReturnValueOnce({
-        where: jest.fn().mockReturnValue({
-          first: jest.fn().mockResolvedValue(null),
-        }),
-      });
+      mockFormTenantLookups({ preCheck: null, inTransaction: null });
       const spy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
       FormTenant.query.mockReturnValueOnce({ insert: jest.fn().mockResolvedValue({}) });
       FormGroup.query.mockReturnValue({ insert: jest.fn().mockResolvedValue([]) });
@@ -2103,6 +2115,92 @@ describe('TenantService', () => {
       await tenantService.migrateFormToTenant(expressLikeReq, formId, tenantId);
 
       expect(spy.mock.calls[0][0].headers).toEqual({ authorization: 'Bearer token' });
+    });
+
+    describe('concurrent migration and group validation', () => {
+      it('re-checks form_tenant inside the transaction under a row lock', async () => {
+        // The pre-check cannot prevent two requests both passing it before either
+        // commits; the locked re-check is what actually serialises them.
+        const forUpdate = jest.fn().mockResolvedValue({ id: formId });
+        Form.query.mockReturnValue({ findById: jest.fn().mockReturnValue({ forUpdate }) });
+        mockFormTenantLookups({ preCheck: null, inTransaction: { id: 'won-the-race' } });
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
+
+        const err = await tenantService.migrateFormToTenant(req, formId, tenantId).catch((e) => e);
+
+        expect(forUpdate).toHaveBeenCalled();
+        expect(err.code).toBe('ALREADY_MIGRATED');
+      });
+
+      it('maps a unique violation to ALREADY_MIGRATED rather than surfacing a 500', async () => {
+        mockFormTenantLookups({ preCheck: null, inTransaction: null });
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
+        FormGroup.transaction = jest.fn().mockRejectedValue(Object.assign(new Error('duplicate key'), { nativeError: { code: '23505' } }));
+
+        const err = await tenantService.migrateFormToTenant(req, formId, tenantId).catch((e) => e);
+
+        expect(err.code).toBe('ALREADY_MIGRATED');
+      });
+
+      it('recognises a unique violation reported directly on the error', async () => {
+        mockFormTenantLookups({ preCheck: null, inTransaction: null });
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
+        FormGroup.transaction = jest.fn().mockRejectedValue(Object.assign(new Error('dup'), { code: '23505' }));
+
+        const err = await tenantService.migrateFormToTenant(req, formId, tenantId).catch((e) => e);
+
+        expect(err.code).toBe('ALREADY_MIGRATED');
+      });
+
+      it('lets unrelated transaction failures through untouched', async () => {
+        mockFormTenantLookups({ preCheck: null, inTransaction: null });
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
+        FormGroup.transaction = jest.fn().mockRejectedValue(new Error('connection reset'));
+
+        await expect(tenantService.migrateFormToTenant(req, formId, tenantId)).rejects.toThrow('connection reset');
+      });
+
+      // Valid UUIDs, so these exercise the tenant-membership check rather than the
+      // cheaper UUID-format rejection.
+      const ADMIN_GROUP_UUID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+      const OTHER_TENANT_GROUP_UUID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+      const uuidAdminGroups = [{ id: ADMIN_GROUP_UUID, name: 'Form Admins', roles: ['form_admin'] }];
+
+      it('rejects group IDs that do not belong to the target tenant', async () => {
+        // Being in a form_admin group proves the user may migrate; it says nothing about
+        // the other ids in the list, which previously landed in form_group unchecked.
+        mockFormTenantLookups({ preCheck: null, inTransaction: null });
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(uuidAdminGroups);
+        tenantService.getGroupsForCurrentTenant.mockResolvedValue([{ id: ADMIN_GROUP_UUID }]);
+
+        const err = await tenantService.migrateFormToTenant(req, formId, tenantId, [ADMIN_GROUP_UUID, OTHER_TENANT_GROUP_UUID]).catch((e) => e);
+
+        expect(err.code).toBe('INVALID_GROUP');
+        expect(err.message).toMatch(/do not belong to the selected tenant/);
+      });
+
+      it('rejects group IDs that are not UUIDs', async () => {
+        mockFormTenantLookups({ preCheck: null, inTransaction: null });
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(adminGroups);
+
+        const err = await tenantService.migrateFormToTenant(req, formId, tenantId, ['not-a-uuid']).catch((e) => e);
+
+        expect(err.code).toBe('INVALID_GROUP');
+      });
+
+      it('deduplicates group IDs before inserting', async () => {
+        mockFormTenantLookups({ preCheck: null, inTransaction: null });
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue(uuidAdminGroups);
+        tenantService.getGroupsForCurrentTenant.mockResolvedValue([{ id: ADMIN_GROUP_UUID }]);
+        const insertGroup = jest.fn().mockResolvedValue([]);
+        FormTenant.query.mockReturnValueOnce({ insert: jest.fn().mockResolvedValue({}) });
+        FormGroup.query.mockReturnValue({ insert: insertGroup });
+        FormMigrationLog.query.mockReturnValue({ insert: jest.fn().mockResolvedValue({}) });
+
+        await tenantService.migrateFormToTenant(req, formId, tenantId, [ADMIN_GROUP_UUID, ADMIN_GROUP_UUID]);
+
+        expect(insertGroup.mock.calls[0][0]).toHaveLength(1);
+      });
     });
 
     it('does not retry non-401 errors from the CSTAR group lookup', async () => {

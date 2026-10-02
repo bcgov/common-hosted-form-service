@@ -716,6 +716,21 @@ describe('getMigrationPreview', () => {
       expect(sharedUsers.map((u) => u.email)).toEqual(['a@a.com', 'b@b.com']);
     });
 
+    it('excludes the creator of each submission, so a form with no sharing reports 0', async () => {
+      // Every submitter gets form_submission_user rows for their own submission, which is
+      // why an unshared form used to report its owner as a shared user. submission_create
+      // is the creator marker form/service.js writes.
+      const raw = arrange([]);
+
+      await controller.getMigrationPreview(req, res, next);
+
+      const sql = raw.mock.calls[1][0].replace(/\s+/g, ' ');
+      expect(sql).toContain('NOT EXISTS');
+      expect(sql).toContain('creator.permission = ?');
+      expect(raw.mock.calls[1][1]).toContain('submission_create');
+      expect(res.json.mock.calls[0][0].impact.submissions.withShareUsers).toBe(0);
+    });
+
     it('a form shared only with system accounts reports 0 and an empty list', async () => {
       arrange([]);
 
@@ -876,11 +891,14 @@ describe('getMigrationPreview', () => {
 
 describe('migrateForm', () => {
   let req, res, next;
+  // Must be a real UUID: the endpoint now rejects malformed tenant ids with a 400
+  // instead of letting TenantService throw a 500 deep in the call stack.
+  const TENANT_UUID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 
   beforeEach(() => {
     req = {
       params: { formId: 'form-1' },
-      body: { tenantId: 'tenant-1' },
+      body: { tenantId: TENANT_UUID },
       currentUser: { idpUserId: 'user-1' },
     };
     res = {
@@ -905,7 +923,7 @@ describe('migrateForm', () => {
 
     await controller.migrateForm(req, res, next);
 
-    expect(tenantService.migrateFormToTenant).toHaveBeenCalledWith(req, 'form-1', 'tenant-1', null);
+    expect(tenantService.migrateFormToTenant).toHaveBeenCalledWith(req, 'form-1', TENANT_UUID, null);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: 'Form migrated successfully.' });
     expect(next).not.toHaveBeenCalled();
@@ -918,7 +936,51 @@ describe('migrateForm', () => {
     await controller.migrateForm(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: 'Form is already migrated to a tenant.' });
+    // The code travels with the detail so the page can switch to the already-migrated
+    // view (e.g. the form was migrated in another tab) instead of printing the text.
+    expect(res.json).toHaveBeenCalledWith({ detail: 'Form is already migrated to a tenant.', code: 'ALREADY_MIGRATED' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('rejects a non-UUID tenantId with 400 rather than a 500 from deep in the service', async () => {
+    req.body.tenantId = 'not-a-uuid';
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json.mock.calls[0][0].detail).toMatch(/not a valid identifier/);
+    expect(tenantService.migrateFormToTenant).not.toHaveBeenCalled();
+  });
+
+  it('rejects an empty groupIds array instead of silently assigning every form_admin group', async () => {
+    // The UI requires an explicit form_admin group; the API quietly substituting all of
+    // them granted access the caller never asked for.
+    req.body.groupIds = [];
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json.mock.calls[0][0]).toMatchObject({ code: 'INVALID_GROUP' });
+    expect(tenantService.migrateFormToTenant).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 with INVALID_GROUP when the service rejects the group list', async () => {
+    const err = Object.assign(new Error('One or more groups do not belong to the selected tenant.'), { code: 'INVALID_GROUP' });
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ detail: err.message, code: 'INVALID_GROUP' });
+  });
+
+  it('answers 400 for a TenantService argument error without leaking the internal prefix', async () => {
+    tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(new TypeError('TenantService: invalid tenantId'));
+
+    await controller.migrateForm(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json.mock.calls[0][0].detail).not.toMatch(/TenantService/);
     expect(next).not.toHaveBeenCalled();
   });
 

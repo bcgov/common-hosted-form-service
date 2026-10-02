@@ -215,6 +215,41 @@ describe('getUserForms', () => {
     expect(result[0].permissions).toContain('submission_read');
   });
 
+  it('a tenanted form grants no roles when groups cannot be checked, instead of falling back to legacy team roles', async () => {
+    // Migration leaves form_role_user in place. If those rows were honoured whenever the
+    // group check could not run, the old team would keep the access the migration screen
+    // told them they had lost.
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const items = [{ formId: 'migrated-form', tenantId: 'tenant-1', idps: ['idir'], roles: ['owner'], permissions: ['form_update', 'submission_read'] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'migrated-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    const tenantSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles');
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    // No headers → no way to ask CSTAR.
+    const result = await service.getUserForms(userInfo, { formId: 'migrated-form' });
+
+    expect(tenantSpy).not.toHaveBeenCalled();
+    expect(result[0].roles).toEqual([]);
+    expect(result[0].permissions).toEqual([]);
+  });
+
+  it('leaves a personal form’s roles untouched when there are no headers', async () => {
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const items = [{ formId: 'personal-form', tenantId: null, idps: ['idir'], roles: ['owner'], permissions: ['form_update'] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'personal-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    const result = await service.getUserForms(userInfo, { formId: 'personal-form' });
+
+    expect(result[0].permissions).toEqual(['form_update']);
+  });
+
   it('surfaces a 503 rather than silently denying access when the group lookup fails', async () => {
     // A failed lookup must not be read as "user is in no groups" — that collapses every
     // permission and reports a service outage as an authorization error.

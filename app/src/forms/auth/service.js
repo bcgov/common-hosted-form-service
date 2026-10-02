@@ -186,11 +186,21 @@ const service = {
       // a form migrated into a tenant keeps its original idps. Gating on empty idps meant
       // group roles were never resolved for migrated forms, so group members fell through
       // to the default {submission_create, form_read} row and were denied submission_read.
-      if (params.formId && headers) {
+      if (params.formId) {
         const userGroupsByTenant = new Map();
         const allRoles = await Role.query().withGraphFetched('permissions');
         for (const item of items) {
           if (item && item.tenantId) {
+            if (!headers) {
+              // Once a form belongs to a tenant, its management access comes from that
+              // tenant's groups and nowhere else. With no headers we cannot ask CSTAR, so
+              // fall through to no roles rather than honouring the form_role_user rows
+              // migration deliberately left behind — otherwise the old team keeps the
+              // access the UI told them they had lost.
+              item.roles = [];
+              item.permissions = [];
+              continue;
+            }
             if (!userGroupsByTenant.has(item.tenantId)) {
               const userGroups = await service.fetchTenantGroupRoles(userInfo, headers, item.tenantId, `form ${item.formId}`);
               userGroupsByTenant.set(item.tenantId, userGroups);
@@ -200,6 +210,12 @@ const service = {
         }
       }
 
+      // filterForms re-adds FORM_SUBMITTER (form_read, submission_create,
+      // document_template_read) for anyone whose IDP matches the form's. That is kept on
+      // purpose: idps govern who may SUBMIT, groups govern who may MANAGE, so a migrated
+      // login-required form still accepts submissions and submitters keep their own
+      // drafts — exactly what the migration screen promises. It grants no submission_read,
+      // so it never exposes anyone else's submissions.
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },

@@ -3,8 +3,20 @@ const formService = require('../submission/service');
 const service = require('./service');
 const tenantService = require('../../components/tenantService');
 const userService = require('../user/service');
+const uuid = require('uuid');
 const { Form, FormMigrationLog, FormTenant, FormSubmissionUser } = require('../common/models');
 const { HUMAN_USER_SQL_PREDICATE, humanUserJoin } = require('../common/systemUsers');
+const { Permissions } = require('../common/constants');
+
+// TenantService validates its own arguments by throwing TypeError. Those are caller
+// mistakes (a malformed id in the request), not server faults, so answer 400 — and never
+// pass the raw `TenantService: ...` text to the user.
+const _handleMigrationError = (error, res, next) => {
+  if (error instanceof TypeError && String(error.message).startsWith('TenantService:')) {
+    return res.status(400).json({ detail: 'The request contained an invalid tenant or form identifier.' });
+  }
+  return next(error);
+};
 
 const BCEID_IDP_CODES = new Set(['bceid-basic', 'bceid-business']);
 const BCEID_BASIC_IDP_CODE = 'bceid-basic';
@@ -289,14 +301,22 @@ module.exports = {
       const { formId } = req.params;
       const { tenantId } = req.query;
       if (!tenantId) return res.status(400).json({ detail: 'tenantId is required.' });
+      if (!uuid.validate(tenantId)) return res.status(400).json({ detail: 'tenantId is not a valid identifier.' });
 
       const existing = await FormTenant.query().where({ formId }).first();
       if (existing) return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
 
+      // Only tenants the user could actually migrate into may be inspected. Without this
+      // the endpoint listed the groups of any tenant whose id was guessed or pasted in.
+      // The check lives in the service, which already reads the user's groups for this
+      // tenant, so it costs no extra CSTAR calls.
       const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
       res.status(200).json(result);
     } catch (error) {
-      next(error);
+      if (error.code === 'TENANT_NOT_ELIGIBLE') {
+        return res.status(403).json({ detail: error.message, code: error.code });
+      }
+      return _handleMigrationError(error, res, next);
     }
   },
 
@@ -341,8 +361,17 @@ module.exports = {
            WHERE fv."formId" = ? AND fs.deleted = false`,
           [formId]
         ),
-        // Distinct PEOPLE the form's submissions are shared with — not the number of
-        // submissions that happen to carry share rows, and not service accounts.
+        // Distinct PEOPLE the form's submissions are shared WITH — not the number of
+        // submissions carrying share rows, not service accounts, and not the submitters
+        // themselves. Every submitter gets form_submission_user rows for their own
+        // submission, so without excluding them a form with no sharing at all reports
+        // its owner as a shared user.
+        //
+        // submission_create marks the creator: form/service.js grants it only to the
+        // submitter ("We know this is the submission creator when we see the
+        // SUBMISSION_CREATE permission"), while rbac/service.js writes shares with the
+        // permissions the sharer chose. Excluded per submission, so someone who created
+        // one submission and was shared on another is still counted for the latter.
         FormSubmissionUser.knex().raw(
           `SELECT hu.id, hu.email, hu."fullName", hu."idpCode"
            FROM form_submission_user fsu
@@ -350,9 +379,15 @@ module.exports = {
            JOIN form_version fv ON fv.id = fs."formVersionId"
            ${humanUserJoin('fsu."userId"')}
            WHERE fv."formId" = ? AND fs.deleted = false AND ${HUMAN_USER_SQL_PREDICATE}
+             AND NOT EXISTS (
+               SELECT 1 FROM form_submission_user creator
+               WHERE creator."formSubmissionId" = fsu."formSubmissionId"
+                 AND creator."userId" = fsu."userId"
+                 AND creator.permission = ?
+             )
            GROUP BY hu.id, hu.email, hu."fullName", hu."idpCode"
            ORDER BY lower(coalesce(hu."fullName", hu.email))`,
-          [formId]
+          [formId, Permissions.SUBMISSION_CREATE]
         ),
       ]);
 
@@ -403,7 +438,7 @@ module.exports = {
         },
       });
     } catch (error) {
-      next(error);
+      return _handleMigrationError(error, res, next);
     }
   },
 
@@ -413,14 +448,22 @@ module.exports = {
       const { tenantId, groupIds } = req.body;
 
       if (!tenantId) return res.status(400).json({ detail: 'tenantId is required.' });
+      if (!uuid.validate(tenantId)) return res.status(400).json({ detail: 'tenantId is not a valid identifier.' });
       if (groupIds !== undefined && !Array.isArray(groupIds)) {
         return res.status(400).json({ detail: 'groupIds must be an array.' });
+      }
+      // An empty array is a request to assign nothing, which is not the same as omitting
+      // the field. Silently substituting every form_admin group assigned access the
+      // caller never asked for, and contradicted the UI's own "pick a group" rule.
+      if (Array.isArray(groupIds) && groupIds.length === 0) {
+        return res.status(400).json({ detail: 'At least one group must be assigned.', code: 'INVALID_GROUP' });
       }
 
       await tenantService.migrateFormToTenant(req, formId, tenantId, groupIds || null);
       res.status(200).json({ message: 'Form migrated successfully.' });
     } catch (error) {
-      if (error.code === 'ALREADY_MIGRATED') return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+      if (error.code === 'ALREADY_MIGRATED') return res.status(400).json({ detail: 'Form is already migrated to a tenant.', code: error.code });
+      if (error.code === 'INVALID_GROUP') return res.status(400).json({ detail: error.message, code: error.code });
       if (error.code === 'FORM_ADMIN_GROUP_REQUIRED') return res.status(400).json({ detail: error.message, code: error.code });
       if (error.code === 'ECONNABORTED')
         return res.status(503).json({ detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' });
@@ -429,7 +472,7 @@ module.exports = {
       if (isCstarNetworkError) return res.status(503).json({ detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' });
       if (cstarStatus === 401) return res.status(401).json({ detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' });
       if (cstarStatus === 403) return res.status(403).json({ detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' });
-      next(error);
+      return _handleMigrationError(error, res, next);
     }
   },
 };
