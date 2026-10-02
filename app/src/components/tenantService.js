@@ -41,12 +41,16 @@ class TenantService {
    * Returns `{ tenants, degraded }`. On transient CSTAR failure (5xx / network)
    * returns `{ tenants: [], degraded: true }` without caching. On 4xx or other
    * unexpected errors, throws.
+   *
+   * `bypassCache` skips the cached entry and replaces it with a fresh call. It is for
+   * user-initiated refreshes only — a Refresh button that returns up-to-30s-old data
+   * has not refreshed anything from the user's point of view.
    */
-  _fetchUserTenantsList(req) {
+  _fetchUserTenantsList(req, { bypassCache = false } = {}) {
     const userId = req.currentUser.idpUserId;
     const now = Date.now();
     const cached = listTenantsCache.get(userId);
-    if (cached?.expiresAt > now) {
+    if (!bypassCache && cached?.expiresAt > now) {
       return cached.promise;
     }
     const url = `${endpoint}${listUserTenantsPath.replace('{userId}', userId)}`;
@@ -96,7 +100,7 @@ class TenantService {
     return { belongs, degraded: false };
   }
 
-  async getCurrentUserTenants(req) {
+  async getCurrentUserTenants(req, { bypassCache = false } = {}) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
     }
@@ -105,7 +109,7 @@ class TenantService {
     }
     let tenants, degraded;
     try {
-      ({ tenants, degraded } = await this._fetchUserTenantsList(req));
+      ({ tenants, degraded } = await this._fetchUserTenantsList(req, { bypassCache }));
     } catch (error) {
       // A 401 from CSTAR means the user's token is not recognised — treat as
       // having no tenants rather than surfacing an opaque 401 to the caller.
@@ -447,8 +451,8 @@ class TenantService {
    * @param {object} req - Express request with currentUser
    * @returns {Promise<Array<{id, name, groups}>>}
    */
-  async getEligibleTenantsForMigration(req) {
-    const allTenants = await this.getCurrentUserTenants(req);
+  async getEligibleTenantsForMigration(req, { bypassCache = false } = {}) {
+    const allTenants = await this.getCurrentUserTenants(req, { bypassCache });
     const eligible = allTenants.filter((t) => Array.isArray(t.roles) && t.roles.includes(TenantRoles.FORM_ADMIN));
 
     return Promise.all(
@@ -484,9 +488,82 @@ class TenantService {
   }
 
   /**
-   * Returns all groups for a target tenant enriched with role details, plus the
-   * IDs of the current user's form_admin groups to use as pre-selection defaults,
-   * plus per-team-member CSTAR group membership so the UI can show live status.
+   * Fetch the members enrolled in one CSTAR group.
+   *
+   * CSTAR only exposes membership this way: listing tenant users with a `groupIds`
+   * filter narrows the result but does not say which group each user came from (the
+   * GroupUser join there is a filter, not a select), so group → members has to be read
+   * one group at a time via `?expand=groupUsers`.
+   *
+   * Throws on failure rather than degrading to []: an empty group and an unreachable
+   * CSTAR look identical to the UI, and silently showing "no members" for a group that
+   * actually has people in it is how access decisions get made on bad information.
+   *
+   * @param {object} req - Express request (headers used for auth)
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {string} groupId - UUID of the group
+   * @returns {Promise<Array<{ssoUserId, userName, displayName, firstName, lastName, email, idpType}>>}
+   */
+  async getGroupMembers(req, tenantId, groupId) {
+    const getGroupPath = config.get('cstar.getGroupPath');
+    const url = `${endpoint}${getGroupPath.replace('{tenantId}', tenantId).replace('{groupId}', groupId)}`;
+    const { data } = await axios.get(url, {
+      headers: this._getAuthHeaders(req),
+      params: { expand: 'groupUsers' },
+      timeout: CSTAR_TIMEOUT_MS,
+    });
+    const groupUsers = data?.data?.group?.users || [];
+    return groupUsers
+      .filter((gu) => !gu?.isDeleted)
+      .map((gu) => gu?.user?.ssoUser)
+      .filter((ssoUser) => !!ssoUser?.ssoUserId)
+      .map((ssoUser) => ({
+        ssoUserId: ssoUser.ssoUserId,
+        userName: ssoUser.userName,
+        displayName: ssoUser.displayName,
+        firstName: ssoUser.firstName,
+        lastName: ssoUser.lastName,
+        email: ssoUser.email,
+        idpType: ssoUser.idpType,
+      }));
+  }
+
+  /**
+   * Membership for several groups at once, as a Map of groupId → members.
+   * Calls run in parallel; one call per group is the finest granularity CSTAR offers.
+   * A group that cannot be read is omitted rather than reported as empty, so callers
+   * can tell "no members" apart from "could not check".
+   *
+   * @param {object} req - Express request (headers used for auth)
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {string[]} groupIds
+   * @returns {Promise<Map<string, Array<object>>>}
+   */
+  async getMembersByGroup(req, tenantId, groupIds) {
+    const unique = [...new Set(groupIds || [])];
+    const results = await Promise.all(
+      unique.map(async (groupId) => {
+        try {
+          return [groupId, await this.getGroupMembers(req, tenantId, groupId)];
+        } catch (err) {
+          log.error(`${SERVICE}: failed to read members of group ${groupId} in tenant ${tenantId}`, err);
+          return null;
+        }
+      })
+    );
+    return new Map(results.filter(Boolean));
+  }
+
+  /**
+   * Returns all groups for a target tenant enriched with role details, the IDs of the
+   * current user's form_admin groups to use as pre-selection defaults, the membership of
+   * each group, and per-team-member group membership derived from it.
+   *
+   * Membership is read once per group and then inverted to get member → groups. The
+   * previous shape asked CSTAR for each team member's groups individually, which was one
+   * request per team member and could never describe a group's members — so a person
+   * enrolled in a group but not yet on the CHEFS form team was invisible here.
+   *
    * @param {object} req - Express request with currentUser
    * @param {string} formId - UUID of the form being migrated
    * @param {string} tenantId - UUID of the target tenant
@@ -521,23 +598,45 @@ class TenantService {
     const userFormAdminGroupIds = new Set(userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN)).map((g) => g.id));
     const preSelectedGroupIds = [...userFormAdminGroupIds];
 
-    const groups = allTenantGroups.map((g) => ({
-      id: g.id,
-      name: g.name,
-      roles: g.roles,
-      isFormAdmin: userFormAdminGroupIds.has(g.id),
-      isUserMember: userGroupIds.has(g.id),
-    }));
-
-    // Fetch each team member's group membership in this tenant — parallel, errors degrade to []
-    const teamMemberGroups = await Promise.all(
-      rawMembers
-        .filter((m) => m.idpUserId)
-        .map(async (m) => {
-          const memberGroups = await this.getGroupsForUser(req, tenantId, m.idpUserId);
-          return { email: m.email, fullName: m.fullName, groupIds: memberGroups.map((g) => g.id) };
-        })
+    // One membership read per group, in parallel, instead of one per team member.
+    const membersByGroup = await this.getMembersByGroup(
+      req,
+      tenantId,
+      allTenantGroups.map((g) => g.id)
     );
+
+    const groups = allTenantGroups.map((g) => {
+      const members = membersByGroup.get(g.id);
+      return {
+        id: g.id,
+        name: g.name,
+        roles: g.roles,
+        isFormAdmin: userFormAdminGroupIds.has(g.id),
+        isUserMember: userGroupIds.has(g.id),
+        // null (not []) when membership could not be read, so the UI can say so rather
+        // than claiming the group is empty.
+        members: members
+          ? members.map((m) => ({ ssoUserId: m.ssoUserId, fullName: m.displayName || [m.firstName, m.lastName].filter(Boolean).join(' '), email: m.email, idpType: m.idpType }))
+          : null,
+      };
+    });
+
+    // Invert group → members into ssoUserId → groupIds, then attach to the CHEFS team.
+    const groupIdsBySsoUser = new Map();
+    for (const [groupId, members] of membersByGroup.entries()) {
+      for (const m of members) {
+        if (!groupIdsBySsoUser.has(m.ssoUserId)) groupIdsBySsoUser.set(m.ssoUserId, []);
+        groupIdsBySsoUser.get(m.ssoUserId).push(groupId);
+      }
+    }
+
+    const teamMemberGroups = rawMembers
+      .filter((m) => m.idpUserId)
+      .map((m) => ({
+        email: m.email,
+        fullName: m.fullName,
+        groupIds: groupIdsBySsoUser.get(m.idpUserId) || [],
+      }));
 
     return { groups, preSelectedGroupIds, teamMemberGroups };
   }

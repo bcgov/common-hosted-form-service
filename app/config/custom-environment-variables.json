@@ -130,6 +130,7 @@
     "listGroupsForUserForTenantPath": "CSTAR_LIST_GROUPS_FOR_USER_FOR_TENANT_PATH",
     "listGroupsForTenant": "CSTAR_LIST_GROUPS_FOR_TENANT",
     "listTenantUsersPath": "CSTAR_LIST_TENANT_USERS_PATH",
+    "getGroupPath": "CSTAR_GET_GROUP_PATH",
     "timeoutMs": "CSTAR_TIMEOUT_MS"
   },
   "features": {

@@ -3,7 +3,8 @@ const formService = require('../submission/service');
 const service = require('./service');
 const tenantService = require('../../components/tenantService');
 const userService = require('../user/service');
-const { FormTenant, FormSubmissionUser } = require('../common/models');
+const { Form, FormMigrationLog, FormTenant, FormSubmissionUser } = require('../common/models');
+const { HUMAN_USER_SQL_PREDICATE, humanUserJoin } = require('../common/systemUsers');
 
 const BCEID_IDP_CODES = new Set(['bceid-basic', 'bceid-business']);
 const BCEID_BASIC_IDP_CODE = 'bceid-basic';
@@ -303,29 +304,54 @@ module.exports = {
     try {
       const { formId } = req.params;
 
+      // An already-migrated form is a valid state to look at, not an error. Returning 400
+      // here meant revisiting the page — including browser Back after migrating — rendered
+      // an error instead of telling the user the migration had already happened.
       const existing = await FormTenant.query().where({ formId }).first();
       if (existing) {
-        return res.status(400).json({ detail: 'Form is already migrated to a tenant.' });
+        const [migratedForm, migration] = await Promise.all([
+          Form.query().findById(formId).select('id', 'name'),
+          FormMigrationLog.query().where({ formId }).orderBy('createdAt', 'desc').first(),
+        ]);
+        return res.status(200).json({
+          alreadyMigrated: true,
+          formName: migratedForm?.name || null,
+          tenantId: existing.tenantId,
+          migratedAt: migration?.createdAt || null,
+          migratedBy: migration?.createdBy || null,
+          eligibleTenants: [],
+          impact: null,
+        });
       }
 
-      const [eligibleTenants, teamMembers, submissionStatsResult, shareUsersResult] = await Promise.all([
-        tenantService.getEligibleTenantsForMigration(req),
+      // An explicit Refresh must reflect group/tenant changes made in CSTAR moments ago,
+      // so it bypasses the short-TTL tenant cache rather than serving a stale list.
+      const bypassCache = req.query?.refresh === 'true';
+
+      const [form, eligibleTenants, teamMembers, submissionStatsResult, shareUsersResult] = await Promise.all([
+        Form.query().findById(formId).select('id', 'name'),
+        tenantService.getEligibleTenantsForMigration(req, { bypassCache }),
         service.getFormUsers({ formId }),
         FormSubmissionUser.knex().raw(
           `SELECT
-             COUNT(DISTINCT fs.id)                                    AS total,
+             COUNT(DISTINCT fs.id) FILTER (WHERE fs.draft = false)   AS total,
              COUNT(DISTINCT fs.id) FILTER (WHERE fs.draft = true)    AS drafts
            FROM form_version fv
            JOIN form_submission fs ON fs."formVersionId" = fv.id
            WHERE fv."formId" = ? AND fs.deleted = false`,
           [formId]
         ),
+        // Distinct PEOPLE the form's submissions are shared with — not the number of
+        // submissions that happen to carry share rows, and not service accounts.
         FormSubmissionUser.knex().raw(
-          `SELECT COUNT(DISTINCT fsu."formSubmissionId") AS count
+          `SELECT hu.id, hu.email, hu."fullName", hu."idpCode"
            FROM form_submission_user fsu
            JOIN form_submission fs ON fs.id = fsu."formSubmissionId"
            JOIN form_version fv ON fv.id = fs."formVersionId"
-           WHERE fv."formId" = ?`,
+           ${humanUserJoin('fsu."userId"')}
+           WHERE fv."formId" = ? AND fs.deleted = false AND ${HUMAN_USER_SQL_PREDICATE}
+           GROUP BY hu.id, hu.email, hu."fullName", hu."idpCode"
+           ORDER BY lower(coalesce(hu."fullName", hu.email))`,
           [formId]
         ),
       ]);
@@ -354,16 +380,26 @@ module.exports = {
       }
 
       const stats = submissionStatsResult.rows[0] || {};
+      const sharedUsers = (shareUsersResult.rows || []).map((u) => ({
+        id: u.id,
+        email: u.email,
+        fullName: u.fullName,
+        idpCode: u.idpCode,
+      }));
 
       res.status(200).json({
+        formName: form?.name || null,
         eligibleTenants,
         impact: {
           team: Array.from(userMap.values()).map(({ roleSet, ...rest }) => ({ ...rest, roles: [...roleSet] })),
           submissions: {
             total: parseInt(stats.total || '0', 10),
             drafts: parseInt(stats.drafts || '0', 10),
-            withShareUsers: parseInt(shareUsersResult.rows[0]?.count || '0', 10),
+            // Count is derived from the list so the figure and the names can never disagree.
+            withShareUsers: sharedUsers.length,
           },
+          // The people behind the count, so the page can show who rather than how many.
+          sharedUsers,
         },
       });
     } catch (error) {

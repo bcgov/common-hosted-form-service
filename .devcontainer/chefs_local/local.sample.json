@@ -117,7 +117,8 @@
     "listUserTenantsPath": "users/{userId}/tenants",
     "listGroupsForUserForTenantPath": "tenants/{tenantId}/users/{userId}/groups/shared-service-roles",
     "listGroupsForTenant": "tenants/{tenantId}/groups",
-    "listTenantUsersPath": "tenants/{tenantId}/users"
+    "listTenantUsersPath": "tenants/{tenantId}/users",
+    "getGroupPath": "tenants/{tenantId}/groups/{groupId}"
   },
   "customBcAddressFormioComponent": {
     "apikey": "xxxxxxxxxxxxxxx",

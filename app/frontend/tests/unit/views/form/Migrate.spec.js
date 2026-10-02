@@ -41,6 +41,7 @@ const MOCK_IMPACT = {
 
 const MOCK_PREPARE_RESPONSE = {
   data: {
+    formName: 'Contractor Intake 2026',
     eligibleTenants: [MOCK_TENANT],
     impact: MOCK_IMPACT,
   },
@@ -95,7 +96,10 @@ describe('Migrate.vue', () => {
       mountComponent();
       await flushPromises();
 
-      expect(rbacService.getMigrationPreview).toHaveBeenCalledWith(FORM_ID);
+      // Initial load is not a refresh, so it may use the cached tenant list.
+      expect(rbacService.getMigrationPreview).toHaveBeenCalledWith(FORM_ID, {
+        refresh: false,
+      });
     });
   });
 
@@ -144,6 +148,274 @@ describe('Migrate.vue', () => {
       await flushPromises();
 
       expect(wrapper.vm.loading).toBe(false);
+    });
+  });
+
+  describe('form identity on the page', () => {
+    it('renders the form name so the user can tell which form they are migrating', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.formName).toBe('Contractor Intake 2026');
+      expect(wrapper.text()).toContain('Contractor Intake 2026');
+    });
+
+    it('omits the name heading when the API returns no form name', async () => {
+      rbacService.getMigrationPreview.mockResolvedValueOnce({
+        data: { eligibleTenants: [MOCK_TENANT], impact: MOCK_IMPACT },
+      });
+
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.formName).toBe('');
+      expect(wrapper.find('h2.text-subtitle-1').exists()).toBe(false);
+    });
+  });
+
+  describe('Refresh pulls fresh data', () => {
+    it('re-fetches the preview with refresh=true as well as the tenant groups', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      rbacService.getMigrationPreview.mockClear();
+      rbacService.getMigrationTenantGroups.mockClear();
+
+      await wrapper.vm.refreshTenantGroups();
+
+      // Groups alone are not "the latest data" — the impact table and counts come
+      // from the preview, and the cache must be bypassed for an explicit refresh.
+      expect(rbacService.getMigrationTenantGroups).toHaveBeenCalledWith(FORM_ID, 'tenant-1');
+      expect(rbacService.getMigrationPreview).toHaveBeenCalledWith(FORM_ID, {
+        refresh: true,
+      });
+    });
+
+    it('updates the impact counts shown after a refresh returns new numbers', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      rbacService.getMigrationPreview.mockResolvedValueOnce({
+        data: {
+          formName: 'Contractor Intake 2026',
+          eligibleTenants: [MOCK_TENANT],
+          impact: {
+            team: MOCK_IMPACT.team,
+            submissions: { total: 99, drafts: 7, withShareUsers: 4 },
+          },
+        },
+      });
+
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(wrapper.vm.impact.submissions).toEqual({
+        total: 99,
+        drafts: 7,
+        withShareUsers: 4,
+      });
+    });
+
+    it('picks up changed group membership for groups that stay assigned', async () => {
+      // Regression: the assigned groups used to keep the objects captured when the
+      // tenant was first selected, so a refresh could not change who was in them.
+      rbacService.getMigrationTenantGroups.mockResolvedValueOnce({
+        data: {
+          groups: [{ id: 'g1', name: 'Form Admins', isFormAdmin: true, members: [] }],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [],
+        },
+      });
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      expect(wrapper.vm.assignedGroupUsers).toEqual([]);
+
+      rbacService.getMigrationTenantGroups.mockResolvedValueOnce({
+        data: {
+          groups: [
+            {
+              id: 'g1',
+              name: 'Form Admins',
+              isFormAdmin: true,
+              members: [{ ssoUserId: 's1', fullName: 'Ann Lee', email: 'ann@gov.bc.ca' }],
+            },
+          ],
+          preSelectedGroupIds: ['g1'],
+          teamMemberGroups: [],
+        },
+      });
+
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(wrapper.vm.assignedGroupUsers.map((u) => u.email)).toEqual(['ann@gov.bc.ca']);
+    });
+
+    it('does not blank the page with the full-page loading state while refreshing', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      await wrapper.vm.refreshTenantGroups();
+
+      expect(wrapper.vm.loading).toBe(false);
+    });
+  });
+
+  describe('assigned users list', () => {
+    const withMembers = (members) => ({
+      data: {
+        groups: [
+          { id: 'g1', name: 'Form Admins', isFormAdmin: true, members },
+        ],
+        preSelectedGroupIds: ['g1'],
+        teamMemberGroups: [],
+      },
+    });
+
+    it('lists the distinct people in the assigned groups', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(
+        withMembers([
+          { ssoUserId: 's1', fullName: 'Ann Lee', email: 'ann@gov.bc.ca' },
+          { ssoUserId: 's2', fullName: 'Bob Roy', email: 'bob@gov.bc.ca' },
+        ])
+      );
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.assignedGroupUsers.map((u) => u.email)).toEqual([
+        'ann@gov.bc.ca',
+        'bob@gov.bc.ca',
+      ]);
+      expect(wrapper.text()).toContain('Ann Lee');
+      expect(wrapper.text()).toContain('Bob Roy');
+    });
+
+    it('shows a person in two assigned groups once, tagged with both', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue({
+        data: {
+          groups: [
+            {
+              id: 'g1',
+              name: 'Form Admins',
+              isFormAdmin: true,
+              members: [{ ssoUserId: 's1', fullName: 'Ann Lee', email: 'ann@gov.bc.ca' }],
+            },
+            {
+              id: 'g2',
+              name: 'Reviewers',
+              isFormAdmin: false,
+              members: [{ ssoUserId: 's1', fullName: 'Ann Lee', email: 'ann@gov.bc.ca' }],
+            },
+          ],
+          preSelectedGroupIds: ['g1', 'g2'],
+          teamMemberGroups: [],
+        },
+      });
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.assignedGroupUsers).toHaveLength(1);
+      expect(wrapper.vm.assignedGroupUsers[0].groupNames).toEqual([
+        'Form Admins',
+        'Reviewers',
+      ]);
+    });
+
+    it('renders an empty state when the assigned groups have no members', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(withMembers([]));
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.assignedGroupUsers).toEqual([]);
+      expect(wrapper.text()).toContain('trans.formMigration.assignedUsersEmpty');
+    });
+
+    it('flags groups whose membership could not be read, rather than calling them empty', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(withMembers(null));
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.unreadableAssignedGroups).toHaveLength(1);
+      expect(wrapper.text()).toContain('trans.formMigration.assignedUsersUnreadable');
+    });
+  });
+
+  describe('already-migrated state', () => {
+    const migratedResponse = {
+      data: {
+        alreadyMigrated: true,
+        formName: 'Contractor Intake 2026',
+        tenantId: 'tenant-1',
+        migratedAt: '2026-09-20T10:00:00.000Z',
+        migratedBy: 'ABC@idir',
+      },
+    };
+
+    it('renders the migrated state instead of an error when the form is already migrated', async () => {
+      rbacService.getMigrationPreview.mockResolvedValue(migratedResponse);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.alreadyMigrated).toBe(true);
+      expect(wrapper.vm.error).toBeNull();
+      expect(wrapper.text()).toContain('trans.formMigration.alreadyMigratedTitle');
+    });
+
+    it('hides the migration wizard once the form is migrated', async () => {
+      rbacService.getMigrationPreview.mockResolvedValue(migratedResponse);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.showMigratedState).toBe(true);
+      // The irreversible-action warning is meaningless after the fact.
+      expect(wrapper.text()).not.toContain(
+        'trans.formMigration.cannotBeUndoneWarning'
+      );
+    });
+
+    it('surfaces who migrated it and when', async () => {
+      rbacService.getMigrationPreview.mockResolvedValue(migratedResponse);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      expect(wrapper.vm.migratedInfo).toMatchObject({
+        tenantId: 'tenant-1',
+        migratedBy: 'ABC@idir',
+      });
+    });
+
+    it('returning to the page after migrating shows the migrated state, not an error', async () => {
+      // Reproduces browser Back: the component remounts and re-fetches.
+      rbacService.getMigrationPreview.mockResolvedValue(migratedResponse);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      await wrapper.vm.loadPreviewData();
+
+      expect(wrapper.vm.error).toBeNull();
+      expect(wrapper.vm.alreadyMigrated).toBe(true);
     });
   });
 

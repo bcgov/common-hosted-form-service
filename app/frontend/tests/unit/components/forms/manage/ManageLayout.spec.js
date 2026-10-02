@@ -8,6 +8,7 @@ import getRouter from '~/router';
 import ManageLayout from '~/components/forms/manage/ManageLayout.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useTenantStore } from '~/store/tenant';
 import { FormPermissions } from '~/utils/constants';
 import { ref } from 'vue';
 import { useAppStore } from '~/store/app';
@@ -162,5 +163,109 @@ describe('ManageLayout.vue', () => {
 
     expect(getFormPermissionsForUserSpy).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).not.toHaveBeenCalled();
+  });
+
+  describe('tenant context for a migrated form', () => {
+    const TENANT = { id: 'tenant-1', name: 'Natural Resources' };
+
+    function mountLayout() {
+      return mount(ManageLayout, {
+        props: { f: 'f' },
+        global: {
+          plugins: [router, pinia],
+          stubs: { ManageFormActions: true, ManageForm: true },
+        },
+      });
+    }
+
+    it('switches the session to the form own tenant when opened via an old URL', async () => {
+      // An old link carries no tenant context, so without this the form shows under
+      // Personal CHEFS while its access is actually governed by the tenant groups.
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = true;
+      tenantStore.selectedTenant = null;
+      tenantStore.tenants = [TENANT];
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = { id: 'f', name: 'Migrated Form', tenantId: 'tenant-1' };
+      });
+      const selectSpy = vi.spyOn(tenantStore, 'selectTenant');
+      const notificationStore = useNotificationStore(pinia);
+      const notifySpy = vi.spyOn(notificationStore, 'addNotification');
+
+      mountLayout();
+      await flushPromises();
+
+      expect(selectSpy).toHaveBeenCalledWith(TENANT);
+      // Changing global tenant context silently would be surprising.
+      expect(notifySpy).toHaveBeenCalled();
+    });
+
+    it('leaves context alone for a form with no tenant', async () => {
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = true;
+      tenantStore.selectedTenant = null;
+      tenantStore.tenants = [TENANT];
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = { id: 'f', name: 'Personal Form', tenantId: null };
+      });
+      const selectSpy = vi.spyOn(tenantStore, 'selectTenant');
+
+      mountLayout();
+      await flushPromises();
+
+      expect(selectSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not re-select when already in the form tenant', async () => {
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = true;
+      tenantStore.selectedTenant = TENANT;
+      tenantStore.tenants = [TENANT];
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = { id: 'f', name: 'Migrated Form', tenantId: 'tenant-1' };
+      });
+      const selectSpy = vi.spyOn(tenantStore, 'selectTenant');
+
+      mountLayout();
+      await flushPromises();
+
+      expect(selectSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not switch tenant when tenant features are disabled', async () => {
+      // With the feature off the UI has no tenant affordances, so moving the user into
+      // a tenant context would strand them somewhere they cannot navigate out of.
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = false;
+      tenantStore.selectedTenant = null;
+      tenantStore.tenants = [TENANT];
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = { id: 'f', name: 'Migrated Form', tenantId: 'tenant-1' };
+      });
+      const selectSpy = vi.spyOn(tenantStore, 'selectTenant');
+
+      mountLayout();
+      await flushPromises();
+
+      expect(selectSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not switch to a tenant the user does not belong to', async () => {
+      // getTenantById reads the user own tenant list; a form in a tenant they cannot
+      // access must not silently change their context.
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = true;
+      tenantStore.selectedTenant = null;
+      tenantStore.tenants = [];
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = { id: 'f', name: 'Other Tenant Form', tenantId: 'tenant-999' };
+      });
+      const selectSpy = vi.spyOn(tenantStore, 'selectTenant');
+
+      mountLayout();
+      await flushPromises();
+
+      expect(selectSpy).not.toHaveBeenCalled();
+    });
   });
 });

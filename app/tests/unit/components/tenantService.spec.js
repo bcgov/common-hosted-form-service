@@ -282,6 +282,40 @@ describe('TenantService', () => {
       expect(hits).toBe(1);
     });
 
+    it('bypassCache forces a fresh CSTAR call instead of serving the cached list', async () => {
+      // A Refresh that can return data up to the TTL old has not refreshed anything.
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      // Stub the per-tenant role fan-out so only the cached list call is counted.
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([]);
+      let hits = 0;
+      mockAxios.onGet(apiUrl).reply(() => {
+        hits += 1;
+        return [200, { data: { tenants: [{ id: tenantId }] } }];
+      });
+
+      await tenantService.getCurrentUserTenants(req);
+      expect(hits).toBe(1);
+
+      await tenantService.getCurrentUserTenants(req);
+      expect(hits).toBe(1); // cached
+
+      await tenantService.getCurrentUserTenants(req, { bypassCache: true });
+      expect(hits).toBe(2); // refreshed
+
+      // The refreshed result must replace the cache, not sit alongside it.
+      await tenantService.getCurrentUserTenants(req);
+      expect(hits).toBe(2);
+    });
+
+    it('getEligibleTenantsForMigration forwards bypassCache to the tenant lookup', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      const spy = jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([]);
+
+      await tenantService.getEligibleTenantsForMigration(req, { bypassCache: true });
+
+      expect(spy).toHaveBeenCalledWith(req, { bypassCache: true });
+    });
+
     it('coalesces concurrent in-flight calls onto one CSTAR call', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       let hits = 0;
@@ -1710,6 +1744,9 @@ describe('TenantService', () => {
       FormTenant.knex = jest.fn().mockReturnValue({
         raw: jest.fn().mockResolvedValue({ rows: [] }),
       });
+      // Default: membership reads succeed but return nobody, so existing assertions
+      // about groups/roles are unaffected by the membership lookup.
+      jest.spyOn(tenantService, 'getMembersByGroup').mockResolvedValue(new Map());
     });
 
     it('marks a group as isFormAdmin from the user-scoped listing even when the tenant-wide listing has no role details', async () => {
@@ -1764,6 +1801,174 @@ describe('TenantService', () => {
 
       expect(result.groups.find((g) => g.id === 'group-1').isUserMember).toBe(true);
       expect(result.groups.find((g) => g.id === 'group-2').isUserMember).toBe(false);
+    });
+
+    describe('CSTAR group → member mapping', () => {
+      const ann = { ssoUserId: 'sso-ann', displayName: 'Ann Lee', email: 'ann@gov.bc.ca', idpType: 'idir' };
+      const bob = { ssoUserId: 'sso-bob', displayName: 'Bob Roy', email: 'bob@gov.bc.ca', idpType: 'idir' };
+
+      function arrangeGroups(groups, membersByGroup) {
+        jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue(groups);
+        jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([]);
+        tenantService.getMembersByGroup.mockResolvedValue(membersByGroup);
+      }
+
+      it('attaches each group’s members', async () => {
+        arrangeGroups([{ id: 'g1', name: 'Admins' }], new Map([['g1', [ann, bob]]]));
+
+        const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+        expect(result.groups[0].members).toEqual([
+          { ssoUserId: 'sso-ann', fullName: 'Ann Lee', email: 'ann@gov.bc.ca', idpType: 'idir' },
+          { ssoUserId: 'sso-bob', fullName: 'Bob Roy', email: 'bob@gov.bc.ca', idpType: 'idir' },
+        ]);
+      });
+
+      it('reports an empty group as an empty member list, not as unreadable', async () => {
+        arrangeGroups([{ id: 'g1', name: 'Empty' }], new Map([['g1', []]]));
+
+        const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+        expect(result.groups[0].members).toEqual([]);
+      });
+
+      it('distinguishes a group whose membership could not be read (null, not empty)', async () => {
+        // getMembersByGroup omits groups it could not read; claiming "no members" for a
+        // group that may be full is how access gets granted on bad information.
+        arrangeGroups([{ id: 'g1', name: 'Unreadable' }], new Map());
+
+        const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+        expect(result.groups[0].members).toBeNull();
+      });
+
+      it('maps a user enrolled in several groups to all of them', async () => {
+        FormTenant.knex = jest.fn().mockReturnValue({
+          raw: jest.fn().mockResolvedValue({ rows: [{ email: 'ann@gov.bc.ca', fullName: 'Ann Lee', idpUserId: 'sso-ann' }] }),
+        });
+        arrangeGroups(
+          [
+            { id: 'g1', name: 'Admins' },
+            { id: 'g2', name: 'Reviewers' },
+          ],
+          new Map([
+            ['g1', [ann]],
+            ['g2', [ann, bob]],
+          ])
+        );
+
+        const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+        expect(result.teamMemberGroups).toEqual([{ email: 'ann@gov.bc.ca', fullName: 'Ann Lee', groupIds: ['g1', 'g2'] }]);
+      });
+
+      it('gives a team member in no CSTAR group an empty group list', async () => {
+        FormTenant.knex = jest.fn().mockReturnValue({
+          raw: jest.fn().mockResolvedValue({ rows: [{ email: 'cal@gov.bc.ca', fullName: 'Cal Fox', idpUserId: 'sso-cal' }] }),
+        });
+        arrangeGroups([{ id: 'g1', name: 'Admins' }], new Map([['g1', [ann]]]));
+
+        const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+        expect(result.teamMemberGroups).toEqual([{ email: 'cal@gov.bc.ca', fullName: 'Cal Fox', groupIds: [] }]);
+      });
+
+      it('reads membership once per group rather than once per team member', async () => {
+        FormTenant.knex = jest.fn().mockReturnValue({
+          raw: jest.fn().mockResolvedValue({
+            rows: [
+              { email: 'ann@gov.bc.ca', fullName: 'Ann Lee', idpUserId: 'sso-ann' },
+              { email: 'bob@gov.bc.ca', fullName: 'Bob Roy', idpUserId: 'sso-bob' },
+              { email: 'cal@gov.bc.ca', fullName: 'Cal Fox', idpUserId: 'sso-cal' },
+            ],
+          }),
+        });
+        const perUser = jest.spyOn(tenantService, 'getGroupsForUser');
+        arrangeGroups([{ id: 'g1', name: 'Admins' }], new Map([['g1', [ann]]]));
+
+        await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+
+        expect(tenantService.getMembersByGroup).toHaveBeenCalledTimes(1);
+        expect(tenantService.getMembersByGroup).toHaveBeenCalledWith(req, tenantId, ['g1']);
+        expect(perUser).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('getGroupMembers / getMembersByGroup', () => {
+    const tenantId = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
+    const req = { currentUser: { idpUserId: 'user-sso-id' }, headers: { authorization: 'Bearer token' } };
+    const groupUrl = (gid) => `${endpoint}tenants/${tenantId}/groups/${gid}`;
+
+    it('requests expand=groupUsers and maps the nested sso users out', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(groupUrl('g1')).reply(200, {
+        data: {
+          group: {
+            id: 'g1',
+            users: [
+              { isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-ann', displayName: 'Ann Lee', email: 'ann@gov.bc.ca', idpType: 'idir' } } },
+              { isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-bob', displayName: 'Bob Roy', email: 'bob@gov.bc.ca', idpType: 'idir' } } },
+            ],
+          },
+        },
+      });
+
+      const members = await tenantService.getGroupMembers(req, tenantId, 'g1');
+
+      expect(mockAxios.history.get[0].params).toEqual({ expand: 'groupUsers' });
+      expect(members.map((m) => m.ssoUserId)).toEqual(['sso-ann', 'sso-bob']);
+    });
+
+    it('skips removed memberships and entries with no sso user', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(groupUrl('g1')).reply(200, {
+        data: {
+          group: {
+            users: [
+              { isDeleted: true, user: { ssoUser: { ssoUserId: 'sso-gone' } } },
+              { isDeleted: false, user: {} },
+              { isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-ann' } } },
+            ],
+          },
+        },
+      });
+
+      const members = await tenantService.getGroupMembers(req, tenantId, 'g1');
+
+      expect(members.map((m) => m.ssoUserId)).toEqual(['sso-ann']);
+    });
+
+    it('returns an empty array for a group with no members', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(groupUrl('g1')).reply(200, { data: { group: { users: [] } } });
+
+      await expect(tenantService.getGroupMembers(req, tenantId, 'g1')).resolves.toEqual([]);
+    });
+
+    it('getMembersByGroup omits groups it could not read but keeps the rest', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(groupUrl('g1')).reply(200, { data: { group: { users: [{ isDeleted: false, user: { ssoUser: { ssoUserId: 'sso-ann' } } }] } } });
+      mockAxios.onGet(groupUrl('g2')).reply(500, { error: 'boom' });
+
+      const map = await tenantService.getMembersByGroup(req, tenantId, ['g1', 'g2']);
+
+      expect(map.has('g1')).toBe(true);
+      expect(map.get('g1').map((m) => m.ssoUserId)).toEqual(['sso-ann']);
+      expect(map.has('g2')).toBe(false);
+    });
+
+    it('deduplicates repeated group ids into a single read', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      let hits = 0;
+      mockAxios.onGet(groupUrl('g1')).reply(() => {
+        hits += 1;
+        return [200, { data: { group: { users: [] } } }];
+      });
+
+      await tenantService.getMembersByGroup(req, tenantId, ['g1', 'g1', 'g1']);
+
+      expect(hits).toBe(1);
     });
   });
 

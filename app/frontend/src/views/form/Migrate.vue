@@ -42,7 +42,16 @@ const showRetryButton = ref(false);
 const showConfirmDialog = ref(false);
 const migrated = ref(false);
 const migrationResult = ref(null);
+const alreadyMigrated = ref(false);
+const migratedInfo = ref(null);
 
+// True whenever the form lives in a tenant — whether it was migrated just now in this
+// session or on an earlier visit. Drives the migrated view and hides the wizard.
+const showMigratedState = computed(
+  () => migrated.value || alreadyMigrated.value
+);
+
+const formName = ref('');
 const eligibleTenants = ref([]);
 const impact = ref({ ...EMPTY_IMPACT });
 const selectedTenantId = ref(null);
@@ -68,6 +77,31 @@ const availableGroups = computed(() => {
 
 const hasFormAdminGroupAssigned = computed(() =>
   assignedGroups.value.some((g) => g.isFormAdmin)
+);
+
+// Distinct people across every assigned group, each annotated with the groups they are
+// in. Built from the same membership data the status chips use, so the list and the
+// statuses can never tell different stories.
+const assignedGroupUsers = computed(() => {
+  const byUser = new Map();
+  for (const group of assignedGroups.value) {
+    for (const member of group.members || []) {
+      if (!member?.ssoUserId) continue;
+      if (!byUser.has(member.ssoUserId)) {
+        byUser.set(member.ssoUserId, { ...member, groupNames: [] });
+      }
+      byUser.get(member.ssoUserId).groupNames.push(group.name);
+    }
+  }
+  return [...byUser.values()].sort((a, b) =>
+    (a.fullName || a.email || '').localeCompare(b.fullName || b.email || '')
+  );
+});
+
+// members === null means CSTAR could not be read for that group — distinct from a group
+// that genuinely has nobody in it, so the UI can say which happened.
+const unreadableAssignedGroups = computed(() =>
+  assignedGroups.value.filter((g) => g.members === null)
 );
 
 const showNoGroupsWarning = computed(
@@ -197,17 +231,32 @@ onMounted(async () => {
   await loadPreviewData();
 });
 
-async function loadPreviewData() {
-  loading.value = true;
+// showLoading is suppressed on refresh: the refresh control has its own spinner, and
+// toggling the page-level flag would blank the whole wizard mid-interaction.
+async function loadPreviewData({ refresh = false, showLoading = true } = {}) {
+  if (showLoading) loading.value = true;
   error.value = null;
   try {
-    const res = await rbacService.getMigrationPreview(props.f);
+    const res = await rbacService.getMigrationPreview(props.f, { refresh });
+    formName.value = res.data.formName || '';
+    // The form may already belong to a tenant — on a revisit, a reload, or browser Back
+    // after migrating. That is a state to render, not an error.
+    if (res.data.alreadyMigrated) {
+      alreadyMigrated.value = true;
+      migratedInfo.value = {
+        tenantId: res.data.tenantId,
+        migratedAt: res.data.migratedAt,
+        migratedBy: res.data.migratedBy,
+      };
+      return;
+    }
+    alreadyMigrated.value = false;
     eligibleTenants.value = res.data.eligibleTenants || [];
     impact.value = res.data.impact || { ...EMPTY_IMPACT };
   } catch (err) {
     error.value = err.response?.data?.detail || err.message;
   } finally {
-    loading.value = false;
+    if (showLoading) loading.value = false;
   }
 }
 
@@ -247,15 +296,23 @@ async function refreshTenantGroups() {
   refreshingGroups.value = true;
   staleGroupsRemoved.value = false;
   try {
-    const res = await rbacService.getMigrationTenantGroups(
-      props.f,
-      selectedTenantId.value
-    );
+    // Refresh must re-pull everything the page shows, not just the group lists —
+    // the team impact table and submission counts come from the preview call, and
+    // leaving them stale makes Refresh look like it did nothing.
+    const [res] = await Promise.all([
+      rbacService.getMigrationTenantGroups(props.f, selectedTenantId.value),
+      loadPreviewData({ refresh: true, showLoading: false }),
+    ]);
     allTenantGroups.value = res.data.groups || [];
     teamMemberGroups.value = res.data.teamMemberGroups || [];
 
-    const freshIds = new Set(allTenantGroups.value.map((g) => g.id));
-    const stillValid = assignedGroups.value.filter((g) => freshIds.has(g.id));
+    // Keep the user's selection, but carry over the REFRESHED group objects rather than
+    // the ones already held — otherwise membership stays as it was when the tenant was
+    // first picked and the assigned-users list silently ignores the refresh.
+    const freshById = new Map(allTenantGroups.value.map((g) => [g.id, g]));
+    const stillValid = assignedGroups.value
+      .map((g) => freshById.get(g.id))
+      .filter(Boolean);
     staleGroupsRemoved.value = stillValid.length < assignedGroups.value.length;
     assignedGroups.value = stillValid;
 
@@ -347,6 +404,8 @@ defineExpose({
   submitting,
   error,
   confirmed,
+  formName,
+  loadPreviewData,
   eligibleTenants,
   impact,
   selectedTenantId,
@@ -366,6 +425,11 @@ defineExpose({
   showRetryButton,
   migrated,
   migrationResult,
+  alreadyMigrated,
+  migratedInfo,
+  showMigratedState,
+  assignedGroupUsers,
+  unreadableAssignedGroups,
   refreshTenantGroups,
   requestMigration,
   confirmMigration,
@@ -390,6 +454,9 @@ defineExpose({
           <h1 class="text-h5 mb-1" :lang="locale">
             {{ $t('trans.formMigration.pageTitle') }}
           </h1>
+          <h2 v-if="formName" class="text-subtitle-1 font-weight-medium mb-1">
+            {{ formName }}
+          </h2>
           <p class="text-body-2 text-medium-emphasis mb-0" :lang="locale">
             {{ $t('trans.formMigration.description') }}
           </p>
@@ -398,7 +465,7 @@ defineExpose({
 
       <!-- Permanent-action warning banner — irrelevant once the action is done -->
       <v-alert
-        v-if="!migrated"
+        v-if="!showMigratedState"
         type="error"
         variant="tonal"
         density="compact"
@@ -443,8 +510,54 @@ defineExpose({
         </template>
       </v-alert>
 
+      <!-- ── ALREADY MIGRATED — revisit, reload, or browser Back ───────────── -->
+      <template v-if="alreadyMigrated">
+        <v-card variant="outlined" class="mb-4">
+          <v-card-text class="pa-6">
+            <div class="d-flex align-start ga-3 mb-4">
+              <v-icon size="36" color="success" class="flex-shrink-0">
+                mdi:mdi-check-circle
+              </v-icon>
+              <div>
+                <h2 class="text-h6 mb-1" :lang="locale">
+                  {{ $t('trans.formMigration.alreadyMigratedTitle') }}
+                </h2>
+                <p class="text-body-2 text-medium-emphasis mb-0" :lang="locale">
+                  {{
+                    migratedInfo && migratedInfo.migratedAt
+                      ? $t('trans.formMigration.alreadyMigratedOn', {
+                          date: new Date(
+                            migratedInfo.migratedAt
+                          ).toLocaleDateString(),
+                          by: migratedInfo.migratedBy,
+                        })
+                      : $t('trans.formMigration.alreadyMigratedBody')
+                  }}
+                </p>
+              </div>
+            </div>
+            <div class="d-flex ga-3 flex-wrap">
+              <v-btn
+                color="primary"
+                :lang="locale"
+                :to="{ name: 'FormGroups', query: { f } }"
+              >
+                {{ $t('trans.formMigration.resultManageGroups') }}
+              </v-btn>
+              <v-btn
+                variant="outlined"
+                :lang="locale"
+                :to="{ name: 'FormManage', query: { f } }"
+              >
+                {{ $t('trans.formMigration.resultBackToForm') }}
+              </v-btn>
+            </div>
+          </v-card-text>
+        </v-card>
+      </template>
+
       <!-- ── RESULT — shown once the migration has actually happened ────────── -->
-      <template v-if="migrated && migrationResult">
+      <template v-else-if="migrated && migrationResult">
         <v-card variant="outlined" class="mb-4">
           <v-card-text class="pa-6">
             <div class="d-flex align-start ga-3 mb-5">
@@ -675,6 +788,86 @@ defineExpose({
               >
                 {{ $t('trans.formMigration.noGroupsAssignedWarning') }}
               </v-alert>
+
+              <!-- Who is actually in the groups being assigned -->
+              <v-card
+                v-if="assignedGroups.length > 0"
+                variant="outlined"
+                class="mt-4"
+              >
+                <v-card-title
+                  class="text-body-1 font-weight-medium pt-3 pb-0 px-4"
+                  :lang="locale"
+                >
+                  {{ $t('trans.formMigration.assignedUsersTitle') }}
+                  <v-chip
+                    size="x-small"
+                    color="primary"
+                    variant="tonal"
+                    class="ml-2"
+                  >
+                    {{ assignedGroupUsers.length }}
+                  </v-chip>
+                </v-card-title>
+                <v-card-subtitle
+                  class="px-4 pt-1 pb-2 text-caption"
+                  :lang="locale"
+                >
+                  {{ $t('trans.formMigration.assignedUsersSubtitle') }}
+                </v-card-subtitle>
+                <v-divider />
+                <div v-if="loadingGroups" class="d-flex justify-center py-4">
+                  <v-progress-circular
+                    indeterminate
+                    color="primary"
+                    size="22"
+                  />
+                </div>
+                <div
+                  v-else-if="assignedGroupUsers.length === 0"
+                  class="px-4 py-4 text-body-2 text-medium-emphasis text-center"
+                  :lang="locale"
+                >
+                  {{ $t('trans.formMigration.assignedUsersEmpty') }}
+                </div>
+                <v-list v-else density="compact" class="py-1">
+                  <v-list-item
+                    v-for="u in assignedGroupUsers"
+                    :key="u.ssoUserId"
+                  >
+                    <v-list-item-title class="text-body-2">
+                      {{ u.fullName || u.email }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="text-caption">
+                      {{ u.email }}
+                    </v-list-item-subtitle>
+                    <template #append>
+                      <div class="d-flex flex-wrap ga-1 justify-end">
+                        <v-chip
+                          v-for="g in u.groupNames"
+                          :key="g"
+                          size="x-small"
+                          variant="tonal"
+                          color="primary"
+                        >
+                          {{ g }}
+                        </v-chip>
+                      </div>
+                    </template>
+                  </v-list-item>
+                </v-list>
+                <v-alert
+                  v-if="unreadableAssignedGroups.length > 0"
+                  type="warning"
+                  variant="tonal"
+                  density="compact"
+                  class="ma-3"
+                  icon="mdi:mdi-alert-outline"
+                  :lang="locale"
+                >
+                  {{ $t('trans.formMigration.assignedUsersUnreadable') }}
+                </v-alert>
+              </v-card>
             </div>
           </v-expand-transition>
 

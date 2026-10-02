@@ -9,10 +9,12 @@ jest.mock('../../../../src/forms/rbac/service');
 jest.mock('../../../../src/components/tenantService');
 jest.mock('../../../../src/forms/user/service');
 jest.mock('../../../../src/forms/common/models', () => ({
+  Form: { query: jest.fn() },
+  FormMigrationLog: { query: jest.fn() },
   FormTenant: { query: jest.fn() },
   FormSubmissionUser: { knex: jest.fn() },
 }));
-const { FormTenant, FormSubmissionUser } = require('../../../../src/forms/common/models');
+const { Form, FormMigrationLog, FormTenant, FormSubmissionUser } = require('../../../../src/forms/common/models');
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -524,11 +526,21 @@ describe('getFormGroups', () => {
 describe('getMigrationPreview', () => {
   let req, res, next;
 
-  function mockKnexRaw(statsRow, shareCount) {
+  // sharedUsers may be a count (rows are synthesised) or explicit user rows.
+  function mockKnexRaw(statsRow, sharedUsers) {
+    const rows =
+      typeof sharedUsers === 'number'
+        ? Array.from({ length: sharedUsers }, (_, i) => ({
+            id: `user-${i}`,
+            email: `user${i}@example.com`,
+            fullName: `User ${i}`,
+            idpCode: 'idir',
+          }))
+        : sharedUsers || [];
     const raw = jest
       .fn()
       .mockResolvedValueOnce({ rows: [statsRow] }) // submissionStatsResult
-      .mockResolvedValueOnce({ rows: [{ count: String(shareCount) }] }); // shareUsersResult
+      .mockResolvedValueOnce({ rows }); // shareUsersResult — distinct human users
     FormSubmissionUser.knex.mockReturnValue({ raw });
     return raw;
   }
@@ -536,6 +548,7 @@ describe('getMigrationPreview', () => {
   beforeEach(() => {
     req = {
       params: { formId: 'form-1' },
+      query: {},
       currentUser: { idpUserId: 'user-1' },
     };
     res = {
@@ -543,20 +556,61 @@ describe('getMigrationPreview', () => {
       json: jest.fn(),
     };
     next = jest.fn();
+    // The page header needs the form's name, so the preview reads it alongside the counts.
+    Form.query.mockReturnValue({
+      findById: jest.fn().mockReturnValue({
+        select: jest.fn().mockResolvedValue({ id: 'form-1', name: 'Test Form' }),
+      }),
+    });
   });
 
-  it('should return 400 if form is already migrated', async () => {
+  it('reports an already-migrated form as a state, not an error', async () => {
+    // Previously a 400, which the page rendered as a raw error — so revisiting the page
+    // or pressing browser Back after migrating looked like a failure.
     FormTenant.query.mockReturnValue({
       where: jest.fn().mockReturnValue({
-        first: jest.fn().mockResolvedValue({ id: 'existing-record' }),
+        first: jest.fn().mockResolvedValue({ id: 'existing-record', tenantId: 'tenant-1' }),
+      }),
+    });
+    FormMigrationLog.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        orderBy: jest.fn().mockReturnValue({
+          first: jest.fn().mockResolvedValue({ createdAt: '2026-09-20T10:00:00.000Z', createdBy: 'ABC@idir' }),
+        }),
       }),
     });
 
     await controller.getMigrationPreview(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: 'Form is already migrated to a tenant.' });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        alreadyMigrated: true,
+        formName: 'Test Form',
+        tenantId: 'tenant-1',
+        migratedAt: '2026-09-20T10:00:00.000Z',
+        migratedBy: 'ABC@idir',
+      })
+    );
     expect(next).not.toHaveBeenCalled();
+  });
+
+  it('still reports the migrated state when no audit row exists', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        first: jest.fn().mockResolvedValue({ id: 'existing-record', tenantId: 'tenant-1' }),
+      }),
+    });
+    FormMigrationLog.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        orderBy: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+      }),
+    });
+
+    await controller.getMigrationPreview(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json.mock.calls[0][0]).toMatchObject({ alreadyMigrated: true, migratedAt: null, migratedBy: null });
   });
 
   it('should return eligible tenants and impact with team and submission stats', async () => {
@@ -571,17 +625,160 @@ describe('getMigrationPreview', () => {
 
     await controller.getMigrationPreview(req, res, next);
 
-    expect(tenantService.getEligibleTenantsForMigration).toHaveBeenCalledWith(req);
+    expect(tenantService.getEligibleTenantsForMigration).toHaveBeenCalledWith(req, { bypassCache: false });
     expect(service.getFormUsers).toHaveBeenCalledWith({ formId: 'form-1' });
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
+      formName: 'Test Form',
       eligibleTenants,
       impact: {
         team: [{ email: 'a@a.com', fullName: 'Alice', idpCode: 'idir', isBceid: false, isBceidBasic: false, roles: ['owner'] }],
         submissions: { total: 5, drafts: 2, withShareUsers: 3 },
+        sharedUsers: [
+          { id: 'user-0', email: 'user0@example.com', fullName: 'User 0', idpCode: 'idir' },
+          { id: 'user-1', email: 'user1@example.com', fullName: 'User 1', idpCode: 'idir' },
+          { id: 'user-2', email: 'user2@example.com', fullName: 'User 2', idpCode: 'idir' },
+        ],
       },
     });
     expect(next).not.toHaveBeenCalled();
+  });
+
+  it('returns the form name so the page can identify which form is being migrated', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    service.getFormUsers = jest.fn().mockResolvedValue([]);
+    mockKnexRaw({ total: '0', drafts: '0' }, 0);
+
+    await controller.getMigrationPreview(req, res, next);
+
+    expect(res.json.mock.calls[0][0].formName).toBe('Test Form');
+  });
+
+  it('counts submitted submissions only — drafts are reported separately, not in the total', async () => {
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    service.getFormUsers = jest.fn().mockResolvedValue([]);
+    const raw = mockKnexRaw({ total: '5', drafts: '2' }, 0);
+
+    await controller.getMigrationPreview(req, res, next);
+
+    // The SQL itself must exclude drafts from the total; a total that merely equals the
+    // mocked value would still pass if the filter were dropped.
+    const statsSql = raw.mock.calls[0][0].replace(/\s+/g, ' ');
+    expect(statsSql).toContain('FILTER (WHERE fs.draft = false) AS total');
+    expect(res.json.mock.calls[0][0].impact.submissions).toEqual({ total: 5, drafts: 2, withShareUsers: 0 });
+  });
+
+  describe('shared users — distinct real people, not drafts', () => {
+    function arrange(sharedUsers, stats = { total: '0', drafts: '0' }) {
+      FormTenant.query.mockReturnValue({
+        where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+      });
+      tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+      service.getFormUsers = jest.fn().mockResolvedValue([]);
+      return mockKnexRaw(stats, sharedUsers);
+    }
+
+    it('counts distinct users, so one person sharing many drafts counts once', async () => {
+      // The query GROUPs BY user, so the same person across several drafts is one row.
+      const raw = arrange([{ id: 'u1', email: 'a@a.com', fullName: 'Ann', idpCode: 'idir' }]);
+
+      await controller.getMigrationPreview(req, res, next);
+
+      const sql = raw.mock.calls[1][0].replace(/\s+/g, ' ');
+      expect(sql).toContain('GROUP BY hu.id');
+      expect(sql).not.toContain('COUNT(DISTINCT fsu."formSubmissionId")');
+      // The user table is joined once, by the shared helper — not again for the SELECT.
+      expect(sql.match(/JOIN "user"/g)).toHaveLength(1);
+      expect(res.json.mock.calls[0][0].impact.submissions.withShareUsers).toBe(1);
+    });
+
+    it('excludes service accounts: 2 real users + 1 system account reports 2', async () => {
+      // The SQL restricts to identity providers a person can sign in as, so the service
+      // account never reaches the controller. Assert the predicate is actually applied.
+      const raw = arrange([
+        { id: 'u1', email: 'a@a.com', fullName: 'Ann', idpCode: 'idir' },
+        { id: 'u2', email: 'b@b.com', fullName: 'Bob', idpCode: 'bceid-business' },
+      ]);
+
+      await controller.getMigrationPreview(req, res, next);
+
+      const sql = raw.mock.calls[1][0].replace(/\s+/g, ' ');
+      expect(sql).toContain('hip.login = true');
+      expect(sql).toContain('identity_provider hip');
+      const { submissions, sharedUsers } = res.json.mock.calls[0][0].impact;
+      expect(submissions.withShareUsers).toBe(2);
+      expect(sharedUsers.map((u) => u.email)).toEqual(['a@a.com', 'b@b.com']);
+    });
+
+    it('a form shared only with system accounts reports 0 and an empty list', async () => {
+      arrange([]);
+
+      await controller.getMigrationPreview(req, res, next);
+
+      const { submissions, sharedUsers } = res.json.mock.calls[0][0].impact;
+      expect(submissions.withShareUsers).toBe(0);
+      expect(sharedUsers).toEqual([]);
+    });
+
+    it('reports 0 for a form with no submissions at all', async () => {
+      arrange([], { total: '0', drafts: '0' });
+
+      await controller.getMigrationPreview(req, res, next);
+
+      expect(res.json.mock.calls[0][0].impact.submissions).toEqual({ total: 0, drafts: 0, withShareUsers: 0 });
+    });
+
+    it('a drafts-only form reports 0 submitted but still lists the draft owners', async () => {
+      arrange([{ id: 'u1', email: 'a@a.com', fullName: 'Ann', idpCode: 'idir' }], { total: '0', drafts: '3' });
+
+      await controller.getMigrationPreview(req, res, next);
+
+      const { submissions } = res.json.mock.calls[0][0].impact;
+      expect(submissions.total).toBe(0);
+      expect(submissions.drafts).toBe(3);
+      expect(submissions.withShareUsers).toBe(1);
+    });
+
+    it('excludes deleted submissions from the shared-user list', async () => {
+      const raw = arrange([]);
+
+      await controller.getMigrationPreview(req, res, next);
+
+      expect(raw.mock.calls[1][0].replace(/\s+/g, ' ')).toContain('fs.deleted = false');
+    });
+
+    it('count always equals the length of the list it is derived from', async () => {
+      arrange([
+        { id: 'u1', email: 'a@a.com', fullName: 'Ann', idpCode: 'idir' },
+        { id: 'u2', email: 'b@b.com', fullName: 'Bob', idpCode: 'idir' },
+        { id: 'u3', email: 'c@c.com', fullName: 'Cal', idpCode: 'idir' },
+      ]);
+
+      await controller.getMigrationPreview(req, res, next);
+
+      const { submissions, sharedUsers } = res.json.mock.calls[0][0].impact;
+      expect(submissions.withShareUsers).toBe(sharedUsers.length);
+    });
+  });
+
+  it('bypasses the tenant cache when an explicit refresh is requested', async () => {
+    req.query = { refresh: 'true' };
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    service.getFormUsers = jest.fn().mockResolvedValue([]);
+    mockKnexRaw({ total: '0', drafts: '0' }, 0);
+
+    await controller.getMigrationPreview(req, res, next);
+
+    expect(tenantService.getEligibleTenantsForMigration).toHaveBeenCalledWith(req, { bypassCache: true });
   });
 
   it('should flag bceid-basic and bceid-business users as isBceid: true, but only bceid-basic as isBceidBasic: true', async () => {
