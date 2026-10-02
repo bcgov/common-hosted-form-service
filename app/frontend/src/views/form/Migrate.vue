@@ -104,6 +104,14 @@ const unreadableAssignedGroups = computed(() =>
   assignedGroups.value.filter((g) => g.members === null)
 );
 
+// The already-migrated response carries only the tenant id; resolve it to a name from
+// the user's own tenant list, falling back to the id so the message is never blank.
+const migratedTenantName = computed(() => {
+  const id = migratedInfo.value?.tenantId;
+  if (!id) return '';
+  return tenantStore.getTenantById?.(id)?.name || id;
+});
+
 const showNoGroupsWarning = computed(
   () =>
     !!selectedTenantId.value &&
@@ -147,6 +155,14 @@ const teamMemberGroupMap = computed(() => {
   return map;
 });
 
+// True when the groups loaded but CSTAR membership could not be read for any of them —
+// we then know nothing about who belongs where, which is not the same as nobody belonging.
+const membershipUnknown = computed(
+  () =>
+    allTenantGroups.value.length > 0 &&
+    allTenantGroups.value.every((g) => g.members === null)
+);
+
 const teamRowsWithStatus = computed(() => {
   const assignedIds = new Set(assignedGroups.value.map((g) => g.id));
   const groupNameMap = new Map(
@@ -157,6 +173,11 @@ const teamRowsWithStatus = computed(() => {
   return teamRows.value.map((member) => {
     if (member.isBceidBasic) {
       return { ...member, transferStatus: 'loses_access', memberGroups: [] };
+    }
+    // Membership could not be read: say so rather than asserting "no group membership",
+    // which reads as a definite finding and sends people off to fix a non-problem.
+    if (membershipUnknown.value) {
+      return { ...member, transferStatus: 'unknown', memberGroups: [] };
     }
     if (!tenantLoaded) {
       return { ...member, transferStatus: 'needs_group', memberGroups: [] };
@@ -180,6 +201,8 @@ const teamRowsWithStatus = computed(() => {
 });
 
 // Count members losing or needing to re-establish access — used for the "at risk" chip
+// "unknown" is deliberately excluded: we could not read membership, so calling those
+// people at risk would be asserting something we do not know.
 const atRiskCount = computed(
   () =>
     teamRowsWithStatus.value.filter(
@@ -191,6 +214,7 @@ const atRiskCount = computed(
 );
 
 function rowStatusClass(status) {
+  if (status === 'unknown') return '';
   if (status === 'retained') return 'row-retained';
   if (status === 'loses_access') return 'row-error';
   if (status === 'needs_assignment' || status === 'no_membership')
@@ -269,10 +293,17 @@ watch(selectedTenantId, async (tenantId) => {
   await loadTenantGroups(tenantId);
 });
 
+// Switching tenants quickly leaves several group requests in flight; without this token
+// a slower response for an abandoned tenant can land last and overwrite the groups for
+// the tenant actually selected.
+let groupsRequestToken = 0;
+
 async function loadTenantGroups(tenantId) {
+  const token = ++groupsRequestToken;
   loadingGroups.value = true;
   try {
     const res = await rbacService.getMigrationTenantGroups(props.f, tenantId);
+    if (token !== groupsRequestToken) return;
     allTenantGroups.value = res.data.groups || [];
     teamMemberGroups.value = res.data.teamMemberGroups || [];
     const preSelectedIds = new Set(res.data.preSelectedGroupIds || []);
@@ -280,9 +311,10 @@ async function loadTenantGroups(tenantId) {
       preSelectedIds.has(g.id)
     );
   } catch (err) {
+    if (token !== groupsRequestToken) return;
     error.value = err.response?.data?.detail || err.message;
   } finally {
-    loadingGroups.value = false;
+    if (token === groupsRequestToken) loadingGroups.value = false;
   }
 }
 
@@ -382,6 +414,12 @@ async function submitMigration() {
     migrated.value = true;
   } catch (err) {
     const code = err.response?.data?.code;
+    // Migrated elsewhere (another tab, another admin) — show the migrated state rather
+    // than an error about a thing that has in fact succeeded.
+    if (code === 'ALREADY_MIGRATED') {
+      await loadPreviewData({ showLoading: false });
+      return;
+    }
     if (code === 'SESSION_EXPIRED') {
       const recovered = await attemptSessionRecovery();
       if (recovered) {
@@ -428,9 +466,13 @@ defineExpose({
   alreadyMigrated,
   migratedInfo,
   showMigratedState,
+  migratedTenantName,
   assignedGroupUsers,
   unreadableAssignedGroups,
   refreshTenantGroups,
+  loadTenantGroups,
+  allTenantGroups,
+  atRiskCount,
   requestMigration,
   confirmMigration,
   submitMigration,
@@ -526,12 +568,15 @@ defineExpose({
                   {{
                     migratedInfo && migratedInfo.migratedAt
                       ? $t('trans.formMigration.alreadyMigratedOn', {
+                          tenant: migratedTenantName,
                           date: new Date(
                             migratedInfo.migratedAt
                           ).toLocaleDateString(),
                           by: migratedInfo.migratedBy,
                         })
-                      : $t('trans.formMigration.alreadyMigratedBody')
+                      : $t('trans.formMigration.alreadyMigratedToTenant', {
+                          tenant: migratedTenantName,
+                        })
                   }}
                 </p>
               </div>
@@ -585,10 +630,14 @@ defineExpose({
               >
                 <v-list-item-title class="text-body-2" :lang="locale">
                   {{
-                    $t('trans.formMigration.resultSubmissionsKept', {
-                      total: migrationResult.submissions.total,
-                      drafts: migrationResult.submissions.drafts,
-                    })
+                    $t(
+                      'trans.formMigration.resultSubmissionsKept',
+                      migrationResult.submissions.total,
+                      {
+                        total: migrationResult.submissions.total,
+                        drafts: migrationResult.submissions.drafts,
+                      }
+                    )
                   }}
                 </v-list-item-title>
               </v-list-item>
@@ -598,9 +647,11 @@ defineExpose({
               >
                 <v-list-item-title class="text-body-2" :lang="locale">
                   {{
-                    $t('trans.formMigration.resultSharesKept', {
-                      count: migrationResult.submissions.withShareUsers,
-                    })
+                    $t(
+                      'trans.formMigration.resultSharesKept',
+                      migrationResult.submissions.withShareUsers,
+                      { count: migrationResult.submissions.withShareUsers }
+                    )
                   }}
                 </v-list-item-title>
               </v-list-item>
@@ -611,9 +662,13 @@ defineExpose({
               >
                 <v-list-item-title class="text-body-2" :lang="locale">
                   {{
-                    $t('trans.formMigration.resultRetained', {
-                      count: migrationResult.retained,
-                    })
+                    $t(
+                      'trans.formMigration.resultRetained',
+                      migrationResult.retained,
+                      {
+                        count: migrationResult.retained,
+                      }
+                    )
                   }}
                 </v-list-item-title>
               </v-list-item>
@@ -624,9 +679,11 @@ defineExpose({
               >
                 <v-list-item-title class="text-body-2" :lang="locale">
                   {{
-                    $t('trans.formMigration.resultNeedsGroup', {
-                      count: migrationResult.needsGroup,
-                    })
+                    $t(
+                      'trans.formMigration.resultNeedsGroup',
+                      migrationResult.needsGroup,
+                      { count: migrationResult.needsGroup }
+                    )
                   }}
                 </v-list-item-title>
               </v-list-item>
@@ -637,9 +694,11 @@ defineExpose({
               >
                 <v-list-item-title class="text-body-2" :lang="locale">
                   {{
-                    $t('trans.formMigration.resultLosesAccess', {
-                      count: migrationResult.losesAccess,
-                    })
+                    $t(
+                      'trans.formMigration.resultLosesAccess',
+                      migrationResult.losesAccess,
+                      { count: migrationResult.losesAccess }
+                    )
                   }}
                 </v-list-item-title>
               </v-list-item>
@@ -707,6 +766,7 @@ defineExpose({
             </div>
             <v-select
               v-model="selectedTenantId"
+              :menu-props="{ closeOnContentClick: true }"
               :items="eligibleTenants"
               item-title="name"
               item-value="id"
@@ -828,7 +888,11 @@ defineExpose({
                   class="px-4 py-4 text-body-2 text-medium-emphasis text-center"
                   :lang="locale"
                 >
-                  {{ $t('trans.formMigration.assignedUsersEmpty') }}
+                  {{
+                    unreadableAssignedGroups.length > 0
+                      ? $t('trans.formMigration.assignedUsersUnreadable')
+                      : $t('trans.formMigration.assignedUsersEmpty')
+                  }}
                 </div>
                 <v-list v-else density="compact" class="py-1">
                   <v-list-item
@@ -922,7 +986,7 @@ defineExpose({
                 </v-chip>
               </v-card-title>
               <v-card-subtitle
-                class="px-4 pt-1 pb-2 text-caption"
+                class="px-4 pt-1 pb-2 text-caption subtitle-wrap"
                 :lang="locale"
               >
                 {{ $t('trans.formMigration.teamImpactSubtitle') }}
@@ -1077,6 +1141,17 @@ defineExpose({
                             {{
                               $t('trans.formMigration.statusNoMembership')
                             }}</span
+                          >
+                        </v-chip>
+                        <v-chip
+                          v-else-if="member.transferStatus === 'unknown'"
+                          size="x-small"
+                          color="grey"
+                          variant="tonal"
+                          prepend-icon="mdi:mdi-help-circle-outline"
+                        >
+                          <span :lang="locale">
+                            {{ $t('trans.formMigration.statusUnknown') }}</span
                           >
                         </v-chip>
                         <v-chip
@@ -1269,7 +1344,16 @@ defineExpose({
             {{ $t('trans.formMigration.confirmTitle') }}
           </v-card-title>
           <v-card-text :lang="locale">
-            {{ $t('trans.formMigration.confirmMessage') }}
+            <p class="mb-3">{{ $t('trans.formMigration.confirmMessage') }}</p>
+            <p class="mb-0 font-weight-medium">
+              {{
+                $t('trans.formMigration.confirmDetail', {
+                  formName: formName,
+                  tenant: selectedTenant ? selectedTenant.name : '',
+                  groups: assignedGroups.map((g) => g.name).join(', '),
+                })
+              }}
+            </p>
           </v-card-text>
           <v-card-actions class="justify-end pb-4 px-4">
             <v-btn
@@ -1296,6 +1380,13 @@ defineExpose({
 </template>
 
 <style scoped>
+/* Vuetify truncates card subtitles by default; these are full sentences. */
+.subtitle-wrap {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
 /* Step badge */
 .step-badge {
   display: inline-flex;

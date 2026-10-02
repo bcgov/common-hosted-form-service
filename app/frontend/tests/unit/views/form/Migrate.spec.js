@@ -419,6 +419,109 @@ describe('Migrate.vue', () => {
     });
   });
 
+  describe('stale response handling when switching tenants', () => {
+    it('ignores a slow response for a tenant the user has already switched away from', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      let resolveSlow;
+      rbacService.getMigrationTenantGroups
+        .mockImplementationOnce(() => new Promise((r) => (resolveSlow = r)))
+        .mockResolvedValueOnce({
+          data: {
+            groups: [{ id: 'fast', name: 'Fast Tenant Group', isFormAdmin: true, members: [] }],
+            preSelectedGroupIds: ['fast'],
+            teamMemberGroups: [],
+          },
+        });
+
+      const slow = wrapper.vm.loadTenantGroups('tenant-slow');
+      const fast = wrapper.vm.loadTenantGroups('tenant-fast');
+      await fast;
+
+      // The abandoned tenant's response lands last and must not overwrite the current one.
+      resolveSlow({
+        data: {
+          groups: [{ id: 'slow', name: 'Slow Tenant Group', isFormAdmin: true, members: [] }],
+          preSelectedGroupIds: ['slow'],
+          teamMemberGroups: [],
+        },
+      });
+      await slow;
+      await flushPromises();
+
+      expect(wrapper.vm.allTenantGroups.map((g) => g.id)).toEqual(['fast']);
+    });
+  });
+
+  describe('membership that could not be read', () => {
+    const unreadable = {
+      data: {
+        groups: [{ id: 'g1', name: 'Form Admins', isFormAdmin: true, members: null }],
+        preSelectedGroupIds: ['g1'],
+        teamMemberGroups: [],
+      },
+    };
+
+    it('reports Unknown rather than asserting the member has no groups', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(unreadable);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.teamRowsWithStatus[0].transferStatus).toBe('unknown');
+    });
+
+    it('does not count members as at risk when membership is unknown', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(unreadable);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.vm.atRiskCount).toBe(0);
+    });
+
+    it('does not claim nobody is enrolled when the group could not be read', async () => {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(unreadable);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      expect(wrapper.text()).toContain('trans.formMigration.assignedUsersUnreadable');
+      expect(wrapper.text()).not.toContain('trans.formMigration.assignedUsersEmpty');
+    });
+  });
+
+  describe('migrated in another tab', () => {
+    it('switches to the already-migrated view instead of showing the error text', async () => {
+      rbacService.executeMigration.mockRejectedValueOnce({
+        response: { data: { code: 'ALREADY_MIGRATED', detail: 'Form is already migrated to a tenant.' } },
+      });
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      // Queued only now: the initial mount already consumed one preview response.
+      rbacService.getMigrationPreview.mockResolvedValueOnce({
+        data: { alreadyMigrated: true, formName: 'X', tenantId: 'tenant-1', migratedAt: null, migratedBy: null },
+      });
+
+      await wrapper.vm.submitMigration();
+      await flushPromises();
+
+      expect(wrapper.vm.alreadyMigrated).toBe(true);
+      expect(wrapper.vm.error).toBeNull();
+    });
+  });
+
   describe('computed: canSubmit', () => {
     it('is false when no tenant selected', async () => {
       const wrapper = mountComponent();

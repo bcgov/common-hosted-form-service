@@ -259,7 +259,7 @@ export default function getRouter(basePath = '/') {
             name: 'FormMigrate',
             component: () => import('~/views/form/Migrate.vue'),
             meta: {
-              breadcrumbTitle: 'Transfer Form to Tenant',
+              breadcrumbTitle: 'Migrate Form to Tenant',
               requiresAuth: 'primary',
               hasLogin: true,
             },

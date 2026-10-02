@@ -183,7 +183,7 @@ defineExpose({
         prepend-icon="mdi:mdi-account-group"
         :lang="locale"
       >
-        {{ $t('trans.formsTable.groupAccessChip') }}
+        {{ $t('trans.manageLayout.tenantChip') }}
       </v-chip>
       <v-icon
         v-if="item.description?.trim()"
