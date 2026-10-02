@@ -1,4 +1,5 @@
 const Problem = require('api-problem');
+const config = require('config');
 const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
@@ -11,6 +12,7 @@ const fs = require('fs-extra');
 const path = require('node:path');
 const fileService = require('../file/service');
 const { fileUpload } = require('../file/middleware/upload');
+const uploadCleanup = require('../file/uploadCleanup');
 const emailService = require('../email/emailService');
 const log = require('../../components/log')(module.filename);
 const uuid = require('uuid');
@@ -326,35 +328,43 @@ const service = {
       // every failure MUST be caught and logged, or it becomes a silent
       // unhandled rejection and the user simply never gets their email.
       const logCtx = { formId: form.id, to: currentUser.email };
+      // On failure the temp file is orphaned in every mode and must be removed.
+      // On success, object-storage mode staged a separate upload copy so the temp
+      // can go; local-storage mode uses the temp file AS the permanent path, so leave it.
+      const isObjectStorage = config.get('files.permanent') === 'objectStorage';
       // `stage` attributes a failure to the step that produced it.
       let stage = 'pipe';
       const buildAndEmailExport = async () => {
-        // pipeline() propagates any stream error into one promise rejection; no
-        // separate .on('error') handlers needed.
-        await pipeline(dataStream, json2csvParser, outputStream);
+        let uploadSucceeded = false;
+        try {
+          // pipeline() propagates any stream error into one promise rejection; no
+          // separate .on('error') handlers needed.
+          await pipeline(dataStream, json2csvParser, outputStream);
 
-        stage = 'stat';
-        const stats = await fs.stat(pathToTmpFile);
+          stage = 'stat';
+          const stats = await fs.stat(pathToTmpFile);
 
-        stage = 'upload';
-        // fileService.create removes the temp file on success (object storage).
-        const fileResult = await fileService.create(
-          { originalname: filename, mimetype: 'text/csv', size: stats.size, path: pathToTmpFile },
-          { usernameIdp: currentUser.usernameIdp },
-          'exports'
-        );
+          stage = 'upload';
+          const fileResult = await fileService.create(
+            { originalname: filename, mimetype: 'text/csv', size: stats.size, path: pathToTmpFile },
+            { usernameIdp: currentUser.usernameIdp },
+            'exports'
+          );
+          uploadSucceeded = true;
 
-        stage = 'email';
-        await emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
-        log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
+          stage = 'email';
+          await emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
+          log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
+        } catch (err) {
+          log.error('Export email pipeline failed', { ...logCtx, stage, err: err.message, stack: err.stack });
+        } finally {
+          if (!uploadSucceeded || isObjectStorage) {
+            await uploadCleanup.removeUploadedFile(pathToTmpFile, uploadSucceeded ? 'csv-export-success' : 'csv-export-failure');
+          }
+        }
       };
 
-      buildAndEmailExport().catch(async (err) => {
-        log.error('Export email pipeline failed', { ...logCtx, stage, err: err.message, stack: err.stack });
-        // Best-effort cleanup: covers the pre-upload failure path where
-        // fileService.create never ran and could not clean up itself.
-        await fs.remove(pathToTmpFile).catch((cleanupErr) => log.warn(`Could not remove temp export file ${pathToTmpFile}: ${cleanupErr.message}`));
-      });
+      buildAndEmailExport();
 
       return Promise.resolve({
         data: null,
