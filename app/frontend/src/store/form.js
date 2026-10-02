@@ -191,6 +191,7 @@ export const useFormStore = defineStore('form', {
           published: f.published,
           enableOfflineSubmission: f.enableOfflineSubmission,
           tenantId: f.tenantId,
+          migrated: f.migrated,
         }));
         this.formList = forms;
       } catch (error) {

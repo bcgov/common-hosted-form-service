@@ -175,15 +175,15 @@ defineExpose({
       </router-link>
       <span v-else>{{ item.name }}</span>
       <v-chip
-        v-if="item.tenantId"
+        v-if="item.migrated"
         size="x-small"
         color="primary"
         variant="tonal"
         class="ml-2"
-        prepend-icon="mdi:mdi-account-group"
+        prepend-icon="mdi:mdi-swap-horizontal-bold"
         :lang="locale"
       >
-        {{ $t('trans.manageLayout.tenantChip') }}
+        {{ $t('trans.manageLayout.migratedChip') }}
       </v-chip>
       <v-icon
         v-if="item.description?.trim()"
