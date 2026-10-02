@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const exportService = require('../../../../src/forms/form/exportService');
 const emailService = require('../../../../src/forms/email/emailService');
 const fileService = require('../../../../src/forms/file/service');
+const uploadCleanup = require('../../../../src/forms/file/uploadCleanup');
 const MockModel = require('../../../../src/forms/common/models/views/submissionData');
 const _ = require('lodash');
 jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
@@ -1058,12 +1059,21 @@ describe('_submissionCSVExport email export (background flow)', () => {
   const currentUser = { usernameIdp: 'PAT_TEST', email: 'pat.test@gov.bc.ca' };
   const data = [{ a: '1', b: '2' }];
 
-  afterEach(() => {
+  // Mocks don't actually remove; track and clean the real on-disk csvs.
+  const tempPaths = [];
+
+  afterEach(async () => {
     jest.restoreAllMocks();
+    while (tempPaths.length) {
+      await fs.remove(tempPaths.pop()).catch(() => {});
+    }
   });
 
   it('uploads the export then emails the download link', async () => {
-    fileService.create = jest.fn().mockResolvedValue({ id: 'file-1' });
+    fileService.create = jest.fn().mockImplementation(async (file) => {
+      tempPaths.push(file.path);
+      return { id: 'file-1' };
+    });
     let emailResolve;
     const emailCalled = new Promise((resolve) => (emailResolve = resolve));
     emailService.submissionExportLink = jest.fn().mockImplementation(async (...args) => emailResolve(args));
@@ -1083,20 +1093,62 @@ describe('_submissionCSVExport email export (background flow)', () => {
     expect(emailArgs[2]).toBe('file-1');
   });
 
-  it('does not send the email and cleans up the temp file when the upload fails', async () => {
-    fileService.create = jest.fn().mockRejectedValue(new Error('upload boom'));
-    emailService.submissionExportLink = jest.fn().mockResolvedValue();
-    let removeResolve;
-    const removeCalled = new Promise((resolve) => (removeResolve = resolve));
-    const removeSpy = jest.spyOn(fs, 'remove').mockImplementation(async (p) => removeResolve(p));
+  // Background work hits the real filesystem; signal from inside a mock to await it.
+  const createSignal = () => {
+    let resolveFn;
+    const promise = new Promise((resolve) => (resolveFn = resolve));
+    return { promise, resolve: resolveFn };
+  };
 
-    // The failure is in the background work, so the caller still gets a response.
+  it('does not send the email when the upload fails, and leaves cleanup to fileService.create', async () => {
+    const created = createSignal();
+    fileService.create = jest.fn().mockImplementation(async (file) => {
+      tempPaths.push(file.path);
+      // Signal AFTER the rejection has had a chance to be observed by the awaiter.
+      setImmediate(created.resolve);
+      throw new Error('upload boom');
+    });
+    emailService.submissionExportLink = jest.fn().mockResolvedValue();
+    const removeSpy = jest.spyOn(uploadCleanup, 'removeUploadedFile').mockResolvedValue(true);
+
     const result = await exportService._submissionCSVExport({}, form, data, true, currentUser);
     expect(result.data).toBeNull();
 
-    const removedPath = await removeCalled;
-    expect(removedPath).toMatch(/\.csv$/);
+    await created.promise;
+    await new Promise((r) => setImmediate(r));
+    expect(fileService.create).toHaveBeenCalledTimes(1);
+    // Verifies the handoff: the staged temp path, mimetype, and 'exports' folder are
+    // what fileService receives; cleanup responsibility transfers with that call.
+    const [fileArg, , folderArg] = fileService.create.mock.calls[0];
+    expect(fileArg.path).toMatch(/[\\/]chefs-uploads[\\/][a-f0-9-]+\.csv$/);
+    expect(fileArg.mimetype).toBe('text/csv');
+    expect(fileArg.originalname).toMatch(/\.csv$/);
+    expect(folderArg).toBe('exports');
     expect(emailService.submissionExportLink).not.toHaveBeenCalled();
+    // exportService must not clean up once fileService.create was reached; cleanup is its job.
+    expect(removeSpy).not.toHaveBeenCalled();
+    removeSpy.mockRestore();
+  });
+
+  it('removes the temp file when a pre-upload stage (stat) fails and never calls create', async () => {
+    jest.spyOn(fs, 'stat').mockRejectedValue(new Error('stat boom'));
+    fileService.create = jest.fn();
+    emailService.submissionExportLink = jest.fn().mockResolvedValue();
+    const cleaned = createSignal();
+    const removeSpy = jest.spyOn(uploadCleanup, 'removeUploadedFile').mockImplementation(async (p, reason) => {
+      tempPaths.push(p);
+      cleaned.resolve({ p, reason });
+      return true;
+    });
+
+    const result = await exportService._submissionCSVExport({}, form, data, true, currentUser);
+    expect(result.data).toBeNull();
+
+    const { p, reason } = await cleaned.promise;
+    expect(fileService.create).not.toHaveBeenCalled();
+    expect(emailService.submissionExportLink).not.toHaveBeenCalled();
+    expect(p).toMatch(/\.csv$/);
+    expect(reason).toBe('csv-export-pre-upload-failure');
     removeSpy.mockRestore();
   });
 });
