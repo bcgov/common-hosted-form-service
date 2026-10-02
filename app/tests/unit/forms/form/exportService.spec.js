@@ -1,5 +1,4 @@
 const uuid = require('uuid');
-const fs = require('fs-extra');
 
 const exportService = require('../../../../src/forms/form/exportService');
 const emailService = require('../../../../src/forms/email/emailService');
@@ -1083,20 +1082,22 @@ describe('_submissionCSVExport email export (background flow)', () => {
     expect(emailArgs[2]).toBe('file-1');
   });
 
-  it('does not send the email and cleans up the temp file when the upload fails', async () => {
-    fileService.create = jest.fn().mockRejectedValue(new Error('upload boom'));
+  it('does not send the email when the upload fails', async () => {
+    let createResolve;
+    const createCalled = new Promise((resolve) => (createResolve = resolve));
+    fileService.create = jest.fn().mockImplementation(async () => {
+      createResolve();
+      throw new Error('upload boom');
+    });
     emailService.submissionExportLink = jest.fn().mockResolvedValue();
-    let removeResolve;
-    const removeCalled = new Promise((resolve) => (removeResolve = resolve));
-    const removeSpy = jest.spyOn(fs, 'remove').mockImplementation(async (p) => removeResolve(p));
 
     // The failure is in the background work, so the caller still gets a response.
     const result = await exportService._submissionCSVExport({}, form, data, true, currentUser);
     expect(result.data).toBeNull();
 
-    const removedPath = await removeCalled;
-    expect(removedPath).toMatch(/\.csv$/);
+    // Temp-file cleanup after create() is called is fileService.create's responsibility;
+    // exportService only cleans up when create() was never reached.
+    await createCalled;
     expect(emailService.submissionExportLink).not.toHaveBeenCalled();
-    removeSpy.mockRestore();
   });
 });

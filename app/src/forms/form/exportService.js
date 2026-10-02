@@ -1,5 +1,4 @@
 const Problem = require('api-problem');
-const config = require('config');
 const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
@@ -328,14 +327,12 @@ const service = {
       // every failure MUST be caught and logged, or it becomes a silent
       // unhandled rejection and the user simply never gets their email.
       const logCtx = { formId: form.id, to: currentUser.email };
-      // On failure the temp file is orphaned in every mode and must be removed.
-      // On success, object-storage mode staged a separate upload copy so the temp
-      // can go; local-storage mode uses the temp file AS the permanent path, so leave it.
-      const isObjectStorage = config.get('files.permanent') === 'objectStorage';
       // `stage` attributes a failure to the step that produced it.
       let stage = 'pipe';
       const buildAndEmailExport = async () => {
-        let uploadSucceeded = false;
+        // fileService.create owns the temp file once entered; only clean up if not reached.
+        let createCalled = false;
+        let fileResult;
         try {
           // pipeline() propagates any stream error into one promise rejection; no
           // separate .on('error') handlers needed.
@@ -345,26 +342,28 @@ const service = {
           const stats = await fs.stat(pathToTmpFile);
 
           stage = 'upload';
-          const fileResult = await fileService.create(
+          createCalled = true;
+          fileResult = await fileService.create(
             { originalname: filename, mimetype: 'text/csv', size: stats.size, path: pathToTmpFile },
             { usernameIdp: currentUser.usernameIdp },
             'exports'
           );
-          uploadSucceeded = true;
 
           stage = 'email';
           await emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
           log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
         } catch (err) {
-          log.error('Export email pipeline failed', { ...logCtx, stage, err: err.message, stack: err.stack });
+          // fileId lets ops recover an uploaded export if the email step failed.
+          log.error('Export email pipeline failed', { ...logCtx, stage, fileId: fileResult?.id, err: err?.message, stack: err?.stack });
         } finally {
-          if (!uploadSucceeded || isObjectStorage) {
-            await uploadCleanup.removeUploadedFile(pathToTmpFile, uploadSucceeded ? 'csv-export-success' : 'csv-export-failure');
+          if (!createCalled) {
+            await uploadCleanup.removeUploadedFile(pathToTmpFile, 'csv-export-pre-upload-failure');
           }
         }
       };
 
-      buildAndEmailExport();
+      // Backstop so a throw from catch/finally doesn't become an unhandled rejection.
+      buildAndEmailExport().catch((err) => log.error('Export email background task crashed', { ...logCtx, err: err?.message, stack: err?.stack }));
 
       return Promise.resolve({
         data: null,
