@@ -58,6 +58,16 @@ const validateFileSecurity = (file) => {
   return true;
 };
 
+// Non-throwing rollback so a rollback failure doesn't skip downstream compensation.
+const safeRollback = async (trx, fileId) => {
+  if (!trx) return;
+  try {
+    await trx.rollback();
+  } catch (rollbackErr) {
+    log.warn('FileStorage rollback failed', { fileId, err: rollbackErr.message });
+  }
+};
+
 const service = {
   create: async (data, currentUser, folder = 'uploads') => {
     const tempPath = data?.path;
@@ -104,7 +114,7 @@ const service = {
       // successful commit the object is legitimately referenced (and for local
       // storage the temp file IS that object), so leave everything in place.
       if (!committed) {
-        if (trx) await trx.rollback();
+        await safeRollback(trx, obj?.id);
 
         if (uploadResult && obj?.id) {
           await service.deleteStorageObject({
@@ -115,6 +125,11 @@ const service = {
         }
 
         await uploadCleanup.removeUploadedFile(tempPath, 'create-failure');
+      }
+
+      // Post-commit failure: row is durable but caller won't see fileResult; surface the id.
+      if (committed && obj?.id) {
+        log.warn('FileStorage post-commit failure', { fileId: obj.id, err: err?.message });
       }
 
       throw err;
