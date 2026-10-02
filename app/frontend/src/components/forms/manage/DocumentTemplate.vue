@@ -20,7 +20,10 @@ const documentTemplates = ref([]);
 const enablePreview = ref(false);
 const fileInput = ref(null);
 const printConfig = ref(null);
-const headers = ref([
+const headers = computed(() => [
+  ...(props.formSettingsMode
+    ? [{ title: '', key: 'selected', width: '60px' }]
+    : []),
   { title: 'File Name', key: 'filename' },
   { title: 'Date Created', key: 'createdAt' },
   { title: 'Actions', key: 'actions', align: 'end' },
@@ -54,6 +57,23 @@ const validationRules = computed(() => [
 const isTemplateInUse = (templateId) => {
   return printConfig.value?.templateId === templateId;
 };
+
+const props = defineProps({
+  formSettingsMode: {
+    type: Boolean,
+    default: false,
+  },
+  selectedTemplateId: {
+    type: String,
+    default: null,
+  },
+});
+
+const emit = defineEmits(['update:selectedTemplateId']);
+
+function handleTemplateSelection(templateId) {
+  emit('update:selectedTemplateId', templateId);
+}
 
 function handlePrintConfigUpdate(event) {
   // Only refresh if it's for this form
@@ -102,6 +122,20 @@ async function fetchTemplates() {
   try {
     documentTemplates.value = [];
     documentTemplates.value = await fetchDocumentTemplates(form.value.id);
+
+    // In form-settings mode, if the selected template no longer exists (e.g. it
+    // was just deleted, or was removed since the form was saved), clear the
+    // selection so the form doesn't keep referencing a non-existent template.
+    if (
+      props.formSettingsMode &&
+      props.selectedTemplateId &&
+      !documentTemplates.value.some(
+        (template) => template.templateId === props.selectedTemplateId
+      )
+    ) {
+      handleTemplateSelection(null);
+    }
+
     // disable preview for microsoft docs
     if (documentTemplates.value.length > 0) {
       // get file extension
@@ -300,12 +334,12 @@ defineExpose({
       <div style="display: inline-flex; align-items: center">
         {{ $t('trans.documentTemplate.info') }}
         <v-tooltip location="bottom">
-          <template #activator="{ props }">
+          <template #activator="{ props: tooltipProps }">
             <v-icon
               color="primary"
               class="ml-2"
               :class="{ 'mr-2': isRTL }"
-              v-bind="props"
+              v-bind="tooltipProps"
               icon="mdi:mdi-help-circle-outline"
             ></v-icon>
           </template>
@@ -341,10 +375,10 @@ defineExpose({
       <template #item.filename="{ item }">
         <span v-if="!enablePreview">{{ item.filename }}</span>
         <v-tooltip v-if="enablePreview" location="bottom">
-          <template #activator="{ props }">
+          <template #activator="{ props: tooltipProps }">
             <a
               href="#"
-              v-bind="props"
+              v-bind="tooltipProps"
               @click="handleFileAction(item, 'preview')"
             >
               {{ item.filename }}
@@ -361,10 +395,10 @@ defineExpose({
       <template #item.actions="{ item }">
         <div class="icon-container">
           <v-tooltip location="bottom">
-            <template #activator="{ props }">
+            <template #activator="{ props: tooltipProps }">
               <v-icon
                 color="primary"
-                v-bind="props"
+                v-bind="tooltipProps"
                 class="action-icon"
                 @click="handleFileAction(item, 'download')"
               >
@@ -374,10 +408,10 @@ defineExpose({
             <span>{{ $t('trans.documentTemplate.download') }}</span>
           </v-tooltip>
           <v-tooltip location="bottom">
-            <template #activator="{ props }">
+            <template #activator="{ props: tooltipProps }">
               <v-icon
                 :color="isTemplateInUse(item.templateId) ? 'grey' : 'red'"
-                v-bind="props"
+                v-bind="tooltipProps"
                 class="action-icon"
                 :class="{ 'disabled-icon': isTemplateInUse(item.templateId) }"
                 @click="!isTemplateInUse(item.templateId) && handleDelete(item)"
@@ -391,6 +425,17 @@ defineExpose({
             <span v-else>{{ $t('trans.documentTemplate.delete') }}</span>
           </v-tooltip>
         </div>
+      </template>
+
+      <!-- Select Template (for sending packaged emails)-->
+      <template v-if="props.formSettingsMode" #item.selected="{ item }">
+        <v-radio
+          :model-value="props.selectedTemplateId"
+          :value="item.templateId"
+          color="primary"
+          hide-details
+          @click="handleTemplateSelection(item.templateId)"
+        />
       </template>
 
       <!-- Empty footer, remove if allowing multiple templates -->

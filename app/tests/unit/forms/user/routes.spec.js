@@ -224,3 +224,40 @@ describe(`${basePath}/preferences/forms/:formId`, () => {
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
+
+describe(`${basePath}/stale`, () => {
+  const path = `${basePath}/stale`;
+  let savedToken;
+
+  beforeAll(() => {
+    savedToken = process.env.APITOKEN;
+    process.env.APITOKEN = uuid.v4();
+  });
+
+  afterAll(() => {
+    if (savedToken === undefined) delete process.env.APITOKEN;
+    else process.env.APITOKEN = savedToken;
+  });
+
+  beforeEach(() => {
+    controller.markStaleUsers = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+  });
+
+  it('rejects requests without an API key', async () => {
+    const response = await appRequest.post(path);
+
+    expect(response.status).toBe(401);
+    expect(controller.markStaleUsers).not.toBeCalled();
+  });
+
+  it('calls the controller with a matching API key', async () => {
+    const response = await appRequest.post(path).set({ apikey: process.env.APITOKEN });
+
+    expect(response.status).toBe(200);
+    expect(controller.markStaleUsers).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).not.toBeCalled();
+    expect(userAccess.currentUser).not.toBeCalled();
+  });
+});

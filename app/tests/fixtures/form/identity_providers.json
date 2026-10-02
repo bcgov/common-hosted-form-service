@@ -109,7 +109,7 @@
           }
         ]
       },
-      "formAccessSettings": "idim",
+      "formAccessSettings": "bceid-basic",
       "addTeamMemberSearch": {
         "text": {
           "message": "trans.manageSubmissionUsers.searchInputLength",

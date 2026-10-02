@@ -286,7 +286,7 @@ describe('Form Designer', () => {
       //Delete form after test run
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+      cy.get('[data-test="canRemoveForm"]').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('.mdi-logout').click();
    

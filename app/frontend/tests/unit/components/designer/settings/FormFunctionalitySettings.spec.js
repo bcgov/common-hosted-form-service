@@ -4,6 +4,7 @@ import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useAuthStore } from '~/store/auth';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
@@ -132,12 +133,14 @@ describe('FormFunctionalitySettings.vue', () => {
   setActivePinia(pinia);
 
   const authStore = useAuthStore(pinia);
+  const featureFlagStore = useFeatureFlagStore(pinia);
   const formStore = useFormStore(pinia);
   const idpStore = useIdpStore(pinia);
   const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     authStore.$reset();
+    featureFlagStore.$reset();
     formStore.$reset();
     idpStore.$reset();
     appStore.$reset();
@@ -556,5 +559,81 @@ describe('FormFunctionalitySettings.vue', () => {
     revisionCheckbox.setValue(true);
     await nextTick();
     expect(formStore.form.enableSubmitterRevision).toBe(true);
+  });
+
+  const offlineStubs = {
+    BaseInfoCard: {
+      name: 'BaseInfoCard',
+      template: '<div class="base-info-card-stub"><slot /></div>',
+    },
+    BasePanel: {
+      name: 'BasePanel',
+      template: '<div class="base-panel-stub"><slot /></div>',
+    },
+  };
+
+  it('clears enableOfflineSubmission when the form is switched to public', async () => {
+    formStore.form = ref(
+      createFormObject({
+        userType: IdentityMode.TEAM,
+        enableOfflineSubmission: true,
+      })
+    );
+
+    mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    expect(formStore.form.enableOfflineSubmission).toBe(true);
+
+    formStore.form.userType = IdentityMode.PUBLIC;
+    await nextTick();
+
+    expect(formStore.form.enableOfflineSubmission).toBe(false);
+  });
+
+  it('leaves enableOfflineSubmission enabled when switching between non-public identity types', async () => {
+    formStore.form = ref(
+      createFormObject({
+        userType: IdentityMode.TEAM,
+        enableOfflineSubmission: true,
+      })
+    );
+
+    mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    formStore.form.userType = IdentityMode.LOGIN;
+    await nextTick();
+
+    expect(formStore.form.enableOfflineSubmission).toBe(true);
+  });
+
+  it('clears enableOfflineSubmission when a file component is added to the form', async () => {
+    formStore.form = ref(
+      createFormObject({
+        userType: IdentityMode.TEAM,
+        enableOfflineSubmission: true,
+        versions: [{ schema: { components: [] } }],
+      })
+    );
+
+    mount(FormFunctionalitySettings, {
+      global: { plugins: [pinia], stubs: offlineStubs },
+    });
+
+    expect(formStore.form.enableOfflineSubmission).toBe(true);
+
+    formStore.form.versions = [
+      {
+        schema: {
+          components: [{ type: 'simplefile', key: 'file1', input: true }],
+        },
+      },
+    ];
+    await nextTick();
+
+    expect(formStore.form.enableOfflineSubmission).toBe(false);
   });
 });

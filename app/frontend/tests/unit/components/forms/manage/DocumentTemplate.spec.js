@@ -84,6 +84,46 @@ describe('DocumentTemplate.vue', () => {
     expect(fetchDocumentTemplatesSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('clears the selection when the selected template no longer exists', async () => {
+    const fetchDocumentTemplatesSpy = vi.spyOn(
+      documentTemplateComposables,
+      'fetchDocumentTemplates'
+    );
+    fetchDocumentTemplatesSpy.mockImplementationOnce(async () => [
+      { createdAt: moment().format(), filename: 'other.txt', templateId: 'other-id' },
+    ]);
+
+    const wrapper = mount(DocumentTemplate, {
+      props: { formSettingsMode: true, selectedTemplateId: 'stale-id' },
+      global: { plugins: [router, pinia], stubs: STUBS },
+    });
+
+    await flushPromises();
+
+    const emitted = wrapper.emitted('update:selectedTemplateId');
+    expect(emitted).toBeTruthy();
+    expect(emitted[emitted.length - 1]).toEqual([null]);
+  });
+
+  it('does not clear the selection when the selected template still exists', async () => {
+    const fetchDocumentTemplatesSpy = vi.spyOn(
+      documentTemplateComposables,
+      'fetchDocumentTemplates'
+    );
+    fetchDocumentTemplatesSpy.mockImplementationOnce(async () => [
+      { createdAt: moment().format(), filename: 'keep.txt', templateId: 'keep-id' },
+    ]);
+
+    const wrapper = mount(DocumentTemplate, {
+      props: { formSettingsMode: true, selectedTemplateId: 'keep-id' },
+      global: { plugins: [router, pinia], stubs: STUBS },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.emitted('update:selectedTemplateId')).toBeFalsy();
+  });
+
   it('fetchDocumentTemplates should disable preview for microsoft docs', async () => {
     const fetchDocumentTemplatesSpy = vi.spyOn(
       documentTemplateComposables,

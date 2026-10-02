@@ -1,2 +1,6 @@
 nsp:
   environment: dev
+
+clamav:
+  # always re-pull :latest so helm upgrade can't reuse a stale cached image on the node
+  imagePullPolicy: Always

@@ -39,13 +39,11 @@ describe('Form Designer', () => {
   // Publish a simple form 
   it('Verify Data Retention Settings', () => {
     cy.viewport(1000, 1100);
-    cy.get('div.formio-builder-form').then($el => {
+    cy.get('div.formio-builder-form').then(($el) => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-      
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -150, { force: true })
-      .trigger('mouseup', { force: true });
+      cy.get('span.btn').contains('Text Field').trigger('mousedown', { which: 1, force: true });
+      cy.get('div.formio-builder-form').trigger('mousemove', coords.x, -150, { force: true });
+      cy.get('div.formio-builder-form').trigger('mouseup', { force: true });
       cy.get('.btn-success').click();
     });
     // Form saving
@@ -71,13 +69,12 @@ describe('Form Designer', () => {
     //Update form design version
     cy.get('.mdi-plus').click();
     //Add new component to version 1
-    cy.get('div.formio-builder-form').then($el => {
-    const coords = $el[0].getBoundingClientRect();
-    cy.get('span.btn').contains('Columns - 2')
-    .trigger('mousedown', { which: 1}, { force: true })
-    .trigger('mousemove', coords.x, -140, { force: true })
-    .trigger('mouseup', { force: true });
-    cy.get('.btn-success').click();
+    cy.get('div.formio-builder-form').then(($el) => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Columns - 2').trigger('mousedown', { which: 1, force: true });
+      cy.get('div.formio-builder-form').trigger('mousemove', coords.x, -140, { force: true });
+      cy.get('div.formio-builder-form').trigger('mouseup', { force: true });
+      cy.get('.btn-success').click();
     });
      // Form saving
     cy.wait(1000); 
@@ -98,15 +95,13 @@ describe('Form Designer', () => {
     cy.get('button[title="Edit Version"]').click();
     cy.wait(1000);
     //Add new component to version 1
-    cy.get('div.formio-builder-form').then($el => {
-    const coords = $el[0].getBoundingClientRect();
-    cy.get('span.btn').contains('Text/Images')
-      
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
-      .trigger('mouseup', { force: true });
+    cy.get('div.formio-builder-form').then(($el) => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Text/Images').trigger('mousedown', { which: 1, force: true });
+      cy.get('div.formio-builder-form').trigger('mousemove', coords.x, -50, { force: true });
+      cy.get('div.formio-builder-form').trigger('mouseup', { force: true });
       cy.waitForLoad();
-    cy.get('.btn-success').click();
+      cy.get('.btn-success').click();
     });
     cy.wait(1000);
     cy.get('.mdi-dots-vertical').click();
@@ -122,13 +117,12 @@ describe('Form Designer', () => {
     cy.get('button[title="Delete Version"]').should('not.exist');
     //Update form design version
     cy.get('.mdi-plus').click();
-    cy.get('div.formio-builder-form').then($el => {
-    const coords = $el[0].getBoundingClientRect();
-    cy.get('span.btn').contains('Columns - 3')
-    .trigger('mousedown', { which: 1}, { force: true })
-    .trigger('mousemove', coords.x, -140, { force: true })
-    .trigger('mouseup', { force: true });
-    cy.get('.btn-success').click();
+    cy.get('div.formio-builder-form').then(($el) => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Columns - 3').trigger('mousedown', { which: 1, force: true });
+      cy.get('div.formio-builder-form').trigger('mousemove', coords.x, -140, { force: true });
+      cy.get('div.formio-builder-form').trigger('mouseup', { force: true });
+      cy.get('.btn-success').click();
     });
     //Form saving
     cy.wait(1000); 

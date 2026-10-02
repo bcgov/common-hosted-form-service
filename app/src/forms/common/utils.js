@@ -68,13 +68,9 @@ const getBaseUrl = () => {
   let host = process.env.SERVER_HOST;
 
   if (!host) {
+    let port = config.has('frontend.localhostPort') ? config.get('frontend.localhostPort') : 5173;
     protocol = 'http';
-    host = 'localhost';
-
-    // This only needs to be defined to use the email links in local dev.
-    if (config.has('frontend.localhostPort')) {
-      host += ':' + config.get('frontend.localhostPort');
-    }
+    host = `localhost:${port}`;
   }
 
   const basePath = config.get('frontend.basePath');
@@ -293,7 +289,31 @@ const encodeURI = (unsafe) => {
   return unsafe.replace(textDelimiterRegex, textDelimiter);
 };
 
+const chefsTemplate = (submission) => {
+  /*
+    A helper method to build the data object for CDOGS export.
+    `submission` is the composite returned by submissionService.read():
+      { submission: <FormSubmission record>, version: <FormVersion>, form }
+    so the submitted field data lives at submission.submission.submission.data.
+   */
+  return {
+    ...submission.submission.submission.data,
+    chefs: {
+      formVersion: submission.version.version,
+      submissionId: submission.submission.id,
+      confirmationId: submission.submission.confirmationId,
+      createdBy: submission.submission.createdBy,
+      createdAt: submission.submission.createdAt,
+      updatedBy: submission.submission.updatedBy,
+      updatedAt: submission.submission.updatedAt,
+      isDraft: submission.submission.draft,
+      isDeleted: submission.submission.deleted,
+    },
+  };
+};
+
 module.exports = {
+  chefsTemplate,
   falsey,
   getBaseUrl,
   setupMount,

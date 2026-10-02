@@ -1,9 +1,21 @@
 const Problem = require('api-problem');
 const clamAvScanner = require('../../../../../src/components/clamAvScanner');
-const virusScan = require('../../../../../src/forms/file/middleware/virusScan');
-const fs = require('fs').promises;
+
+const mockResolveUploadPath = jest.fn();
+const mockRemoveUploadedFile = jest.fn().mockResolvedValue(true);
 
 jest.mock('../../../../../src/components/clamAvScanner');
+jest.mock('../../../../../src/forms/file/uploadCleanup', () => ({
+  resolveUploadPath: (...args) => mockResolveUploadPath(...args),
+  removeUploadedFile: (...args) => mockRemoveUploadedFile(...args),
+}));
+jest.mock('../../../../../src/forms/file/middleware/upload', () => ({
+  fileUpload: {
+    getFileUploadsDir: jest.fn(() => '/tmp/uploads'),
+  },
+}));
+
+const virusScan = require('../../../../../src/forms/file/middleware/virusScan');
 
 describe('virusScan middleware', () => {
   let req, res, next;
@@ -11,13 +23,24 @@ describe('virusScan middleware', () => {
   beforeEach(() => {
     req = {
       file: {
-        path: '/tmp/test-file.txt',
+        path: '/tmp/uploads/test-file.txt',
         originalname: 'test-file.txt',
       },
     };
     res = {};
     next = jest.fn();
     jest.clearAllMocks();
+    mockRemoveUploadedFile.mockResolvedValue(true);
+    mockResolveUploadPath.mockImplementation((filePath, baseDirectory = '/tmp/uploads') => {
+      const path = require('path');
+      const resolvedBase = path.resolve(baseDirectory);
+      const resolvedFilePath = path.resolve(resolvedBase, filePath);
+      const relative = path.relative(resolvedBase, resolvedFilePath);
+      if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        throw new Error(`Invalid file path: ${filePath} is outside the allowed directory.`);
+      }
+      return resolvedFilePath;
+    });
   });
 
   describe('validateFilePath', () => {
@@ -57,32 +80,20 @@ describe('virusScan middleware', () => {
       }).toThrowError(new Error('Invalid file path: /etc/passwd is outside the allowed directory.'));
     });
 
-    it('should default to os.tmpdir() if no base directory is provided', () => {
+    it('should use the configured upload directory when no base directory is provided', () => {
       const filePath = 'test-file.txt';
-      const os = require('os');
-      const baseDirectory = os.tmpdir();
 
-      const result = virusScan.validateFilePath(filePath);
+      virusScan.validateFilePath(filePath);
 
-      expect(result).toBe(`${baseDirectory}/test-file.txt`);
+      expect(mockResolveUploadPath).toHaveBeenCalledWith(filePath, '/tmp/uploads');
     });
   });
 
   describe('removeInfected', () => {
     it('should delete the infected file successfully', async () => {
-      jest.spyOn(fs, 'unlink').mockResolvedValue();
-
       await virusScan.removeInfected(req.file.path);
 
-      expect(fs.unlink).toHaveBeenCalledWith(req.file.path);
-    });
-
-    it('should handle errors when deleting the infected file', async () => {
-      jest.spyOn(fs, 'unlink').mockRejectedValue(new Error('File deletion failed'));
-
-      await virusScan.removeInfected(req.file.path);
-
-      expect(fs.unlink).toHaveBeenCalledWith(req.file.path);
+      expect(mockRemoveUploadedFile).toHaveBeenCalledWith(req.file.path, 'infected');
     });
   });
 
@@ -120,6 +131,7 @@ describe('virusScan middleware', () => {
 
       expect(clamAvScanner.scanFile).toHaveBeenCalledWith(req.file.path);
       expect(next).toHaveBeenCalled();
+      expect(mockRemoveUploadedFile).not.toHaveBeenCalled();
     });
 
     it('should delete the infected file and return a Problem if the file is infected', async () => {
@@ -127,12 +139,11 @@ describe('virusScan middleware', () => {
         isInfected: true,
         viruses: ['TestVirus'],
       });
-      jest.spyOn(fs, 'unlink').mockResolvedValue();
 
       await virusScan.scanFile(req, res, next);
 
       expect(clamAvScanner.scanFile).toHaveBeenCalledWith(req.file.path);
-      expect(fs.unlink).toHaveBeenCalledWith(req.file.path);
+      expect(mockRemoveUploadedFile).toHaveBeenCalledWith(req.file.path, 'infected');
       expect(next).toHaveBeenCalledWith(
         new Problem(409, {
           detail: `Uploaded file (${req.file.originalname}) contains malware: TestVirus`,
@@ -141,17 +152,16 @@ describe('virusScan middleware', () => {
       );
     });
 
-    it('should handle errors when deleting the infected file', async () => {
+    it('should still return a Problem when infected file deletion fails', async () => {
       clamAvScanner.scanFile.mockResolvedValue({
         isInfected: true,
         viruses: ['TestVirus'],
       });
-      jest.spyOn(fs, 'unlink').mockRejectedValue(new Error('File deletion failed'));
+      mockRemoveUploadedFile.mockResolvedValue(false);
 
       await virusScan.scanFile(req, res, next);
 
-      expect(clamAvScanner.scanFile).toHaveBeenCalledWith(req.file.path);
-      expect(fs.unlink).toHaveBeenCalledWith(req.file.path);
+      expect(mockRemoveUploadedFile).toHaveBeenCalledWith(req.file.path, 'infected');
       expect(next).toHaveBeenCalledWith(
         new Problem(409, {
           detail: `Uploaded file (${req.file.originalname}) contains malware: TestVirus`,
@@ -160,12 +170,13 @@ describe('virusScan middleware', () => {
       );
     });
 
-    it('should handle errors during scanning and call next() with the error', async () => {
+    it('should delete temp file and call next() with the error when scanning fails', async () => {
       clamAvScanner.scanFile.mockRejectedValue(new Error('Scanning failed'));
 
       await virusScan.scanFile(req, res, next);
 
       expect(clamAvScanner.scanFile).toHaveBeenCalledWith(req.file.path);
+      expect(mockRemoveUploadedFile).toHaveBeenCalledWith(req.file.path, 'scan-error');
       expect(next).toHaveBeenCalledWith(new Error('Scanning failed'));
     });
   });
