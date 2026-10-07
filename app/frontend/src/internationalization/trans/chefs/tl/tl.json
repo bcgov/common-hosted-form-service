@@ -150,6 +150,8 @@
     "confirmFormLabel": "Form:",
     "confirmTenantLabel": "Nangungupahan:",
     "confirmGroupsLabel": "Mga grupo:",
+    "confirmGroupsMore": "+{count} pa",
+    "confirmGroupsShowLess": "Ipakita nang mas kaunti",
     "resultDetailsTitle": "Mga detalye ng paglipat",
     "resultFormName": "Pangalan ng form",
     "resultTenant": "Nangungupahan",

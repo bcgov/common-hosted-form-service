@@ -150,6 +150,8 @@
     "confirmFormLabel": "양식:",
     "confirmTenantLabel": "테넌트:",
     "confirmGroupsLabel": "그룹:",
+    "confirmGroupsMore": "+{count}개 더 보기",
+    "confirmGroupsShowLess": "간단히 보기",
     "resultDetailsTitle": "마이그레이션 세부 정보",
     "resultFormName": "양식 이름",
     "resultTenant": "테넌트",

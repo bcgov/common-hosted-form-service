@@ -150,6 +150,8 @@
     "confirmFormLabel": "फ़ॉर्म:",
     "confirmTenantLabel": "किरायेदार:",
     "confirmGroupsLabel": "समूह:",
+    "confirmGroupsMore": "+{count} और",
+    "confirmGroupsShowLess": "कम दिखाएँ",
     "resultDetailsTitle": "माइग्रेशन विवरण",
     "resultFormName": "फ़ॉर्म का नाम",
     "resultTenant": "किरायेदार",

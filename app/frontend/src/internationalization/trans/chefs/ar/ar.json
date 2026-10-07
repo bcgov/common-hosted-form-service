@@ -150,6 +150,8 @@
     "confirmFormLabel": "النموذج:",
     "confirmTenantLabel": "المستأجر:",
     "confirmGroupsLabel": "المجموعات:",
+    "confirmGroupsMore": "+{count} أخرى",
+    "confirmGroupsShowLess": "عرض أقل",
     "resultDetailsTitle": "تفاصيل الترحيل",
     "resultFormName": "اسم النموذج",
     "resultTenant": "المستأجر",

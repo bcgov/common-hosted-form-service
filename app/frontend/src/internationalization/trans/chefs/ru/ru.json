@@ -150,6 +150,8 @@
     "confirmFormLabel": "Форма:",
     "confirmTenantLabel": "Арендатор:",
     "confirmGroupsLabel": "Группы:",
+    "confirmGroupsMore": "Ещё {count}",
+    "confirmGroupsShowLess": "Свернуть",
     "resultDetailsTitle": "Сведения о переносе",
     "resultFormName": "Название формы",
     "resultTenant": "Арендатор",

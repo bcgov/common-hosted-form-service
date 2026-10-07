@@ -150,6 +150,8 @@
     "confirmFormLabel": "Biểu mẫu:",
     "confirmTenantLabel": "Người thuê:",
     "confirmGroupsLabel": "Nhóm:",
+    "confirmGroupsMore": "+{count} nhóm khác",
+    "confirmGroupsShowLess": "Thu gọn",
     "resultDetailsTitle": "Chi tiết di chuyển",
     "resultFormName": "Tên biểu mẫu",
     "resultTenant": "Người thuê",

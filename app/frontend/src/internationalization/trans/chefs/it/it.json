@@ -150,6 +150,8 @@
     "confirmFormLabel": "Modulo:",
     "confirmTenantLabel": "Tenant:",
     "confirmGroupsLabel": "Gruppi:",
+    "confirmGroupsMore": "+{count} altri",
+    "confirmGroupsShowLess": "Mostra meno",
     "resultDetailsTitle": "Dettagli della migrazione",
     "resultFormName": "Nome del modulo",
     "resultTenant": "Tenant",

@@ -150,6 +150,8 @@
     "confirmFormLabel": "Форма:",
     "confirmTenantLabel": "Орендар:",
     "confirmGroupsLabel": "Групи:",
+    "confirmGroupsMore": "Ще {count}",
+    "confirmGroupsShowLess": "Згорнути",
     "resultDetailsTitle": "Відомості про перенесення",
     "resultFormName": "Назва форми",
     "resultTenant": "Орендар",

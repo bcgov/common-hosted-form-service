@@ -670,8 +670,29 @@ describe('getMigrationPreview', () => {
     // The SQL itself must exclude drafts from the total; a total that merely equals the
     // mocked value would still pass if the filter were dropped.
     const statsSql = raw.mock.calls[0][0].replace(/\s+/g, ' ');
-    expect(statsSql).toContain('FILTER (WHERE fs.draft = false) AS total');
+    expect(statsSql).toContain('FILTER (WHERE s.has_status) AS total');
+    expect(statsSql).toContain('FILTER (WHERE NOT s.has_status) AS drafts');
     expect(res.json.mock.calls[0][0].impact.submissions).toEqual({ total: 5, drafts: 2, withShareUsers: 0 });
+  });
+
+  it('counts REVISING submissions as submitted even though their draft flag is true', async () => {
+    // QA case: 3 SUBMITTED + 2 COMPLETED + 2 REVISING = 7 submitted, plus 1 never-submitted
+    // draft. Revising sets form_submission.draft = true, so the split must come from status
+    // history; the draft flag would report 5 submitted and 3 drafts.
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+    });
+    tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
+    service.getFormUsers = jest.fn().mockResolvedValue([]);
+    const raw = mockKnexRaw({ total: '7', drafts: '1' }, 2);
+
+    await controller.getMigrationPreview(req, res, next);
+
+    const statsSql = raw.mock.calls[0][0].replace(/\s+/g, ' ');
+    expect(statsSql).toContain('form_submission_status');
+    expect(statsSql).not.toContain('fs.draft');
+    expect(statsSql).toContain('fs.deleted = false');
+    expect(res.json.mock.calls[0][0].impact.submissions).toEqual({ total: 7, drafts: 1, withShareUsers: 2 });
   });
 
   describe('shared users — distinct real people, not drafts', () => {

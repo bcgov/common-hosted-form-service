@@ -2,7 +2,38 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const { locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
+
+// CSTAR role names are CHEFS role codes (see auth/service.js), so the form-team labels
+// apply. Anything unrecognised is shown as its raw code rather than hidden.
+const ROLE_LABEL_KEYS = {
+  form_admin: 'trans.formMigration.formAdminBadge',
+  owner: 'trans.formMigration.roleOwner',
+  team_manager: 'trans.formMigration.roleTeamManager',
+  form_designer: 'trans.formMigration.roleFormDesigner',
+  submission_reviewer: 'trans.formMigration.roleSubmissionReviewer',
+  submission_approver: 'trans.formMigration.roleSubmissionApprover',
+  form_submitter: 'trans.formMigration.roleFormSubmitter',
+};
+
+function roleLabel(role) {
+  return ROLE_LABEL_KEYS[role] ? t(ROLE_LABEL_KEYS[role]) : role;
+}
+
+// The current user's roles in a group, Form Admin first since it is the role the
+// migration requires. Falls back to isFormAdmin if userRoles is absent.
+function groupRoles(group) {
+  const roles = Array.isArray(group.userRoles)
+    ? [...new Set(group.userRoles)]
+    : group.isFormAdmin
+    ? ['form_admin']
+    : [];
+  return roles.sort(
+    (a, b) =>
+      (b === 'form_admin') - (a === 'form_admin') ||
+      roleLabel(a).localeCompare(roleLabel(b))
+  );
+}
 
 const props = defineProps({
   available: {
@@ -229,15 +260,19 @@ function removeAll() {
               <v-list-item-title class="text-body-2">
                 {{ group.name }}
               </v-list-item-title>
-              <template v-if="group.isFormAdmin" #append>
-                <v-chip
-                  size="x-small"
-                  color="primary"
-                  variant="tonal"
-                  :lang="locale"
-                >
-                  {{ $t('trans.formMigration.formAdminBadge') }}
-                </v-chip>
+              <template v-if="groupRoles(group).length > 0" #append>
+                <div class="d-flex flex-wrap ga-1 justify-end role-chips">
+                  <v-chip
+                    v-for="role in groupRoles(group)"
+                    :key="role"
+                    size="x-small"
+                    :color="role === 'form_admin' ? 'primary' : undefined"
+                    variant="tonal"
+                    :lang="locale"
+                  >
+                    {{ roleLabel(role) }}
+                  </v-chip>
+                </div>
               </template>
             </v-list-item>
           </template>
@@ -384,15 +419,19 @@ function removeAll() {
               <v-list-item-title class="text-body-2">
                 {{ group.name }}
               </v-list-item-title>
-              <template v-if="group.isFormAdmin" #append>
-                <v-chip
-                  size="x-small"
-                  color="primary"
-                  variant="tonal"
-                  :lang="locale"
-                >
-                  {{ $t('trans.formMigration.formAdminBadge') }}
-                </v-chip>
+              <template v-if="groupRoles(group).length > 0" #append>
+                <div class="d-flex flex-wrap ga-1 justify-end role-chips">
+                  <v-chip
+                    v-for="role in groupRoles(group)"
+                    :key="role"
+                    size="x-small"
+                    :color="role === 'form_admin' ? 'primary' : undefined"
+                    variant="tonal"
+                    :lang="locale"
+                  >
+                    {{ roleLabel(role) }}
+                  </v-chip>
+                </div>
               </template>
             </v-list-item>
           </template>
@@ -418,6 +457,11 @@ function removeAll() {
 
 .form-admin-row {
   background: rgb(var(--v-theme-primary), 0.04);
+}
+
+/* Role chips wrap under a long group name instead of pushing it off the panel. */
+.role-chips {
+  max-width: 60%;
 }
 
 .select-all-row {

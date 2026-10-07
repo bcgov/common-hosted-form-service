@@ -150,6 +150,8 @@
     "confirmFormLabel": "Formulário:",
     "confirmTenantLabel": "Tenant:",
     "confirmGroupsLabel": "Grupos:",
+    "confirmGroupsMore": "+{count} mais",
+    "confirmGroupsShowLess": "Mostrar menos",
     "resultDetailsTitle": "Detalhes da migração",
     "resultFormName": "Nome do formulário",
     "resultTenant": "Tenant",

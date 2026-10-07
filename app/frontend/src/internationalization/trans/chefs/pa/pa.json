@@ -150,6 +150,8 @@
     "confirmFormLabel": "ਫਾਰਮ:",
     "confirmTenantLabel": "ਕਿਰਾਏਦਾਰ:",
     "confirmGroupsLabel": "ਸਮੂਹ:",
+    "confirmGroupsMore": "+{count} ਹੋਰ",
+    "confirmGroupsShowLess": "ਘੱਟ ਦਿਖਾਓ",
     "resultDetailsTitle": "ਮਾਈਗ੍ਰੇਸ਼ਨ ਵੇਰਵੇ",
     "resultFormName": "ਫਾਰਮ ਦਾ ਨਾਮ",
     "resultTenant": "ਕਿਰਾਏਦਾਰ",

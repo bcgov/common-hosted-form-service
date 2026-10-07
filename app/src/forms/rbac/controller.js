@@ -352,13 +352,25 @@ module.exports = {
         Form.query().findById(formId).select('id', 'name'),
         tenantService.getEligibleTenantsForMigration(req, { bypassCache }),
         service.getFormUsers({ formId }),
+        // Submitted vs draft is decided by status history, not the draft flag: sending a
+        // submission back for revision sets draft = true (submission/service.js
+        // changeStatusState), so a REVISING submission would otherwise count as a draft.
+        // Any status row means it was submitted — the same rule the submissions table
+        // uses (submissions_vw, formSubmissionStatusCode not null).
         FormSubmissionUser.knex().raw(
           `SELECT
-             COUNT(DISTINCT fs.id) FILTER (WHERE fs.draft = false)   AS total,
-             COUNT(DISTINCT fs.id) FILTER (WHERE fs.draft = true)    AS drafts
-           FROM form_version fv
-           JOIN form_submission fs ON fs."formVersionId" = fv.id
-           WHERE fv."formId" = ? AND fs.deleted = false`,
+             COUNT(*) FILTER (WHERE s.has_status)       AS total,
+             COUNT(*) FILTER (WHERE NOT s.has_status)   AS drafts
+           FROM (
+             SELECT fs.id,
+                    EXISTS (
+                      SELECT 1 FROM form_submission_status fss
+                      WHERE fss."submissionId" = fs.id
+                    ) AS has_status
+             FROM form_version fv
+             JOIN form_submission fs ON fs."formVersionId" = fv.id
+             WHERE fv."formId" = ? AND fs.deleted = false
+           ) s`,
           [formId]
         ),
         // Distinct PEOPLE the form's submissions are shared WITH — not the number of

@@ -20,6 +20,11 @@ const submitToEmailActive = computed(() =>
   featureFlagStore.isActive('submitToEmail')
 );
 
+// Templates are stored per form (/forms/:formId/documentTemplates), so nothing can be
+// listed or uploaded until the form has been saved and has an id. On /form/create the
+// id is still '', and mounting DocumentTemplate would request /forms//documentTemplates.
+const formSaved = computed(() => !!form.value.id);
+
 /* c8 ignore start */
 // The email + template inputs only render when the feature is enabled (the
 // v-if below), so these rules don't need to re-check `enabled` — they only run
@@ -44,6 +49,7 @@ const submissionPackageTemplateRules = computed(() => [
 
     <v-checkbox
       v-model="form.submissionPackageSettings.enabled"
+      :disabled="!formSaved"
       hide-details="auto"
       class="my-0"
       data-test="submission-package-email-test"
@@ -85,8 +91,19 @@ const submissionPackageTemplateRules = computed(() => [
         </div>
       </template>
     </v-checkbox>
+    <div
+      v-if="!formSaved"
+      class="text-caption text-medium-emphasis ml-10"
+      :lang="locale"
+      data-test="submission-package-email-save-first"
+    >
+      {{ $t('trans.formSettings.emailPackageDisabled') }}
+    </div>
 
-    <div v-if="form.submissionPackageSettings.enabled" class="mt-4">
+    <div
+      v-if="formSaved && form.submissionPackageSettings.enabled"
+      class="mt-4"
+    >
       <v-combobox
         v-model="form.submissionPackageSettings.emails"
         :hide-no-data="false"

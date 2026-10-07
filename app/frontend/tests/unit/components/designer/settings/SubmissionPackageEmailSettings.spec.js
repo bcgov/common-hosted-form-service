@@ -51,6 +51,8 @@ describe('SubmissionPackageEmailSettings.vue', () => {
   beforeEach(() => {
     formStore.$reset();
     featureFlagStore.$reset();
+    // A saved form; the create-page case (no id yet) is tested explicitly below.
+    formStore.form.id = 'form-1';
   });
 
   it('renders nothing when the submitToEmail feature is not active', () => {
@@ -73,6 +75,29 @@ describe('SubmissionPackageEmailSettings.vue', () => {
     // "please publish/save" disabled label must not render.
     expect(wrapper.text()).not.toMatch(
       'trans.formSettings.emailPackageDisabled'
+    );
+  });
+
+  it('disables the option on /form/create until the form has been saved', async () => {
+    // Templates live under /forms/:formId, so with no id DocumentTemplate would request
+    // /forms//documentTemplates and show "An error occurred while fetching the template."
+    featureFlagStore.active = { submitToEmail: true };
+    formStore.form.id = '';
+
+    const wrapper = mountComponent(pinia);
+
+    const checkbox = wrapper.find(
+      '[data-test="submission-package-email-test"] input'
+    );
+    expect(checkbox.attributes('disabled')).toBeDefined();
+    expect(wrapper.text()).toMatch('trans.formSettings.emailPackageDisabled');
+
+    // Even if enabled is already true (e.g. state carried over), nothing that
+    // needs a form id is mounted.
+    formStore.form.submissionPackageSettings.enabled = true;
+    await nextTick();
+    expect(wrapper.findComponent({ name: 'DocumentTemplate' }).exists()).toBe(
+      false
     );
   });
 

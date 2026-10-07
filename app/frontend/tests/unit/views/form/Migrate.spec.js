@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router';
 
 import rbacService from '~/services/rbacService';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 import { useTenantStore } from '~/store/tenant';
 import Migrate from '~/views/form/Migrate.vue';
 
@@ -528,6 +529,81 @@ describe('Migrate.vue', () => {
   });
 
   describe('UX revisions', () => {
+    describe('confirm dialog group list', () => {
+      const group = (id, isFormAdmin = false) => ({
+        id,
+        name: `Group_${id}`,
+        isFormAdmin,
+      });
+
+      it('shows every group with no toggle when there are three or fewer', async () => {
+        const wrapper = mountComponent();
+        await flushPromises();
+        wrapper.vm.assignedGroups = [group('a', true), group('b'), group('c')];
+        await flushPromises();
+
+        expect(wrapper.vm.visibleConfirmGroups).toHaveLength(3);
+        expect(wrapper.vm.hiddenConfirmGroupCount).toBe(0);
+      });
+
+      it('shows three, Form Admin first, and expands to all on demand', async () => {
+        const wrapper = mountComponent();
+        await flushPromises();
+        wrapper.vm.assignedGroups = [
+          group('a'),
+          group('b'),
+          group('c'),
+          group('d'),
+          group('z', true),
+          group('e'),
+        ];
+        await flushPromises();
+
+        expect(wrapper.vm.visibleConfirmGroups.map((g) => g.id)).toEqual([
+          'z',
+          'a',
+          'b',
+        ]);
+        expect(wrapper.vm.hiddenConfirmGroupCount).toBe(3);
+
+        wrapper.vm.showAllConfirmGroups = true;
+        await flushPromises();
+        expect(wrapper.vm.visibleConfirmGroups).toHaveLength(6);
+      });
+
+      it('starts collapsed each time the dialog opens', async () => {
+        const wrapper = mountComponent();
+        await flushPromises();
+        wrapper.vm.showAllConfirmGroups = true;
+
+        wrapper.vm.requestMigration();
+
+        expect(wrapper.vm.showAllConfirmGroups).toBe(false);
+        expect(wrapper.vm.showConfirmDialog).toBe(true);
+      });
+    });
+
+    it('Migrate another form leaves tenant mode and opens My Forms', async () => {
+      // Only My Forms (no tenant) forms can be migrated, but success selects the new
+      // tenant — so the button must clear it before listing forms.
+      const push = vi.fn();
+      useRouter.mockImplementationOnce(() => ({ replace: vi.fn(), push }));
+      const formStore = useFormStore(pinia);
+      const wrapper = mountComponent();
+      await flushPromises();
+
+      await wrapper.vm.goToMyForms();
+
+      expect(tenantStore.clearSelectedTenant).toHaveBeenCalled();
+      expect(formStore.getFormsForCurrentUser).toHaveBeenCalled();
+      expect(push).toHaveBeenCalledWith({ name: 'UserForms' });
+      expect(
+        tenantStore.clearSelectedTenant.mock.invocationCallOrder[0]
+      ).toBeLessThan(
+        formStore.getFormsForCurrentUser.mock.invocationCallOrder[0]
+      );
+    });
+
     it('enables Migrate without an acknowledgement checkbox', async () => {
       // The checkbox was removed; the confirm dialog is the single final check.
       const wrapper = mountComponent();

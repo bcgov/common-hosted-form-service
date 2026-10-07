@@ -152,6 +152,8 @@
     "confirmFormLabel": "Form:",
     "confirmTenantLabel": "Tenant:",
     "confirmGroupsLabel": "Groups:",
+    "confirmGroupsMore": "+{count} more",
+    "confirmGroupsShowLess": "Show less",
     "resultDetailsTitle": "Migration details",
     "resultFormName": "Form name",
     "resultTenant": "Tenant",

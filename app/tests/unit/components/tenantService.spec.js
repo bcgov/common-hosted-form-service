@@ -1807,6 +1807,27 @@ describe('TenantService', () => {
       expect(result.groups.find((g) => g.id === 'group-2').isUserMember).toBe(false);
     });
 
+    it("exposes the current user's roles per group from the user-scoped listing", async () => {
+      // The tenant-wide listing carries no roles, so userRoles must come from the
+      // user-scoped call; groups the user is not in get an empty list.
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([
+        { id: 'group-1', name: 'Test_reviewer' },
+        { id: 'group-2', name: 'Test_approver' },
+        { id: 'group-3', name: 'Not mine' },
+      ]);
+      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
+        { id: 'group-1', name: 'Test_reviewer', roles: ['form_admin', 'submission_reviewer'] },
+        { id: 'group-2', name: 'Test_approver', roles: ['submission_approver'] },
+      ]);
+
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+      const byId = (id) => result.groups.find((g) => g.id === id);
+
+      expect(byId('group-1').userRoles).toEqual(['form_admin', 'submission_reviewer']);
+      expect(byId('group-2').userRoles).toEqual(['submission_approver']);
+      expect(byId('group-3').userRoles).toEqual([]);
+    });
+
     it('rejects a tenant where the user holds no form_admin role', async () => {
       // Eligibility is decided from the group listing this method already fetches, so it
       // costs no extra CSTAR calls — unlike re-deriving it across every tenant.

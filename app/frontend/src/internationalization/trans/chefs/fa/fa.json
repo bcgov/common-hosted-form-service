@@ -150,6 +150,8 @@
     "confirmFormLabel": "فرم:",
     "confirmTenantLabel": "مستأجر:",
     "confirmGroupsLabel": "گروه‌ها:",
+    "confirmGroupsMore": "+{count} مورد دیگر",
+    "confirmGroupsShowLess": "نمایش کمتر",
     "resultDetailsTitle": "جزئیات انتقال",
     "resultFormName": "نام فرم",
     "resultTenant": "مستأجر",

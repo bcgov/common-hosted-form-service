@@ -7,6 +7,7 @@ import GroupPicker from '~/components/forms/migrate/GroupPicker.vue';
 import rbacService from '~/services/rbacService';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 import { useTenantStore } from '~/store/tenant';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -14,6 +15,7 @@ const router = useRouter();
 const tenantStore = useTenantStore();
 const authStore = useAuthStore();
 const appStore = useAppStore();
+const formStore = useFormStore();
 
 const props = defineProps({
   f: {
@@ -137,6 +139,15 @@ const migratedAtDisplay = computed(() => {
 
 // Same pattern as TenantDropdown: only offer the link when a URL is configured.
 const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
+
+// Only forms in My Forms (no tenant) can be migrated, but a successful migration
+// selects the new tenant — so leave tenant mode first, the same way the tenant
+// dropdown's "My Forms" option does, or the list would show the tenant's forms.
+async function goToMyForms() {
+  tenantStore.clearSelectedTenant();
+  await formStore.getFormsForCurrentUser();
+  await router.push({ name: 'UserForms' });
+}
 
 function goToCstar() {
   if (!cstarBaseUrl.value) return;
@@ -383,7 +394,33 @@ async function refreshTenantGroups() {
   }
 }
 
+// Confirm dialog group list: Form Admin groups first (the one the migration needs is
+// always visible), then the first few; the rest expand inline rather than in a menu,
+// which would stack a second overlay on the dialog.
+const CONFIRM_GROUPS_VISIBLE = 3;
+const showAllConfirmGroups = ref(false);
+
+const confirmGroups = computed(() =>
+  [...assignedGroups.value].sort(
+    (a, b) =>
+      (b.isFormAdmin === true) - (a.isFormAdmin === true) ||
+      (a.name || '').localeCompare(b.name || '')
+  )
+);
+
+const visibleConfirmGroups = computed(() =>
+  showAllConfirmGroups.value
+    ? confirmGroups.value
+    : confirmGroups.value.slice(0, CONFIRM_GROUPS_VISIBLE)
+);
+
+const hiddenConfirmGroupCount = computed(() =>
+  Math.max(confirmGroups.value.length - CONFIRM_GROUPS_VISIBLE, 0)
+);
+
 function requestMigration() {
+  // Each opening starts collapsed.
+  showAllConfirmGroups.value = false;
   showConfirmDialog.value = true;
 }
 
@@ -496,6 +533,9 @@ defineExpose({
   refreshingGroups,
   staleGroupsRemoved,
   showConfirmDialog,
+  showAllConfirmGroups,
+  visibleConfirmGroups,
+  hiddenConfirmGroupCount,
   showRetryButton,
   migrated,
   migrationResult,
@@ -506,6 +546,7 @@ defineExpose({
   migratedByDisplay,
   migratedAtDisplay,
   cstarBaseUrl,
+  goToMyForms,
   assignedGroupUsers,
   unreadableAssignedGroups,
   refreshTenantGroups,
@@ -706,7 +747,7 @@ defineExpose({
           >
             {{ $t('trans.formMigration.resultManageInCstar') }}
           </v-btn>
-          <v-btn variant="outlined" :lang="locale" :to="{ name: 'UserForms' }">
+          <v-btn variant="outlined" :lang="locale" @click="goToMyForms">
             {{ $t('trans.formMigration.resultMigrateAnother') }}
           </v-btn>
         </div>
@@ -1302,7 +1343,39 @@ defineExpose({
               <dt>{{ $t('trans.formMigration.confirmTenantLabel') }}</dt>
               <dd>{{ selectedTenant ? selectedTenant.name : '' }}</dd>
               <dt>{{ $t('trans.formMigration.confirmGroupsLabel') }}</dt>
-              <dd>{{ assignedGroups.map((g) => g.name).join(', ') }}</dd>
+              <dd>
+                <div class="d-flex flex-wrap align-center ga-1">
+                  <v-chip
+                    v-for="g in visibleConfirmGroups"
+                    :key="g.id"
+                    size="small"
+                    variant="tonal"
+                    :color="g.isFormAdmin ? 'primary' : undefined"
+                  >
+                    {{ g.name }}
+                  </v-chip>
+                  <v-btn
+                    v-if="hiddenConfirmGroupCount > 0"
+                    variant="text"
+                    size="small"
+                    density="compact"
+                    color="primary"
+                    class="text-none"
+                    :aria-expanded="showAllConfirmGroups ? 'true' : 'false'"
+                    :lang="locale"
+                    data-test="confirm-groups-toggle"
+                    @click="showAllConfirmGroups = !showAllConfirmGroups"
+                  >
+                    {{
+                      showAllConfirmGroups
+                        ? $t('trans.formMigration.confirmGroupsShowLess')
+                        : $t('trans.formMigration.confirmGroupsMore', {
+                            count: hiddenConfirmGroupCount,
+                          })
+                    }}
+                  </v-btn>
+                </div>
+              </dd>
             </dl>
             <p class="mb-0">
               {{ $t('trans.formMigration.confirmConsequence') }}

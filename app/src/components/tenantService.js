@@ -607,6 +607,9 @@ class TenantService {
     ]);
 
     const userGroupIds = new Set(userGroups.map((g) => g.id));
+    // CHEFS roles the current user gets through each group. CSTAR assigns roles to the
+    // group, so every member holds all of them; only the user-scoped listing carries them.
+    const userRolesByGroup = new Map(userGroups.map((g) => [g.id, g.roles || []]));
     // Tenant-wide group listing may not include role details, so form_admin
     // status must be derived from the user-scoped group listing instead.
     const userFormAdminGroupIds = new Set(userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN)).map((g) => g.id));
@@ -634,6 +637,8 @@ class TenantService {
         id: g.id,
         name: g.name,
         roles: g.roles,
+        // Empty when the current user is not a member of the group.
+        userRoles: userRolesByGroup.get(g.id) || [],
         isFormAdmin: userFormAdminGroupIds.has(g.id),
         isUserMember: userGroupIds.has(g.id),
         // null (not []) when membership could not be read, so the UI can say so rather

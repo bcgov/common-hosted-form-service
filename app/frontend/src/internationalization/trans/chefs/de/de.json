@@ -150,6 +150,8 @@
     "confirmFormLabel": "Formular:",
     "confirmTenantLabel": "Mandant:",
     "confirmGroupsLabel": "Gruppen:",
+    "confirmGroupsMore": "+{count} weitere",
+    "confirmGroupsShowLess": "Weniger anzeigen",
     "resultDetailsTitle": "Migrationsdetails",
     "resultFormName": "Formularname",
     "resultTenant": "Mandant",

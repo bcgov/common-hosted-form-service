@@ -150,6 +150,8 @@
     "confirmFormLabel": "フォーム：",
     "confirmTenantLabel": "テナント：",
     "confirmGroupsLabel": "グループ：",
+    "confirmGroupsMore": "他 {count} 件",
+    "confirmGroupsShowLess": "表示を減らす",
     "resultDetailsTitle": "移行の詳細",
     "resultFormName": "フォーム名",
     "resultTenant": "テナント",

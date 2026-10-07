@@ -150,6 +150,8 @@
     "confirmFormLabel": "表单：",
     "confirmTenantLabel": "租户：",
     "confirmGroupsLabel": "组：",
+    "confirmGroupsMore": "另外 {count} 个",
+    "confirmGroupsShowLess": "收起",
     "resultDetailsTitle": "迁移详情",
     "resultFormName": "表单名称",
     "resultTenant": "租户",
