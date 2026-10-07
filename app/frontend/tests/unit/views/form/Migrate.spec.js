@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { createTestingPinia } from '@pinia/testing';
 import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
@@ -156,8 +159,10 @@ describe('Migrate.vue', () => {
       const wrapper = mountComponent();
       await flushPromises();
 
+      // The name is rendered through formNameCaption, and the shared i18n stub echoes
+      // keys rather than interpolating, so assert the value the template is given.
       expect(wrapper.vm.formName).toBe('Contractor Intake 2026');
-      expect(wrapper.text()).toContain('Contractor Intake 2026');
+      expect(wrapper.text()).toContain('trans.formMigration.formNameCaption');
     });
 
     it('omits the name heading when the API returns no form name', async () => {
@@ -169,7 +174,7 @@ describe('Migrate.vue', () => {
       await flushPromises();
 
       expect(wrapper.vm.formName).toBe('');
-      expect(wrapper.find('h2.text-subtitle-1').exists()).toBe(false);
+      expect(wrapper.text()).not.toContain('trans.formMigration.formNameCaption');
     });
   });
 
@@ -522,6 +527,95 @@ describe('Migrate.vue', () => {
     });
   });
 
+  describe('UX revisions', () => {
+    it('enables Migrate without an acknowledgement checkbox', async () => {
+      // The checkbox was removed; the confirm dialog is the single final check.
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.assignedGroups = [{ id: 'g1', name: 'Admins', isFormAdmin: true }];
+      await flushPromises();
+
+      expect(wrapper.vm.canSubmit).toBe(true);
+      expect(wrapper.find('input[type="checkbox"].v-checkbox-btn').exists()).toBe(false);
+      expect(wrapper.text()).not.toContain('trans.formMigration.confirmCheckbox');
+    });
+
+    it('still requires a Form Admin group', async () => {
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      wrapper.vm.assignedGroups = [{ id: 'g1', name: 'Readers', isFormAdmin: false }];
+      await flushPromises();
+
+      expect(wrapper.vm.canSubmit).toBe(false);
+    });
+
+    it('does not set a placeholder on the tenant select', () => {
+      // Label and placeholder rendered on top of each other while empty.
+      const source = readFileSync(resolve(__dirname, '../../../../src/views/form/Migrate.vue'), 'utf8');
+      const select = source.slice(source.indexOf('<v-select'), source.indexOf('</v-select>') + 11);
+
+      expect(select).not.toContain(':placeholder');
+    });
+
+    it('opens the expectations panel by default', () => {
+      const source = readFileSync(resolve(__dirname, '../../../../src/views/form/Migrate.vue'), 'utf8');
+
+      expect(source).toMatch(/v-expansion-panels[\s\S]{0,160}:model-value="\[0\]"/);
+    });
+
+    it('shows the migration details card after a successful migration', async () => {
+      rbacService.executeMigration.mockResolvedValue({});
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      await wrapper.vm.submitMigration();
+      await flushPromises();
+
+      expect(wrapper.vm.migrated).toBe(true);
+      expect(wrapper.text()).toContain('trans.formMigration.resultDetailsTitle');
+      expect(wrapper.text()).toContain('trans.formMigration.resultManageInChefs');
+      expect(wrapper.text()).toContain('trans.formMigration.resultMigrateAnother');
+    });
+
+    it('reports who migrated the form from the stored record, not the browser', async () => {
+      rbacService.executeMigration.mockResolvedValue({});
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      rbacService.getMigrationPreview.mockResolvedValueOnce({
+        data: { alreadyMigrated: true, migratedBy: 'ABC@idir', migratedAt: '2026-05-26T17:42:00.000Z' },
+      });
+      await wrapper.vm.submitMigration();
+      await flushPromises();
+
+      expect(wrapper.vm.migrationResult.migratedBy).toBe('ABC@idir');
+      expect(wrapper.vm.migratedByDisplay).toBe('ABC@idir');
+    });
+
+    it('still shows a success screen when the migration record cannot be read back', async () => {
+      // The migration already succeeded; a failed read-back must not look like an error.
+      rbacService.executeMigration.mockResolvedValue({});
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+
+      rbacService.getMigrationPreview.mockRejectedValueOnce(new Error('boom'));
+      await wrapper.vm.submitMigration();
+      await flushPromises();
+
+      expect(wrapper.vm.migrated).toBe(true);
+      expect(wrapper.vm.error).toBeNull();
+    });
+  });
+
   describe('computed: canSubmit', () => {
     it('is false when no tenant selected', async () => {
       const wrapper = mountComponent();
@@ -822,7 +916,6 @@ describe('Migrate.vue', () => {
 
       expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
       expect(wrapper.vm.staleGroupsRemoved).toBe(true);
-      expect(wrapper.vm.confirmed).toBe(false);
     });
 
     it('does not flag staleGroupsRemoved when nothing was dropped', async () => {
@@ -1026,7 +1119,6 @@ describe('Migrate.vue', () => {
       expect(wrapper.vm.migrated).toBe(true);
       expect(wrapper.vm.migrationResult).toMatchObject({
         tenantName: MOCK_TENANT.name,
-        submissions: MOCK_IMPACT.submissions,
       });
     });
 

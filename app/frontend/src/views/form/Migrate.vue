@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 
 import GroupPicker from '~/components/forms/migrate/GroupPicker.vue';
 import rbacService from '~/services/rbacService';
+import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useTenantStore } from '~/store/tenant';
 
@@ -12,6 +13,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
 const tenantStore = useTenantStore();
 const authStore = useAuthStore();
+const appStore = useAppStore();
 
 const props = defineProps({
   f: {
@@ -63,8 +65,6 @@ const allTenantGroups = ref([]);
 const assignedGroups = ref([]);
 const teamMemberGroups = ref([]);
 
-const confirmed = ref(false);
-
 const selectedTenant = computed(
   () =>
     eligibleTenants.value.find((t) => t.id === selectedTenantId.value) || null
@@ -112,6 +112,37 @@ const migratedTenantName = computed(() => {
   return tenantStore.getTenantById?.(id)?.name || id;
 });
 
+// Prefer the stored record so the screen reports what was actually written; fall back to
+// the signed-in user only if that read failed.
+const migratedByDisplay = computed(
+  () =>
+    migrationResult.value?.migratedBy ||
+    authStore.fullName ||
+    authStore.email ||
+    ''
+);
+
+const migratedAtDisplay = computed(() => {
+  const at = migrationResult.value?.migratedAt;
+  const when = at ? new Date(at) : new Date();
+  // Format in the UI language, not the browser's. App locale keys aren't all valid
+  // BCP 47 tags (zhTW), so map those and fall back to the browser default on error.
+  const tag = locale.value === 'zhTW' ? 'zh-TW' : locale.value;
+  try {
+    return when.toLocaleString(tag);
+  } catch {
+    return when.toLocaleString();
+  }
+});
+
+// Same pattern as TenantDropdown: only offer the link when a URL is configured.
+const cstarBaseUrl = computed(() => appStore.config?.cstarBaseUrl || '');
+
+function goToCstar() {
+  if (!cstarBaseUrl.value) return;
+  window.open(cstarBaseUrl.value, '_blank', 'noopener,noreferrer');
+}
+
 const showNoGroupsWarning = computed(
   () =>
     !!selectedTenantId.value &&
@@ -119,11 +150,10 @@ const showNoGroupsWarning = computed(
     !hasFormAdminGroupAssigned.value
 );
 
+// Enabled once a tenant is picked and a Form Admin group is assigned. The removed
+// acknowledgement checkbox used to gate this too; the confirm dialog covers it now.
 const canSubmit = computed(
-  () =>
-    !!selectedTenantId.value &&
-    confirmed.value &&
-    hasFormAdminGroupAssigned.value
+  () => !!selectedTenantId.value && hasFormAdminGroupAssigned.value
 );
 
 const teamRows = computed(() =>
@@ -288,7 +318,6 @@ watch(selectedTenantId, async (tenantId) => {
   allTenantGroups.value = [];
   assignedGroups.value = [];
   teamMemberGroups.value = [];
-  confirmed.value = false;
   if (!tenantId) return;
   await loadTenantGroups(tenantId);
 });
@@ -347,8 +376,6 @@ async function refreshTenantGroups() {
       .filter(Boolean);
     staleGroupsRemoved.value = stillValid.length < assignedGroups.value.length;
     assignedGroups.value = stillValid;
-
-    confirmed.value = false;
   } catch (err) {
     error.value = err.response?.data?.detail || err.message;
   } finally {
@@ -377,6 +404,23 @@ async function attemptSessionRecovery() {
   }
 }
 
+// Reads back the stored migration record. Best-effort: the migration itself has already
+// succeeded, so a failure here must not turn a success screen into an error.
+async function loadMigrationRecord() {
+  try {
+    const res = await rbacService.getMigrationPreview(props.f);
+    if (res.data?.alreadyMigrated && migrationResult.value) {
+      migrationResult.value = {
+        ...migrationResult.value,
+        migratedBy: res.data.migratedBy,
+        migratedAt: res.data.migratedAt,
+      };
+    }
+  } catch {
+    // Leave the fields null; the template falls back to the signed-in user.
+  }
+}
+
 async function submitMigration() {
   submitting.value = true;
   error.value = null;
@@ -396,22 +440,15 @@ async function submitMigration() {
     migrationResult.value = {
       tenantName: selectedTenant.value?.name,
       groupNames: assignedGroups.value.map((g) => g.name),
-      submissions: { ...impact.value.submissions },
-      retained: teamRowsWithStatus.value.filter(
-        (m) => m.transferStatus === 'retained'
-      ).length,
-      needsGroup: teamRowsWithStatus.value.filter(
-        (m) =>
-          m.transferStatus === 'needs_assignment' ||
-          m.transferStatus === 'no_membership' ||
-          m.transferStatus === 'needs_group'
-      ).length,
-      losesAccess: teamRowsWithStatus.value.filter(
-        (m) => m.transferStatus === 'loses_access'
-      ).length,
+      // Filled in below from the server's own migration record.
+      migratedBy: null,
+      migratedAt: null,
     };
     tenantStore.selectTenant(selectedTenant.value);
     migrated.value = true;
+    // Who migrated it and when come from form_migration_log rather than the browser
+    // clock, so the record shown matches the record stored.
+    await loadMigrationRecord();
   } catch (err) {
     const code = err.response?.data?.code;
     // Migrated elsewhere (another tab, another admin) — show the migrated state rather
@@ -441,7 +478,6 @@ defineExpose({
   loading,
   submitting,
   error,
-  confirmed,
   formName,
   loadPreviewData,
   eligibleTenants,
@@ -467,6 +503,9 @@ defineExpose({
   migratedInfo,
   showMigratedState,
   migratedTenantName,
+  migratedByDisplay,
+  migratedAtDisplay,
+  cstarBaseUrl,
   assignedGroupUsers,
   unreadableAssignedGroups,
   refreshTenantGroups,
@@ -482,30 +521,8 @@ defineExpose({
 <template>
   <BaseSecure v-if="tenantStore.isTenantFeatureEnabled">
     <v-container>
-      <!-- Page header -->
-      <div class="d-flex align-start gap-3 mb-4">
-        <v-icon
-          size="36"
-          color="primary"
-          class="mt-1 flex-shrink-0"
-          aria-hidden="true"
-        >
-          mdi:mdi-swap-horizontal-bold
-        </v-icon>
-        <div>
-          <h1 class="text-h5 mb-1" :lang="locale">
-            {{ $t('trans.formMigration.pageTitle') }}
-          </h1>
-          <h2 v-if="formName" class="text-subtitle-1 font-weight-medium mb-1">
-            {{ formName }}
-          </h2>
-          <p class="text-body-2 text-medium-emphasis mb-0" :lang="locale">
-            {{ $t('trans.formMigration.description') }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Permanent-action warning banner — irrelevant once the action is done -->
+      <!-- The irreversibility warning leads the page: it frames everything below it,
+           so it sits above the title rather than after it. Irrelevant once migrated. -->
       <v-alert
         v-if="!showMigratedState"
         type="error"
@@ -517,6 +534,20 @@ defineExpose({
       >
         {{ $t('trans.formMigration.cannotBeUndoneWarning') }}
       </v-alert>
+
+      <!-- Page header -->
+      <div class="mb-6">
+        <h1 class="text-h4 mb-1" :lang="locale">
+          {{ $t('trans.formMigration.pageTitle') }}
+        </h1>
+        <p
+          v-if="formName"
+          class="text-caption text-medium-emphasis mb-0"
+          :lang="locale"
+        >
+          {{ $t('trans.formMigration.formNameCaption', { formName }) }}
+        </p>
+      </div>
 
       <!-- API / session error -->
       <v-alert
@@ -603,140 +634,82 @@ defineExpose({
 
       <!-- ── RESULT — shown once the migration has actually happened ────────── -->
       <template v-else-if="migrated && migrationResult">
-        <v-card variant="outlined" class="mb-4">
-          <v-card-text class="pa-6">
-            <div class="d-flex align-start ga-3 mb-5">
-              <v-icon size="36" color="success" class="flex-shrink-0">
-                mdi:mdi-check-circle
-              </v-icon>
-              <div>
-                <h2 class="text-h6 mb-1" :lang="locale">
-                  {{ $t('trans.formMigration.resultTitle') }}
-                </h2>
-                <p class="text-body-2 text-medium-emphasis mb-0" :lang="locale">
-                  {{
-                    $t('trans.formMigration.resultSubtitle', {
-                      tenant: migrationResult.tenantName,
-                    })
-                  }}
-                </p>
-              </div>
-            </div>
+        <v-alert
+          type="success"
+          variant="tonal"
+          density="compact"
+          class="mb-6"
+          icon="mdi:mdi-check-circle-outline"
+          :lang="locale"
+        >
+          {{ $t('trans.formMigration.resultTitle') }}
+        </v-alert>
 
-            <v-list density="compact" class="py-0 mb-4">
-              <v-list-item
-                prepend-icon="mdi:mdi-check-circle-outline"
-                base-color="success"
-              >
-                <v-list-item-title class="text-body-2" :lang="locale">
-                  {{
-                    $t(
-                      'trans.formMigration.resultSubmissionsKept',
-                      migrationResult.submissions.total,
-                      {
-                        total: migrationResult.submissions.total,
-                        drafts: migrationResult.submissions.drafts,
-                      }
-                    )
-                  }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                prepend-icon="mdi:mdi-check-circle-outline"
-                base-color="success"
-              >
-                <v-list-item-title class="text-body-2" :lang="locale">
-                  {{
-                    $t(
-                      'trans.formMigration.resultSharesKept',
-                      migrationResult.submissions.withShareUsers,
-                      { count: migrationResult.submissions.withShareUsers }
-                    )
-                  }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                v-if="migrationResult.retained > 0"
-                prepend-icon="mdi:mdi-account-check-outline"
-                base-color="success"
-              >
-                <v-list-item-title class="text-body-2" :lang="locale">
-                  {{
-                    $t(
-                      'trans.formMigration.resultRetained',
-                      migrationResult.retained,
-                      {
-                        count: migrationResult.retained,
-                      }
-                    )
-                  }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                v-if="migrationResult.needsGroup > 0"
-                prepend-icon="mdi:mdi-account-alert-outline"
-                base-color="warning"
-              >
-                <v-list-item-title class="text-body-2" :lang="locale">
-                  {{
-                    $t(
-                      'trans.formMigration.resultNeedsGroup',
-                      migrationResult.needsGroup,
-                      { count: migrationResult.needsGroup }
-                    )
-                  }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                v-if="migrationResult.losesAccess > 0"
-                prepend-icon="mdi:mdi-close-circle-outline"
-                base-color="error"
-              >
-                <v-list-item-title class="text-body-2" :lang="locale">
-                  {{
-                    $t(
-                      'trans.formMigration.resultLosesAccess',
-                      migrationResult.losesAccess,
-                      { count: migrationResult.losesAccess }
-                    )
-                  }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-
-            <v-alert
-              v-if="
-                migrationResult.needsGroup > 0 ||
-                migrationResult.losesAccess > 0
-              "
-              type="warning"
-              variant="tonal"
-              density="compact"
-              class="mb-4"
-              icon="mdi:mdi-alert-outline"
-              :lang="locale"
-            >
-              {{ $t('trans.formMigration.resultActionNeeded') }}
-            </v-alert>
-
-            <div class="d-flex ga-3 flex-wrap">
-              <v-btn
-                color="primary"
-                :lang="locale"
-                :to="{ name: 'FormGroups', query: { f } }"
-              >
-                {{ $t('trans.formMigration.resultManageGroups') }}
-              </v-btn>
-              <v-btn
-                variant="outlined"
-                :lang="locale"
-                :to="{ name: 'FormManage', query: { f } }"
-              >
-                {{ $t('trans.formMigration.resultBackToForm') }}
-              </v-btn>
-            </div>
+        <v-card variant="outlined" class="mb-6">
+          <v-card-title
+            class="text-h6 font-weight-medium pt-4 px-4"
+            :lang="locale"
+          >
+            {{ $t('trans.formMigration.resultDetailsTitle') }}
+          </v-card-title>
+          <v-card-text class="px-4 pb-4">
+            <dl class="migration-details">
+              <dt :lang="locale">
+                {{ $t('trans.formMigration.resultFormName') }}
+              </dt>
+              <dd>{{ formName }}</dd>
+              <dt :lang="locale">
+                {{ $t('trans.formMigration.resultTenant') }}
+              </dt>
+              <dd>{{ migrationResult.tenantName }}</dd>
+              <dt :lang="locale">
+                {{ $t('trans.formMigration.resultAssignedGroups') }}
+              </dt>
+              <dd>{{ migrationResult.groupNames.join(', ') }}</dd>
+              <dt :lang="locale">
+                {{ $t('trans.formMigration.resultMigratedBy') }}
+              </dt>
+              <dd>{{ migratedByDisplay }}</dd>
+              <dt :lang="locale">
+                {{ $t('trans.formMigration.resultDateTime') }}
+              </dt>
+              <dd>{{ migratedAtDisplay }}</dd>
+            </dl>
           </v-card-text>
         </v-card>
+
+        <v-alert
+          type="warning"
+          variant="tonal"
+          density="compact"
+          class="mb-6"
+          icon="mdi:mdi-alert-outline"
+          :lang="locale"
+        >
+          {{ $t('trans.formMigration.resultAccessNotice') }}
+        </v-alert>
+
+        <div class="d-flex ga-3 flex-wrap">
+          <v-btn
+            color="primary"
+            :lang="locale"
+            :to="{ name: 'FormManage', query: { f } }"
+          >
+            {{ $t('trans.formMigration.resultManageInChefs') }}
+          </v-btn>
+          <v-btn
+            v-if="cstarBaseUrl"
+            variant="outlined"
+            append-icon="mdi:mdi-open-in-new"
+            :lang="locale"
+            @click="goToCstar"
+          >
+            {{ $t('trans.formMigration.resultManageInCstar') }}
+          </v-btn>
+          <v-btn variant="outlined" :lang="locale" :to="{ name: 'UserForms' }">
+            {{ $t('trans.formMigration.resultMigrateAnother') }}
+          </v-btn>
+        </div>
       </template>
 
       <!-- Initial page load spinner -->
@@ -756,14 +729,23 @@ defineExpose({
         </v-alert>
 
         <template v-else>
-          <!-- ── STEP 1 — Select Tenant ───────────────────────────── -->
+          <!-- ── STEP 1 — Select tenant ───────────────────────────── -->
           <div class="step-section mb-5">
-            <div class="d-flex align-center mb-3">
+            <div class="d-flex align-center mb-2">
               <span class="step-badge mr-3">1</span>
-              <span class="text-subtitle-1 font-weight-medium" :lang="locale">
+              <span class="text-h6 font-weight-regular" :lang="locale">
                 {{ $t('trans.formMigration.selectTenant') }}
               </span>
             </div>
+            <p
+              class="text-body-2 text-medium-emphasis mb-3 ml-10"
+              :lang="locale"
+            >
+              {{ $t('trans.formMigration.selectTenantHelper') }}
+            </p>
+            <!-- No placeholder: with the outlined variant and no value, Vuetify renders
+                 the resting label and the placeholder in the same spot, so the two
+                 strings sit on top of each other. The label alone says enough. -->
             <v-select
               v-model="selectedTenantId"
               :menu-props="{ closeOnContentClick: true }"
@@ -771,7 +753,6 @@ defineExpose({
               item-title="name"
               item-value="id"
               :label="$t('trans.formMigration.selectTenant')"
-              :placeholder="$t('trans.formMigration.tenantPlaceholder')"
               variant="outlined"
               density="comfortable"
               hide-details
@@ -783,7 +764,7 @@ defineExpose({
             <div v-if="selectedTenantId" class="step-section mb-5">
               <div class="d-flex align-center mb-1">
                 <span class="step-badge mr-3">2</span>
-                <span class="text-subtitle-1 font-weight-medium" :lang="locale">
+                <span class="text-h6 font-weight-regular" :lang="locale">
                   {{ $t('trans.formMigration.assignGroupsTitle') }}
                 </span>
                 <v-progress-circular
@@ -813,7 +794,7 @@ defineExpose({
                 </v-tooltip>
               </div>
               <p
-                class="text-caption text-medium-emphasis mb-3 ml-10"
+                class="text-body-2 text-medium-emphasis mb-3 ml-10"
                 :lang="locale"
               >
                 {{ $t('trans.formMigration.assignGroupsSubtitle') }}
@@ -870,7 +851,7 @@ defineExpose({
                   </v-chip>
                 </v-card-title>
                 <v-card-subtitle
-                  class="px-4 pt-1 pb-2 text-caption"
+                  class="px-4 pt-1 pb-3 text-body-2 subtitle-wrap"
                   :lang="locale"
                 >
                   {{ $t('trans.formMigration.assignedUsersSubtitle') }}
@@ -894,32 +875,47 @@ defineExpose({
                       : $t('trans.formMigration.assignedUsersEmpty')
                   }}
                 </div>
-                <v-list v-else density="compact" class="py-1">
-                  <v-list-item
-                    v-for="u in assignedGroupUsers"
-                    :key="u.ssoUserId"
+                <template v-else>
+                  <div
+                    class="d-flex align-center px-4 py-2 members-header"
+                    :lang="locale"
                   >
-                    <v-list-item-title class="text-body-2">
-                      {{ u.fullName || u.email }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle class="text-caption">
-                      {{ u.email }}
-                    </v-list-item-subtitle>
-                    <template #append>
-                      <div class="d-flex flex-wrap ga-1 justify-end">
-                        <v-chip
-                          v-for="g in u.groupNames"
-                          :key="g"
-                          size="x-small"
-                          variant="tonal"
-                          color="primary"
-                        >
-                          {{ g }}
-                        </v-chip>
-                      </div>
-                    </template>
-                  </v-list-item>
-                </v-list>
+                    <span class="text-body-2 font-weight-bold">
+                      {{ $t('trans.formMigration.colUser') }}
+                    </span>
+                    <v-spacer />
+                    <span class="text-body-2 font-weight-bold">
+                      {{ $t('trans.formMigration.colGroups') }}
+                    </span>
+                  </div>
+                  <v-divider />
+                  <v-list density="compact" class="py-1">
+                    <v-list-item
+                      v-for="u in assignedGroupUsers"
+                      :key="u.ssoUserId"
+                    >
+                      <v-list-item-title class="text-body-2">
+                        {{ u.fullName || u.email }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle class="text-caption">
+                        {{ u.email }}
+                      </v-list-item-subtitle>
+                      <template #append>
+                        <div class="d-flex flex-wrap ga-1 justify-end">
+                          <v-chip
+                            v-for="g in u.groupNames"
+                            :key="g"
+                            size="x-small"
+                            variant="tonal"
+                            color="primary"
+                          >
+                            {{ g }}
+                          </v-chip>
+                        </div>
+                      </template>
+                    </v-list-item>
+                  </v-list>
+                </template>
                 <v-alert
                   v-if="unreadableAssignedGroups.length > 0"
                   type="warning"
@@ -944,7 +940,7 @@ defineExpose({
               >
                 3
               </span>
-              <span class="text-subtitle-1 font-weight-medium" :lang="locale">
+              <span class="text-h6 font-weight-regular" :lang="locale">
                 {{ $t('trans.formMigration.impactTitle') }}
               </span>
               <v-chip
@@ -1230,107 +1226,61 @@ defineExpose({
             </v-card>
           </div>
 
-          <!-- What Changes — collapsible -->
-          <v-expansion-panels variant="accordion" class="mb-5">
+          <!-- What to expect — plain bullets. The mockup shows this open on arrival:
+               it explains the consequences of an irreversible action, so it should not
+               need a click to discover. -->
+          <v-expansion-panels
+            variant="accordion"
+            class="mb-5"
+            :model-value="[0]"
+          >
             <v-expansion-panel>
               <v-expansion-panel-title
-                class="text-body-2 font-weight-medium"
+                class="text-body-1 font-weight-medium"
                 :lang="locale"
               >
-                <v-icon class="mr-2" size="18">
-                  mdi:mdi-information-outline
-                </v-icon>
                 {{ $t('trans.formMigration.afterMigrationTitle') }}
               </v-expansion-panel-title>
               <v-expansion-panel-text>
-                <v-list density="compact" class="py-0">
-                  <v-list-item
-                    prepend-icon="mdi:mdi-check-circle-outline"
-                    color="success"
-                  >
-                    <v-list-item-title class="text-body-2" :lang="locale">
-                      {{ $t('trans.formMigration.afterSubmissionsKept') }}
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    prepend-icon="mdi:mdi-check-circle-outline"
-                    color="success"
-                  >
-                    <v-list-item-title class="text-body-2" :lang="locale">
-                      {{ $t('trans.formMigration.afterExistingSharesKept') }}
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    prepend-icon="mdi:mdi-alert-outline"
-                    color="warning"
-                  >
-                    <v-list-item-title class="text-body-2" :lang="locale">
-                      {{ $t('trans.formMigration.afterDraftShareGated') }}
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    prepend-icon="mdi:mdi-alert-outline"
-                    color="warning"
-                  >
-                    <v-list-item-title class="text-body-2" :lang="locale">
-                      {{ $t('trans.formMigration.afterTeamRolesStay') }}
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-if="hasBceidBasicUsers"
-                    prepend-icon="mdi:mdi-close-circle-outline"
-                    color="error"
-                  >
-                    <v-list-item-title class="text-body-2" :lang="locale">
-                      {{ $t('trans.formMigration.afterBceidLosesAccess') }}
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    prepend-icon="mdi:mdi-information-outline"
-                    color="info"
-                  >
-                    <v-list-item-title class="text-body-2" :lang="locale">
-                      {{ $t('trans.formMigration.groupAccessInfo') }}
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
+                <ul class="expect-list" :lang="locale">
+                  <li>{{ $t('trans.formMigration.afterSubmissionsKept') }}</li>
+                  <li>
+                    {{ $t('trans.formMigration.afterExistingSharesKept') }}
+                  </li>
+                  <li>{{ $t('trans.formMigration.afterDraftShareGated') }}</li>
+                  <li>
+                    {{ $t('trans.formMigration.afterRolesNoLongerApply') }}
+                  </li>
+                  <li>{{ $t('trans.formMigration.afterManageInCstar') }}</li>
+                  <li v-if="hasBceidBasicUsers">
+                    {{ $t('trans.formMigration.afterBceidLosesAccess') }}
+                  </li>
+                </ul>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
 
-          <!-- ── Confirm & Migrate ──────────────────────────────── -->
-          <v-divider class="mb-4" />
-          <v-card variant="outlined" class="mb-2">
-            <v-card-text class="pt-3 pb-4">
-              <v-checkbox
-                v-model="confirmed"
-                :label="$t('trans.formMigration.confirmCheckbox')"
-                color="error"
-                density="compact"
-                hide-details
-                class="mb-4"
-                :lang="locale"
-              />
-              <div class="d-flex gap-3 flex-wrap">
-                <v-btn
-                  color="primary"
-                  :disabled="!canSubmit"
-                  :loading="submitting"
-                  :lang="locale"
-                  @click="requestMigration"
-                >
-                  {{ $t('trans.formMigration.transferButton') }}
-                </v-btn>
-                <v-btn
-                  variant="outlined"
-                  :lang="locale"
-                  :to="{ name: 'FormManage', query: { f } }"
-                >
-                  {{ $t('trans.formMigration.cancelButton') }}
-                </v-btn>
-              </div>
-            </v-card-text>
-          </v-card>
+          <!-- ── Migrate ─────────────────────────────────────────── -->
+          <!-- No acknowledgement checkbox: the confirm dialog is the single final
+               check, and it restates the form, tenant and groups. -->
+          <div class="d-flex gap-3 flex-wrap mb-2">
+            <v-btn
+              color="primary"
+              :disabled="!canSubmit"
+              :loading="submitting"
+              :lang="locale"
+              @click="requestMigration"
+            >
+              {{ $t('trans.formMigration.transferButton') }}
+            </v-btn>
+            <v-btn
+              variant="outlined"
+              :lang="locale"
+              :to="{ name: 'FormManage', query: { f } }"
+            >
+              {{ $t('trans.formMigration.cancelButton') }}
+            </v-btn>
+          </div>
         </template>
       </template>
 
@@ -1338,24 +1288,35 @@ defineExpose({
       <v-dialog v-model="showConfirmDialog" max-width="500" persistent>
         <v-card>
           <v-card-title class="d-flex align-center" :lang="locale">
-            <v-icon color="error" class="mr-2">
-              mdi:mdi-alert-circle-outline
+            <v-icon color="warning" class="mr-2">
+              mdi:mdi-alert-outline
             </v-icon>
             {{ $t('trans.formMigration.confirmTitle') }}
           </v-card-title>
           <v-card-text :lang="locale">
-            <p class="mb-3">{{ $t('trans.formMigration.confirmMessage') }}</p>
-            <p class="mb-0 font-weight-medium">
-              {{
-                $t('trans.formMigration.confirmDetail', {
-                  formName: formName,
-                  tenant: selectedTenant ? selectedTenant.name : '',
-                  groups: assignedGroups.map((g) => g.name).join(', '),
-                })
-              }}
+            <!-- Restating form, tenant and groups is the point of this dialog: it is the
+                 only confirmation now, so it has to show what is about to change. -->
+            <dl class="confirm-summary mb-4">
+              <dt>{{ $t('trans.formMigration.confirmFormLabel') }}</dt>
+              <dd>{{ formName }}</dd>
+              <dt>{{ $t('trans.formMigration.confirmTenantLabel') }}</dt>
+              <dd>{{ selectedTenant ? selectedTenant.name : '' }}</dd>
+              <dt>{{ $t('trans.formMigration.confirmGroupsLabel') }}</dt>
+              <dd>{{ assignedGroups.map((g) => g.name).join(', ') }}</dd>
+            </dl>
+            <p class="mb-0">
+              {{ $t('trans.formMigration.confirmConsequence') }}
             </p>
           </v-card-text>
           <v-card-actions class="justify-end pb-4 px-4">
+            <v-btn
+              color="primary"
+              :loading="submitting"
+              :lang="locale"
+              @click="confirmMigration"
+            >
+              {{ $t('trans.formMigration.confirmButton') }}
+            </v-btn>
             <v-btn
               variant="outlined"
               :disabled="submitting"
@@ -1363,14 +1324,6 @@ defineExpose({
               @click="showConfirmDialog = false"
             >
               {{ $t('trans.formMigration.cancelButton') }}
-            </v-btn>
-            <v-btn
-              color="error"
-              :loading="submitting"
-              :lang="locale"
-              @click="confirmMigration"
-            >
-              {{ $t('trans.formMigration.confirmButton') }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -1385,6 +1338,67 @@ defineExpose({
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
+}
+
+/* Column headings over the member rows. */
+.members-header {
+  background: rgb(var(--v-theme-surface-variant), 0.25);
+}
+
+/* Plain bullets — icons implied a per-item severity the content does not carry. */
+.expect-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.expect-list li {
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+}
+
+/* Label/value pairs in the confirm dialog. */
+.confirm-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 8px;
+  row-gap: 2px;
+  margin: 0;
+}
+
+.confirm-summary dt {
+  font-weight: 600;
+}
+
+.confirm-summary dd {
+  margin: 0;
+}
+
+/* Label/value rows on the success screen. */
+.migration-details {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) 1fr;
+  column-gap: 24px;
+  row-gap: 10px;
+  margin: 0;
+}
+
+.migration-details dt {
+  font-weight: 600;
+}
+
+.migration-details dd {
+  margin: 0;
+}
+
+@media (max-width: 599px) {
+  .migration-details {
+    grid-template-columns: 1fr;
+    row-gap: 2px;
+  }
+
+  .migration-details dd {
+    margin-bottom: 8px;
+  }
 }
 
 /* Step badge */
