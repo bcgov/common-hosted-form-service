@@ -262,6 +262,11 @@ objects:
                     secretKeyRef:
                       key: mailapitoken
                       name: "chefs-${JOB_NAME}-secret"
+                - name: SUBMISSION_TOKEN_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: submissiontokenkey
+                      name: "chefs-${JOB_NAME}-secret"
                 - name: EVENTSTREAMSERVICE_USERNAME
                   valueFrom:
                     secretKeyRef:

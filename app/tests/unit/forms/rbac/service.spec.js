@@ -1,5 +1,6 @@
 const service = require('../../../../src/forms/rbac/service');
 const authService = require('../../../../src/forms/auth/service');
+const { FormMigrationLog } = require('../../../../src/forms/common/models');
 
 jest.mock('~/forms/common/models');
 
@@ -30,6 +31,49 @@ describe('getCurrentUser', () => {
     const result = await service.getCurrentUser(userInfo);
     expect(result).toBeTruthy();
     expect(result).toMatchObject({});
+  });
+});
+
+describe('_markMigratedForms', () => {
+  it('flags only the forms that have a migration record', async () => {
+    // Inside a tenant's list every form is group-controlled, so "uses groups" is true of
+    // every row. Whether it was migrated is the part that actually varies.
+    FormMigrationLog.query = jest.fn().mockReturnValue({
+      whereIn: jest.fn().mockReturnValue({
+        distinct: jest.fn().mockResolvedValue([{ formId: 'migrated-form' }]),
+      }),
+    });
+
+    const result = await service._markMigratedForms([
+      { formId: 'migrated-form', tenantId: 'tenant-1' },
+      { formId: 'native-form', tenantId: 'tenant-1' },
+    ]);
+
+    expect(result.find((f) => f.formId === 'migrated-form').migrated).toBe(true);
+    expect(result.find((f) => f.formId === 'native-form').migrated).toBe(false);
+  });
+
+  it('skips the lookup entirely when no form is tenanted', async () => {
+    FormMigrationLog.query = jest.fn();
+
+    const result = await service._markMigratedForms([{ formId: 'personal-form', tenantId: null }]);
+
+    expect(FormMigrationLog.query).not.toHaveBeenCalled();
+    expect(result[0].migrated).toBe(false);
+  });
+
+  it('uses a single query for the whole page rather than one per form', async () => {
+    const whereIn = jest.fn().mockReturnValue({ distinct: jest.fn().mockResolvedValue([]) });
+    FormMigrationLog.query = jest.fn().mockReturnValue({ whereIn });
+
+    await service._markMigratedForms([
+      { formId: 'a', tenantId: 't' },
+      { formId: 'b', tenantId: 't' },
+      { formId: 'c', tenantId: 't' },
+    ]);
+
+    expect(FormMigrationLog.query).toHaveBeenCalledTimes(1);
+    expect(whereIn).toHaveBeenCalledWith('formId', ['a', 'b', 'c']);
   });
 });
 

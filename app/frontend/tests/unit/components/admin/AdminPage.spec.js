@@ -25,6 +25,7 @@ describe('AdminPage.vue', () => {
         stubs: {
           AdminFormsTable: true,
           AdminUsersTable: true,
+          AdminDuplicateUsers: true,
           AdminFeatureFlags: true,
           Developer: true,
           FormComponentsProactiveHelp: true,
@@ -36,6 +37,7 @@ describe('AdminPage.vue', () => {
 
   it('renders', async () => {
     expect(wrapper.text()).toContain('trans.adminPage.forms');
+    expect(wrapper.text()).toContain('trans.adminPage.duplicateUsers');
     expect(wrapper.text()).not.toContain('trans.adminPage.metrics');
   });
 

@@ -12,6 +12,7 @@ module.exports = Object.freeze({
     STATUS_REVISING: 'statusRevising',
     SUBMISSION_RECEIVED: 'submissionReceived',
     SUBMISSION_CONFIRMATION: 'submissionConfirmation',
+    SUBMISSION_PACKAGE: 'submissionPackage',
     REMINDER_FORM_OPEN: 'formOpen',
     REMINDER_FORM_WILL_CLOSE: 'formWillClose',
     REMINDER_FORM_NOT_FILL: 'formNotFill',
@@ -123,5 +124,12 @@ module.exports = Object.freeze({
     DISABLE: 'DISABLE',
     CREATE: 'CREATE',
     RECALCUALTE: 'RECALCULATE',
+  },
+  PackageJobStatuses: {
+    QUEUED: 'queued',
+    PROCESSING: 'processing',
+    COMPLETED: 'completed',
+    SKIPPED: 'skipped',
+    FAILED: 'failed',
   },
 });

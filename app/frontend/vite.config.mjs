@@ -45,6 +45,7 @@ export default defineConfig(({ command, mode }) => {
       clearMocks: true,
       coverage: {
         enabled: true,
+        reporter: ['text', 'clover', 'json-summary'],
         include: [
           'src/**/*.{js,vue}',
           '!src/main.js',

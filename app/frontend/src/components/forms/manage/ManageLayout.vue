@@ -1,14 +1,15 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
-import { useNotificationStore } from '~/store/notification';
 import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 import { useRecordsManagementStore } from '~/store/recordsManagement';
-import { FormPermissions } from '~/utils/constants';
+import { useTenantStore } from '~/store/tenant';
+import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
 const { locale, t } = useI18n({ useScope: 'global' });
 
@@ -21,33 +22,75 @@ const properties = defineProps({
 
 const loading = ref(true);
 
-const notificationStore = useNotificationStore();
 const recordsManagementStore = useRecordsManagementStore();
+const notificationStore = useNotificationStore();
+const tenantStore = useTenantStore();
 
 const { form, permissions, isRTL } = storeToRefs(useFormStore());
+
+// A migrated form carries an audit row; a tenant-native one does not. Say which it is,
+// since migration is irreversible and this record is its only trace.
+const tenancyTooltip = computed(() => {
+  const migratedAt = form.value?.migration?.migratedAt;
+  if (!migratedAt) return t('trans.manageLayout.tenantChipTooltip');
+  return t('trans.manageLayout.migratedChipTooltip', {
+    date: new Date(migratedAt).toLocaleDateString(),
+    by: form.value.migration.migratedBy,
+  });
+});
 
 onMounted(async () => {
   loading.value = true;
 
   const formStore = useFormStore();
 
-  await formStore.fetchForm(properties.f);
-
-  if (formStore.form.versions) {
-    await formStore.getFormPermissionsForUser(properties.f);
-  } else {
-    notificationStore.addNotification({
-      text: t('trans.baseSecure.401UnAuthorizedErrMsg'),
-    });
-  }
-
-  await recordsManagementStore.getFormRetentionPolicy(properties.f);
+  // Access to this page is already enforced by BaseSecure (IDP permission) and
+  // the backend form_read middleware, so anyone who reaches here is authorized.
+  // Load the user's form permissions unconditionally; the version list is only
+  // returned to designers, so it must not be used as an authorization signal.
+  await Promise.all([
+    formStore.fetchForm(properties.f),
+    formStore.getFormPermissionsForUser(properties.f),
+    recordsManagementStore.getFormRetentionPolicy(properties.f),
+  ]);
 
   if (permissions.value.includes(FormPermissions.DESIGN_READ))
     await formStore.fetchDrafts(properties.f);
 
+  resolveTenantContext();
+
   loading.value = false;
 });
+
+/**
+ * A link to a form created before it was migrated carries no tenant context, so the app
+ * would show it under Personal CHEFS while its access is actually governed by a tenant's
+ * groups. Switch the session to the form's own tenant so the rest of the UI — the form
+ * list heading, group management, create permissions — matches the form being viewed.
+ *
+ * The tenant must be one the user actually belongs to; `getTenantById` looks in the
+ * user's own tenant list, so a form in a tenant they have no access to changes nothing
+ * here and the backend remains the authority on access.
+ */
+function resolveTenantContext() {
+  // Never move the user into a tenant while tenant features are off — the rest of the
+  // UI has no tenant affordances in that mode, so the context would be unreachable.
+  if (!tenantStore.isTenantFeatureEnabled) return;
+
+  const formTenantId = form.value?.tenantId;
+  if (!formTenantId) return;
+  if (tenantStore.selectedTenant?.id === formTenantId) return;
+
+  const tenant = tenantStore.getTenantById(formTenantId);
+  if (!tenant) return;
+
+  tenantStore.selectTenant(tenant);
+  // Switching tenant changes global context, so say so rather than doing it silently.
+  notificationStore.addNotification({
+    text: t('trans.manageLayout.switchedToTenant', { tenant: tenant.name }),
+    ...NotificationTypes.INFO,
+  });
+}
 </script>
 
 <template>
@@ -58,7 +101,28 @@ onMounted(async () => {
       <!-- page title -->
       <div>
         <h1 :lang="locale">{{ $t('trans.manageLayout.manageForm') }}</h1>
-        <h3>{{ form.name }}</h3>
+        <div class="d-flex align-center flex-wrap ga-2">
+          <h3>{{ form.name }}</h3>
+          <v-tooltip v-if="form.tenantId" location="bottom">
+            <template #activator="{ props: tip }">
+              <v-chip
+                v-bind="tip"
+                size="small"
+                color="primary"
+                variant="tonal"
+                prepend-icon="mdi:mdi-account-group"
+                :lang="locale"
+              >
+                {{
+                  form.migration
+                    ? $t('trans.manageLayout.migratedChip')
+                    : $t('trans.manageLayout.tenantChip')
+                }}
+              </v-chip>
+            </template>
+            <span :lang="locale">{{ tenancyTooltip }}</span>
+          </v-tooltip>
+        </div>
       </div>
       <!-- buttons -->
       <div>

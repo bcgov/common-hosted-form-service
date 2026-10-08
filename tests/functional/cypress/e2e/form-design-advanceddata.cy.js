@@ -153,8 +153,7 @@ it('Checks the Container component', () => {
      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
      cy.waitForLoad();
     //Delete form after test run
-      //cy.get('.mdi-delete').click();
-      cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+      cy.get('[data-test="canRemoveForm"]').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('.mdi-logout').click();
      

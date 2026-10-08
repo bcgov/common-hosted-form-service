@@ -80,6 +80,14 @@ module.exports = {
       next(error);
     }
   },
+  getDuplicateUsers: async (_req, res, next) => {
+    try {
+      const response = await service.getDuplicateUsers();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   getFormUserRoles: async (req, res, next) => {
     try {
       const response = await service.getFormUserRoles(req.params.formId);

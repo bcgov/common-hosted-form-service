@@ -11,6 +11,7 @@ import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
+import { useFeatureFlagStore } from '~/store/featureFlags';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormDesignerBuilderOptions, IdentityMode } from '~/utils/constants';
@@ -38,9 +39,11 @@ describe('FormDesigner.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const authStore = useAuthStore(pinia);
+  const featureFlagStore = useFeatureFlagStore(pinia);
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
   const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+  const resolveForContextSpy = vi.spyOn(featureFlagStore, 'resolveForContext');
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
   const getProxyHeadersSpy = vi.spyOn(formService, 'getProxyHeaders');
   const readVersionSpy = vi.spyOn(formService, 'readVersion');
@@ -49,8 +52,10 @@ describe('FormDesigner.vue', () => {
 
   beforeEach(() => {
     authStore.$reset();
+    featureFlagStore.$reset();
     formStore.$reset();
     notificationStore.$reset();
+    resolveForContextSpy.mockReset();
 
     authStore.keycloak = {
       tokenParsed: {
@@ -239,6 +244,21 @@ describe('FormDesigner.vue', () => {
       expect(addNotificationSpy).toBeCalledTimes(0);
       expect(readVersionSpy).toBeCalledTimes(0);
       expect(readDraftSpy).toBeCalledTimes(1);
+    });
+
+    it('onMounted, with no formId does not fetchForm and does not resolve feature flags (Create.vue owns the new-form context resolution)', async () => {
+      shallowMount(FormDesigner, {
+        props: {},
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      expect(fetchFormSpy).toBeCalledTimes(0);
+      expect(resolveForContextSpy).not.toBeCalled();
     });
   });
 

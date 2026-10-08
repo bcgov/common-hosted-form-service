@@ -1,7 +1,11 @@
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import Submit from '~/views/form/Submit.vue';
+
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ query: {} }),
+}));
 
 describe('Submit.vue', () => {
   it('renders', () => {
