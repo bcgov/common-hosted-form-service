@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useFormStore } from '~/store/form';
 import FormSubmissionSettings from '~/components/designer/settings/FormSubmissionSettings.vue';
+import SubmissionPackageEmailSettings from '~/components/designer/settings/SubmissionPackageEmailSettings.vue';
 import { nextTick, ref } from 'vue';
 import { useAppStore } from '~/store/app';
 import { IdentityMode } from '~/utils/constants';
@@ -330,5 +331,51 @@ describe('FormSubmissionSettings.vue', () => {
     emailCheckbox.setValue(false);
     await nextTick();
     expect(formStore.form.enableSubmitterEmailReceipt).toBe(false);
+  });
+
+  it('does not render submission package email settings on an unsaved form', async () => {
+    formStore.form = ref({ ...formStore.form, id: '' });
+
+    const wrapper = mount(FormSubmissionSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+          SubmissionPackageEmailSettings: true,
+        },
+      },
+    });
+
+    await nextTick();
+
+    expect(
+      wrapper.findComponent(SubmissionPackageEmailSettings).exists()
+    ).toBe(false);
+  });
+
+  it('renders submission package email settings on a saved form', async () => {
+    formStore.form = ref({ ...formStore.form, id: '123' });
+
+    const wrapper = mount(FormSubmissionSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+          SubmissionPackageEmailSettings: true,
+        },
+      },
+    });
+
+    await nextTick();
+
+    expect(
+      wrapper.findComponent(SubmissionPackageEmailSettings).exists()
+    ).toBe(true);
   });
 });
