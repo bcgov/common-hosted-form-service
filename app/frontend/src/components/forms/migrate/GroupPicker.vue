@@ -247,6 +247,7 @@ function removeAll() {
               v-for="group in filteredAvailable"
               :key="group.id"
               density="compact"
+              class="group-row"
               :class="{ 'form-admin-row': group.isFormAdmin }"
               @click="toggleAvailable(group.id)"
             >
@@ -257,23 +258,26 @@ function removeAll() {
                   @click.stop="toggleAvailable(group.id)"
                 />
               </template>
-              <v-list-item-title class="text-body-2">
+              <v-list-item-title class="text-body-2 group-name">
                 {{ group.name }}
               </v-list-item-title>
-              <template v-if="groupRoles(group).length > 0" #append>
-                <div class="d-flex flex-wrap ga-1 justify-end role-chips">
-                  <v-chip
-                    v-for="role in groupRoles(group)"
-                    :key="role"
-                    size="x-small"
-                    :color="role === 'form_admin' ? 'primary' : undefined"
-                    variant="tonal"
-                    :lang="locale"
-                  >
-                    {{ roleLabel(role) }}
-                  </v-chip>
-                </div>
-              </template>
+              <!-- Under the name, not in the append slot: the append slot is narrow, so
+                   two or more chips stacked and the last one was clipped. -->
+              <div
+                v-if="groupRoles(group).length > 0"
+                class="d-flex flex-wrap ga-1 mt-1 role-chips"
+              >
+                <v-chip
+                  v-for="role in groupRoles(group)"
+                  :key="role"
+                  size="x-small"
+                  :color="role === 'form_admin' ? 'primary' : undefined"
+                  variant="tonal"
+                  :lang="locale"
+                >
+                  {{ roleLabel(role) }}
+                </v-chip>
+              </div>
             </v-list-item>
           </template>
         </div>
@@ -406,6 +410,7 @@ function removeAll() {
               v-for="group in filteredAssigned"
               :key="group.id"
               density="compact"
+              class="group-row"
               :class="{ 'form-admin-row': group.isFormAdmin }"
               @click="toggleAssigned(group.id)"
             >
@@ -416,23 +421,26 @@ function removeAll() {
                   @click.stop="toggleAssigned(group.id)"
                 />
               </template>
-              <v-list-item-title class="text-body-2">
+              <v-list-item-title class="text-body-2 group-name">
                 {{ group.name }}
               </v-list-item-title>
-              <template v-if="groupRoles(group).length > 0" #append>
-                <div class="d-flex flex-wrap ga-1 justify-end role-chips">
-                  <v-chip
-                    v-for="role in groupRoles(group)"
-                    :key="role"
-                    size="x-small"
-                    :color="role === 'form_admin' ? 'primary' : undefined"
-                    variant="tonal"
-                    :lang="locale"
-                  >
-                    {{ roleLabel(role) }}
-                  </v-chip>
-                </div>
-              </template>
+              <!-- Under the name, not in the append slot: the append slot is narrow, so
+                   two or more chips stacked and the last one was clipped. -->
+              <div
+                v-if="groupRoles(group).length > 0"
+                class="d-flex flex-wrap ga-1 mt-1 role-chips"
+              >
+                <v-chip
+                  v-for="role in groupRoles(group)"
+                  :key="role"
+                  size="x-small"
+                  :color="role === 'form_admin' ? 'primary' : undefined"
+                  variant="tonal"
+                  :lang="locale"
+                >
+                  {{ roleLabel(role) }}
+                </v-chip>
+              </div>
             </v-list-item>
           </template>
         </div>
@@ -459,9 +467,25 @@ function removeAll() {
   background: rgb(var(--v-theme-primary), 0.04);
 }
 
-/* Role chips wrap under a long group name instead of pushing it off the panel. */
-.role-chips {
-  max-width: 60%;
+/* Group rows grow to fit role chips, so keep the checkbox on the name's line. */
+.group-row :deep(.v-list-item__prepend) {
+  align-self: flex-start;
+}
+
+.group-row {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Long names wrap rather than being cut off next to their chips. */
+.group-name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Chips keep their full label; Vuetify's default nowrap/hidden would clip it. */
+.role-chips :deep(.v-chip) {
+  max-width: 100%;
 }
 
 .select-all-row {
