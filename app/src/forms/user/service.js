@@ -1,7 +1,9 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
-const { User, UserFormPreferences, Label } = require('../common/models');
+const { User, UserFormPreferences, Label, UserLoginHistory } = require('../common/models');
 const idpService = require('../../components/idpService');
+
+const IDIR_CODES = ['idir', 'azureidir'];
 
 const service = {
   //
@@ -29,6 +31,37 @@ const service = {
   readByKeycloakId: (keycloakId) => {
     if (!keycloakId) return null;
     return User.query().modify('filterKeycloakId', keycloakId).first();
+  },
+
+  update: async (userId, data, currentUser) => {
+    if (!data || typeof data.stale !== 'boolean' || Object.keys(data).length !== 1) {
+      throw new Problem(422, {
+        detail: 'Only the stale user status can be updated.',
+      });
+    }
+
+    await User.query()
+      .patchAndFetchById(userId, { stale: data.stale, updatedBy: currentUser?.usernameIdp || 'ADMIN' })
+      .throwIfNotFound();
+
+    return service.readSafe(userId);
+  },
+
+  markStaleUsers: () => {
+    const cutoff = new Date();
+    cutoff.setUTCFullYear(cutoff.getUTCFullYear() - 1);
+
+    const hasIdirLogin = UserLoginHistory.query().select(1).whereColumn('user_login_history.userId', 'users.id').whereIn('user_login_history.idpCode', IDIR_CODES);
+
+    const hasRecentIdirLogin = hasIdirLogin.clone().where('user_login_history.lastLoginAt', '>=', cutoff.toISOString());
+
+    return User.query()
+      .alias('users')
+      .patch({ stale: true, updatedBy: 'stale-user-cronjob' })
+      .whereIn('users.idpCode', IDIR_CODES)
+      .where('users.stale', false)
+      .whereExists(hasIdirLogin)
+      .whereNotExists(hasRecentIdirLogin);
   },
 
   //

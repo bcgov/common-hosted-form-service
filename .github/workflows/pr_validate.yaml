@@ -1,0 +1,42 @@
+# Validates the pull request title (conventional commits) and rejects forks.
+# Only the PR title is checked — individual commits are not inspected — because
+# merges use the PR title as the squash commit message.
+name: PR Validate
+run-name: PR-${{ github.event.number }} validate
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize, ready_for_review]
+
+permissions:
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: ubuntu-24.04
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Allowed conventional-commit types. The Jira id (e.g. CCP-1234)
+          # belongs in the subject: "feat: CCP-1234 add submission export".
+          types: |
+            feat
+            fix
+            build
+            ci
+            docs
+            perf
+            refactor
+            revert
+            style
+            test
+            chore

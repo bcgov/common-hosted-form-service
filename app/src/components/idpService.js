@@ -215,6 +215,7 @@ class IdpService {
       .modify('filterFirstName', params.firstName)
       .modify('filterLastName', params.lastName)
       .modify('filterEmail', params.email, false, false)
+      .modify('filterStale', params.stale)
       .modify('filterSearch', params.search)
       .modify('orderLastFirstAscending');
   }

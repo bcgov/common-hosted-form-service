@@ -2,8 +2,14 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const currentUser = require('../auth/middleware/userAccess').currentUser;
+const apiAccess = require('../public/middleware/apiAccess');
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
+
+// Internal: mark IDIR users with no login in the past year as stale.
+routes.post('/stale', apiAccess.checkApiKey, async (req, res, next) => {
+  await controller.markStaleUsers(req, res, next);
+});
 
 routes.use(jwtService.protect());
 routes.use(currentUser);

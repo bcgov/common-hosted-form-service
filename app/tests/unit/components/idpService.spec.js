@@ -138,9 +138,10 @@ describe('idpService', () => {
     const s = await idpService.userSearch({ idpCode: 'idir', email: 'em@il.com' });
     expect(s).toBeFalsy();
     expect(MockModel.query).toBeCalledTimes(1);
-    expect(MockModel.modify).toBeCalledTimes(9);
+    expect(MockModel.modify).toBeCalledTimes(10);
     expect(MockModel.modify).toBeCalledWith('filterIdpCodes', ['idir']);
     expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', false, false);
+    expect(MockModel.modify).toBeCalledWith('filterStale', undefined);
   });
 
   it('should pass when customized user search for required > 1 (one of group required, first param)', async () => {

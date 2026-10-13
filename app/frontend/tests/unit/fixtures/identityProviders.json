@@ -109,8 +109,8 @@
       "idp": "identity_provider"
     },
     "extra": {
-      "sortOrder": 30,
-      "formAccessSettings": "idim",
+      "sortOrder": 50,
+      "formAccessSettings": "bceid-basic",
       "addTeamMemberSearch": {
         "text": {
           "message": "trans.manageSubmissionUsers.searchInputLength",

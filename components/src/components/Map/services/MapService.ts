@@ -45,6 +45,7 @@ interface MapServiceOptions {
   availableBaseLayers?: string[];
   availableBaseLayersCustom?: any[];
   recenterButton?: boolean; // New option for recenter button
+  allowExistingFeatureChanges?: boolean;
 }
 
 class MapService {
@@ -113,6 +114,7 @@ class MapService {
       const { map, drawnItems, drawControl } = await this.initializeMap(
         options
       );
+
       this.map = map;
       this.drawnItems = drawnItems;
       this.drawControl = drawControl; // Store the draw control globally
@@ -175,8 +177,10 @@ class MapService {
 
         const form = document.getElementsByClassName('formio')[0];
         const isDesigner = form?.classList.contains('formbuilder') ?? false;
+        const protectExistingFeatures =
+          !isDesigner && !options.allowExistingFeatureChanges;
 
-        if (!isDesigner) {
+        if (protectExistingFeatures) {
           e.layers.eachLayer((layer) => {
             const match = this.isDefaultFeature(layer as L.Layer);
             if (match) {

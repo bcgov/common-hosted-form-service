@@ -2,6 +2,7 @@ module.exports = {
   detectOpenHandles: true,
   clearMocks: true,
   collectCoverage: true,
+  coverageReporters: ['json-summary', 'clover', 'lcov', 'text'],
   collectCoverageFrom: ['src/**/*.js', '!src/db/migrations/*.js', '!src/db/seeds/*.js', '!src/forms/common/models/(tables|views)/*.js', '!frontend/**/*.*'],
   moduleFileExtensions: ['js', 'json'],
   moduleNameMapper: {

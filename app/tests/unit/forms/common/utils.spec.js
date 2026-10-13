@@ -6,7 +6,7 @@ jest.mock('config');
 describe('getBaseUrl', () => {
   const basePath = '/app';
   const basePathPr = '/pr-1234';
-  const localhostPort = '5173';
+  const localhostPort = '1234';
   const serverDev = 'chefs-dev.apps.silver.devops.gov.bc.ca';
   const serverProd = 'submit.digital.gov.bc.ca';
 
@@ -15,7 +15,7 @@ describe('getBaseUrl', () => {
 
     const baseUrl = getBaseUrl();
 
-    expect(baseUrl).toEqual(`http://localhost${basePath}`);
+    expect(baseUrl).toEqual(`http://localhost:5173${basePath}`);
   });
 
   it('should return a default with port for local development', () => {

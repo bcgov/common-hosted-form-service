@@ -34,7 +34,7 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
         <FormFunctionalitySettings :disabled="disabled" />
       </v-col>
       <v-col cols="12" md="6">
-        <FormSubmissionSettings />
+        <FormSubmissionSettings :disabled="disabled" />
       </v-col>
       <v-col v-if="form.schedule.enabled && isFormPublished" cols="12" md="6">
         <FormScheduleSettings />

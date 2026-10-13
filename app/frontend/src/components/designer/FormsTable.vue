@@ -156,7 +156,9 @@ defineExpose({
         v-if="item.published"
         :to="{
           name: 'FormSubmit',
-          query: { f: item.id },
+          query: {
+            f: item.id,
+          },
         }"
         target="_blank"
         rel="noopener noreferrer"
@@ -172,6 +174,17 @@ defineExpose({
         </v-tooltip>
       </router-link>
       <span v-else>{{ item.name }}</span>
+      <v-chip
+        v-if="item.migrated"
+        size="x-small"
+        color="primary"
+        variant="tonal"
+        class="ml-2"
+        prepend-icon="mdi:mdi-swap-horizontal-bold"
+        :lang="locale"
+      >
+        {{ $t('trans.manageLayout.migratedChip') }}
+      </v-chip>
       <v-icon
         v-if="item.description?.trim()"
         size="small"

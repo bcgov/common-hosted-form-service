@@ -3,10 +3,13 @@ const uuid = require('uuid');
 const service = require('../../../../src/forms/file/service');
 const { FileStorage } = require('../../../../src/forms/common/models');
 const storageService = require('../../../../src/forms/file/storage/storageService');
+const uploadCleanup = require('../../../../src/forms/file/uploadCleanup');
+const { StorageTypes } = require('../../../../src/forms/common/constants');
 
 // Mock external dependencies
 jest.mock('../../../../src/forms/common/models');
 jest.mock('../../../../src/forms/file/storage/storageService');
+jest.mock('../../../../src/forms/file/uploadCleanup');
 
 const currentUser = {
   usernameIdp: 'TESTER',
@@ -42,11 +45,131 @@ storageService.upload = jest.fn().mockResolvedValue({
   storage: 'uploads',
 });
 
+beforeEach(() => {
+  storageService.upload = jest.fn().mockResolvedValue({
+    path: '/app/storage/uploads/file123',
+    storage: 'uploads',
+  });
+  FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+  FileStorage.query = jest.fn().mockReturnValue({
+    insert: jest.fn().mockResolvedValue(mockFileStorage),
+    findById: jest.fn().mockReturnValue({
+      throwIfNotFound: jest.fn().mockResolvedValue(mockFileStorage),
+    }),
+  });
+  uploadCleanup.removeUploadedFile.mockResolvedValue(true);
+});
+
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('create', () => {
+  describe('temp file cleanup', () => {
+    const validFileData = {
+      originalname: 'document.pdf',
+      mimetype: 'application/pdf',
+      size: 1024,
+      path: '/app/uploads/document.pdf',
+    };
+
+    beforeEach(() => {
+      FileStorage.query = jest.fn().mockReturnValue({
+        insert: jest.fn().mockResolvedValue(mockFileStorage),
+        findById: jest.fn().mockReturnValue({
+          throwIfNotFound: jest.fn().mockResolvedValue(mockFileStorage),
+        }),
+      });
+      uploadCleanup.removeUploadedFile.mockResolvedValue(true);
+    });
+
+    it('removes local temp file after successful object storage upload', async () => {
+      storageService.upload = jest.fn().mockResolvedValue({
+        path: 'chefs/dev/uploads/file123',
+        storage: StorageTypes.OBJECT_STORAGE,
+      });
+
+      await service.create(validFileData, currentUser);
+
+      expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(validFileData.path, 'object-storage-upload-success');
+    });
+
+    it('preserves local temp file after successful local storage upload', async () => {
+      storageService.upload = jest.fn().mockResolvedValue({
+        path: validFileData.path,
+        storage: StorageTypes.UPLOADS,
+      });
+
+      await service.create(validFileData, currentUser);
+
+      expect(uploadCleanup.removeUploadedFile).not.toHaveBeenCalled();
+    });
+
+    it('removes temp file and rolls back when DB insert fails after storage upload', async () => {
+      storageService.upload = jest.fn().mockResolvedValue({
+        path: 'chefs/dev/uploads/file123',
+        storage: StorageTypes.OBJECT_STORAGE,
+      });
+      FileStorage.query = jest.fn().mockReturnValue({
+        insert: jest.fn().mockRejectedValue(new Error('DB insert failed')),
+      });
+      const deleteStorageSpy = jest.spyOn(service, 'deleteStorageObject').mockResolvedValue(true);
+
+      try {
+        await expect(service.create(validFileData, currentUser)).rejects.toThrow('DB insert failed');
+
+        expect(deleteStorageSpy).toHaveBeenCalled();
+        expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(validFileData.path, 'create-failure');
+        expect(mockTransaction.rollback).toHaveBeenCalled();
+      } finally {
+        deleteStorageSpy.mockRestore();
+      }
+    });
+
+    it('removes temp file when storage upload fails', async () => {
+      storageService.upload = jest.fn().mockRejectedValue(new Error('Storage upload failed'));
+
+      await expect(service.create(validFileData, currentUser)).rejects.toThrow('Storage upload failed');
+
+      expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(validFileData.path, 'create-failure');
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+    });
+
+    // Regression: a failure AFTER the transaction commits (e.g. the read-back
+    // hitting a transient DB error) must not undo committed work. Deleting the
+    // stored object here would orphan a committed file record, and rolling back
+    // an already-committed transaction is invalid.
+    it('does not delete the committed object or roll back when the post-commit read fails', async () => {
+      storageService.upload = jest.fn().mockResolvedValue({
+        path: 'chefs/dev/uploads/file123',
+        storage: StorageTypes.OBJECT_STORAGE,
+      });
+      // Insert (inside the txn) succeeds and the txn commits, but the read-back throws.
+      FileStorage.query = jest.fn().mockReturnValue({
+        insert: jest.fn().mockResolvedValue(mockFileStorage),
+        findById: jest.fn().mockReturnValue({
+          throwIfNotFound: jest.fn().mockRejectedValue(new Error('transient DB read error after commit')),
+        }),
+      });
+      const deleteStorageSpy = jest.spyOn(service, 'deleteStorageObject').mockResolvedValue(true);
+
+      try {
+        await expect(service.create(validFileData, currentUser)).rejects.toThrow('transient DB read error after commit');
+
+        // The record was committed...
+        expect(mockTransaction.commit).toHaveBeenCalled();
+        // ...so none of the compensation may run.
+        expect(mockTransaction.rollback).not.toHaveBeenCalled();
+        expect(deleteStorageSpy).not.toHaveBeenCalled();
+        expect(uploadCleanup.removeUploadedFile).not.toHaveBeenCalledWith(validFileData.path, 'create-failure');
+        // The object-storage temp cleanup still happens before the read (success path).
+        expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(validFileData.path, 'object-storage-upload-success');
+      } finally {
+        deleteStorageSpy.mockRestore();
+      }
+    });
+  });
+
   describe('security validation', () => {
     describe('error response when', () => {
       it('file has dangerous .exe extension', async () => {
@@ -61,6 +184,7 @@ describe('create', () => {
 
         expect(FileStorage.startTransaction).not.toHaveBeenCalled();
         expect(storageService.upload).not.toHaveBeenCalled();
+        expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(fileData.path, 'create-failure');
       });
 
       it('file has path traversal characters', async () => {
@@ -75,6 +199,7 @@ describe('create', () => {
 
         expect(FileStorage.startTransaction).not.toHaveBeenCalled();
         expect(storageService.upload).not.toHaveBeenCalled();
+        expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(fileData.path, 'create-failure');
       });
     });
 

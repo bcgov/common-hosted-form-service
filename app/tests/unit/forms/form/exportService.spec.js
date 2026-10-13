@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+const fs = require('fs-extra');
 
 const exportService = require('../../../../src/forms/form/exportService');
 const emailService = require('../../../../src/forms/email/emailService');
@@ -1046,5 +1047,56 @@ describe('_getSubmissions', () => {
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.modify).toBeCalledTimes(7);
     expect(MockModel.modify).toBeCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
+  });
+});
+
+describe('_submissionCSVExport email export (background flow)', () => {
+  const form = {
+    id: uuid.v4(),
+    snake: () => 'form',
+  };
+  const currentUser = { usernameIdp: 'PAT_TEST', email: 'pat.test@gov.bc.ca' };
+  const data = [{ a: '1', b: '2' }];
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('uploads the export then emails the download link', async () => {
+    fileService.create = jest.fn().mockResolvedValue({ id: 'file-1' });
+    let emailResolve;
+    const emailCalled = new Promise((resolve) => (emailResolve = resolve));
+    emailService.submissionExportLink = jest.fn().mockImplementation(async (...args) => emailResolve(args));
+
+    // Responds immediately while the upload+email happen in the background.
+    const result = await exportService._submissionCSVExport({}, form, data, true, currentUser);
+    expect(result.data).toBeNull();
+    expect(result.headers['content-type']).toBe('text/csv');
+
+    const emailArgs = await emailCalled;
+    expect(fileService.create).toHaveBeenCalledTimes(1);
+    // uploaded into the 'exports' folder
+    expect(fileService.create.mock.calls[0][2]).toBe('exports');
+    // email sent to the requester with the created file id
+    expect(emailArgs[0]).toBe(form.id);
+    expect(emailArgs[1]).toEqual({ to: 'pat.test@gov.bc.ca' });
+    expect(emailArgs[2]).toBe('file-1');
+  });
+
+  it('does not send the email and cleans up the temp file when the upload fails', async () => {
+    fileService.create = jest.fn().mockRejectedValue(new Error('upload boom'));
+    emailService.submissionExportLink = jest.fn().mockResolvedValue();
+    let removeResolve;
+    const removeCalled = new Promise((resolve) => (removeResolve = resolve));
+    const removeSpy = jest.spyOn(fs, 'remove').mockImplementation(async (p) => removeResolve(p));
+
+    // The failure is in the background work, so the caller still gets a response.
+    const result = await exportService._submissionCSVExport({}, form, data, true, currentUser);
+    expect(result.data).toBeNull();
+
+    const removedPath = await removeCalled;
+    expect(removedPath).toMatch(/\.csv$/);
+    expect(emailService.submissionExportLink).not.toHaveBeenCalled();
+    removeSpy.mockRestore();
   });
 });
