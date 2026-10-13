@@ -349,12 +349,20 @@ const service = {
         log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
       };
 
-      buildAndEmailExport().catch(async (err) => {
+      const onExportFailure = async (err) => {
         log.error('Export email pipeline failed', { ...logCtx, stage, err: err.message, stack: err.stack });
         // Best-effort cleanup: covers the pre-upload failure path where
         // fileService.create never ran and could not clean up itself.
-        await fs.remove(pathToTmpFile).catch((cleanupErr) => log.warn(`Could not remove temp export file ${pathToTmpFile}: ${cleanupErr.message}`));
-      });
+        try {
+          await fs.remove(pathToTmpFile);
+        } catch (cleanupErr) {
+          log.warn(`Could not remove temp export file ${pathToTmpFile}: ${cleanupErr.message}`);
+        }
+      };
+
+      // Deliberately not awaited: the export is emailed in the background and the
+      // request returns immediately.
+      buildAndEmailExport().catch(onExportFailure);
 
       return Promise.resolve({
         data: null,

@@ -215,6 +215,34 @@ describe('getUserForms', () => {
     expect(result[0].permissions).toContain('submission_read');
   });
 
+  it('asks CSTAR once per tenant, resolves every tenanted row, and leaves untenanted rows alone', async () => {
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [
+      { formId: 'f1', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] },
+      { formId: 'f1', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] },
+      { formId: 'f1', tenantId: 'tenant-2', idps: [], roles: [], permissions: [] },
+      { formId: 'f1', tenantId: null, idps: ['idir'], roles: ['owner'], permissions: ['form_read'] },
+    ];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'f1', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({
+      withGraphFetched: jest.fn().mockResolvedValue([{ code: 'submission_reviewer', permissions: [{ code: 'submission_read' }] }]),
+    });
+    jest.spyOn(FormGroup, 'query').mockReturnValue({ modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', roles: ['submission_reviewer'] }]);
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    const result = await service.getUserForms(userInfo, { formId: 'f1' }, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledTimes(2);
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-1');
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-2');
+    expect(result.slice(0, 3).map((i) => i.permissions)).toEqual([['submission_read'], ['submission_read'], ['submission_read']]);
+    expect(result[3]).toMatchObject({ roles: ['owner'], permissions: ['form_read'] });
+  });
+
   it('a tenanted form grants no roles when groups cannot be checked, instead of falling back to legacy team roles', async () => {
     // Migration leaves form_role_user in place. If those rows were honoured whenever the
     // group check could not run, the old team would keep the access the migration screen

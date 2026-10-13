@@ -700,37 +700,58 @@ class TenantService {
       throw Object.assign(new Error(`${SERVICE}: user has no form_admin groups in this tenant`), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
     }
 
-    let finalGroupIds;
-    if (Array.isArray(groupIds) && groupIds.length > 0) {
-      const uniqueGroupIds = [...new Set(groupIds)];
-
-      const malformed = uniqueGroupIds.filter((id) => typeof id !== 'string' || !uuid.validate(id));
-      if (malformed.length > 0) {
-        throw Object.assign(new Error('One or more group IDs are not valid identifiers.'), { code: 'INVALID_GROUP' });
-      }
-
-      // Membership of a form_admin group proves the user may migrate, but says nothing
-      // about the other IDs in the list. Without checking them against the target tenant,
-      // a group from another tenant (or any random UUID) lands in form_group and later
-      // surfaces as "Group no longer available".
-      const tenantGroups = await this.getGroupsForCurrentTenant(reqContext);
-      const tenantGroupIds = new Set(tenantGroups.map((g) => g.id));
-      const foreign = uniqueGroupIds.filter((id) => !tenantGroupIds.has(id));
-      if (foreign.length > 0) {
-        throw Object.assign(new Error('One or more groups do not belong to the selected tenant.'), { code: 'INVALID_GROUP' });
-      }
-
-      const adminGroupIds = new Set(adminGroups.map((g) => g.id));
-      if (!uniqueGroupIds.some((id) => adminGroupIds.has(id))) {
-        throw Object.assign(new Error(`${SERVICE}: at least one assigned group must have form_admin role`), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
-      }
-      finalGroupIds = uniqueGroupIds;
-    } else {
-      finalGroupIds = adminGroups.map((g) => g.id);
-    }
-
+    const finalGroupIds = await this._resolveMigrationGroupIds(reqContext, adminGroups, groupIds);
     const createdBy = req.currentUser.usernameIdp || req.currentUser.username;
 
+    await this._writeMigrationRecords({ formId, tenantId, groupIds: finalGroupIds, createdBy });
+  }
+
+  /**
+   * Decides which groups a migration assigns. With no explicit list, every form_admin
+   * group the user holds in the tenant is used. An explicit list is de-duplicated and
+   * must be well-formed, belong to the tenant, and include one of the user's form_admin
+   * groups.
+   * @param {object} reqContext - Request context with currentUser.tenantId set
+   * @param {Array} adminGroups - The user's form_admin groups in the tenant
+   * @param {string[]|null} groupIds - Explicit group IDs from the request, if any
+   * @returns {Promise<string[]>}
+   * @throws {Error} code INVALID_GROUP or FORM_ADMIN_GROUP_REQUIRED
+   */
+  async _resolveMigrationGroupIds(reqContext, adminGroups, groupIds) {
+    if (!Array.isArray(groupIds) || groupIds.length === 0) {
+      return adminGroups.map((g) => g.id);
+    }
+
+    const uniqueGroupIds = [...new Set(groupIds)];
+
+    const malformed = uniqueGroupIds.filter((id) => typeof id !== 'string' || !uuid.validate(id));
+    if (malformed.length > 0) {
+      throw Object.assign(new Error('One or more group IDs are not valid identifiers.'), { code: 'INVALID_GROUP' });
+    }
+
+    // Membership of a form_admin group proves the user may migrate, but says nothing
+    // about the other IDs in the list. Without checking them against the target tenant,
+    // a group from another tenant (or any random UUID) lands in form_group and later
+    // surfaces as "Group no longer available".
+    const tenantGroups = await this.getGroupsForCurrentTenant(reqContext);
+    const tenantGroupIds = new Set(tenantGroups.map((g) => g.id));
+    const foreign = uniqueGroupIds.filter((id) => !tenantGroupIds.has(id));
+    if (foreign.length > 0) {
+      throw Object.assign(new Error('One or more groups do not belong to the selected tenant.'), { code: 'INVALID_GROUP' });
+    }
+
+    const adminGroupIds = new Set(adminGroups.map((g) => g.id));
+    if (!uniqueGroupIds.some((id) => adminGroupIds.has(id))) {
+      throw Object.assign(new Error(`${SERVICE}: at least one assigned group must have form_admin role`), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
+    }
+    return uniqueGroupIds;
+  }
+
+  /**
+   * Inserts form_tenant, form_group and form_migration_log rows in one transaction.
+   * @throws {Error} code ALREADY_MIGRATED if another migration of the form won the race
+   */
+  async _writeMigrationRecords({ formId, tenantId, groupIds, createdBy }) {
     try {
       await FormGroup.transaction(async (trx) => {
         // Serialise concurrent migrations of the same form: the second transaction waits
@@ -743,7 +764,7 @@ class TenantService {
         }
 
         await FormTenant.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
-        await FormGroup.query(trx).insert(finalGroupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
+        await FormGroup.query(trx).insert(groupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
         await FormMigrationLog.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
       });
     } catch (error) {

@@ -21,6 +21,57 @@ const _handleMigrationError = (error, res, next) => {
 const BCEID_IDP_CODES = new Set(['bceid-basic', 'bceid-business']);
 const BCEID_BASIC_IDP_CODE = 'bceid-basic';
 
+/**
+ * Validates the migrateForm request body.
+ * @returns {{ status: number, body: object } | null} the 400 response to send, or null if valid.
+ */
+const _validateMigrateFormBody = ({ tenantId, groupIds }) => {
+  if (!tenantId) return { status: 400, body: { detail: 'tenantId is required.' } };
+  if (!uuid.validate(tenantId)) return { status: 400, body: { detail: 'tenantId is not a valid identifier.' } };
+  if (groupIds !== undefined && !Array.isArray(groupIds)) {
+    return { status: 400, body: { detail: 'groupIds must be an array.' } };
+  }
+  // An empty array is a request to assign nothing, which is not the same as omitting
+  // the field. Silently substituting every form_admin group assigned access the
+  // caller never asked for, and contradicted the UI's own "pick a group" rule.
+  if (Array.isArray(groupIds) && groupIds.length === 0) {
+    return { status: 400, body: { detail: 'At least one group must be assigned.', code: 'INVALID_GROUP' } };
+  }
+  return null;
+};
+
+// Validation failures raised by tenantService.migrateFormToTenant, passed through as 400s.
+const MIGRATE_VALIDATION_CODES = new Set(['INVALID_GROUP', 'FORM_ADMIN_GROUP_REQUIRED']);
+const CSTAR_NETWORK_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT']);
+const CSTAR_UNAVAILABLE_STATUSES = new Set([500, 502, 503, 504]);
+
+/**
+ * Maps a CSTAR transport or HTTP failure to the response the client should see.
+ * @returns {{ status: number, body: object } | null} null when the error did not come from CSTAR.
+ */
+const _cstarErrorResponse = (error) => {
+  if (error.code === 'ECONNABORTED') {
+    return { status: 503, body: { detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' } };
+  }
+  const cstarStatus = error?.response?.status;
+  if (CSTAR_NETWORK_ERROR_CODES.has(error.code) || CSTAR_UNAVAILABLE_STATUSES.has(cstarStatus)) {
+    return { status: 503, body: { detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' } };
+  }
+  if (cstarStatus === 401) return { status: 401, body: { detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' } };
+  if (cstarStatus === 403) return { status: 403, body: { detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' } };
+  return null;
+};
+
+/**
+ * Maps a migrateForm failure to a client response.
+ * @returns {{ status: number, body: object } | null} null when the generic handler should take it.
+ */
+const _migrateFormErrorResponse = (error) => {
+  if (error.code === 'ALREADY_MIGRATED') return { status: 400, body: { detail: 'Form is already migrated to a tenant.', code: error.code } };
+  if (MIGRATE_VALIDATION_CODES.has(error.code)) return { status: 400, body: { detail: error.message, code: error.code } };
+  return _cstarErrorResponse(error);
+};
+
 // Shared mapping for a raw CSTAR user object → RBAC response shape.
 async function _mapCstarUser(user) {
   const ssoUser = user?.ssoUser || {};
@@ -440,8 +491,8 @@ module.exports = {
         impact: {
           team: Array.from(userMap.values()).map(({ roleSet, ...rest }) => ({ ...rest, roles: [...roleSet] })),
           submissions: {
-            total: parseInt(stats.total || '0', 10),
-            drafts: parseInt(stats.drafts || '0', 10),
+            total: Number.parseInt(stats.total || '0', 10),
+            drafts: Number.parseInt(stats.drafts || '0', 10),
             // Count is derived from the list so the figure and the names can never disagree.
             withShareUsers: sharedUsers.length,
           },
@@ -459,31 +510,14 @@ module.exports = {
       const { formId } = req.params;
       const { tenantId, groupIds } = req.body;
 
-      if (!tenantId) return res.status(400).json({ detail: 'tenantId is required.' });
-      if (!uuid.validate(tenantId)) return res.status(400).json({ detail: 'tenantId is not a valid identifier.' });
-      if (groupIds !== undefined && !Array.isArray(groupIds)) {
-        return res.status(400).json({ detail: 'groupIds must be an array.' });
-      }
-      // An empty array is a request to assign nothing, which is not the same as omitting
-      // the field. Silently substituting every form_admin group assigned access the
-      // caller never asked for, and contradicted the UI's own "pick a group" rule.
-      if (Array.isArray(groupIds) && groupIds.length === 0) {
-        return res.status(400).json({ detail: 'At least one group must be assigned.', code: 'INVALID_GROUP' });
-      }
+      const invalid = _validateMigrateFormBody({ tenantId, groupIds });
+      if (invalid) return res.status(invalid.status).json(invalid.body);
 
       await tenantService.migrateFormToTenant(req, formId, tenantId, groupIds || null);
       res.status(200).json({ message: 'Form migrated successfully.' });
     } catch (error) {
-      if (error.code === 'ALREADY_MIGRATED') return res.status(400).json({ detail: 'Form is already migrated to a tenant.', code: error.code });
-      if (error.code === 'INVALID_GROUP') return res.status(400).json({ detail: error.message, code: error.code });
-      if (error.code === 'FORM_ADMIN_GROUP_REQUIRED') return res.status(400).json({ detail: error.message, code: error.code });
-      if (error.code === 'ECONNABORTED')
-        return res.status(503).json({ detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' });
-      const cstarStatus = error?.response?.status;
-      const isCstarNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error.code) || [500, 502, 503, 504].includes(cstarStatus);
-      if (isCstarNetworkError) return res.status(503).json({ detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' });
-      if (cstarStatus === 401) return res.status(401).json({ detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' });
-      if (cstarStatus === 403) return res.status(403).json({ detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' });
+      const mapped = _migrateFormErrorResponse(error);
+      if (mapped) return res.status(mapped.status).json(mapped.body);
       return _handleMigrationError(error, res, next);
     }
   },

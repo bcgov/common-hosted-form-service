@@ -131,6 +131,49 @@ const service = {
     item.permissions = [...new Set(permissions)];
   },
 
+  /**
+   * Replaces the roles/permissions of tenanted form-access rows with the user's group
+   * roles in each form's tenant. Rows for forms with no tenant are left untouched.
+   *
+   * CSTAR is asked once per distinct tenant (not once per row), and the per-row group
+   * lookups are independent of each other, so both steps run in parallel.
+   *
+   * @param {object} userInfo the current user
+   * @param {object|null} headers request headers, forwarded to CSTAR for auth
+   * @param {object[]} items user form access rows, updated in place
+   * @param {object[]} allRoles every role with its permissions
+   */
+  resolveTenantRolesForItems: async (userInfo, headers, items, allRoles) => {
+    const tenantItems = items.filter((item) => item?.tenantId);
+    if (tenantItems.length === 0) return;
+
+    if (!headers) {
+      // Once a form belongs to a tenant, its management access comes from that
+      // tenant's groups and nowhere else. With no headers we cannot ask CSTAR, so
+      // fall through to no roles rather than honouring the form_role_user rows
+      // migration deliberately left behind — otherwise the old team keeps the
+      // access the UI told them they had lost.
+      for (const item of tenantItems) {
+        item.roles = [];
+        item.permissions = [];
+      }
+      return;
+    }
+
+    // One lookup per tenant; the first row seen for a tenant names it in the log line.
+    const firstItemByTenant = new Map();
+    for (const item of tenantItems) {
+      if (!firstItemByTenant.has(item.tenantId)) firstItemByTenant.set(item.tenantId, item);
+    }
+    const userGroupsByTenant = new Map(
+      await Promise.all(
+        [...firstItemByTenant.values()].map(async (item) => [item.tenantId, await service.fetchTenantGroupRoles(userInfo, headers, item.tenantId, `form ${item.formId}`)])
+      )
+    );
+
+    await Promise.all(tenantItems.map((item) => service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles)));
+  },
+
   getUserForms: async (userInfo, params = {}, headers = null) => {
     params = queryUtils.defaultActiveOnly(params);
     let items = [];
@@ -155,9 +198,8 @@ const service = {
       const userGroups = await service.fetchTenantGroupRoles(userInfo, headers, userInfo.tenantId, 'selected tenant');
       const allRoles = await Role.query().withGraphFetched('permissions');
 
-      for (const item of items) {
-        await service.populateItemWithTenantRoles(item, userGroups, allRoles);
-      }
+      // One CSTAR lookup above covers every row; the per-row group reads are independent.
+      await Promise.all(items.map((item) => service.populateItemWithTenantRoles(item, userGroups, allRoles)));
 
       return service.filterForms(userInfo, items, params.accessLevels);
     } else {
@@ -187,27 +229,8 @@ const service = {
       // group roles were never resolved for migrated forms, so group members fell through
       // to the default {submission_create, form_read} row and were denied submission_read.
       if (params.formId) {
-        const userGroupsByTenant = new Map();
         const allRoles = await Role.query().withGraphFetched('permissions');
-        for (const item of items) {
-          if (item && item.tenantId) {
-            if (!headers) {
-              // Once a form belongs to a tenant, its management access comes from that
-              // tenant's groups and nowhere else. With no headers we cannot ask CSTAR, so
-              // fall through to no roles rather than honouring the form_role_user rows
-              // migration deliberately left behind — otherwise the old team keeps the
-              // access the UI told them they had lost.
-              item.roles = [];
-              item.permissions = [];
-              continue;
-            }
-            if (!userGroupsByTenant.has(item.tenantId)) {
-              const userGroups = await service.fetchTenantGroupRoles(userInfo, headers, item.tenantId, `form ${item.formId}`);
-              userGroupsByTenant.set(item.tenantId, userGroups);
-            }
-            await service.populateItemWithTenantRoles(item, userGroupsByTenant.get(item.tenantId), allRoles);
-          }
-        }
+        await service.resolveTenantRolesForItems(userInfo, headers, items, allRoles);
       }
 
       // filterForms re-adds FORM_SUBMITTER (form_read, submission_create,

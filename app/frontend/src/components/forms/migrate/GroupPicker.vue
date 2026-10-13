@@ -22,13 +22,14 @@ function roleLabel(role) {
 
 // The current user's roles in a group, Form Admin first since it is the role the
 // migration requires. Falls back to isFormAdmin if userRoles is absent.
+function rawGroupRoles(group) {
+  if (Array.isArray(group.userRoles)) return [...new Set(group.userRoles)];
+  if (group.isFormAdmin) return ['form_admin'];
+  return [];
+}
+
 function groupRoles(group) {
-  const roles = Array.isArray(group.userRoles)
-    ? [...new Set(group.userRoles)]
-    : group.isFormAdmin
-    ? ['form_admin']
-    : [];
-  return roles.sort(
+  return rawGroupRoles(group).sort(
     (a, b) =>
       (b === 'form_admin') - (a === 'form_admin') ||
       roleLabel(a).localeCompare(roleLabel(b))
