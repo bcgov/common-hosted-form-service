@@ -643,6 +643,15 @@ describe('Migrate.vue', () => {
       expect(source).toMatch(/v-expansion-panels[\s\S]{0,160}:model-value="\[0\]"/);
     });
 
+    it('renders the confirm dialog primary action as a filled button', () => {
+      // v-card-actions defaults buttons to the text variant, which made "Migrate form"
+      // look no different from Cancel.
+      const source = readFileSync(resolve(__dirname, '../../../../src/views/form/Migrate.vue'), 'utf8');
+      const button = source.slice(source.lastIndexOf('<v-btn', source.indexOf('@click="confirmMigration"')), source.indexOf('@click="confirmMigration"'));
+
+      expect(button).toContain('variant="flat"');
+    });
+
     it('shows the migration details card after a successful migration', async () => {
       rbacService.executeMigration.mockResolvedValue({});
       const wrapper = mountComponent();

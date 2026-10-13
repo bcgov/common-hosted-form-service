@@ -268,4 +268,45 @@ describe('ManageLayout.vue', () => {
       expect(selectSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('tenancy chip icon', () => {
+    // The forms list marks migrated forms with the swap icon; the Manage page must use
+    // the same one for "Migrated", keeping the group icon for forms created in a tenant.
+    async function chipIcon(form) {
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = false;
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = form;
+      });
+      const wrapper = mount(ManageLayout, {
+        props: { f: 'f' },
+        global: {
+          plugins: [router, pinia],
+          stubs: { ManageFormActions: true, ManageForm: true },
+        },
+      });
+      await flushPromises();
+      return wrapper.find('.v-chip .v-icon').classes().join(' ');
+    }
+
+    it('uses the swap icon for a migrated form', async () => {
+      const classes = await chipIcon({
+        id: 'f',
+        name: 'Migrated Form',
+        tenantId: 'tenant-1',
+        migration: { createdAt: '2026-10-13T21:04:08Z', createdBy: 'X@idir' },
+      });
+      expect(classes).toContain('mdi-swap-horizontal-bold');
+    });
+
+    it('uses the group icon for a form created in a tenant', async () => {
+      const classes = await chipIcon({
+        id: 'f',
+        name: 'Tenant Form',
+        tenantId: 'tenant-1',
+        migration: null,
+      });
+      expect(classes).toContain('mdi-account-group');
+    });
+  });
 });

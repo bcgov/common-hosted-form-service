@@ -1382,8 +1382,11 @@ defineExpose({
             </p>
           </v-card-text>
           <v-card-actions class="justify-end pb-4 px-4">
+            <!-- flat: inside v-card-actions Vuetify defaults buttons to the text variant,
+                 which made the primary action look no different from Cancel. -->
             <v-btn
               color="primary"
+              variant="flat"
               :loading="submitting"
               :lang="locale"
               @click="confirmMigration"

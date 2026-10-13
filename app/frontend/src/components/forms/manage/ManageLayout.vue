@@ -110,7 +110,11 @@ function resolveTenantContext() {
                 size="small"
                 color="primary"
                 variant="tonal"
-                prepend-icon="mdi:mdi-account-group"
+                :prepend-icon="
+                  form.migration
+                    ? 'mdi:mdi-swap-horizontal-bold'
+                    : 'mdi:mdi-account-group'
+                "
                 :lang="locale"
               >
                 {{
