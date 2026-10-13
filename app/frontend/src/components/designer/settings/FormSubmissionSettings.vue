@@ -257,6 +257,6 @@ const submissionReceivedEmailRules = computed(() =>
       </v-combobox>
     </div>
 
-    <SubmissionPackageEmailSettings />
+    <SubmissionPackageEmailSettings v-if="form.id" />
   </BasePanel>
 </template>
