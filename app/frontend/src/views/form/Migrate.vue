@@ -9,6 +9,7 @@ import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useTenantStore } from '~/store/tenant';
+import { TenantRoles } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
@@ -458,6 +459,17 @@ async function loadMigrationRecord() {
   }
 }
 
+// The migration preview's tenants carry only { id, name, groups }, but the Manage page
+// decides what to offer from the selected tenant's `roles` (Group Management needs
+// form_admin). Select the store's full entry instead; if the tenant list has not loaded,
+// eligibility already guarantees form_admin, so record at least that.
+function tenantToSelect(tenant) {
+  const known = tenantStore.getTenantById?.(tenant.id);
+  if (known) return known;
+  const roles = new Set([...(tenant.roles || []), TenantRoles.FORM_ADMIN]);
+  return { ...tenant, roles: [...roles] };
+}
+
 async function submitMigration() {
   submitting.value = true;
   error.value = null;
@@ -481,7 +493,7 @@ async function submitMigration() {
       migratedBy: null,
       migratedAt: null,
     };
-    tenantStore.selectTenant(selectedTenant.value);
+    tenantStore.selectTenant(tenantToSelect(selectedTenant.value));
     migrated.value = true;
     // Who migrated it and when come from form_migration_log rather than the browser
     // clock, so the record shown matches the record stored.

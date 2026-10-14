@@ -1187,6 +1187,40 @@ describe('Migrate.vue', () => {
       expect(tenantStore.selectTenant).toHaveBeenCalledWith(MOCK_TENANT);
     });
 
+    describe('tenant selected after migration', () => {
+      // The preview's eligible tenants carry no `roles`, but the Manage page offers
+      // Group Management from the selected tenant's roles. Selecting the bare preview
+      // object hid that button until the user switched tenants by hand.
+      const PREVIEW_TENANT = { id: 'tenant-1', name: 'Tenant One', groups: [] };
+
+      async function migrate() {
+        rbacService.getMigrationPreview.mockResolvedValueOnce({
+          data: { ...MOCK_PREPARE_RESPONSE.data, eligibleTenants: [PREVIEW_TENANT] },
+        });
+        const wrapper = mountComponent();
+        await flushPromises();
+        wrapper.vm.selectedTenantId = 'tenant-1';
+        await flushPromises();
+        await wrapper.vm.submitMigration();
+        return tenantStore.selectTenant.mock.calls.at(-1)[0];
+      }
+
+      it('selects the full tenant entry, with its roles, when the store has it', async () => {
+        const full = { id: 'tenant-1', name: 'Tenant One', roles: ['form_admin', 'submission_reviewer'] };
+        tenantStore.tenants = [full];
+
+        expect(await migrate()).toEqual(full);
+      });
+
+      it('still records form_admin when the tenant list has not loaded', async () => {
+        tenantStore.tenants = [];
+
+        const selected = await migrate();
+        expect(selected.id).toBe('tenant-1');
+        expect(selected.roles).toContain('form_admin');
+      });
+    });
+
     it('shows the result screen on success instead of redirecting away', async () => {
       // Migration is irreversible and reassigns access — the user needs to be told what
       // happened and who still needs a group, not silently dropped on another page.
