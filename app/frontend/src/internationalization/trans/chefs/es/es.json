@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "Mis formularios",
     "groupForms": "Formularios de Grupo",
+    "groupAccessChip": "Acceso por grupo",
     "createNewForm": "Crear un nuevo formulario",
     "search": "Buscar",
     "manage": "Administrar",
@@ -39,7 +40,12 @@
     "noDataText": "No se encontraron formularios"
   },
   "manageLayout": {
-    "manageForm": "Administrar formulario"
+    "manageForm": "Administrar formulario",
+    "tenantChip": "Acceso por grupo",
+    "tenantChipTooltip": "El acceso a este formulario está controlado por los grupos del inquilino.",
+    "migratedChip": "Migrado",
+    "migratedChipTooltip": "Migrado a este inquilino el {date} por {by}. El acceso ahora está controlado por los grupos del inquilino.",
+    "switchedToTenant": "Se cambió a {tenant}: este formulario pertenece a ese inquilino."
   },
   "preview": {
     "preview": "Avance",
@@ -1011,7 +1017,11 @@
     "leave": "Salir",
     "selectAll": "Seleccionar todo",
     "addSelected": "Agregar seleccionados",
+    "addAll": "Agregar todos",
     "removeSelected": "Eliminar seleccionados",
+    "removeAll": "Eliminar todos",
+    "noGroups": "No hay grupos disponibles",
+    "noSearchResults": "Ningún grupo coincide con su búsqueda",
     "formAdminGroupRequired": "Al menos un grupo asignado debe tener el rol form_admin.",
     "invalidGroupIds": "Uno o más grupos seleccionados no son válidos para este inquilino.",
     "insufficientPermissions": "No tiene permiso para gestionar las asociaciones de grupos."

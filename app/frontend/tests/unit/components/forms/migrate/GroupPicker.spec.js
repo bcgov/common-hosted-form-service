@@ -77,3 +77,26 @@ describe('GroupPicker.vue', () => {
     ]);
   });
 });
+
+describe('GroupPicker.vue disabled', () => {
+  it('emits no changes while disabled, even if a move is triggered', async () => {
+    const wrapper = mount(GroupPicker, {
+      props: {
+        disabled: true,
+        available: [{ id: 'g1', name: 'Readers', userRoles: [] }],
+        assigned: [{ id: 'g2', name: 'Admins', isFormAdmin: true, userRoles: ['form_admin'] }],
+      },
+    });
+
+    const buttons = wrapper.findAll('.arrows-col button');
+    expect(buttons.length).toBe(4);
+    for (const b of buttons) {
+      expect(b.attributes('disabled')).toBeDefined();
+    }
+    expect(wrapper.find('[aria-disabled="true"]').exists()).toBe(true);
+
+    // Even a programmatic click must not change the assignment.
+    for (const b of buttons) await b.trigger('click');
+    expect(wrapper.emitted('update:assigned')).toBeUndefined();
+  });
+});

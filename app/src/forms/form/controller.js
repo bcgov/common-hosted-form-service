@@ -1,3 +1,4 @@
+const config = require('config');
 const { validate } = require('uuid');
 
 const docGenService = require('../../components/docGenService');
@@ -54,10 +55,14 @@ module.exports = {
   },
   readForm: async (req, res, next) => {
     try {
-      const response = await service.readForm(req.params.formId, req.query, req.apiUser ? null : req.currentUser, req.headers);
       // Tenancy is attached here rather than inside readForm: readForm is reused on hot
-      // internal paths (listFormSubmissions) that must not pay for the extra queries.
-      const tenancy = await service.readFormTenancy(req.params.formId);
+      // internal paths (listFormSubmissions) that must not pay for the extra queries. It
+      // only exists with the tenant feature on; otherwise the fields are null so the
+      // response shape does not change.
+      const [response, tenancy] = await Promise.all([
+        service.readForm(req.params.formId, req.query, req.apiUser ? null : req.currentUser, req.headers),
+        config.get('cstar.tenantFeatureEnabled') ? service.readFormTenancy(req.params.formId) : { tenantId: null, migration: null },
+      ]);
       const body = typeof response?.toJSON === 'function' ? response.toJSON() : response;
       res.status(200).json({ ...body, ...tenancy });
     } catch (error) {

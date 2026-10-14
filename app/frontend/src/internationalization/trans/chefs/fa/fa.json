@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "فرم های من",
     "groupForms": "فرم‌های گروهی",
+    "groupAccessChip": "دسترسی گروهی",
     "createNewForm": "یک فرم جدید ایجاد کنید",
     "search": "جستجو کردن",
     "manage": "مدیریت کنید",
@@ -39,7 +40,12 @@
     "noDataText": "هیچ فرمی یافت نشد"
   },
   "manageLayout": {
-    "manageForm": "مدیریت فرم"
+    "manageForm": "مدیریت فرم",
+    "tenantChip": "دسترسی گروهی",
+    "tenantChipTooltip": "دسترسی به این فرم توسط گروه‌های مستأجر کنترل می‌شود.",
+    "migratedChip": "منتقل‌شده",
+    "migratedChipTooltip": "در تاریخ {date} توسط {by} به این مستأجر منتقل شد. دسترسی اکنون توسط گروه‌های مستأجر کنترل می‌شود.",
+    "switchedToTenant": "به {tenant} تغییر کرد — این فرم متعلق به آن مستأجر است."
   },
   "preview": {
     "preview": "پیش نمایش",
@@ -1011,7 +1017,11 @@
     "leave": "خروج",
     "selectAll": "انتخاب همه",
     "addSelected": "افزودن انتخاب‌شده‌ها",
+    "addAll": "افزودن همه",
     "removeSelected": "حذف انتخاب‌شده‌ها",
+    "removeAll": "حذف همه",
+    "noGroups": "هیچ گروهی در دسترس نیست",
+    "noSearchResults": "هیچ گروهی با جستجوی شما مطابقت ندارد",
     "formAdminGroupRequired": "حداقل یک گروه اختصاص‌یافته باید نقش form_admin داشته باشد.",
     "invalidGroupIds": "یک یا چند گروه انتخاب‌شده برای این مستأجر معتبر نیستند.",
     "insufficientPermissions": "شما مجوز مدیریت ارتباطات گروه را ندارید."

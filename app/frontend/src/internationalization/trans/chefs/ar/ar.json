@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "نماذجي",
     "groupForms": "نماذج المجموعة",
+    "groupAccessChip": "وصول المجموعة",
     "createNewForm": "قم بإنشاء نموذج جديد",
     "search": "يبحث",
     "manage": "يدير",
@@ -39,7 +40,12 @@
     "noDataText": "لم يتم العثور على نماذج"
   },
   "manageLayout": {
-    "manageForm": "إدارة النموذج"
+    "manageForm": "إدارة النموذج",
+    "tenantChip": "وصول المجموعة",
+    "tenantChipTooltip": "يتم التحكم في الوصول إلى هذا النموذج من خلال مجموعات المستأجر.",
+    "migratedChip": "تم الترحيل",
+    "migratedChipTooltip": "تم الترحيل إلى هذا المستأجر بتاريخ {date} بواسطة {by}. يتم التحكم في الوصول الآن من خلال مجموعات المستأجر.",
+    "switchedToTenant": "تم التبديل إلى {tenant} — ينتمي هذا النموذج إلى ذلك المستأجر."
   },
   "preview": {
     "preview": "معاينة",
@@ -1011,7 +1017,11 @@
     "leave": "مغادرة",
     "selectAll": "تحديد الكل",
     "addSelected": "إضافة المحدد",
+    "addAll": "إضافة الكل",
     "removeSelected": "إزالة المحدد",
+    "removeAll": "إزالة الكل",
+    "noGroups": "لا توجد مجموعات متاحة",
+    "noSearchResults": "لا توجد مجموعات تطابق بحثك",
     "formAdminGroupRequired": "يجب أن تمتلك مجموعة واحدة على الأقل دور form_admin.",
     "invalidGroupIds": "واحدة أو أكثر من المجموعات المحددة غير صالحة لهذا المستأجر.",
     "insufficientPermissions": "ليس لديك الإذن لإدارة ارتباطات المجموعة."

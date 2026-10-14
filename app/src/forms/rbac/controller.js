@@ -49,13 +49,16 @@ const CSTAR_UNAVAILABLE_STATUSES = new Set([500, 502, 503, 504]);
  * Maps a CSTAR transport or HTTP failure to the response the client should see.
  * @returns {{ status: number, body: object } | null} null when the error did not come from CSTAR.
  */
+// Not 503: the frontend's global interceptor treats any 503 as "CHEFS is down" and shows
+// the full-screen service-unavailable overlay. A CSTAR problem is a gateway failure (502)
+// or a gateway timeout (504), which the migration page reports inline.
 const _cstarErrorResponse = (error) => {
   if (error.code === 'ECONNABORTED') {
-    return { status: 503, body: { detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' } };
+    return { status: 504, body: { detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' } };
   }
   const cstarStatus = error?.response?.status;
   if (CSTAR_NETWORK_ERROR_CODES.has(error.code) || CSTAR_UNAVAILABLE_STATUSES.has(cstarStatus)) {
-    return { status: 503, body: { detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' } };
+    return { status: 502, body: { detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' } };
   }
   if (cstarStatus === 401) return { status: 401, body: { detail: 'Your session has expired. Please refresh the page and try again.', code: 'SESSION_EXPIRED' } };
   if (cstarStatus === 403) return { status: 403, body: { detail: 'Insufficient permissions in CSTAR.', code: 'CSTAR_FORBIDDEN' } };
@@ -367,6 +370,8 @@ module.exports = {
       if (error.code === 'TENANT_NOT_ELIGIBLE') {
         return res.status(403).json({ detail: error.message, code: error.code });
       }
+      const mapped = _cstarErrorResponse(error);
+      if (mapped) return res.status(mapped.status).json(mapped.body);
       return _handleMigrationError(error, res, next);
     }
   },
@@ -402,7 +407,9 @@ module.exports = {
       const [form, eligibleTenants, teamMembers, submissionStatsResult, shareUsersResult] = await Promise.all([
         Form.query().findById(formId).select('id', 'name'),
         tenantService.getEligibleTenantsForMigration(req, { bypassCache }),
-        service.getFormUsers({ formId }),
+        // roles '*' keeps only users with at least one explicit role on this form; without
+        // it user_form_access returns a row for every CHEFS user.
+        service.getFormUsers({ formId, roles: '*' }),
         // Submitted vs draft is decided by status history, not the draft flag: sending a
         // submission back for revision sets draft = true (submission/service.js
         // changeStatusState), so a REVISING submission would otherwise count as a draft.
@@ -454,13 +461,9 @@ module.exports = {
         ),
       ]);
 
-      // user_form_roles_vw UNIONs every user with roles={} for forms they have no
-      // explicit entry on — filter those out so only real team members appear.
-      const explicitTeamMembers = teamMembers.filter((m) => Array.isArray(m.roles) && m.roles.length > 0);
-
       // Build a unique-user map; use a Set per entry to deduplicate roles in O(1).
       const userMap = new Map();
-      for (const m of explicitTeamMembers) {
+      for (const m of teamMembers) {
         if (!userMap.has(m.email)) {
           userMap.set(m.email, {
             email: m.email,

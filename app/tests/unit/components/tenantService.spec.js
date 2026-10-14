@@ -244,6 +244,15 @@ describe('TenantService', () => {
       expect(result).toEqual({ belongs: false, degraded: true });
     });
 
+    it('returns degraded=true on a CSTAR timeout (ECONNABORTED) instead of throwing a 500', async () => {
+      jwtService.getBearerToken.mockReturnValue('testtoken');
+      mockAxios.onGet(apiUrl).reply(() => Promise.reject(Object.assign(new Error('timeout of 15000ms exceeded'), { code: 'ECONNABORTED' })));
+
+      const result = await tenantService.verifyTenantMembership(req, tenantId);
+
+      expect(result).toEqual({ belongs: false, degraded: true });
+    });
+
     it('throws on 401', async () => {
       jwtService.getBearerToken.mockReturnValue('testtoken');
       mockAxios.onGet(apiUrl).reply(401, { error: 'Unauthorized' });
@@ -1843,22 +1852,19 @@ describe('TenantService', () => {
       headers: { authorization: 'Bearer token' },
     };
 
-    it('returns only tenants where the user has form_admin, with groups filtered to form_admin', async () => {
+    it('returns only tenants where the user has form_admin, as { id, name }, with no extra CSTAR calls', async () => {
       jest.spyOn(tenantService, 'getCurrentUserTenants').mockResolvedValue([
         { id: tenantId1, name: 'Tenant A', roles: ['form_admin'] },
         { id: tenantId2, name: 'Tenant B', roles: ['form_viewer'] },
       ]);
-      jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([
-        { id: 'group-1', name: 'Admins', roles: ['form_admin'] },
-        { id: 'group-2', name: 'Viewers', roles: ['form_viewer'] },
-      ]);
+      // getCurrentUserTenants already read each tenant's groups to derive roles; a second
+      // per-tenant round is wasted CSTAR traffic.
+      const groupsSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles');
 
       const result = await tenantService.getEligibleTenantsForMigration(req);
 
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(tenantId1);
-      expect(result[0].name).toBe('Tenant A');
-      expect(result[0].groups).toEqual([{ id: 'group-1', name: 'Admins', roles: ['form_admin'] }]);
+      expect(result).toEqual([{ id: tenantId1, name: 'Tenant A' }]);
+      expect(groupsSpy).not.toHaveBeenCalled();
     });
 
     it('returns empty array when user has no tenants with form_admin role', async () => {
@@ -1886,6 +1892,20 @@ describe('TenantService', () => {
 
   describe('getMigrationTenantGroups', () => {
     const tenantId = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
+
+    it('rethrows a CSTAR 401 instead of reporting the user as not a Form Admin', async () => {
+      FormTenant.knex = jest.fn().mockReturnValue({ raw: jest.fn().mockResolvedValue({ rows: [] }) });
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([]);
+      const groupsSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(Object.assign(new Error('Unauthorized'), { response: { status: 401 } }));
+      const req = { currentUser: { idpUserId: 'user-sso-id' }, headers: { authorization: 'Bearer token' } };
+
+      const err = await tenantService.getMigrationTenantGroups(req, 'ffffffff-ffff-ffff-ffff-ffffffffffff', tenantId).catch((e) => e);
+
+      expect(groupsSpy).toHaveBeenCalledWith(expect.anything(), tenantId, { rethrowOnAuthError: true });
+      expect(err.response.status).toBe(401);
+      expect(err.code).not.toBe('TENANT_NOT_ELIGIBLE');
+    });
+
     const formId = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
     const req = {
       currentUser: { idpUserId: 'user-sso-id', usernameIdp: 'TEST@idir' },
@@ -2153,6 +2173,26 @@ describe('TenantService', () => {
 
       expect(hits).toBe(1);
     });
+
+    it('reads at most 5 groups at once and still returns every group in order', async () => {
+      let inFlight = 0;
+      let maxInFlight = 0;
+      jest.spyOn(tenantService, 'getGroupMembers').mockImplementation(async (_req, _tenantId, groupId) => {
+        inFlight += 1;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        inFlight -= 1;
+        if (groupId === 'g3') throw new Error('boom');
+        return [{ ssoUserId: `sso-${groupId}` }];
+      });
+      const ids = Array.from({ length: 12 }, (_, i) => `g${i}`);
+
+      const map = await tenantService.getMembersByGroup(req, tenantId, ids);
+
+      expect(maxInFlight).toBe(5);
+      expect([...map.keys()]).toEqual(ids.filter((id) => id !== 'g3'));
+      expect(map.has('g3')).toBe(false);
+    });
   });
 
   describe('migrateFormToTenant', () => {
@@ -2221,6 +2261,8 @@ describe('TenantService', () => {
       const err = await tenantService.migrateFormToTenant(req, formId, tenantId).catch((e) => e);
 
       expect(err.code).toBe('FORM_ADMIN_GROUP_REQUIRED');
+      // The controller passes this message to the user, so no internal "TenantService:" prefix.
+      expect(err.message).toBe('You do not have the Form Admin role in this tenant.');
     });
 
     it('inserts form_tenant, form_group, and form_migration_log in a transaction on success', async () => {

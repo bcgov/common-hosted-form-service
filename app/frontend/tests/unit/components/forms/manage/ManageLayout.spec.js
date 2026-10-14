@@ -267,6 +267,53 @@ describe('ManageLayout.vue', () => {
 
       expect(selectSpy).not.toHaveBeenCalled();
     });
+
+    it('loads the tenant list first when it is still empty on a fresh page load', async () => {
+      // router.js starts fetchTenants() without awaiting it, so the list can be empty here.
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = true;
+      tenantStore.selectedTenant = null;
+      tenantStore.tenants = [];
+      tenantStore.loading = false;
+      tenantStore.fetchTenants.mockImplementationOnce(async () => {
+        tenantStore.tenants = [TENANT];
+      });
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = { id: 'f', name: 'Migrated Form', tenantId: 'tenant-1' };
+      });
+      const selectSpy = vi.spyOn(tenantStore, 'selectTenant');
+
+      mountLayout();
+      await flushPromises();
+
+      expect(tenantStore.fetchTenants).toHaveBeenCalled();
+      expect(selectSpy).toHaveBeenCalledWith(TENANT);
+    });
+
+    it('waits for a tenant fetch already in flight instead of starting another', async () => {
+      const tenantStore = useTenantStore(pinia);
+      tenantStore.isTenantFeatureEnabled = true;
+      tenantStore.selectedTenant = null;
+      tenantStore.tenants = [];
+      tenantStore.loading = true;
+      tenantStore.fetchTenants.mockClear();
+      vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+        formStore.form = { id: 'f', name: 'Migrated Form', tenantId: 'tenant-1' };
+      });
+      const selectSpy = vi.spyOn(tenantStore, 'selectTenant');
+
+      mountLayout();
+      await flushPromises();
+      expect(selectSpy).not.toHaveBeenCalled();
+
+      // The in-flight fetch finishes.
+      tenantStore.tenants = [TENANT];
+      tenantStore.loading = false;
+      await flushPromises();
+
+      expect(tenantStore.fetchTenants).not.toHaveBeenCalled();
+      expect(selectSpy).toHaveBeenCalledWith(TENANT);
+    });
   });
 
   describe('tenancy chip icon', () => {

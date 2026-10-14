@@ -45,12 +45,15 @@ const canManageGroups = computed(() => {
   return roles.includes(TenantRoles.FORM_ADMIN);
 });
 
-// Show Migrate to Tenant for personal forms when tenant feature is enabled and user is OWNER
+// Show Migrate to Tenant for a personal form (My Forms mode, form not yet in a tenant)
+// to its owners. FORM_UPDATE is how "owner" is expressed: in classic CHEFS only the Owner
+// role grants it, and the migration endpoints check the same permission server-side.
 const canMigrateForm = computed(
   () =>
     tenantStore.isTenantFeatureEnabled &&
     permissions.value.includes(FormPermissions.FORM_UPDATE) &&
-    selectedTenant.value === null
+    selectedTenant.value === null &&
+    !form.value?.tenantId
 );
 
 const canViewSubmissions = computed(() => {

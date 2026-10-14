@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "Le mie Forme",
     "groupForms": "Moduli di Gruppo",
+    "groupAccessChip": "Accesso di gruppo",
     "createNewForm": "Crea un nuovo modulo",
     "search": "Ricerca",
     "manage": "Maneggio",
@@ -39,7 +40,12 @@
     "noDataText": "Nessun modulo trovato"
   },
   "manageLayout": {
-    "manageForm": "Gestisci modulo"
+    "manageForm": "Gestisci modulo",
+    "tenantChip": "Accesso di gruppo",
+    "tenantChipTooltip": "L'accesso a questo modulo è controllato dai gruppi del Tenant.",
+    "migratedChip": "Migrato",
+    "migratedChipTooltip": "Migrato a questo Tenant il {date} da {by}. L'accesso è ora controllato dai gruppi del Tenant.",
+    "switchedToTenant": "Passato a {tenant}: questo modulo appartiene a quel Tenant."
   },
   "preview": {
     "preview": "Anteprima",
@@ -1011,7 +1017,11 @@
     "leave": "Lascia",
     "selectAll": "Seleziona tutto",
     "addSelected": "Aggiungi selezionati",
+    "addAll": "Aggiungi tutti",
     "removeSelected": "Rimuovi selezionati",
+    "removeAll": "Rimuovi tutti",
+    "noGroups": "Nessun gruppo disponibile",
+    "noSearchResults": "Nessun gruppo corrisponde alla ricerca",
     "formAdminGroupRequired": "Almeno un gruppo assegnato deve avere il ruolo form_admin.",
     "invalidGroupIds": "Uno o più gruppi selezionati non sono validi per questo tenant.",
     "insufficientPermissions": "Non hai il permesso di gestire le associazioni di gruppi."

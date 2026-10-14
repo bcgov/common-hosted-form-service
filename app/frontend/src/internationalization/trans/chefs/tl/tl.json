@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "Aking Mga Form",
     "groupForms": "Mga Group Form",
+    "groupAccessChip": "Access ng grupo",
     "createNewForm": "Gumawa ng Bagong Form",
     "search": "Maghanap",
     "manage": "Pamahalaan",
@@ -39,7 +40,12 @@
     "noDataText": "Walang nakitang pormularyo"
   },
   "manageLayout": {
-    "manageForm": "Pamahalaan ang Form"
+    "manageForm": "Pamahalaan ang Form",
+    "tenantChip": "Access ng grupo",
+    "tenantChipTooltip": "Ang access sa form na ito ay kinokontrol ng mga grupo ng nangungupahan.",
+    "migratedChip": "Nailipat",
+    "migratedChipTooltip": "Inilipat sa nangungupahang ito noong {date} ni {by}. Ang access ay kinokontrol na ngayon ng mga grupo ng nangungupahan.",
+    "switchedToTenant": "Lumipat sa {tenant} — ang form na ito ay pag-aari ng nangungupahang iyon."
   },
   "preview": {
     "preview": "Silipin",
@@ -1011,7 +1017,11 @@
     "leave": "Umalis",
     "selectAll": "Piliin lahat",
     "addSelected": "Idagdag ang napili",
+    "addAll": "Idagdag lahat",
     "removeSelected": "Alisin ang napili",
+    "removeAll": "Alisin lahat",
+    "noGroups": "Walang available na grupo",
+    "noSearchResults": "Walang grupong tumutugma sa iyong paghahanap",
     "formAdminGroupRequired": "Hindi bababa sa isang nakatalagang grupo ang dapat may form_admin na papel.",
     "invalidGroupIds": "Isa o higit pang napiling grupo ay hindi wasto para sa tenant na ito.",
     "insufficientPermissions": "Wala kang pahintulot na pamahalaan ang mga asosasyon ng grupo."

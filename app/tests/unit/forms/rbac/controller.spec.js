@@ -523,6 +523,53 @@ describe('getFormGroups', () => {
   });
 });
 
+describe('getMigrationTenantGroups', () => {
+  const tenantId = '3f2b6c1e-8a4d-4c2b-9e7f-1a2b3c4d5e6f';
+  let req, res, next;
+
+  beforeEach(() => {
+    req = { params: { formId: 'form-1' }, query: { tenantId }, currentUser: { idpUserId: 'u1' }, headers: {} };
+    res = { status: jest.fn().mockReturnThis(), json: jest.fn().mockReturnThis() };
+    next = jest.fn();
+    FormTenant.query.mockReturnValue({
+      where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
+    });
+  });
+
+  it('returns 401 SESSION_EXPIRED when CSTAR rejects the session, not a Form Admin error', async () => {
+    tenantService.getMigrationTenantGroups = jest.fn().mockRejectedValue(Object.assign(new Error('Unauthorized'), { response: { status: 401 } }));
+
+    await controller.getMigrationTenantGroups(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ code: 'SESSION_EXPIRED' }));
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('returns 502 CSTAR_UNAVAILABLE on a network error and 504 CSTAR_TIMEOUT on a timeout', async () => {
+    tenantService.getMigrationTenantGroups = jest.fn().mockRejectedValue(Object.assign(new Error('refused'), { code: 'ECONNREFUSED' }));
+    await controller.getMigrationTenantGroups(req, res, next);
+    expect(res.status).toHaveBeenLastCalledWith(502);
+    expect(res.json).toHaveBeenLastCalledWith(expect.objectContaining({ code: 'CSTAR_UNAVAILABLE' }));
+
+    tenantService.getMigrationTenantGroups = jest.fn().mockRejectedValue(Object.assign(new Error('timeout'), { code: 'ECONNABORTED' }));
+    await controller.getMigrationTenantGroups(req, res, next);
+    expect(res.status).toHaveBeenLastCalledWith(504);
+    expect(res.json).toHaveBeenLastCalledWith(expect.objectContaining({ code: 'CSTAR_TIMEOUT' }));
+  });
+
+  it('still answers 403 for TENANT_NOT_ELIGIBLE and passes unknown errors on', async () => {
+    tenantService.getMigrationTenantGroups = jest.fn().mockRejectedValue(Object.assign(new Error('nope'), { code: 'TENANT_NOT_ELIGIBLE' }));
+    await controller.getMigrationTenantGroups(req, res, next);
+    expect(res.status).toHaveBeenLastCalledWith(403);
+
+    const boom = new Error('boom');
+    tenantService.getMigrationTenantGroups = jest.fn().mockRejectedValue(boom);
+    await controller.getMigrationTenantGroups(req, res, next);
+    expect(next).toHaveBeenCalledWith(boom);
+  });
+});
+
 describe('getMigrationPreview', () => {
   let req, res, next;
 
@@ -617,7 +664,7 @@ describe('getMigrationPreview', () => {
     FormTenant.query.mockReturnValue({
       where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
     });
-    const eligibleTenants = [{ id: 'tenant-1', name: 'Tenant 1', groups: [] }];
+    const eligibleTenants = [{ id: 'tenant-1', name: 'Tenant 1' }];
     const teamMembers = [{ email: 'a@a.com', fullName: 'Alice', roles: ['owner'], user_idpCode: 'idir' }];
     tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue(eligibleTenants);
     service.getFormUsers = jest.fn().mockResolvedValue(teamMembers);
@@ -626,7 +673,7 @@ describe('getMigrationPreview', () => {
     await controller.getMigrationPreview(req, res, next);
 
     expect(tenantService.getEligibleTenantsForMigration).toHaveBeenCalledWith(req, { bypassCache: false });
-    expect(service.getFormUsers).toHaveBeenCalledWith({ formId: 'form-1' });
+    expect(service.getFormUsers).toHaveBeenCalledWith({ formId: 'form-1', roles: '*' });
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       formName: 'Test Form',
@@ -859,23 +906,22 @@ describe('getMigrationPreview', () => {
     expect(team[0].roles).toEqual(expect.arrayContaining(['owner', 'team_manager']));
   });
 
-  it('should exclude system/service users that appear with empty roles from the view UNION', async () => {
+  it('asks the access view for explicit team members only, instead of every CHEFS user', async () => {
+    // user_form_access returns a row for every user (roles = {}) unless filtered; roles '*'
+    // makes the query keep only users with at least one role on this form, the same filter
+    // Team Management uses. System/service users with no role never reach the controller.
     FormTenant.query.mockReturnValue({
       where: jest.fn().mockReturnValue({ first: jest.fn().mockResolvedValue(null) }),
     });
     tenantService.getEligibleTenantsForMigration = jest.fn().mockResolvedValue([]);
-    service.getFormUsers = jest.fn().mockResolvedValue([
-      { email: 'real@gov.bc.ca', fullName: 'Real User', roles: ['owner'], user_idpCode: 'idir' },
-      { email: 'api-user@runtime-auth.local', fullName: 'API User', roles: [], user_idpCode: 'idir' },
-      { email: 'gateway-user@runtime-auth.local', fullName: 'Gateway User', roles: [], user_idpCode: 'idir' },
-    ]);
+    service.getFormUsers = jest.fn().mockResolvedValue([{ email: 'real@gov.bc.ca', fullName: 'Real User', roles: ['owner'], user_idpCode: 'idir' }]);
     mockKnexRaw({ total: '0', drafts: '0' }, 0);
 
     await controller.getMigrationPreview(req, res, next);
 
+    expect(service.getFormUsers).toHaveBeenCalledWith(expect.objectContaining({ formId: 'form-1', roles: '*' }));
     const { team } = res.json.mock.calls[0][0].impact;
-    expect(team).toHaveLength(1);
-    expect(team[0].email).toBe('real@gov.bc.ca');
+    expect(team.map((m) => m.email)).toEqual(['real@gov.bc.ca']);
   });
 
   it('should default submission counts to 0 when rows are missing', async () => {
@@ -1006,7 +1052,7 @@ describe('migrateForm', () => {
   });
 
   it('should return 400 for FORM_ADMIN_GROUP_REQUIRED error code', async () => {
-    const err = Object.assign(new Error('at least one assigned group must have form_admin role'), {
+    const err = Object.assign(new Error('At least one assigned group must have the Form Admin role.'), {
       code: 'FORM_ADMIN_GROUP_REQUIRED',
     });
     tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
@@ -1040,35 +1086,35 @@ describe('migrateForm', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 503 with CSTAR_TIMEOUT code when the CSTAR call times out', async () => {
+  it('should return 504 (not 503, which trips the global outage overlay) with CSTAR_TIMEOUT code when the CSTAR call times out', async () => {
     const err = Object.assign(new Error('timeout of 15000ms exceeded'), { code: 'ECONNABORTED' });
     tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
 
     await controller.migrateForm(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.status).toHaveBeenCalledWith(504);
     expect(res.json).toHaveBeenCalledWith({ detail: 'The tenant service is taking too long to respond. Please try again in a moment.', code: 'CSTAR_TIMEOUT' });
     expect(next).not.toHaveBeenCalled();
   });
 
-  it.each(['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'])('should return 503 with CSTAR_UNAVAILABLE code on %s network error', async (code) => {
+  it.each(['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'])('should return 502 with CSTAR_UNAVAILABLE code on %s network error', async (code) => {
     const err = Object.assign(new Error('connect failed'), { code });
     tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
 
     await controller.migrateForm(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.status).toHaveBeenCalledWith(502);
     expect(res.json).toHaveBeenCalledWith({ detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' });
     expect(next).not.toHaveBeenCalled();
   });
 
-  it.each([500, 502, 503, 504])('should return 503 with CSTAR_UNAVAILABLE code when CSTAR responds with %i', async (status) => {
+  it.each([500, 502, 503, 504])('should return 502 with CSTAR_UNAVAILABLE code when CSTAR responds with %i', async (status) => {
     const err = Object.assign(new Error('CSTAR error'), { response: { status } });
     tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
 
     await controller.migrateForm(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.status).toHaveBeenCalledWith(502);
     expect(res.json).toHaveBeenCalledWith({ detail: 'The tenant service is currently unavailable. Please try again in a moment.', code: 'CSTAR_UNAVAILABLE' });
     expect(next).not.toHaveBeenCalled();
   });

@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "Meine Formulare",
     "groupForms": "Gruppenformulare",
+    "groupAccessChip": "Gruppenzugriff",
     "createNewForm": "Erstellen Sie ein neues Formular",
     "search": "Suchen",
     "manage": "Verwalten",
@@ -43,7 +44,12 @@
     "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
   },
   "manageLayout": {
-    "manageForm": "Formular verwalten"
+    "manageForm": "Formular verwalten",
+    "tenantChip": "Gruppenzugriff",
+    "tenantChipTooltip": "Der Zugriff auf dieses Formular wird über die Gruppen des Mandanten gesteuert.",
+    "migratedChip": "Migriert",
+    "migratedChipTooltip": "Am {date} von {by} zu diesem Mandanten migriert. Der Zugriff wird jetzt über die Gruppen des Mandanten gesteuert.",
+    "switchedToTenant": "Zu {tenant} gewechselt – dieses Formular gehört zu diesem Mandanten."
   },
   "shareForm": {
     "shareForm": "Formular teilen",
@@ -1011,7 +1017,11 @@
     "leave": "Verlassen",
     "selectAll": "Alle auswählen",
     "addSelected": "Ausgewählte hinzufügen",
+    "addAll": "Alle hinzufügen",
     "removeSelected": "Ausgewählte entfernen",
+    "removeAll": "Alle entfernen",
+    "noGroups": "Keine Gruppen verfügbar",
+    "noSearchResults": "Keine Gruppen entsprechen Ihrer Suche",
     "formAdminGroupRequired": "Mindestens eine zugewiesene Gruppe muss die Rolle form_admin haben.",
     "invalidGroupIds": "Eine oder mehrere ausgewählte Gruppen sind für diesen Mandanten ungültig.",
     "insufficientPermissions": "Sie haben keine Berechtigung, Gruppenzuordnungen zu verwalten."

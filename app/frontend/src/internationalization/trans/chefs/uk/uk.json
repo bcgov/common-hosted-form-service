@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "Мої форми",
     "groupForms": "Групові форми",
+    "groupAccessChip": "Груповий доступ",
     "createNewForm": "Створіть нову форму",
     "search": "Пошук",
     "manage": "Керувати",
@@ -39,7 +40,12 @@
     "noDataText": "Форми не знайдено"
   },
   "manageLayout": {
-    "manageForm": "Керувати формою"
+    "manageForm": "Керувати формою",
+    "tenantChip": "Груповий доступ",
+    "tenantChipTooltip": "Доступ до цієї форми контролюється групами орендаря.",
+    "migratedChip": "Перенесено",
+    "migratedChipTooltip": "Перенесено цьому орендарю {date}, виконав: {by}. Тепер доступ контролюється групами орендаря.",
+    "switchedToTenant": "Перейдено до {tenant}: ця форма належить цьому орендарю."
   },
   "preview": {
     "preview": "Попередній перегляд",
@@ -1011,7 +1017,11 @@
     "leave": "Залишити",
     "selectAll": "Вибрати все",
     "addSelected": "Додати вибрані",
+    "addAll": "Додати всі",
     "removeSelected": "Видалити вибрані",
+    "removeAll": "Видалити всі",
+    "noGroups": "Немає доступних груп",
+    "noSearchResults": "Немає груп, що відповідають пошуку",
     "formAdminGroupRequired": "Принаймні одна призначена група повинна мати роль form_admin.",
     "invalidGroupIds": "Одна або кілька вибраних груп недійсні для цього орендаря.",
     "insufficientPermissions": "У вас немає дозволу на управління зв'язками груп."

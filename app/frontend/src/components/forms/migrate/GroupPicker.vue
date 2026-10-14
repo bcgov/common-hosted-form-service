@@ -49,6 +49,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // Locks the picker while the parent submits, so the groups sent cannot change.
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(['update:assigned']);
@@ -137,6 +142,7 @@ function toggleSelectAllAssigned() {
 }
 
 function addSelected() {
+  if (props.disabled) return;
   const toMove = props.available.filter((g) =>
     selectedAvailable.value.includes(g.id)
   );
@@ -145,6 +151,7 @@ function addSelected() {
 }
 
 function removeSelected() {
+  if (props.disabled) return;
   const removeIds = new Set(selectedAssigned.value);
   emit(
     'update:assigned',
@@ -154,11 +161,13 @@ function removeSelected() {
 }
 
 function addAll() {
+  if (props.disabled) return;
   emit('update:assigned', [...props.assigned, ...props.available]);
   selectedAvailable.value = [];
 }
 
 function removeAll() {
+  if (props.disabled) return;
   emit('update:assigned', []);
   selectedAssigned.value = [];
 }
@@ -187,7 +196,12 @@ function removeAll() {
   </div>
 
   <!-- Dual-panel picker -->
-  <v-row v-else dense>
+  <v-row
+    v-else
+    dense
+    :class="{ 'picker-disabled': disabled }"
+    :aria-disabled="disabled ? 'true' : undefined"
+  >
     <!-- Available panel -->
     <v-col cols="12" md="5">
       <div class="d-flex align-center mb-1">
@@ -291,7 +305,7 @@ function removeAll() {
         <template #activator="{ props: tip }">
           <v-btn
             v-bind="tip"
-            :disabled="selectedAvailable.length === 0"
+            :disabled="disabled || selectedAvailable.length === 0"
             icon
             size="small"
             variant="outlined"
@@ -306,7 +320,7 @@ function removeAll() {
         <template #activator="{ props: tip }">
           <v-btn
             v-bind="tip"
-            :disabled="available.length === 0"
+            :disabled="disabled || available.length === 0"
             icon
             size="small"
             variant="outlined"
@@ -324,7 +338,7 @@ function removeAll() {
         <template #activator="{ props: tip }">
           <v-btn
             v-bind="tip"
-            :disabled="selectedAssigned.length === 0"
+            :disabled="disabled || selectedAssigned.length === 0"
             icon
             size="small"
             variant="outlined"
@@ -339,7 +353,7 @@ function removeAll() {
         <template #activator="{ props: tip }">
           <v-btn
             v-bind="tip"
-            :disabled="assigned.length === 0"
+            :disabled="disabled || assigned.length === 0"
             icon
             size="small"
             variant="outlined"
@@ -487,6 +501,11 @@ function removeAll() {
 /* Chips keep their full label; Vuetify's default nowrap/hidden would clip it. */
 .role-chips :deep(.v-chip) {
   max-width: 100%;
+}
+
+.picker-disabled {
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .select-all-row {

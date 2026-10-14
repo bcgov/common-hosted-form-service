@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "Meus formulários",
     "groupForms": "Formulários de Grupo",
+    "groupAccessChip": "Acesso por grupo",
     "createNewForm": "Criar um novo formulário",
     "search": "Procurar",
     "manage": "Gerenciar",
@@ -43,7 +44,12 @@
     "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
   },
   "manageLayout": {
-    "manageForm": "Gerenciar formulário"
+    "manageForm": "Gerenciar formulário",
+    "tenantChip": "Acesso por grupo",
+    "tenantChipTooltip": "O acesso a este formulário é controlado pelos grupos do Tenant.",
+    "migratedChip": "Migrado",
+    "migratedChipTooltip": "Migrado para este Tenant em {date} por {by}. O acesso agora é controlado pelos grupos do Tenant.",
+    "switchedToTenant": "Alternado para {tenant}: este formulário pertence a esse Tenant."
   },
   "shareForm": {
     "shareForm": "Formulário de compartilhamento",
@@ -1011,7 +1017,11 @@
     "leave": "Sair",
     "selectAll": "Selecionar tudo",
     "addSelected": "Adicionar selecionados",
+    "addAll": "Adicionar todos",
     "removeSelected": "Remover selecionados",
+    "removeAll": "Remover todos",
+    "noGroups": "Nenhum grupo disponível",
+    "noSearchResults": "Nenhum grupo corresponde à sua pesquisa",
     "formAdminGroupRequired": "Pelo menos um grupo atribuído deve ter o papel form_admin.",
     "invalidGroupIds": "Um ou mais grupos selecionados não são válidos para este inquilino.",
     "insufficientPermissions": "Você não tem permissão para gerenciar associações de grupos."

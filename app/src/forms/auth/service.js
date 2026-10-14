@@ -112,7 +112,7 @@ const service = {
       return await tenantService.getUserTenantGroupsAndRoles({ currentUser: userInfo, headers }, tenantId);
     } catch (err) {
       log.error(`Failed to fetch tenant groups/roles for ${context} (tenant ${tenantId})`, err);
-      throw new Problem(503, {
+      throw new Problem(502, {
         detail: 'Unable to verify your group membership right now. Please try again in a moment.',
       });
     }

@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
@@ -57,10 +57,34 @@ onMounted(async () => {
   if (permissions.value.includes(FormPermissions.DESIGN_READ))
     await formStore.fetchDrafts(properties.f);
 
-  resolveTenantContext();
+  await resolveTenantContext();
 
   loading.value = false;
 });
+
+/**
+ * On a fresh page load the router starts fetchTenants() without awaiting it, so the list
+ * can still be empty here. Wait for the fetch already in flight, or start one; otherwise
+ * getTenantById misses and an old link never switches to the form's tenant.
+ */
+async function ensureTenantsLoaded() {
+  if (tenantStore.tenants.length > 0) return;
+  if (tenantStore.loading) {
+    await new Promise((resolve) => {
+      const stop = watch(
+        () => tenantStore.loading,
+        (isLoading) => {
+          if (!isLoading) {
+            stop();
+            resolve();
+          }
+        }
+      );
+    });
+    return;
+  }
+  await tenantStore.fetchTenants();
+}
 
 /**
  * A link to a form created before it was migrated carries no tenant context, so the app
@@ -72,7 +96,7 @@ onMounted(async () => {
  * user's own tenant list, so a form in a tenant they have no access to changes nothing
  * here and the backend remains the authority on access.
  */
-function resolveTenantContext() {
+async function resolveTenantContext() {
   // Never move the user into a tenant while tenant features are off — the rest of the
   // UI has no tenant affordances in that mode, so the context would be unreachable.
   if (!tenantStore.isTenantFeatureEnabled) return;
@@ -81,6 +105,7 @@ function resolveTenantContext() {
   if (!formTenantId) return;
   if (tenantStore.selectedTenant?.id === formTenantId) return;
 
+  await ensureTenantsLoaded();
   const tenant = tenantStore.getTenantById(formTenantId);
   if (!tenant) return;
 

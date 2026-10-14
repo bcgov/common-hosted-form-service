@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "我的表格",
     "groupForms": "群組表單",
+    "groupAccessChip": "群組存取",
     "createNewForm": "創建新表單",
     "search": "搜索",
     "manage": "管理",
@@ -39,7 +40,12 @@
     "noDataText": "未找到表單"
   },
   "manageLayout": {
-    "manageForm": "管理表格"
+    "manageForm": "管理表格",
+    "tenantChip": "群組存取",
+    "tenantChipTooltip": "此表單的存取權由租戶的群組控制。",
+    "migratedChip": "已遷移",
+    "migratedChipTooltip": "已於 {date} 由 {by} 遷移至此租戶。存取權現由租戶的群組控制。",
+    "switchedToTenant": "已切換至 {tenant}——此表單屬於該租戶。"
   },
   "shareForm": {
     "shareForm": "分享表格",
@@ -1011,7 +1017,11 @@
     "leave": "離開",
     "selectAll": "全選",
     "addSelected": "新增所選",
+    "addAll": "全部新增",
     "removeSelected": "移除所選",
+    "removeAll": "全部移除",
+    "noGroups": "沒有可用的群組",
+    "noSearchResults": "沒有符合搜尋條件的群組",
     "formAdminGroupRequired": "至少一個已指派的群組必須具有 form_admin 角色。",
     "invalidGroupIds": "一個或多個選取的群組對此租戶無效。",
     "insufficientPermissions": "您沒有管理群組關聯的權限。"

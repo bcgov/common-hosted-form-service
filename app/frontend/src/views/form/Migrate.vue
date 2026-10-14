@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -205,6 +205,13 @@ const membershipUnknown = computed(
     allTenantGroups.value.every((g) => g.members === null)
 );
 
+// True when membership could not be read for at least one ASSIGNED group. Anyone not
+// confirmed as retained through a group we could read might still be in that one, so their
+// status is unknown rather than "no group membership" / "not in assigned groups".
+const assignedMembershipPartlyUnknown = computed(() =>
+  assignedGroups.value.some((g) => g.members === null)
+);
+
 const teamRowsWithStatus = computed(() => {
   const assignedIds = new Set(assignedGroups.value.map((g) => g.id));
   const groupNameMap = new Map(
@@ -224,21 +231,25 @@ const teamRowsWithStatus = computed(() => {
     if (!tenantLoaded) {
       return { ...member, transferStatus: 'needs_group', memberGroups: [] };
     }
+    // memberGroupIds only ever contains groups whose membership was read, so a match
+    // here is a confirmed "retained".
     const memberGroupIds = teamMemberGroupMap.value.get(member.email) || [];
     const memberGroups = memberGroupIds.map((id) => ({
       id,
       name: groupNameMap.get(id) || id,
       isAssigned: assignedIds.has(id),
     }));
+    const retained = memberGroupIds.some((id) => assignedIds.has(id));
+    if (retained) {
+      return { ...member, transferStatus: 'retained', memberGroups };
+    }
+    if (assignedMembershipPartlyUnknown.value) {
+      return { ...member, transferStatus: 'unknown', memberGroups };
+    }
     if (memberGroupIds.length === 0) {
       return { ...member, transferStatus: 'no_membership', memberGroups: [] };
     }
-    const retained = memberGroupIds.some((id) => assignedIds.has(id));
-    return {
-      ...member,
-      transferStatus: retained ? 'retained' : 'needs_assignment',
-      memberGroups,
-    };
+    return { ...member, transferStatus: 'needs_assignment', memberGroups };
   });
 });
 
@@ -327,6 +338,9 @@ async function loadPreviewData({ refresh = false, showLoading = true } = {}) {
 }
 
 watch(selectedTenantId, async (tenantId) => {
+  // An error or stale-groups notice belongs to the tenant it came from.
+  error.value = null;
+  staleGroupsRemoved.value = false;
   allTenantGroups.value = [];
   assignedGroups.value = [];
   teamMemberGroups.value = [];
@@ -366,6 +380,9 @@ async function loadTenantGroups(tenantId) {
 // assigned that no longer exist are dropped, and the user is warned.
 async function refreshTenantGroups() {
   if (!selectedTenantId.value) return;
+  // Shares loadTenantGroups' token: switching tenant mid-refresh must not let this
+  // response overwrite the newly selected tenant's groups.
+  const token = ++groupsRequestToken;
   refreshingGroups.value = true;
   staleGroupsRemoved.value = false;
   try {
@@ -376,6 +393,7 @@ async function refreshTenantGroups() {
       rbacService.getMigrationTenantGroups(props.f, selectedTenantId.value),
       loadPreviewData({ refresh: true, showLoading: false }),
     ]);
+    if (token !== groupsRequestToken) return;
     allTenantGroups.value = res.data.groups || [];
     teamMemberGroups.value = res.data.teamMemberGroups || [];
 
@@ -389,9 +407,10 @@ async function refreshTenantGroups() {
     staleGroupsRemoved.value = stillValid.length < assignedGroups.value.length;
     assignedGroups.value = stillValid;
   } catch (err) {
+    if (token !== groupsRequestToken) return;
     error.value = err.response?.data?.detail || err.message;
   } finally {
-    refreshingGroups.value = false;
+    if (token === groupsRequestToken) refreshingGroups.value = false;
   }
 }
 
@@ -435,8 +454,9 @@ async function confirmMigration() {
 // made. If Keycloak can refresh the token, offer an in-place retry instead.
 async function attemptSessionRecovery() {
   try {
-    await authStore.keycloak.updateToken(30);
-    return true;
+    // -1 forces a refresh: CSTAR has just rejected the token, so "still valid for 30s"
+    // by the local clock is not a reason to keep it.
+    return await authStore.keycloak.updateToken(-1);
   } catch {
     return false;
   }
@@ -459,46 +479,67 @@ async function loadMigrationRecord() {
   }
 }
 
-// The migration preview's tenants carry only { id, name, groups }, but the Manage page
-// decides what to offer from the selected tenant's `roles` (Group Management needs
-// form_admin). Select the store's full entry instead; if the tenant list has not loaded,
-// eligibility already guarantees form_admin, so record at least that.
-function tenantToSelect(tenant) {
-  const known = tenantStore.getTenantById?.(tenant.id);
-  if (known) return known;
-  const roles = new Set([...(tenant.roles || []), TenantRoles.FORM_ADMIN]);
-  return { ...tenant, roles: [...roles] };
+// The Manage page and nav decide what to offer from the selected tenant's `roles`
+// (isFormAdmin, Group Management), and the preview's eligible tenants carry only
+// { id, name }. So select the tenant store's own entry, loading the list if needed.
+async function storeTenant(tenantId) {
+  let tenant = tenantStore.getTenantById(tenantId);
+  if (!tenant) {
+    await tenantStore.fetchTenants();
+    tenant = tenantStore.getTenantById(tenantId);
+  }
+  return tenant || null;
 }
 
+// Set when the page is left mid-submit; the request still completes, but nothing after it
+// may switch tenants or write state for a page that is gone.
+let isUnmounted = false;
+onBeforeUnmount(() => {
+  isUnmounted = true;
+});
+
 async function submitMigration() {
+  if (submitting.value) return;
   submitting.value = true;
   error.value = null;
   showRefreshButton.value = false;
   showRetryButton.value = false;
+  // Snapshot the selection: the result screen must describe what was sent, whatever the
+  // reactive state does while the request is in flight.
+  const tenantId = selectedTenantId.value;
+  const tenantName = selectedTenant.value?.name;
+  const groupIds = assignedGroups.value.map((g) => g.id);
+  const groupNames = assignedGroups.value.map((g) => g.name);
   try {
-    const groupIds =
-      assignedGroups.value.length > 0
-        ? assignedGroups.value.map((g) => g.id)
-        : undefined;
     await rbacService.executeMigration(props.f, {
-      tenantId: selectedTenantId.value,
-      ...(groupIds ? { groupIds } : {}),
+      tenantId,
+      ...(groupIds.length > 0 ? { groupIds } : {}),
     });
-    // Capture the outcome before switching tenants — the impact data is what the
-    // result screen reports, and selecting the tenant re-scopes everything.
+    if (isUnmounted) return;
+    const tenant = await storeTenant(tenantId);
+    if (isUnmounted) return;
     migrationResult.value = {
-      tenantName: selectedTenant.value?.name,
-      groupNames: assignedGroups.value.map((g) => g.name),
+      tenantName,
+      groupNames,
       // Filled in below from the server's own migration record.
       migratedBy: null,
       migratedAt: null,
     };
-    tenantStore.selectTenant(tenantToSelect(selectedTenant.value));
+    // If the list still cannot return the tenant (CSTAR degraded), select it with the
+    // role eligibility guarantees, so the Manage page keeps Group Management.
+    tenantStore.selectTenant(
+      tenant || {
+        id: tenantId,
+        name: tenantName,
+        roles: [TenantRoles.FORM_ADMIN],
+      }
+    );
     migrated.value = true;
     // Who migrated it and when come from form_migration_log rather than the browser
     // clock, so the record shown matches the record stored.
     await loadMigrationRecord();
   } catch (err) {
+    if (isUnmounted) return;
     const code = err.response?.data?.code;
     // Migrated elsewhere (another tab, another admin) — show the migrated state rather
     // than an error about a thing that has in fact succeeded.
@@ -806,6 +847,7 @@ defineExpose({
               item-title="name"
               item-value="id"
               :label="$t('trans.formMigration.selectTenant')"
+              :disabled="submitting"
               variant="outlined"
               density="comfortable"
               hide-details
@@ -839,7 +881,9 @@ defineExpose({
                       icon="mdi:mdi-refresh"
                       size="small"
                       variant="text"
-                      :disabled="loadingGroups || refreshingGroups"
+                      :disabled="
+                        loadingGroups || refreshingGroups || submitting
+                      "
                       :aria-label="$t('trans.formMigration.refreshGroups')"
                       @click="refreshTenantGroups"
                     />
@@ -852,7 +896,10 @@ defineExpose({
               >
                 {{ $t('trans.formMigration.assignGroupsSubtitle') }}
               </p>
+              <!-- Keyed by tenant so its checkbox selections reset with the tenant. -->
               <GroupPicker
+                :key="selectedTenantId"
+                :disabled="submitting"
                 :available="availableGroups"
                 :assigned="assignedGroups"
                 :loading="loadingGroups"
@@ -1328,6 +1375,7 @@ defineExpose({
             </v-btn>
             <v-btn
               variant="outlined"
+              :disabled="submitting"
               :lang="locale"
               :to="{ name: 'FormManage', query: { f } }"
             >

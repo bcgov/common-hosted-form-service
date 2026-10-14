@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "biểu mẫu của tôi",
     "groupForms": "Biểu mẫu nhóm",
+    "groupAccessChip": "Truy cập theo nhóm",
     "createNewForm": "Tạo một biểu mẫu mới",
     "search": "Tìm kiếm",
     "manage": "Quản lý",
@@ -39,7 +40,12 @@
     "noDataText": "Không tìm thấy biểu mẫu"
   },
   "manageLayout": {
-    "manageForm": "Quản lý biểu mẫu"
+    "manageForm": "Quản lý biểu mẫu",
+    "tenantChip": "Truy cập theo nhóm",
+    "tenantChipTooltip": "Quyền truy cập biểu mẫu này được kiểm soát bởi các nhóm của người thuê.",
+    "migratedChip": "Đã di chuyển",
+    "migratedChipTooltip": "Đã được {by} di chuyển sang người thuê này vào {date}. Quyền truy cập hiện được kiểm soát bởi các nhóm của người thuê.",
+    "switchedToTenant": "Đã chuyển sang {tenant} — biểu mẫu này thuộc về người thuê đó."
   },
   "preview": {
     "preview": "Xem trước",
@@ -1011,7 +1017,11 @@
     "leave": "Rời khỏi",
     "selectAll": "Chọn tất cả",
     "addSelected": "Thêm đã chọn",
+    "addAll": "Thêm tất cả",
     "removeSelected": "Xóa đã chọn",
+    "removeAll": "Xóa tất cả",
+    "noGroups": "Không có nhóm nào",
+    "noSearchResults": "Không có nhóm nào khớp với tìm kiếm của bạn",
     "formAdminGroupRequired": "Ít nhất một nhóm được giao phải có vai trò form_admin.",
     "invalidGroupIds": "Một hoặc nhiều nhóm được chọn không hợp lệ cho tenant này.",
     "insufficientPermissions": "Bạn không có quyền quản lý các liên kết nhóm."

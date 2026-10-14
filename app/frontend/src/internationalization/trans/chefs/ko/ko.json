@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "내 양식",
     "groupForms": "그룹 양식",
+    "groupAccessChip": "그룹 액세스",
     "createNewForm": "새 양식 만들기",
     "search": "찾다",
     "manage": "관리하다",
@@ -43,7 +44,12 @@
     "previewToolTip": "이는 제출자가 볼 수 있는 양식 버전 디자인 및 동작의 미리보기를 보여줍니다. 이 페이지에서는 양식을 제출할 수 없습니다."
   },
   "manageLayout": {
-    "manageForm": "양식 관리"
+    "manageForm": "양식 관리",
+    "tenantChip": "그룹 액세스",
+    "tenantChipTooltip": "이 양식에 대한 액세스는 테넌트의 그룹에서 관리합니다.",
+    "migratedChip": "마이그레이션됨",
+    "migratedChipTooltip": "{date}에 {by}님이 이 테넌트로 마이그레이션했습니다. 이제 액세스는 테넌트의 그룹에서 관리합니다.",
+    "switchedToTenant": "{tenant}(으)로 전환했습니다. 이 양식은 해당 테넌트에 속합니다."
   },
   "shareForm": {
     "shareForm": "양식 공유",
@@ -1011,7 +1017,11 @@
     "leave": "나가기",
     "selectAll": "모두 선택",
     "addSelected": "선택 항목 추가",
+    "addAll": "모두 추가",
     "removeSelected": "선택 항목 제거",
+    "removeAll": "모두 제거",
+    "noGroups": "사용 가능한 그룹이 없습니다",
+    "noSearchResults": "검색과 일치하는 그룹이 없습니다",
     "formAdminGroupRequired": "할당된 그룹 중 하나 이상에 form_admin 역할이 있어야 합니다.",
     "invalidGroupIds": "선택한 그룹 중 하나 이상이 이 테넌트에 유효하지 않습니다.",
     "insufficientPermissions": "그룹 연결을 관리할 권한이 없습니다."

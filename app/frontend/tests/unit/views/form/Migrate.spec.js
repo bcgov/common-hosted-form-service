@@ -460,6 +460,54 @@ describe('Migrate.vue', () => {
     });
   });
 
+  describe('membership that could only partly be read', () => {
+    // g1 was read and the user is in it; g2 could not be read.
+    function groups({ userInG1 }) {
+      return {
+        data: {
+          groups: [
+            { id: 'g1', name: 'Admins', isFormAdmin: true, members: [] },
+            { id: 'g2', name: 'Reviewers', isFormAdmin: false, members: null },
+          ],
+          preSelectedGroupIds: ['g1', 'g2'],
+          teamMemberGroups: [
+            { email: 'user@example.com', fullName: 'User One', groupIds: userInG1 ? ['g1'] : [] },
+          ],
+        },
+      };
+    }
+
+    async function statusFor(response, assigned) {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(response);
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      if (assigned) {
+        wrapper.vm.assignedGroups = wrapper.vm.allTenantGroups.filter((g) => assigned.includes(g.id));
+        await flushPromises();
+      }
+      return wrapper.vm.teamRowsWithStatus[0].transferStatus;
+    }
+
+    it('still reports retained when a readable assigned group confirms it', async () => {
+      expect(await statusFor(groups({ userInG1: true }))).toBe('retained');
+    });
+
+    it('reports unknown, not no_membership, when an assigned group could not be read', async () => {
+      expect(await statusFor(groups({ userInG1: false }))).toBe('unknown');
+    });
+
+    it('reports unknown, not needs_assignment, when the unreadable group is assigned', async () => {
+      // In g1 (not assigned) and maybe in the unreadable g2 (assigned): cannot tell.
+      expect(await statusFor(groups({ userInG1: true }), ['g2'])).toBe('unknown');
+    });
+
+    it('keeps definite statuses when every assigned group was read', async () => {
+      expect(await statusFor(groups({ userInG1: false }), ['g1'])).toBe('no_membership');
+    });
+  });
+
   describe('membership that could not be read', () => {
     const unreadable = {
       data: {
@@ -525,6 +573,121 @@ describe('Migrate.vue', () => {
 
       expect(wrapper.vm.alreadyMigrated).toBe(true);
       expect(wrapper.vm.error).toBeNull();
+    });
+  });
+
+  describe('review fixes', () => {
+    const GROUP = { id: 'g1', name: 'Admins', isFormAdmin: true, members: [] };
+    const GROUPS = { data: { groups: [GROUP], preSelectedGroupIds: ['g1'], teamMemberGroups: [] } };
+
+    async function ready() {
+      rbacService.getMigrationTenantGroups.mockResolvedValue(GROUPS);
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      return wrapper;
+    }
+
+    it('ignores a second submit while the first is in flight', async () => {
+      let resolve;
+      rbacService.executeMigration.mockImplementationOnce(() => new Promise((r) => (resolve = r)));
+      const wrapper = await ready();
+
+      const first = wrapper.vm.submitMigration();
+      await wrapper.vm.submitMigration();
+      resolve({});
+      await first;
+
+      expect(rbacService.executeMigration).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports what was sent even if the selection changes mid-request', async () => {
+      let resolve;
+      rbacService.executeMigration.mockImplementationOnce(() => new Promise((r) => (resolve = r)));
+      const wrapper = await ready();
+
+      const pending = wrapper.vm.submitMigration();
+      wrapper.vm.assignedGroups = [];
+      resolve({});
+      await pending;
+      await flushPromises();
+
+      expect(rbacService.executeMigration).toHaveBeenCalledWith(FORM_ID, { tenantId: 'tenant-1', groupIds: ['g1'] });
+      expect(wrapper.vm.migrationResult).toMatchObject({ tenantName: MOCK_TENANT.name, groupNames: ['Admins'] });
+    });
+
+    it('does not switch tenant or show a result after the page is left mid-submit', async () => {
+      let resolve;
+      rbacService.executeMigration.mockImplementationOnce(() => new Promise((r) => (resolve = r)));
+      const wrapper = await ready();
+
+      const pending = wrapper.vm.submitMigration();
+      const vm = wrapper.vm;
+      wrapper.unmount();
+      resolve({});
+      await pending;
+
+      expect(tenantStore.selectTenant).not.toHaveBeenCalled();
+      expect(vm.migrated).toBe(false);
+    });
+
+    it('loads the tenant list when the migrated tenant is not in it yet', async () => {
+      tenantStore.tenants = [];
+      const full = { id: 'tenant-1', name: 'Tenant One', roles: ['form_admin', 'form_designer'] };
+      tenantStore.fetchTenants.mockImplementationOnce(async () => {
+        tenantStore.tenants = [full];
+      });
+      rbacService.executeMigration.mockResolvedValueOnce({});
+      const wrapper = await ready();
+
+      await wrapper.vm.submitMigration();
+
+      expect(tenantStore.fetchTenants).toHaveBeenCalled();
+      expect(tenantStore.selectTenant).toHaveBeenCalledWith(full);
+    });
+
+    it('ignores a refresh that finishes after the tenant was changed', async () => {
+      const wrapper = await ready();
+      let resolveRefresh;
+      rbacService.getMigrationTenantGroups.mockImplementationOnce(() => new Promise((r) => (resolveRefresh = r)));
+
+      const refresh = wrapper.vm.refreshTenantGroups();
+      // Switching tenant starts a newer request, which owns the token now.
+      rbacService.getMigrationTenantGroups.mockResolvedValueOnce({
+        data: { groups: [{ id: 'other', name: 'Other', isFormAdmin: true, members: [] }], preSelectedGroupIds: ['other'], teamMemberGroups: [] },
+      });
+      wrapper.vm.selectedTenantId = 'tenant-2';
+      await flushPromises();
+      resolveRefresh({ data: { groups: [{ id: 'stale', name: 'Stale', isFormAdmin: true, members: [] }], preSelectedGroupIds: [], teamMemberGroups: [] } });
+      await refresh;
+      await flushPromises();
+
+      expect(wrapper.vm.allTenantGroups.map((g) => g.id)).toEqual(['other']);
+    });
+
+    it('clears the previous tenant error and stale-groups notice when the tenant changes', async () => {
+      const wrapper = await ready();
+      wrapper.vm.error = 'old tenant failed';
+      wrapper.vm.staleGroupsRemoved = true;
+
+      wrapper.vm.selectedTenantId = 'tenant-2';
+      await flushPromises();
+
+      expect(wrapper.vm.error).toBeNull();
+      expect(wrapper.vm.staleGroupsRemoved).toBe(false);
+    });
+
+    it('locks the tenant picker, group picker, refresh and cancel while submitting', () => {
+      const source = readFileSync(resolve(__dirname, '../../../../src/views/form/Migrate.vue'), 'utf8');
+      const select = source.slice(source.indexOf('<v-select'), source.indexOf('/>', source.indexOf('<v-select')));
+      const picker = source.slice(source.indexOf('<GroupPicker'), source.indexOf('/>', source.indexOf('<GroupPicker')));
+
+      expect(select).toContain(':disabled="submitting"');
+      expect(picker).toContain(':disabled="submitting"');
+      expect(picker).toContain(':key="selectedTenantId"');
+      expect(source).toMatch(/:disabled="\s*loadingGroups \|\| refreshingGroups \|\| submitting\s*"/);
+      expect(source).toMatch(/:disabled="submitting"\s+:lang="locale"\s+:to="\{ name: 'FormManage', query: \{ f \} \}"/);
     });
   });
 
@@ -1328,11 +1491,28 @@ describe('Migrate.vue', () => {
       await flushPromises();
       await wrapper.vm.submitMigration();
 
-      expect(authStore.keycloak.updateToken).toHaveBeenCalledWith(30);
+      // -1 forces a refresh: CSTAR has just rejected the token.
+      expect(authStore.keycloak.updateToken).toHaveBeenCalledWith(-1);
       expect(wrapper.vm.showRetryButton).toBe(true);
       expect(wrapper.vm.error).toBe(
         'trans.formMigration.sessionExpiredRetry'
       );
+    });
+
+    it('falls back to the reload prompt when updateToken reports no refresh', async () => {
+      rbacService.executeMigration.mockRejectedValueOnce({
+        response: { data: { code: 'SESSION_EXPIRED' } },
+      });
+      authStore.keycloak.updateToken.mockResolvedValue(false);
+
+      const wrapper = mountComponent();
+      await flushPromises();
+      wrapper.vm.selectedTenantId = 'tenant-1';
+      await flushPromises();
+      await wrapper.vm.submitMigration();
+
+      expect(wrapper.vm.showRetryButton).toBe(false);
+      expect(wrapper.vm.error).toBe('trans.formMigration.sessionExpired');
     });
 
     it('falls back to the reload prompt when the Keycloak token cannot be refreshed', async () => {

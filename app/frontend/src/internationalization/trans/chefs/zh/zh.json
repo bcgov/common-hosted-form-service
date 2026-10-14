@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "我的表格",
     "groupForms": "群组表单",
+    "groupAccessChip": "组访问",
     "createNewForm": "创建新表单",
     "search": "搜索",
     "manage": "管理",
@@ -39,7 +40,12 @@
     "noDataText": "未找到表单"
   },
   "manageLayout": {
-    "manageForm": "管理表格"
+    "manageForm": "管理表格",
+    "tenantChip": "组访问",
+    "tenantChipTooltip": "此表单的访问权限由租户的组控制。",
+    "migratedChip": "已迁移",
+    "migratedChipTooltip": "已于 {date} 由 {by} 迁移到此租户。访问权限现由租户的组控制。",
+    "switchedToTenant": "已切换到 {tenant}——此表单属于该租户。"
   },
   "preview": {
     "preview": "预览",
@@ -1011,7 +1017,11 @@
     "leave": "离开",
     "selectAll": "全选",
     "addSelected": "添加所选",
+    "addAll": "全部添加",
     "removeSelected": "移除所选",
+    "removeAll": "全部移除",
+    "noGroups": "没有可用的组",
+    "noSearchResults": "没有与您的搜索匹配的组",
     "formAdminGroupRequired": "至少一个分配的组必须具有 form_admin 角色。",
     "invalidGroupIds": "一个或多个选定的组对此租户无效。",
     "insufficientPermissions": "您没有管理组关联的权限。"

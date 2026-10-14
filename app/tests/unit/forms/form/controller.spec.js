@@ -449,3 +449,52 @@ describe('createSubmission access token attachment', () => {
     expect(createdSubmission._accessToken).toBeUndefined();
   });
 });
+
+describe('readForm tenancy', () => {
+  const config = require('config');
+  const realGet = config.get.bind(config);
+
+  function withTenantFeature(enabled) {
+    jest.spyOn(config, 'get').mockImplementation((key) => (key === 'cstar.tenantFeatureEnabled' ? enabled : realGet(key)));
+  }
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('runs the tenancy lookup in parallel with readForm when the tenant feature is on', async () => {
+    withTenantFeature(true);
+    const order = [];
+    service.readForm = jest.fn().mockImplementation(async () => {
+      order.push('readForm:start');
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      order.push('readForm:end');
+      return { id: 'f1', name: 'Form' };
+    });
+    service.readFormTenancy = jest.fn().mockImplementation(async () => {
+      order.push('tenancy:start');
+      return { tenantId: 't1', migration: { migratedBy: 'X@idir' } };
+    });
+    const req = getMockReq({ params: { formId: 'f1' }, query: {} });
+    const { res, next } = getMockRes();
+
+    await controller.readForm(req, res, next);
+
+    // Both started before readForm finished.
+    expect(order.indexOf('tenancy:start')).toBeLessThan(order.indexOf('readForm:end'));
+    expect(res.json).toHaveBeenCalledWith({ id: 'f1', name: 'Form', tenantId: 't1', migration: { migratedBy: 'X@idir' } });
+  });
+
+  it('skips the tenancy lookup when the tenant feature is off but keeps the response shape', async () => {
+    withTenantFeature(false);
+    service.readForm = jest.fn().mockResolvedValue({ id: 'f1', name: 'Form' });
+    service.readFormTenancy = jest.fn();
+    const req = getMockReq({ params: { formId: 'f1' }, query: {} });
+    const { res, next } = getMockRes();
+
+    await controller.readForm(req, res, next);
+
+    expect(service.readFormTenancy).not.toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ id: 'f1', name: 'Form', tenantId: null, migration: null });
+  });
+});

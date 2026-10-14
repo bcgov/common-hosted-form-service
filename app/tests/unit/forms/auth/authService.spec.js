@@ -278,7 +278,7 @@ describe('getUserForms', () => {
     expect(result[0].permissions).toEqual(['form_update']);
   });
 
-  it('surfaces a 503 rather than silently denying access when the group lookup fails', async () => {
+  it('surfaces a 502 (not 503, which trips the global outage overlay) rather than silently denying access when the group lookup fails', async () => {
     // A failed lookup must not be read as "user is in no groups" — that collapses every
     // permission and reports a service outage as an authorization error.
     const userInfo = { id: 'user-1' };
@@ -290,7 +290,7 @@ describe('getUserForms', () => {
     jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
     jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(new Error('CSTAR unreachable'));
 
-    await expect(service.getUserForms(userInfo, { formId: 'group-form' }, headers)).rejects.toMatchObject({ status: 503 });
+    await expect(service.getUserForms(userInfo, { formId: 'group-form' }, headers)).rejects.toMatchObject({ status: 502 });
   });
 
   it('personal path: tenanted form with IDIR IDP is included in query results when no tenant header', async () => {

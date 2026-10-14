@@ -22,6 +22,7 @@
   "formsTable": {
     "myForms": "私のフォーム",
     "groupForms": "グループフォーム",
+    "groupAccessChip": "グループアクセス",
     "createNewForm": "新しいフォームを作成する",
     "search": "検索",
     "manage": "管理",
@@ -39,7 +40,12 @@
     "noDataText": "フォームが見つかりません"
   },
   "manageLayout": {
-    "manageForm": "フォームの管理"
+    "manageForm": "フォームの管理",
+    "tenantChip": "グループアクセス",
+    "tenantChipTooltip": "このフォームへのアクセスはテナントのグループによって管理されています。",
+    "migratedChip": "移行済み",
+    "migratedChipTooltip": "{date} に {by} によってこのテナントに移行されました。アクセスは現在テナントのグループによって管理されています。",
+    "switchedToTenant": "{tenant} に切り替えました。このフォームはそのテナントに属しています。"
   },
   "preview": {
     "preview": "プレビュー",
@@ -1011,7 +1017,11 @@
     "leave": "離れる",
     "selectAll": "すべて選択",
     "addSelected": "選択した項目を追加",
+    "addAll": "すべて追加",
     "removeSelected": "選択した項目を削除",
+    "removeAll": "すべて削除",
+    "noGroups": "利用できるグループはありません",
+    "noSearchResults": "検索に一致するグループはありません",
     "formAdminGroupRequired": "割り当てられたグループの少なくとも1つにform_adminロールが必要です。",
     "invalidGroupIds": "選択されたグループの1つ以上がこのテナントには無効です。",
     "insufficientPermissions": "グループの関連付けを管理する権限がありません。"

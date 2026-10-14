@@ -3146,17 +3146,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /rbac/forms/{formId}/migration/tenant-groups:
+    get:
+      summary: Get a tenant's groups for assigning during migration
+      description: >
+        Returns every group in the target tenant with the current user's CHEFS
+        roles in each (empty for groups the user is not a member of), the ids of
+        the user's form_admin groups to pre-select, each group's members, and the
+        tenant groups each current form team member belongs to. Returns 403
+        (TENANT_NOT_ELIGIBLE) if the user has no form_admin group in the tenant,
+        401 (SESSION_EXPIRED) if CSTAR rejects the session, 502 if CSTAR is
+        unavailable and 504 if it times out.
+      operationId: getMigrationTenantGroups
+      tags:
+        - RBAC
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: query
+          name: tenantId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MigrationGroup'
+                  preSelectedGroupIds:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  teamMemberGroups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        email:
+                          type: string
+                        fullName:
+                          type: string
+                        groupIds:
+                          type: array
+                          items:
+                            type: string
+                            format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /rbac/forms/{formId}/migration:
     post:
       summary: Migrate a personal form to a tenant
       description: >
         Atomically migrates a personal CHEFS form to the specified tenant by
         inserting form_tenant, form_group, and form_migration_log records in a
-        single database transaction. All form_admin groups the caller holds in
-        the target tenant are auto-assigned — no explicit group selection is
-        required. Re-validates eligibility server-side regardless of the preview
+        single database transaction. `groupIds` names the tenant groups to
+        assign; at least one must be a form_admin group the caller belongs to.
+        If omitted, all of the caller's form_admin groups in the tenant are
+        assigned. Re-validates eligibility server-side regardless of the preview
         response. Returns 401 if the session has expired since the preview was
-        loaded. This action cannot be undone.
+        loaded, 502 if CSTAR is unavailable and 504 if it times out. This action
+        cannot be undone.
       operationId: migrateForm
       tags:
         - RBAC
@@ -3183,6 +3254,10 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
         default:
           description: Unexpected error
           content:
@@ -5694,7 +5769,7 @@ components:
           example: true
     MigrationGroup:
       type: object
-      description: A CSTAR group that carries form_admin, eligible for assignment during migration.
+      description: A CSTAR group in the target tenant, assignable during migration.
       properties:
         id:
           type: string
@@ -5707,8 +5782,33 @@ components:
           type: array
           items:
             type: string
+          example: []
+        userRoles:
+          type: array
+          description: The current user's CHEFS roles through this group; empty if not a member.
+          items:
+            type: string
           example:
             - form_admin
+        isFormAdmin:
+          type: boolean
+        isUserMember:
+          type: boolean
+        members:
+          type: array
+          nullable: true
+          description: Group members, or null if membership could not be read.
+          items:
+            type: object
+            properties:
+              ssoUserId:
+                type: string
+              fullName:
+                type: string
+              email:
+                type: string
+              idpType:
+                type: string
     MigrationEligibleTenant:
       type: object
       description: A tenant where the current user holds form_admin in at least one group.
@@ -5720,11 +5820,6 @@ components:
         name:
           type: string
           example: FLNR Ministry
-        groups:
-          type: array
-          description: Groups in this tenant that carry the form_admin role.
-          items:
-            $ref: '#/components/schemas/MigrationGroup'
     MigrationTeamMember:
       type: object
       description: A current CHEFS team member on the form being migrated.
@@ -6545,6 +6640,21 @@ components:
                     example: Bad Gateway
                   type:
                     example: https://httpstatuses.com/502
+    GatewayTimeout:
+      description: External system did not respond in time
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 504
+                  title:
+                    example: Gateway Timeout
+                  type:
+                    example: https://httpstatuses.com/504
     BadRequest:
       description: Request is missing content or is malformed
       content:
