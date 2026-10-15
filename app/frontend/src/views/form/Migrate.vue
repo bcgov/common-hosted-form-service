@@ -390,7 +390,9 @@ async function refreshTenantGroups() {
     // the team impact table and submission counts come from the preview call, and
     // leaving them stale makes Refresh look like it did nothing.
     const [res] = await Promise.all([
-      rbacService.getMigrationTenantGroups(props.f, selectedTenantId.value),
+      rbacService.getMigrationTenantGroups(props.f, selectedTenantId.value, {
+        refresh: true,
+      }),
       loadPreviewData({ refresh: true, showLoading: false }),
     ]);
     if (token !== groupsRequestToken) return;
@@ -498,6 +500,53 @@ onBeforeUnmount(() => {
   isUnmounted = true;
 });
 
+// Switches into the migrated tenant and shows the result screen. `sent` is the selection
+// that was submitted, captured before the request.
+async function completeMigration(sent) {
+  const tenant = await storeTenant(sent.tenantId);
+  if (isUnmounted) return;
+  migrationResult.value = {
+    tenantName: sent.tenantName,
+    groupNames: sent.groupNames,
+    // Filled in below from the server's own migration record.
+    migratedBy: null,
+    migratedAt: null,
+  };
+  // If the list still cannot return the tenant (CSTAR degraded), select it with the
+  // role eligibility guarantees, so the Manage page keeps Group Management.
+  tenantStore.selectTenant(
+    tenant || {
+      id: sent.tenantId,
+      name: sent.tenantName,
+      roles: [TenantRoles.FORM_ADMIN],
+    }
+  );
+  migrated.value = true;
+  // Who migrated it and when come from form_migration_log rather than the browser
+  // clock, so the record shown matches the record stored.
+  await loadMigrationRecord();
+}
+
+async function handleMigrationError(err) {
+  const code = err.response?.data?.code;
+  // Migrated elsewhere (another tab, another admin) — show the migrated state rather
+  // than an error about a thing that has in fact succeeded.
+  if (code === 'ALREADY_MIGRATED') {
+    await loadPreviewData({ showLoading: false });
+    return;
+  }
+  if (code !== 'SESSION_EXPIRED') {
+    error.value = err.response?.data?.detail || err.message;
+    return;
+  }
+  const recovered = await attemptSessionRecovery();
+  error.value = recovered
+    ? t('trans.formMigration.sessionExpiredRetry')
+    : t('trans.formMigration.sessionExpired');
+  showRetryButton.value = recovered;
+  showRefreshButton.value = !recovered;
+}
+
 async function submitMigration() {
   if (submitting.value) return;
   submitting.value = true;
@@ -506,59 +555,20 @@ async function submitMigration() {
   showRetryButton.value = false;
   // Snapshot the selection: the result screen must describe what was sent, whatever the
   // reactive state does while the request is in flight.
-  const tenantId = selectedTenantId.value;
-  const tenantName = selectedTenant.value?.name;
-  const groupIds = assignedGroups.value.map((g) => g.id);
-  const groupNames = assignedGroups.value.map((g) => g.name);
+  const sent = {
+    tenantId: selectedTenantId.value,
+    tenantName: selectedTenant.value?.name,
+    groupIds: assignedGroups.value.map((g) => g.id),
+    groupNames: assignedGroups.value.map((g) => g.name),
+  };
   try {
     await rbacService.executeMigration(props.f, {
-      tenantId,
-      ...(groupIds.length > 0 ? { groupIds } : {}),
+      tenantId: sent.tenantId,
+      ...(sent.groupIds.length > 0 ? { groupIds: sent.groupIds } : {}),
     });
-    if (isUnmounted) return;
-    const tenant = await storeTenant(tenantId);
-    if (isUnmounted) return;
-    migrationResult.value = {
-      tenantName,
-      groupNames,
-      // Filled in below from the server's own migration record.
-      migratedBy: null,
-      migratedAt: null,
-    };
-    // If the list still cannot return the tenant (CSTAR degraded), select it with the
-    // role eligibility guarantees, so the Manage page keeps Group Management.
-    tenantStore.selectTenant(
-      tenant || {
-        id: tenantId,
-        name: tenantName,
-        roles: [TenantRoles.FORM_ADMIN],
-      }
-    );
-    migrated.value = true;
-    // Who migrated it and when come from form_migration_log rather than the browser
-    // clock, so the record shown matches the record stored.
-    await loadMigrationRecord();
+    if (!isUnmounted) await completeMigration(sent);
   } catch (err) {
-    if (isUnmounted) return;
-    const code = err.response?.data?.code;
-    // Migrated elsewhere (another tab, another admin) — show the migrated state rather
-    // than an error about a thing that has in fact succeeded.
-    if (code === 'ALREADY_MIGRATED') {
-      await loadPreviewData({ showLoading: false });
-      return;
-    }
-    if (code === 'SESSION_EXPIRED') {
-      const recovered = await attemptSessionRecovery();
-      if (recovered) {
-        error.value = t('trans.formMigration.sessionExpiredRetry');
-        showRetryButton.value = true;
-      } else {
-        error.value = t('trans.formMigration.sessionExpired');
-        showRefreshButton.value = true;
-      }
-    } else {
-      error.value = err.response?.data?.detail || err.message;
-    }
+    if (!isUnmounted) await handleMigrationError(err);
   } finally {
     submitting.value = false;
   }

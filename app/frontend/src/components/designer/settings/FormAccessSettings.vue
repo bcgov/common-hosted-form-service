@@ -369,10 +369,12 @@ defineExpose({ idpType, userTypeChanged, IdpTypeList });
   color: #313132;
 }
 
-.restricted-chip {
-  background-color: #fff4cc !important;
-  border: 1px solid #d6b64c !important;
-  color: #313132 !important;
+/* Two classes (plus the scope attribute) outrank Vuetify's single-class
+   .v-chip--variant-flat colours without !important. */
+.v-chip.restricted-chip {
+  background-color: #fff4cc;
+  border: 1px solid #d6b64c;
+  color: #313132;
   font-weight: 600;
 }
 </style>

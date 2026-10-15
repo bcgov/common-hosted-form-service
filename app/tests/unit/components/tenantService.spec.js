@@ -33,12 +33,41 @@ describe('TenantService', () => {
     mockAxios = new MockAdapter(axios);
     jwtService.getBearerToken.mockReset();
     tenantService._clearListTenantsCache();
+    tenantService._clearGroupMembersCache();
   });
 
   afterEach(() => {
     mockAxios.reset();
     jest.restoreAllMocks();
     jest.clearAllMocks();
+  });
+
+  describe('cstar.timeoutMs', () => {
+    it('falls back to 15000 instead of throwing at load when the key is missing', async () => {
+      // The devcontainer reads config from .devcontainer/chefs_local, whose older
+      // local.json files have no timeoutMs; config.get would throw when the module loads.
+      await jest.isolateModulesAsync(async () => {
+        const realConfig = jest.requireActual('config');
+        jest.doMock('config', () => ({
+          has: (key) => key !== 'cstar.timeoutMs' && realConfig.has(key),
+          get: (key) => {
+            if (key === 'cstar.timeoutMs') throw new Error('Configuration property "cstar.timeoutMs" is not defined');
+            return realConfig.get(key);
+          },
+        }));
+        const isolatedAxios = require('axios');
+        const getSpy = jest.spyOn(isolatedAxios, 'get').mockResolvedValue({ data: { data: { groups: [] } } });
+
+        let isolated;
+        expect(() => {
+          isolated = require('../../../src/components/tenantService');
+        }).not.toThrow();
+
+        await isolated.getGroupsForUser({ headers: {} }, 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'u1');
+        expect(getSpy).toHaveBeenCalledTimes(1);
+        expect(getSpy.mock.calls[0][1].timeout).toBe(15000);
+      });
+    });
   });
 
   describe('_getAuthHeaders', () => {
@@ -1893,19 +1922,6 @@ describe('TenantService', () => {
   describe('getMigrationTenantGroups', () => {
     const tenantId = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
 
-    it('rethrows a CSTAR 401 instead of reporting the user as not a Form Admin', async () => {
-      FormTenant.knex = jest.fn().mockReturnValue({ raw: jest.fn().mockResolvedValue({ rows: [] }) });
-      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([]);
-      const groupsSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(Object.assign(new Error('Unauthorized'), { response: { status: 401 } }));
-      const req = { currentUser: { idpUserId: 'user-sso-id' }, headers: { authorization: 'Bearer token' } };
-
-      const err = await tenantService.getMigrationTenantGroups(req, 'ffffffff-ffff-ffff-ffff-ffffffffffff', tenantId).catch((e) => e);
-
-      expect(groupsSpy).toHaveBeenCalledWith(expect.anything(), tenantId, { rethrowOnAuthError: true });
-      expect(err.response.status).toBe(401);
-      expect(err.code).not.toBe('TENANT_NOT_ELIGIBLE');
-    });
-
     const formId = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
     const req = {
       currentUser: { idpUserId: 'user-sso-id', usernameIdp: 'TEST@idir' },
@@ -1919,6 +1935,17 @@ describe('TenantService', () => {
       // Default: membership reads succeed but return nobody, so existing assertions
       // about groups/roles are unaffected by the membership lookup.
       jest.spyOn(tenantService, 'getMembersByGroup').mockResolvedValue(new Map());
+    });
+
+    it('rethrows a CSTAR 401 instead of reporting the user as not a Form Admin', async () => {
+      jest.spyOn(tenantService, 'getGroupsForCurrentTenant').mockResolvedValue([]);
+      const groupsSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(Object.assign(new Error('Unauthorized'), { response: { status: 401 } }));
+
+      const err = await tenantService.getMigrationTenantGroups(req, formId, tenantId).catch((e) => e);
+
+      expect(groupsSpy).toHaveBeenCalledWith(expect.anything(), tenantId, { rethrowOnAuthError: true });
+      expect(err.response.status).toBe(401);
+      expect(err.code).not.toBe('TENANT_NOT_ELIGIBLE');
     });
 
     it('marks a group as isFormAdmin from the user-scoped listing even when the tenant-wide listing has no role details', async () => {
@@ -2097,7 +2124,7 @@ describe('TenantService', () => {
         await tenantService.getMigrationTenantGroups(req, formId, tenantId);
 
         expect(tenantService.getMembersByGroup).toHaveBeenCalledTimes(1);
-        expect(tenantService.getMembersByGroup).toHaveBeenCalledWith(req, tenantId, ['g1']);
+        expect(tenantService.getMembersByGroup).toHaveBeenCalledWith(req, tenantId, ['g1'], { bypassCache: false });
         expect(perUser).not.toHaveBeenCalled();
       });
     });
@@ -2107,6 +2134,60 @@ describe('TenantService', () => {
     const tenantId = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
     const req = { currentUser: { idpUserId: 'user-sso-id' }, headers: { authorization: 'Bearer token' } };
     const usersUrl = `${endpoint}tenants/${tenantId}/users`;
+
+    describe('membership cache', () => {
+      function countReads(reply = [200, { data: { users: [{ isDeleted: false, ssoUser: { ssoUserId: 'sso-ann' } }] } }]) {
+        let reads = 0;
+        jwtService.getBearerToken.mockReturnValue('testtoken');
+        mockAxios.onGet(usersUrl).reply(() => {
+          reads += 1;
+          return typeof reply === 'function' ? reply(reads) : reply;
+        });
+        return () => reads;
+      }
+
+      it('reuses a recent read of the same tenant and group', async () => {
+        const reads = countReads();
+
+        await tenantService.getMembersByGroup(req, tenantId, ['g1']);
+        const map = await tenantService.getMembersByGroup(req, tenantId, ['g1']);
+
+        expect(reads()).toBe(1);
+        expect(map.get('g1').map((m) => m.ssoUserId)).toEqual(['sso-ann']);
+      });
+
+      it('re-reads when the caller bypasses the cache (an explicit Refresh)', async () => {
+        const reads = countReads();
+
+        await tenantService.getMembersByGroup(req, tenantId, ['g1']);
+        await tenantService.getMembersByGroup(req, tenantId, ['g1'], { bypassCache: true });
+
+        expect(reads()).toBe(2);
+      });
+
+      it('keys by tenant as well as group', async () => {
+        const otherTenant = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
+        const reads = countReads();
+        mockAxios.onGet(`${endpoint}tenants/${otherTenant}/users`).reply(200, { data: { users: [] } });
+
+        await tenantService.getMembersByGroup(req, tenantId, ['g1']);
+        const other = await tenantService.getMembersByGroup(req, otherTenant, ['g1']);
+
+        expect(reads()).toBe(1);
+        expect(other.get('g1')).toEqual([]);
+      });
+
+      it('does not cache a failed read', async () => {
+        const reads = countReads((n) => (n === 1 ? [500, { error: 'boom' }] : [200, { data: { users: [] } }]));
+
+        const first = await tenantService.getMembersByGroup(req, tenantId, ['g1']);
+        const second = await tenantService.getMembersByGroup(req, tenantId, ['g1']);
+
+        expect(first.has('g1')).toBe(false);
+        expect(second.get('g1')).toEqual([]);
+        expect(reads()).toBe(2);
+      });
+    });
 
     it('reads membership from the tenant-users route filtered to one group', async () => {
       // CSTAR guards GET /tenants/:id/groups/:groupId with checkJwt() (no

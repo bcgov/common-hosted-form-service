@@ -90,10 +90,11 @@ export default {
     );
   },
 
-  getMigrationTenantGroups(formId, tenantId) {
+  getMigrationTenantGroups(formId, tenantId, { refresh = false } = {}) {
+    // refresh=true re-reads group membership from CSTAR instead of the short-lived cache.
     return appAxios().get(
       `${ApiRoutes.RBAC}/forms/${formId}/migration/tenant-groups`,
-      { params: { tenantId } }
+      { params: { tenantId, ...(refresh ? { refresh: true } : {}) } }
     );
   },
 

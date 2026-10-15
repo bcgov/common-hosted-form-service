@@ -27,15 +27,27 @@ const GROUP_MEMBERS_CONCURRENCY = 5;
 async function _mapWithConcurrency(items, limit, fn) {
   const results = new Array(items.length);
   let next = 0;
-  const worker = async () => {
-    while (next < items.length) {
-      const index = next++;
-      results[index] = await fn(items[index], index);
-    }
+  // Each worker takes the next item only when its current one settles, so at most
+  // `limit` calls are in flight; chained rather than awaited in a loop.
+  const worker = () => {
+    if (next >= items.length) return Promise.resolve();
+    const index = next++;
+    return Promise.resolve(fn(items[index], index)).then((result) => {
+      results[index] = result;
+      return worker();
+    });
   };
   await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
   return results;
 }
+
+// Single-flight + short-TTL cache of group members, keyed by tenant and group, in the same
+// shape as listTenantsCache below. Picking groups on the migration page re-reads every
+// group in the tenant; this keeps that from re-hitting CSTAR within a few seconds.
+// Failures are never cached. Only read after the caller is confirmed Form Admin in the
+// tenant, so a cached entry is never served to someone who could not read it themselves.
+const GROUP_MEMBERS_TTL_MS = 30 * 1000;
+const groupMembersCache = new Map();
 
 // Single-flight + short-TTL cache for the list-user-tenants CSTAR call. Every
 // authenticated CHEFS request routes through the tenant middleware (see
@@ -558,11 +570,11 @@ class TenantService {
    * @param {string[]} groupIds
    * @returns {Promise<Map<string, Array<object>>>}
    */
-  async getMembersByGroup(req, tenantId, groupIds) {
+  async getMembersByGroup(req, tenantId, groupIds, { bypassCache = false } = {}) {
     const unique = [...new Set(groupIds || [])];
     const results = await _mapWithConcurrency(unique, GROUP_MEMBERS_CONCURRENCY, async (groupId) => {
       try {
-        return [groupId, await this.getGroupMembers(req, tenantId, groupId)];
+        return [groupId, await this._getGroupMembersCached(req, tenantId, groupId, { bypassCache })];
       } catch (err) {
         // Log the status and CSTAR's own reason — a bare stack hid that every call was
         // failing identically on an audience check rather than intermittently.
@@ -581,6 +593,27 @@ class TenantService {
   }
 
   /**
+   * getGroupMembers through groupMembersCache. `bypassCache` (an explicit Refresh) skips a
+   * cached entry and replaces it with a fresh read.
+   */
+  _getGroupMembersCached(req, tenantId, groupId, { bypassCache = false } = {}) {
+    const key = `${tenantId}:${groupId}`;
+    const now = Date.now();
+    const cached = groupMembersCache.get(key);
+    if (!bypassCache && cached?.expiresAt > now) return cached.promise;
+    const promise = this.getGroupMembers(req, tenantId, groupId).catch((err) => {
+      if (groupMembersCache.get(key)?.promise === promise) groupMembersCache.delete(key);
+      throw err;
+    });
+    groupMembersCache.set(key, { promise, expiresAt: now + GROUP_MEMBERS_TTL_MS });
+    return promise;
+  }
+
+  _clearGroupMembersCache() {
+    groupMembersCache.clear();
+  }
+
+  /**
    * Returns all groups for a target tenant enriched with role details, the IDs of the
    * current user's form_admin groups to use as pre-selection defaults, the membership of
    * each group, and per-team-member group membership derived from it.
@@ -593,9 +626,11 @@ class TenantService {
    * @param {object} req - Express request with currentUser
    * @param {string} formId - UUID of the form being migrated
    * @param {string} tenantId - UUID of the target tenant
+   * @param {object} [options]
+   * @param {boolean} [options.bypassCache] - re-read group membership (explicit Refresh)
    * @returns {Promise<{groups, preSelectedGroupIds, teamMemberGroups}>}
    */
-  async getMigrationTenantGroups(req, formId, tenantId) {
+  async getMigrationTenantGroups(req, formId, tenantId, { bypassCache = false } = {}) {
     if (!req?.currentUser) throw new TypeError(`${SERVICE}: missing currentUser`);
     if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
     if (!tenantId) throw new TypeError(`${SERVICE}: missing tenantId`);
@@ -642,7 +677,8 @@ class TenantService {
     const membersByGroup = await this.getMembersByGroup(
       req,
       tenantId,
-      allTenantGroups.map((g) => g.id)
+      allTenantGroups.map((g) => g.id),
+      { bypassCache }
     );
 
     const groups = allTenantGroups.map((g) => {

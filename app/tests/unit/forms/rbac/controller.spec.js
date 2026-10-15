@@ -536,6 +536,17 @@ describe('getMigrationTenantGroups', () => {
     });
   });
 
+  it('reads cached group membership normally, and bypasses the cache on ?refresh=true', async () => {
+    tenantService.getMigrationTenantGroups = jest.fn().mockResolvedValue({ groups: [] });
+
+    await controller.getMigrationTenantGroups(req, res, next);
+    expect(tenantService.getMigrationTenantGroups).toHaveBeenLastCalledWith(req, 'form-1', tenantId, { bypassCache: false });
+
+    req.query.refresh = 'true';
+    await controller.getMigrationTenantGroups(req, res, next);
+    expect(tenantService.getMigrationTenantGroups).toHaveBeenLastCalledWith(req, 'form-1', tenantId, { bypassCache: true });
+  });
+
   it('returns 401 SESSION_EXPIRED when CSTAR rejects the session, not a Form Admin error', async () => {
     tenantService.getMigrationTenantGroups = jest.fn().mockRejectedValue(Object.assign(new Error('Unauthorized'), { response: { status: 401 } }));
 
@@ -1038,7 +1049,7 @@ describe('migrateForm', () => {
     await controller.migrateForm(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: err.message, code: 'INVALID_GROUP' });
+    expect(res.json).toHaveBeenCalledWith({ detail: 'One or more selected groups are not valid for this tenant.', code: 'INVALID_GROUP' });
   });
 
   it('answers 400 for a TenantService argument error without leaking the internal prefix', async () => {
@@ -1051,16 +1062,17 @@ describe('migrateForm', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 400 for FORM_ADMIN_GROUP_REQUIRED error code', async () => {
-    const err = Object.assign(new Error('At least one assigned group must have the Form Admin role.'), {
-      code: 'FORM_ADMIN_GROUP_REQUIRED',
-    });
+  it.each([
+    ['FORM_ADMIN_GROUP_REQUIRED', 'At least one assigned group must have the Form Admin role.'],
+    ['INVALID_GROUP', 'One or more selected groups are not valid for this tenant.'],
+  ])('should return 400 for %s with a fixed user-facing detail, never the service message', async (code, detail) => {
+    const err = Object.assign(new Error('TenantService: internal wording that must not reach the user'), { code });
     tenantService.migrateFormToTenant = jest.fn().mockRejectedValue(err);
 
     await controller.migrateForm(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: err.message, code: 'FORM_ADMIN_GROUP_REQUIRED' });
+    expect(res.json).toHaveBeenCalledWith({ detail, code });
     expect(next).not.toHaveBeenCalled();
   });
 

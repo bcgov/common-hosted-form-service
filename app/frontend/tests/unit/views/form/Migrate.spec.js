@@ -192,8 +192,9 @@ describe('Migrate.vue', () => {
       await wrapper.vm.refreshTenantGroups();
 
       // Groups alone are not "the latest data" — the impact table and counts come
-      // from the preview, and the cache must be bypassed for an explicit refresh.
-      expect(rbacService.getMigrationTenantGroups).toHaveBeenCalledWith(FORM_ID, 'tenant-1');
+      // from the preview, and the cache must be bypassed for an explicit refresh,
+      // including the server's short-lived group-membership cache.
+      expect(rbacService.getMigrationTenantGroups).toHaveBeenCalledWith(FORM_ID, 'tenant-1', { refresh: true });
       expect(rbacService.getMigrationPreview).toHaveBeenCalledWith(FORM_ID, {
         refresh: true,
       });
@@ -1127,7 +1128,7 @@ describe('Migrate.vue', () => {
       });
       await wrapper.vm.refreshTenantGroups();
 
-      expect(rbacService.getMigrationTenantGroups).toHaveBeenCalledWith(FORM_ID, 'tenant-1');
+      expect(rbacService.getMigrationTenantGroups).toHaveBeenCalledWith(FORM_ID, 'tenant-1', { refresh: true });
       expect(wrapper.vm.selectedTenantId).toBe('tenant-1');
       expect(wrapper.vm.assignedGroups.map((g) => g.id)).toEqual(['g1']);
     });

@@ -40,8 +40,13 @@ const _validateMigrateFormBody = ({ tenantId, groupIds }) => {
   return null;
 };
 
-// Validation failures raised by tenantService.migrateFormToTenant, passed through as 400s.
-const MIGRATE_VALIDATION_CODES = new Set(['INVALID_GROUP', 'FORM_ADMIN_GROUP_REQUIRED']);
+// Validation failures raised by tenantService.migrateFormToTenant, answered as 400s with a
+// fixed user-facing message per code. The service's own error text is never sent: it is
+// written for logs and may name internals.
+const MIGRATE_VALIDATION_DETAILS = new Map([
+  ['INVALID_GROUP', 'One or more selected groups are not valid for this tenant.'],
+  ['FORM_ADMIN_GROUP_REQUIRED', 'At least one assigned group must have the Form Admin role.'],
+]);
 const CSTAR_NETWORK_ERROR_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT']);
 const CSTAR_UNAVAILABLE_STATUSES = new Set([500, 502, 503, 504]);
 
@@ -71,7 +76,8 @@ const _cstarErrorResponse = (error) => {
  */
 const _migrateFormErrorResponse = (error) => {
   if (error.code === 'ALREADY_MIGRATED') return { status: 400, body: { detail: 'Form is already migrated to a tenant.', code: error.code } };
-  if (MIGRATE_VALIDATION_CODES.has(error.code)) return { status: 400, body: { detail: error.message, code: error.code } };
+  const detail = MIGRATE_VALIDATION_DETAILS.get(error.code);
+  if (detail) return { status: 400, body: { detail, code: error.code } };
   return _cstarErrorResponse(error);
 };
 
@@ -364,7 +370,9 @@ module.exports = {
       // the endpoint listed the groups of any tenant whose id was guessed or pasted in.
       // The check lives in the service, which already reads the user's groups for this
       // tenant, so it costs no extra CSTAR calls.
-      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId);
+      // An explicit Refresh must show membership changes just made in CSTAR.
+      const bypassCache = req.query?.refresh === 'true';
+      const result = await tenantService.getMigrationTenantGroups(req, formId, tenantId, { bypassCache });
       res.status(200).json(result);
     } catch (error) {
       if (error.code === 'TENANT_NOT_ELIGIBLE') {
