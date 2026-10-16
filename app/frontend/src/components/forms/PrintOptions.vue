@@ -40,7 +40,7 @@ const templateForm = ref({
   outputFileName: '',
   outputFileType: null,
 });
-const expandedText = ref(false);
+const expandedText = ref(true);
 const timeout = ref(undefined);
 const tab = ref('tab-1');
 const selectedOption = ref('upload');
@@ -115,10 +115,18 @@ async function printBrowser() {
   dialog.value = false;
 
   if (expandedText.value) {
-    // Get all text input elements
-    let inputs = document.querySelectorAll('input[type="text"]');
+    // Get all text input and text area elements. Textareas render as
+    // scrollable boxes that browsers clip (rather than paginate) when
+    // printed, so they're swapped out the same way as text inputs.
+    // Excludes hidden helper inputs inside select components (Choices.js
+    // search clone and Form.io autofill decoy) that would print as empty boxes.
+    let inputs = Array.from(
+      document.querySelectorAll(
+        'textarea, input[type="text"]:not(.choices__input):not(.formio-select-autocomplete-input)'
+      )
+    );
 
-    // Create arrays to store original input fields and new divs
+    // Create arrays to store original fields and new divs
     let originalInputs = [];
     let divs = [];
 
@@ -126,14 +134,22 @@ async function printBrowser() {
       let div = document.createElement('div');
       div.textContent = input.value;
       // apply styling
-      div.style.width = '100%';
-      div.style.height = 'auto';
+      // Inside a flex row (e.g. date field with calendar icon) let the div
+      // share the row; a forced 100% width would push the icon to the next line.
+      if (getComputedStyle(input.parentNode).display === 'flex') {
+        div.style.flex = '1 1 auto';
+        div.style.minWidth = '0';
+      } else {
+        div.style.width = '100%';
+      }
+      div.style.minHeight = `${input.offsetHeight}px`;
       div.style.padding = '6px 12px';
       div.style.lineHeight = '1.5';
       div.style.color = '#495057';
       div.style.border = '1px solid #606060';
       div.style.borderRadius = '4px';
       div.style.boxSizing = 'border-box';
+      div.style.whiteSpace = 'pre-wrap';
 
       // Store the original input and new div
       originalInputs.push(input);
