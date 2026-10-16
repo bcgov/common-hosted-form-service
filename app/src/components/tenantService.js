@@ -6,12 +6,48 @@ const log = require('./log')(module.filename);
 const SERVICE = 'TenantService';
 const endpoint = config.get('cstar.endpoint');
 const listUserTenantsPath = config.get('cstar.listUserTenantsPath');
+// Optional: the devcontainer loads config from .devcontainer/chefs_local, where older
+// local.json files have no timeoutMs, and config.get throws on a missing key.
+const CSTAR_TIMEOUT_MS = config.has('cstar.timeoutMs') ? config.get('cstar.timeoutMs') : 15000;
 const { TenantRoles } = require('../forms/common/constants');
 const { Role, User } = require('../forms/common/models');
 const Form = require('../forms/common/models/tables/form');
 const FormGroup = require('../forms/common/models/tables/formGroup');
+const FormMigrationLog = require('../forms/common/models/tables/formMigrationLog');
 const FormTenant = require('../forms/common/models/tables/formTenant');
 const uuid = require('uuid');
+
+// Upper bound on simultaneous per-group membership reads (getMembersByGroup).
+const GROUP_MEMBERS_CONCURRENCY = 5;
+
+/**
+ * Like Promise.all(items.map(fn)) but with at most `limit` calls in flight; results keep
+ * the input order. `fn` is expected to handle its own errors.
+ */
+async function _mapWithConcurrency(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  // Each worker takes the next item only when its current one settles, so at most
+  // `limit` calls are in flight; chained rather than awaited in a loop.
+  const worker = () => {
+    if (next >= items.length) return Promise.resolve();
+    const index = next++;
+    return Promise.resolve(fn(items[index], index)).then((result) => {
+      results[index] = result;
+      return worker();
+    });
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
+// Single-flight + short-TTL cache of group members, keyed by tenant and group, in the same
+// shape as listTenantsCache below. Picking groups on the migration page re-reads every
+// group in the tenant; this keeps that from re-hitting CSTAR within a few seconds.
+// Failures are never cached. Only read after the caller is confirmed Form Admin in the
+// tenant, so a cached entry is never served to someone who could not read it themselves.
+const GROUP_MEMBERS_TTL_MS = 30 * 1000;
+const groupMembersCache = new Map();
 
 // Single-flight + short-TTL cache for the list-user-tenants CSTAR call. Every
 // authenticated CHEFS request routes through the tenant middleware (see
@@ -39,18 +75,22 @@ class TenantService {
    * Returns `{ tenants, degraded }`. On transient CSTAR failure (5xx / network)
    * returns `{ tenants: [], degraded: true }` without caching. On 4xx or other
    * unexpected errors, throws.
+   *
+   * `bypassCache` skips the cached entry and replaces it with a fresh call. It is for
+   * user-initiated refreshes only — a Refresh button that returns up-to-30s-old data
+   * has not refreshed anything from the user's point of view.
    */
-  _fetchUserTenantsList(req) {
+  _fetchUserTenantsList(req, { bypassCache = false } = {}) {
     const userId = req.currentUser.idpUserId;
     const now = Date.now();
     const cached = listTenantsCache.get(userId);
-    if (cached?.expiresAt > now) {
+    if (!bypassCache && cached?.expiresAt > now) {
       return cached.promise;
     }
     const url = `${endpoint}${listUserTenantsPath.replace('{userId}', userId)}`;
     const headers = this._getAuthHeaders(req);
     const promise = axios
-      .get(url, { headers })
+      .get(url, { headers, timeout: CSTAR_TIMEOUT_MS })
       .then((res) => {
         const raw = res?.data?.data?.tenants;
         return { tenants: Array.isArray(raw) ? raw : [], degraded: false };
@@ -61,7 +101,8 @@ class TenantService {
         if (current?.promise === promise) listTenantsCache.delete(userId);
         const status = error?.response?.status;
         const isUnavailable = [500, 502, 503, 504].includes(status);
-        const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(error?.code);
+        // ECONNABORTED is axios's timeout: degrade like any other outage instead of a 500.
+        const isNetworkError = ['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT', 'ECONNABORTED'].includes(error?.code);
         if (isUnavailable || isNetworkError) return { tenants: [], degraded: true };
         throw error;
       });
@@ -94,14 +135,24 @@ class TenantService {
     return { belongs, degraded: false };
   }
 
-  async getCurrentUserTenants(req) {
+  async getCurrentUserTenants(req, { bypassCache = false } = {}) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
     }
     if (!req.currentUser.idpUserId) {
       throw new TypeError(`${SERVICE}: missing currentUser.idpUserId`);
     }
-    const { tenants, degraded } = await this._fetchUserTenantsList(req);
+    let tenants, degraded;
+    try {
+      ({ tenants, degraded } = await this._fetchUserTenantsList(req, { bypassCache }));
+    } catch (error) {
+      // A 401 from CSTAR means the user's token is not recognised — treat as
+      // having no tenants rather than surfacing an opaque 401 to the caller.
+      // Handled here rather than in _fetchUserTenantsList so verifyTenantMembership
+      // (used by the currentUser middleware) still surfaces a 401 as an error.
+      if (error?.response?.status === 401) return [];
+      throw error;
+    }
     if (degraded) {
       req._tenantServiceDegraded = true;
       return [];
@@ -128,7 +179,7 @@ class TenantService {
     return tenantsWithRoles;
   }
 
-  async getUserTenantGroupsAndRoles(req, tenantId) {
+  async getUserTenantGroupsAndRoles(req, tenantId, { rethrowOnAuthError = false } = {}) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
     }
@@ -146,15 +197,25 @@ class TenantService {
     const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', userId)}`;
     const headers = this._getAuthHeaders(req);
-    const { data } = await axios.get(url, { headers });
-    const groups = Array.isArray(data?.data?.groups) ? data.data.groups : [];
-    return groups.map((group) => ({
-      id: group.id,
-      name: group.name,
-      roles: (group.sharedServiceRoles || []).filter((role) => role.isDeleted !== true).map((role) => role.name),
-    }));
+    try {
+      const { data } = await axios.get(url, { headers, timeout: CSTAR_TIMEOUT_MS });
+      const groups = Array.isArray(data?.data?.groups) ? data.data.groups : [];
+      return groups.map((group) => ({
+        id: group.id,
+        name: group.name,
+        roles: (group.sharedServiceRoles || []).filter((role) => role.isDeleted !== true).map((role) => role.name),
+      }));
+    } catch (error) {
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        // rethrowOnAuthError: true is used by the execute path so a session expiry
+        // surfaces as a 401 to the caller rather than a misleading "no form_admin groups" error.
+        if (rethrowOnAuthError) throw error;
+        return [];
+      }
+      throw error;
+    }
   }
-
   async getGroupsForCurrentTenant(req) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
@@ -167,7 +228,7 @@ class TenantService {
     const groupPath = config.get('cstar.listGroupsForTenant');
     const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId)}`;
     const headers = this._getAuthHeaders(req);
-    const { data } = await axios.get(url, { headers });
+    const { data } = await axios.get(url, { headers, timeout: CSTAR_TIMEOUT_MS });
     return Array.isArray(data?.data?.groups) ? data.data.groups : [];
   }
 
@@ -353,7 +414,7 @@ class TenantService {
       const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
       const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', formTenant.tenantId)}`;
       const groupIdsCsv = formGroups.map((fg) => fg.groupId).join(',');
-      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req), params: { groupIds: groupIdsCsv } });
+      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req), params: { groupIds: groupIdsCsv }, timeout: CSTAR_TIMEOUT_MS });
       const usersInGroups = data?.data?.users || data?.users || [];
       return usersInGroups.some((u) => u?.ssoUser?.ssoUserId === targetUser.idpUserId);
     } catch {
@@ -367,8 +428,11 @@ class TenantService {
    * required — this works from the submit view where tenant context is absent.
    *
    * Returns null for classic CHEFS forms (no FormTenant record); caller should
-   * fall back to the regular getFormUsers path. Tenanted forms — with or without
-   * specific group assignments — return all tenant users.
+   * fall back to the regular getFormUsers path. When the form restricts access to
+   * specific groups the result is scoped to the members of those groups, so that the
+   * people offered here are exactly the people isUserInFormGroups will later accept —
+   * otherwise a user can be picked from the list and then rejected on save. A tenanted
+   * form with no group restrictions returns all tenant users.
    *
    * @param {object} req    - Express request (headers used for CSTAR auth)
    * @param {string} formId - UUID of the form
@@ -384,16 +448,20 @@ class TenantService {
     const reqForTenant = {
       ...req,
       currentUser: { ...req.currentUser, tenantId: formTenant.tenantId },
+      headers: req.headers,
     };
-    return this.getTenantUsers(reqForTenant);
+    const groupIds = formGroups.map((fg) => fg.groupId);
+    return this.getTenantUsers(reqForTenant, groupIds.length ? groupIds : null);
   }
 
   /**
-   * Get users for a specific tenant from CSTAR
+   * Get users for a specific tenant from CSTAR, optionally restricted to the members of
+   * specific groups.
    * @param {object} req - Express request object with currentUser and headers
+   * @param {string[]|null} groupIds - Optional group IDs to restrict membership to
    * @returns {Promise<Array>} Array of user objects
    */
-  async getTenantUsers(req) {
+  async getTenantUsers(req, groupIds = null) {
     if (!req || !req.currentUser) {
       throw new TypeError(`${SERVICE}: missing currentUser`);
     }
@@ -404,8 +472,399 @@ class TenantService {
     const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
     const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', req.currentUser.tenantId)}`;
     const headers = this._getAuthHeaders(req);
-    const { data } = await axios.get(url, { headers });
+    const requestConfig = { headers, timeout: CSTAR_TIMEOUT_MS };
+    if (Array.isArray(groupIds) && groupIds.length) {
+      requestConfig.params = { groupIds: groupIds.join(',') };
+    }
+    const { data } = await axios.get(url, requestConfig);
     return data?.data?.users || data?.users || [];
+  }
+  /**
+   * Returns tenants where the current user has form_admin in at least one group.
+   * getCurrentUserTenants has already read each tenant's groups to derive `roles`, so no
+   * further CSTAR calls are needed; the group picker loads groups for the chosen tenant.
+   * @param {object} req - Express request with currentUser
+   * @returns {Promise<Array<{id, name}>>}
+   */
+  async getEligibleTenantsForMigration(req, { bypassCache = false } = {}) {
+    const allTenants = await this.getCurrentUserTenants(req, { bypassCache });
+    return allTenants
+      .filter((t) => Array.isArray(t.roles) && t.roles.includes(TenantRoles.FORM_ADMIN))
+      .map((tenant) => ({ id: tenant.id, name: tenant.name || tenant.displayName }));
+  }
+
+  /**
+   * Fetch the CSTAR groups that a specific SSO user belongs to in a tenant.
+   * Degrades to [] on any error so one unreachable user never breaks the page.
+   * @param {object} req - Express request (headers used for auth)
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {string} ssoUserId - The SSO user ID (idpUserId) to look up
+   * @returns {Promise<Array<{id, name}>>}
+   */
+  async getGroupsForUser(req, tenantId, ssoUserId) {
+    const groupPath = config.get('cstar.listGroupsForUserForTenantPath');
+    const url = `${endpoint}${groupPath.replace('{tenantId}', tenantId).replace('{userId}', ssoUserId)}`;
+    try {
+      const { data } = await axios.get(url, { headers: this._getAuthHeaders(req), timeout: CSTAR_TIMEOUT_MS });
+      return (data?.data?.groups || []).map((g) => ({ id: g.id, name: g.name }));
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Fetch the members enrolled in one CSTAR group.
+   *
+   * CSTAR only exposes membership this way: listing tenant users with a `groupIds`
+   * filter narrows the result but does not say which group each user came from (the
+   * GroupUser join there is a filter, not a select), so group → members has to be read
+   * one group at a time via `?expand=groupUsers`.
+   *
+   * Throws on failure rather than degrading to []: an empty group and an unreachable
+   * CSTAR look identical to the UI, and silently showing "no members" for a group that
+   * actually has people in it is how access decisions get made on bad information.
+   *
+   * @param {object} req - Express request (headers used for auth)
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {string} groupId - UUID of the group
+   * @returns {Promise<Array<{ssoUserId, userName, displayName, firstName, lastName, email, idpType}>>}
+   */
+  async getGroupMembers(req, tenantId, groupId) {
+    // Read membership by filtering the tenant's user list to one group, rather than
+    // GET /tenants/{id}/groups/{groupId}?expand=groupUsers. That endpoint looks like the
+    // natural fit but CSTAR guards it with checkJwt() without sharedServiceAccess, so it
+    // enforces the TMS audience and rejects CHEFS's own token with invalid_audience on
+    // every call. The tenant-users route allows shared-service tokens.
+    const listTenantUsersPath = config.get('cstar.listTenantUsersPath');
+    const url = `${endpoint}${listTenantUsersPath.replace('{tenantId}', tenantId)}`;
+    const { data } = await axios.get(url, {
+      headers: this._getAuthHeaders(req),
+      params: { groupIds: groupId },
+      timeout: CSTAR_TIMEOUT_MS,
+    });
+    const users = data?.data?.users || data?.users || [];
+    return users
+      .filter((u) => u?.isDeleted !== true)
+      .map((u) => u?.ssoUser)
+      .filter((ssoUser) => !!ssoUser?.ssoUserId)
+      .map((ssoUser) => ({
+        ssoUserId: ssoUser.ssoUserId,
+        userName: ssoUser.userName,
+        displayName: ssoUser.displayName,
+        firstName: ssoUser.firstName,
+        lastName: ssoUser.lastName,
+        email: ssoUser.email,
+        idpType: ssoUser.idpType,
+      }));
+  }
+
+  /**
+   * Membership for several groups at once, as a Map of groupId → members.
+   * One call per group is the finest granularity CSTAR offers; at most
+   * GROUP_MEMBERS_CONCURRENCY run at once so a large tenant does not burst CSTAR.
+   * A group that cannot be read is omitted rather than reported as empty, so callers
+   * can tell "no members" apart from "could not check".
+   *
+   * @param {object} req - Express request (headers used for auth)
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {string[]} groupIds
+   * @returns {Promise<Map<string, Array<object>>>}
+   */
+  async getMembersByGroup(req, tenantId, groupIds, { bypassCache = false } = {}) {
+    const unique = [...new Set(groupIds || [])];
+    const results = await _mapWithConcurrency(unique, GROUP_MEMBERS_CONCURRENCY, async (groupId) => {
+      try {
+        return [groupId, await this._getGroupMembersCached(req, tenantId, groupId, { bypassCache })];
+      } catch (err) {
+        // Log the status and CSTAR's own reason — a bare stack hid that every call was
+        // failing identically on an audience check rather than intermittently.
+        log.error(`${SERVICE}: failed to read members of group ${groupId} in tenant ${tenantId}`, {
+          groupId,
+          tenantId,
+          status: err?.response?.status,
+          cstarReason: err?.response?.data?.reason || err?.response?.data?.error,
+          code: err?.code,
+          message: err?.message,
+        });
+        return null;
+      }
+    });
+    return new Map(results.filter(Boolean));
+  }
+
+  /**
+   * getGroupMembers through groupMembersCache. `bypassCache` (an explicit Refresh) skips a
+   * cached entry and replaces it with a fresh read.
+   */
+  _getGroupMembersCached(req, tenantId, groupId, { bypassCache = false } = {}) {
+    const key = `${tenantId}:${groupId}`;
+    const now = Date.now();
+    const cached = groupMembersCache.get(key);
+    if (!bypassCache && cached?.expiresAt > now) return cached.promise;
+    const promise = this.getGroupMembers(req, tenantId, groupId).catch((err) => {
+      if (groupMembersCache.get(key)?.promise === promise) groupMembersCache.delete(key);
+      throw err;
+    });
+    groupMembersCache.set(key, { promise, expiresAt: now + GROUP_MEMBERS_TTL_MS });
+    return promise;
+  }
+
+  _clearGroupMembersCache() {
+    groupMembersCache.clear();
+  }
+
+  /**
+   * Returns all groups for a target tenant enriched with role details, the IDs of the
+   * current user's form_admin groups to use as pre-selection defaults, the membership of
+   * each group, and per-team-member group membership derived from it.
+   *
+   * Membership is read once per group and then inverted to get member → groups. The
+   * previous shape asked CSTAR for each team member's groups individually, which was one
+   * request per team member and could never describe a group's members — so a person
+   * enrolled in a group but not yet on the CHEFS form team was invisible here.
+   *
+   * @param {object} req - Express request with currentUser
+   * @param {string} formId - UUID of the form being migrated
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {object} [options]
+   * @param {boolean} [options.bypassCache] - re-read group membership (explicit Refresh)
+   * @returns {Promise<{groups, preSelectedGroupIds, teamMemberGroups}>}
+   */
+  async getMigrationTenantGroups(req, formId, tenantId, { bypassCache = false } = {}) {
+    if (!req?.currentUser) throw new TypeError(`${SERVICE}: missing currentUser`);
+    if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
+    if (!tenantId) throw new TypeError(`${SERVICE}: missing tenantId`);
+
+    const reqContext = { ...req, currentUser: { ...req.currentUser, tenantId }, headers: req.headers };
+
+    // Tenant groups and current user's membership run in parallel with the member lookup
+    const [allTenantGroups, userGroups, rawMembers] = await Promise.all([
+      this._getTenantGroupsWithRolesForCurrentTenant(reqContext),
+      // Rethrow 401/403: an expired session must surface as SESSION_EXPIRED, not as
+      // "you do not have the Form Admin role" from an empty group list.
+      this.getUserTenantGroupsAndRoles(reqContext, tenantId, { rethrowOnAuthError: true }),
+      FormTenant.knex()
+        .raw(
+          `SELECT u.email, u."fullName", u."idpUserId"
+           FROM "user" u
+           INNER JOIN form_role_user fru ON u.id = fru."userId"
+           WHERE fru."formId" = ?
+           GROUP BY u.email, u."fullName", u."idpUserId"`,
+          [formId]
+        )
+        .then((r) => r.rows),
+    ]);
+
+    const userGroupIds = new Set(userGroups.map((g) => g.id));
+    // CHEFS roles the current user gets through each group. CSTAR assigns roles to the
+    // group, so every member holds all of them; only the user-scoped listing carries them.
+    const userRolesByGroup = new Map(userGroups.map((g) => [g.id, g.roles || []]));
+    // Tenant-wide group listing may not include role details, so form_admin
+    // status must be derived from the user-scoped group listing instead.
+    const userFormAdminGroupIds = new Set(userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN)).map((g) => g.id));
+
+    // Eligibility is exactly "holds form_admin in this tenant", which the listing above
+    // already answers. Asking getEligibleTenantsForMigration instead would re-derive it
+    // for every tenant the user belongs to — a list call plus a role call per tenant —
+    // to decide a question about this one.
+    if (userFormAdminGroupIds.size === 0) {
+      throw Object.assign(new Error('You do not have the Form Admin role in this tenant.'), { code: 'TENANT_NOT_ELIGIBLE' });
+    }
+
+    const preSelectedGroupIds = [...userFormAdminGroupIds];
+
+    // One membership read per group, in parallel, instead of one per team member.
+    const membersByGroup = await this.getMembersByGroup(
+      req,
+      tenantId,
+      allTenantGroups.map((g) => g.id),
+      { bypassCache }
+    );
+
+    const groups = allTenantGroups.map((g) => {
+      const members = membersByGroup.get(g.id);
+      return {
+        id: g.id,
+        name: g.name,
+        roles: g.roles,
+        // Empty when the current user is not a member of the group.
+        userRoles: userRolesByGroup.get(g.id) || [],
+        isFormAdmin: userFormAdminGroupIds.has(g.id),
+        isUserMember: userGroupIds.has(g.id),
+        // null (not []) when membership could not be read, so the UI can say so rather
+        // than claiming the group is empty.
+        members: members
+          ? members.map((m) => ({ ssoUserId: m.ssoUserId, fullName: m.displayName || [m.firstName, m.lastName].filter(Boolean).join(' '), email: m.email, idpType: m.idpType }))
+          : null,
+      };
+    });
+
+    // Invert group → members into ssoUserId → groupIds, then attach to the CHEFS team.
+    const groupIdsBySsoUser = new Map();
+    for (const [groupId, members] of membersByGroup.entries()) {
+      for (const m of members) {
+        if (!groupIdsBySsoUser.has(m.ssoUserId)) groupIdsBySsoUser.set(m.ssoUserId, []);
+        groupIdsBySsoUser.get(m.ssoUserId).push(groupId);
+      }
+    }
+
+    const teamMemberGroups = rawMembers
+      .filter((m) => m.idpUserId)
+      .map((m) => ({
+        email: m.email,
+        fullName: m.fullName,
+        groupIds: groupIdsBySsoUser.get(m.idpUserId) || [],
+      }));
+
+    return { groups, preSelectedGroupIds, teamMemberGroups };
+  }
+
+  /**
+   * Migrates a personal form to a tenant by inserting form_tenant, form_group,
+   * and form_migration_log records in a single atomic transaction.
+   * If groupIds is provided, those groups are assigned (must include at least one
+   * form_admin group). If omitted, all of the user's form_admin groups are used.
+   * @param {object} req - Express request with currentUser
+   * @param {string} formId - UUID of the form to migrate
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {string[]|null} groupIds - Optional explicit group IDs to assign
+   */
+  async migrateFormToTenant(req, formId, tenantId, groupIds = null) {
+    if (!req?.currentUser) throw new TypeError(`${SERVICE}: missing currentUser`);
+    if (!formId) throw new TypeError(`${SERVICE}: missing formId`);
+    if (!tenantId) throw new TypeError(`${SERVICE}: missing tenantId`);
+
+    // Cheap pre-check so the common case fails fast with a clear error. It is NOT the
+    // guard against concurrent migrations — that is the row lock plus the unique
+    // constraint inside the transaction below.
+    const existing = await FormTenant.query().where({ formId }).first();
+    if (existing) {
+      throw Object.assign(new Error(`${SERVICE}: form already migrated`), { code: 'ALREADY_MIGRATED' });
+    }
+
+    const reqContext = { ...req, currentUser: { ...req.currentUser, tenantId }, headers: req.headers };
+    const userGroups = await this._getUserTenantGroupsAndRolesWithRetry(reqContext, tenantId);
+    const adminGroups = userGroups.filter((g) => g.roles.includes(TenantRoles.FORM_ADMIN));
+
+    if (adminGroups.length === 0) {
+      throw Object.assign(new Error('You do not have the Form Admin role in this tenant.'), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
+    }
+
+    const finalGroupIds = await this._resolveMigrationGroupIds(reqContext, adminGroups, groupIds);
+    const createdBy = req.currentUser.usernameIdp || req.currentUser.username;
+
+    await this._writeMigrationRecords({ formId, tenantId, groupIds: finalGroupIds, createdBy });
+  }
+
+  /**
+   * Decides which groups a migration assigns. With no explicit list, every form_admin
+   * group the user holds in the tenant is used. An explicit list is de-duplicated and
+   * must be well-formed, belong to the tenant, and include one of the user's form_admin
+   * groups.
+   * @param {object} reqContext - Request context with currentUser.tenantId set
+   * @param {Array} adminGroups - The user's form_admin groups in the tenant
+   * @param {string[]|null} groupIds - Explicit group IDs from the request, if any
+   * @returns {Promise<string[]>}
+   * @throws {Error} code INVALID_GROUP or FORM_ADMIN_GROUP_REQUIRED
+   */
+  async _resolveMigrationGroupIds(reqContext, adminGroups, groupIds) {
+    if (!Array.isArray(groupIds) || groupIds.length === 0) {
+      return adminGroups.map((g) => g.id);
+    }
+
+    const uniqueGroupIds = [...new Set(groupIds)];
+
+    const malformed = uniqueGroupIds.filter((id) => typeof id !== 'string' || !uuid.validate(id));
+    if (malformed.length > 0) {
+      throw Object.assign(new Error('One or more group IDs are not valid identifiers.'), { code: 'INVALID_GROUP' });
+    }
+
+    // Membership of a form_admin group proves the user may migrate, but says nothing
+    // about the other IDs in the list. Without checking them against the target tenant,
+    // a group from another tenant (or any random UUID) lands in form_group and later
+    // surfaces as "Group no longer available".
+    const tenantGroups = await this.getGroupsForCurrentTenant(reqContext);
+    const tenantGroupIds = new Set(tenantGroups.map((g) => g.id));
+    const foreign = uniqueGroupIds.filter((id) => !tenantGroupIds.has(id));
+    if (foreign.length > 0) {
+      throw Object.assign(new Error('One or more groups do not belong to the selected tenant.'), { code: 'INVALID_GROUP' });
+    }
+
+    const adminGroupIds = new Set(adminGroups.map((g) => g.id));
+    if (!uniqueGroupIds.some((id) => adminGroupIds.has(id))) {
+      throw Object.assign(new Error('At least one assigned group must have the Form Admin role.'), { code: 'FORM_ADMIN_GROUP_REQUIRED' });
+    }
+    return uniqueGroupIds;
+  }
+
+  /**
+   * Inserts form_tenant, form_group and form_migration_log rows in one transaction.
+   * @throws {Error} code ALREADY_MIGRATED if another migration of the form won the race
+   */
+  async _writeMigrationRecords({ formId, tenantId, groupIds, createdBy }) {
+    try {
+      await FormGroup.transaction(async (trx) => {
+        // Serialise concurrent migrations of the same form: the second transaction waits
+        // here until the first commits, then sees its form_tenant row.
+        await Form.query(trx).findById(formId).forUpdate();
+
+        const alreadyMigrated = await FormTenant.query(trx).where({ formId }).first();
+        if (alreadyMigrated) {
+          throw Object.assign(new Error(`${SERVICE}: form already migrated`), { code: 'ALREADY_MIGRATED' });
+        }
+
+        await FormTenant.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
+        await FormGroup.query(trx).insert(groupIds.map((groupId) => ({ id: uuid.v4(), formId, groupId, createdBy })));
+        await FormMigrationLog.query(trx).insert({ id: uuid.v4(), formId, tenantId, createdBy });
+      });
+    } catch (error) {
+      // Backstop for anything the lock does not serialise (a replica, a lock timeout):
+      // the unique constraint on form_tenant.formId still refuses the second row, and a
+      // "form is already migrated" answer is more useful than a raw constraint error.
+      if (this._isUniqueViolation(error)) {
+        throw Object.assign(new Error(`${SERVICE}: form already migrated`), { code: 'ALREADY_MIGRATED' });
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * True for a Postgres unique-violation, however the driver surfaces it.
+   * Objection wraps pg errors, so the code can sit on the error or its cause.
+   * @param {Error} error
+   */
+  _isUniqueViolation(error) {
+    const PG_UNIQUE_VIOLATION = '23505';
+    return error?.nativeError?.code === PG_UNIQUE_VIOLATION || error?.code === PG_UNIQUE_VIOLATION || error?.name === 'UniqueViolationError';
+  }
+
+  /**
+   * Wraps getUserTenantGroupsAndRoles(..., { rethrowOnAuthError: true }) with a single
+   * retry on a CSTAR 401. The submit path is the only caller that treats a CSTAR auth
+   * error as fatal (surfaced to the user as SESSION_EXPIRED), so a borderline-fresh
+   * bearer token that CHEFS already accepted but CSTAR momentarily rejects — e.g. clock
+   * skew between services, or the user lingering on the review step near the token's
+   * expiry — gets one short retry before we tell the user their session is gone.
+   * @param {object} reqContext - Request context with currentUser.tenantId set
+   * @param {string} tenantId - UUID of the target tenant
+   * @param {number} retriesLeft - Remaining retry attempts (internal use)
+   * @returns {Promise<Array>}
+   */
+  async _getUserTenantGroupsAndRolesWithRetry(reqContext, tenantId, retriesLeft = 1) {
+    try {
+      return await this.getUserTenantGroupsAndRoles(reqContext, tenantId, { rethrowOnAuthError: true });
+    } catch (error) {
+      const status = error?.response?.status;
+      if (status === 401 && retriesLeft > 0) {
+        log.warn(`${SERVICE}: CSTAR rejected bearer token as unauthorized during migration submit, retrying once`, { tenantId });
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return this._getUserTenantGroupsAndRolesWithRetry(reqContext, tenantId, retriesLeft - 1);
+      }
+      if (status === 401) {
+        log.warn(`${SERVICE}: CSTAR bearer token unauthorized during migration submit after retry, giving up`, { tenantId });
+      }
+      throw error;
+    }
   }
 }
 

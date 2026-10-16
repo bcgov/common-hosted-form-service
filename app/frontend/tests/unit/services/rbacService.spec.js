@@ -126,4 +126,24 @@ describe('RBAC Service', () => {
       ]);
     });
   });
+
+  describe('forms/{formId}/migration/tenant-groups', () => {
+    const endpoint = `${ApiRoutes.RBAC}/forms/f1/migration/tenant-groups`;
+
+    it('asks for the tenant without refresh by default', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      await rbacService.getMigrationTenantGroups('f1', 't1');
+
+      expect(mockAxios.history.get[0].params).toEqual({ tenantId: 't1' });
+    });
+
+    it('adds refresh=true so the server re-reads group membership', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      await rbacService.getMigrationTenantGroups('f1', 't1', { refresh: true });
+
+      expect(mockAxios.history.get[0].params).toEqual({ tenantId: 't1', refresh: true });
+    });
+  });
 });

@@ -39,6 +39,7 @@ module.exports = {
   FormPrintConfigTypeCode: require('./tables/formPrintConfigTypeCode'),
   FormTenant: require('./tables/formTenant'),
   FormGroup: require('./tables/formGroup'),
+  FormMigrationLog: require('./tables/formMigrationLog'),
   FeatureFlag: require('./tables/featureFlag'),
   FeatureFlagForm: require('./tables/featureFlagForm'),
   FeatureFlagTenant: require('./tables/featureFlagTenant'),

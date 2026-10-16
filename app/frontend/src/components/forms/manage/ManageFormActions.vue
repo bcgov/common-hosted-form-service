@@ -45,6 +45,17 @@ const canManageGroups = computed(() => {
   return roles.includes(TenantRoles.FORM_ADMIN);
 });
 
+// Show Migrate to Tenant for a personal form (My Forms mode, form not yet in a tenant)
+// to its owners. FORM_UPDATE is how "owner" is expressed: in classic CHEFS only the Owner
+// role grants it, and the migration endpoints check the same permission server-side.
+const canMigrateForm = computed(
+  () =>
+    tenantStore.isTenantFeatureEnabled &&
+    permissions.value.includes(FormPermissions.FORM_UPDATE) &&
+    selectedTenant.value === null &&
+    !form.value?.tenantId
+);
+
 const canViewSubmissions = computed(() => {
   const perms = [
     FormPermissions.SUBMISSION_READ,
@@ -70,6 +81,7 @@ defineExpose({
   canManageEmail,
   canManageGroups,
   canManageTeam,
+  canMigrateForm,
   canViewSubmissions,
   isPublished,
   deleteForm,
@@ -142,6 +154,27 @@ defineExpose({
         </template>
         <span :lang="locale">{{
           $t('trans.manageFormActions.groupManagement')
+        }}</span>
+      </v-tooltip>
+    </span>
+
+    <span v-if="canMigrateForm">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-btn
+            class="mx-1"
+            color="primary"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-transfer"
+            data-test="canMigrateForm"
+            :to="{ name: 'FormMigrate', query: { f: form.id } }"
+            :title="$t('trans.manageFormActions.migrateForm')"
+          />
+        </template>
+        <span :lang="locale">{{
+          $t('trans.manageFormActions.migrateForm')
         }}</span>
       </v-tooltip>
     </span>

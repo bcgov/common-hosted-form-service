@@ -372,3 +372,54 @@ describe('ManageForm.vue', () => {
     expect(push).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('ManageFormActions migrate button', () => {
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
+  const formStore = useFormStore(pinia);
+  const tenantStore = useTenantStore(pinia);
+
+  function mountActions() {
+    return mount(ManageFormActions, {
+      global: {
+        plugins: [pinia],
+        mocks: { $filters: { formatDate: vi.fn() } },
+        provide: { formDesigner: false, draftId: '1', formId: '1' },
+        stubs: STUBS,
+      },
+    });
+  }
+
+  beforeEach(() => {
+    formStore.$reset();
+    tenantStore.$reset();
+    tenantStore.isTenantFeatureEnabled = true;
+    tenantStore.selectedTenant = null;
+    formStore.permissions = [FormPermissions.FORM_UPDATE];
+  });
+
+  it('is offered to an owner (FORM_UPDATE) of a personal form in My Forms', async () => {
+    formStore.form = { id: 'f1', tenantId: null };
+    const wrapper = mountActions();
+    await flushPromises();
+
+    expect(wrapper.html()).toContain('trans.manageFormActions.migrateForm');
+  });
+
+  it('is not offered for a form that already belongs to a tenant, even in My Forms', async () => {
+    formStore.form = { id: 'f1', tenantId: 'tenant-1' };
+    const wrapper = mountActions();
+    await flushPromises();
+
+    expect(wrapper.html()).not.toContain('trans.manageFormActions.migrateForm');
+  });
+
+  it('is not offered without FORM_UPDATE', async () => {
+    formStore.permissions = [FormPermissions.FORM_READ];
+    formStore.form = { id: 'f1', tenantId: null };
+    const wrapper = mountActions();
+    await flushPromises();
+
+    expect(wrapper.html()).not.toContain('trans.manageFormActions.migrateForm');
+  });
+});
