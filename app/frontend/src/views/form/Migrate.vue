@@ -341,6 +341,9 @@ watch(selectedTenantId, async (tenantId) => {
   // An error or stale-groups notice belongs to the tenant it came from.
   error.value = null;
   staleGroupsRemoved.value = false;
+  // A refresh still in flight for the old tenant is superseded and will not clear its
+  // own flag (see refreshTenantGroups), so clear it here.
+  refreshingGroups.value = false;
   allTenantGroups.value = [];
   assignedGroups.value = [];
   teamMemberGroups.value = [];

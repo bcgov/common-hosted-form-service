@@ -667,6 +667,25 @@ describe('Migrate.vue', () => {
       expect(wrapper.vm.allTenantGroups.map((g) => g.id)).toEqual(['other']);
     });
 
+    it('does not leave the refresh spinner on when the tenant changes mid-refresh', async () => {
+      const wrapper = await ready();
+      let resolveRefresh;
+      rbacService.getMigrationTenantGroups.mockImplementationOnce(() => new Promise((r) => (resolveRefresh = r)));
+
+      const refresh = wrapper.vm.refreshTenantGroups();
+      expect(wrapper.vm.refreshingGroups).toBe(true);
+      rbacService.getMigrationTenantGroups.mockResolvedValueOnce({
+        data: { groups: [{ id: 'other', name: 'Other', isFormAdmin: true, members: [] }], preSelectedGroupIds: ['other'], teamMemberGroups: [] },
+      });
+      wrapper.vm.selectedTenantId = 'tenant-2';
+      await flushPromises();
+      resolveRefresh({ data: { groups: [], preSelectedGroupIds: [], teamMemberGroups: [] } });
+      await refresh;
+      await flushPromises();
+
+      expect(wrapper.vm.refreshingGroups).toBe(false);
+    });
+
     it('clears the previous tenant error and stale-groups notice when the tenant changes', async () => {
       const wrapper = await ready();
       wrapper.vm.error = 'old tenant failed';
