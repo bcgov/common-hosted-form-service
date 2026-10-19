@@ -157,7 +157,7 @@ describe('getUserForms', () => {
     return queryObj;
   };
 
-  it('personal path returns all forms without a whereNull filter', async () => {
+  it('personal path excludes tenanted forms from the list-all (My Forms) query', async () => {
     const userInfo = { id: 'user-1' };
     const items = [{ formId: 'personal-form', tenantId: null, idps: ['idir'], roles: [], permissions: [] }];
 
@@ -170,9 +170,127 @@ describe('getUserForms', () => {
     const result = await service.getUserForms(userInfo, {});
 
     expect(queryObj.modify).toHaveBeenCalledWith('filterUserId', userInfo.id);
-    expect(queryObj.modify).not.toHaveBeenCalledWith('whereNull', 'tenantId');
+    // Migration is additive, so a migrated form keeps its roles and idps. Without this
+    // the original owner (and every matching-IDP user) keeps seeing it in My Forms.
+    expect(queryObj.modify).toHaveBeenCalledWith('filterNoTenant');
     expect(filterFormsSpy).toHaveBeenCalledWith(userInfo, items, undefined);
     expect(result).toEqual(['personal-form']);
+  });
+
+  it('personal path does NOT exclude tenanted forms on a single-form permission check', async () => {
+    const userInfo = { id: 'user-1' };
+    const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'group-form', active: true });
+    const queryObj = makeQueryObj(items);
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(queryObj);
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    jest.spyOn(service, 'filterForms').mockReturnValue(['group-form']);
+
+    await service.getUserForms(userInfo, { formId: 'group-form' });
+
+    expect(queryObj.modify).not.toHaveBeenCalledWith('filterNoTenant');
+  });
+
+  it('personal path: MIGRATED form (tenanted, idps retained) still resolves tenant group roles', async () => {
+    // Regression for the migrated-form 401: group resolution used to require
+    // idps.length === 0, which is never true for a form migrated out of classic CHEFS,
+    // so group members fell through to {submission_create, form_read} and were denied.
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [{ formId: 'migrated-form', tenantId: 'tenant-1', idps: ['idir'], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'migrated-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({
+      withGraphFetched: jest.fn().mockResolvedValue([{ code: 'submission_reviewer', permissions: [{ code: 'submission_read' }] }]),
+    });
+    jest.spyOn(FormGroup, 'query').mockReturnValue({ modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', roles: ['submission_reviewer'] }]);
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    const result = await service.getUserForms(userInfo, { formId: 'migrated-form' }, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-1');
+    expect(result[0].permissions).toContain('submission_read');
+  });
+
+  it('asks CSTAR once per tenant, resolves every tenanted row, and leaves untenanted rows alone', async () => {
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [
+      { formId: 'f1', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] },
+      { formId: 'f1', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] },
+      { formId: 'f1', tenantId: 'tenant-2', idps: [], roles: [], permissions: [] },
+      { formId: 'f1', tenantId: null, idps: ['idir'], roles: ['owner'], permissions: ['form_read'] },
+    ];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'f1', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({
+      withGraphFetched: jest.fn().mockResolvedValue([{ code: 'submission_reviewer', permissions: [{ code: 'submission_read' }] }]),
+    });
+    jest.spyOn(FormGroup, 'query').mockReturnValue({ modify: jest.fn().mockResolvedValue([{ groupId: 'group-1' }]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockResolvedValue([{ id: 'group-1', roles: ['submission_reviewer'] }]);
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    const result = await service.getUserForms(userInfo, { formId: 'f1' }, headers);
+
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledTimes(2);
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-1');
+    expect(tenantService.getUserTenantGroupsAndRoles).toHaveBeenCalledWith({ currentUser: userInfo, headers }, 'tenant-2');
+    expect(result.slice(0, 3).map((i) => i.permissions)).toEqual([['submission_read'], ['submission_read'], ['submission_read']]);
+    expect(result[3]).toMatchObject({ roles: ['owner'], permissions: ['form_read'] });
+  });
+
+  it('a tenanted form grants no roles when groups cannot be checked, instead of falling back to legacy team roles', async () => {
+    // Migration leaves form_role_user in place. If those rows were honoured whenever the
+    // group check could not run, the old team would keep the access the migration screen
+    // told them they had lost.
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const items = [{ formId: 'migrated-form', tenantId: 'tenant-1', idps: ['idir'], roles: ['owner'], permissions: ['form_update', 'submission_read'] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'migrated-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    const tenantSpy = jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles');
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    // No headers → no way to ask CSTAR.
+    const result = await service.getUserForms(userInfo, { formId: 'migrated-form' });
+
+    expect(tenantSpy).not.toHaveBeenCalled();
+    expect(result[0].roles).toEqual([]);
+    expect(result[0].permissions).toEqual([]);
+  });
+
+  it('leaves a personal form’s roles untouched when there are no headers', async () => {
+    const userInfo = { id: 'user-1', idpHint: 'idir' };
+    const items = [{ formId: 'personal-form', tenantId: null, idps: ['idir'], roles: ['owner'], permissions: ['form_update'] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'personal-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    jest.spyOn(service, 'filterForms').mockImplementation((_u, i) => i);
+
+    const result = await service.getUserForms(userInfo, { formId: 'personal-form' });
+
+    expect(result[0].permissions).toEqual(['form_update']);
+  });
+
+  it('surfaces a 502 (not 503, which trips the global outage overlay) rather than silently denying access when the group lookup fails', async () => {
+    // A failed lookup must not be read as "user is in no groups" — that collapses every
+    // permission and reports a service outage as an authorization error.
+    const userInfo = { id: 'user-1' };
+    const headers = { authorization: 'Bearer token' };
+    const items = [{ formId: 'group-form', tenantId: 'tenant-1', idps: [], roles: [], permissions: [] }];
+
+    jest.spyOn(queryUtils, 'defaultActiveOnly').mockReturnValue({ formId: 'group-form', active: true });
+    jest.spyOn(UserFormAccess, 'query').mockReturnValue(makeQueryObj(items));
+    jest.spyOn(Role, 'query').mockReturnValue({ withGraphFetched: jest.fn().mockResolvedValue([]) });
+    jest.spyOn(tenantService, 'getUserTenantGroupsAndRoles').mockRejectedValue(new Error('CSTAR unreachable'));
+
+    await expect(service.getUserForms(userInfo, { formId: 'group-form' }, headers)).rejects.toMatchObject({ status: 502 });
   });
 
   it('personal path: tenanted form with IDIR IDP is included in query results when no tenant header', async () => {

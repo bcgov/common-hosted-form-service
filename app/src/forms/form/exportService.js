@@ -11,6 +11,7 @@ const fs = require('fs-extra');
 const path = require('node:path');
 const fileService = require('../file/service');
 const { fileUpload } = require('../file/middleware/upload');
+const uploadCleanup = require('../file/uploadCleanup');
 const emailService = require('../email/emailService');
 const log = require('../../components/log')(module.filename);
 const uuid = require('uuid');
@@ -329,32 +330,40 @@ const service = {
       // `stage` attributes a failure to the step that produced it.
       let stage = 'pipe';
       const buildAndEmailExport = async () => {
-        // pipeline() propagates any stream error into one promise rejection; no
-        // separate .on('error') handlers needed.
-        await pipeline(dataStream, json2csvParser, outputStream);
+        // fileService.create owns the temp file once entered; only clean up if not reached.
+        let createCalled = false;
+        let fileResult;
+        try {
+          // pipeline() propagates any stream error into one promise rejection; no
+          // separate .on('error') handlers needed.
+          await pipeline(dataStream, json2csvParser, outputStream);
 
-        stage = 'stat';
-        const stats = await fs.stat(pathToTmpFile);
+          stage = 'stat';
+          const stats = await fs.stat(pathToTmpFile);
 
-        stage = 'upload';
-        // fileService.create removes the temp file on success (object storage).
-        const fileResult = await fileService.create(
-          { originalname: filename, mimetype: 'text/csv', size: stats.size, path: pathToTmpFile },
-          { usernameIdp: currentUser.usernameIdp },
-          'exports'
-        );
+          stage = 'upload';
+          createCalled = true;
+          fileResult = await fileService.create(
+            { originalname: filename, mimetype: 'text/csv', size: stats.size, path: pathToTmpFile },
+            { usernameIdp: currentUser.usernameIdp },
+            'exports'
+          );
 
-        stage = 'email';
-        await emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
-        log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
+          stage = 'email';
+          await emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
+          log.info('Export email sent', { ...logCtx, fileId: fileResult.id });
+        } catch (err) {
+          // fileId lets ops recover an uploaded export if the email step failed.
+          log.error('Export email pipeline failed', { ...logCtx, stage, fileId: fileResult?.id, err: err?.message, stack: err?.stack });
+        } finally {
+          if (!createCalled) {
+            await uploadCleanup.removeUploadedFile(pathToTmpFile, 'csv-export-pre-upload-failure');
+          }
+        }
       };
 
-      buildAndEmailExport().catch(async (err) => {
-        log.error('Export email pipeline failed', { ...logCtx, stage, err: err.message, stack: err.stack });
-        // Best-effort cleanup: covers the pre-upload failure path where
-        // fileService.create never ran and could not clean up itself.
-        await fs.remove(pathToTmpFile).catch((cleanupErr) => log.warn(`Could not remove temp export file ${pathToTmpFile}: ${cleanupErr.message}`));
-      });
+      // Backstop so a throw from catch/finally doesn't become an unhandled rejection.
+      buildAndEmailExport().catch((err) => log.error('Export email background task crashed', { ...logCtx, err: err?.message, stack: err?.stack }));
 
       return Promise.resolve({
         data: null,

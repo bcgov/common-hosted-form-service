@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
-const { FormRoleUser, FormSubmissionUser, User, UserFormAccess, UserSubmissions } = require('../common/models');
+const { FormMigrationLog, FormRoleUser, FormSubmissionUser, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
@@ -72,6 +72,34 @@ const service = {
     return user;
   },
 
+  /**
+   * Flags which of the given forms arrived in their tenant by migration.
+   *
+   * Within a tenant's form list every form is group-controlled, so "this form uses
+   * groups" is true of every row and tells the reader nothing. Whether a form was
+   * migrated out of classic CHEFS is the distinction that actually varies — those are
+   * the ones whose old team roles no longer grant access.
+   *
+   * One query for the whole page rather than a lookup per form.
+   *
+   * @param {Array<object>} forms as returned by filterForms
+   * @returns {Promise<Array<object>>} the same forms, each with a `migrated` boolean
+   */
+  _markMigratedForms: async (forms) => {
+    const tenanted = forms.filter((f) => f.tenantId);
+    if (tenanted.length === 0) return forms.map((f) => ({ ...f, migrated: false }));
+
+    const rows = await FormMigrationLog.query()
+      .whereIn(
+        'formId',
+        tenanted.map((f) => f.formId)
+      )
+      .distinct('formId');
+    const migratedIds = new Set(rows.map((r) => r.formId));
+
+    return forms.map((f) => ({ ...f, migrated: migratedIds.has(f.formId) }));
+  },
+
   getCurrentUserForms: async (currentUser, params = {}, headers = null) => {
     if (!currentUser) return [];
     try {
@@ -93,7 +121,7 @@ const service = {
         headers
       );
       const filteredForms = authService.filterForms(currentUser, forms, accessLevels);
-      return filteredForms;
+      return await service._markMigratedForms(filteredForms);
     } catch (err) {
       log.error('Failed to get current user forms', err);
       return [];

@@ -90,6 +90,25 @@ export default {
     );
   },
 
+  getMigrationTenantGroups(formId, tenantId, { refresh = false } = {}) {
+    // refresh=true re-reads group membership from CSTAR instead of the short-lived cache.
+    return appAxios().get(
+      `${ApiRoutes.RBAC}/forms/${formId}/migration/tenant-groups`,
+      { params: { tenantId, ...(refresh ? { refresh: true } : {}) } }
+    );
+  },
+
+  getMigrationPreview(formId, { refresh = false } = {}) {
+    return appAxios().get(
+      `${ApiRoutes.RBAC}/forms/${formId}/migration/preview`,
+      refresh ? { params: { refresh: true } } : undefined
+    );
+  },
+
+  executeMigration(formId, body) {
+    return appAxios().post(`${ApiRoutes.RBAC}/forms/${formId}/migration`, body);
+  },
+
   //
   // Form Management calls
   //
