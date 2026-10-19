@@ -150,6 +150,7 @@ async function printBrowser() {
       div.style.borderRadius = '4px';
       div.style.boxSizing = 'border-box';
       div.style.whiteSpace = 'pre-wrap';
+      div.style.overflowWrap = 'anywhere';
 
       // Store the original input and new div
       originalInputs.push(input);
