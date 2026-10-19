@@ -40,8 +40,9 @@ const templateForm = ref({
   outputFileName: '',
   outputFileType: null,
 });
-const expandedText = ref(false);
+const expandedText = ref(true);
 const timeout = ref(undefined);
+let restoreExpandedFields = null;
 const tab = ref('tab-1');
 const selectedOption = ref('upload');
 const defaultReportname = ref('');
@@ -108,53 +109,91 @@ watch(selectedOption, () => {
 
 onBeforeUnmount(() => {
   if (timeout.value) clearTimeout(timeout.value);
+  globalThis.removeEventListener('afterprint', onAfterPrint);
+  restoreExpandedFields?.();
 });
+
+// Choices.js search inputs are visible in multi-select and tags but hold no
+// value, so they would print as empty boxes.
+const EXPAND_FIELD_SELECTOR = [
+  '.formio-form textarea',
+  '.formio-form input[type="text"]:not(.choices__input)',
+].join(', ');
+
+// Editors and selects keep helper fields that are hidden with display,
+// visibility or opacity. A swapped-in div would make them print.
+function isRendered(field) {
+  if (field.getClientRects().length === 0) return false;
+  const style = getComputedStyle(field);
+  return style.visibility !== 'hidden' && style.opacity !== '0';
+}
+
+function createPrintDiv(field) {
+  const div = document.createElement('div');
+  div.textContent = field.value;
+  const parentStyle = getComputedStyle(field.parentNode);
+  const inFlexRow =
+    parentStyle.display === 'flex' &&
+    !parentStyle.flexDirection.startsWith('column');
+  if (inFlexRow) {
+    // Same sizing as Bootstrap .input-group > .form-control, so a long value
+    // wraps inside the div instead of pushing the addon to the next line.
+    div.style.flex = '1 1 auto';
+    div.style.width = '1%';
+    div.style.minWidth = '0';
+  } else {
+    div.style.width = '100%';
+  }
+  div.style.minHeight = `${field.offsetHeight}px`;
+  div.style.padding = '6px 12px';
+  div.style.lineHeight = '1.5';
+  div.style.color = '#495057';
+  div.style.border = '1px solid #606060';
+  div.style.borderRadius = '4px';
+  div.style.boxSizing = 'border-box';
+  div.style.whiteSpace = 'pre-wrap';
+  div.style.overflowWrap = 'anywhere';
+  return div;
+}
+
+function expandFields() {
+  restoreExpandedFields?.();
+  // Read layout for all fields before any swap to avoid a reflow per field.
+  const swaps = [...document.querySelectorAll(EXPAND_FIELD_SELECTOR)]
+    .filter((field) => isRendered(field))
+    .map((field) => ({ field, div: createPrintDiv(field) }));
+  for (const { field, div } of swaps) field.replaceWith(div);
+  restoreExpandedFields = () => {
+    for (const { field, div } of swaps) div.replaceWith(field);
+    restoreExpandedFields = null;
+  };
+  globalThis.addEventListener('afterprint', onAfterPrint, { once: true });
+}
+
+function onAfterPrint() {
+  restoreExpandedFields?.();
+  //show the dialog again
+  dialog.value = true;
+}
 
 async function printBrowser() {
   //handle the 'Download Options' popup (v-dialog)
   dialog.value = false;
-
-  if (expandedText.value) {
-    // Get all text input elements
-    let inputs = document.querySelectorAll('input[type="text"]');
-
-    // Create arrays to store original input fields and new divs
-    let originalInputs = [];
-    let divs = [];
-
-    inputs.forEach((input) => {
-      let div = document.createElement('div');
-      div.textContent = input.value;
-      // apply styling
-      div.style.width = '100%';
-      div.style.height = 'auto';
-      div.style.padding = '6px 12px';
-      div.style.lineHeight = '1.5';
-      div.style.color = '#495057';
-      div.style.border = '1px solid #606060';
-      div.style.borderRadius = '4px';
-      div.style.boxSizing = 'border-box';
-
-      // Store the original input and new div
-      originalInputs.push(input);
-      divs.push(div);
-
-      // Replace the input with the div
-      input.parentNode.replaceChild(div, input);
-    });
-
-    window.onafterprint = () => {
-      // Restore the original input fields after printing
-      originalInputs.forEach((input, index) => {
-        divs[index].parentNode.replaceChild(input, divs[index]);
-      });
-      //show the dialog again
-      dialog.value = true;
-    };
-  }
+  clearTimeout(timeout.value);
 
   //delaying window.print() so that the 'Download Options' popup isn't rendered
-  timeout.value = setTimeout(() => window.print(), 500);
+  timeout.value = setTimeout(() => {
+    // beforeprint fires inside print() only when the print goes ahead, so
+    // fields are never left swapped by an ignored print.
+    if (expandedText.value) {
+      globalThis.addEventListener('beforeprint', expandFields);
+    }
+    try {
+      globalThis.print();
+    } finally {
+      globalThis.removeEventListener('beforeprint', expandFields);
+    }
+  }, 500);
 }
 
 async function generate() {
