@@ -9,10 +9,11 @@ const PINNED_INTEGRITY = {
   v1: 'sha384-Rr8+o3qvZIMeaEPizONUw7+/26/hw4LlBY6wNTJYSdDPZ/n7Hp6kp2yBJ5R0dZWa',
 };
 
-const releases = fs
+const folders = fs
   .readdirSync(RELEASES_DIR, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
+const releases = folders.filter((name) => !name.startsWith('.'));
 
 describe('webcomponents releases', () => {
   describe('releaseDir', () => {
@@ -27,6 +28,10 @@ describe('webcomponents releases', () => {
 
   it('includes the frozen v1 release', () => {
     expect(releases).toContain('v1');
+  });
+
+  it('has no staging folder left by an interrupted npm run embed:release', () => {
+    expect(folders.filter((name) => name.startsWith('.'))).toEqual([]);
   });
 
   // Releases are immutable: any change to a released file must fail here

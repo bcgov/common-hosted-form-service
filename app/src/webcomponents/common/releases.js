@@ -5,9 +5,11 @@ const path = require('node:path');
 // Committed, immutable web component releases: embed/releases/<version>
 const RELEASES_DIR = path.join(__dirname, '../../../embed/releases');
 const INTEGRITY_FILE = 'integrity.json';
+// Versioned releases are exact x.y.z; v1 is the frozen legacy release
+const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
 
 function releaseDir(version) {
-  if (!/^(v1|\d+\.\d+\.\d+)$/.test(version)) {
+  if (version !== 'v1' && !VERSION_PATTERN.test(version)) {
     throw new Error(`Invalid release version "${version}"`);
   }
   return path.join(RELEASES_DIR, version);
@@ -28,9 +30,8 @@ function hashFile(filePath) {
   return `sha384-${crypto.createHash('sha384').update(fs.readFileSync(filePath)).digest('base64')}`;
 }
 
-// SRI hash of every file in a release except integrity.json, keyed by release-relative path
-function hashRelease(version) {
-  const dir = releaseDir(version);
+// SRI hash of every file under dir except integrity.json, keyed by dir-relative path
+function hashDir(dir) {
   return Object.fromEntries(
     listFiles(dir)
       .filter((file) => file !== INTEGRITY_FILE)
@@ -39,9 +40,16 @@ function hashRelease(version) {
   );
 }
 
+function hashRelease(version) {
+  return hashDir(releaseDir(version));
+}
+
 module.exports = {
   RELEASES_DIR,
   INTEGRITY_FILE,
+  VERSION_PATTERN,
   releaseDir,
+  hashFile,
+  hashDir,
   hashRelease,
 };

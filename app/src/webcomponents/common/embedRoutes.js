@@ -1,0 +1,59 @@
+const express = require('express');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const log = require('../../components/log')(module.filename);
+const { RELEASES_DIR, INTEGRITY_FILE, VERSION_PATTERN } = require('./releases');
+
+// Matches only an x.y.z first segment, so no other path is decoded or claimed here
+const VERSION_ROUTE = /^\/(\d+\.\d+\.\d+)(?=\/|$)/;
+
+// Releases are loaded cross-origin with SRI, which needs CORS; CORP allows embedding under COEP
+function setReleaseHeaders(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+}
+
+// Exact-version release folders that have an integrity.json
+function listVersions(dir) {
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && VERSION_PATTERN.test(entry.name) && fs.existsSync(path.join(dir, entry.name, INTEGRITY_FILE)))
+    .map((entry) => entry.name);
+}
+
+// Serves exact-version releases at /<x.y.z>/<path> and the frozen v1 embed files at their legacy URLs
+function createEmbedRouter(dir = RELEASES_DIR) {
+  const router = express.Router();
+  const releases = new Map(
+    listVersions(dir).map((version) => [
+      version,
+      express.static(path.join(dir, version), { index: false, redirect: false, immutable: true, maxAge: '365d', setHeaders: setReleaseHeaders }),
+    ])
+  );
+
+  router.use(VERSION_ROUTE, (req, res) => {
+    const version = req.params[0];
+    // Answer here rather than in the app error handlers, keeping CORS so cross-origin loads see the status
+    const done = (err) => {
+      if (err) log.error(`Embed release ${version}: ${err.message}`);
+      if (res.headersSent) return res.destroy();
+      setReleaseHeaders(res);
+      if (err) return res.status(500).json({ detail: 'Release file could not be read' });
+      res.status(404).json({ detail: 'Release file not found' });
+    };
+    const serve = releases.get(version);
+    if (!serve) return done();
+    serve(req, res, done);
+  });
+
+  // Frozen v1 embed scripts at their legacy URLs
+  router.use(express.static(path.join(dir, 'v1', 'embed')));
+
+  return router;
+}
+
+module.exports = {
+  createEmbedRouter,
+};
