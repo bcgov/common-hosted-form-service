@@ -26,26 +26,22 @@ function listVersions(dir) {
 // Serves exact-version releases at /<x.y.z>/<path> and the frozen v1 embed files at their legacy URLs
 function createEmbedRouter(dir = RELEASES_DIR) {
   const router = express.Router();
-  const releases = new Map(
-    listVersions(dir).map((version) => [
-      version,
-      express.static(path.join(dir, version), { index: false, redirect: false, immutable: true, maxAge: '365d', setHeaders: setReleaseHeaders }),
-    ])
-  );
 
-  router.use(VERSION_ROUTE, (req, res) => {
-    const version = req.params[0];
-    // Answer here rather than in the app error handlers, keeping CORS so cross-origin loads see the status
-    const done = (err) => {
-      if (err) log.error(`Embed release ${version}: ${err.message}`);
-      if (res.headersSent) return res.destroy();
-      setReleaseHeaders(res);
-      if (err) return res.status(500).json({ detail: 'Release file could not be read' });
-      res.status(404).json({ detail: 'Release file not found' });
-    };
-    const serve = releases.get(version);
-    if (!serve) return done();
-    serve(req, res, done);
+  for (const version of listVersions(dir)) {
+    router.use(`/${version}`, express.static(path.join(dir, version), { index: false, redirect: false, immutable: true, maxAge: '365d', setHeaders: setReleaseHeaders }));
+  }
+
+  // Answer release misses and errors here rather than in the app handlers, keeping CORS so cross-origin loads see the status
+  router.use(VERSION_ROUTE, (_req, res) => {
+    setReleaseHeaders(res);
+    res.status(404).json({ detail: 'Release file not found' });
+  });
+  // eslint-disable-next-line no-unused-vars
+  router.use(VERSION_ROUTE, (err, req, res, _next) => {
+    log.error(`Embed release ${req.params[0]}: ${err.message}`);
+    if (res.headersSent) return res.destroy();
+    setReleaseHeaders(res);
+    res.status(500).json({ detail: 'Release file could not be read' });
   });
 
   // Frozen v1 embed scripts at their legacy URLs
