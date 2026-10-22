@@ -41,7 +41,7 @@ const countOf = (text, part) => text.split(part).length - 1;
 // Point the frontend build's asset URLs at the release's chefs-assets folder
 function rewriteCssUrls(css, assetNames) {
   const assets = new Set();
-  const rewritten = css.replace(/url\(\s*(['"]?)([^'")]*?)\1\s*\)/gi, (match, quote, url) => {
+  const rewritten = css.replace(/url\(\s*(['"]?)([^'"()\s]*)\1\s*\)/gi, (match, quote, url) => {
     if (url.startsWith('data:') || url.startsWith('#')) return match;
     const found = /^(?:.*\/)?assets\/([^/?#]+)([?#].*)?$/.exec(url);
     if (!found || !assetNames.has(found[1])) {
@@ -56,7 +56,7 @@ function rewriteCssUrls(css, assetNames) {
       throw new Error(`Unrewritten reference to ${name} in frontend CSS`);
     }
   }
-  return { css: rewritten, assets: [...assets].sort() };
+  return { css: rewritten, assets: [...assets].sort((a, b) => a.localeCompare(b)) };
 }
 
 function injectPlaceholders(code, { version, integrity }) {
@@ -71,8 +71,11 @@ function injectPlaceholders(code, { version, integrity }) {
   return { code: injected, counts };
 }
 
+// Use the node and npm that started this tool rather than whatever PATH finds
 function runNpm(cwd, script) {
-  const result = spawnSync('npm', ['run', script], { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
+  const npmCli = process.env.npm_execpath;
+  if (!npmCli) throw new Error('Run the release tool with npm run embed:release');
+  const result = spawnSync(process.execPath, [npmCli, 'run', script], { cwd, stdio: 'inherit' });
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`npm run ${script} failed in ${cwd}`);
 }
@@ -151,7 +154,7 @@ async function buildRelease({ version, outDir, build = true, frontendDir = FRONT
     for (const name of assets) write(`assets/chefs-assets/${name}`, fs.readFileSync(path.join(distAssetsDir, name)));
 
     const placeholders = {};
-    for (const name of EMBED_SCRIPTS) {
+    const buildScript = async (name) => {
       const source = fs.readFileSync(path.join(frontendDir, 'public/embed', `${name}.js`), 'utf8');
       const { code, counts } = injectPlaceholders(source, { version, integrity: hashDir(staging) });
       placeholders[`embed/${name}.js`] = counts;
@@ -159,7 +162,9 @@ async function buildRelease({ version, outDir, build = true, frontendDir = FRONT
       const min = await minify(`public/embed/${name}.js`, code);
       write(`embed/${name}.min.js`, min.code);
       write(`embed/${name}.min.js.map`, min.map);
-    }
+    };
+    // One at a time, so each script's integrity map includes the scripts built before it
+    await EMBED_SCRIPTS.reduce((previous, name) => previous.then(() => buildScript(name)), Promise.resolve());
 
     const integrity = hashDir(staging);
     write(INTEGRITY_FILE, `${JSON.stringify(integrity, null, 2)}\n`);

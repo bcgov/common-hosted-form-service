@@ -37,8 +37,9 @@ function createEmbedRouter(dir = RELEASES_DIR) {
     res.status(404).json({ detail: 'Release file not found' });
   });
   // eslint-disable-next-line no-unused-vars
-  router.use(VERSION_ROUTE, (err, req, res, _next) => {
-    log.error(`Embed release ${req.params[0]}: ${err.message}`);
+  router.use(VERSION_ROUTE, (err, _req, res, _next) => {
+    // The error message carries the request path, so log only the error code
+    log.error(`Embed release file could not be read: ${err.code || err.name}`);
     if (res.headersSent) return res.destroy();
     setReleaseHeaders(res);
     res.status(500).json({ detail: 'Release file could not be read' });
