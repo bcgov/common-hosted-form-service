@@ -89,12 +89,16 @@ describe('webcomponents/v1/assets routes', () => {
     expect(res.body).toEqual({ detail });
   });
 
-  it('rejects font path traversal with 404', async () => {
-    // Route param does not match slashes; use ".." to test traversal attempt
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/fonts/..');
-    expect(res.statusCode).toBe(404);
-    // Express 4 route matching allowed .. to be matched, but Express 5 does not
-    expect(res.body).toEqual({});
+  // An encoded slash reaches the handler as part of :file
+  it.each([
+    ['/font-awesome/fonts/..%2F..%2Fchefs-index.css', 'Invalid font path'],
+    ['/font-awesome/fonts/..%2F..%2F..%2Fintegrity.json', 'Invalid font path'],
+    ['/chefs-assets/..%2Fchefs-index.css', 'Invalid asset path'],
+    ['/chefs-assets/..%2F..%2Fintegrity.json', 'Invalid asset path'],
+  ])('returns 400 for path traversal %s', async (url, detail) => {
+    const res = await request(app).get(`/webcomponents/v1/assets${url}`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({ detail });
   });
 
   it.each(['/formio.js', '/formio.css', '/font-awesome/css/font-awesome.min.css', '/font-awesome/fonts/fontawesome-webfont.ttf', '/chefs-assets/BCSans-Bold-DLThXedW.woff'])(
