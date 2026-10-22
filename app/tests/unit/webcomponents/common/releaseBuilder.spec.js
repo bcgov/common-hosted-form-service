@@ -30,7 +30,7 @@ describe('webcomponents releaseBuilder', () => {
     });
 
     it('reads --out and --skip-build in any order', () => {
-      expect(parseReleaseArgs(['--skip-build', '--out', '/tmp/x', '1.1.0'])).toEqual({ version: '1.1.0', outDir: '/tmp/x', build: false });
+      expect(parseReleaseArgs(['--skip-build', '--out', 'dry-run/1.1.0', '1.1.0'])).toEqual({ version: '1.1.0', outDir: 'dry-run/1.1.0', build: false });
     });
 
     it.each([[[]], [['1.1.0', '1.2.0']], [['1.1.0', '--out']]])('rejects %p', (argv) => {
@@ -50,6 +50,11 @@ describe('webcomponents releaseBuilder', () => {
 
     it('rewrites uppercase url() with spaces', () => {
       expect(rewriteCssUrls('a{src:URL( /app/assets/font-abc.woff2 )}', names).css).toBe('a{src:url(chefs-assets/font-abc.woff2)}');
+    });
+
+    it('leaves empty url() alone', () => {
+      const css = 'a{background:url()}b{background:url( )}c{background:url("")}';
+      expect(rewriteCssUrls(css, names)).toEqual({ css, assets: [] });
     });
 
     it('keeps data and fragment URLs', () => {

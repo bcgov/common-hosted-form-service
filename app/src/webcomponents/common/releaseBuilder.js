@@ -41,7 +41,7 @@ const countOf = (text, part) => text.split(part).length - 1;
 // Point the frontend build's asset URLs at the release's chefs-assets folder
 function rewriteCssUrls(css, assetNames) {
   const assets = new Set();
-  const rewritten = css.replace(/url\(\s*(['"]?)([^'"()\s]*)\1\s*\)/gi, (match, quote, url) => {
+  const rewritten = css.replace(/url\(\s*(['"]?)([^'"()\s]+)\1\s*\)/gi, (match, quote, url) => {
     if (url.startsWith('data:') || url.startsWith('#')) return match;
     const found = /^(?:.*\/)?assets\/([^/?#]+)([?#].*)?$/.exec(url);
     if (!found || !assetNames.has(found[1])) {

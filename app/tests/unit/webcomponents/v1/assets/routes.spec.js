@@ -50,10 +50,8 @@ describe('webcomponents/v1/assets routes', () => {
     expect(css).not.toContain('/app/assets/');
     const files = [...new Set([...css.matchAll(/url\(chefs-assets\/([^?#)]+)/g)].map((match) => match[1]))];
     expect(files).toHaveLength(14);
-    for (const file of files) {
-      const res = await request(app).get(`/webcomponents/v1/assets/chefs-assets/${file}`);
-      expect(res.statusCode).toBe(200);
-    }
+    const responses = await Promise.all(files.map((file) => request(app).get(`/webcomponents/v1/assets/chefs-assets/${file}`)));
+    expect(responses.map((res) => res.statusCode)).toEqual(files.map(() => 200));
   });
 
   it.each([
