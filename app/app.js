@@ -13,6 +13,7 @@ const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
 const webcomponentRouter = require('./src/webcomponents');
+const { releaseDir } = require('./src/webcomponents/common/releases');
 const gatewayRouter = require('./src/gateway');
 
 const DataConnection = require('./src/db/dataConnection');
@@ -135,6 +136,8 @@ const staticFilesPath = config.get('frontend.basePath');
 app.use('/favicon.ico', (_req, res) => {
   res.redirect(`${staticFilesPath}/favicon.ico`);
 });
+// Frozen v1 embed scripts at their legacy URLs, ahead of the frontend build
+app.use(`${staticFilesPath}/embed`, express.static(path.join(releaseDir('v1'), 'embed')));
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
 
 // Handle 500

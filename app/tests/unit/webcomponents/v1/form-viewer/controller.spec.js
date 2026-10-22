@@ -1,6 +1,8 @@
 const controller = require('../../../../../src/webcomponents/v1/form-viewer/controller');
 const service = require('../../../../../src/forms/form/service');
+const { releaseDir } = require('../../../../../src/webcomponents/common/releases');
 const fs = require('node:fs');
+const path = require('node:path');
 const { v4: uuidv4 } = require('uuid');
 
 describe('webcomponents/v1/form-viewer controller', () => {
@@ -105,13 +107,17 @@ describe('webcomponents/v1/form-viewer controller', () => {
   });
 
   describe('static asset handlers', () => {
+    const formViewerDir = path.join(releaseDir('v1'), 'form-viewer');
+
     afterEach(() => {
       jest.restoreAllMocks();
     });
 
-    it('getCustomComponents serves JS when exists', async () => {
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      jest.spyOn(fs, 'readFileSync').mockReturnValue('console.log(1);');
+    it.each([
+      ['getCustomComponents', 'bcgov-formio-components.use.min.js', 'application/javascript'],
+      ['getBcGovStyles', 'chefs-form-viewer.css', 'text/css'],
+      ['getBcGovTheme', 'bcgov-theme.css', 'text/css'],
+    ])('%s serves %s from the v1 release', async (handler, file, contentType) => {
       const req = {};
       const headers = {};
       const res = {
@@ -123,81 +129,26 @@ describe('webcomponents/v1/form-viewer controller', () => {
         json: jest.fn(),
       };
       const next = jest.fn();
-      await controller.getCustomComponents(req, res, next);
-      expect(headers['Content-Type']).toBe('application/javascript');
-      expect(headers['Cache-Control']).toMatch('max-age=3600');
-      expect(res.send).toHaveBeenCalledWith('console.log(1);');
+      await controller[handler](req, res, next);
+      expect(headers['Content-Type']).toBe(contentType);
+      expect(headers['Cache-Control']).toBe('public, max-age=3600');
+      expect(res.send).toHaveBeenCalledWith(fs.readFileSync(path.join(formViewerDir, file), 'utf8'));
+      expect(res.status).not.toHaveBeenCalled();
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('getCustomComponents returns 404 when missing', async () => {
+    it.each([
+      ['getCustomComponents', 'Custom components not found'],
+      ['getBcGovStyles', 'BC Gov styles not found'],
+      ['getBcGovTheme', 'BC Gov theme not found'],
+    ])('%s returns 404 when missing', async (handler, detail) => {
       jest.spyOn(fs, 'existsSync').mockReturnValue(false);
       const req = {};
       const res = { status: jest.fn().mockReturnThis(), json: jest.fn(), setHeader: jest.fn(), send: jest.fn() };
       const next = jest.fn();
-      await controller.getCustomComponents(req, res, next);
+      await controller[handler](req, res, next);
       expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ detail: 'Custom components not found' });
-    });
-
-    it('getBcGovStyles serves CSS when exists', async () => {
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      jest.spyOn(fs, 'readFileSync').mockReturnValue('/* css */');
-      const req = {};
-      const headers = {};
-      const res = {
-        setHeader: (k, v) => {
-          headers[k] = v;
-        },
-        send: jest.fn(),
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-      const next = jest.fn();
-      await controller.getBcGovStyles(req, res, next);
-      expect(headers['Content-Type']).toBe('text/css');
-      expect(res.send).toHaveBeenCalledWith('/* css */');
-      expect(next).not.toHaveBeenCalled();
-    });
-
-    it('getBcGovStyles returns 404 when missing', async () => {
-      jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-      const req = {};
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn(), setHeader: jest.fn(), send: jest.fn() };
-      const next = jest.fn();
-      await controller.getBcGovStyles(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ detail: 'BC Gov styles not found' });
-    });
-
-    it('getBcGovTheme serves CSS when exists', async () => {
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      jest.spyOn(fs, 'readFileSync').mockReturnValue('/* theme */');
-      const req = {};
-      const headers = {};
-      const res = {
-        setHeader: (k, v) => {
-          headers[k] = v;
-        },
-        send: jest.fn(),
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-      const next = jest.fn();
-      await controller.getBcGovTheme(req, res, next);
-      expect(headers['Content-Type']).toBe('text/css');
-      expect(res.send).toHaveBeenCalledWith('/* theme */');
-      expect(next).not.toHaveBeenCalled();
-    });
-
-    it('getBcGovTheme returns 404 when missing', async () => {
-      jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-      const req = {};
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn(), setHeader: jest.fn(), send: jest.fn() };
-      const next = jest.fn();
-      await controller.getBcGovTheme(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ detail: 'BC Gov theme not found' });
+      expect(res.json).toHaveBeenCalledWith({ detail });
     });
   });
 });

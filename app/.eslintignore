@@ -2,3 +2,4 @@ dist
 frontend
 node_modules
 public/js
+embed/releases

@@ -11,7 +11,6 @@ RUN npm run all:ci \
   && npm run all:build \
   && cd ../components && npm run build \
   && cd ../app \
-  && npm run webcomponents:build \
   && npm run frontend:purge \
   && npm run components:purge \
   && mkdir /.npm \
