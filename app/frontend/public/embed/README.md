@@ -64,3 +64,18 @@ The webcomponent uses the `X-Chefs-Gateway-Token` header for authentication when
 - **Header name**: `X-Chefs-Gateway-Token`
 - **Value**: JWT token obtained from the gateway token endpoint above
 - **Usage**: Automatically added to all requests to CHEFS backend URLs (URLs matching the component's `baseUrl`)
+
+#### Public forms without an API key
+
+A form that uses the Public login option can be embedded without an API key or gateway token, on websites its owner lists under **Manage Form > Web Component > Allowed origins**. The v1 component calls the keyed `form-viewer` endpoints; support for these endpoints in the component comes with release 1.1.0.
+
+| Endpoint                                                  | Purpose                                                 |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| `GET {basePath}/webcomponents/v1/public/{formId}/schema`  | Form schema (same response as the keyed endpoint)       |
+| `POST {basePath}/webcomponents/v1/public/{formId}/submit` | Submit; returns `201 { id, confirmationId, createdAt }` |
+
+- **Allowed origins**: the browser's `Origin` header must match one of the form's allowed origins (`https://host[:port]`, or `http://` on `localhost`, `127.0.0.1` or `[::1]` for development). A missing or unlisted origin, or an empty list, returns `403`.
+- **Public forms only**: any other form returns `404`.
+- **Credentials are ignored**: an `Authorization` or `X-Chefs-Gateway-Token` header is removed before the request is handled, so a host page can pass its own headers. The submission is recorded as `public`, the same as a public form submitted in CHEFS.
+- **Submissions are final**: only `submission.data` and `submission.metadata` are read from the request, `draft` is always `false`, and data that references uploaded files is rejected with `400`.
+- **Keyed embeds are unchanged**: requests with an API key or gateway token use the `form-viewer` endpoints and are not checked against allowed origins.
