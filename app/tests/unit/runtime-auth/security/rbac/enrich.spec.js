@@ -336,11 +336,11 @@ describe('rbac/enrich', () => {
   });
 
   describe('enrichRBAC - Public users', () => {
-    it('should grant base permissions to public users', async () => {
+    it('should grant base permissions to public users on public forms', async () => {
       const enrichRBAC = makeEnrichRBAC({ deps: makeDeps() });
       const policy = { requiredPermissions: [], resourceSpec: { kind: 'formOnly' } };
       const who = { actor: { type: 'public', id: 'public-user-123' } };
-      const resource = {};
+      const resource = { publicForm: true, form: { id: 'form-123' } };
 
       const result = await enrichRBAC({ policy, who, resource, currentUser: null, apiUser: false });
 
@@ -353,13 +353,28 @@ describe('rbac/enrich', () => {
       const enrichRBAC = makeEnrichRBAC({ deps: makeDeps() });
       const policy = { requiredPermissions: [], resourceSpec: { kind: 'formOnly' } };
       const who = { actor: { type: 'public', id: 'public-user-123' } };
-      const resource = {};
+      const resource = { publicForm: true, form: { id: 'form-123' } };
 
       const result = await enrichRBAC({ policy, who, resource, currentUser: null, apiUser: false });
 
       const baseAccessDecision = result.decisions.find((d) => d.predicate === 'publicUserBaseAccess');
       expect(baseAccessDecision).toBeDefined();
       expect(baseAccessDecision.result).toBe(true);
+    });
+
+    it.each([
+      ['a form without the Public identity provider', { publicForm: false, form: { id: 'form-123' } }],
+      ['no form', {}],
+    ])('should grant no permissions to public users on %s', async (_name, resource) => {
+      const enrichRBAC = makeEnrichRBAC({ deps: makeDeps() });
+      const policy = { requiredPermissions: [Permissions.SUBMISSION_READ], resourceSpec: { kind: 'formOnly' } };
+      const who = { actor: { type: 'public', id: 'public-user-123' } };
+
+      const result = await enrichRBAC({ policy, who, resource, currentUser: null, apiUser: false });
+
+      expect(result.permissions).toEqual([]);
+      const baseAccessDecision = result.decisions.find((d) => d.predicate === 'publicUserBaseAccess');
+      expect(baseAccessDecision.result).toBe(false);
     });
 
     it('should grant SUBMISSION_READ on public forms when required', async () => {

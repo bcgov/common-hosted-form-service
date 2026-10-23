@@ -41,7 +41,7 @@ When you don't specify `allowedAuth`, it defaults to trying non-public strategie
 The middleware also auto-infers a few things:
 
 - **Classification**: Guessed from the URL path (e.g., `/api/v1/forms` becomes `api`)
-- **Resource type**: Inferred from route params (e.g., `:formId` → `formOnly`, `:submissionId` → `submissionFromForm`)
+- **Resource type**: Inferred from route params (e.g., `:formId` → `formOnly`, `:submissionId` → `submissionFromForm`). Query parameters (`formId`, `submissionId`, `fileId`) are only used when the path names no resource, so a query string cannot change the resource a route is checked against. A route with `:formId` in its path must resolve to that form, otherwise `404`.
 - **Route pattern**: Uses Express's `req.route.path` if available, falls back to `req.path`
 
 You can override any of these behaviors.
@@ -384,27 +384,29 @@ After the middleware runs, `req.securityContext` contains everything about the r
     strategyName: 'public',
     actor: {
       type: 'public',           // Public actor type
-      id: 'user-public-id',     // Special public user ID from database
-      username: 'runtime-auth-public-user',
+      id: '<uuid>',             // User row looked up as 'runtime-auth-public-user'
+      username: 'public-user',
       metadata: { /* user fields */ }
     },
     claims: { public: true }
   },
   resource: {
     form: { /* form object */ },
-    publicForm: true,           // Form must be public for this to work
+    publicForm: true,           // The form uses the Public identity provider
     // ...
   },
   rbac: {
-    permissions: ['submission_create'],  // Limited public permissions
+    permissions: ['form_read', 'submission_create', 'document_template_read'],
     decisions: [
-      { predicate: 'isPublicForm', result: true }
+      { predicate: 'publicUserBaseAccess', result: true, publicForm: true }
     ],
     // ...
   },
   // ...
 }
 ```
+
+Public actors only get permissions on forms that use the Public identity provider. On any other form the orchestrator returns `404`, so the form's existence is not confirmed.
 
 The middleware also sets `req.currentUser` and `req.apiUser` for backward compatibility with existing code. For API users (`apiKey` or `gateway` types), `req.apiUser` will be `true`.
 

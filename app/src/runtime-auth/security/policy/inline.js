@@ -48,10 +48,13 @@ function inferClassification(req, deps) {
 
 function inferResourceSpec(req) {
   const p = req.params || {};
-  const q = req.query || {};
-  const formId = p.formId ?? q.formId;
-  const submissionId = p.submissionId ?? p.formSubmissionId ?? q.submissionId;
-  const fileId = p.fileId ?? q.fileId;
+  // Path parameters name the resource a route acts on. Query parameters only apply when the
+  // path names none (e.g. POST /files?formId=), so ?fileId= cannot swap the resource that is checked.
+  const pathNamesResource = [p.formId, p.submissionId, p.formSubmissionId, p.fileId].some(Boolean);
+  const src = pathNamesResource ? p : req.query || {};
+  const formId = src.formId;
+  const submissionId = src.submissionId ?? src.formSubmissionId;
+  const fileId = src.fileId;
 
   if (fileId) return { kind: 'file', params: { fileId } };
   if (submissionId) return { kind: 'submissionFromForm', params: { formId, submissionId } };

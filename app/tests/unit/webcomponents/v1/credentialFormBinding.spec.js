@@ -2,6 +2,7 @@ const express = require('express');
 const request = require('supertest');
 
 const authService = require('../../../../src/forms/auth/service');
+const fileService = require('../../../../src/forms/file/service');
 const formService = require('../../../../src/forms/form/service');
 const submissionService = require('../../../../src/forms/submission/service');
 const gatewayService = require('../../../../src/gateway/v1/auth/service');
@@ -139,6 +140,30 @@ describe('webcomponents credential form binding', () => {
       const res = await request(app)
         .post(`/webcomponents/v1/print/${formA.id}/submission/${submissionB}/print`)
         .set(await gatewayAuth(formA));
+      expect(res.statusCode).toBe(404);
+      expectHandlerNotCalled();
+    });
+  });
+
+  describe('query parameters naming another resource', () => {
+    const draftFile = '55555555-5555-4555-8555-555555555555';
+
+    beforeEach(() => {
+      // A draft file has no submission, so it resolves without a form
+      jest.spyOn(fileService, 'read').mockResolvedValue({ id: draftFile, formSubmissionId: null });
+    });
+
+    it.each([
+      ['GET', `/webcomponents/v1/form-viewer/${formB.id}/schema?fileId=${draftFile}`],
+      ['POST', `/webcomponents/v1/form-viewer/${formB.id}/submit?fileId=${draftFile}`],
+      ['GET', `/webcomponents/v1/form-viewer/${formB.id}/submission/${submissionB}?fileId=${draftFile}`],
+      ['POST', `/webcomponents/v1/print/${formB.id}/print?fileId=${draftFile}`],
+      ['GET', `/webcomponents/v1/form-viewer/${formB.id}/schema?submissionId=${submissionA}`],
+    ])('%s %s returns 404 for a credential on another form', async (method, url) => {
+      const res = await request(app)
+        [method.toLowerCase()](url)
+        .set(basicAuth(formA))
+        .send({ submission: { data: {} } });
       expect(res.statusCode).toBe(404);
       expectHandlerNotCalled();
     });

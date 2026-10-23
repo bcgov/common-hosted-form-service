@@ -363,8 +363,24 @@ describe('policy/inline', () => {
       expect(result).toEqual({ kind: 'submissionFromForm', params: { formId: 'form-123', submissionId: 'sub-456' } });
     });
 
-    it('should infer submission resource from submissionId query', () => {
-      const req = { params: { formId: 'form-123' }, query: { submissionId: 'sub-456' } };
+    it('should infer submission resource from query when the path names no resource', () => {
+      const req = { params: {}, query: { formId: 'form-123', submissionId: 'sub-456' } };
+      const result = inferResourceSpec(req);
+      expect(result).toEqual({ kind: 'submissionFromForm', params: { formId: 'form-123', submissionId: 'sub-456' } });
+    });
+
+    it.each([
+      ['fileId', { fileId: 'file-999' }],
+      ['submissionId', { submissionId: 'sub-999' }],
+      ['formId', { formId: 'form-999' }],
+    ])('should ignore a query %s when the path names a form', (_name, query) => {
+      const req = { params: { formId: 'form-123' }, query };
+      const result = inferResourceSpec(req);
+      expect(result).toEqual({ kind: 'formOnly', params: { formId: 'form-123' } });
+    });
+
+    it('should ignore a query fileId when the path names a submission', () => {
+      const req = { params: { formId: 'form-123', formSubmissionId: 'sub-456' }, query: { fileId: 'file-999' } };
       const result = inferResourceSpec(req);
       expect(result).toEqual({ kind: 'submissionFromForm', params: { formId: 'form-123', submissionId: 'sub-456' } });
     });
