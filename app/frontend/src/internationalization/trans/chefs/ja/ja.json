@@ -182,7 +182,8 @@
     "eventSubscription": "イベントのサブスクリプション",
     "cdogsTemplate": "CDOGS テンプレート",
     "externalAPIs": "外部API",
-    "eventStreamConfig": "イベントストリームの構成"
+    "eventStreamConfig": "イベントストリームの構成",
+    "webcomponentSettings": "Web コンポーネント"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGSテンプレートをアップロード",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "出力ファイルのカスタム名を入力してください",
     "reportNameCustomInput": "カスタムファイル名",
     "reportNameCustomInputHint": "生成されたドキュメントのカスタム名を入力してください"
+  },
+  "webcomponentSettings": {
+    "description": "API キーなしで CHEFS Web コンポーネントを使ってこのフォームを埋め込めるウェブサイトを選択します。API キーを使用する埋め込みには影響しません。",
+    "notPublicNotice": "許可されたオリジンは、フォームが公開ログインオプションを使用している場合にのみ有効になります。",
+    "allowedOrigins": "許可されたオリジン",
+    "noOrigins": "オリジンが追加されていません。このフォームは API キーなしでは埋め込めません。",
+    "originLabel": "オリジン",
+    "originHint": "例: https://www.example.com。https を使用してください。http は localhost の場合のみ使用できます。",
+    "invalidOrigin": "https://www.example.com のようなオリジンをパスなしで入力してください。",
+    "duplicateOrigin": "このオリジンはすでにリストにあります。",
+    "maxOrigins": "オリジンは最大 {max} 件まで追加できます。",
+    "add": "追加",
+    "remove": "オリジンを削除",
+    "save": "設定を保存",
+    "saving": "保存中...",
+    "saveSuccess": "Web コンポーネントの設定を保存しました",
+    "saveError": "Web コンポーネントの設定の保存中にエラーが発生しました",
+    "fetchError": "Web コンポーネントの設定の取得中にエラーが発生しました"
   },
   "encryptionKey": {
     "info": "フォームの暗号化キーを設定します。",

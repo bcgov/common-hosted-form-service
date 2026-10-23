@@ -182,7 +182,8 @@
     "eventSubscription": "E活动订阅",
     "cdogsTemplate": "CDOGS 模板",
     "externalAPIs": "外部 API",
-    "eventStreamConfig": "事件流配置"
+    "eventStreamConfig": "事件流配置",
+    "webcomponentSettings": "Web 组件"
   },
   "documentTemplate": {
     "uploadTemplate": "上传CDOGS模板",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "输入输出文件的自定义名称",
     "reportNameCustomInput": "自定义文件名",
     "reportNameCustomInputHint": "输入生成文档的自定义名称"
+  },
+  "webcomponentSettings": {
+    "description": "选择可以在无需 API 密钥的情况下使用 CHEFS Web 组件嵌入此表单的网站。使用 API 密钥的嵌入不受影响。",
+    "notPublicNotice": "仅当表单使用公共登录选项时，允许的来源才会生效。",
+    "allowedOrigins": "允许的来源",
+    "noOrigins": "尚未添加来源。没有 API 密钥无法嵌入此表单。",
+    "originLabel": "来源",
+    "originHint": "例如 https://www.example.com。请使用 https，仅 localhost 可使用 http。",
+    "invalidOrigin": "请输入不含路径的来源，例如 https://www.example.com。",
+    "duplicateOrigin": "此来源已在列表中。",
+    "maxOrigins": "最多可以添加 {max} 个来源。",
+    "add": "添加",
+    "remove": "删除来源",
+    "save": "保存设置",
+    "saving": "正在保存...",
+    "saveSuccess": "Web 组件设置已成功保存",
+    "saveError": "保存 Web 组件设置时出错",
+    "fetchError": "获取 Web 组件设置时出错"
   },
   "encryptionKey": {
     "info": "为您的表单配置加密密钥。",

@@ -182,7 +182,8 @@
     "eventSubscription": "Đăng ký sự kiện",
     "cdogsTemplate": "mẫu CDOGS",
     "externalAPIs": "API bên ngoài",
-    "eventStreamConfig": "Cấu hình luồng sự kiện"
+    "eventStreamConfig": "Cấu hình luồng sự kiện",
+    "webcomponentSettings": "Thành phần web"
   },
   "documentTemplate": {
     "uploadTemplate": "Tải lên mẫu CDOGS",
@@ -1401,6 +1402,24 @@
     "reportNameOptionCustomDescription": "Nhập tên tùy chỉnh cho tệp đầu ra",
     "reportNameCustomInput": "Tên Tệp Tùy chỉnh",
     "reportNameCustomInputHint": "Nhập tên tùy chỉnh cho tài liệu đã tạo"
+  },
+  "webcomponentSettings": {
+    "description": "Chọn các trang web có thể nhúng biểu mẫu này bằng thành phần web CHEFS mà không cần khóa API. Các bản nhúng dùng khóa API không bị ảnh hưởng.",
+    "notPublicNotice": "Các nguồn gốc được phép chỉ có hiệu lực khi biểu mẫu dùng tùy chọn đăng nhập công khai.",
+    "allowedOrigins": "Nguồn gốc được phép",
+    "noOrigins": "Chưa thêm nguồn gốc nào. Không thể nhúng biểu mẫu này mà không có khóa API.",
+    "originLabel": "Nguồn gốc",
+    "originHint": "Ví dụ https://www.example.com. Dùng https, hoặc chỉ dùng http cho localhost.",
+    "invalidOrigin": "Nhập một nguồn gốc như https://www.example.com, không có đường dẫn.",
+    "duplicateOrigin": "Nguồn gốc này đã có trong danh sách.",
+    "maxOrigins": "Bạn có thể thêm tối đa {max} nguồn gốc.",
+    "add": "Thêm",
+    "remove": "Xóa nguồn gốc",
+    "save": "Lưu cài đặt",
+    "saving": "Đang lưu...",
+    "saveSuccess": "Đã lưu cài đặt thành phần web thành công",
+    "saveError": "Đã xảy ra lỗi khi lưu cài đặt thành phần web",
+    "fetchError": "Đã xảy ra lỗi khi tải cài đặt thành phần web"
   },
   "encryptionKey": {
     "info": "Cấu hình Khóa mã hóa cho biểu mẫu của bạn.",

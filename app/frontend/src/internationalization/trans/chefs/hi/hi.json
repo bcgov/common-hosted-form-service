@@ -182,7 +182,8 @@
     "eventSubscription": "इवेंट सदस्यता",
     "cdogsTemplate": "सीडीओजीएस टेम्पलेट",
     "externalAPIs": "बाह्य एपीआई",
-    "eventStreamConfig": "इवेंट स्ट्रीम कॉन्फ़िगरेशन"
+    "eventStreamConfig": "इवेंट स्ट्रीम कॉन्फ़िगरेशन",
+    "webcomponentSettings": "वेब कंपोनेंट"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS टेम्पलेट अपलोड करें",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "आउटपुट फ़ाइल के लिए एक कस्टम नाम दर्ज करें",
     "reportNameCustomInput": "कस्टम फ़ाइल नाम",
     "reportNameCustomInputHint": "उत्पन्न दस्तावेज़ के लिए कस्टम नाम दर्ज करें"
+  },
+  "webcomponentSettings": {
+    "description": "उन वेबसाइटों को चुनें जो API कुंजी के बिना CHEFS वेब कंपोनेंट से इस फ़ॉर्म को एम्बेड कर सकती हैं। API कुंजी का उपयोग करने वाले एम्बेड प्रभावित नहीं होते।",
+    "notPublicNotice": "अनुमत ओरिजिन तभी लागू होते हैं जब फ़ॉर्म सार्वजनिक लॉगिन विकल्प का उपयोग करता है।",
+    "allowedOrigins": "अनुमत ओरिजिन",
+    "noOrigins": "कोई ओरिजिन नहीं जोड़ा गया। इस फ़ॉर्म को API कुंजी के बिना एम्बेड नहीं किया जा सकता।",
+    "originLabel": "ओरिजिन",
+    "originHint": "उदाहरण: https://www.example.com। https का उपयोग करें, या http केवल localhost के लिए।",
+    "invalidOrigin": "https://www.example.com जैसा ओरिजिन बिना पाथ के दर्ज करें।",
+    "duplicateOrigin": "यह ओरिजिन पहले से सूची में है।",
+    "maxOrigins": "आप अधिकतम {max} ओरिजिन जोड़ सकते हैं।",
+    "add": "जोड़ें",
+    "remove": "ओरिजिन हटाएँ",
+    "save": "सेटिंग्स सहेजें",
+    "saving": "सहेजा जा रहा है...",
+    "saveSuccess": "वेब कंपोनेंट सेटिंग्स सफलतापूर्वक सहेजी गईं",
+    "saveError": "वेब कंपोनेंट सेटिंग्स सहेजते समय एक त्रुटि हुई",
+    "fetchError": "वेब कंपोनेंट सेटिंग्स प्राप्त करते समय एक त्रुटि हुई"
   },
   "encryptionKey": {
     "info": "अपने फॉर्म के लिए एन्क्रिप्शन कुंजी कॉन्फ़िगर करें.",

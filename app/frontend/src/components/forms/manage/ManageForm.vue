@@ -10,6 +10,7 @@ import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import PrintConfig from '~/components/forms/manage/PrintConfig.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
+import WebcomponentSettings from '~/components/forms/manage/WebcomponentSettings.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useRecordsManagementStore } from '~/store/recordsManagement';
@@ -28,6 +29,7 @@ const subscription = ref(false);
 const subscriptionsPanel = ref(0);
 const versionsPanel = ref(0);
 const printConfigPanel = ref(1);
+const webcomponentSettingsPanel = ref(1);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
@@ -344,6 +346,24 @@ defineExpose({
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <PrintConfig />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- Web Component Settings -->
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="webcomponentSettingsPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="locale">
+            <strong>{{ $t('trans.manageForm.webcomponentSettings') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <WebcomponentSettings />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>

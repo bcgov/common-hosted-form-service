@@ -182,7 +182,8 @@
     "eventSubscription": "Subscription sa Kaganapan",
     "cdogsTemplate": "template ng CDOGS",
     "externalAPIs": "Mga panlabas na API",
-    "eventStreamConfig": "Configuration ng Stream ng Event"
+    "eventStreamConfig": "Configuration ng Stream ng Event",
+    "webcomponentSettings": "Web Component"
   },
   "documentTemplate": {
     "uploadTemplate": "I-upload ang Template ng CDOGS",
@@ -1401,6 +1402,24 @@
     "reportNameOptionCustomDescription": "Maglagay ng custom name para sa output file",
     "reportNameCustomInput": "Custom File Name",
     "reportNameCustomInputHint": "Maglagay ng custom name para sa generated document"
+  },
+  "webcomponentSettings": {
+    "description": "Piliin ang mga website na puwedeng mag-embed ng form na ito gamit ang CHEFS web component nang walang API key. Hindi apektado ang mga embed na gumagamit ng API key.",
+    "notPublicNotice": "Magkakabisa lang ang mga pinapayagang origin kapag ginagamit ng form ang Public na opsyon sa pag-login.",
+    "allowedOrigins": "Mga pinapayagang origin",
+    "noOrigins": "Walang naidagdag na origin. Hindi maaaring i-embed ang form na ito nang walang API key.",
+    "originLabel": "Origin",
+    "originHint": "Halimbawa: https://www.example.com. Gumamit ng https, o http para lang sa localhost.",
+    "invalidOrigin": "Maglagay ng origin tulad ng https://www.example.com, nang walang path.",
+    "duplicateOrigin": "Nasa listahan na ang origin na ito.",
+    "maxOrigins": "Maaari kang magdagdag ng hanggang {max} origin.",
+    "add": "Idagdag",
+    "remove": "Alisin ang origin",
+    "save": "I-save ang Mga Setting",
+    "saving": "Sine-save...",
+    "saveSuccess": "Matagumpay na na-save ang mga setting ng web component",
+    "saveError": "Nagkaroon ng error habang sine-save ang mga setting ng web component",
+    "fetchError": "Nagkaroon ng error habang kinukuha ang mga setting ng web component"
   },
   "encryptionKey": {
     "info": "I-configure ang Mga Encryption Key para sa iyong form.",

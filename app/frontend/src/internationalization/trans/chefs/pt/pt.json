@@ -182,7 +182,8 @@
     "eventSubscription": "Assinatura de evento",
     "cdogsTemplate": "modelo CDOGS",
     "externalAPIs": "APIs externas",
-    "eventStreamConfig": "Configuração do fluxo de eventos"
+    "eventStreamConfig": "Configuração do fluxo de eventos",
+    "webcomponentSettings": "Componente web"
   },
   "documentTemplate": {
     "uploadTemplate": "Carregar modelo CDOGS",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "Digite um nome personalizado para o arquivo de saída",
     "reportNameCustomInput": "Nome do arquivo personalizado",
     "reportNameCustomInputHint": "Digite o nome personalizado para o documento gerado"
+  },
+  "webcomponentSettings": {
+    "description": "Escolha os sites que podem incorporar este formulário com o componente web do CHEFS sem uma chave de API. Incorporações que usam uma chave de API não são afetadas.",
+    "notPublicNotice": "As origens permitidas só têm efeito quando o formulário usa a opção de login público.",
+    "allowedOrigins": "Origens permitidas",
+    "noOrigins": "Nenhuma origem adicionada. Este formulário não pode ser incorporado sem uma chave de API.",
+    "originLabel": "Origem",
+    "originHint": "Por exemplo, https://www.example.com. Use https, ou http apenas para localhost.",
+    "invalidOrigin": "Insira uma origem como https://www.example.com, sem caminho.",
+    "duplicateOrigin": "Esta origem já está na lista.",
+    "maxOrigins": "Você pode adicionar até {max} origens.",
+    "add": "Adicionar",
+    "remove": "Remover origem",
+    "save": "Salvar configurações",
+    "saving": "Salvando...",
+    "saveSuccess": "Configurações do componente web salvas com sucesso",
+    "saveError": "Ocorreu um erro ao salvar as configurações do componente web",
+    "fetchError": "Ocorreu um erro ao buscar as configurações do componente web"
   },
   "encryptionKey": {
     "info": "Configure chaves de criptografia para seu formulário.",
