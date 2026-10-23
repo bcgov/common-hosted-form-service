@@ -127,9 +127,7 @@ describe('Form Designer', () => {
     cy.get('.v-label > span').contains('Expand text fields');
     cy.get('.v-slide-group-item--active > .v-btn__content').contains('Browser Print');
     cy.get('[tabindex="-1"] > .v-btn__content').contains('Template Print');
-    cy.get('input[type="checkbox"]').should('not.be.checked');
-    cy.get('input[type="checkbox"]').click();
-    cy.get('input[type="checkbox"]').should('be.checked');
+    cy.contains('label', 'Expand text fields').closest('.v-selection-control').find('input[type="checkbox"]').should('be.checked');
     cy.get('.v-window-item--active > .flex-container > .more-info-link').should('exist');
     //print option for submission files
     cy.get('[tabindex="-1"] > .v-btn__content').click();
