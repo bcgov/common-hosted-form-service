@@ -182,7 +182,8 @@
     "eventSubscription": "د پیښې ګډون",
     "cdogsTemplate": "CDOGS ਟੈਂਪਲੇਟ",
     "externalAPIs": "ਬਾਹਰੀ APIs",
-    "eventStreamConfig": "ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਕੌਂਫਿਗਰੇਸ਼ਨ"
+    "eventStreamConfig": "ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਕੌਂਫਿਗਰੇਸ਼ਨ",
+    "webcomponentSettings": "ਵੈੱਬ ਕੰਪੋਨੈਂਟ"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "ਆਉਟਪੁੱਟ ਫਾਈਲ ਲਈ ਇੱਕ ਕਸਟਮ ਨਾਮ ਦਰਜ ਕਰੋ",
     "reportNameCustomInput": "ਕਸਟਮ ਫਾਈਲ ਨਾਮ",
     "reportNameCustomInputHint": "ਜਨਰੇਟ ਕੀਤੇ ਦਸਤਾਵੇਜ਼ ਲਈ ਕਸਟਮ ਨਾਮ ਦਰਜ ਕਰੋ"
+  },
+  "webcomponentSettings": {
+    "description": "ਉਹ ਵੈੱਬਸਾਈਟਾਂ ਚੁਣੋ ਜੋ API ਕੁੰਜੀ ਤੋਂ ਬਿਨਾਂ CHEFS ਵੈੱਬ ਕੰਪੋਨੈਂਟ ਨਾਲ ਇਸ ਫ਼ਾਰਮ ਨੂੰ ਐਮਬੈੱਡ ਕਰ ਸਕਦੀਆਂ ਹਨ। API ਕੁੰਜੀ ਵਰਤਣ ਵਾਲੇ ਐਮਬੈੱਡ ਪ੍ਰਭਾਵਿਤ ਨਹੀਂ ਹੁੰਦੇ।",
+    "notPublicNotice": "ਮਨਜ਼ੂਰ ਓਰੀਜਿਨ ਤਾਂ ਹੀ ਲਾਗੂ ਹੁੰਦੇ ਹਨ ਜਦੋਂ ਫ਼ਾਰਮ ਜਨਤਕ ਲੌਗਇਨ ਵਿਕਲਪ ਵਰਤਦਾ ਹੈ।",
+    "allowedOrigins": "ਮਨਜ਼ੂਰ ਓਰੀਜਿਨ",
+    "noOrigins": "ਕੋਈ ਓਰੀਜਿਨ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ। ਇਸ ਫ਼ਾਰਮ ਨੂੰ API ਕੁੰਜੀ ਤੋਂ ਬਿਨਾਂ ਐਮਬੈੱਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।",
+    "originLabel": "ਓਰੀਜਿਨ",
+    "originHint": "ਉਦਾਹਰਨ: https://www.example.com। https ਵਰਤੋ, ਜਾਂ http ਸਿਰਫ਼ localhost ਲਈ।",
+    "invalidOrigin": "https://www.example.com ਵਰਗਾ ਓਰੀਜਿਨ ਬਿਨਾਂ ਪਾਥ ਦੇ ਦਾਖਲ ਕਰੋ।",
+    "duplicateOrigin": "ਇਹ ਓਰੀਜਿਨ ਪਹਿਲਾਂ ਹੀ ਸੂਚੀ ਵਿੱਚ ਹੈ।",
+    "maxOrigins": "ਤੁਸੀਂ ਵੱਧ ਤੋਂ ਵੱਧ {max} ਓਰੀਜਿਨ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।",
+    "add": "ਸ਼ਾਮਲ ਕਰੋ",
+    "remove": "ਓਰੀਜਿਨ ਹਟਾਓ",
+    "save": "ਸੈਟਿੰਗਾਂ ਸੰਭਾਲੋ",
+    "saving": "ਸੰਭਾਲਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
+    "saveSuccess": "ਵੈੱਬ ਕੰਪੋਨੈਂਟ ਸੈਟਿੰਗਾਂ ਸਫਲਤਾਪੂਰਵਕ ਸੰਭਾਲੀਆਂ ਗਈਆਂ",
+    "saveError": "ਵੈੱਬ ਕੰਪੋਨੈਂਟ ਸੈਟਿੰਗਾਂ ਸੰਭਾਲਦੇ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ",
+    "fetchError": "ਵੈੱਬ ਕੰਪੋਨੈਂਟ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ"
   },
   "encryptionKey": {
     "info": "ਆਪਣੇ ਫਾਰਮ ਲਈ ਐਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀਆਂ ਨੂੰ ਕੌਂਫਿਗਰ ਕਰੋ।",

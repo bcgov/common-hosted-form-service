@@ -182,7 +182,8 @@
     "eventSubscription": "Abonnement à l'événement",
     "cdogsTemplate": "Modèle CDOGS",
     "externalAPIs": "API externes",
-    "eventStreamConfig": "Configuration du flux d'événements"
+    "eventStreamConfig": "Configuration du flux d'événements",
+    "webcomponentSettings": "Composant Web"
   },
   "documentTemplate": {
     "uploadTemplate": "Télécharger le modèle CDOGS",
@@ -1397,6 +1398,24 @@
     "reportNameOptionCustomDescription": "Entrez un nom personnalisé pour le fichier de sortie",
     "reportNameCustomInput": "Nom de fichier personnalisé",
     "reportNameCustomInputHint": "Entrez le nom personnalisé pour le document généré"
+  },
+  "webcomponentSettings": {
+    "description": "Choisissez les sites Web qui peuvent intégrer ce formulaire avec le composant Web CHEFS sans clé API. Les intégrations qui utilisent une clé API ne sont pas concernées.",
+    "notPublicNotice": "Les origines autorisées ne s'appliquent que lorsque le formulaire utilise l'option de connexion publique.",
+    "allowedOrigins": "Origines autorisées",
+    "noOrigins": "Aucune origine ajoutée. Ce formulaire ne peut pas être intégré sans clé API.",
+    "originLabel": "Origine",
+    "originHint": "Par exemple https://www.example.com. Utilisez https, ou http uniquement pour localhost.",
+    "invalidOrigin": "Saisissez une origine comme https://www.example.com, sans chemin.",
+    "duplicateOrigin": "Cette origine figure déjà dans la liste.",
+    "maxOrigins": "Vous pouvez ajouter jusqu'à {max} origines.",
+    "add": "Ajouter",
+    "remove": "Supprimer l'origine",
+    "save": "Enregistrer les paramètres",
+    "saving": "Enregistrement...",
+    "saveSuccess": "Paramètres du composant Web enregistrés avec succès",
+    "saveError": "Une erreur s'est produite lors de l'enregistrement des paramètres du composant Web",
+    "fetchError": "Une erreur s'est produite lors de la récupération des paramètres du composant Web"
   },
   "encryptionKey": {
     "info": "Configurez les clés de chiffrement pour votre formulaire.",

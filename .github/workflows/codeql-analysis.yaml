@@ -52,6 +52,10 @@ jobs:
         uses: github/codeql-action/init@b1bff81932f5cdfc8695c7752dcee935dcd061c8  # SHA for v4
         with:
           languages: ${{ matrix.language }}
+          # Committed web component releases are vendor bundles
+          config: |
+            paths-ignore:
+              - app/embed/releases
           # If you wish to specify custom queries, you can do so here or in a config file.
           # By default, queries listed here will override any specified in a config file.
           # Prefix the list here with "+" to use these queries and those in the config file.

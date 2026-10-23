@@ -4,6 +4,10 @@ const path = require('node:path');
 
 const service = require('../../../forms/form/service');
 const submissionService = require('../../../forms/submission/service');
+const { releaseDir } = require('../../common/releases');
+
+// Frozen v1 custom components and styles
+const formViewerDir = path.join(releaseDir('v1'), 'form-viewer');
 
 module.exports = {
   /**
@@ -94,7 +98,7 @@ module.exports = {
   getCustomComponents: async (req, res, next) => {
     try {
       // Serve the built custom components bundle (chefs-form-viewer only)
-      const componentsPath = path.join(__dirname, '../../../../../components/dist/bcgov-formio-components.use.min.js');
+      const componentsPath = path.join(formViewerDir, 'bcgov-formio-components.use.min.js');
       if (fs.existsSync(componentsPath)) {
         res.setHeader('Content-Type', 'application/javascript');
         res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
@@ -114,7 +118,7 @@ module.exports = {
   getBcGovStyles: async (_req, res, next) => {
     try {
       // Serve the base chefs-form-viewer CSS
-      const stylesPath = path.join(__dirname, '../../../../../components/dist/chefs-form-viewer.css');
+      const stylesPath = path.join(formViewerDir, 'chefs-form-viewer.css');
       if (fs.existsSync(stylesPath)) {
         res.setHeader('Content-Type', 'text/css');
         res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
@@ -131,7 +135,7 @@ module.exports = {
   getBcGovTheme: async (_req, res, next) => {
     try {
       // Serve the BCGov theme CSS for chefs-form-viewer
-      const themePath = path.join(__dirname, '../../../../../components/dist/bcgov-theme.css');
+      const themePath = path.join(formViewerDir, 'bcgov-theme.css');
       if (fs.existsSync(themePath)) {
         res.setHeader('Content-Type', 'text/css');
         res.setHeader('Cache-Control', 'public, max-age=3600');

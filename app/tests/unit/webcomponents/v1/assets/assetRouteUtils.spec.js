@@ -2,91 +2,28 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 jest.mock('node:fs');
-jest.mock('node:path');
 
-// Mock config with a factory function
-const mockConfig = {
-  has: jest.fn(),
-  get: jest.fn(),
-};
-
-jest.mock('config', () => mockConfig);
-
-const MODULE_PATH = '../../../../../src/webcomponents/v1/assets/assetRouteUtils';
-const { trySend, createAssetRoute } = require(MODULE_PATH);
+const { assetsDir, trySend, createAssetRoute, createFileRoute } = require('../../../../../src/webcomponents/v1/assets/assetRouteUtils');
 
 describe('assetRouteUtils', () => {
   let mockRes;
   let mockNext;
+  let mockStream;
 
   beforeEach(() => {
+    jest.resetAllMocks();
     mockRes = {
       setHeader: jest.fn(),
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
     mockNext = jest.fn();
-
-    // Mock path.join to return predictable paths
-    path.join.mockImplementation((...args) => args.join('/'));
-
-    jest.clearAllMocks();
+    mockStream = { pipe: jest.fn() };
   });
 
-  describe('assetRoots', () => {
-    it('should return empty array when config has no roots', () => {
-      mockConfig.has.mockReturnValue(false);
-
-      // Re-require to get fresh assetRoots
-      jest.resetModules();
-      const { assetRoots: freshAssetRoots } = require(MODULE_PATH);
-
-      expect(freshAssetRoots).toEqual([]);
-    });
-
-    it('should return array when config has array roots', () => {
-      const roots = ['/path1', '/path2'];
-      mockConfig.has.mockReturnValue(true);
-      mockConfig.get.mockReturnValue(roots);
-
-      jest.resetModules();
-      const { assetRoots: freshAssetRoots } = require(MODULE_PATH);
-
-      expect(freshAssetRoots).toEqual(roots);
-    });
-
-    it('should parse comma-separated string roots', () => {
-      const rootsString = '/path1, /path2 , /path3';
-      const expected = ['/path1', '/path2', '/path3'];
-      mockConfig.has.mockReturnValue(true);
-      mockConfig.get.mockReturnValue(rootsString);
-
-      jest.resetModules();
-      const { assetRoots: freshAssetRoots } = require(MODULE_PATH);
-
-      expect(freshAssetRoots).toEqual(expected);
-    });
-
-    it('should filter empty strings from comma-separated roots', () => {
-      const rootsString = '/path1, , /path2,';
-      const expected = ['/path1', '/path2'];
-      mockConfig.has.mockReturnValue(true);
-      mockConfig.get.mockReturnValue(rootsString);
-
-      jest.resetModules();
-      const { assetRoots: freshAssetRoots } = require(MODULE_PATH);
-
-      expect(freshAssetRoots).toEqual(expected);
-    });
-
-    it('should return empty array for empty string', () => {
-      mockConfig.has.mockReturnValue(true);
-      mockConfig.get.mockReturnValue('');
-
-      jest.resetModules();
-      const { assetRoots: freshAssetRoots } = require(MODULE_PATH);
-
-      expect(freshAssetRoots).toEqual([]);
+  describe('assetsDir', () => {
+    it('points at the frozen v1 release assets', () => {
+      expect(assetsDir).toBe(path.resolve(__dirname, '../../../../../embed/releases/v1/assets'));
     });
   });
 
@@ -94,7 +31,6 @@ describe('assetRouteUtils', () => {
     it('should send file when it exists', () => {
       const filePath = '/test/file.css';
       const contentType = 'text/css';
-      const mockStream = { pipe: jest.fn() };
 
       fs.existsSync.mockReturnValue(true);
       fs.createReadStream.mockReturnValue(mockStream);
@@ -110,13 +46,10 @@ describe('assetRouteUtils', () => {
     });
 
     it('should not set content type when not provided', () => {
-      const filePath = '/test/file.css';
-      const mockStream = { pipe: jest.fn() };
-
       fs.existsSync.mockReturnValue(true);
       fs.createReadStream.mockReturnValue(mockStream);
 
-      trySend(mockRes, filePath);
+      trySend(mockRes, '/test/file.css');
 
       expect(mockRes.setHeader).not.toHaveBeenCalledWith('Content-Type', expect.any(String));
       expect(mockRes.setHeader).toHaveBeenCalledWith('Cache-Control', 'public, max-age=31536000, immutable');
@@ -137,106 +70,114 @@ describe('assetRouteUtils', () => {
   });
 
   describe('createAssetRoute', () => {
-    it('should return a function', () => {
+    it('should send file from the given root', async () => {
+      fs.existsSync.mockImplementation((p) => p === '/root1/vendor/test.css');
+      fs.createReadStream.mockReturnValue(mockStream);
+
+      const route = createAssetRoute('vendor/test.css', 'text/css', 'Not found', '/root1');
+      await route({}, mockRes, mockNext);
+
+      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/css');
+      expect(mockRes.setHeader).toHaveBeenCalledWith('Cache-Control', 'public, max-age=31536000, immutable');
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockRes);
+      expect(mockRes.status).not.toHaveBeenCalled();
+    });
+
+    it('should default to the v1 assets directory', async () => {
+      fs.existsSync.mockReturnValue(true);
+      fs.createReadStream.mockReturnValue(mockStream);
+
       const route = createAssetRoute('test.css', 'text/css', 'Not found');
-      expect(typeof route).toBe('function');
-    });
-
-    it('should send file when found in first root', async () => {
-      const relPath = 'vendor/test.css';
-      const contentType = 'text/css';
-      const errorMessage = 'Not found';
-      const mockStream = { pipe: jest.fn() };
-      const testRoots = ['/root1', '/root2'];
-
-      // Mock file exists and stream
-      fs.existsSync.mockImplementation((path) => path === '/root1/vendor/test.css');
-      fs.createReadStream.mockReturnValue(mockStream);
-
-      const route = createAssetRoute(relPath, contentType, errorMessage, testRoots);
       await route({}, mockRes, mockNext);
 
-      // Test the behavior - file was sent successfully
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', contentType);
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Cache-Control', 'public, max-age=31536000, immutable');
-      expect(mockStream.pipe).toHaveBeenCalledWith(mockRes);
-      expect(mockRes.status).not.toHaveBeenCalled();
+      expect(fs.existsSync).toHaveBeenCalledWith(path.join(assetsDir, 'test.css'));
     });
 
-    it('should try multiple roots until file is found', async () => {
-      const relPath = 'vendor/test.css';
-      const contentType = 'text/css';
-      const errorMessage = 'Not found';
-      const mockStream = { pipe: jest.fn() };
-      const testRoots = ['/root1', '/root2', '/root3'];
-
-      // Mock file exists in second root
-      fs.existsSync.mockImplementation((path) => path === '/root2/vendor/test.css');
-      fs.createReadStream.mockReturnValue(mockStream);
-
-      const route = createAssetRoute(relPath, contentType, errorMessage, testRoots);
-      await route({}, mockRes, mockNext);
-
-      // Test the behavior - file was found in second root
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', contentType);
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Cache-Control', 'public, max-age=31536000, immutable');
-      expect(mockStream.pipe).toHaveBeenCalledWith(mockRes);
-      expect(mockRes.status).not.toHaveBeenCalled();
-    });
-
-    it('should return 404 when file not found in any root', async () => {
-      const relPath = 'vendor/nonexistent.css';
-      const contentType = 'text/css';
-      const errorMessage = 'File not found';
-      const testRoots = ['/root1', '/root2'];
-
-      // Mock file does not exist
+    it('should return 404 when file not found', async () => {
       fs.existsSync.mockReturnValue(false);
 
-      const route = createAssetRoute(relPath, contentType, errorMessage, testRoots);
+      const route = createAssetRoute('vendor/nonexistent.css', 'text/css', 'File not found', '/root1');
       await route({}, mockRes, mockNext);
 
-      // Test the behavior - 404 response
       expect(mockRes.status).toHaveBeenCalledWith(404);
-      expect(mockRes.json).toHaveBeenCalledWith({ detail: errorMessage });
+      expect(mockRes.json).toHaveBeenCalledWith({ detail: 'File not found' });
       expect(mockRes.setHeader).not.toHaveBeenCalled();
     });
 
     it('should call next with error when exception occurs', async () => {
-      const relPath = 'vendor/test.css';
-      const contentType = 'text/css';
-      const errorMessage = 'Not found';
       const testError = new Error('Test error');
-      const testRoots = ['/root1'];
-
-      // Mock fs.existsSync to throw error
       fs.existsSync.mockImplementation(() => {
         throw testError;
       });
 
-      const route = createAssetRoute(relPath, contentType, errorMessage, testRoots);
+      const route = createAssetRoute('vendor/test.css', 'text/css', 'Not found', '/root1');
       await route({}, mockRes, mockNext);
 
-      // Test the behavior - error passed to next
       expect(mockNext).toHaveBeenCalledWith(testError);
       expect(mockRes.status).not.toHaveBeenCalled();
     });
 
     it('should not set content type when not provided', async () => {
-      const relPath = 'vendor/test.css';
-      const errorMessage = 'Not found';
-      const mockStream = { pipe: jest.fn() };
-      const testRoots = ['/root1'];
-
       fs.existsSync.mockReturnValue(true);
       fs.createReadStream.mockReturnValue(mockStream);
 
-      const route = createAssetRoute(relPath, null, errorMessage, testRoots);
+      const route = createAssetRoute('vendor/test.css', null, 'Not found', '/root1');
       await route({}, mockRes, mockNext);
 
-      // Test the behavior - no content type set
       expect(mockRes.setHeader).toHaveBeenCalledWith('Cache-Control', 'public, max-age=31536000, immutable');
       expect(mockRes.setHeader).not.toHaveBeenCalledWith('Content-Type', expect.any(String));
+    });
+  });
+
+  describe('createFileRoute', () => {
+    const route = () => createFileRoute('fonts', 'Invalid path', 'File not found', '/root1');
+
+    it.each([
+      ['font.woff2', 'font/woff2'],
+      ['font.WOFF', 'font/woff'],
+      ['font.ttf', 'font/ttf'],
+      ['font.eot', 'application/vnd.ms-fontobject'],
+      ['font.otf', 'font/otf'],
+      ['sprite.svg', 'image/svg+xml'],
+      ['file.bin', 'application/octet-stream'],
+    ])('should send %s as %s', async (file, contentType) => {
+      fs.existsSync.mockReturnValue(true);
+      fs.createReadStream.mockReturnValue(mockStream);
+
+      await route()({ params: { file } }, mockRes, mockNext);
+
+      expect(fs.existsSync).toHaveBeenCalledWith(`/root1/fonts/${file}`);
+      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', contentType);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockRes);
+    });
+
+    it.each(['', 'bad$name.woff', 'a..b.woff', '.', '..'])('should return 400 for file name %p', async (file) => {
+      await route()({ params: { file } }, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({ detail: 'Invalid path' });
+      expect(fs.existsSync).not.toHaveBeenCalled();
+    });
+
+    it('should return 404 when file not found', async () => {
+      fs.existsSync.mockReturnValue(false);
+
+      await route()({ params: { file: 'missing.woff' } }, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(404);
+      expect(mockRes.json).toHaveBeenCalledWith({ detail: 'File not found' });
+    });
+
+    it('should call next with error when exception occurs', async () => {
+      const testError = new Error('Test error');
+      fs.existsSync.mockImplementation(() => {
+        throw testError;
+      });
+
+      await route()({ params: { file: 'font.woff' } }, mockRes, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith(testError);
+      expect(mockRes.status).not.toHaveBeenCalled();
     });
   });
 });

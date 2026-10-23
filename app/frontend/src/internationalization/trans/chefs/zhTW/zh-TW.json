@@ -182,7 +182,8 @@
     "eventSubscription": "活動訂閱",
     "cdogsTemplate": "CDOGS 模板",
     "externalAPIs": "外部API",
-    "eventStreamConfig": "事件流配置"
+    "eventStreamConfig": "事件流配置",
+    "webcomponentSettings": "Web 元件"
   },
   "documentTemplate": {
     "uploadTemplate": "上傳CDOGS範本",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "輸入輸出檔案的自訂名稱",
     "reportNameCustomInput": "自訂檔案名稱",
     "reportNameCustomInputHint": "輸入產生文件的自訂名稱"
+  },
+  "webcomponentSettings": {
+    "description": "選擇可在不需要 API 金鑰的情況下，使用 CHEFS Web 元件嵌入此表單的網站。使用 API 金鑰的嵌入不受影響。",
+    "notPublicNotice": "只有在表單使用公開登入選項時，允許的來源才會生效。",
+    "allowedOrigins": "允許的來源",
+    "noOrigins": "尚未新增來源。沒有 API 金鑰就無法嵌入此表單。",
+    "originLabel": "來源",
+    "originHint": "例如 https://www.example.com。請使用 https，僅 localhost 可使用 http。",
+    "invalidOrigin": "請輸入不含路徑的來源，例如 https://www.example.com。",
+    "duplicateOrigin": "此來源已在清單中。",
+    "maxOrigins": "最多可新增 {max} 個來源。",
+    "add": "新增",
+    "remove": "移除來源",
+    "save": "儲存設定",
+    "saving": "正在儲存...",
+    "saveSuccess": "已成功儲存 Web 元件設定",
+    "saveError": "儲存 Web 元件設定時發生錯誤",
+    "fetchError": "擷取 Web 元件設定時發生錯誤"
   },
   "encryptionKey": {
     "info": "為您的表單配置加密金鑰。",

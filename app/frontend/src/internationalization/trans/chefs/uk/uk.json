@@ -182,7 +182,8 @@
     "eventSubscription": "Підписка на подію",
     "cdogsTemplate": "Шаблон CDOGS",
     "externalAPIs": "Зовнішні API",
-    "eventStreamConfig": "Конфігурація потоку подій"
+    "eventStreamConfig": "Конфігурація потоку подій",
+    "webcomponentSettings": "Вебкомпонент"
   },
   "documentTemplate": {
     "uploadTemplate": "Завантажити шаблон CDOGS",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "Введіть користувацьке ім'я для вихідного файлу",
     "reportNameCustomInput": "Користувацьке ім'я файлу",
     "reportNameCustomInputHint": "Введіть користувацьке ім'я для згенерованого документа"
+  },
+  "webcomponentSettings": {
+    "description": "Виберіть вебсайти, які можуть вбудовувати цю форму за допомогою вебкомпонента CHEFS без ключа API. Вбудовування з ключем API це не зачіпає.",
+    "notPublicNotice": "Дозволені джерела діють лише тоді, коли форма використовує загальнодоступний варіант входу.",
+    "allowedOrigins": "Дозволені джерела",
+    "noOrigins": "Джерела не додано. Цю форму не можна вбудувати без ключа API.",
+    "originLabel": "Джерело",
+    "originHint": "Наприклад, https://www.example.com. Використовуйте https, а http — лише для localhost.",
+    "invalidOrigin": "Введіть джерело, наприклад https://www.example.com, без шляху.",
+    "duplicateOrigin": "Це джерело вже є у списку.",
+    "maxOrigins": "Можна додати не більше {max} джерел.",
+    "add": "Додати",
+    "remove": "Видалити джерело",
+    "save": "Зберегти налаштування",
+    "saving": "Збереження...",
+    "saveSuccess": "Налаштування вебкомпонента успішно збережено",
+    "saveError": "Під час збереження налаштувань вебкомпонента сталася помилка",
+    "fetchError": "Під час отримання налаштувань вебкомпонента сталася помилка"
   },
   "encryptionKey": {
     "info": "Налаштуйте ключі шифрування для вашої форми.",

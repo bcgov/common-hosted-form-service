@@ -29,6 +29,7 @@ jest.mock('../../../../src/runtime-auth/security/auth/utils/currentUser', () => 
     email: actor.email,
   })),
   isApiUser: jest.fn((actor) => actor.type === 'api' || actor.type === 'gateway'),
+  isPublicUser: jest.fn((actor) => actor.type === 'public'),
 }));
 
 jest.mock('../../../../src/runtime-auth/security/auth/utils/validatePermissions', () => ({
@@ -443,6 +444,148 @@ describe('orchestrator', () => {
       await orchestrator.middleware(req, res, next);
 
       expect(next).toHaveBeenCalledWith(rbacError);
+    });
+  });
+
+  const buildOrchestrator = () =>
+    makeOrchestrator({
+      deps: mockDeps,
+      policyStore: mockPolicyStore,
+      authRegistry: mockAuthRegistry,
+      resolver: mockResolver,
+      enrichRBAC: mockEnrichRBAC,
+    });
+
+  describe('api credential form binding', () => {
+    beforeEach(() => {
+      mockPolicyStore.match.mockReturnValue({ allowedAuth: [], requiredPermissions: [] });
+      mockEnrichRBAC.mockResolvedValue({ permissions: [], decisions: [] });
+    });
+
+    it('should return 404 when the resource form differs from the credential form', async () => {
+      const req = { method: 'GET', path: '/form-b/schema', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'gateway', id: 'gateway-user', formId: 'form-a' } });
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-b' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: HTTP_STATUS.NOT_FOUND, detail: ERRORS.RESOURCE_NOT_FOUND }));
+      expect(mockEnrichRBAC).not.toHaveBeenCalled();
+    });
+
+    it('should continue when the resource form matches the credential form', async () => {
+      const req = { method: 'GET', path: '/form-a/schema', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'gateway', id: 'gateway-user', formId: 'form-a' } });
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-a' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should continue when the resource has no form', async () => {
+      const req = { method: 'GET', path: '/files/file-1', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'gateway', id: 'gateway-user', formId: 'form-a' } });
+      mockResolver.resolve.mockResolvedValue({ form: null, file: { id: 'file-1' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should not apply to non-api actors', async () => {
+      const req = { method: 'GET', path: '/form-b/schema', query: {} };
+      const next = jest.fn();
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'user', id: 'user-1' } });
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-b' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('path form binding', () => {
+    beforeEach(() => {
+      mockPolicyStore.match.mockReturnValue({ allowedAuth: [], requiredPermissions: [] });
+      mockEnrichRBAC.mockResolvedValue({ permissions: [], decisions: [] });
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'user', id: 'user-1' } });
+    });
+
+    it.each([
+      ['another form', { form: { id: 'form-b' } }],
+      ['no form', { form: null, file: { id: 'file-1' } }],
+    ])('should return 404 when a :formId route resolves %s', async (_name, resource) => {
+      const req = { method: 'GET', path: '/form-a/schema', params: { formId: 'form-a' }, query: {} };
+      const next = jest.fn();
+      mockResolver.resolve.mockResolvedValue(resource);
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: HTTP_STATUS.NOT_FOUND, detail: ERRORS.RESOURCE_NOT_FOUND }));
+      expect(mockEnrichRBAC).not.toHaveBeenCalled();
+    });
+
+    it('should continue when the resolved form matches the path form in any case', async () => {
+      const req = { method: 'GET', path: '/form-a/schema', params: { formId: 'FORM-A' }, query: {} };
+      const next = jest.fn();
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-a' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should not apply to routes without :formId', async () => {
+      const req = { method: 'GET', path: '/files/file-1', params: { fileId: 'file-1' }, query: {} };
+      const next = jest.fn();
+      mockResolver.resolve.mockResolvedValue({ form: null, file: { id: 'file-1' } });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('public actor form restriction', () => {
+    beforeEach(() => {
+      mockPolicyStore.match.mockReturnValue({ allowedAuth: ['public'], requiredPermissions: [] });
+      mockEnrichRBAC.mockResolvedValue({ permissions: [], decisions: [] });
+      mockAuthRegistry.authenticate.mockResolvedValue({ actor: { type: 'public', id: 'public-user' } });
+    });
+
+    it('should return 404 when the form does not use the Public identity provider', async () => {
+      const req = { method: 'GET', path: '/form-a/schema', query: {} };
+      const next = jest.fn();
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-a' }, publicForm: false });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: HTTP_STATUS.NOT_FOUND, detail: ERRORS.RESOURCE_NOT_FOUND }));
+      expect(mockEnrichRBAC).not.toHaveBeenCalled();
+    });
+
+    it('should continue when the form uses the Public identity provider', async () => {
+      const req = { method: 'GET', path: '/form-a/schema', query: {} };
+      const next = jest.fn();
+      mockResolver.resolve.mockResolvedValue({ form: { id: 'form-a' }, publicForm: true });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
+    });
+
+    it('should not apply when the resource has no form', async () => {
+      const req = { method: 'GET', path: '/files/file-1', query: {} };
+      const next = jest.fn();
+      mockResolver.resolve.mockResolvedValue({ form: null, publicForm: false });
+
+      await buildOrchestrator().middleware(req, {}, next);
+
+      expect(next).toHaveBeenCalledWith();
     });
   });
 

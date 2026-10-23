@@ -182,7 +182,8 @@
     "eventSubscription": "Ereignisabonnement",
     "cdogsTemplate": "CDOGS-Vorlage",
     "externalAPIs": "Externe APIs",
-    "eventStreamConfig": "Event Stream-Konfiguration"
+    "eventStreamConfig": "Event Stream-Konfiguration",
+    "webcomponentSettings": "Webkomponente"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS-Vorlage hochladen",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "Geben Sie einen benutzerdefinierten Namen für die Ausgabedatei ein",
     "reportNameCustomInput": "Benutzerdefinierter Dateiname",
     "reportNameCustomInputHint": "Geben Sie den benutzerdefinierten Namen für das generierte Dokument ein"
+  },
+  "webcomponentSettings": {
+    "description": "Wählen Sie die Websites aus, die dieses Formular mit der CHEFS-Webkomponente ohne API-Schlüssel einbetten dürfen. Einbettungen mit einem API-Schlüssel sind nicht betroffen.",
+    "notPublicNotice": "Zulässige Ursprünge werden nur wirksam, wenn das Formular die öffentliche Anmeldeoption verwendet.",
+    "allowedOrigins": "Zulässige Ursprünge",
+    "noOrigins": "Keine Ursprünge hinzugefügt. Dieses Formular kann nicht ohne API-Schlüssel eingebettet werden.",
+    "originLabel": "Ursprung",
+    "originHint": "Zum Beispiel https://www.example.com. Verwenden Sie https oder http nur für localhost.",
+    "invalidOrigin": "Geben Sie einen Ursprung wie https://www.example.com ohne Pfad ein.",
+    "duplicateOrigin": "Dieser Ursprung ist bereits in der Liste.",
+    "maxOrigins": "Sie können bis zu {max} Ursprünge hinzufügen.",
+    "add": "Hinzufügen",
+    "remove": "Ursprung entfernen",
+    "save": "Einstellungen speichern",
+    "saving": "Wird gespeichert...",
+    "saveSuccess": "Webkomponenten-Einstellungen erfolgreich gespeichert",
+    "saveError": "Beim Speichern der Webkomponenten-Einstellungen ist ein Fehler aufgetreten",
+    "fetchError": "Beim Abrufen der Webkomponenten-Einstellungen ist ein Fehler aufgetreten"
   },
   "encryptionKey": {
     "info": "Konfigurieren Sie Verschlüsselungsschlüssel für Ihr Formular.",

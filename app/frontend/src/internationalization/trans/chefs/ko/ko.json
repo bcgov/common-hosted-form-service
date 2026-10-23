@@ -182,7 +182,8 @@
     "eventSubscription": "イベントのサブスクリプション",
     "cdogsTemplate": "CDOGS 템플릿",
     "externalAPIs": "외부 API",
-    "eventStreamConfig": "이벤트 스트림 구성"
+    "eventStreamConfig": "이벤트 스트림 구성",
+    "webcomponentSettings": "웹 구성 요소"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS 템플릿 업로드",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "출력 파일의 사용자 정의 이름을 입력하세요",
     "reportNameCustomInput": "사용자 정의 파일 이름",
     "reportNameCustomInputHint": "생성된 문서의 사용자 정의 이름을 입력하세요"
+  },
+  "webcomponentSettings": {
+    "description": "API 키 없이 CHEFS 웹 구성 요소로 이 양식을 삽입할 수 있는 웹사이트를 선택하세요. API 키를 사용하는 삽입에는 영향을 주지 않습니다.",
+    "notPublicNotice": "허용된 출처는 양식이 공개 로그인 옵션을 사용할 때만 적용됩니다.",
+    "allowedOrigins": "허용된 출처",
+    "noOrigins": "추가된 출처가 없습니다. 이 양식은 API 키 없이 삽입할 수 없습니다.",
+    "originLabel": "출처",
+    "originHint": "예: https://www.example.com. https를 사용하고, http는 localhost에만 사용하세요.",
+    "invalidOrigin": "https://www.example.com과 같은 출처를 경로 없이 입력하세요.",
+    "duplicateOrigin": "이 출처는 이미 목록에 있습니다.",
+    "maxOrigins": "출처는 최대 {max}개까지 추가할 수 있습니다.",
+    "add": "추가",
+    "remove": "출처 제거",
+    "save": "설정 저장",
+    "saving": "저장 중...",
+    "saveSuccess": "웹 구성 요소 설정이 저장되었습니다",
+    "saveError": "웹 구성 요소 설정을 저장하는 중 오류가 발생했습니다",
+    "fetchError": "웹 구성 요소 설정을 가져오는 중 오류가 발생했습니다"
   },
   "encryptionKey": {
     "info": "양식에 대한 암호화 키를 구성합니다.",

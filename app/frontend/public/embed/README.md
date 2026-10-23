@@ -2,18 +2,13 @@
 
 Documentation is located at [`CHEFS Tech Docs > Capabilities > Integrations > Embed your Form in another Application`](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Embedding-Webcomponent)
 
-```dockerfile
-# Builds all the necessary artifacts for the web component
-RUN npm run webcomponents:build
-```
-
-All generated assets are automatically copied to the correct locations for serving by the Express backend.
+Releases are cut from these sources into `app/embed/releases/<version>/` and committed. The image build does not generate web component files. See [`app/embed/README.md`](../../../embed/README.md) for the release layout and how to cut a release.
 
 ### Source Code Organization
 
 #### **Source Files** (in `app/frontend/public/embed/`)
 
-These files are stored in source control and copied to `dist/embed/` during build:
+These files are the source for future releases. The frontend build does not ship them; the HTTP paths below serve the frozen v1 copies in `app/embed/releases/v1/embed/`:
 
 | File                                                                                   | Purpose                               | HTTP Path                                            |
 | -------------------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------- |
@@ -27,45 +22,28 @@ These files are stored in source control and copied to `dist/embed/` during buil
 | [`chefs-form-viewer-theme-demo.html`](./chefs-form-viewer-theme-demo.html)             | Theme testing demo tool               | `/app/embed/chefs-form-viewer-theme-demo.html`       |
 | [`README.md`](./README.md)                                                             | This documentation                    | `/app/embed/README.md`                               |
 
-#### **Generated Files** (created in `dist/embed/` during build)
+#### **Release Tools**
 
-These files are **not in source control** and are created by the build process:
-
-| File                                 | Purpose                            | HTTP Path                                       | Created By            |
-| ------------------------------------ | ---------------------------------- | ----------------------------------------------- | --------------------- |
-| `chefs-form-viewer.min.js`           | Minified component (production)    | `/app/embed/chefs-form-viewer.min.js`           | `npm run build:embed` |
-| `chefs-form-viewer-embed.min.js`     | Minified embed script (production) | `/app/embed/chefs-form-viewer-embed.min.js`     | `npm run build:embed` |
-| `chefs-form-viewer.min.js.map`       | Source map for debugging           | `/app/embed/chefs-form-viewer.min.js.map`       | `npm run build:embed` |
-| `chefs-form-viewer-embed.min.js.map` | Source map for debugging           | `/app/embed/chefs-form-viewer-embed.min.js.map` | `npm run build:embed` |
-| `chefs-index.css`                    | Complete CHEFS CSS bundle          | `/app/embed/chefs-index.css`                    | `extract-theme.js`    |
-| `chefs-theme.css`                    | CSS variables and theming          | `/app/embed/chefs-theme.css`                    | `extract-theme.js`    |
-
-#### **Build Scripts and Tools**
-
-| File                                                   | Purpose                                        |
-| ------------------------------------------------------ | ---------------------------------------------- |
-| `app/frontend/scripts/extract-theme.js`                | Orchestrates CSS copying and theme extraction  |
-| `app/frontend/src/embed/themeExtractor.js`             | Core theme extraction and CSS processing logic |
-| `app/frontend/tests/unit/embed/themeExtractor.spec.js` | Unit tests for theme extraction functionality  |
-| `app/frontend/tests/fixtures/chefs-index.fixture.css`  | Test fixture for theme extraction testing      |
+| File                                                   | Purpose                                                 |
+| ------------------------------------------------------ | ------------------------------------------------------- |
+| `app/scripts/embed-release.js`                         | `npm run embed:release -- <x.y.z>` cuts a release       |
+| `app/src/webcomponents/common/releaseBuilder.js`       | Assembles a release folder and its `integrity.json`     |
+| `app/frontend/src/embed/themeExtractor.js`             | Builds `chefs-theme.css` from the frontend CSS bundle   |
+| `app/frontend/tests/unit/embed/themeExtractor.spec.js` | Unit tests for theme extraction functionality           |
+| `app/frontend/tests/fixtures/chefs-index.fixture.css`  | Test fixture for theme extraction testing               |
 
 #### **For CHEFS Developers**
 
 - **Source files**: Edit files in `app/frontend/public/embed/`
-- **Generated files**: Available in `app/frontend/dist/embed/` after running `npm run build`
-- **Asset files**: In the devcontainer, created at `webcomponents/v1/assets/vendor` after running `npm run webcomponents:build` (in production, `/opt/app-root/src/app/webcomponents/v1/assets`)
-- **Development**: Use non-minified files (`.js`) for easier debugging
-- **Production**: Use minified files (`.min.js`, `.css`) for better performance
+- **Development**: The Vite dev server serves this folder at `/app/embed/`; use non-minified files (`.js`) for easier debugging
+- **Releases**: Cut with `npm run embed:release -- <x.y.z>` from `app/`; released files never change
 
 #### **For Embedding Developers**
 
-- **All files are served from `/app/embed/`** (or `/pr-####/embed/` in PR environments)
-- **CSS and minified JS files are only available after CHEFS build process**
+- **v1 files keep their URLs under `/app/embed/`** (or `/pr-####/embed/` in PR environments)
+- **Versioned releases are served from `/app/embed/<x.y.z>/`** with long-lived caching and CORS for SRI
 - **Use `.min.js` files in production** for better performance and smaller downloads
-- **CSS files (`chefs-index.css`, `chefs-theme.css`) are automatically generated** and contain the complete CHEFS styling
 - **Custom themes**: Use `chefs-form-viewer-override-template.css` as a starting point. See demo themes (`chefs-form-viewer-theme-dark.css`, `chefs-form-viewer-theme-material.css`) for examples. Use `chefs-form-viewer-theme-demo.html` to test themes.
-
-**Note**: Generated files (`.min.js`, `.css`) are created during the build process and are not stored in the source repository.
 
 ### Authentication
 
@@ -86,3 +64,18 @@ The webcomponent uses the `X-Chefs-Gateway-Token` header for authentication when
 - **Header name**: `X-Chefs-Gateway-Token`
 - **Value**: JWT token obtained from the gateway token endpoint above
 - **Usage**: Automatically added to all requests to CHEFS backend URLs (URLs matching the component's `baseUrl`)
+
+#### Public forms without an API key
+
+A form that uses the Public login option can be embedded without an API key or gateway token, on websites its owner lists under **Manage Form > Web Component > Allowed origins**. The v1 component calls the keyed `form-viewer` endpoints; support for these endpoints in the component comes with release 1.1.0.
+
+| Endpoint                                                  | Purpose                                                 |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| `GET {basePath}/webcomponents/v1/public/{formId}/schema`  | Form schema (same response as the keyed endpoint)       |
+| `POST {basePath}/webcomponents/v1/public/{formId}/submit` | Submit; returns `201 { id, confirmationId, createdAt }` |
+
+- **Allowed origins**: the browser's `Origin` header must match one of the form's allowed origins (`https://host[:port]`, or `http://` on `localhost`, `127.0.0.1` or `[::1]` for development). A missing or unlisted origin, or an empty list, returns `403`.
+- **Public forms only**: any other form returns `404`.
+- **Credentials are ignored**: an `Authorization` or `X-Chefs-Gateway-Token` header is removed before the request is handled, so a host page can pass its own headers. The submission is recorded as `public`, the same as a public form submitted in CHEFS.
+- **Submissions are final**: only `submission.data` and `submission.metadata` are read from the request, `draft` is always `false`, and data that references uploaded files is rejected with `400`.
+- **Keyed embeds are unchanged**: requests with an API key or gateway token use the `form-viewer` endpoints and are not checked against allowed origins.

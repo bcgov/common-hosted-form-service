@@ -7,9 +7,25 @@ const Problem = require('api-problem');
 const clsRtracer = require('cls-rtracer');
 const { HTTP_STATUS } = require('./httpStatus');
 const ERRORS = require('./errorMessages');
-const { generateCurrentUserFromActor, isApiUser } = require('./auth/utils/currentUser');
+const { generateCurrentUserFromActor, isApiUser, isPublicUser } = require('./auth/utils/currentUser');
 const { validatePermissionsLogic } = require('./auth/utils/validatePermissions');
 const securityLog = require('./logger');
+
+function isOutsideCredentialForm(actor, resource) {
+  if (!actor || !isApiUser(actor) || !resource?.form) return false;
+  return String(resource.form.id).toLowerCase() !== String(actor.formId).toLowerCase();
+}
+
+function isAnonymousOnNonPublicForm(actor, resource) {
+  return !!actor && isPublicUser(actor) && !!resource?.form && !resource.publicForm;
+}
+
+// A route with :formId in its path acts on that form, so the checked resource must be that form
+function isOutsidePathForm(req, resource) {
+  const formId = req.params?.formId;
+  if (!formId) return false;
+  return !resource?.form || String(resource.form.id).toLowerCase() !== String(formId).toLowerCase();
+}
 
 module.exports = function makeOrchestrator({ deps, policyStore, authRegistry, resolver, enrichRBAC }) {
   const { clock = { now: () => Date.now() } } = deps;
@@ -39,6 +55,39 @@ module.exports = function makeOrchestrator({ deps, policyStore, authRegistry, re
       const resource = await resolver.resolve(req, deps, policy);
       if (!resource) throw new Problem(HTTP_STATUS.NOT_FOUND, { detail: ERRORS.RESOURCE_NOT_FOUND });
       tRes = clock.now() - t0r;
+
+      if (isOutsidePathForm(req, resource)) {
+        orchestratorLogger.warn({
+          event: 'resource_path_form_mismatch',
+          resourceFormId: resource.form?.id,
+          method: req.method,
+          path: req.path,
+        });
+        throw new Problem(HTTP_STATUS.NOT_FOUND, { detail: ERRORS.RESOURCE_NOT_FOUND });
+      }
+
+      // API keys and gateway tokens are scoped to one form. 404 so other form ids are not confirmed.
+      if (isOutsideCredentialForm(who?.actor, resource)) {
+        orchestratorLogger.warn({
+          event: 'api_credential_form_mismatch',
+          credentialFormId: who.actor.formId,
+          resourceFormId: resource.form.id,
+          method: req.method,
+          path: req.path,
+        });
+        throw new Problem(HTTP_STATUS.NOT_FOUND, { detail: ERRORS.RESOURCE_NOT_FOUND });
+      }
+
+      // Anonymous callers only reach forms that use the Public identity provider. 404 so other forms are not confirmed.
+      if (isAnonymousOnNonPublicForm(who?.actor, resource)) {
+        orchestratorLogger.warn({
+          event: 'public_actor_non_public_form',
+          resourceFormId: resource.form.id,
+          method: req.method,
+          path: req.path,
+        });
+        throw new Problem(HTTP_STATUS.NOT_FOUND, { detail: ERRORS.RESOURCE_NOT_FOUND });
+      }
 
       // 3.5) Backward compatibility: Set req.currentUser and req.apiUser
       if (who?.actor) {

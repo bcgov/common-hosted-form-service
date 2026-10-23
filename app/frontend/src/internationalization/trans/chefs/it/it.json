@@ -182,7 +182,8 @@
     "eventSubscription": "Abbonamento all'evento",
     "cdogsTemplate": "Modello CDOGS",
     "externalAPIs": "API esterne",
-    "eventStreamConfig": "Configurazione del flusso di eventi"
+    "eventStreamConfig": "Configurazione del flusso di eventi",
+    "webcomponentSettings": "Componente web"
   },
   "documentTemplate": {
     "uploadTemplate": "Carica template CDOGS",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "Inserisci un nome personalizzato per il file di output",
     "reportNameCustomInput": "Nome file personalizzato",
     "reportNameCustomInputHint": "Inserisci il nome personalizzato per il documento generato"
+  },
+  "webcomponentSettings": {
+    "description": "Scegli i siti web che possono incorporare questo modulo con il componente web CHEFS senza una chiave API. Le incorporazioni che usano una chiave API non sono interessate.",
+    "notPublicNotice": "Le origini consentite hanno effetto solo quando il modulo usa l'opzione di accesso pubblico.",
+    "allowedOrigins": "Origini consentite",
+    "noOrigins": "Nessuna origine aggiunta. Questo modulo non può essere incorporato senza una chiave API.",
+    "originLabel": "Origine",
+    "originHint": "Ad esempio https://www.example.com. Usa https, oppure http solo per localhost.",
+    "invalidOrigin": "Inserisci un'origine come https://www.example.com, senza percorso.",
+    "duplicateOrigin": "Questa origine è già nell'elenco.",
+    "maxOrigins": "Puoi aggiungere fino a {max} origini.",
+    "add": "Aggiungi",
+    "remove": "Rimuovi origine",
+    "save": "Salva impostazioni",
+    "saving": "Salvataggio...",
+    "saveSuccess": "Impostazioni del componente web salvate correttamente",
+    "saveError": "Si è verificato un errore durante il salvataggio delle impostazioni del componente web",
+    "fetchError": "Si è verificato un errore durante il recupero delle impostazioni del componente web"
   },
   "encryptionKey": {
     "info": "Configura le chiavi di crittografia per il tuo modulo.",

@@ -78,6 +78,12 @@ tags:
       or template-based document generation. When set to "direct", users will
       print directly using a pre-configured document template, generating a PDF
       output.
+  - name: Web Component Settings
+    description: >
+      Settings for embedding a form with the CHEFS web component. The allowed
+      origins list the websites that can embed a form using the Public identity
+      provider without an API key. Embeds that use an API key or gateway token
+      are not affected.
   - name: Submission
     description: >-
       These API endpoints handle the input data provided by a user that
@@ -706,6 +712,101 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/webcomponentSettings:
+    get:
+      summary: Get web component settings for a form
+      description: >
+        Gets the web component settings for a form. Returns `null` if no web
+        component settings have been set for the form. Requires permission to
+        update the form.
+      operationId: readWebcomponentSettings
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Web Component Settings
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebcomponentSettingsResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Create or update web component settings for a form
+      description: >
+        Creates or updates the web component settings for a form. Each allowed
+        origin must be an https origin such as `https://www.example.com`, or an
+        http origin on `localhost`, `127.0.0.1` or `[::1]`, with no path,
+        query or wildcard. Origins are stored lowercase without a default
+        port. At most 20 origins are allowed and duplicates are rejected.
+      operationId: upsertWebcomponentSettings
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Web Component Settings
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebcomponentSettingsRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebcomponentSettingsResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -4894,6 +4995,52 @@ components:
       description: >
         The print configuration for a form. Returns `null` if no print
         configuration has been set.
+    WebcomponentSettingsRequest:
+      type: object
+      required:
+        - allowedOrigins
+      properties:
+        allowedOrigins:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 255
+          description: >
+            Origins (scheme://host[:port]) that can embed the form without an
+            API key when the form uses the Public identity provider.
+          example:
+            - https://www2.gov.bc.ca
+    WebcomponentSettingsResponse:
+      allOf:
+        - type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the web component settings.
+              example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
+            formId:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the form that these settings belong
+                to.
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            allowedOrigins:
+              type: array
+              items:
+                type: string
+              description: >
+                Normalised origins that can embed the form without an API key.
+              example:
+                - https://www2.gov.bc.ca
+        - $ref: '#/components/schemas/TimeStampUserData'
+      description: >
+        The web component settings for a form. Returns `null` if no settings
+        have been set.
     EmailMessage:
       allOf:
         - type: object

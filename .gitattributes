@@ -6,3 +6,6 @@
 *.jpeg binary
 *.gif binary
 *.png binary
+
+# Web component releases are served with SRI hashes; keep their bytes exactly as committed
+app/embed/releases/** -text

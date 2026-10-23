@@ -1,22 +1,19 @@
 const express = require('express');
-const request = require('supertest');
 const fs = require('node:fs');
-const { Readable } = require('node:stream');
+const path = require('node:path');
+const request = require('supertest');
 
-// Mock config to provide test asset roots
-const mockConfig = {
-  has: jest.fn((key) => key === 'webcomponents.assets.roots'),
-  get: jest.fn((key) => {
-    if (key === 'webcomponents.assets.roots') {
-      return ['/test/assets/root1', '/test/assets/root2'];
-    }
-    return [];
-  }),
-};
-
-jest.mock('config', () => mockConfig);
-
+const { releaseDir } = require('../../../../../src/webcomponents/common/releases');
 const routes = require('../../../../../src/webcomponents/v1/assets/routes');
+
+const assetsDir = path.join(releaseDir('v1'), 'assets');
+
+// Collect the raw body so binary files compare byte for byte
+function binary(res, cb) {
+  const chunks = [];
+  res.on('data', (chunk) => chunks.push(chunk));
+  res.on('end', () => cb(null, Buffer.concat(chunks)));
+}
 
 describe('webcomponents/v1/assets routes', () => {
   let app;
@@ -24,149 +21,92 @@ describe('webcomponents/v1/assets routes', () => {
   beforeEach(() => {
     app = express();
     app.use('/webcomponents/v1/assets', routes);
-    // Reset all mocks before each test
-    jest.clearAllMocks();
   });
 
-  // CHEFS CSS tests
-  it('serves chefs-index.css when present', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation((p) => String(p).includes('vendor/chefs/chefs-index.css'));
-    jest.spyOn(fs, 'createReadStream').mockReturnValue(Readable.from('/* chefs index css */'));
-    const res = await request(app).get('/webcomponents/v1/assets/chefs-index.css');
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it.each([
+    ['/chefs-index.css', 'chefs-index.css', 'text/css'],
+    ['/chefs-theme.css', 'chefs-theme.css', 'text/css'],
+    ['/formio.js', 'formio.full.min.js', 'application/javascript'],
+    ['/formio.css', 'formio.full.min.css', 'text/css'],
+    ['/font-awesome/css/font-awesome.min.css', 'font-awesome/css/font-awesome.min.css', 'text/css'],
+    ['/font-awesome/fonts/fontawesome-webfont.woff2', 'font-awesome/fonts/fontawesome-webfont.woff2', 'font/woff2'],
+    ['/font-awesome/fonts/FontAwesome.otf', 'font-awesome/fonts/FontAwesome.otf', 'font/otf'],
+    ['/chefs-assets/BCSans-Regular-D1GWWdtt.woff', 'chefs-assets/BCSans-Regular-D1GWWdtt.woff', 'font/woff'],
+    ['/chefs-assets/spritesheet-DpIxuf5L.svg', 'chefs-assets/spritesheet-DpIxuf5L.svg', 'image/svg+xml'],
+  ])('serves %s from the v1 release', async (url, file, contentType) => {
+    const res = await request(app).get(`/webcomponents/v1/assets${url}`).buffer(true).parse(binary);
     expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toBe('text/css');
-    expect(res.headers['cache-control']).toMatch('max-age=31536000');
-    expect(res.text).toContain('chefs index css');
+    expect(res.headers['content-type']).toBe(contentType);
+    expect(res.headers['cache-control']).toBe('public, max-age=31536000, immutable');
+    expect(res.body.equals(fs.readFileSync(path.join(assetsDir, file)))).toBe(true);
   });
 
-  it('returns 404 when chefs-index.css missing', async () => {
+  it('serves every chefs-assets file referenced by chefs-index.css', async () => {
+    const css = fs.readFileSync(path.join(assetsDir, 'chefs-index.css'), 'utf8');
+    expect(css).not.toContain('/app/assets/');
+    const files = [...new Set([...css.matchAll(/url\(chefs-assets\/([^?#)]+)/g)].map((match) => match[1]))];
+    expect(files).toHaveLength(14);
+    const responses = await Promise.all(files.map((file) => request(app).get(`/webcomponents/v1/assets/chefs-assets/${file}`)));
+    expect(responses.map((res) => res.statusCode)).toEqual(files.map(() => 200));
+  });
+
+  it.each([
+    ['/chefs-index.css', 'CHEFS index CSS not found'],
+    ['/chefs-theme.css', 'CHEFS theme CSS not found'],
+    ['/formio.js', 'Form.io asset not found'],
+    ['/formio.css', 'Form.io CSS not found'],
+    ['/font-awesome/css/font-awesome.min.css', 'Font Awesome CSS not found'],
+  ])('returns 404 when %s is missing', async (url, detail) => {
     jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const res = await request(app).get('/webcomponents/v1/assets/chefs-index.css');
+    const res = await request(app).get(`/webcomponents/v1/assets${url}`);
     expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({ detail: 'CHEFS index CSS not found' });
+    expect(res.body).toEqual({ detail });
   });
 
-  it('serves chefs-theme.css when present', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation((p) => String(p).includes('vendor/chefs/chefs-theme.css'));
-    jest.spyOn(fs, 'createReadStream').mockReturnValue(Readable.from('/* chefs theme css */'));
-    const res = await request(app).get('/webcomponents/v1/assets/chefs-theme.css');
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toBe('text/css');
-    expect(res.headers['cache-control']).toMatch('max-age=31536000');
-    expect(res.text).toContain('chefs theme css');
-  });
-
-  it('returns 404 when chefs-theme.css missing', async () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const res = await request(app).get('/webcomponents/v1/assets/chefs-theme.css');
+  it.each([
+    ['/font-awesome/fonts/missing.woff', 'Font file not found'],
+    ['/chefs-assets/missing.woff', 'Asset file not found'],
+  ])('returns 404 for unknown file %s', async (url, detail) => {
+    const res = await request(app).get(`/webcomponents/v1/assets${url}`);
     expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({ detail: 'CHEFS theme CSS not found' });
+    expect(res.body).toEqual({ detail });
   });
 
-  // Form.io tests
-  it('serves formio.js when present', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation((p) => String(p).includes('vendor/formiojs/dist/formio.full.min.js'));
-    jest.spyOn(fs, 'createReadStream').mockReturnValue(Readable.from('console.log("ok");'));
-    const res = await request(app).get('/webcomponents/v1/assets/formio.js');
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toBe('application/javascript');
-    expect(res.headers['cache-control']).toMatch('max-age=31536000');
-    expect(res.text).toContain('ok');
+  it.each([
+    ['/font-awesome/fonts/bad%24name.woff', 'Invalid font path'],
+    ['/font-awesome/fonts/a..b.woff', 'Invalid font path'],
+    ['/chefs-assets/bad%24name.woff', 'Invalid asset path'],
+    ['/chefs-assets/a..b.woff', 'Invalid asset path'],
+  ])('returns 400 for invalid file name %s', async (url, detail) => {
+    const res = await request(app).get(`/webcomponents/v1/assets${url}`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({ detail });
   });
 
-  it('returns 404 when formio.css missing', async () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const res = await request(app).get('/webcomponents/v1/assets/formio.css');
-    expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({ detail: 'Form.io CSS not found' });
+  // An encoded slash reaches the handler as part of :file
+  it.each([
+    ['/font-awesome/fonts/..%2F..%2Fchefs-index.css', 'Invalid font path'],
+    ['/font-awesome/fonts/..%2F..%2F..%2Fintegrity.json', 'Invalid font path'],
+    ['/chefs-assets/..%2Fchefs-index.css', 'Invalid asset path'],
+    ['/chefs-assets/..%2F..%2Fintegrity.json', 'Invalid asset path'],
+  ])('returns 400 for path traversal %s', async (url, detail) => {
+    const res = await request(app).get(`/webcomponents/v1/assets${url}`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({ detail });
   });
 
-  it('serves formio.css when present', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation((p) => String(p).includes('vendor/formiojs/dist/formio.full.min.css'));
-    jest.spyOn(fs, 'createReadStream').mockReturnValue(Readable.from('/*ok*/'));
-    const res = await request(app).get('/webcomponents/v1/assets/formio.css');
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toBe('text/css');
-    expect(res.headers['cache-control']).toMatch('max-age=31536000');
-    expect(res.text).toContain('ok');
-  });
-
-  it('returns 404 when formio.js missing', async () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const res = await request(app).get('/webcomponents/v1/assets/formio.js');
-    expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({ detail: 'Form.io asset not found' });
-  });
-
-  it('serves Font Awesome CSS when present', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation((p) => String(p).includes('vendor/font-awesome/css/font-awesome.min.css'));
-    jest.spyOn(fs, 'createReadStream').mockReturnValue(Readable.from('/* fa */'));
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/css/font-awesome.min.css');
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toBe('text/css');
-    expect(res.text).toContain('fa');
-  });
-
-  it('returns 404 when Font Awesome CSS missing', async () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/css/font-awesome.min.css');
-    expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({ detail: 'Font Awesome CSS not found' });
-  });
-
-  it('rejects font path traversal with 404', async () => {
-    // Route param does not match slashes; use ".." to test traversal attempt
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/fonts/..');
-    expect(res.statusCode).toBe(404);
-    // Express 4 route matching allowed .. to be matched, but Express 5 does not
-    // Thus it returns {} instead of what we're expecting, to fix this, we need to update our actual route definitions but should be careful about sanitizing the path
-    expect(res.body).toEqual({});
-  });
-
-  it('serves font file with correct content-type', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation((p) => String(p).includes('vendor/font-awesome/fonts/fontawesome-webfont.woff2'));
-    jest.spyOn(fs, 'createReadStream').mockReturnValue(Readable.from('woff2data'));
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.woff2');
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toBe('font/woff2');
-  });
-
-  it('returns 404 when font file missing', async () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.ttf');
-    expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({ detail: 'Font file not found' });
-  });
-
-  it('returns 500 when formio.js handler throws', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation(() => {
-      throw new Error('boom');
-    });
-    const res = await request(app).get('/webcomponents/v1/assets/formio.js');
-    expect(res.statusCode).toBe(500);
-  });
-
-  it('returns 500 when formio.css handler throws', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation(() => {
-      throw new Error('boom');
-    });
-    const res = await request(app).get('/webcomponents/v1/assets/formio.css');
-    expect(res.statusCode).toBe(500);
-  });
-
-  it('returns 500 when Font Awesome CSS handler throws', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation(() => {
-      throw new Error('boom');
-    });
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/css/font-awesome.min.css');
-    expect(res.statusCode).toBe(500);
-  });
-
-  it('returns 500 when font file handler throws', async () => {
-    jest.spyOn(fs, 'existsSync').mockImplementation(() => {
-      throw new Error('boom');
-    });
-    const res = await request(app).get('/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.ttf');
-    expect(res.statusCode).toBe(500);
-  });
+  it.each(['/formio.js', '/formio.css', '/font-awesome/css/font-awesome.min.css', '/font-awesome/fonts/fontawesome-webfont.ttf', '/chefs-assets/BCSans-Bold-DLThXedW.woff'])(
+    'returns 500 when %s handler throws',
+    async (url) => {
+      jest.spyOn(fs, 'existsSync').mockImplementation(() => {
+        throw new Error('boom');
+      });
+      const res = await request(app).get(`/webcomponents/v1/assets${url}`);
+      expect(res.statusCode).toBe(500);
+    }
+  );
 });

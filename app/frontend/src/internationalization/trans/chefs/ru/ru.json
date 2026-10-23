@@ -182,7 +182,8 @@
     "eventSubscription": "Подписка на события",
     "cdogsTemplate": "Шаблон CDOGS",
     "externalAPIs": "Внешние API",
-    "eventStreamConfig": "Конфигурация потока событий"
+    "eventStreamConfig": "Конфигурация потока событий",
+    "webcomponentSettings": "Веб-компонент"
   },
   "documentTemplate": {
     "uploadTemplate": "Загрузить шаблон CDOGS",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "Введите пользовательское имя для выходного файла",
     "reportNameCustomInput": "Пользовательское имя файла",
     "reportNameCustomInputHint": "Введите пользовательское имя для созданного документа"
+  },
+  "webcomponentSettings": {
+    "description": "Выберите веб-сайты, которые могут встраивать эту форму с помощью веб-компонента CHEFS без ключа API. Встраивания с ключом API это не затрагивает.",
+    "notPublicNotice": "Разрешённые источники действуют только тогда, когда форма использует общедоступный вариант входа.",
+    "allowedOrigins": "Разрешённые источники",
+    "noOrigins": "Источники не добавлены. Эту форму нельзя встроить без ключа API.",
+    "originLabel": "Источник",
+    "originHint": "Например, https://www.example.com. Используйте https, а http — только для localhost.",
+    "invalidOrigin": "Введите источник, например https://www.example.com, без пути.",
+    "duplicateOrigin": "Этот источник уже есть в списке.",
+    "maxOrigins": "Можно добавить не более {max} источников.",
+    "add": "Добавить",
+    "remove": "Удалить источник",
+    "save": "Сохранить настройки",
+    "saving": "Сохранение...",
+    "saveSuccess": "Настройки веб-компонента успешно сохранены",
+    "saveError": "При сохранении настроек веб-компонента произошла ошибка",
+    "fetchError": "При получении настроек веб-компонента произошла ошибка"
   },
   "encryptionKey": {
     "info": "Настройте ключи шифрования для вашей формы.",

@@ -182,7 +182,8 @@
     "eventSubscription": "اشتراك الحدث",
     "cdogsTemplate": "قالب CDOGS",
     "externalAPIs": "واجهات برمجة التطبيقات الخارجية",
-    "eventStreamConfig": "تكوين تدفق الحدث"
+    "eventStreamConfig": "تكوين تدفق الحدث",
+    "webcomponentSettings": "مكوّن الويب"
   },
   "documentTemplate": {
     "uploadTemplate": "تحميل قالب CDOGS",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "أدخل اسمًا مخصصًا لملف الإخراج",
     "reportNameCustomInput": "اسم الملف المخصص",
     "reportNameCustomInputHint": "أدخل الاسم المخصص للمستند المُنشأ"
+  },
+  "webcomponentSettings": {
+    "description": "اختر مواقع الويب التي يمكنها تضمين هذا النموذج باستخدام مكوّن الويب CHEFS دون مفتاح API. لا تتأثر عمليات التضمين التي تستخدم مفتاح API.",
+    "notPublicNotice": "لا تسري المصادر المسموح بها إلا عندما يستخدم النموذج خيار تسجيل الدخول العام.",
+    "allowedOrigins": "المصادر المسموح بها",
+    "noOrigins": "لم تتم إضافة أي مصادر. لا يمكن تضمين هذا النموذج دون مفتاح API.",
+    "originLabel": "المصدر",
+    "originHint": "مثال: https://www.example.com. استخدم https، أو http لـ localhost فقط.",
+    "invalidOrigin": "أدخل مصدرًا مثل https://www.example.com بدون مسار.",
+    "duplicateOrigin": "هذا المصدر موجود بالفعل في القائمة.",
+    "maxOrigins": "يمكنك إضافة ما يصل إلى {max} مصدرًا.",
+    "add": "إضافة",
+    "remove": "إزالة المصدر",
+    "save": "حفظ الإعدادات",
+    "saving": "جارٍ الحفظ...",
+    "saveSuccess": "تم حفظ إعدادات مكوّن الويب بنجاح",
+    "saveError": "حدث خطأ أثناء حفظ إعدادات مكوّن الويب",
+    "fetchError": "حدث خطأ أثناء جلب إعدادات مكوّن الويب"
   },
   "encryptionKey": {
     "info": "قم بتكوين مفاتيح التشفير للنماذج الخاصة بك.",

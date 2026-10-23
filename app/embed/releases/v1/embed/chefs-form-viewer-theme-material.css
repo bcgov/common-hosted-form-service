@@ -1,0 +1,715 @@
+/**
+ * CHEFS Form Viewer - Material Design / Playful Theme
+ * 
+ * A bright, vibrant theme inspired by Material Design 3 with playful colors,
+ * rounded corners, elevated cards, and smooth animations.
+ * Perfect for modern web applications, consumer-facing products, or creative platforms.
+ * 
+ * Design Philosophy:
+ * - Bright, vibrant colors (purple, teal, orange accents) for energy and fun
+ * - Rounded corners everywhere (8px, 12px, 16px) for a friendly, approachable feel
+ * - Elevated cards with soft shadows for depth and hierarchy
+ * - Smooth transitions and animations for polished interactions
+ * - Light backgrounds with colorful accents for clarity
+ * - Modern, friendly aesthetic that feels welcoming
+ * 
+ * IMPORTANT: This theme uses !important declarations to override CHEFS default styles
+ * and the component's inline styles. The gradient background and rounded corners should be immediately visible.
+ */
+
+/* Override component's inline form-control style */
+:host .form-control {
+  background-color: #ffffff !important;
+  color: #333 !important;
+  border-radius: 12px !important;
+}
+
+/* ============================================================================
+ * ROOT CONTAINER STRUCTURE
+ * ============================================================================
+ */
+
+:host .v-application {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+  color: #333 !important;
+}
+
+:host .v-layout.app {
+  background: transparent !important;
+}
+
+:host .v-main.app {
+  background: transparent !important;
+}
+
+:host .v-container.main {
+  background: transparent !important;
+}
+
+:host .v-container--fluid {
+  background: transparent !important;
+}
+
+:host .v-skeleton-loader {
+  background: transparent !important;
+}
+
+:host .form-wrapper {
+  padding: 2rem !important;
+  background-color: #ffffff !important;
+  border: none !important;
+  border-radius: 24px !important;
+  box-shadow: 0 12px 48px rgba(102, 126, 234, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host #formio-container {
+  background: transparent !important;
+}
+
+
+/* ============================================================================
+ * FORM.IO FORM STRUCTURE
+ * ============================================================================
+ */
+
+:host .formio-form {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: #333 !important;
+  background: transparent !important;
+}
+
+:host .formio-form.formio-read-only {
+  opacity: 0.9;
+}
+
+:host .formio-form.formio-read-only .form-control {
+  background-color: #f5f5f5;
+  color: #666;
+  border-color: #e0e0e0;
+}
+
+
+/* ============================================================================
+ * FORM.IO COMPONENTS
+ * ============================================================================
+ */
+
+:host .formio-component {
+  margin-bottom: 2rem;
+}
+
+:host .formio-component-button {
+  margin-top: 2rem;
+}
+
+:host .formio-component-button .btn {
+  text-transform: none;
+  padding: 14px 28px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 0.9375rem;
+  border-radius: 12px;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:host .formio-component-submit .btn.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+:host .formio-component-submit .btn.btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+}
+
+:host .formio-component-submit .btn.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+:host .formio-component-datagrid {
+  border: 2px solid #e0e0e0;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+:host .formio-component-simpletabs > .card {
+  border: none;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+:host .formio-component-simpletabs > .card > .card-header {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+  padding: 1.5rem;
+}
+
+:host .formio-component-simpletabs .nav-item {
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-right: 8px;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+:host .formio-component-simpletabs .nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+:host .formio-component-simpletabs .nav-link {
+  font-weight: 600;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+:host .formio-component-simpletabs .nav-link.active {
+  color: #764ba2;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:host .formio-component-simpletabs .nav-link.active:hover {
+  color: #764ba2;
+  cursor: default;
+  text-decoration: none;
+  transform: scale(1.02);
+}
+
+:host .formio-component-file .fileSelector {
+  margin-left: 24px;
+  border: 3px dashed #667eea;
+  padding: 2rem;
+  background: #f8f9ff;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+:host .formio-component-file .fileSelector:hover {
+  border-color: #764ba2;
+  background: #f0f2ff;
+}
+
+:host .formio-component-simplefile a[href] {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+:host .formio-component-simplefile a[href]:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+:host .formio-component-simpletextarea .card-body.bg-light {
+  background-color: #f8f9ff !important;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+:host .formio-component-simpletextarea .card-body.bg-light:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+:host .formio-component .table {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+  color: #333;
+}
+
+:host .formio-component .table th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+:host .formio-component .table td {
+  border-color: #f0f0f0;
+}
+
+
+/* ============================================================================
+ * BOOTSTRAP FORM CONTROLS
+ * ============================================================================
+ */
+
+:host .form-control {
+  background-color: #ffffff !important;
+  color: #333 !important;
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  font-size: 16px !important;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+:host .form-control:focus {
+  background-color: #ffffff !important;
+  color: #333 !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2), 0 4px 12px rgba(102, 126, 234, 0.15) !important;
+  outline: none !important;
+}
+
+:host .form-control::placeholder,
+:host .form-control .choices__placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+:host .form-control.is-invalid,
+:host .was-validated .form-control:invalid {
+  border-color: #f5576c;
+  background-image: none;
+  box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+}
+
+:host .input-group > .flatpickr-input.form-control + .form-control.input {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+:host .input-group > .flatpickr-input.form-control.is-invalid + .form-control.input {
+  border: 2px solid #f5576c;
+  box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+}
+
+:host .input-group > .flatpickr-input.form-control.is-invalid + .form-control.input:focus {
+  border-color: #f5576c;
+  box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.15);
+}
+
+
+/* ============================================================================
+ * BUTTONS
+ * ============================================================================
+ */
+
+:host .btn {
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  cursor: pointer;
+}
+
+:host .btn.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+:host .btn.btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+:host .btn.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+:host .btn.btn-primary:disabled,
+:host .btn.btn-primary[disabled='disabled'] {
+  background: #e0e0e0;
+  opacity: 0.6;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+  text-decoration: none;
+  transform: none;
+}
+
+:host .btn.btn-secondary {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: #333;
+  box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
+}
+
+:host .btn.btn-secondary:hover {
+  background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
+  box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4);
+  transform: translateY(-2px);
+}
+
+:host .btn.btn-success {
+  background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  color: #333;
+  box-shadow: 0 4px 12px rgba(132, 250, 176, 0.3);
+}
+
+:host .btn.btn-success:hover {
+  background: linear-gradient(135deg, #8fd3f4 0%, #84fab0 100%);
+  box-shadow: 0 6px 20px rgba(132, 250, 176, 0.4);
+  transform: translateY(-2px);
+}
+
+:host .btn.btn-danger {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+}
+
+:host .btn.btn-danger:hover {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  transform: translateY(-2px);
+}
+
+
+/* ============================================================================
+ * CHOICES.JS DROPDOWNS
+ * ============================================================================
+ */
+
+:host .choices__list--dropdown {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+:host .choices__list--dropdown .choices__item {
+  color: #333;
+  background: #ffffff;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+
+:host .choices__list--dropdown .choices__item:not(.is-selected) {
+  color: #333;
+}
+
+:host .choices__list--dropdown .choices__item:hover {
+  background-color: #f8f9ff;
+  color: #667eea;
+}
+
+:host .choices__list--dropdown .choices__item.is-selected {
+  background-color: #667eea;
+  color: #ffffff;
+}
+
+:host .choices__list--multiple {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+:host .choices__list--multiple .choices__item {
+  margin-bottom: 6px;
+  font-size: 14px;
+  background-color: #667eea;
+  color: #ffffff;
+  border-color: #667eea;
+  border-radius: 8px;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+}
+
+:host .choices__list--multiple .choices__item:hover {
+  background-color: #764ba2;
+  border-color: #764ba2;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+:host .choices__list--multiple .choices__button {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  border-color: transparent;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+:host .choices__list--multiple .choices__button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+:host .choices.is-disabled .choices__input {
+  background-color: #f5f5f5;
+  color: #999;
+}
+
+
+/* ============================================================================
+ * CARDS AND PANELS
+ * ============================================================================
+ */
+
+:host .card-header {
+  font-weight: 700;
+  color: #ffffff;
+  opacity: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.5rem;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+}
+
+:host .card-body {
+  padding: 1.5rem;
+  background: #ffffff;
+  border: none;
+  color: #333;
+  border-radius: 0 0 16px 16px;
+}
+
+:host .card {
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+:host .card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+:host .card-header .fa-minus-square-o::before,
+:host .card-header .fa-plus-square-o::before {
+  font-size: 130%;
+  color: #ffffff;
+}
+
+
+/* ============================================================================
+ * VALIDATION AND ERROR MESSAGES
+ * ============================================================================
+ */
+
+:host .formio-error-wrapper {
+  background-color: transparent;
+  padding: 0;
+}
+
+:host .formio-warning-wrapper {
+  padding: 0;
+}
+
+:host .form-text {
+  font-size: 0.875em;
+  color: #666;
+  margin-top: 6px;
+}
+
+:host .form-text.error {
+  background: none !important;
+  color: #f5576c;
+  font-weight: 600;
+}
+
+:host .invalid-feedback {
+  font-size: 0.875em;
+  color: #f5576c;
+  font-weight: 600;
+  margin-top: 6px;
+  display: block;
+}
+
+
+/* ============================================================================
+ * RADIO BUTTONS AND CHECKBOXES
+ * ============================================================================
+ */
+
+:host .form-radio .form-check {
+  margin-bottom: 12px;
+}
+
+:host .form-radio .form-check-label {
+  font-size: 1em;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:host .form-radio .form-check-label:hover {
+  color: #667eea;
+}
+
+:host .form-radio .form-check-label .form-check-input {
+  transform: scale(1.4);
+  accent-color: #667eea;
+  cursor: pointer;
+}
+
+:host .form-radio .form-check-label span {
+  margin-left: 10px;
+}
+
+
+/* ============================================================================
+ * TYPOGRAPHY
+ * ============================================================================
+ */
+
+:host h1 {
+  font-size: 2.5em;
+  color: #764ba2;
+  line-height: 1.2;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+:host h2 {
+  font-size: 2em;
+  color: #667eea;
+  line-height: 1.2;
+  font-weight: 700;
+  margin-bottom: 0.875rem;
+}
+
+:host h3 {
+  font-size: 1.5em;
+  color: #f5576c;
+  line-height: 1.2;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+:host h4 {
+  font-size: 1.25em;
+  color: #333;
+  line-height: 1.2;
+  font-weight: 600;
+  margin-bottom: 0.625rem;
+}
+
+:host h5 {
+  font-size: 1.125em;
+  color: #333;
+  line-height: 1.2;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+:host p {
+  color: #666;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+
+/* ============================================================================
+ * LINKS
+ * ============================================================================
+ */
+
+:host a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+:host a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+
+/* ============================================================================
+ * TOOLTIPS
+ * ============================================================================
+ */
+
+:host .tooltip-inner {
+  background-color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 0.875em;
+  padding: 8px 12px;
+  color: #ffffff;
+}
+
+
+/* ============================================================================
+ * GRID AND COLUMNS
+ * ============================================================================
+ */
+
+:host div[class^='col-']:nth-child(n + 1) {
+  padding-top: 0;
+}
+
+
+/* ============================================================================
+ * CSS VARIABLES (THEME OVERRIDES)
+ * ============================================================================
+ */
+
+:host {
+  --bs-primary: #667eea;
+  --bs-secondary: #fa709a;
+  --bs-success: #84fab0;
+  --bs-danger: #f5576c;
+  --bs-warning: #fee140;
+  --bs-info: #8fd3f4;
+  
+  --bs-body-font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --bs-body-font-size: 16px;
+  --bs-body-color: #333;
+  --bs-body-bg: #ffffff;
+  
+  --bs-link-color: #667eea;
+  --bs-link-hover-color: #764ba2;
+  
+  --bs-border-color: #e0e0e0;
+  --bs-border-radius: 12px;
+  
+  --bs-form-valid-color: #84fab0;
+  --bs-form-valid-border-color: #84fab0;
+  --bs-form-invalid-color: #f5576c;
+  --bs-form-invalid-border-color: #f5576c;
+  
+  --v-theme-overlay-multiplier: 1;
+  --v-scrollbar-offset: 0px;
+}
+
+
+/* ============================================================================
+ * UTILITY CLASSES
+ * ============================================================================
+ */
+
+:host hr {
+  margin-bottom: 1.5em;
+  border-color: #e0e0e0;
+  border-width: 2px;
+}
+
+:host hr.orange {
+  border-top: 3px solid #fee140;
+}
+

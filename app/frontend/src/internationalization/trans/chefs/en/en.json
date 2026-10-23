@@ -179,7 +179,8 @@
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
     "eventStreamConfig": "Event Stream Configuration",
-    "printConfig": "Print Configuration"
+    "printConfig": "Print Configuration",
+    "webcomponentSettings": "Web Component"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -240,6 +241,24 @@
     "reportNameOptionCustomDescription": "Enter a custom name for the output file",
     "reportNameCustomInput": "Custom File Name",
     "reportNameCustomInputHint": "Enter the custom name for the generated document"
+  },
+  "webcomponentSettings": {
+    "description": "Choose the websites that can embed this form with the CHEFS web component without an API key. Embeds that use an API key are not affected.",
+    "notPublicNotice": "Allowed origins only take effect when the form uses the Public login option.",
+    "allowedOrigins": "Allowed origins",
+    "noOrigins": "No origins added. This form cannot be embedded without an API key.",
+    "originLabel": "Origin",
+    "originHint": "For example https://www.example.com. Use https, or http only for localhost.",
+    "invalidOrigin": "Enter an origin such as https://www.example.com, without a path.",
+    "duplicateOrigin": "This origin is already in the list.",
+    "maxOrigins": "You can add up to {max} origins.",
+    "add": "Add",
+    "remove": "Remove origin",
+    "save": "Save Settings",
+    "saving": "Saving...",
+    "saveSuccess": "Web component settings saved successfully",
+    "saveError": "An error occurred while saving web component settings",
+    "fetchError": "An error occurred while fetching web component settings"
   },
   "encryptionKey": {
     "info": "Configure Encryption Keys for your form.",

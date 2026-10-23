@@ -182,7 +182,8 @@
     "eventSubscription": "اشتراک رویداد",
     "cdogsTemplate": "قالب CDOGS",
     "externalAPIs": "API های خارجی",
-    "eventStreamConfig": "پیکربندی جریان رویداد"
+    "eventStreamConfig": "پیکربندی جریان رویداد",
+    "webcomponentSettings": "مؤلفه وب"
   },
   "documentTemplate": {
     "uploadTemplate": "بارگذاری قالب CDOGS",
@@ -1403,6 +1404,24 @@
     "reportNameOptionCustomDescription": "یک نام سفارشی برای فایل خروجی وارد کنید",
     "reportNameCustomInput": "نام فایل سفارشی",
     "reportNameCustomInputHint": "نام سفارشی برای سند تولید شده وارد کنید"
+  },
+  "webcomponentSettings": {
+    "description": "وب‌سایت‌هایی را انتخاب کنید که می‌توانند این فرم را با مؤلفه وب CHEFS بدون کلید API جاسازی کنند. جاسازی‌هایی که از کلید API استفاده می‌کنند تحت تأثیر قرار نمی‌گیرند.",
+    "notPublicNotice": "مبداهای مجاز فقط زمانی اعمال می‌شوند که فرم از گزینه ورود عمومی استفاده کند.",
+    "allowedOrigins": "مبداهای مجاز",
+    "noOrigins": "هیچ مبدایی اضافه نشده است. این فرم را نمی‌توان بدون کلید API جاسازی کرد.",
+    "originLabel": "مبدا",
+    "originHint": "برای مثال https://www.example.com. از https استفاده کنید، یا http فقط برای localhost.",
+    "invalidOrigin": "مبدایی مانند https://www.example.com را بدون مسیر وارد کنید.",
+    "duplicateOrigin": "این مبدا از قبل در فهرست است.",
+    "maxOrigins": "حداکثر می‌توانید {max} مبدا اضافه کنید.",
+    "add": "افزودن",
+    "remove": "حذف مبدا",
+    "save": "ذخیره تنظیمات",
+    "saving": "در حال ذخیره...",
+    "saveSuccess": "تنظیمات مؤلفه وب با موفقیت ذخیره شد",
+    "saveError": "هنگام ذخیره تنظیمات مؤلفه وب خطایی رخ داد",
+    "fetchError": "هنگام دریافت تنظیمات مؤلفه وب خطایی رخ داد"
   },
   "encryptionKey": {
     "info": "کلیدهای رمزگذاری را برای فرم خود پیکربندی کنید.",

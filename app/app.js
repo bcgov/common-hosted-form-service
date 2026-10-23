@@ -13,6 +13,7 @@ const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
 const webcomponentRouter = require('./src/webcomponents');
+const { createEmbedRouter } = require('./src/webcomponents/common/embedRoutes');
 const gatewayRouter = require('./src/gateway');
 
 const DataConnection = require('./src/db/dataConnection');
@@ -135,6 +136,8 @@ const staticFilesPath = config.get('frontend.basePath');
 app.use('/favicon.ico', (_req, res) => {
   res.redirect(`${staticFilesPath}/favicon.ico`);
 });
+// Web component releases and the frozen v1 embed scripts, ahead of the frontend build
+app.use(`${staticFilesPath}/embed`, createEmbedRouter());
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
 
 // Handle 500
