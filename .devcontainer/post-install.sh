@@ -78,14 +78,6 @@ cd ${WORKSPACE_DIR}/app/frontend
 npm run build:formio
 npm run deploy:formio
 
-# make an initial build of webcomponents
-# need to build the frontend first to get the formio and font awesome assets
-cd ${WORKSPACE_DIR}/app/frontend
-npm run build
-# then build the webcomponents
-cd ${WORKSPACE_DIR}/app
-npm run webcomponents:build
-
 
 # copy over the sample files to the image...
 if [ ! -f "${CHEFS_LOCAL_DIR}/local.json" ]; then

@@ -1,6 +1,7 @@
 const service = require('./service');
 const storageService = require('./storage/storageService');
 
+const { StorageTypes } = require('../common/constants');
 const { encodeURI } = require('../common/utils');
 
 const _trim = (r) => {
@@ -18,9 +19,9 @@ const _trim = (r) => {
 };
 
 module.exports = {
-  create: async (req, res, next) => {
+  create: async (req, res, next, formId = null) => {
     try {
-      const response = await service.create(req.file, req.currentUser);
+      const response = await service.create(req.file, req.currentUser, StorageTypes.UPLOADS, { formId });
       res.status(201).json(_trim(response));
     } catch (error) {
       next(error);

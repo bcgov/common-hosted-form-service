@@ -1,3 +1,4 @@
+const { NotFoundError } = require('objection');
 const uuid = require('uuid');
 
 const service = require('../../../../src/forms/file/service');
@@ -64,6 +65,99 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+describe('findByIds and readAll', () => {
+  const ids = (count, prefix = 'id') => Array.from({ length: count }, (_v, i) => `${prefix}-${i}`);
+  let findByIds;
+
+  beforeEach(() => {
+    // Each batch query returns a row for every id it was given, except ids starting with "missing"
+    findByIds = jest.fn((batch) => Promise.resolve(batch.filter((id) => !id.startsWith('missing')).map((id) => ({ id: id.toLowerCase() }))));
+    FileStorage.query = jest.fn().mockReturnValue({ findByIds });
+  });
+
+  it('looks ids up a batch of 1000 at a time, each id once', async () => {
+    const all = [...ids(2500), 'id-0', 'id-1'];
+
+    const found = await service.findByIds(all);
+
+    expect(findByIds.mock.calls.map(([batch]) => batch.length)).toEqual([1000, 1000, 500]);
+    expect(found).toHaveLength(2500);
+  });
+
+  it('waits for each batch before sending the next', async () => {
+    let inFlight = 0;
+    let most = 0;
+    findByIds.mockImplementation(async (batch) => {
+      inFlight++;
+      most = Math.max(most, inFlight);
+      await new Promise((resolve) => setImmediate(resolve));
+      inFlight--;
+      return batch.map((id) => ({ id }));
+    });
+
+    await service.findByIds(ids(3500));
+
+    expect(most).toBe(1);
+  });
+
+  it('leaves out ids that match no file', async () => {
+    expect(await service.findByIds(['id-1', 'missing-1'])).toEqual([{ id: 'id-1' }]);
+  });
+
+  it('reads each file once, in the order given, matching ids in any case', async () => {
+    expect(await service.readAll(['ID-B', 'id-a', 'id-b'])).toEqual([{ id: 'id-b' }, { id: 'id-a' }]);
+  });
+
+  it('throws NotFoundError when an id matches no file', async () => {
+    await expect(service.readAll(['id-1', 'missing-1'])).rejects.toBeInstanceOf(NotFoundError);
+  });
+});
+
+describe('linkToSubmission', () => {
+  it('links files a batch of 1000 at a time, each id once, in the given transaction', async () => {
+    const whereIn = jest.fn().mockResolvedValue(1);
+    const patch = jest.fn().mockReturnValue({ whereIn });
+    FileStorage.query = jest.fn().mockReturnValue({ patch });
+    const trx = { id: 'submission-trx' };
+    const ids = [...Array.from({ length: 1500 }, (_v, i) => `id-${i}`), 'id-0'];
+
+    await service.linkToSubmission(ids, 'submission-1', 'TESTER', trx);
+
+    expect(FileStorage.query).toHaveBeenCalledWith(trx);
+    expect(patch).toHaveBeenCalledWith({ formSubmissionId: 'submission-1', updatedBy: 'TESTER' });
+    expect(whereIn.mock.calls.map(([column, batch]) => [column, batch.length])).toEqual([
+      ['id', 1000],
+      ['id', 500],
+    ]);
+  });
+
+  it('sends nothing for no ids', async () => {
+    FileStorage.query = jest.fn();
+
+    await service.linkToSubmission([], 'submission-1', 'TESTER', {});
+
+    expect(FileStorage.query).not.toHaveBeenCalled();
+  });
+});
+
+describe('checkFilesForForm', () => {
+  const formId = '11111111-1111-4111-8111-111111111111';
+
+  it.each([
+    ['no files', []],
+    ['files that record no form', [{ formId: null }, {}]],
+    ["files uploaded for the submission's form", [{ formId }]],
+  ])('accepts %s', (_name, files) => {
+    expect(() => service.checkFilesForForm(files, formId)).not.toThrow();
+  });
+
+  it('refuses a file uploaded for another form', () => {
+    expect(() => service.checkFilesForForm([{ formId: null }, { formId: '22222222-2222-4222-8222-222222222222' }], formId)).toThrow(
+      expect.objectContaining({ status: 422, detail: 'The submission references a file uploaded for another form.' })
+    );
+  });
+});
+
 describe('create', () => {
   describe('temp file cleanup', () => {
     const validFileData = {
@@ -92,6 +186,19 @@ describe('create', () => {
       await service.create(validFileData, currentUser);
 
       expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(validFileData.path, 'object-storage-upload-success');
+    });
+
+    it.each([
+      ['records the form it is given', { formId: '11111111-1111-4111-8111-111111111111' }, '11111111-1111-4111-8111-111111111111'],
+      ['records no form by default', undefined, undefined],
+    ])('%s', async (_name, options, expected) => {
+      storageService.upload = jest.fn().mockResolvedValue({ path: validFileData.path, storage: StorageTypes.UPLOADS });
+
+      await service.create(validFileData, currentUser, StorageTypes.UPLOADS, options);
+
+      const inserted = FileStorage.query.mock.results[0].value.insert.mock.calls[0][0];
+      expect(inserted.formId).toBe(expected);
+      expect(inserted.storage).toBe(StorageTypes.UPLOADS);
     });
 
     it('preserves local temp file after successful local storage upload', async () => {

@@ -209,6 +209,66 @@ describe('chefs-form-viewer-embed.js', () => {
     expect(element.setAttribute).toHaveBeenCalledWith('no-shadow', '');
   });
 
+  it('should pass false boolean parameters so default-on options can be turned off', () => {
+    const { applyQueryParams } = embedUtils;
+    const logger = { warn: vi.fn(), info: vi.fn() };
+    const element = { setAttribute: vi.fn() };
+
+    applyQueryParams(
+      element,
+      { 'auto-reload-on-submit': 'false', 'read-only': '0', 'no-shadow': 'false' },
+      logger
+    );
+
+    expect(element.setAttribute).toHaveBeenCalledWith(
+      'auto-reload-on-submit',
+      'false'
+    );
+    expect(element.setAttribute).toHaveBeenCalledWith('read-only', 'false');
+    // no-shadow is read by presence, so false must leave it unset
+    expect(element.setAttribute).not.toHaveBeenCalledWith(
+      'no-shadow',
+      expect.anything()
+    );
+  });
+
+  describe('componentScript', () => {
+    const release = {
+      version: '1.0.0',
+      integrity: { 'embed/chefs-form-viewer.min.js': 'sha384-component' },
+    };
+
+    it.each([
+      'https://chefs.example/app/embed/chefs-form-viewer-embed.js?form-id=1',
+      'https://chefs.example/app/embed/chefs-form-viewer-embed.min.js?form-id=1',
+    ])('finds the component next to %s outside a release', (src) => {
+      expect(
+        embedUtils.componentScript(src, { version: null, integrity: {} })
+      ).toEqual({
+        src: 'https://chefs.example/app/embed/chefs-form-viewer.js',
+        integrity: null,
+      });
+    });
+
+    it.each([
+      'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer-embed.js',
+      'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer-embed.min.js?form-id=1&debug',
+    ])('loads the minified component with its hash from %s', (src) => {
+      expect(embedUtils.componentScript(src, release)).toEqual({
+        src: 'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer.min.js',
+        integrity: 'sha384-component',
+      });
+    });
+
+    it('uses the unreleased source by default', () => {
+      expect(
+        embedUtils.componentScript(
+          'https://chefs.example/app/embed/chefs-form-viewer-embed.js'
+        ).integrity
+      ).toBeNull();
+    });
+  });
+
   it('should handle host-data as JSON and set as hostData property', () => {
     const { applyQueryParams } = embedUtils;
     const logger = {

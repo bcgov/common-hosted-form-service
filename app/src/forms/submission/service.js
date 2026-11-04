@@ -1,6 +1,7 @@
 const uuid = require('uuid');
 
 const { Statuses } = require('../common/constants');
+const { findFileIds } = require('../common/utils');
 const {
   Form,
   FormGroup,
@@ -91,31 +92,7 @@ const service = {
    * @param {object} data the data for a submission.
    * @returns an array of file UUIDs.
    */
-  _findFileIds: (data) => {
-    const findFiles = (currentData) => {
-      let fileIds = [];
-      // Check if the current level is an array or an object
-      if (Array.isArray(currentData)) {
-        currentData.forEach((item) => {
-          fileIds = fileIds.concat(findFiles(item));
-        });
-      } else if (typeof currentData === 'object' && currentData !== null) {
-        Object.keys(currentData).forEach((key) => {
-          if (key === 'data' && currentData[key] && currentData[key].id) {
-            // Add the file ID if it exists
-            fileIds.push(currentData[key].id);
-          } else {
-            // Recurse into nested objects
-            fileIds = fileIds.concat(findFiles(currentData[key]));
-          }
-        });
-      }
-      return fileIds;
-    };
-
-    // Start the search from the top-level submission data
-    return findFiles(data.submission.data);
-  },
+  _findFileIds: (data) => findFileIds(data?.submission?.data),
 
   read: (formSubmissionId) => service._fetchSubmissionData(formSubmissionId),
 

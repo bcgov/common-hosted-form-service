@@ -6,6 +6,11 @@ const documentTemplateService = require('../../../../../src/forms/form/documentT
 const formService = require('../../../../../src/forms/form/service');
 const { PrintConfigTypes } = require('../../../../../src/forms/common/constants');
 
+// runtime-auth resolves the resource before the handler runs; these tests hand it over the same way
+const resolved = (req, resource) => {
+  req.securityContext = { resource };
+};
+
 describe('webcomponents/v1/print controller', () => {
   const res = () => {
     const resMock = {
@@ -29,7 +34,8 @@ describe('webcomponents/v1/print controller', () => {
       const next = jest.fn();
 
       jest.spyOn(printConfigService, 'readPrintConfig').mockResolvedValue({ code: PrintConfigTypes.DIRECT, templateId: 'tmpl-1', outputFileType: 'pdf' });
-      jest.spyOn(submissionService, 'read').mockResolvedValue({
+      jest.spyOn(submissionService, 'read');
+      resolved(req, {
         submission: {
           id: 'sub-1',
           confirmationId: 'conf-1',
@@ -60,7 +66,7 @@ describe('webcomponents/v1/print controller', () => {
       await controller.printSubmission(req, response, next);
 
       expect(printConfigService.readPrintConfig).toHaveBeenCalledWith('form-1');
-      expect(submissionService.read).toHaveBeenCalledWith('sub-1');
+      expect(submissionService.read).not.toHaveBeenCalled();
       expect(documentTemplateService.documentTemplateRead).toHaveBeenCalledWith('tmpl-1');
       expect(docGenService.templateUploadAndRender).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -98,7 +104,8 @@ describe('webcomponents/v1/print controller', () => {
       const next = jest.fn();
 
       jest.spyOn(printConfigService, 'readPrintConfig').mockResolvedValue({ code: PrintConfigTypes.DIRECT, templateId: 'tmpl-1', outputFileType: 'pdf' });
-      jest.spyOn(submissionService, 'read').mockResolvedValue({
+      jest.spyOn(submissionService, 'read');
+      resolved(req, {
         submission: {
           id: 'sub-1',
           confirmationId: 'conf-1',
@@ -172,7 +179,8 @@ describe('webcomponents/v1/print controller', () => {
         filename: 'template.docx',
         template: Buffer.from('file'),
       });
-      jest.spyOn(formService, 'readPublishedForm').mockResolvedValue({ name: 'Form Name' });
+      jest.spyOn(formService, 'readPublishedForm');
+      resolved(req, { form: { name: 'Form Name' } });
       jest.spyOn(docGenService, 'templateUploadAndRender').mockResolvedValue({
         data: Buffer.from('pdf'),
         headers: {
@@ -186,7 +194,7 @@ describe('webcomponents/v1/print controller', () => {
 
       expect(printConfigService.readPrintConfig).toHaveBeenCalledWith('form-1');
       expect(documentTemplateService.documentTemplateRead).toHaveBeenCalledWith('tmpl-1');
-      expect(formService.readPublishedForm).toHaveBeenCalledWith('form-1');
+      expect(formService.readPublishedForm).not.toHaveBeenCalled();
       expect(docGenService.templateUploadAndRender).toHaveBeenCalledWith(
         expect.objectContaining({
           formId: 'form-1',
@@ -220,7 +228,8 @@ describe('webcomponents/v1/print controller', () => {
         templateId: 'tmpl-1',
         outputFileType: 'pdf',
       });
-      jest.spyOn(submissionService, 'read').mockResolvedValue({
+      jest.spyOn(submissionService, 'read');
+      resolved(req, {
         submission: {
           id: 'sub-1',
           confirmationId: 'conf-1',

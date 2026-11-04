@@ -21,6 +21,7 @@ export const ApiRoutes = Object.freeze({
   ENCRYPTION_KEY: '/encryptionKey',
   RECORDS_MANAGEMENT: '/recordsManagement',
   PRINT_CONFIG: '/printConfig',
+  WEBCOMPONENT_SETTINGS: '/webcomponentSettings',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */

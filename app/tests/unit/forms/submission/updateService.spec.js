@@ -8,9 +8,10 @@ jest.mock('../../../../src/forms/common/models', () => ({
   SubmissionMetadata: { query: jest.fn() },
 }));
 jest.mock('../../../../src/forms/file/service', () => ({
-  read: jest.fn(),
+  readAll: jest.fn(),
   moveSubmissionFile: jest.fn(),
   deleteStorageObject: jest.fn(),
+  checkFilesForForm: jest.fn(),
 }));
 jest.mock('../../../../src/forms/email/emailService', () => ({
   submissionReceived: jest.fn().mockResolvedValue(),
@@ -198,8 +199,8 @@ describe('updateService', () => {
         _findFileIds: jest.fn().mockReturnValue(fileIds),
       };
 
-      // Mock fileService.read to return fileStorage objects
-      fileService.read.mockImplementation((fileId) => Promise.resolve({ id: fileId, formSubmissionId: null }));
+      // Mock fileService.readAll to return fileStorage objects
+      fileService.readAll.mockImplementation((ids) => Promise.resolve(ids.map((fileId) => ({ id: fileId, formSubmissionId: null }))));
 
       // moveSubmissionFile returns the original file storage object
       fileService.moveSubmissionFile.mockImplementation((_id, fileStorage) => Promise.resolve(fileStorage));
@@ -207,7 +208,7 @@ describe('updateService', () => {
       const moved = await updateService._handleFileUploads(submissionService, data, id, user, trx);
 
       expect(submissionService._findFileIds).toHaveBeenCalledWith(data);
-      expect(fileService.read).toHaveBeenCalledTimes(fileIds.length);
+      expect(fileService.readAll).toHaveBeenCalledWith(fileIds);
       expect(fileService.moveSubmissionFile).toHaveBeenCalledTimes(fileIds.length);
       // The submission transaction must be passed through so a second transaction
       // is never opened against the row this transaction already locked.
@@ -231,13 +232,79 @@ describe('updateService', () => {
         _findFileIds: jest.fn().mockReturnValue(fileIds),
       };
 
-      fileService.read.mockResolvedValue({ id: 'f3', formSubmissionId: 556 });
+      fileService.readAll.mockResolvedValue([{ id: 'f3', formSubmissionId: 556 }]);
       fileService.moveSubmissionFile.mockResolvedValue();
 
       const moved = await updateService._handleFileUploads(submissionService, data, id, user, trx);
 
       expect(fileService.moveSubmissionFile).not.toHaveBeenCalled();
       expect(moved).toEqual([]);
+    });
+
+    it("checks every file against the submission's form before moving any", async () => {
+      const submissionService = {
+        _findFileIds: jest.fn().mockReturnValue(['f1', 'f2']),
+        read: jest.fn().mockResolvedValue({ form: { id: 'form-a' } }),
+      };
+      const files = [
+        { id: 'f1', formSubmissionId: null, formId: null },
+        { id: 'f2', formSubmissionId: null, formId: 'form-b' },
+      ];
+      fileService.readAll.mockResolvedValue(files);
+      const refused = Object.assign(new Error('another form'), { status: 422 });
+      fileService.checkFilesForForm.mockImplementationOnce(() => {
+        throw refused;
+      });
+
+      await expect(updateService._handleFileUploads(submissionService, {}, 558, { usernameIdp: 'uploader' }, {})).rejects.toBe(refused);
+
+      expect(submissionService.read).toHaveBeenCalledWith(558);
+      expect(fileService.checkFilesForForm).toHaveBeenCalledWith(files, 'form-a');
+      expect(fileService.moveSubmissionFile).not.toHaveBeenCalled();
+    });
+
+    it('moves a file uploaded for the same form', async () => {
+      const submissionService = {
+        _findFileIds: jest.fn().mockReturnValue(['f1']),
+        read: jest.fn().mockResolvedValue({ form: { id: 'form-a' } }),
+      };
+      fileService.readAll.mockResolvedValue([{ id: 'f1', formSubmissionId: null, formId: 'form-a' }]);
+      fileService.moveSubmissionFile.mockImplementation((_id, fileStorage) => Promise.resolve(fileStorage));
+
+      const moved = await updateService._handleFileUploads(submissionService, {}, 559, { usernameIdp: 'uploader' }, {});
+
+      expect(fileService.checkFilesForForm).toHaveBeenCalledWith([{ id: 'f1', formSubmissionId: null, formId: 'form-a' }], 'form-a');
+      expect(moved).toEqual([{ id: 'f1', formSubmissionId: null, formId: 'form-a' }]);
+    });
+
+    it('reads no files when the data references none', async () => {
+      const submissionService = { _findFileIds: jest.fn().mockReturnValue([]), read: jest.fn() };
+
+      expect(await updateService._handleFileUploads(submissionService, {}, 561, { usernameIdp: 'uploader' }, {})).toEqual([]);
+
+      expect(fileService.readAll).not.toHaveBeenCalled();
+    });
+
+    it('moves nothing when a referenced id matches no file', async () => {
+      const submissionService = { _findFileIds: jest.fn().mockReturnValue(['f1', 'missing']), read: jest.fn() };
+      const notFound = Object.assign(new Error('NotFoundError'), { statusCode: 404 });
+      fileService.readAll.mockRejectedValueOnce(notFound);
+
+      await expect(updateService._handleFileUploads(submissionService, {}, 562, { usernameIdp: 'uploader' }, {})).rejects.toBe(notFound);
+
+      expect(fileService.moveSubmissionFile).not.toHaveBeenCalled();
+    });
+
+    it('does not read the submission when no file records a form', async () => {
+      const submissionService = { _findFileIds: jest.fn().mockReturnValue(['f1']), read: jest.fn() };
+      fileService.readAll.mockResolvedValue([{ id: 'f1', formSubmissionId: null, formId: null }]);
+      fileService.moveSubmissionFile.mockImplementation((_id, fileStorage) => Promise.resolve(fileStorage));
+
+      await updateService._handleFileUploads(submissionService, {}, 560, { usernameIdp: 'uploader' }, {});
+
+      expect(submissionService.read).not.toHaveBeenCalled();
+      expect(fileService.checkFilesForForm).not.toHaveBeenCalled();
+      expect(fileService.moveSubmissionFile).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error from moveSubmissionFile instead of silently catching', async () => {
@@ -251,7 +318,7 @@ describe('updateService', () => {
         _findFileIds: jest.fn().mockReturnValue(fileIds),
       };
 
-      fileService.read.mockResolvedValue({ id: 'f1', formSubmissionId: null });
+      fileService.readAll.mockResolvedValue([{ id: 'f1', formSubmissionId: null }]);
 
       // Mock moveSubmissionFile to throw
       fileService.moveSubmissionFile.mockRejectedValue(new Error('File move failed'));

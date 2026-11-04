@@ -6,7 +6,6 @@ const eventService = require('../event/eventService');
 const authService = require('../auth/service');
 const moment = require('moment');
 const {
-  FileStorage,
   Form,
   FormApiKey,
   FormEmailTemplate,
@@ -26,10 +25,11 @@ const {
   FormGroup,
   FormMigrationLog,
 } = require('../common/models');
-const { falsey, queryUtils, typeUtils } = require('../common/utils');
+const { falsey, findFileIds, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
+const fileService = require('../file/service');
 const formSubmissionPackageSettingsService = require('../feature/submitToEmail/settingsService');
 const submitToEmailJobService = require('../feature/submitToEmail/jobService');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
@@ -228,31 +228,8 @@ const service = {
     const isPublicForm = idps.some((idp) => idp.code === 'public');
     return !isPublicForm && formData.enableOfflineSubmission === true;
   },
-  _findFileIds: (schema, data) => {
-    const findFiles = (currentData) => {
-      let fileIds = [];
-      // Check if the current level is an array or an object
-      if (Array.isArray(currentData)) {
-        currentData.forEach((item) => {
-          fileIds = fileIds.concat(findFiles(item));
-        });
-      } else if (typeof currentData === 'object' && currentData !== null) {
-        Object.keys(currentData).forEach((key) => {
-          if (key === 'data' && currentData[key]?.id) {
-            // Add the file ID if it exists
-            fileIds.push(currentData[key].id);
-          } else {
-            // Recurse into nested objects
-            fileIds = fileIds.concat(findFiles(currentData[key]));
-          }
-        });
-      }
-      return fileIds;
-    };
-
-    // Start the search from the top-level submission data
-    return findFiles(data.submission.data);
-  },
+  // A body without a submission has no files; the insert's schema check then rejects it
+  _findFileIds: (_schema, data) => findFileIds(data?.submission?.data),
 
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
@@ -968,6 +945,12 @@ const service = {
         validateSubmissionSchedule(form.schedule);
       }
 
+      // The files this submission links to; refused before anything is written if one was
+      // uploaded for another form
+      const fileIds = service._findFileIds(formVersion.schema, data);
+      const files = fileIds.length ? await fileService.findByIds(fileIds) : [];
+      fileService.checkFilesForForm(files, formVersion.formId);
+
       trx = await FormSubmission.startTransaction();
 
       // Ensure we only record the user if the form is not public facing
@@ -1029,12 +1012,13 @@ const service = {
       eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
 
       // does this submission contain any file uploads?
-      // if so, we need to update the file storage records.
-      // use the schema to determine if there are uploads, fetch the ids from the submission data...
-      const fileIds = service._findFileIds(formVersion.schema, data);
-      for (const fileId of fileIds) {
-        await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: obj.id, updatedBy: currentUser.usernameIdp });
-      }
+      // if so, we need to update the file storage records. Ids that match no file are skipped.
+      await fileService.linkToSubmission(
+        files.map((file) => file.id),
+        obj.id,
+        currentUser.usernameIdp,
+        trx
+      );
 
       await trx.commit();
       result = await service.readSubmission(obj.id);

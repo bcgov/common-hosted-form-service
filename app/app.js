@@ -13,6 +13,7 @@ const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
 const webcomponentRouter = require('./src/webcomponents');
+const { createEmbedRouter } = require('./src/webcomponents/common/embedRoutes');
 const gatewayRouter = require('./src/gateway');
 
 const DataConnection = require('./src/db/dataConnection');
@@ -37,6 +38,7 @@ app.set('query parser', qs.parse);
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
+app.use(middleware.limitJsonDepth());
 
 // Express needs to know about the OpenShift proxy. With this setting Express
 // pulls the IP address from the headers, rather than use the proxy IP address.
@@ -128,14 +130,18 @@ app.use(`${config.get('server.basePath')}/webcomponents`, rateLimiter, webcompon
 // Host gateway endpoints (separate from API) and apply rate limiting
 app.use(`${config.get('server.basePath')}/gateway`, rateLimiter, gatewayRouter);
 
-app.use(middleware.errorHandler);
-
 // Host the static frontend assets
 const staticFilesPath = config.get('frontend.basePath');
 app.use('/favicon.ico', (_req, res) => {
   res.redirect(`${staticFilesPath}/favicon.ico`);
 });
+// Web component releases and the frozen v1 embed scripts, ahead of the frontend build
+app.use(`${staticFilesPath}/embed`, createEmbedRouter());
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
+
+// After the static files too, so their errors (an unsatisfiable Range, a failed precondition)
+// keep their 4xx status instead of reaching the 500 handler
+app.use(middleware.errorHandler);
 
 // Handle 500
 // eslint-disable-next-line no-unused-vars
