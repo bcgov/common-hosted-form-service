@@ -7,6 +7,7 @@ import StatusTable from '~/components/forms/submission/StatusTable.vue';
 import { formService, rbacService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 import { useTenantStore } from '~/store/tenant';
 import { FormPermissions } from '~/utils/constants';
@@ -49,6 +50,7 @@ const showStatusContent = ref(false);
 const emailRecipients = ref([]);
 
 const formStore = useFormStore();
+const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 const { user } = storeToRefs(useAuthStore());
 const { form, formSubmission, submissionUsers, isRTL } = storeToRefs(formStore);
@@ -153,8 +155,11 @@ async function onStatusChange(status) {
       });
 
       const submitterData = submissionUsers.value.data.find((data) => {
-        const username = data.user.idpCode
-          ? `${data.user.username}@${data.user.idpCode}`
+        const canonicalIdpCode = data.user.idpCode
+          ? idpStore.findByCode(data.user.idpCode)?.code || data.user.idpCode
+          : null;
+        const username = canonicalIdpCode
+          ? `${data.user.username}@${canonicalIdpCode}`
           : data.user.username;
         return username === formSubmission.value.createdBy;
       });
