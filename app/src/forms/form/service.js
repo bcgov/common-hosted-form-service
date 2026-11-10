@@ -930,7 +930,8 @@ const service = {
     let trx;
     let result;
     let createdBy;
-    const { dedupKey } = options;
+    // ownUploadsOnly: every linked file must be an upload for this form that no submission has yet
+    const { dedupKey, ownUploadsOnly } = options;
     try {
       const formVersion = await service.readVersion(formVersionId);
       const form = await service.readForm(formVersion.formId);
@@ -950,6 +951,7 @@ const service = {
       const fileIds = service._findFileIds(formVersion.schema, data);
       const files = fileIds.length ? await fileService.findByIds(fileIds) : [];
       fileService.checkFilesForForm(files, formVersion.formId);
+      if (ownUploadsOnly) fileService.checkUnsubmittedUploads(files, formVersion.formId);
 
       trx = await FormSubmission.startTransaction();
 
@@ -1009,16 +1011,18 @@ const service = {
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
 
-      eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
-
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records. Ids that match no file are skipped.
+      // Linked before the submission event, so a refused link sends no event.
       await fileService.linkToSubmission(
         files.map((file) => file.id),
         obj.id,
         currentUser.usernameIdp,
-        trx
+        trx,
+        ownUploadsOnly ? { unsubmittedFor: formVersion.formId } : {}
       );
+
+      eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
 
       await trx.commit();
       result = await service.readSubmission(obj.id);

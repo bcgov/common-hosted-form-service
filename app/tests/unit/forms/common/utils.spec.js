@@ -1,5 +1,27 @@
 const config = require('config');
-const { findFileIds, getBaseUrl, queryUtils, typeUtils } = require('../../../../src/forms/common/utils');
+const { findFileIds, getBaseUrl, hasComponentType, queryUtils, typeUtils } = require('../../../../src/forms/common/utils');
+
+describe('hasComponentType', () => {
+  const upload = { type: 'simplefile', key: 'upload', input: true };
+
+  it.each([
+    ['at the top level', { components: [{ type: 'textfield', key: 'name', input: true }, upload] }],
+    ['in a panel', { components: [{ type: 'panel', key: 'panel', components: [upload] }] }],
+    ['in columns', { components: [{ type: 'columns', key: 'columns', columns: [{ components: [] }, { components: [upload] }] }] }],
+    ['in a table', { components: [{ type: 'table', key: 'table', rows: [[{ components: [] }, { components: [upload] }]] }] }],
+    ['in a data grid', { components: [{ type: 'datagrid', key: 'grid', input: true, components: [upload] }] }],
+  ])('finds a component %s', (_name, schema) => {
+    expect(hasComponentType(schema, 'simplefile')).toBe(true);
+  });
+
+  it.each([
+    ['a schema without that type', { components: [{ type: 'textfield', key: 'name', input: true }] }],
+    ['a schema without components', {}],
+    ['no schema', undefined],
+  ])('returns false for %s', (_name, schema) => {
+    expect(hasComponentType(schema, 'simplefile')).toBe(false);
+  });
+});
 
 describe('findFileIds', () => {
   const id = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;

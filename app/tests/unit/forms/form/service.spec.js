@@ -1783,6 +1783,47 @@ describe('createSubmission', () => {
       expect(fileQuery.patch).not.toHaveBeenCalled();
     });
 
+    it('refuses a file that records no form when only its own uploads may be linked', async () => {
+      fileQuery.findByIds.mockResolvedValue([{ id: file1, formId: null, formSubmissionId: null }]);
+      const data = { draft: false, submission: { data: { upload: upload(file1) } } };
+
+      await expect(service.createSubmission('123', data, currentUser, { ownUploadsOnly: true })).rejects.toThrow(expect.objectContaining({ status: 422 }));
+
+      expect(FormSubmission.startTransaction).not.toHaveBeenCalled();
+      expect(fileQuery.patch).not.toHaveBeenCalled();
+    });
+
+    describe('when only its own uploads may be linked', () => {
+      beforeEach(() => {
+        fileQuery.findByIds.mockResolvedValue([{ id: file1, formId: formId, formSubmissionId: null }]);
+        fileQuery.whereIn = jest.fn().mockReturnThis();
+        fileQuery.where = jest.fn().mockReturnThis();
+        fileQuery.whereNull = jest.fn().mockResolvedValue(1);
+      });
+
+      it('links unsubmitted uploads for the form, checking them again as they are linked', async () => {
+        const data = { draft: false, submission: { data: { upload: upload(file1) } } };
+
+        await service.createSubmission('123', data, currentUser, { ownUploadsOnly: true });
+
+        expect(fileQuery.whereIn).toHaveBeenCalledWith('id', [file1]);
+        expect(fileQuery.where).toHaveBeenCalledWith('formId', formId);
+        expect(fileQuery.whereNull).toHaveBeenCalledWith('formSubmissionId');
+        expect(MockTransaction.commit).toBeCalledTimes(1);
+      });
+
+      it('refuses with 422, rolls back and sends no event when another submission linked a file first', async () => {
+        fileQuery.whereNull.mockResolvedValue(0);
+        const data = { draft: false, submission: { data: { upload: upload(file1) } } };
+
+        await expect(service.createSubmission('123', data, currentUser, { ownUploadsOnly: true })).rejects.toThrow(expect.objectContaining({ status: 422 }));
+
+        expect(MockTransaction.rollback).toHaveBeenCalled();
+        expect(MockTransaction.commit).not.toHaveBeenCalled();
+        expect(eventService.formSubmissionEventReceived).not.toHaveBeenCalled();
+      });
+    });
+
     it("links files that record no form or the submission's form", async () => {
       fileQuery.findByIds.mockResolvedValue([
         { id: file1, formId: null },

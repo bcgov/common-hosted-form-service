@@ -1,5 +1,6 @@
 const Problem = require('api-problem');
 
+const fileService = require('../../../forms/file/service');
 const service = require('../../../forms/form/service');
 const { formSchemaResponse, submitResponse } = require('../../common/responses');
 
@@ -36,13 +37,21 @@ module.exports = {
       const { metadata } = req.body.submission;
       const data = { submission: metadata === undefined ? { data: submissionData } : { data: submissionData, metadata }, draft: false };
 
-      // Files cannot be uploaded anonymously, so a submission cannot claim any
-      if (service._findFileIds(version.schema, data).length) {
-        throw new Problem(400, { detail: 'Anonymous submissions cannot include files.' });
-      }
-
-      const submission = await service.createSubmission(version.id, data, req.currentUser);
+      // A file the submission references must be one uploaded here for this form and not yet submitted
+      const submission = await service.createSubmission(version.id, data, req.currentUser, { ownUploadsOnly: true });
       res.status(201).json(submitResponse(submission));
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Removes an anonymous upload for the form in the path that is not yet part of a submission
+   */
+  deleteFile: async (req, res, next) => {
+    try {
+      await fileService.deleteUnsubmittedUpload(req.params.fileId, req.securityContext.resource.form.id);
+      res.sendStatus(202);
     } catch (error) {
       next(error);
     }

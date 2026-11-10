@@ -541,7 +541,8 @@
    * - Without auth-token, api-key, onBuildAuthHeader or a schema/submit endpoint override the component
    *   is anonymous: it loads and submits a Public form through /webcomponents/v1/public/, which only
    *   answers websites the form allows. Anonymous requests carry no CHEFS credentials and none of the
-   *   onPassthroughHeaders headers. Anonymous embeds cannot print, upload or download files or load a
+   *   onPassthroughHeaders headers. Anonymous embeds upload files to a form with a file upload field,
+   *   and can download or remove an upload until it is submitted. They cannot print or load a
    *   submission-id, and show the submitted data read-only after a submit (or clear the form when its
    *   settings hide submission contents). Public forms never allow drafts.
    * - submission-id (string): optional. Prefills from an existing submission.
@@ -1729,7 +1730,7 @@
       return error;
     }
 
-    /** Headers for a schema or submit request; anonymous requests carry no credentials or host headers */
+    /** Headers for a schema, submit or file request; anonymous requests carry no credentials or host headers */
     _chefsHeaders(url, headers, anonymous) {
       if (anonymous) return headers;
       return this._mergeHeadersWithAuth(
@@ -1766,8 +1767,12 @@
       const base = this.getBaseUrl();
       const fid = this.formId || ':formId';
       const sid = this.submissionId || ':submissionId';
-      // Without credentials, a Public form loads and submits through the anonymous routes
-      const formRoutes = this._isAnonymous() ? 'public' : 'form-viewer';
+      // Without credentials, a Public form loads, submits and uploads through the anonymous routes
+      const anonymous = this._isAnonymous();
+      const formRoutes = anonymous ? 'public' : 'form-viewer';
+      const files = anonymous
+        ? `${base}/webcomponents/v1/public/${fid}/files`
+        : `${base}/webcomponents/v1/files`;
       return {
         ...this._defaultAssetUrls(base),
 
@@ -1778,10 +1783,10 @@
         printDraft: `${base}/webcomponents/v1/print/${fid}/print`,
 
         // simplefile component routes
-        files: `${base}/webcomponents/v1/files`,
-        deleteFile: `${base}/webcomponents/v1/files/:fileId`,
-        getFile: `${base}/webcomponents/v1/files/:fileId`,
-        uploadFile: `${base}/webcomponents/v1/files?formId=${fid}`,
+        files,
+        deleteFile: `${files}/:fileId`,
+        getFile: `${files}/:fileId`,
+        uploadFile: anonymous ? files : `${files}?formId=${fid}`,
 
         // bcgeoaddress component routes
         bcgeoaddress: `${base}/webcomponents/v1/bcgeoaddress/advance/address`,
@@ -3107,15 +3112,12 @@
           // Open the request first
           xhr.open('POST', uploadUrl);
 
-          // Set auth headers and other headers, but exclude Content-Type for multipart/form-data
-          const authHeaders = this._buildAuthHeader(uploadUrl);
-          const configHeaders = config.headers || {};
-
-          // Merge headers, preserving Authorization from config if present
-          const mergedHeaders = this._mergeHeadersWithAuth(
-            configHeaders,
-            authHeaders,
-            uploadUrl
+          // Set auth headers and other headers, but exclude Content-Type for multipart/form-data.
+          // A keyed upload keeps a non-Basic Authorization from config.
+          const mergedHeaders = this._chefsHeaders(
+            uploadUrl,
+            config.headers || {},
+            this._isAnonymous()
           );
 
           // Filter out Content-Type if it's multipart/form-data to let browser set it automatically
@@ -3162,11 +3164,10 @@
       this._log.info('File download starting', { fileId, url: getFileUrl });
 
       try {
-        const authHeaders = this._buildAuthHeader(getFileUrl);
-        const mergedHeaders = this._mergeHeadersWithAuth(
+        const mergedHeaders = this._chefsHeaders(
+          getFileUrl,
           config.headers,
-          authHeaders,
-          getFileUrl
+          this._isAnonymous()
         );
         const response = await fetch(getFileUrl, {
           headers: mergedHeaders,
@@ -3227,10 +3228,9 @@
       this._log.info('File delete starting', { fileId, url: deleteUrl });
 
       try {
-        const authHeaders = this._buildAuthHeader(deleteUrl);
         const response = await fetch(deleteUrl, {
           method: 'DELETE',
-          headers: this._mergeHeadersWithAuth({}, authHeaders, deleteUrl),
+          headers: this._chefsHeaders(deleteUrl, {}, this._isAnonymous()),
         });
 
         if (!response.ok) {
@@ -3398,10 +3398,6 @@
 
         // File operation functions with cancelable events
         uploadFile: async (formData, config = {}) => {
-          // Anonymous submissions cannot include files, and file routes need credentials
-          if (this._isAnonymous()) {
-            throw new Error(this._rejectAnonymous('Uploading a file'));
-          }
           const proceed = this._emitCancelable('formio:beforeFileUpload', {
             formData,
             config,
@@ -3416,9 +3412,6 @@
         },
 
         getFile: async (fileId, config = {}) => {
-          if (this._isAnonymous()) {
-            throw new Error(this._rejectAnonymous('Downloading a file'));
-          }
           const proceed = this._emitCancelable('formio:beforeFileDownload', {
             fileId,
             config,
@@ -3433,9 +3426,6 @@
         },
 
         deleteFile: async (fileInfo) => {
-          if (this._isAnonymous()) {
-            throw new Error(this._rejectAnonymous('Deleting a file'));
-          }
           const fileId = fileInfo?.data?.id || fileInfo?.id;
           const proceed = this._emitCancelable('formio:beforeFileDelete', {
             fileInfo,

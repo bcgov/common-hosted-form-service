@@ -138,6 +138,80 @@ describe('linkToSubmission', () => {
 
     expect(FileStorage.query).not.toHaveBeenCalled();
   });
+
+  describe('with unsubmittedFor', () => {
+    const formId = '11111111-1111-4111-8111-111111111111';
+    let query;
+
+    beforeEach(() => {
+      query = { patch: jest.fn().mockReturnThis(), whereIn: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), whereNull: jest.fn() };
+      FileStorage.query = jest.fn().mockReturnValue(query);
+    });
+
+    it('links only unsubmitted uploads for the form', async () => {
+      query.whereNull.mockResolvedValue(2);
+
+      await service.linkToSubmission(['a', 'b', 'a'], 'submission-1', 'TESTER', {}, { unsubmittedFor: formId });
+
+      expect(query.whereIn).toHaveBeenCalledWith('id', ['a', 'b']);
+      expect(query.where).toHaveBeenCalledWith('formId', formId);
+      expect(query.whereNull).toHaveBeenCalledWith('formSubmissionId');
+    });
+
+    it('refuses with 422 when a file was linked by another submission after the check', async () => {
+      query.whereNull.mockResolvedValue(1);
+
+      await expect(service.linkToSubmission(['a', 'b'], 'submission-1', 'TESTER', {}, { unsubmittedFor: formId })).rejects.toThrow(
+        expect.objectContaining({ status: 422, detail: 'The submission references a file that was not uploaded for this form or is already part of a submission.' })
+      );
+    });
+  });
+});
+
+describe('deleteUnsubmittedUpload', () => {
+  const formId = '11111111-1111-4111-8111-111111111111';
+  let query;
+  let trx;
+
+  beforeEach(() => {
+    trx = { commit: jest.fn(), rollback: jest.fn() };
+    FileStorage.startTransaction = jest.fn().mockResolvedValue(trx);
+    query = { delete: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), whereNull: jest.fn().mockReturnThis(), returning: jest.fn() };
+    FileStorage.query = jest.fn().mockReturnValue(query);
+    storageService.delete = jest.fn().mockResolvedValue(true);
+  });
+
+  it('deletes the row and the stored file of an unsubmitted upload for the form', async () => {
+    query.returning.mockResolvedValue([mockFileStorage]);
+
+    await service.deleteUnsubmittedUpload(mockFileStorage.id, formId);
+
+    expect(FileStorage.query).toHaveBeenCalledWith(trx);
+    expect(query.where).toHaveBeenCalledWith({ id: mockFileStorage.id, formId });
+    expect(query.whereNull).toHaveBeenCalledWith('formSubmissionId');
+    expect(storageService.delete).toHaveBeenCalledWith(mockFileStorage);
+    expect(trx.commit).toHaveBeenCalled();
+  });
+
+  it('returns 404 and keeps the file when no unsubmitted upload matches', async () => {
+    query.returning.mockResolvedValue([]);
+
+    await expect(service.deleteUnsubmittedUpload(mockFileStorage.id, formId)).rejects.toThrow(expect.objectContaining({ status: 404, detail: 'File not found.' }));
+
+    expect(storageService.delete).not.toHaveBeenCalled();
+    expect(trx.rollback).toHaveBeenCalled();
+    expect(trx.commit).not.toHaveBeenCalled();
+  });
+
+  it('rolls back when the stored file cannot be deleted', async () => {
+    query.returning.mockResolvedValue([mockFileStorage]);
+    storageService.delete.mockRejectedValue(new Error('storage down'));
+
+    await expect(service.deleteUnsubmittedUpload(mockFileStorage.id, formId)).rejects.toThrow('storage down');
+
+    expect(trx.rollback).toHaveBeenCalled();
+    expect(trx.commit).not.toHaveBeenCalled();
+  });
 });
 
 describe('checkFilesForForm', () => {
@@ -154,6 +228,27 @@ describe('checkFilesForForm', () => {
   it('refuses a file uploaded for another form', () => {
     expect(() => service.checkFilesForForm([{ formId: null }, { formId: '22222222-2222-4222-8222-222222222222' }], formId)).toThrow(
       expect.objectContaining({ status: 422, detail: 'The submission references a file uploaded for another form.' })
+    );
+  });
+});
+
+describe('checkUnsubmittedUploads', () => {
+  const formId = '11111111-1111-4111-8111-111111111111';
+
+  it.each([
+    ['no files', []],
+    ['unsubmitted uploads for the form', [{ formId, formSubmissionId: null }, { formId }]],
+  ])('accepts %s', (_name, files) => {
+    expect(() => service.checkUnsubmittedUploads(files, formId)).not.toThrow();
+  });
+
+  it.each([
+    ['records no form', { formId: null, formSubmissionId: null }],
+    ['was uploaded for another form', { formId: '22222222-2222-4222-8222-222222222222', formSubmissionId: null }],
+    ['is part of a submission', { formId, formSubmissionId: '33333333-3333-4333-8333-333333333333' }],
+  ])('refuses a file that %s', (_name, file) => {
+    expect(() => service.checkUnsubmittedUploads([{ formId }, file], formId)).toThrow(
+      expect.objectContaining({ status: 422, detail: 'The submission references a file that was not uploaded for this form or is already part of a submission.' })
     );
   });
 });

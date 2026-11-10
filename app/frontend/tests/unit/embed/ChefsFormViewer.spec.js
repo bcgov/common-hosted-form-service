@@ -3942,6 +3942,27 @@ describe('ChefsFormViewer internals', () => {
       });
     });
 
+    it('keeps the keyed file routes and sends the key with file requests', async () => {
+      el.apiKey = 'key';
+      const files = 'https://chefs.example/app/webcomponents/v1/files';
+      expect(el._urls()).toEqual(
+        expect.objectContaining({
+          files,
+          uploadFile: `${files}?formId=form-1`,
+          getFile: `${files}/:fileId`,
+          deleteFile: `${files}/:fileId`,
+        })
+      );
+      globalThis.fetch.mockResolvedValueOnce({ ok: true });
+
+      await el._handleFileDelete({ id: 'file-1' });
+
+      expect(globalThis.fetch).toHaveBeenCalledWith(`${files}/file-1`, {
+        method: 'DELETE',
+        headers: { Authorization: `Basic ${btoa('form-1:key')}` },
+      });
+    });
+
     it('sends the gateway token and keeps the host Bearer header', async () => {
       el.authToken = 'token';
       el.onPassthroughHeaders = () => ({
@@ -4106,20 +4127,81 @@ describe('ChefsFormViewer internals', () => {
       expect(el._isBusy).toBe(false);
     });
 
-    it.each([
-      ['an upload', (files) => files.uploadFile(new FormData()), 'Uploading'],
-      ['a download', (files) => files.getFile('file-1'), 'Downloading'],
-      ['a delete', (files) => files.deleteFile({ id: 'file-1' }), 'Deleting'],
-    ])('refuses %s with a clear error', async (_name, run, verb) => {
-      el.onPassthroughHeaders = vi.fn(() => ({ 'X-Host': 'yes' }));
-      const message = `${verb} a file needs an API key or auth token.`;
-
-      await expect(run(el._getSimpleFileComponentOptions())).rejects.toThrow(
-        message
+    it('uploads, downloads and deletes through the anonymous file routes', () => {
+      const files = 'https://chefs.example/app/webcomponents/v1/public/form-1/files';
+      expect(el._urls()).toEqual(
+        expect.objectContaining({
+          files,
+          uploadFile: files,
+          getFile: `${files}/:fileId`,
+          deleteFile: `${files}/:fileId`,
+        })
       );
+    });
 
-      expect(errors).toEqual([message]);
-      expect(globalThis.fetch).not.toHaveBeenCalled();
+    it('lets the file component upload, download and delete', async () => {
+      el._handleFileUpload = vi.fn().mockResolvedValue({ data: { id: 'file-1' } });
+      el._handleFileDownload = vi.fn().mockResolvedValue();
+      el._handleFileDelete = vi.fn().mockResolvedValue();
+      const files = el._getSimpleFileComponentOptions();
+
+      await files.uploadFile(new FormData());
+      await files.getFile('file-1');
+      await files.deleteFile({ id: 'file-1' });
+
+      expect(el._handleFileUpload).toHaveBeenCalledTimes(1);
+      expect(el._handleFileDownload).toHaveBeenCalledWith('file-1', {});
+      expect(el._handleFileDelete).toHaveBeenCalledWith({ id: 'file-1' });
+      expect(errors).toEqual([]);
+    });
+
+    it('sends no credentials or host headers with file requests', async () => {
+      const files = 'https://chefs.example/app/webcomponents/v1/public/form-1/files';
+      el.onPassthroughHeaders = vi.fn(() => ({
+        Authorization: 'Bearer host-token',
+        'X-Host': 'yes',
+      }));
+      el._triggerFileDownload = vi.fn();
+      globalThis.fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          blob: () => Promise.resolve(new Blob(['x'])),
+          headers: { get: () => null },
+        })
+        .mockResolvedValueOnce({ ok: true });
+      const xhr = {
+        upload: { addEventListener: vi.fn() },
+        addEventListener: vi.fn(),
+        open: vi.fn(),
+        setRequestHeader: vi.fn(),
+        send: vi.fn(),
+        status: 201,
+        responseText: '{"id":"file-1"}',
+      };
+      const originalXhr = globalThis.XMLHttpRequest;
+      globalThis.XMLHttpRequest = vi.fn(function () {
+        return xhr;
+      });
+
+      try {
+        const upload = el._handleFileUpload(new FormData());
+        xhr.addEventListener.mock.calls.find(([name]) => name === 'load')[1]();
+        await expect(upload).resolves.toEqual({ data: { id: 'file-1' } });
+        await el._handleFileDownload('file-1');
+        await el._handleFileDelete({ id: 'file-1' });
+      } finally {
+        globalThis.XMLHttpRequest = originalXhr;
+      }
+
+      expect(xhr.open).toHaveBeenCalledWith('POST', files);
+      expect(xhr.setRequestHeader).not.toHaveBeenCalled();
+      expect(globalThis.fetch).toHaveBeenNthCalledWith(1, `${files}/file-1`, {
+        headers: undefined,
+      });
+      expect(globalThis.fetch).toHaveBeenNthCalledWith(2, `${files}/file-1`, {
+        method: 'DELETE',
+        headers: {},
+      });
       expect(el.onPassthroughHeaders).not.toHaveBeenCalled();
     });
 

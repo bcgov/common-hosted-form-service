@@ -235,6 +235,19 @@ const eachComponent = (components, fn, includeAll, path, parent, inRecursion) =>
   }
 };
 
+// True when a component of this type appears anywhere in the schema, inside layout components too
+const hasComponentType = (schema, type) => {
+  let found = false;
+  eachComponent(
+    schema?.components,
+    (component) => {
+      if (component.type === type) found = true;
+    },
+    true
+  );
+  return found;
+};
+
 const unwindPath = (schema) => {
   let path = [];
   for (let obj of schema) {
@@ -357,6 +370,7 @@ module.exports = {
   typeUtils,
   periodType,
   flattenComponents,
+  hasComponentType,
   unwindPath,
   submissionHeaders,
   encodeURI,
