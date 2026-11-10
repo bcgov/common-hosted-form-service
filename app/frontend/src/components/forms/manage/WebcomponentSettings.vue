@@ -102,13 +102,13 @@ function addOrigin() {
   allowedOrigins.value = [...allowedOrigins.value, origin];
   newOrigin.value = '';
   originTouched.value = false;
-  keepFocus();
+  void keepFocus();
   return true;
 }
 
 function removeOrigin(origin) {
   allowedOrigins.value = allowedOrigins.value.filter((o) => o !== origin);
-  keepFocus();
+  void keepFocus();
 }
 
 // The panel stays mounted while collapsed to keep unsaved edits, so load only once it opens

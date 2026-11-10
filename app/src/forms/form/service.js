@@ -231,6 +231,23 @@ const service = {
   // A body without a submission has no files; the insert's schema check then rejects it
   _findFileIds: (_schema, data) => findFileIds(data?.submission?.data),
 
+  /**
+   * The files a new submission links to, refused before anything is written if one was
+   * uploaded for another form. With ownUploadsOnly, each must also be an upload for this
+   * form that no submission has yet, and the link checks that again as it updates them.
+   *
+   * @returns {Promise<{files: object[], linkOptions: object}>} the files and the options to link them with.
+   */
+  _filesToLink: async (formVersion, data, ownUploadsOnly) => {
+    const fileIds = service._findFileIds(formVersion.schema, data);
+    const files = fileIds.length ? await fileService.findByIds(fileIds) : [];
+    fileService.checkFilesForForm(files, formVersion.formId);
+    if (!ownUploadsOnly) return { files, linkOptions: {} };
+
+    fileService.checkUnsubmittedUploads(files, formVersion.formId);
+    return { files, linkOptions: { unsubmittedFor: formVersion.formId } };
+  },
+
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
     return Form.query()
@@ -946,12 +963,7 @@ const service = {
         validateSubmissionSchedule(form.schedule);
       }
 
-      // The files this submission links to; refused before anything is written if one was
-      // uploaded for another form
-      const fileIds = service._findFileIds(formVersion.schema, data);
-      const files = fileIds.length ? await fileService.findByIds(fileIds) : [];
-      fileService.checkFilesForForm(files, formVersion.formId);
-      if (ownUploadsOnly) fileService.checkUnsubmittedUploads(files, formVersion.formId);
+      const { files, linkOptions } = await service._filesToLink(formVersion, data, ownUploadsOnly);
 
       trx = await FormSubmission.startTransaction();
 
@@ -1019,7 +1031,7 @@ const service = {
         obj.id,
         currentUser.usernameIdp,
         trx,
-        ownUploadsOnly ? { unsubmittedFor: formVersion.formId } : {}
+        linkOptions
       );
 
       eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
