@@ -154,15 +154,15 @@ describe('webcomponents releaseBuilder', () => {
         'assets/formio.full.min.css',
         'assets/formio.full.min.js',
         'assets/formio.full.min.js.LICENSE.txt',
-        'embed/chefs-form-viewer-embed.js',
-        'embed/chefs-form-viewer-embed.min.js',
-        'embed/chefs-form-viewer-embed.min.js.map',
-        'embed/chefs-form-viewer-override-template.css',
-        'embed/chefs-form-viewer-theme-dark.css',
-        'embed/chefs-form-viewer-theme-material.css',
-        'embed/chefs-form-viewer.js',
-        'embed/chefs-form-viewer.min.js',
-        'embed/chefs-form-viewer.min.js.map',
+        'chefs-form-viewer-embed.js',
+        'chefs-form-viewer-embed.min.js',
+        'chefs-form-viewer-embed.min.js.map',
+        'chefs-form-viewer-override-template.css',
+        'chefs-form-viewer-theme-dark.css',
+        'chefs-form-viewer-theme-material.css',
+        'chefs-form-viewer.js',
+        'chefs-form-viewer.min.js',
+        'chefs-form-viewer.min.js.map',
         'form-viewer/bcgov-formio-components.use.min.js',
         'form-viewer/bcgov-formio-components.use.min.js.LICENSE.txt',
         'form-viewer/bcgov-theme.css',
@@ -183,25 +183,25 @@ describe('webcomponents releaseBuilder', () => {
       const integrity = JSON.parse(fs.readFileSync(path.join(dir, 'integrity.json'), 'utf8'));
       const injected = (file) => JSON.parse(/const INTEGRITY = (\{.*\});/.exec(fs.readFileSync(path.join(dir, file), 'utf8'))[1]);
 
-      const viewer = injected('embed/chefs-form-viewer.js');
-      expect(Object.keys(viewer).filter((file) => file.startsWith('embed/chefs-form-viewer'))).toEqual([
-        'embed/chefs-form-viewer-override-template.css',
-        'embed/chefs-form-viewer-theme-dark.css',
-        'embed/chefs-form-viewer-theme-material.css',
+      const viewer = injected('chefs-form-viewer.js');
+      expect(Object.keys(viewer).filter((file) => file.startsWith('chefs-form-viewer'))).toEqual([
+        'chefs-form-viewer-override-template.css',
+        'chefs-form-viewer-theme-dark.css',
+        'chefs-form-viewer-theme-material.css',
       ]);
       expect(viewer['assets/formio.full.min.js']).toBe(integrity['assets/formio.full.min.js']);
-      expect(fs.readFileSync(path.join(dir, 'embed/chefs-form-viewer.js'), 'utf8')).toContain('const VERSION = "1.1.0";');
+      expect(fs.readFileSync(path.join(dir, 'chefs-form-viewer.js'), 'utf8')).toContain('const VERSION = "1.1.0";');
 
-      const loader = injected('embed/chefs-form-viewer-embed.js');
-      expect(loader['embed/chefs-form-viewer.min.js']).toBe(integrity['embed/chefs-form-viewer.min.js']);
-      expect(loader['embed/chefs-form-viewer-embed.js']).toBeUndefined();
+      const loader = injected('chefs-form-viewer-embed.js');
+      expect(loader['chefs-form-viewer.min.js']).toBe(integrity['chefs-form-viewer.min.js']);
+      expect(loader['chefs-form-viewer-embed.js']).toBeUndefined();
 
       expect(result.placeholders).toEqual({
-        'embed/chefs-form-viewer.js': { integrity: 1, version: 1 },
-        'embed/chefs-form-viewer-embed.js': { integrity: 1, version: 1 },
+        'chefs-form-viewer.js': { integrity: 1, version: 1 },
+        'chefs-form-viewer-embed.js': { integrity: 1, version: 1 },
       });
       expect(deps.minify).toHaveBeenCalledWith('public/embed/chefs-form-viewer.js', expect.any(String));
-      expect(fs.readFileSync(path.join(dir, 'embed/chefs-form-viewer.min.js.map'), 'utf8')).toBe('{"sources":["public/embed/chefs-form-viewer.js"]}');
+      expect(fs.readFileSync(path.join(dir, 'chefs-form-viewer.min.js.map'), 'utf8')).toBe('{"sources":["public/embed/chefs-form-viewer.js"]}');
     });
 
     it.each([

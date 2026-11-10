@@ -59,8 +59,8 @@ Load the embed script from the release folder, with its hash from the release's 
 
 ```html
 <script
-  src="https://<chefs-host>/app/embed/1.0.0/embed/chefs-form-viewer-embed.min.js?form-id=<formId>&auth-token=<jwt>"
-  integrity="sha384-qZGPg1SRR08dy4uKklHJM5YqPnwiKfIeWKal675acxmdo6TZgmy0kJ1I2X23OYAM"
+  src="https://<chefs-host>/app/embed/1.0.0/chefs-form-viewer-embed.min.js?form-id=<formId>&auth-token=<jwt>"
+  integrity="sha384-En6mgcYrMlpYpSFHB+hBakM+iSHxGTIJteweLt5+qT9YRLdBsIX7yc4cO9f4iOme"
   crossorigin="anonymous"
 ></script>
 ```
@@ -69,7 +69,7 @@ Load the embed script from the release folder, with its hash from the release's 
 - Form.io still loads some libraries from `https://cdn.form.io` when a form uses them, without SRI, as in v1: flatpickr for date and time fields, Quill or CKEditor for rich text, and Ace for code editors. A reCAPTCHA component loads Google reCAPTCHA. A Content Security Policy that blocks these hosts breaks those fields.
 - The script URL, `auth-token` and `api-key` included, is written to the CHEFS request log and to the logs of any proxy on the way. Pass a short-lived gateway token there, not an API key, or create the `<chefs-form-viewer>` element yourself and set its `auth-token` attribute.
 - The CHEFS base URL defaults to the server and path the script was loaded from; `base-url` overrides it. Set `base-url` whenever the release files are served from somewhere other than CHEFS, or the component sends its API key or token to that server.
-- To use the component without the embed script, load `embed/chefs-form-viewer.min.js` with its hash from `integrity.json`.
+- To use the component without the embed script, load `chefs-form-viewer.min.js` from the release folder with its hash from `integrity.json`, add a `<chefs-form-viewer>` element and call its `load()`.
 - A release never changes; moving to another release means changing the version and the hash.
 
 Changes in 1.0.0 from v1:
@@ -117,8 +117,8 @@ A form that uses the Public login option can be embedded without an API key or g
 
 ```html
 <script
-  src="https://<chefs-host>/app/embed/1.1.0/embed/chefs-form-viewer-embed.min.js?form-id=<formId>"
-  integrity="sha384-rY3qdd4SrJB9vDTTTPvW69eTIxfNnPQMuP7ewM5VBAMbVH/ENwXKh5ePZEkdaEtY"
+  src="https://<chefs-host>/app/embed/1.1.0/chefs-form-viewer-embed.min.js?form-id=<formId>"
+  integrity="sha384-1ACEWM6fkYXRzsIA/Y6kEIrlW5IhZHxpGT3Zpm+KN2/UaQLTWlZmWzLwxGhP8Rhd"
   crossorigin="anonymous"
 ></script>
 ```

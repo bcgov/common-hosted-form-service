@@ -235,7 +235,7 @@ describe('chefs-form-viewer-embed.js', () => {
   describe('componentScript', () => {
     const release = {
       version: '1.0.0',
-      integrity: { 'embed/chefs-form-viewer.min.js': 'sha384-component' },
+      integrity: { 'chefs-form-viewer.min.js': 'sha384-component' },
     };
 
     it.each([
@@ -251,11 +251,11 @@ describe('chefs-form-viewer-embed.js', () => {
     });
 
     it.each([
-      'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer-embed.js',
-      'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer-embed.min.js?form-id=1&debug',
+      'https://chefs.example/app/embed/1.0.0/chefs-form-viewer-embed.js',
+      'https://chefs.example/app/embed/1.0.0/chefs-form-viewer-embed.min.js?form-id=1&debug',
     ])('loads the minified component with its hash from %s', (src) => {
       expect(embedUtils.componentScript(src, release)).toEqual({
-        src: 'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer.min.js',
+        src: 'https://chefs.example/app/embed/1.0.0/chefs-form-viewer.min.js',
         integrity: 'sha384-component',
       });
     });

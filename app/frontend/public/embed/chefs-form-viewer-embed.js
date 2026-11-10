@@ -10,7 +10,7 @@
  *
  * @example Release (integrity is the file's hash in the release's integrity.json)
  * <script
- *   src="https://chefs.example/app/embed/<version>/embed/chefs-form-viewer-embed.min.js?form-id=123&auth-token=..."
+ *   src="https://chefs.example/app/embed/<version>/chefs-form-viewer-embed.min.js?form-id=123&auth-token=..."
  *   integrity="sha384-..." crossorigin="anonymous"></script>
  *
  * @example Advanced Usage with Global Config
@@ -360,8 +360,8 @@
    * @param {Object} release - Release version and SRI hashes
    * @returns {Object} { src, integrity } where integrity is null outside a release
    * @example
-   * componentScript('https://host/app/embed/1.0.0/embed/chefs-form-viewer-embed.min.js?form-id=1', release)
-   * // Returns: { src: 'https://host/app/embed/1.0.0/embed/chefs-form-viewer.min.js', integrity: 'sha384-...' }
+   * componentScript('https://host/app/embed/1.0.0/chefs-form-viewer-embed.min.js?form-id=1', release)
+   * // Returns: { src: 'https://host/app/embed/1.0.0/chefs-form-viewer.min.js', integrity: 'sha384-...' }
    */
   function componentScript(scriptSrc, release = RELEASE) {
     const file = release.version
@@ -369,7 +369,7 @@
       : 'chefs-form-viewer.js';
     return {
       src: new URL(file, scriptSrc).href,
-      integrity: release.integrity[`embed/${file}`] || null,
+      integrity: release.integrity[file] || null,
     };
   }
 

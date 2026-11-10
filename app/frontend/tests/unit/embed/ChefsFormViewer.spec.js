@@ -241,7 +241,7 @@ describe('FormViewerUtils', () => {
   it('parseReleaseUrl finds the base and release folder from a release script', () => {
     expect(
       utils.parseReleaseUrl(
-        'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer.min.js',
+        'https://chefs.example/app/embed/1.0.0/chefs-form-viewer.min.js',
         '1.0.0'
       )
     ).toEqual({
@@ -250,7 +250,7 @@ describe('FormViewerUtils', () => {
     });
     expect(
       utils.parseReleaseUrl(
-        'https://chefs.example/pr-1966/embed/1.0.0/embed/chefs-form-viewer.js?x=1',
+        'https://chefs.example/pr-1966/embed/1.0.0/chefs-form-viewer.js?x=1',
         '1.0.0'
       )
     ).toEqual({
@@ -261,12 +261,19 @@ describe('FormViewerUtils', () => {
 
   it('parseReleaseUrl returns null outside that release', () => {
     const src =
-      'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer.min.js';
+      'https://chefs.example/app/embed/1.0.0/chefs-form-viewer.min.js';
     expect(utils.parseReleaseUrl(src, '1.1.0')).toBeNull();
     expect(utils.parseReleaseUrl(src, null)).toBeNull();
     expect(
       utils.parseReleaseUrl(
         'https://chefs.example/app/embed/chefs-form-viewer.js',
+        '1.0.0'
+      )
+    ).toBeNull();
+    // Release scripts sit in the release folder itself, not in a subfolder
+    expect(
+      utils.parseReleaseUrl(
+        'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer.min.js',
         '1.0.0'
       )
     ).toBeNull();
@@ -502,7 +509,7 @@ describe('ChefsFormViewer', () => {
 
   describe('in a release', () => {
     const releaseSrc =
-      'https://chefs.example/app/embed/1.0.0/embed/chefs-form-viewer.min.js';
+      'https://chefs.example/app/embed/1.0.0/chefs-form-viewer.min.js';
     const release = {
       version: '1.0.0',
       integrity: {

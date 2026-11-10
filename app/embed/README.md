@@ -30,11 +30,11 @@ A path whose first segment is `x.y.z` belongs to releases: an unknown version or
 
 ## Layout
 
-Versioned releases use the same layout as `v1`:
+Versioned releases keep their scripts at the release root, so a script URL is `/app/embed/<x.y.z>/<file>`. `assets/` and `form-viewer/` use the same layout as `v1`:
 
 ```text
 releases/<x.y.z>/
-  embed/        chefs-form-viewer and chefs-form-viewer-embed (.js, .min.js, .min.js.map) and theme CSS
+  chefs-form-viewer and chefs-form-viewer-embed (.js, .min.js, .min.js.map) and theme CSS
   assets/       chefs-index.css, chefs-theme.css, chefs-assets/, formio, font-awesome
   form-viewer/  BC Gov custom components bundle and its CSS
   integrity.json

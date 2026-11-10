@@ -108,7 +108,7 @@
     },
     /**
      * Finds the release folder and CHEFS base URL from a release script's URL
-     * @param {string} src - Script URL, e.g. https://host/app/embed/1.0.0/embed/chefs-form-viewer.min.js
+     * @param {string} src - Script URL, e.g. https://host/app/embed/1.0.0/chefs-form-viewer.min.js
      * @param {string} version - Release version
      * @returns {Object|null} { baseUrl, releaseUrl }, or null when src is not in that release
      */
@@ -120,8 +120,10 @@
       } catch {
         return null;
       }
-      const at = url.pathname.lastIndexOf(`/embed/${version}/embed/`);
-      if (at < 0) return null;
+      // The release scripts sit directly in the release folder
+      const folder = `/embed/${version}/`;
+      const at = url.pathname.lastIndexOf(folder);
+      if (at < 0 || url.pathname.includes('/', at + folder.length)) return null;
       const baseUrl = `${url.origin}${url.pathname.slice(0, at)}`;
       return { baseUrl, releaseUrl: `${baseUrl}/embed/${version}` };
     },

@@ -12,6 +12,7 @@ const COMPONENTS_DIR = path.join(APP_DIR, '../components');
 const INTEGRITY_PLACEHOLDER = '/*__CHEFS_RELEASE_INTEGRITY__*/ {}';
 const VERSION_PLACEHOLDER = '/*__CHEFS_RELEASE_VERSION__*/ null';
 
+// Scripts and theme CSS sit at the release root, so a script URL is /app/embed/<x.y.z>/<file>.
 // Built in order: each script's integrity placeholder covers every file written before it
 const EMBED_SCRIPTS = ['chefs-form-viewer', 'chefs-form-viewer-embed'];
 const EMBED_STYLES = ['chefs-form-viewer-override-template.css', 'chefs-form-viewer-theme-dark.css', 'chefs-form-viewer-theme-material.css'];
@@ -120,7 +121,7 @@ function copiedFiles(frontendDir, componentsDir) {
     ['form-viewer/bcgov-formio-components.use.min.js.LICENSE.txt', path.join(components, 'bcgov-formio-components.use.min.js.LICENSE.txt')],
     ['form-viewer/chefs-form-viewer.css', path.join(components, 'chefs-form-viewer.css')],
     ['form-viewer/bcgov-theme.css', path.join(components, 'bcgov-theme.css')],
-    ...EMBED_STYLES.map((name) => [`embed/${name}`, path.join(frontendDir, 'public/embed', name)]),
+    ...EMBED_STYLES.map((name) => [name, path.join(frontendDir, 'public/embed', name)]),
   ];
 }
 
@@ -161,11 +162,11 @@ async function buildRelease({ version, outDir, build = true, frontendDir = FRONT
       if (counts.integrity !== 1 || counts.version !== 1) {
         throw new Error(`${name}.js must contain each release placeholder exactly once (integrity x${counts.integrity}, version x${counts.version})`);
       }
-      placeholders[`embed/${name}.js`] = counts;
-      write(`embed/${name}.js`, code);
+      placeholders[`${name}.js`] = counts;
+      write(`${name}.js`, code);
       const min = await minify(`public/embed/${name}.js`, code);
-      write(`embed/${name}.min.js`, min.code);
-      write(`embed/${name}.min.js.map`, min.map);
+      write(`${name}.min.js`, min.code);
+      write(`${name}.min.js.map`, min.map);
     };
     // One at a time, so each script's integrity map includes the scripts built before it
     await EMBED_SCRIPTS.reduce((previous, name) => previous.then(() => buildScript(name)), Promise.resolve());

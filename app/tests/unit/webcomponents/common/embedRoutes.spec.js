@@ -11,12 +11,12 @@ const { releaseDir } = require('../../../../src/webcomponents/common/releases');
 function writeFixture(dir) {
   const files = {
     '1.1.0/integrity.json': '{}\n',
-    '1.1.0/embed/chefs-form-viewer.min.js': 'console.log("1.1.0");\n',
+    '1.1.0/chefs-form-viewer.min.js': 'console.log("1.1.0");\n',
     '1.1.0/assets/chefs-index.css': 'body{}\n',
     '1.1.0/.hidden': 'secret\n',
-    '9.9.9/embed/chefs-form-viewer.min.js': 'console.log("9.9.9");\n',
+    '9.9.9/chefs-form-viewer.min.js': 'console.log("9.9.9");\n',
     '1.1.0-beta/integrity.json': '{}\n',
-    '1.1.0-beta/embed/chefs-form-viewer.min.js': 'console.log("beta");\n',
+    '1.1.0-beta/chefs-form-viewer.min.js': 'console.log("beta");\n',
     'v1/embed/chefs-form-viewer.js': 'console.log("v1");\n',
   };
   for (const [rel, content] of Object.entries(files)) {
@@ -47,7 +47,7 @@ describe('webcomponents embed routes', () => {
 
   describe('versioned releases', () => {
     it.each([
-      ['/embed/chefs-form-viewer.min.js', 'text/javascript; charset=utf-8', 'console.log("1.1.0");\n'],
+      ['/chefs-form-viewer.min.js', 'text/javascript; charset=utf-8', 'console.log("1.1.0");\n'],
       ['/assets/chefs-index.css', 'text/css; charset=utf-8', 'body{}\n'],
       ['/integrity.json', 'application/json; charset=utf-8', '{}\n'],
     ])('serves %s with release headers', async (file, contentType, body) => {
@@ -62,18 +62,18 @@ describe('webcomponents embed routes', () => {
     });
 
     it('answers HEAD requests', async () => {
-      const res = await request(app).head('/app/embed/1.1.0/embed/chefs-form-viewer.min.js');
+      const res = await request(app).head('/app/embed/1.1.0/chefs-form-viewer.min.js');
       expect(res.statusCode).toBe(200);
       expect(res.headers['access-control-allow-origin']).toBe('*');
     });
 
     it.each([
-      ['unknown file', '/app/embed/1.1.0/embed/missing.js'],
+      ['unknown file', '/app/embed/1.1.0/missing.js'],
       ['dotfile', '/app/embed/1.1.0/.hidden'],
-      ['directory', '/app/embed/1.1.0/embed/'],
+      ['directory', '/app/embed/1.1.0/assets/'],
       ['release root', '/app/embed/1.1.0'],
-      ['unknown version', '/app/embed/2.0.0/embed/chefs-form-viewer.min.js'],
-      ['version without integrity.json', '/app/embed/9.9.9/embed/chefs-form-viewer.min.js'],
+      ['unknown version', '/app/embed/2.0.0/chefs-form-viewer.min.js'],
+      ['version without integrity.json', '/app/embed/9.9.9/chefs-form-viewer.min.js'],
       ['encoded traversal', '/app/embed/1.1.0/..%2Fv1%2Fembed%2Fchefs-form-viewer.js'],
       ['malformed escape', '/app/embed/1.1.0/%FF'],
     ])('returns 404 with CORS for %s', async (_name, url) => {
@@ -89,7 +89,7 @@ describe('webcomponents embed routes', () => {
         if (!String(file).includes(`${path.sep}1.1.0${path.sep}`)) return stat(file, ...args);
         args[args.length - 1](Object.assign(new Error('EIO: i/o error'), { code: 'EIO' }));
       });
-      const res = await request(app).get('/app/embed/1.1.0/embed/chefs-form-viewer.min.js');
+      const res = await request(app).get('/app/embed/1.1.0/chefs-form-viewer.min.js');
       expect(res.statusCode).toBe(500);
       expect(res.headers['access-control-allow-origin']).toBe('*');
       expect(res.headers['cache-control']).toBe('no-store');
@@ -97,7 +97,7 @@ describe('webcomponents embed routes', () => {
     });
 
     it('answers a range past the end with 416 and an uncacheable body', async () => {
-      const res = await request(app).get('/app/embed/1.1.0/embed/chefs-form-viewer.min.js').set('Range', 'bytes=99999999-');
+      const res = await request(app).get('/app/embed/1.1.0/chefs-form-viewer.min.js').set('Range', 'bytes=99999999-');
       expect(res.statusCode).toBe(416);
       expect(res.headers['content-range']).toBe('bytes */22');
       expect(res.headers['cache-control']).toBe('no-store');
@@ -110,14 +110,14 @@ describe('webcomponents embed routes', () => {
       ['If-Match', '"not-this-file"'],
       ['If-Unmodified-Since', 'Mon, 01 Jan 2001 00:00:00 GMT'],
     ])('answers a failed %s with 412 and an uncacheable body', async (header, value) => {
-      const res = await request(app).get('/app/embed/1.1.0/embed/chefs-form-viewer.min.js').set(header, value);
+      const res = await request(app).get('/app/embed/1.1.0/chefs-form-viewer.min.js').set(header, value);
       expect(res.statusCode).toBe(412);
       expect(res.headers['cache-control']).toBe('no-store');
       expect(res.body).toEqual({ detail: 'Precondition Failed' });
     });
 
     it('returns 404 for methods other than GET and HEAD', async () => {
-      const res = await request(app).post('/app/embed/1.1.0/embed/chefs-form-viewer.min.js');
+      const res = await request(app).post('/app/embed/1.1.0/chefs-form-viewer.min.js');
       expect(res.statusCode).toBe(404);
     });
   });
@@ -133,16 +133,13 @@ describe('webcomponents embed routes', () => {
       expect(res.text).toBe('console.log("v1");\n');
     });
 
-    it.each([
-      '/app/embed/missing.js',
-      '/app/embed/1.1.0-beta/embed/chefs-form-viewer.min.js',
-      '/app/embed/v1/embed/chefs-form-viewer.js',
-      '/app/embed/%FF',
-      '/app/embed/1.1.0x/a.js',
-    ])('falls through for %s', async (url) => {
-      const res = await request(app).get(url);
-      expect(res.statusCode).toBe(418);
-    });
+    it.each(['/app/embed/missing.js', '/app/embed/1.1.0-beta/chefs-form-viewer.min.js', '/app/embed/v1/embed/chefs-form-viewer.js', '/app/embed/%FF', '/app/embed/1.1.0x/a.js'])(
+      'falls through for %s',
+      async (url) => {
+        const res = await request(app).get(url);
+        expect(res.statusCode).toBe(418);
+      }
+    );
   });
 
   describe('committed releases', () => {
