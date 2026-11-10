@@ -16,6 +16,7 @@ describe('Constants', () => {
       USERS: '/users',
       FILES_API_ACCESS: '/filesApiAccess',
       PRINT_CONFIG: '/printConfig',
+      WEBCOMPONENT_SETTINGS: '/webcomponentSettings',
       PROXY: '/proxy',
       FORM_METADATA: '/formMetadata',
       ENCRYPTION_KEY: '/encryptionKey',

@@ -43,9 +43,16 @@ const service = {
 
   _handleFileUploads: async (submissionService, data, id, user, trx) => {
     const fileIds = submissionService._findFileIds(data);
+    // Every file is read and checked before any is moved
+    const files = fileIds.length ? await fileService.readAll(fileIds) : [];
+    // Only web component uploads record a form, so the submission is read only when one does
+    if (files.some((file) => file.formId)) {
+      const { form } = await submissionService.read(id);
+      fileService.checkFilesForForm(files, form.id);
+    }
     const movedFiles = [];
-    for (const fileId of fileIds) {
-      const fileStorage = await fileService.read(fileId);
+    for (const fileStorage of files) {
+      const fileId = fileStorage.id;
       if (!fileStorage.formSubmissionId) {
         // Run the file's row update inside the submission transaction so it does
         // not deadlock against the lock this transaction holds. The original

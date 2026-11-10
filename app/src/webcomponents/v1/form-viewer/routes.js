@@ -14,12 +14,13 @@ routes.param('formSubmissionId', validateParameter.validateFormSubmissionId);
 // Form viewer endpoints for web component
 // Order: runtime-auth -> originAccess -> handler
 
-// Schema endpoint - API auth (auto-infers formOnly from :formId)
+// Schema endpoint - API auth; runtime-auth loads the published form from :formId for the handler
 routes.get(
   '/:formId/schema',
   chefSecurity.inline({
     allowedAuth: AuthCombinations.API_ONLY,
     requiredPermissions: [P.FORM_READ],
+    resourceSpec: { kind: 'publishedForm' },
   }),
   originAccess,
   async (req, res, next) => {
@@ -27,12 +28,13 @@ routes.get(
   }
 );
 
-// Submit endpoint - API auth (auto-infers formOnly from :formId)
+// Submit endpoint - API auth; runtime-auth loads the published form from :formId for the handler
 routes.post(
   '/:formId/submit',
   chefSecurity.inline({
     allowedAuth: AuthCombinations.API_ONLY,
     requiredPermissions: [P.FORM_READ, P.SUBMISSION_CREATE],
+    resourceSpec: { kind: 'publishedForm' },
   }),
   originAccess,
   async (req, res, next) => {
@@ -40,7 +42,7 @@ routes.post(
   }
 );
 
-// Read submission endpoint - API auth (auto-infers submissionFromForm from both params)
+// Read submission endpoint - API auth (auto-infers submissionFromForm from both params; the handler uses that read)
 routes.get(
   '/:formId/submission/:formSubmissionId',
   chefSecurity.inline({

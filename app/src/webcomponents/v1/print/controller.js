@@ -2,7 +2,6 @@ const Problem = require('api-problem');
 const path = require('node:path');
 
 const docGenService = require('../../../components/docGenService');
-const submissionService = require('../../../forms/submission/service');
 const printConfigService = require('../../../forms/form/printConfig/service');
 const documentTemplateService = require('../../../forms/form/documentTemplate/service');
 const formService = require('../../../forms/form/service');
@@ -79,7 +78,9 @@ module.exports = {
       const { formId, formSubmissionId } = req.params;
       const printConfig = await getDirectPrintConfig(formId);
 
-      const submission = await submissionService.read(formSubmissionId);
+      // runtime-auth has read the submission, its version and form, and checked it belongs to the form in the path
+      const { submission: record, version, form: submissionForm } = req.securityContext.resource;
+      const submission = { submission: record, version, form: submissionForm };
       const template = await documentTemplateService.documentTemplateRead(printConfig.templateId);
 
       let reportName = resolveReportName(printConfig, submission.form?.name);
@@ -122,8 +123,8 @@ module.exports = {
       const printConfig = await getDirectPrintConfig(formId);
       const template = await documentTemplateService.documentTemplateRead(printConfig.templateId);
 
-      // Fetch form name for report naming
-      const form = await formService.readPublishedForm(formId);
+      // runtime-auth has loaded the active published form; its name is used for report naming
+      const { form } = req.securityContext.resource;
       const submissionData = req.body?.submission?.data || req.body?.submission || {};
       const reportName = resolveReportName(printConfig, form?.name);
 

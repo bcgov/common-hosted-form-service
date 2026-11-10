@@ -52,7 +52,7 @@ describe('create', () => {
 
       await controller.create(req, res, next);
 
-      expect(service.create).toBeCalledWith(validRequest.file, validRequest.currentUser);
+      expect(service.create).toBeCalledWith(validRequest.file, validRequest.currentUser, 'uploads', { formId: null });
       expect(res.json).not.toBeCalled();
       expect(res.status).not.toBeCalled();
       expect(next).toBeCalledWith(error);
@@ -66,7 +66,7 @@ describe('create', () => {
 
       await controller.create(req, res, next);
 
-      expect(service.create).toBeCalledWith(validRequest.file, validRequest.currentUser);
+      expect(service.create).toBeCalledWith(validRequest.file, validRequest.currentUser, 'uploads', { formId: null });
       expect(res.json).toBeCalledWith({
         createdAt: fileStorage.createdAt,
         createdBy: fileStorage.createdBy,
@@ -76,6 +76,17 @@ describe('create', () => {
       });
       expect(res.status).toBeCalledWith(201);
       expect(next).not.toBeCalled();
+    });
+
+    it('records the form a web component upload is for', async () => {
+      const req = getMockReq(validRequest);
+      const { res, next } = getMockRes();
+      const formId = uuid.v4();
+
+      await controller.create(req, res, next, formId);
+
+      expect(service.create).toBeCalledWith(validRequest.file, validRequest.currentUser, 'uploads', { formId });
+      expect(res.status).toBeCalledWith(201);
     });
   });
 });

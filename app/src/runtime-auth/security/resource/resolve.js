@@ -2,6 +2,7 @@
  * Registry-based resource resolver with default kinds:
  *  - fileFromSubmission: verifies file ↔ submission ↔ form chain
  *  - submissionFromForm: verifies submission ↔ form
+ *  - publishedForm: verifies form, loading its published versions
  *  - formOnly: verifies form
  *  - none: no resource
  */
@@ -105,10 +106,12 @@ module.exports = function makeResourceResolver({ deps }) {
         }
       }
 
-      // If file has no formSubmissionId, it's a draft file
-      // For draft files, we can't determine the form from the file record alone
-      // The form relationship is established during upload via query parameters
-      // Draft files are handled by uploader permissions, not form permissions
+      // If file has no formSubmissionId, it's a draft file. A web component upload records its
+      // form, which ties the file to an API key's form. Draft files without one are handled by
+      // uploader permissions, and API credentials cannot reach them.
+      if (file.formId) {
+        return await loadFileWithForm(file.formId, file);
+      }
       return { form: null, submission: null, file };
     },
 
@@ -160,7 +163,27 @@ module.exports = function makeResourceResolver({ deps }) {
         // Verify formId matches if provided
         if (formId && String(submissionData.form.id) !== String(formId)) return null;
 
-        return { form: submissionData.form, submission: submissionData.submission, file: null };
+        // The version is kept too, so a route can use the whole read without reading it again
+        return { form: submissionData.form, submission: submissionData.submission, version: submissionData.version, file: null };
+      } catch (error) {
+        resolverLogger.debug({ event: 'resource_not_found', error: error.message });
+        return null;
+      }
+    },
+
+    // The active form with its identity providers and published versions (with their schemas),
+    // for routes that serve or submit the published form; a form with none still resolves
+    async publishedForm(_req, spec) {
+      const { formId } = spec.params || {};
+      if (!formId) return null;
+
+      requireServiceMethod(formService, 'formService', 'readPublishedForm');
+
+      try {
+        const form = await formService.readPublishedForm(formId);
+        if (!form) return null;
+
+        return { form, submission: null, file: null };
       } catch (error) {
         resolverLogger.debug({ event: 'resource_not_found', error: error.message });
         return null;
@@ -218,6 +241,7 @@ module.exports = function makeResourceResolver({ deps }) {
     const resolvedResource = {
       form: result.form || null,
       submission: result.submission || null,
+      version: result.version || null,
       file: result.file || null,
       publicForm: publicForm || false,
       activeForm: result.form?.active || false,

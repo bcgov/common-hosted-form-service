@@ -6,6 +6,35 @@
   const bool = (v) =>
     v === true || v === 'true' || v === '' || v === 1 || v === '1';
 
+  // A release build replaces these with its version and the SRI hashes of its files
+  const RELEASE = {
+    version: /*__CHEFS_RELEASE_VERSION__*/ null,
+    integrity: /*__CHEFS_RELEASE_INTEGRITY__*/ {},
+  };
+
+  // Only available while the script first runs
+  const SCRIPT_SRC = document.currentScript?.src || null;
+
+  // Assets loaded by the component: how to load each, and its file in a release folder
+  const ASSETS = {
+    mainCss: { kind: 'css', path: 'assets/chefs-index.css' },
+    iconsCss: {
+      kind: 'css',
+      path: 'assets/font-awesome/css/font-awesome.min.css',
+    },
+    themeCss: { kind: 'css', path: 'assets/chefs-theme.css' },
+    formioJs: { kind: 'js', path: 'assets/formio.full.min.js' },
+    componentsJs: {
+      kind: 'js',
+      path: 'form-viewer/bcgov-formio-components.use.min.js',
+    },
+  };
+  const FONT_AWESOME_FONTS = 'assets/font-awesome/fonts';
+
+  // Added to anonymous request errors, which usually mean the form or website is not set up for it
+  const ANONYMOUS_HINT =
+    'Embedding without an API key or auth token needs a form that uses the Public login option and lists this website in its allowed origins.';
+
   /**
    * Creates a minimal redaction-aware logger for the component.
    *
@@ -76,6 +105,35 @@
       const match = pathname.match(/^\/(app|pr-\d+)\b/);
       const baseSegment = match ? `/${match[1]}` : '/app';
       return `${origin}${baseSegment}`;
+    },
+    /**
+     * Finds the release folder and CHEFS base URL from a release script's URL
+     * @param {string} src - Script URL, e.g. https://host/app/embed/1.0.0/chefs-form-viewer.min.js
+     * @param {string} version - Release version
+     * @returns {Object|null} { baseUrl, releaseUrl }, or null when src is not in that release
+     */
+    parseReleaseUrl(src, version) {
+      if (typeof src !== 'string' || !version) return null;
+      let url;
+      try {
+        url = new URL(src);
+      } catch {
+        return null;
+      }
+      // The release scripts sit directly in the release folder
+      const folder = `/embed/${version}/`;
+      const at = url.pathname.lastIndexOf(folder);
+      if (at < 0 || url.pathname.includes('/', at + folder.length)) return null;
+      const baseUrl = `${url.origin}${url.pathname.slice(0, at)}`;
+      return { baseUrl, releaseUrl: `${baseUrl}/embed/${version}` };
+    },
+    /**
+     * Attributes that make the browser check a file against its SRI hash
+     * @param {string|null} integrity - SRI hash
+     * @returns {Object} integrity and crossorigin attributes, or {} without a hash
+     */
+    sriAttributes(integrity) {
+      return integrity ? { integrity, crossorigin: 'anonymous' } : {};
     },
     /**
      * Creates Basic auth header
@@ -237,11 +295,10 @@
 
     /**
      * Generates CSS for Font Awesome font faces
-     * @param {string} baseUrl - Base URL for font assets
+     * @param {string} fontPath - URL of the Font Awesome fonts folder
      * @returns {string} CSS string
      */
-    generateFontFaceCSS(baseUrl) {
-      const fontPath = `${baseUrl}/webcomponents/v1/assets/font-awesome/fonts`;
+    generateFontFaceCSS(fontPath) {
       return `@font-face{font-family:'FontAwesome';src:url('${fontPath}/fontawesome-webfont.eot?v=4.7.0');src:url('${fontPath}/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'),url('${fontPath}/fontawesome-webfont.woff2?v=4.7.0') format('woff2'),url('${fontPath}/fontawesome-webfont.woff?v=4.7.0') format('woff'),url('${fontPath}/fontawesome-webfont.ttf?v=4.7.0') format('truetype'),url('${fontPath}/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');font-weight:normal;font-style:normal;font-display:swap;}`;
     },
 
@@ -308,29 +365,6 @@
       }
 
       return this.substituteUrlParams(baseUrl, params);
-    },
-
-    /**
-     * Resolves URL with fallback support
-     * @param {Object} endpoints - All available endpoints
-     * @param {string} primaryKey - Primary endpoint key
-     * @param {string} fallbackKey - Fallback endpoint key
-     * @param {Object} params - Parameters for substitution
-     * @param {Object} overrides - Endpoint overrides (optional)
-     * @returns {Object} { primary: string, fallback: string|null }
-     */
-    resolveUrlWithFallback(
-      endpoints,
-      primaryKey,
-      fallbackKey,
-      params = {},
-      overrides = {}
-    ) {
-      const primary = this.resolveUrl(endpoints, primaryKey, params, overrides);
-      const fallback = fallbackKey
-        ? this.resolveUrl(endpoints, fallbackKey, params, overrides)
-        : null;
-      return { primary, fallback };
     },
 
     /**
@@ -504,10 +538,18 @@
    *   - Enables automatic token refresh based on expiry time. Refreshed 60 seconds before expiry.
    * - api-key (string): API access key (fallback, only if auth-token is not available).
    *   - Used with form-id for same-origin Basic auth when auth-token is not available.
+   * - Without auth-token, api-key, onBuildAuthHeader or a schema/submit endpoint override the component
+   *   is anonymous: it loads and submits a Public form through /webcomponents/v1/public/, which only
+   *   answers websites the form allows. Anonymous requests carry no CHEFS credentials and none of the
+   *   onPassthroughHeaders headers. Anonymous embeds upload files to a form with a file upload field,
+   *   and can download or remove an upload until it is submitted. They cannot print or load a
+   *   submission-id, and show the submitted data read-only after a submit (or clear the form when its
+   *   settings hide submission contents). Public forms never allow drafts.
    * - submission-id (string): optional. Prefills from an existing submission.
    * - read-only (boolean): when present/"true"/empty/1 enables read-only.
    * - language (string): i18n language code (default: "en").
-   * - base-url (string): override autodetected base (defaults to /app or /pr-####).
+   * - base-url (string): override autodetected base (defaults to the CHEFS server and path the
+   *   release script was loaded from, otherwise /app or /pr-#### on the page's origin).
    * - debug (boolean): enable console logging.
    * - no-shadow (boolean): render in light DOM instead of Shadow DOM.
    * - submit-button-key (string): key used for submit vs draft flag (default: "submit").
@@ -540,6 +582,10 @@
    *
    * Core events (CustomEvent)
    * - formio:ready, formio:render, formio:change, formio:submit, formio:submitDone, formio:error
+   * - formio:submitDone detail: { submission, showConfirmationId, hideContent }. submission is the
+   *   submit response: { id, confirmationId, createdAt, draft }. showConfirmationId and hideContent follow the form's
+   *   "show confirmation id" and "hide submission contents" settings so the host can show its own
+   *   confirmation.
    * - formio:authTokenRefreshed: fired when auth token is refreshed (includes new and old tokens)
    * - formio:userTokenRefreshed: fired when user token is updated via refreshUserToken()
    * - formio:userTokenExpiring: fired when user token is about to expire (configurable buffer, default 60s)
@@ -683,6 +729,7 @@
       this._root = this.shadowRoot;
       this._log = createLogger(false);
       this._isBusy = false; // shared lock for load/submit/draft
+      this._lockOwner = null; // the lock submit() or draft() holds, if any
       this.submitButtonKey = 'submit';
       this.printButtonKey = 'print';
       this.printEventName = 'printDocument';
@@ -696,6 +743,10 @@
       this._prefillData = null; // cached prefill data for submission
       this.autoReloadOnSubmit = true; // auto-reload form as read-only after successful submission
       this.submitMode = 'chefs'; // 'chefs' (default) | 'host' | 'none'
+
+      // Release this script belongs to, and the URL it was loaded from
+      this._release = RELEASE;
+      this._scriptSrc = SCRIPT_SRC;
 
       // Asset loading state machine
       this._assetState = 'IDLE';
@@ -750,7 +801,8 @@
      * - submission-id: string; when set, the component will prefetch and apply submission data.
      * - read-only: boolean; passes readOnly to Form.io to disable editing.
      * - language: string; i18n language code (default "en").
-     * - base-url: string; overrides autodetected base (e.g., https://myhost.com/app or https://myhost.com  /pr-####).
+     * - base-url: string; overrides autodetected base (e.g., https://myhost.com/app or https://myhost.com/pr-####).
+     *   Defaults to the CHEFS server and path a release script was loaded from.
      * - debug: boolean; enables the internal logger (also via globalThis.CHEFS_VIEWER_DEBUG).
      * - no-shadow: boolean; when present, disables Shadow DOM rendering by switching the render root to the
      *   host element and re-rendering the shell. In this mode, styles are loaded into document.head and
@@ -774,7 +826,8 @@
      *   The Authorization header can be updated programmatically via refreshUserToken() for user token management.
      * - auto-reload-on-submit: boolean; when true (default), automatically reloads the form as read-only
      *   after successful submission, showing the submitted data. This provides a CHEFS-like experience
-     *   out-of-the-box. Set to "false" to disable this behavior.
+     *   out-of-the-box. A form whose settings hide submission contents on success is cleared instead.
+     *   Set to "false" to disable this behavior.
      * - host-data: string; JSON string containing arbitrary host application data that will be available
      *   in Form.io's evalContext as `host`. Use this to pass datasets, lookup tables, configuration objects,
      *   or any structured data that form components need to access via custom JavaScript (calculated values,
@@ -936,6 +989,27 @@
      */
     async load() {
       if (!this._acquireBusyLock('load')) return;
+      await this._loadHoldingLock();
+    }
+
+    /**
+     * Loads while the caller holds the busy lock. Releases it before formio:ready
+     * so ready handlers can call submit() or draft().
+     * @returns {Promise<boolean>} Whether the form loaded; false when a formio:beforeLoad listener cancelled it
+     * @private
+     */
+    async _loadHoldingLock() {
+      if (!this._proceedWithLoad()) return false;
+      return this._loadAfterBeforeLoad();
+    }
+
+    /**
+     * Fires formio:beforeLoad. When a listener cancels it, releases the busy lock the
+     * caller holds.
+     * @returns {boolean} Whether to go on loading
+     * @private
+     */
+    _proceedWithLoad() {
       this._log.info('load:begin', { formId: this.formId });
 
       const proceed = this._emit(
@@ -943,17 +1017,23 @@
         { formId: this.formId },
         { cancelable: true }
       );
-      if (!proceed) {
-        this._releaseBusyLock();
-        return;
-      }
+      if (!proceed) this._releaseBusyLock();
+      return proceed;
+    }
 
+    /**
+     * The rest of _loadHoldingLock, once formio:beforeLoad has gone ahead.
+     * @returns {Promise<boolean>} True once the form has loaded
+     * @private
+     */
+    async _loadAfterBeforeLoad() {
       try {
         await this._loadSchema();
         await this._initFormio();
         this._releaseBusyLock(); // Unlock before emitting ready
         this._emit('formio:ready', { form: this.form });
         this._log.info('load:done');
+        return true;
       } catch (e) {
         this._releaseBusyLock();
         throw e;
@@ -980,12 +1060,66 @@
     }
 
     /**
+     * Reloads at the end of a submit. submit() and draft() still hold the busy lock
+     * here, so reload() would skip its load; this keeps their lock and loads directly.
+     * Any other caller, such as a button submit, takes the lock like load() does.
+     * @param {symbol|null} lock - The lock the calling submit() or draft() took, if any
+     * @param {Object} state - Properties to set once the reload is certain, such as readOnly
+     * @returns {Promise<boolean>} Whether the form reloaded; false when skipped, or when a
+     *   formio:beforeLoad listener cancelled the load
+     * @private
+     */
+    async _reloadAfterSubmit(lock = null, state = {}) {
+      // A removed element would keep timers running that nothing clears
+      if (!this.isConnected) return false;
+      if (!this._holdsLock(lock) && !this._acquireBusyLock('reload'))
+        return false;
+      // Asked first, so a cancelled load leaves the current form, its state and token refresh as they are
+      if (!this._proceedWithLoad()) return false;
+      Object.assign(this, state);
+      this._log.info('reload:afterSubmit');
+      try {
+        await this.destroy();
+      } catch (error) {
+        this._releaseBusyLock();
+        throw error;
+      }
+      return this._loadAfterBeforeLoad();
+    }
+
+    /**
+     * Clears the form at the end of a submit whose contents the form's settings hide.
+     * Like the reload, it keeps the calling submit()'s lock or takes the lock, and skips
+     * while another call, such as a host load(), holds it.
+     * @param {symbol|null} lock - The lock the calling submit() or draft() took, if any
+     * @returns {Promise<boolean>} Whether the form was cleared
+     * @private
+     */
+    async _clearAfterSubmit(lock = null) {
+      if (!this.isConnected) return false;
+      const holdsLock = this._holdsLock(lock);
+      if (!holdsLock && !this._acquireBusyLock('clear')) return false;
+      try {
+        await this._clearForm();
+      } finally {
+        if (!holdsLock) this._releaseBusyLock();
+      }
+      return true;
+    }
+
+    /** True when the calling submit() or draft() still holds the busy lock */
+    _holdsLock(lock) {
+      return lock !== null && this._lockOwner === lock;
+    }
+
+    /**
      * Refreshes the authentication token by POSTing to the backend refresh endpoint.
      * Updates this.authToken with the new token if successful and automatically
      * schedules the next refresh based on the token's expiry time.
      *
      * The new token is immediately available to all Form.io requests through the
      * dynamic auth plugin without requiring any plugin re-registration.
+     * Does nothing without an auth token (an anonymous or API key embed).
      *
      * @returns {Promise<void>} Resolves when refresh completes
      *
@@ -1004,6 +1138,11 @@
      * });
      */
     async refreshAuthToken() {
+      // Nothing to refresh: an empty refresh would only fail
+      if (!this.authToken) {
+        this._log.info('authToken:refresh:skip:noToken');
+        return;
+      }
       const base = this.getBaseUrl();
       const refreshUrl = `${base}/gateway/v1/auth/refresh`;
       try {
@@ -1213,37 +1352,69 @@
      * await viewer.submit();
      */
     async submit() {
-      if (!this._acquireBusyLock('submit')) return;
-      try {
-        await this._programmaticSubmit(true);
-      } finally {
-        this._releaseBusyLock();
-      }
+      await this._submitHoldingLock('submit', true);
     }
 
     /**
      * Saves the form data to the backend as a draft (not final submission).
      *
      * Sets the submit flag to false and posts current form data. Allows users
-     * to save progress without final submission.
+     * to save progress without final submission. Only for forms whose settings
+     * allow submitters to save drafts; a Public form never does.
      *
      * @returns {Promise<void>} Resolves when draft save completes
      *
      * @fires ChefsFormViewer#formio:beforeSubmit - Before save begins (cancelable)
      * @fires ChefsFormViewer#formio:submit - When save starts
      * @fires ChefsFormViewer#formio:submitDone - When save succeeds
-     * @fires ChefsFormViewer#formio:error - If save fails
+     * @fires ChefsFormViewer#formio:error - If save fails, or the form does not allow drafts
      *
      * @example
      * // Save as draft
      * await viewer.draft();
      */
     async draft() {
-      if (!this._acquireBusyLock('draft')) return;
+      if (this._submitsToChefs() && !this._draftsAllowed()) {
+        this._log.warn('draft:notAllowed', { formId: this.formId });
+        this._emit('formio:error', {
+          error: 'This form does not allow saving drafts.',
+        });
+        return;
+      }
+      await this._submitHoldingLock('draft', false);
+    }
+
+    /**
+     * CHEFS keeps a draft only when the form allows drafts. A Public form never
+     * does: there is no account to return to it.
+     * @private
+     */
+    _draftsAllowed() {
+      return (
+        this.form?.enableSubmitterDraft === true &&
+        !this.form.identityProviders?.some((idp) => idp.code === 'public')
+      );
+    }
+
+    /** True when submits and drafts go to CHEFS rather than to the host */
+    _submitsToChefs() {
+      return this.submitMode !== 'host' && this.submitMode !== 'none';
+    }
+
+    /**
+     * Runs a programmatic submit or draft under the busy lock. A reload at the end
+     * releases the lock before formio:ready, and a ready handler may take it again,
+     * so the lock is only released here if this call still holds it.
+     * @private
+     */
+    async _submitHoldingLock(actionName, isSubmit) {
+      if (!this._acquireBusyLock(actionName)) return;
+      const lock = Symbol(actionName);
+      this._lockOwner = lock;
       try {
-        await this._programmaticSubmit(false);
+        await this._programmaticSubmit(isSubmit, lock);
       } finally {
-        this._releaseBusyLock();
+        if (this._lockOwner === lock) this._releaseBusyLock();
       }
     }
 
@@ -1257,6 +1428,10 @@
      * await viewer.print(); // auto-detects submission vs draft
      */
     async print(options = {}) {
+      if (this._isAnonymous()) {
+        this._rejectAnonymous('Printing');
+        return;
+      }
       if (!this._acquireBusyLock('print')) return;
       try {
         const isSubmissionPrint = !!this.submissionId;
@@ -1393,17 +1568,22 @@
      * with the provided data.
      *
      * @param {Object} data - The form data object to display
-     * @returns {Promise<void>} Resolves when the form is reloaded and data is set
+     * @param {symbol|null} lock - The lock the calling submit() or draft() took, if any
+     * @returns {Promise<boolean>} Whether the form reloaded read-only with the data
      * @private
      */
-    async _displayAsReadOnly(data) {
+    async _displayAsReadOnly(data, lock = null) {
       this._log.info('_displayAsReadOnly:begin');
 
-      this.readOnly = true;
-      await this.reload();
+      // A skipped reload leaves the current form as it is, so the data is not applied to it
+      if (!(await this._reloadAfterSubmit(lock, { readOnly: true }))) {
+        this._log.info('_displayAsReadOnly:skipped');
+        return false;
+      }
       this.setSubmission(data);
 
       this._log.info('_displayAsReadOnly:done');
+      return true;
     }
 
     /**
@@ -1437,7 +1617,67 @@
     /** Compute base URL when not explicitly provided */
     getBaseUrl() {
       if (this.baseUrl) return this.baseUrl;
+      const loadedFrom = this._releaseLocation();
+      if (loadedFrom) return loadedFrom.baseUrl;
       return FormViewerUtils.parseBaseUrl(globalThis.location);
+    }
+
+    /** Where this release script was loaded from, or null */
+    _releaseLocation() {
+      return FormViewerUtils.parseReleaseUrl(
+        this._scriptSrc,
+        this._release.version
+      );
+    }
+
+    /** URL of this release's folder, e.g. https://host/app/embed/1.0.0 */
+    _releaseUrl() {
+      const loadedFrom = this._releaseLocation();
+      if (loadedFrom) return loadedFrom.releaseUrl;
+      return `${this.getBaseUrl()}/embed/${this._release.version}`;
+    }
+
+    /** Default asset URLs: the release folder in a release, otherwise the v1 asset routes */
+    _defaultAssetUrls(base) {
+      if (this._release.version) {
+        const root = this._releaseUrl();
+        return Object.fromEntries(
+          Object.entries(ASSETS).map(([key, asset]) => [
+            key,
+            `${root}/${asset.path}`,
+          ])
+        );
+      }
+      return {
+        // Complete CHEFS CSS bundle (includes Bootstrap, Vuetify, Form.io, custom styles)
+        mainCss: `${base}/webcomponents/v1/assets/chefs-index.css`,
+        formioJs: `${base}/webcomponents/v1/assets/formio.js`,
+        componentsJs: `${base}/webcomponents/v1/form-viewer/components`,
+        // CHEFS theme CSS with CSS variables and theming
+        themeCss: `${base}/webcomponents/v1/assets/chefs-theme.css`,
+        // Local Font Awesome 4.7 for Form.io icon classes (fa fa-*), so fonts load in Shadow DOM.
+        // Embedders can override via endpoints.iconsCss, or disable via 'no-icons'.
+        iconsCss: `${base}/webcomponents/v1/assets/font-awesome/css/font-awesome.min.css`,
+      };
+    }
+
+    /** URL of the Font Awesome fonts folder used by the default icons CSS */
+    _fontAwesomeFontsUrl() {
+      if (this._release.version) {
+        return `${this._releaseUrl()}/${FONT_AWESOME_FONTS}`;
+      }
+      return `${this.getBaseUrl()}/webcomponents/v1/assets/font-awesome/fonts`;
+    }
+
+    /**
+     * SRI hash for an asset loaded from this release's folder. Null for an
+     * overridden URL and for a build that is not a release.
+     */
+    _assetIntegrity(key, url) {
+      const asset = ASSETS[key];
+      if (!asset || !this._release.version) return null;
+      if (url !== `${this._releaseUrl()}/${asset.path}`) return null;
+      return this._release.integrity[asset.path] || null;
     }
 
     /**
@@ -1460,6 +1700,66 @@
      */
     _releaseBusyLock() {
       this._isBusy = false;
+      this._lockOwner = null;
+    }
+
+    /**
+     * True without CHEFS credentials: requests then use the anonymous Public form routes.
+     * A host that points schema or submit at its own endpoint (for example a proxy that
+     * adds the key) is not anonymous, so it keeps the keyed behaviour.
+     */
+    _isAnonymous() {
+      return (
+        !this.authToken &&
+        !this.apiKey &&
+        typeof this.onBuildAuthHeader !== 'function' &&
+        !this.endpoints?.schema &&
+        !this.endpoints?.submit
+      );
+    }
+
+    /**
+     * Reports a feature that needs CHEFS credentials when the component has none
+     * @param {string} action - What was attempted, e.g. 'Printing'
+     * @returns {string} The error message emitted with formio:error
+     */
+    _rejectAnonymous(action) {
+      const error = `${action} needs an API key or auth token.`;
+      this._log.warn('anonymous:unsupported', { action });
+      this._emit('formio:error', { error });
+      return error;
+    }
+
+    /** Headers for a schema, submit or file request; anonymous requests carry no credentials or host headers */
+    _chefsHeaders(url, headers, anonymous) {
+      if (anonymous) return headers;
+      return this._mergeHeadersWithAuth(
+        headers,
+        this._buildAuthHeader(url),
+        url
+      );
+    }
+
+    /**
+     * Error message for a failed schema or submit request
+     * @param {boolean} anonymous - Whether the request was sent anonymously
+     */
+    async _requestError(res, fallback, anonymous) {
+      const msg = await this._parseError(res, fallback);
+      if (anonymous && [401, 403, 404].includes(res.status)) {
+        const sentence = /[.!?]$/.test(msg) ? msg : `${msg}.`;
+        return `${sentence} ${ANONYMOUS_HINT}`;
+      }
+      return msg;
+    }
+
+    /** formio:submitDone detail, with the form's confirmation settings for the host to follow */
+    _submitDoneDetail(submission) {
+      return {
+        submission,
+        showConfirmationId: this.form?.showSubmissionConfirmation === true,
+        hideContent: this.form?.hideSubmissionContentOnSuccess === true,
+      };
     }
 
     /** Default backend endpoints; embedders can override via .endpoints */
@@ -1467,35 +1767,26 @@
       const base = this.getBaseUrl();
       const fid = this.formId || ':formId';
       const sid = this.submissionId || ':submissionId';
+      // Without credentials, a Public form loads, submits and uploads through the anonymous routes
+      const anonymous = this._isAnonymous();
+      const formRoutes = anonymous ? 'public' : 'form-viewer';
+      const files = anonymous
+        ? `${base}/webcomponents/v1/public/${fid}/files`
+        : `${base}/webcomponents/v1/files`;
       return {
-        // Complete CHEFS CSS bundle (includes Bootstrap, Vuetify, Form.io, custom styles)
-        mainCss: `${base}/webcomponents/v1/assets/chefs-index.css`,
-        formioJs: `${base}/webcomponents/v1/assets/formio.js`,
-        componentsJs: `${base}/webcomponents/v1/form-viewer/components`,
-        // CHEFS theme CSS with CSS variables and theming
-        themeCss: `${base}/webcomponents/v1/assets/chefs-theme.css`,
-        // Default to local Font Awesome 4.7 for Form.io icon classes (fa fa-*)
-        // Served by backend to ensure fonts load in Shadow DOM without CORS/CSP issues.
-        // Embedders can override via endpoints.iconsCss, or disable via 'no-icons'.
-        iconsCss: `${base}/webcomponents/v1/assets/font-awesome/css/font-awesome.min.css`,
+        ...this._defaultAssetUrls(base),
 
-        // CDN fallback URLs
-        formioJsFallback:
-          'https://cdn.jsdelivr.net/npm/formiojs@4.17.4/dist/formio.full.min.js',
-        iconsCssFallback:
-          'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
-
-        schema: `${base}/webcomponents/v1/form-viewer/${fid}/schema`,
-        submit: `${base}/webcomponents/v1/form-viewer/${fid}/submit`,
+        schema: `${base}/webcomponents/v1/${formRoutes}/${fid}/schema`,
+        submit: `${base}/webcomponents/v1/${formRoutes}/${fid}/submit`,
         readSubmission: `${base}/webcomponents/v1/form-viewer/${fid}/submission/${sid}`,
         printSubmission: `${base}/webcomponents/v1/print/${fid}/submission/${sid}/print`,
         printDraft: `${base}/webcomponents/v1/print/${fid}/print`,
 
         // simplefile component routes
-        files: `${base}/webcomponents/v1/files`,
-        deleteFile: `${base}/webcomponents/v1/files/:fileId`,
-        getFile: `${base}/webcomponents/v1/files/:fileId`,
-        uploadFile: `${base}/webcomponents/v1/files?formId=${fid}`,
+        files,
+        deleteFile: `${files}/:fileId`,
+        getFile: `${files}/:fileId`,
+        uploadFile: anonymous ? files : `${files}?formId=${fid}`,
 
         // bcgeoaddress component routes
         bcgeoaddress: `${base}/webcomponents/v1/bcgeoaddress/advance/address`,
@@ -1689,30 +1980,11 @@
     }
 
     /**
-     * Resolve URL with fallback support
-     * @param {string} primaryKey - Primary endpoint key
-     * @param {string} fallbackKey - Fallback endpoint key
-     * @returns {Object} { primary: string, fallback: string|null }
-     */
-    _resolveUrlWithFallback(primaryKey, fallbackKey) {
-      const params = {
-        formId: this.formId,
-        submissionId: this.submissionId,
-      };
-      return FormViewerUtils.resolveUrlWithFallback(
-        this._urls(),
-        primaryKey,
-        fallbackKey,
-        params,
-        this.endpoints || {}
-      );
-    }
-
-    /**
      * Internal helper to perform programmatic submit/draft with a single path
      * @param {boolean} isSubmit True for submit, false for draft
+     * @param {symbol|null} lock - The lock the calling submit() or draft() took
      */
-    async _programmaticSubmit(isSubmit) {
+    async _programmaticSubmit(isSubmit, lock = null) {
       if (!this.formioInstance) return;
       this._log.info(isSubmit ? 'submit:programmatic' : 'draft:programmatic');
       const currentData =
@@ -1723,7 +1995,7 @@
         {};
       const submitKey = this._getSubmitButtonKey();
       currentData[submitKey] = isSubmit;
-      await this._manualSubmit({ data: currentData }, isSubmit);
+      await this._manualSubmit({ data: currentData }, isSubmit, lock);
     }
 
     _emit(name, detail, opts = {}) {
@@ -1784,7 +2056,7 @@
     }
 
     /** Load a stylesheet into shadow or document head preserving URL resolution, with timeout and error handling */
-    async _loadCssIntoRoot(href) {
+    async _loadCssIntoRoot(href, integrity = null) {
       try {
         FormViewerUtils.validateAssetUrl(href, 'css');
       } catch (err) {
@@ -1803,6 +2075,7 @@
         const linkElement = FormViewerUtils.createElement('link', {
           rel: 'stylesheet',
           href,
+          ...FormViewerUtils.sriAttributes(integrity),
         });
         linkElement.onload = () => {
           if (!settled) {
@@ -1826,7 +2099,7 @@
     }
 
     /** Injects a script into document head, with timeout and error handling */
-    _injectScript(src) {
+    _injectScript(src, integrity = null) {
       try {
         FormViewerUtils.validateAssetUrl(src, 'js');
       } catch (err) {
@@ -1842,7 +2115,10 @@
             resolve(false);
           }
         }, 10000); // 10s timeout
-        const script = FormViewerUtils.createElement('script', { src });
+        const script = FormViewerUtils.createElement('script', {
+          src,
+          ...FormViewerUtils.sriAttributes(integrity),
+        });
         script.onload = () => {
           if (!settled) {
             settled = true;
@@ -1864,7 +2140,7 @@
 
     /** Generate Font Awesome @font-face CSS */
     _getFontFaceCSS() {
-      return FormViewerUtils.generateFontFaceCSS(this.getBaseUrl());
+      return FormViewerUtils.generateFontFaceCSS(this._fontAwesomeFontsUrl());
     }
 
     /** Generate icon color inheritance CSS */
@@ -1916,7 +2192,7 @@
         this._emit('formio:submit', { submission: payload })
       );
       this.formioInstance.on('submitDone', (result) =>
-        this._emit('formio:submitDone', { submission: result })
+        this._emit('formio:submitDone', this._submitDoneDetail(result))
       );
       this.formioInstance.on('error', (err) =>
         this._emit('formio:error', { error: err?.message || String(err) })
@@ -1974,7 +2250,9 @@
     _ensurePrintButtonEnabled(source = 'unknown') {
       const entry = { source, key: this.printButtonKey };
 
-      if (!this.formioInstance || !this.printButtonKey) return;
+      // Printing needs credentials, so an anonymous form leaves the button as Form.io sets it
+      if (!this.formioInstance || !this.printButtonKey || this._isAnonymous())
+        return;
 
       const component = this._findComponentByKey(this.printButtonKey);
       if (!component) {
@@ -2031,17 +2309,22 @@
 
     /** Fetch and parse the form schema from the backend */
     async _loadSchema() {
+      // Decided once, so a beforeLoadSchema listener changing credentials cannot mix the two modes
+      const anonymous = this._isAnonymous();
       const url = this._resolveUrl('schema');
       this._log.info('schema:request', { url });
       if (!this._emit('formio:beforeLoadSchema', { url }, { cancelable: true }))
         return;
 
-      const authHeaders = this._buildAuthHeader(url);
       const res = await fetch(url, {
-        headers: this._mergeHeadersWithAuth({}, authHeaders, url),
+        headers: this._chefsHeaders(url, {}, anonymous),
       });
       if (!res.ok) {
-        const msg = await this._parseError(res, 'Failed to load form schema');
+        const msg = await this._requestError(
+          res,
+          'Failed to load form schema',
+          anonymous
+        );
         this._emit('formio:error', { error: msg });
         this._log.error('schema:error', { msg });
         throw new Error(msg);
@@ -2127,18 +2410,14 @@
     }
 
     async _loadAssetHints() {
-      // CDN preconnects for fallbacks
-      this._addResourceHint('preconnect', 'https://cdn.jsdelivr.net', {
-        crossOrigin: 'anonymous',
-      });
-      this._addResourceHint('preconnect', 'https://cdnjs.cloudflare.com', {
-        crossOrigin: 'anonymous',
-      });
-      this._addResourceHint('dns-prefetch', 'https://cdn.form.io');
-
-      // Critical asset preloads
-      this._addResourceHint('preload', this._resolveUrl('mainCss'), {
+      // Critical asset preloads. A preload is only reused by a request with the
+      // same integrity and CORS mode, so it carries the asset's SRI attributes.
+      const mainCss = this._resolveUrl('mainCss');
+      this._addResourceHint('preload', mainCss, {
         as: 'style',
+        ...FormViewerUtils.sriAttributes(
+          this._assetIntegrity('mainCss', mainCss)
+        ),
       });
 
       const formioAvailable = FormViewerUtils.validateGlobalMethods(
@@ -2147,8 +2426,12 @@
         []
       );
       if (!formioAvailable) {
-        this._addResourceHint('preload', this._resolveUrl('formioJs'), {
+        const formioJs = this._resolveUrl('formioJs');
+        this._addResourceHint('preload', formioJs, {
           as: 'script',
+          ...FormViewerUtils.sriAttributes(
+            this._assetIntegrity('formioJs', formioJs)
+          ),
         });
       }
 
@@ -2159,22 +2442,18 @@
 
     async _loadCssAssets() {
       // Critical CSS (required)
-      await this._loadAssetWithFallback(
+      await this._loadAsset(
+        'mainCss',
         this._resolveUrl('mainCss'),
-        null, // no fallback
         true, // required
         'critical-css'
       );
 
-      // Icons CSS (optional, with fallback)
+      // Icons CSS (optional)
       if (!this.noIcons) {
-        const { primary, fallback } = this._resolveUrlWithFallback(
+        await this._loadAsset(
           'iconsCss',
-          'iconsCssFallback'
-        );
-        await this._loadAssetWithFallback(
-          primary,
-          fallback,
+          this._resolveUrl('iconsCss'),
           false, // optional
           'icons-css'
         );
@@ -2183,21 +2462,17 @@
       // Theme CSS (optional)
       const themeHref = this.themeCss || this._resolveUrl('themeCss');
       if (themeHref) {
-        await this._loadAssetWithFallback(themeHref, null, false, 'theme-css');
+        await this._loadAsset('themeCss', themeHref, false, 'theme-css');
       }
     }
 
     async _loadJsAssets() {
-      // Form.io JS (required, with fallback and validation)
+      // Form.io JS (required, with validation)
       const formioStatus = FormViewerUtils.validateFormioGlobal(globalThis);
       if (!formioStatus.available) {
-        const { primary, fallback } = this._resolveUrlWithFallback(
+        await this._loadAsset(
           'formioJs',
-          'formioJsFallback'
-        );
-        await this._loadAssetWithFallback(
-          primary,
-          fallback,
+          this._resolveUrl('formioJs'),
           true, // required
           'formio-js',
           () => FormViewerUtils.validateFormioGlobal(globalThis).hasCreateForm
@@ -2205,9 +2480,9 @@
       }
 
       // Components JS (required)
-      await this._loadAssetWithFallback(
+      await this._loadAsset(
+        'componentsJs',
         this._resolveUrl('componentsJs'),
-        null,
         true,
         'components-js'
       );
@@ -2231,7 +2506,7 @@
         this._injectGlobalStyle('cfv-fa-face', this._getFontFaceCSS());
 
         // Preload font after @font-face is available
-        const fontHref = `${this.getBaseUrl()}/webcomponents/v1/assets/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0`;
+        const fontHref = `${this._fontAwesomeFontsUrl()}/fontawesome-webfont.woff2?v=4.7.0`;
         this._addResourceHint('preload', fontHref, {
           as: 'font',
           type: 'font/woff2',
@@ -2245,51 +2520,35 @@
       }
     }
 
-    // Asset loader with fallback, timeout, and error handling
-    async _loadAssetWithFallback(
-      primaryUrl,
-      fallbackUrl,
-      required,
-      assetType,
-      validateFn
-    ) {
+    /**
+     * Loads one asset as the kind declared for its key, with its SRI hash when it
+     * comes from this release's folder. Throws when a required asset fails.
+     * @param {string} key - Endpoint key, e.g. mainCss or formioJs
+     * @param {string} url - URL to load
+     * @param {boolean} required - Whether a failure stops the form loading
+     * @param {string} assetType - Name used in logs, errors and loaded asset state
+     * @param {Function} [validateFn] - Returns true when the asset is usable
+     */
+    async _loadAsset(key, url, required, assetType, validateFn) {
       if (this._isAssetPreLoaded(assetType, validateFn)) return true;
 
-      this._log.info('Loading asset', { assetType, primaryUrl, fallbackUrl });
-      const loadFn = this._getAssetLoadFunction(primaryUrl);
+      const integrity = this._assetIntegrity(key, url);
+      this._log.info('Loading asset', { assetType, url, sri: !!integrity });
       let loaded;
       try {
-        loaded = await this._tryLoadWithFallback(
-          primaryUrl,
-          fallbackUrl,
-          assetType,
-          loadFn,
-          !required
-        );
-      } catch (err) {
-        this._log.error('Asset load threw error', {
-          assetType,
-          error: err.message,
-        });
-        loaded = false;
-      }
-
-      try {
+        loaded =
+          ASSETS[key]?.kind === 'js'
+            ? await this._injectScript(url, integrity)
+            : await this._loadCssIntoRoot(url, integrity);
         this._validateLoadedAsset(loaded, assetType, validateFn);
       } catch (err) {
-        this._log.error('Asset validation failed', {
+        this._log.error('Asset load failed', {
           assetType,
           error: err.message,
         });
         loaded = false;
       }
-      this._handleLoadResult(
-        loaded,
-        primaryUrl,
-        fallbackUrl,
-        required,
-        assetType
-      );
+      this._handleLoadResult(loaded, url, required, assetType);
 
       return loaded;
     }
@@ -2302,97 +2561,24 @@
       return false;
     }
 
-    /**
-     * Detect asset type by Content-Type header using HEAD request
-     * Returns 'js', 'css', or null
-     */
-    async _detectAssetTypeByContentType(url) {
-      try {
-        const resp = await fetch(url, { method: 'HEAD' });
-        const ct = resp.headers.get('content-type') || '';
-        if (ct.includes('javascript')) return 'js';
-        if (ct.includes('css')) return 'css';
-        this._log.error('Unknown asset Content-Type', { url, contentType: ct });
-        return null;
-      } catch (err) {
-        this._log.error('Failed to detect asset Content-Type', {
-          url,
-          error: err.message,
-        });
-        return null;
-      }
-    }
-
-    _getAssetLoadFunction(url) {
-      if (!url || typeof url !== 'string') {
-        return () => Promise.resolve(false);
-      }
-      // Content-Type detection first
-      return async (url) => {
-        const assetType = await this._detectAssetTypeByContentType(url);
-        if (assetType === 'js') return await this._injectScript(url);
-        if (assetType === 'css') return await this._loadCssIntoRoot(url);
-        // Fallback to extension if Content-Type is unknown or HEAD fails
-        if (url.endsWith('.js')) return await this._injectScript(url);
-        if (url.endsWith('.css')) return await this._loadCssIntoRoot(url);
-        // Unknown type
-        this._log.error('Unknown asset type for URL', { url });
-        return false;
-      };
-    }
-
-    async _tryLoadWithFallback(primaryUrl, fallbackUrl, assetType, loadFn) {
-      let loaded = false;
-      try {
-        loaded = await loadFn(primaryUrl);
-      } catch (err) {
-        this._log.error('Primary asset load threw error', {
-          assetType,
-          error: err.message,
-        });
-        loaded = false;
-      }
-
-      if (!loaded && fallbackUrl) {
-        this._log.warn(`Using fallback for ${assetType}`, { fallbackUrl });
-        // Use content detection for fallback as well
-        const fallbackLoadFn = this._getAssetLoadFunction(fallbackUrl);
-        try {
-          loaded = await fallbackLoadFn(fallbackUrl);
-        } catch (err) {
-          this._log.error('Fallback asset load threw error', {
-            assetType,
-            error: err.message,
-          });
-          loaded = false;
-        }
-        if (loaded) {
-          this._loadedAssets.set(`${assetType}-fallback`, fallbackUrl);
-        }
-      }
-
-      return loaded;
-    }
-
     _validateLoadedAsset(loaded, assetType, validateFn) {
       if (loaded && validateFn && !validateFn()) {
         throw new Error(`Asset validation failed: ${assetType}`);
       }
     }
 
-    _handleLoadResult(loaded, primaryUrl, fallbackUrl, required, assetType) {
+    _handleLoadResult(loaded, url, required, assetType) {
       if (!loaded) {
         if (required) {
           throw new Error(`Failed to load required asset: ${assetType}`);
         }
         this._assetErrors.push({
           type: assetType,
-          url: primaryUrl,
-          fallback: fallbackUrl,
+          url,
           error: 'Optional asset failed to load',
         });
       } else if (!this._loadedAssets.has(assetType)) {
-        this._loadedAssets.set(assetType, primaryUrl);
+        this._loadedAssets.set(assetType, url);
       }
     }
 
@@ -2591,8 +2777,11 @@
       };
     }
 
-    /** Post submission payload to CHEFS backend and emit completion/error */
-    async _manualSubmit(submission, isSubmit = true) {
+    /**
+     * Post submission payload to CHEFS backend and emit completion/error
+     * @param {symbol|null} lock - The lock the calling submit() or draft() took; null for a button submit
+     */
+    async _manualSubmit(submission, isSubmit = true, lock = null) {
       this._log.info('beforeSubmit', { submission });
       const proceed = this._emitCancelable('formio:beforeSubmit', {
         submission,
@@ -2604,26 +2793,32 @@
       if (!allow) return;
 
       // Handle host-controlled submission modes (both submit and draft)
-      if (this.submitMode === 'host' || this.submitMode === 'none') {
-        await this._handleHostSubmit(submission, isSubmit);
+      if (!this._submitsToChefs()) {
+        await this._handleHostSubmit(submission, isSubmit, lock);
         return;
       }
 
+      // Decided once, so a host changing credentials mid-submit cannot mix the two modes
+      const anonymous = this._isAnonymous();
       const url = this._resolveUrl('submit');
       // debug: submit post
       this._emit('formio:submit', { submission });
-      const authHeaders = this._buildAuthHeader(url);
+      const body = JSON.stringify({ submission, draft: !isSubmit });
       const res = await fetch(url, {
         method: 'POST',
-        headers: this._mergeHeadersWithAuth(
+        headers: this._chefsHeaders(
+          url,
           { 'Content-Type': 'application/json' },
-          authHeaders,
-          url
+          anonymous
         ),
-        body: JSON.stringify({ submission }),
+        body,
       });
       if (!res.ok) {
-        const msg = await this._parseError(res, 'Submission failed');
+        const msg = await this._requestError(
+          res,
+          'Submission failed',
+          anonymous
+        );
         this._log.error('submit:error', { msg });
         this._emit('formio:error', { error: msg });
         return;
@@ -2631,11 +2826,20 @@
       const result = await res.json().catch(() => ({}));
       const submitParsed = this.parsers.submitResult(result);
       this._log.info('submit:ok');
-      this._emit('formio:submitDone', { submission: submitParsed.submission });
+      this._emit(
+        'formio:submitDone',
+        this._submitDoneDetail(submitParsed.submission)
+      );
 
-      // Auto-reload as read-only after successful submission (if enabled and not a draft)
+      // Auto-reload as read-only after successful submission (if enabled and not a draft).
+      // The data shown is what was sent, not the live form, which may have changed since.
       if (this.autoReloadOnSubmit && isSubmit && submitParsed.submission?.id) {
-        await this._handleAutoReload(submitParsed.submission);
+        await this._handleAutoReload(
+          submitParsed.submission,
+          JSON.parse(body).submission?.data,
+          anonymous,
+          lock
+        );
       }
     }
 
@@ -2649,6 +2853,7 @@
      *
      * @param {Object} submission - The validated submission object with data
      * @param {boolean} isSubmit - True for final submission, false for draft save
+     * @param {symbol|null} lock - The lock the calling submit() or draft() took, if any
      * @returns {Promise<void>} Resolves when host submission handling completes
      * @private
      *
@@ -2657,7 +2862,7 @@
      *   Host can call event.preventDefault() to prevent auto read-only display (in 'host' mode).
      *   Host can call event.detail.waitUntil(promise) for async operations before display.
      */
-    async _handleHostSubmit(submission, isSubmit = true) {
+    async _handleHostSubmit(submission, isSubmit = true, lock = null) {
       const data = submission?.data || {};
       const isDraft = !isSubmit;
 
@@ -2684,7 +2889,14 @@
 
       // For 'host' mode: auto-display as read-only unless cancelled (submissions only, not drafts)
       if (this.submitMode === 'host' && proceed && allowed && !isDraft) {
-        await this._displayAsReadOnly(data);
+        try {
+          await this._displayAsReadOnly(data, lock);
+        } catch (error) {
+          this._log.error('hostSubmit:displayFailed', { error: error.message });
+          this._emit('formio:error', {
+            error: `Read-only display failed: ${error.message}`,
+          });
+        }
       }
 
       // For 'none' mode or drafts: host is fully responsible, we do nothing more
@@ -2698,18 +2910,27 @@
      * Handles auto-reload behavior after successful submission (not draft).
      *
      * Emits cancelable events to allow customization of the auto-reload behavior.
-     * By default, reloads the form as read-only with the submission data.
+     * By default, reloads the form as read-only with the submission data. When the
+     * form's settings hide submission contents on success, clears the form instead.
      * Only runs for actual submissions, not draft saves.
      *
      * @param {Object} submission - The submission object from the successful submission
+     * @param {Object} [data] - The data that was submitted; shown read-only after an anonymous submit
+     * @param {boolean} [anonymous] - Whether the submission was sent anonymously
+     * @param {symbol|null} [lock] - The lock the calling submit() or draft() took, if any
      * @returns {Promise<void>} Resolves when auto-reload completes or is cancelled
      *
      * @fires ChefsFormViewer#formio:beforeAutoReload - Before auto-reload starts (cancelable)
      * @fires ChefsFormViewer#formio:autoReload - When auto-reload begins
-     * @fires ChefsFormViewer#formio:autoReloadComplete - When auto-reload completes
+     * @fires ChefsFormViewer#formio:autoReloadComplete - When auto-reload completes, not when it was skipped
      * @fires ChefsFormViewer#formio:error - If auto-reload fails
      */
-    async _handleAutoReload(submission) {
+    async _handleAutoReload(
+      submission,
+      data = {},
+      anonymous = this._isAnonymous(),
+      lock = null
+    ) {
       this._log.info('autoReload:starting', {
         submissionId: submission.id,
       });
@@ -2744,9 +2965,25 @@
         // Wait a moment then reload as read-only (like the demo pattern)
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        this.submissionId = submission.id;
-        this.readOnly = true;
-        await this.reload();
+        let reloaded = true;
+        if (this.form?.hideSubmissionContentOnSuccess === true) {
+          // The form's settings hide submission contents on success
+          reloaded = await this._clearAfterSubmit(lock);
+        } else if (anonymous) {
+          // Anonymous submissions cannot be read back, so show what was sent
+          reloaded = await this._displayAsReadOnly(data, lock);
+        } else {
+          reloaded = await this._reloadAfterSubmit(lock, {
+            submissionId: submission.id,
+            readOnly: true,
+          });
+        }
+        // Removed, another call holds the lock, or a beforeLoad listener cancelled the load:
+        // nothing reloaded or cleared, so nothing is reported
+        if (!reloaded) {
+          this._log.info('autoReload:skipped');
+          return;
+        }
 
         this._log.info('autoReload:completed');
         this._emit('formio:autoReloadComplete', {
@@ -2759,6 +2996,17 @@
           error: `Auto-reload failed: ${error.message}`,
         });
       }
+    }
+
+    /**
+     * Removes the form after a submit whose contents the form's settings hide.
+     * Token refresh keeps running, so a later load() still has a valid token.
+     * @private
+     */
+    async _clearForm() {
+      if (this.formioInstance?.destroy) this.formioInstance.destroy();
+      this.formioInstance = null;
+      this._root.querySelector('#formio-container')?.replaceChildren();
     }
 
     /** Emit a cancellable event and collect async waits via detail.waitUntil */
@@ -2864,15 +3112,12 @@
           // Open the request first
           xhr.open('POST', uploadUrl);
 
-          // Set auth headers and other headers, but exclude Content-Type for multipart/form-data
-          const authHeaders = this._buildAuthHeader(uploadUrl);
-          const configHeaders = config.headers || {};
-
-          // Merge headers, preserving Authorization from config if present
-          const mergedHeaders = this._mergeHeadersWithAuth(
-            configHeaders,
-            authHeaders,
-            uploadUrl
+          // Set auth headers and other headers, but exclude Content-Type for multipart/form-data.
+          // A keyed upload keeps a non-Basic Authorization from config.
+          const mergedHeaders = this._chefsHeaders(
+            uploadUrl,
+            config.headers || {},
+            this._isAnonymous()
           );
 
           // Filter out Content-Type if it's multipart/form-data to let browser set it automatically
@@ -2919,11 +3164,10 @@
       this._log.info('File download starting', { fileId, url: getFileUrl });
 
       try {
-        const authHeaders = this._buildAuthHeader(getFileUrl);
-        const mergedHeaders = this._mergeHeadersWithAuth(
+        const mergedHeaders = this._chefsHeaders(
+          getFileUrl,
           config.headers,
-          authHeaders,
-          getFileUrl
+          this._isAnonymous()
         );
         const response = await fetch(getFileUrl, {
           headers: mergedHeaders,
@@ -2984,10 +3228,9 @@
       this._log.info('File delete starting', { fileId, url: deleteUrl });
 
       try {
-        const authHeaders = this._buildAuthHeader(deleteUrl);
         const response = await fetch(deleteUrl, {
           method: 'DELETE',
-          headers: this._mergeHeadersWithAuth({}, authHeaders, deleteUrl),
+          headers: this._chefsHeaders(deleteUrl, {}, this._isAnonymous()),
         });
 
         if (!response.ok) {
@@ -3261,6 +3504,11 @@
      */
     async _loadPrefillData() {
       if (!this.submissionId) {
+        this._prefillData = null;
+        return;
+      }
+      if (this._isAnonymous()) {
+        this._rejectAnonymous('Loading a submission');
         this._prefillData = null;
         return;
       }

@@ -38,11 +38,6 @@
       "password": "password"
     }
   },
-  "webcomponents": {
-    "assets": {
-      "roots": ""
-    }
-  },
   "gateway": {
     "jwtLifetime": "30m"
   }

@@ -35,6 +35,7 @@ class FileStorage extends Timestamps(Model) {
         storage: { type: 'string' },
         path: { type: 'string', minLength: 1, maxLength: 1024 },
         formSubmissionId: { type: ['string', 'null'], pattern: Regex.UUID },
+        formId: { type: ['string', 'null'], pattern: Regex.UUID },
         ...stamps,
       },
       additionalProperties: false,
