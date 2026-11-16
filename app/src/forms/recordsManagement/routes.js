@@ -30,7 +30,7 @@ routes.delete('/containers/:formId/policies', currentUser, hasFormPermissions([P
 // Internal: process eligible deletions (called by cron)
 routes.post('/internal/deletions/process', apiAccess.checkApiKey, controller.processDeletions);
 
-// Webhook: external service calls to delete a batch (Stage 2)
-routes.post('/webhooks/process-deletions', controller.processDeletionsWebhook);
+// Webhook: external service calls to delete a batch (Stage 2). System apikey only.
+routes.post('/webhooks/process-deletions', apiAccess.checkApiKey, controller.processDeletionsWebhook);
 
 module.exports = routes;
