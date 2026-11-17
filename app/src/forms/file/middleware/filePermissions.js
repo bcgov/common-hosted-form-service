@@ -1,4 +1,6 @@
 const Problem = require('api-problem');
+const { NotFoundError } = require('objection');
+const { validate: uuidValidate } = require('uuid');
 
 const userAccess = require('../../auth/middleware/userAccess');
 const idpService = require('../../../components/idpService');
@@ -129,7 +131,12 @@ const hasFileCreate = async (req, res, next) => {
       return next(new Problem(400, { detail: 'formId is required as query parameter for file uploads' }));
     }
 
-    // Get form configuration with identity providers
+    if (typeof formId !== 'string' || !uuidValidate(formId)) {
+      return next(new Problem(400, { detail: 'formId must be a valid UUID' }));
+    }
+
+    // Get form configuration with identity providers. readForm only returns
+    // active forms and throws NotFoundError otherwise.
     const form = await formService.readForm(formId);
     if (!form) {
       return next(new Problem(404, { detail: 'Form not found' }));
@@ -150,6 +157,9 @@ const hasFileCreate = async (req, res, next) => {
     // If we get here: public user + public form = allow upload
     return next();
   } catch (error) {
+    if (error instanceof NotFoundError) {
+      return next(new Problem(404, { detail: 'Form not found' }));
+    }
     log.error('Error in hasFileCreate middleware:', error);
     return next(new Problem(500, { detail: 'Unable to upload file at this time. Please try again later.' }));
   }
@@ -282,4 +292,5 @@ module.exports = {
   hasFileDelete,
   hasFilePermissions,
   hasFileRead,
+  restrictsFileDownloads,
 };

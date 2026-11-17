@@ -33,7 +33,11 @@
     },
     "clamav": {
       "host": "127.0.0.1",
-      "port": "3310"
+      "port": "3310",
+      "maxConcurrentScans": "2",
+      "maxWaitingScans": "4",
+      "scanSlotWaitMs": "5000",
+      "scanTimeoutMs": "20000"
     }
   },
   "frontend": {
@@ -68,6 +72,17 @@
         "limitApiKey": "120",
         "limitFrontend": "500",
         "windowMs": "60000"
+      },
+      "fileUpload": {
+        "enabled": "true",
+        "windowMs": "600000",
+        "dailyWindowMs": "86400000",
+        "limitIp": "20",
+        "dailyLimitIp": "100",
+        "limitRestrictedUser": "40",
+        "dailyLimitRestrictedUser": "300",
+        "limitUser": "150",
+        "dailyLimitUser": "500"
       }
     },
     "encryption": {

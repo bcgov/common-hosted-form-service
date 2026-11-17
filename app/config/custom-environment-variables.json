@@ -35,7 +35,11 @@
     },
     "clamav": {
       "host": "FILES_CLAMAV_HOST",
-      "port": "FILES_CLAMAV_PORT"
+      "port": "FILES_CLAMAV_PORT",
+      "maxConcurrentScans": "FILES_CLAMAV_MAX_CONCURRENT_SCANS",
+      "maxWaitingScans": "FILES_CLAMAV_MAX_WAITING_SCANS",
+      "scanSlotWaitMs": "FILES_CLAMAV_SCAN_SLOT_WAIT_MS",
+      "scanTimeoutMs": "FILES_CLAMAV_SCAN_TIMEOUT_MS"
     }
   },
   "frontend": {
@@ -70,7 +74,20 @@
       "proxy": "SERVER_ENCRYPTION_PROXY"
     },
     "submissionTokenKey": "SUBMISSION_TOKEN_KEY",
-    "submissionTokenTtlMinutes": "SUBMISSION_TOKEN_TTL_MINUTES"
+    "submissionTokenTtlMinutes": "SUBMISSION_TOKEN_TTL_MINUTES",
+    "rateLimit": {
+      "fileUpload": {
+        "enabled": "SERVER_RATELIMIT_FILEUPLOAD_ENABLED",
+        "windowMs": "SERVER_RATELIMIT_FILEUPLOAD_WINDOWMS",
+        "dailyWindowMs": "SERVER_RATELIMIT_FILEUPLOAD_DAILYWINDOWMS",
+        "limitIp": "SERVER_RATELIMIT_FILEUPLOAD_LIMITIP",
+        "dailyLimitIp": "SERVER_RATELIMIT_FILEUPLOAD_DAILYLIMITIP",
+        "limitRestrictedUser": "SERVER_RATELIMIT_FILEUPLOAD_LIMITRESTRICTEDUSER",
+        "dailyLimitRestrictedUser": "SERVER_RATELIMIT_FILEUPLOAD_DAILYLIMITRESTRICTEDUSER",
+        "limitUser": "SERVER_RATELIMIT_FILEUPLOAD_LIMITUSER",
+        "dailyLimitUser": "SERVER_RATELIMIT_FILEUPLOAD_DAILYLIMITUSER"
+      }
+    }
   },
   "eventStreamService": {
     "servers": "EVENTSTREAMSERVICE_SERVERS",

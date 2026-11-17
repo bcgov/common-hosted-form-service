@@ -3,3 +3,12 @@ clamav:
   # pinned rather than :latest so every pod runs the same image, even when one is
   # rescheduled onto a node that has a different :latest cached
   tag: sha-7855e41
+  resources:
+    # needed these bumped up in PROD after the attack, clamav crashed OOM
+    # all 4 scan threads unpack compressed files (PDF) spikes memory over 2Gi
+    requests:
+      cpu: 250m
+      memory: 3Gi
+    limits:
+      cpu: 1
+      memory: 4Gi
