@@ -3,7 +3,6 @@ const config = require('config');
 const fs = require('fs-extra');
 const mime = require('mime-types');
 const path = require('path');
-const { Readable } = require('stream');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const errorToProblem = require('../../../components/errorToProblem');
@@ -133,6 +132,8 @@ class ObjectStorageService {
     }
   }
 
+  // Returns the S3 response body stream itself, so destroying it releases the
+  // S3 connection.
   async read(fileStorage) {
     // try to get by primary key first, then fallback to constructed key
     const primaryKey = fileStorage.path;
@@ -145,7 +146,7 @@ class ObjectStorageService {
 
       const response = await this._s3.send(new GetObjectCommand(params));
 
-      return Readable.from(response.Body);
+      return response.Body;
     } catch (e) {
       if (e.name === 'NoSuchKey') {
         try {
@@ -156,7 +157,7 @@ class ObjectStorageService {
 
           const response = await this._s3.send(new GetObjectCommand(params));
 
-          return Readable.from(response.Body);
+          return response.Body;
         } catch (err) {
           errorToProblem(SERVICE, err);
         }
@@ -194,26 +195,6 @@ class ObjectStorageService {
       return await this._s3.send(new CopyObjectCommand(params));
     } catch (e) {
       errorToProblem(SERVICE, e);
-    }
-  }
-
-  async cloneFile(fileStorage, newId) {
-    try {
-      // Construct the new key using the new ID
-      const newKey = this._join(this._key, newId);
-
-      // Perform the copy operation
-      await this.copyFile({ ...fileStorage, id: newId }, newKey);
-
-      // Return the newly cloned file details
-      return {
-        ...fileStorage,
-        id: newId,
-        path: newKey,
-        storage: StorageTypes.OBJECT_STORAGE,
-      };
-    } catch (error) {
-      errorToProblem(SERVICE, error);
     }
   }
 }

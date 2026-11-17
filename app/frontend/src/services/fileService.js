@@ -5,9 +5,6 @@ export default {
   async deleteFile(fileId) {
     return appAxios().delete(`${ApiRoutes.FILES}/${fileId}`);
   },
-  async deleteFiles(fileIds) {
-    return appAxios().delete(`${ApiRoutes.FILES}/`, { data: { fileIds } });
-  },
   async getFile(fileId, options = {}) {
     return appAxios().get(`${ApiRoutes.FILES}/${fileId}`, options);
   },
@@ -17,8 +14,5 @@ export default {
       headers: { 'Content-Type': 'multipart/form-data' },
       ...config,
     });
-  },
-  async cloneFile(fileId) {
-    return appAxios().get(`${ApiRoutes.FILES}/${fileId}/clone`);
   },
 };

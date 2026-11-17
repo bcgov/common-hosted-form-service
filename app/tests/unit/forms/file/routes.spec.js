@@ -29,12 +29,6 @@ filePermissions.hasFileCreate = jest.fn((_req, _res, next) => {
 filePermissions.hasFileDelete = jest.fn((_req, _res, next) => {
   next();
 });
-const hasFilePermissionsMock = jest.fn((_req, _res, next) => {
-  next();
-});
-filePermissions.hasFilePermissions = jest.fn(() => {
-  return hasFilePermissionsMock;
-});
 filePermissions.hasFileRead = jest.fn((_req, _res, next) => {
   next();
 });
@@ -79,37 +73,25 @@ describe(`${basePath}`, () => {
       res.sendStatus(200);
     });
 
-    await appRequest.post(path);
+    const response = await appRequest.post(path);
 
+    expect(response.headers['x-robots-tag']).toBe('noindex, nofollow');
     expect(uploadRateLimit.limitAnonymousUploads).toBeCalledTimes(1);
     expect(uploadRateLimit.limitSignedInUploads).toBeCalledTimes(1);
     expect(basicApiAccess).toBeCalledTimes(0);
     expect(controller.create).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(1);
-    expect(hasFilePermissionsMock).toBeCalledTimes(0);
     expect(upload.fileUpload.upload).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(0);
   });
 
-  it('should have correct middleware for DELETE', async () => {
-    controller.deleteFiles = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
+  it('should have no bulk DELETE', async () => {
+    const response = await appRequest.delete(path);
 
-    await appRequest.delete(path);
-
-    expect(uploadRateLimit.limitAnonymousUploads).toBeCalledTimes(0);
-    expect(uploadRateLimit.limitSignedInUploads).toBeCalledTimes(0);
-    expect(basicApiAccess).toBeCalledTimes(0);
-    expect(controller.deleteFiles).toBeCalledTimes(1);
-    expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
-    expect(filePermissions.hasFileDelete).toBeCalledTimes(1);
-    expect(hasFilePermissionsMock).toBeCalledTimes(0);
-    expect(upload.fileUpload.upload).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateFileId).toBeCalledTimes(0);
+    expect(response.status).toBe(404);
+    expect(filePermissions.hasFileDelete).toBeCalledTimes(0);
   });
 });
 
@@ -122,13 +104,14 @@ describe(`${basePath}/:id`, () => {
       res.sendStatus(200);
     });
 
-    await appRequest.delete(path);
+    const response = await appRequest.delete(path);
 
+    expect(response.headers['x-robots-tag']).toBe('noindex, nofollow');
     expect(basicApiAccess).toBeCalledTimes(1);
     expect(controller.delete).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
-    expect(hasFilePermissionsMock).toBeCalledTimes(1);
+    expect(filePermissions.hasFileDelete).toBeCalledTimes(1);
     expect(filePermissions.hasFileRead).toBeCalledTimes(0);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
@@ -140,15 +123,16 @@ describe(`${basePath}/:id`, () => {
       res.sendStatus(200);
     });
 
-    await appRequest.get(path);
+    const response = await appRequest.get(path);
 
+    expect(response.headers['x-robots-tag']).toBe('noindex, nofollow');
     expect(uploadRateLimit.limitAnonymousUploads).toBeCalledTimes(0);
     expect(uploadRateLimit.limitSignedInUploads).toBeCalledTimes(0);
     expect(basicApiAccess).toBeCalledTimes(1);
     expect(controller.read).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
-    expect(hasFilePermissionsMock).toBeCalledTimes(0);
+    expect(filePermissions.hasFileDelete).toBeCalledTimes(0);
     expect(filePermissions.hasFileRead).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
@@ -157,24 +141,10 @@ describe(`${basePath}/:id`, () => {
 });
 
 describe(`${basePath}/:id/clone`, () => {
-  const fileId = uuid.v4();
-  const path = `${basePath}/${fileId}/clone`;
+  it('should not exist', async () => {
+    const response = await appRequest.get(`${basePath}/${uuid.v4()}/clone`);
 
-  it('should have correct middleware for GET', async () => {
-    controller.clone = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.get(path);
-
-    expect(basicApiAccess).toBeCalledTimes(1);
-    expect(controller.clone).toBeCalledTimes(1);
-    expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
-    expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
-    expect(hasFilePermissionsMock).toBeCalledTimes(0);
-    expect(filePermissions.hasFileRead).toBeCalledTimes(1);
-    expect(upload.fileUpload.upload).toBeCalledTimes(0);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateFileId).toBeCalledTimes(1);
+    expect(response.status).toBe(404);
+    expect(filePermissions.hasFileRead).toBeCalledTimes(0);
   });
 });

@@ -10,6 +10,7 @@ const formService = require('../../form/service');
 const { Permissions, SystemUsers } = require('../../common/constants');
 
 const FILE_READ_DENIED = 'Unauthorized to read file.';
+const FILE_DELETE_DENIED = 'Unauthorized to delete file.';
 
 const FILE_READ = Object.freeze({
   ALLOW: 'allow',
@@ -17,6 +18,19 @@ const FILE_READ = Object.freeze({
   PACKAGE: 'package',
   SUBMISSION: 'submission',
 });
+
+const FILE_DELETE = Object.freeze({
+  ALLOW: 'allow',
+  DENY: 'deny',
+  SUBMISSION: 'submission',
+});
+
+// createdBy of an anonymous upload (file/service.js create).
+const PUBLIC_UPLOADER = 'public';
+
+// createdBy of uploads made through the webcomponents routes (the seeded
+// runtime-auth users); those are managed on the webcomponents routes.
+const EMBED_UPLOADERS = new Set(['api-user', 'gateway-user']);
 
 /**
  * True when the identity provider is treated as public for file access
@@ -166,92 +180,72 @@ const hasFileCreate = async (req, res, next) => {
 };
 
 /**
- * @function hasFileDelete
- * Middleware to determine if this user can delete an array of files from the system
- * @returns {Function} a middleware function
+ * @function decideFileDelete
+ * Decides whether a caller may delete a file. Pure, no I/O.
+ *
+ * A requested submission id (a formSubmissionId query parameter) that is not
+ * the file's own submission is denied, as for reads.
+ *
+ * Attached files: API key callers are allowed (apiAccess has matched the key
+ * to the file's form), anonymous callers are denied, everyone else is checked
+ * against SUBMISSION_UPDATE on the file's submission.
+ *
+ * Unattached files: submission packages and webcomponents uploads cannot be
+ * deleted here, nor by API key callers. Anonymous uploads (createdBy public)
+ * have no uploader to check and may be deleted by anyone, which keeps
+ * remove-before-submit working; ids are random. Any other upload only by the
+ * signed-in user whose usernameIdp is its createdBy. A createdBy that many
+ * users share (the BC Services Card anonymous username) matches any of them,
+ * as an anonymous upload matches anyone.
+ *
+ * @param {object} args
+ * @param {object} args.file the file_storage row.
+ * @param {boolean} args.apiUser true when the request passed form API key auth.
+ * @param {object} args.user the current user; the public user when not signed in.
+ * @param {*} [args.requestedSubmissionId] the formSubmissionId query parameter, if sent.
+ * @returns {string} one of FILE_DELETE.
  */
-const hasFileDelete = async (req, res, next) => {
-  try {
-    // You can't do this if you are not authenticated as a USER (not a public user)
-    // Can expand on this for API key access if ever needed
-    if (!req.currentUser || !req.currentUser.idpUserId) {
-      return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
-    }
+const decideFileDelete = ({ file, apiUser, user, requestedSubmissionId }) => {
+  if (requestedSubmissionId !== undefined && requestedSubmissionId !== file.formSubmissionId) return FILE_DELETE.DENY;
 
-    const fileIds = req.body.fileIds;
-
-    if (!Array.isArray(fileIds)) {
-      return next(new Problem(403, { detail: 'File IDs must be an array of file UUIDs.' }));
-    }
-
-    let fileNotFound = false;
-    let permissionError = null;
-    for (const fileId of fileIds) {
-      const fileRecord = await service.read(fileId);
-      if (!fileRecord) {
-        fileNotFound = true;
-        break;
-      } else {
-        req.currentFileRecord = fileRecord;
-        req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
-        const subPermCheck = userAccess.hasSubmissionPermissions([Permissions.SUBMISSION_UPDATE]);
-        await subPermCheck(req, res, (err) => {
-          if (err) {
-            permissionError = err;
-          }
-        });
-        if (permissionError) {
-          break;
-        }
-      }
-    }
-
-    if (fileNotFound) {
-      // 403 on no auth or file not found (don't 404 for id discovery)
-      return next(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
-    }
-
-    if (permissionError) {
-      return next(permissionError);
-    }
-
-    next();
-  } catch (error) {
-    log.error('Error in hasFileDelete middleware:', error);
-    return next(new Problem(500, { detail: 'Unable to delete files at this time. Please try again later.' }));
+  if (file.formSubmissionId) {
+    if (apiUser) return FILE_DELETE.ALLOW;
+    if (!user?.idpUserId) return FILE_DELETE.DENY;
+    return FILE_DELETE.SUBMISSION;
   }
+
+  if (file.updatedBy === SystemUsers.SUBMISSION_PACKAGE_WORKER) return FILE_DELETE.DENY;
+  if (apiUser || EMBED_UPLOADERS.has(file.createdBy)) return FILE_DELETE.DENY;
+  if (file.createdBy === PUBLIC_UPLOADER) return FILE_DELETE.ALLOW;
+  return user?.idpUserId && user.usernameIdp && file.createdBy === user.usernameIdp ? FILE_DELETE.ALLOW : FILE_DELETE.DENY;
 };
 
 /**
- * @function hasFilePermissions
- * Middleware to determine if the current user can do a specific permission on a file
- * This is generally based on the SUBMISSION permissions that the file is attached to
- * but has to handle management for files that are added before submit
- * @param {string[]} permissions the submission permissions to require on this route
- * @returns {Function} a middleware function
+ * @function hasFileDelete
+ * Middleware to determine if the current caller can delete the file in
+ * req.currentFileRecord. The rules are in decideFileDelete.
  */
-const hasFilePermissions = (permissions) => {
-  return async (req, res, next) => {
-    // skip for API users
-    if (req.apiUser) {
+const hasFileDelete = async (req, res, next) => {
+  try {
+    const decision = decideFileDelete({
+      file: req.currentFileRecord,
+      apiUser: !!req.apiUser,
+      user: req.currentUser,
+      requestedSubmissionId: req.query?.formSubmissionId,
+    });
+
+    if (decision === FILE_DELETE.ALLOW) {
       return next();
     }
 
-    // If file has no submission ID yet, it's a draft - allow deletion
-    if (!req.currentFileRecord.formSubmissionId) {
-      // File not yet submitted - allow the uploader to delete
-      return next();
+    if (decision === FILE_DELETE.SUBMISSION) {
+      return userAccess.hasSubmissionPermissions([Permissions.SUBMISSION_UPDATE])(req, res, next);
     }
 
-    // Guard against unauthed (or public) users for submitted files
-    if (!req.currentUser || !req.currentUser.idpUserId) {
-      return next(new Problem(403, { detail: 'Unauthorized to read file.' }));
-    }
-
-    // For submitted files, check permissions normally
-    const subPermCheck = userAccess.hasSubmissionPermissions(permissions);
-    return subPermCheck(req, res, next);
-  };
+    return next(new Problem(403, { detail: FILE_DELETE_DENIED }));
+  } catch (error) {
+    return next(error);
+  }
 };
 
 /**
@@ -285,12 +279,13 @@ const hasFileRead = async (req, res, next) => {
 };
 
 module.exports = {
+  FILE_DELETE,
   FILE_READ,
   currentFileRecord,
+  decideFileDelete,
   decideFileRead,
   hasFileCreate,
   hasFileDelete,
-  hasFilePermissions,
   hasFileRead,
   restrictsFileDownloads,
 };
