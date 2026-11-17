@@ -1357,9 +1357,14 @@ async function getFile(fileId, options = {}) {
 }
 
 async function uploadFile(file, config = {}) {
+  // Staff edit opens a submission without a formId prop; its form is loaded
+  // with the submission. An existing submission being edited (not copied) is
+  // named, so people who can edit only that submission may upload to it.
   const uploadConfig = {
     ...config,
-    formId: properties.formId,
+    formId: properties.formId || form.value?.id,
+    ...(properties.submissionId &&
+      !properties.isDuplicate && { formSubmissionId: properties.submissionId }),
   };
   return fileService.uploadFile(file, uploadConfig);
 }

@@ -8,13 +8,15 @@ const uuid = require('uuid');
 // fileService.create (with its name checks) and the app's errorHandler and
 // finalErrorHandler all run for real. Only I/O edges are stubbed: JWT
 // signature verification, the identity provider list, the user upsert and
-// login history, the form lookup, multer's disk write, ClamAV, the file_storage
-// model, the object store and temp-file removal.
+// login history, the form, form access and submission permission lookups,
+// multer's disk write, ClamAV, the file_storage model, the object store and
+// temp-file removal.
 //
 // The router is loaded once with small limits and a short scan wait and
 // deadline (settings layered over the real config), so the tests are quick and
-// do not depend on env settings. Limiter counts live for the whole file, so
-// every test uses its own client address or user.
+// do not depend on env settings. Limiter counts live for the whole file and
+// are kept by address for anonymous callers and by user for signed-in ones, so
+// every test uses its own client address and its own users.
 //
 const SETTINGS = {
   'server.rateLimit.fileUpload.limitIp': '3',
@@ -65,6 +67,8 @@ const load = () => {
       jwtService: require('../../../../src/components/jwtService'),
       // jwtService checks errors against this registry's jose classes.
       jose: require('jose'),
+      // hasFileCreate checks errors against this registry's objection classes.
+      objection: require('objection'),
     };
   });
   jest.dontMock('config');
@@ -115,10 +119,37 @@ const TOKENS = {
   'idir-c': { identity_provider: 'idir', idir_user_guid: uuid.v4(), idir_username: 'c' },
   'basic-a': { identity_provider: 'bceidbasic', bceid_user_guid: uuid.v4(), bceid_username: 'basica' },
   'basic-b': { identity_provider: 'bceidbasic', bceid_user_guid: uuid.v4(), bceid_username: 'basicb' },
+  'basic-noaccess': { identity_provider: 'bceidbasic', bceid_user_guid: uuid.v4(), bceid_username: 'noaccess' },
+  'basic-collaborator': { identity_provider: 'bceidbasic', bceid_user_guid: uuid.v4(), bceid_username: 'collaborator' },
+  'basic-stranger': { identity_provider: 'bceidbasic', bceid_user_guid: uuid.v4(), bceid_username: 'stranger' },
+  'idir-submitter': { identity_provider: 'idir', idir_user_guid: uuid.v4(), idir_username: 'submitter' },
+  'idir-designer': { identity_provider: 'idir', idir_user_guid: uuid.v4(), idir_username: 'designer' },
+  'idir-reviewer': { identity_provider: 'idir', idir_user_guid: uuid.v4(), idir_username: 'reviewer' },
+  'idir-public': { identity_provider: 'idir', idir_user_guid: uuid.v4(), idir_username: 'public-form-user' },
+  'idir-noformid': { identity_provider: 'idir', idir_user_guid: uuid.v4(), idir_username: 'noformid' },
+  'idir-unknownform': { identity_provider: 'idir', idir_user_guid: uuid.v4(), idir_username: 'unknownform' },
 };
 const USER_IDS = Object.fromEntries(Object.keys(TOKENS).map((t) => [t, uuid.v4()]));
 
 const fileRow = (id) => ({ id, originalName: 'a.txt', size: 1, createdBy: 'x', createdAt: 'now' });
+
+// The forms the form lookup knows. The fake form access lookup gives
+// submitter access on public forms and on forms that list the user's identity
+// provider, as filterForms does, plus the team roles in TEAM.
+const idirUnpublishedFormId = uuid.v4();
+const FORMS = {
+  [publicFormId]: { id: publicFormId, active: true, identityProviders: [{ code: 'public' }], versions: [{ published: true }] },
+  [idirUnpublishedFormId]: { id: idirUnpublishedFormId, active: true, identityProviders: [{ code: 'idir' }], versions: [{ published: false }] },
+};
+const SUBMITTER = ['form_read', 'submission_create'];
+const TEAM = {
+  [`${USER_IDS['idir-designer']}|${idirUnpublishedFormId}`]: ['form_read', 'design_create', 'design_update'],
+  [`${USER_IDS['idir-reviewer']}|${idirUnpublishedFormId}`]: ['form_read', 'submission_read', 'submission_update'],
+};
+// A draft on the IDIR form, shared with a Basic BCeID user who has no access
+// to the form itself.
+const sharedDraftId = uuid.v4();
+const SUBMISSION_UPDATERS = { [`${USER_IDS['basic-collaborator']}|${sharedDraftId}`]: true };
 
 beforeEach(() => {
   jest.spyOn(ctx.idpService, 'getIdentityProviders').mockResolvedValue(PROVIDERS);
@@ -132,7 +163,23 @@ beforeEach(() => {
     return { id: USER_IDS[token], ...userInfo };
   });
   jest.spyOn(ctx.authService, 'recordLoginHistory').mockResolvedValue();
-  jest.spyOn(ctx.formService, 'readForm').mockResolvedValue({ id: publicFormId, active: true, identityProviders: [{ code: 'public' }] });
+  jest.spyOn(ctx.formService, 'readForm').mockImplementation(async (formId) => {
+    const form = FORMS[formId];
+    if (!form) throw new ctx.objection.NotFoundError({ modelClass: { name: 'Form' } });
+    return form;
+  });
+  jest.spyOn(ctx.authService, 'getUserForms').mockImplementation(async (user, params) => {
+    const submitter = FORMS[params.formId]?.identityProviders.some((p) => p.code === 'public' || p.code === user.idp);
+    const permissions = [...(submitter ? SUBMITTER : []), ...(TEAM[`${user.id}|${params.formId}`] || [])];
+    return permissions.length ? [{ formId: params.formId, permissions }] : [];
+  });
+  jest.spyOn(ctx.authService, 'getSubmissionForm').mockImplementation(async (submissionId) => {
+    if (submissionId !== sharedDraftId) throw new ctx.objection.NotFoundError({ modelClass: { name: 'SubmissionMetadata' } });
+    return { submission: { submissionId, formId: idirUnpublishedFormId, deleted: false }, form: { id: idirUnpublishedFormId } };
+  });
+  jest
+    .spyOn(ctx.authService, 'checkSubmissionPermission')
+    .mockImplementation(async (user, submissionId) => (SUBMISSION_UPDATERS[`${user.id}|${submissionId}`] ? { permission: 'submission_update' } : undefined));
   jest.spyOn(ctx.clamAvScanner, 'scanFile').mockResolvedValue({ isInfected: false, viruses: [] });
   jest.spyOn(ctx.models.FileStorage, 'startTransaction').mockResolvedValue({ commit: jest.fn(), rollback: jest.fn() });
   jest.spyOn(ctx.models.FileStorage, 'query').mockImplementation(() => ({
@@ -148,8 +195,9 @@ afterEach(() => {
   ctx.upload.fileUpload.upload.mockClear();
 });
 
-const post = ({ xff, token, filename } = {}) => {
-  let req = appRequest.post(`/files?formId=${publicFormId}`).set('X-Forwarded-For', xff);
+const post = ({ xff, token, filename, formId = publicFormId, formSubmissionId } = {}) => {
+  const submissionQuery = formSubmissionId ? `&formSubmissionId=${formSubmissionId}` : '';
+  let req = appRequest.post(`/files?formId=${formId}${submissionQuery}`).set('X-Forwarded-For', xff);
   if (token) req = req.set('Authorization', `Bearer ${token}`);
   if (filename) req = req.set('X-Test-Filename', filename);
   return req;
@@ -230,6 +278,7 @@ describe('POST /files upload rate limit', () => {
     expect(statuses).toEqual(new Array(USER_LIMIT).fill(201));
     expect(refused.status).toBe(429);
     expect(ctx.formService.readForm).not.toBeCalled();
+    expect(ctx.authService.getUserForms).not.toBeCalled();
     expect(ctx.upload.fileUpload.upload).not.toBeCalled();
     expect((await post({ xff: '198.51.100.6', token: 'idir-b' })).status).toBe(201);
     expect((await post({ xff: '198.51.100.6' })).status).toBe(201);
@@ -246,6 +295,67 @@ describe('POST /files upload rate limit', () => {
   it('refuses an invalid Bearer token with 401 before the upload', async () => {
     expect((await post({ xff: '198.51.100.8', token: 'not-a-known-token' })).status).toBe(401);
     expect(ctx.upload.fileUpload.upload).not.toBeCalled();
+  });
+});
+
+describe('POST /files form checks', () => {
+  const expectRefusedBeforeUpload = (response, status, detail) => {
+    expect(response.status).toBe(status);
+    expect(response.body.detail).toBe(detail);
+    expect(ctx.upload.fileUpload.upload).not.toBeCalled();
+    expect(ctx.clamAvScanner.scanFile).not.toBeCalled();
+  };
+
+  it('refuses a signed-in user with no access to the form (Basic BCeID on an IDIR form)', async () => {
+    const response = await post({ xff: '198.51.100.40', token: 'basic-noaccess', formId: idirUnpublishedFormId });
+
+    expectRefusedBeforeUpload(response, 403, 'You do not have access to upload files to this form.');
+  });
+
+  it('accepts someone a draft was shared with, naming that draft, without access to the form', async () => {
+    expect((await post({ xff: '198.51.100.48', token: 'basic-collaborator', formId: idirUnpublishedFormId, formSubmissionId: sharedDraftId })).status).toBe(201);
+  });
+
+  it('refuses someone else who names that draft', async () => {
+    const response = await post({ xff: '198.51.100.49', token: 'basic-stranger', formId: idirUnpublishedFormId, formSubmissionId: sharedDraftId });
+
+    expectRefusedBeforeUpload(response, 403, 'You do not have access to upload files to this form.');
+  });
+
+  it('refuses a submitter on a form with no published version (submit access through the identity provider)', async () => {
+    const response = await post({ xff: '198.51.100.41', token: 'idir-submitter', formId: idirUnpublishedFormId });
+
+    expectRefusedBeforeUpload(response, 403, 'This form is not accepting uploads.');
+  });
+
+  it('accepts a designer previewing a form with no published version', async () => {
+    expect((await post({ xff: '198.51.100.42', token: 'idir-designer', formId: idirUnpublishedFormId })).status).toBe(201);
+  });
+
+  it('accepts a team member who edits submissions on a form with no published version', async () => {
+    expect((await post({ xff: '198.51.100.43', token: 'idir-reviewer', formId: idirUnpublishedFormId })).status).toBe(201);
+  });
+
+  it('accepts a signed-in user on a published public form', async () => {
+    expect((await post({ xff: '198.51.100.44', token: 'idir-public' })).status).toBe(201);
+  });
+
+  it('refuses an anonymous caller on a login-only form', async () => {
+    const response = await post({ xff: '198.51.100.45', formId: idirUnpublishedFormId });
+
+    expectRefusedBeforeUpload(response, 403, 'Authentication required for file uploads on this form');
+  });
+
+  it.each([['undefined'], ['null']])('refuses a signed-in upload with formId=%s', async (formId) => {
+    const response = await post({ xff: `198.51.100.${formId === 'null' ? 50 : 46}`, token: 'idir-noformid', formId });
+
+    expectRefusedBeforeUpload(response, 400, 'formId must be a valid UUID');
+  });
+
+  it('refuses a signed-in upload for an unknown form', async () => {
+    const response = await post({ xff: '198.51.100.47', token: 'idir-unknownform', formId: uuid.v4() });
+
+    expectRefusedBeforeUpload(response, 404, 'Form not found');
   });
 });
 
