@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 
 const service = require('../../../../src/forms/file/service');
-const { FileStorage } = require('../../../../src/forms/common/models');
+const { FileStorage, SubmissionPackageJob } = require('../../../../src/forms/common/models');
 const storageService = require('../../../../src/forms/file/storage/storageService');
 const uploadCleanup = require('../../../../src/forms/file/uploadCleanup');
 const { StorageTypes } = require('../../../../src/forms/common/constants');
@@ -669,5 +669,30 @@ describe('create', () => {
       expect(storageService.delete).toHaveBeenCalledTimes(ids.length);
       expect(mockTransaction.commit).toHaveBeenCalled();
     });
+  });
+});
+
+describe('isPackageFile', () => {
+  const mockPackageJobQuery = (result) => {
+    const first = jest.fn().mockResolvedValue(result);
+    const where = jest.fn().mockReturnValue({ first });
+    const select = jest.fn().mockReturnValue({ where });
+    SubmissionPackageJob.query = jest.fn().mockReturnValue({ select });
+    return { select, where, first };
+  };
+
+  it('is true when a package job references the file', async () => {
+    const fileId = uuid.v4();
+    const { select, where } = mockPackageJobQuery({ id: uuid.v4() });
+
+    await expect(service.isPackageFile(fileId)).resolves.toBe(true);
+    expect(select).toHaveBeenCalledWith('id');
+    expect(where).toHaveBeenCalledWith('packageFileId', fileId);
+  });
+
+  it('is false when no package job references the file', async () => {
+    mockPackageJobQuery(undefined);
+
+    await expect(service.isPackageFile(uuid.v4())).resolves.toBe(false);
   });
 });

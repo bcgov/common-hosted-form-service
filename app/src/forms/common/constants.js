@@ -132,4 +132,10 @@ module.exports = Object.freeze({
     SKIPPED: 'skipped',
     FAILED: 'failed',
   },
+  // Usernames that system workers write to createdBy/updatedBy. The file read
+  // gate trusts SUBMISSION_PACKAGE_WORKER on file_storage.updatedBy to find
+  // built submission packages, so the two must stay in step.
+  SystemUsers: {
+    SUBMISSION_PACKAGE_WORKER: 'submission-package-worker',
+  },
 });

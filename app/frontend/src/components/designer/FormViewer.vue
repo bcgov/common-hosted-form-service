@@ -30,6 +30,7 @@ import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 
 import { isFormPublic } from '~/utils/permissionUtils';
@@ -133,6 +134,7 @@ const isAuthorized = ref(true);
 const appStore = useAppStore();
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 
 const { online } = useOnlineStatus();
@@ -153,16 +155,14 @@ const formUnauthorizedMessage = computed(() =>
 
 const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
 
-const shouldDisableFileDownloads = computed(() => {
-  // To disable file downloads for Public forms
-  if (!form.value || !properties.readOnly) {
-    return false;
-  }
-
-  return (
-    properties.readOnly && isFormPublic(form.value) && !authenticated.value
-  );
-});
+// The API refuses file downloads to anonymous callers and to users of a
+// provider with extra.restrictFileDownloads, in every mode, so do not offer
+// the links.
+const shouldDisableFileDownloads = computed(
+  () =>
+    !authenticated.value ||
+    idpStore.restrictsFileDownloads(tokenParsed.value?.identity_provider)
+);
 
 const viewerOptions = computed(() => {
   // Force recomputation of viewerOptions after rerendered formio to prevent duplicate submission update calls
@@ -1329,6 +1329,10 @@ async function deleteFile(file) {
 }
 
 async function getFile(fileId, options = {}) {
+  // The greyed-out link can still be activated from the keyboard; the API
+  // would refuse the download, so do not request it.
+  if (shouldDisableFileDownloads.value) return;
+
   await formStore.downloadFile(fileId, options);
 
   if (downloadedFile.value?.data && downloadedFile.value?.headers) {

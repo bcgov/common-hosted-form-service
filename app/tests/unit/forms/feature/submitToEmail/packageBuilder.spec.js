@@ -8,6 +8,7 @@ const fileService = require('../../../../../src/forms/file/service');
 const storageService = require('../../../../../src/forms/file/storage/storageService');
 const { FileStorage } = require('../../../../../src/forms/common/models');
 const packageBuilder = require('../../../../../src/forms/feature/submitToEmail/packageBuilder');
+const { SystemUsers } = require('../../../../../src/forms/common/constants');
 
 // chefsTemplate (real) reads submission.submission.submission.data + version.version
 const submission = () => ({
@@ -52,8 +53,13 @@ describe('uploadPackage', () => {
     expect(fileService.create).toHaveBeenCalled();
     // relocated out of the upload temp into the package folder
     expect(storageService.move).toHaveBeenCalledWith({ id: 'file-1', path: '/tmp/abc-p.zip' }, 'submission-packages');
-    // record's path/storage updated to the permanent location
-    expect(patchAndFetchById).toHaveBeenCalledWith('file-1', expect.objectContaining({ path: 'myfiles/submission-packages/file-1' }));
+    // record's path/storage updated to the permanent location, marked as a
+    // package (the file read gate keeps package links open on this marker)
+    expect(patchAndFetchById).toHaveBeenCalledWith(
+      'file-1',
+      expect.objectContaining({ path: 'myfiles/submission-packages/file-1', updatedBy: SystemUsers.SUBMISSION_PACKAGE_WORKER })
+    );
+    expect(SystemUsers.SUBMISSION_PACKAGE_WORKER).toBe('submission-package-worker');
     expect(result.path).toBe('myfiles/submission-packages/file-1');
   });
 

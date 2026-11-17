@@ -17,6 +17,7 @@ import {
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, IdentityMode } from '~/utils/constants';
 import * as transformUtils from '~/utils/transformUtils';
@@ -257,6 +258,82 @@ describe('FormViewer.vue', () => {
     };
 
     expect(wrapper.vm.formScheduleExpireMessage).toEqual('custom message');
+  });
+
+  describe('shouldDisableFileDownloads', () => {
+    const idpStore = useIdpStore(pinia);
+
+    const mountViewer = async (props = {}) => {
+      const wrapper = shallowMount(FormViewer, {
+        props: { formId: formId, displayTitle: true, ...props },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+      await flushPromises();
+      return wrapper;
+    };
+
+    beforeEach(() => {
+      idpStore.restrictsFileDownloads.mockReset();
+      // These tests mount more than once; keep every mount off the network.
+      readPublishedSpy.mockImplementation(() => ({
+        data: { versions: [{ version: 1, id: '123', schema: {} }] },
+      }));
+    });
+
+    it('is true for anonymous users, read-only or not', async () => {
+      authStore.authenticated = false;
+
+      expect((await mountViewer()).vm.shouldDisableFileDownloads).toBe(true);
+      expect(
+        (await mountViewer({ readOnly: true })).vm.shouldDisableFileDownloads
+      ).toBe(true);
+    });
+
+    it('is false for a signed-in user whose provider is not restricted', async () => {
+      idpStore.restrictsFileDownloads.mockReturnValue(false);
+
+      expect((await mountViewer()).vm.shouldDisableFileDownloads).toBe(false);
+      expect(idpStore.restrictsFileDownloads).toHaveBeenCalledWith('idir');
+    });
+
+    it('is true for a signed-in user of a restricted provider, read-only or not', async () => {
+      authStore.keycloak = {
+        ...authStore.keycloak,
+        tokenParsed: {
+          ...authStore.keycloak.tokenParsed,
+          identity_provider: 'bceidbasic',
+        },
+      };
+      idpStore.restrictsFileDownloads.mockImplementation(
+        (hint) => hint === 'bceidbasic'
+      );
+
+      expect((await mountViewer()).vm.shouldDisableFileDownloads).toBe(true);
+      expect(
+        (await mountViewer({ readOnly: true })).vm.shouldDisableFileDownloads
+      ).toBe(true);
+    });
+
+    it('getFile does not request a download when downloads are disabled', async () => {
+      authStore.authenticated = false;
+      const anonymous = await mountViewer();
+
+      await anonymous.vm.getFile('asdf');
+
+      authStore.authenticated = true;
+      idpStore.restrictsFileDownloads.mockReturnValue(true);
+      const restricted = await mountViewer();
+
+      await restricted.vm.getFile('asdf');
+
+      expect(downloadFileSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('formUnauthorizedMessage returns the formUnauthorizedMessage translation', async () => {

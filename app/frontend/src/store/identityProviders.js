@@ -164,6 +164,16 @@ export const useIdpStore = defineStore('idps', {
       }
       return undefined;
     },
+    // True when the provider for this login hint is treated as public for
+    // file access (extra.restrictFileDownloads); the API returns 403 for its
+    // users' file downloads.
+    restrictsFileDownloads(hint) {
+      if (hint && this.providers) {
+        const idp = this.providers.find((x) => x.idp === hint);
+        return idp?.extra?.restrictFileDownloads === true;
+      }
+      return false;
+    },
     findByCode(code) {
       if (code && this.providers) {
         const idp = this.providers.find((x) => x.code === code);

@@ -137,25 +137,8 @@ app.use('/favicon.ico', (_req, res) => {
 });
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
 
-// Handle 500
-// eslint-disable-next-line no-unused-vars
-app.use((err, _req, res, _next) => {
-  if (err.stack) {
-    log.error(err);
-  }
-  const status = statusService.getStatus();
-  if (err instanceof Problem) {
-    // Attempt to reset DB connection if 5xx error
-    if (err.status >= 500 && !status.stopped) dataConnection.resetConnection();
-    err.send(res, null);
-  } else {
-    // Attempt to reset DB connection
-    if (!status.stopped) dataConnection.resetConnection();
-    new Problem(500, 'Server Error', {
-      detail: err.message ? err.message : err,
-    }).send(res);
-  }
-});
+// Handle 500. Resets the DB pool only for connection errors.
+app.use(middleware.finalErrorHandler({ dataConnection, statusService, log }));
 
 // Handle 404
 app.use((req, res) => {

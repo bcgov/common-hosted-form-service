@@ -34,6 +34,9 @@ const hasFilePermissionsMock = jest.fn((_req, _res, next) => {
 filePermissions.hasFilePermissions = jest.fn(() => {
   return hasFilePermissionsMock;
 });
+filePermissions.hasFileRead = jest.fn((_req, _res, next) => {
+  next();
+});
 
 upload.fileUpload.upload = jest.fn((_req, _res, next) => {
   next();
@@ -114,6 +117,7 @@ describe(`${basePath}/:id`, () => {
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
     expect(hasFilePermissionsMock).toBeCalledTimes(1);
+    expect(filePermissions.hasFileRead).toBeCalledTimes(0);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
@@ -130,7 +134,8 @@ describe(`${basePath}/:id`, () => {
     expect(controller.read).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
-    expect(hasFilePermissionsMock).toBeCalledTimes(1);
+    expect(hasFilePermissionsMock).toBeCalledTimes(0);
+    expect(filePermissions.hasFileRead).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
@@ -152,7 +157,8 @@ describe(`${basePath}/:id/clone`, () => {
     expect(controller.clone).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
-    expect(hasFilePermissionsMock).toBeCalledTimes(1);
+    expect(hasFilePermissionsMock).toBeCalledTimes(0);
+    expect(filePermissions.hasFileRead).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
