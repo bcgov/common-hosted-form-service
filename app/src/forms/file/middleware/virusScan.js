@@ -164,9 +164,9 @@ const scanFile = async (req, res, next) => {
 
   try {
     fileService.validateFileSecurity(req.file);
-  } catch (problem) {
+  } catch (error_) {
     await uploadCleanup.removeUploadedFile(filePath, 'invalid-name');
-    return next(problem);
+    return next(error_);
   }
 
   if (!(await scanSlots.acquire())) {
