@@ -9,6 +9,7 @@ const validateParameter = require('../../../../src/forms/common/middleware/valid
 const controller = require('../../../../src/forms/file/controller');
 const filePermissions = require('../../../../src/forms/file/middleware/filePermissions');
 const upload = require('../../../../src/forms/file/middleware/upload');
+const uploadRateLimit = require('../../../../src/forms/file/middleware/uploadRateLimit');
 
 //
 // Mock out all the middleware - we're testing that the routes are set up
@@ -39,6 +40,13 @@ filePermissions.hasFileRead = jest.fn((_req, _res, next) => {
 });
 
 upload.fileUpload.upload = jest.fn((_req, _res, next) => {
+  next();
+});
+
+uploadRateLimit.limitAnonymousUploads = jest.fn((_req, _res, next) => {
+  next();
+});
+uploadRateLimit.limitSignedInUploads = jest.fn((_req, _res, next) => {
   next();
 });
 
@@ -73,6 +81,8 @@ describe(`${basePath}`, () => {
 
     await appRequest.post(path);
 
+    expect(uploadRateLimit.limitAnonymousUploads).toBeCalledTimes(1);
+    expect(uploadRateLimit.limitSignedInUploads).toBeCalledTimes(1);
     expect(basicApiAccess).toBeCalledTimes(0);
     expect(controller.create).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
@@ -90,6 +100,8 @@ describe(`${basePath}`, () => {
 
     await appRequest.delete(path);
 
+    expect(uploadRateLimit.limitAnonymousUploads).toBeCalledTimes(0);
+    expect(uploadRateLimit.limitSignedInUploads).toBeCalledTimes(0);
     expect(basicApiAccess).toBeCalledTimes(0);
     expect(controller.deleteFiles).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
@@ -130,6 +142,8 @@ describe(`${basePath}/:id`, () => {
 
     await appRequest.get(path);
 
+    expect(uploadRateLimit.limitAnonymousUploads).toBeCalledTimes(0);
+    expect(uploadRateLimit.limitSignedInUploads).toBeCalledTimes(0);
     expect(basicApiAccess).toBeCalledTimes(1);
     expect(controller.read).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);

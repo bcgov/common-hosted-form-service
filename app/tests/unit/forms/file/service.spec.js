@@ -180,7 +180,7 @@ describe('create', () => {
           path: '/app/uploads/malware.exe',
         };
 
-        await expect(service.create(fileData, currentUser)).rejects.toThrow('File type .exe is not allowed for security reasons');
+        await expect(service.create(fileData, currentUser)).rejects.toMatchObject({ status: 415, detail: 'File type .exe is not allowed for security reasons' });
 
         expect(FileStorage.startTransaction).not.toHaveBeenCalled();
         expect(storageService.upload).not.toHaveBeenCalled();
@@ -195,7 +195,7 @@ describe('create', () => {
           path: '/app/uploads/passwd.txt',
         };
 
-        await expect(service.create(fileData, currentUser)).rejects.toThrow('Filename contains dangerous characters');
+        await expect(service.create(fileData, currentUser)).rejects.toMatchObject({ status: 400, detail: 'Filename contains dangerous characters' });
 
         expect(FileStorage.startTransaction).not.toHaveBeenCalled();
         expect(storageService.upload).not.toHaveBeenCalled();
@@ -292,19 +292,32 @@ describe('create', () => {
   });
 
   describe('dangerous characters coverage', () => {
-    it('throws if filename contains ".."', async () => {
-      const file = { originalname: 'bad..file.txt' };
-      await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
+    it('allows ".." inside a filename', async () => {
+      FileStorage.query = jest.fn().mockReturnValue({
+        insert: jest.fn().mockResolvedValue({}),
+      });
+      const readSpy = jest.spyOn(service, 'read').mockResolvedValue({ id: 'created' });
+      const file = { originalname: 'report..final.pdf', mimetype: 'application/pdf', size: 100, path: '/app/uploads/report..final.pdf' };
+
+      try {
+        await expect(service.create(file, { usernameIdp: 'TESTER' })).resolves.toEqual({ id: 'created' });
+      } finally {
+        readSpy.mockRestore();
+      }
     });
 
-    it('throws if filename contains "/"', async () => {
+    it('throws a 400 if filename contains "/"', async () => {
       const file = { originalname: 'bad/file.txt' };
-      await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
+      await expect(service.create(file, {})).rejects.toMatchObject({ status: 400, detail: 'Filename contains dangerous characters' });
     });
 
-    it(String.raw`throws if filename contains "\\"`, async () => {
+    it(String.raw`throws a 400 if filename contains "\\"`, async () => {
       const file = { originalname: String.raw`bad\file.txt` };
-      await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
+      await expect(service.create(file, {})).rejects.toMatchObject({ status: 400, detail: 'Filename contains dangerous characters' });
+    });
+
+    it('throws a 400 when no file is provided', async () => {
+      await expect(service.create(undefined, {})).rejects.toMatchObject({ status: 400, detail: 'No file provided for upload' });
     });
   });
 

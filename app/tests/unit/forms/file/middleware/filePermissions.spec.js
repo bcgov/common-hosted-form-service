@@ -1,4 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
+const { NotFoundError } = require('objection');
 const uuid = require('uuid');
 
 const { currentFileRecord, hasFileCreate, hasFileDelete, hasFilePermissions } = require('../../../../../src/forms/file/middleware/filePermissions');
@@ -192,6 +193,16 @@ describe('hasFileCreate', () => {
         })
       );
     });
+
+    test.each([['x'], ['00000000-0000-0000-0000-00000000000z'], [[uuid.v4(), uuid.v4()]]])('the formId is not a UUID (%p)', async (badFormId) => {
+      const req = getMockReq({ query: { formId: badFormId } });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).not.toBeCalled();
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 400, detail: 'formId must be a valid UUID' }));
+    });
   });
 
   describe('404 response when', () => {
@@ -215,6 +226,18 @@ describe('hasFileCreate', () => {
           detail: 'Form not found',
         })
       );
+    });
+
+    test('readForm finds no active form (NotFoundError)', async () => {
+      readFormSpy.mockRejectedValue(new NotFoundError({ modelClass: { name: 'Form' } }));
+
+      const req = getMockReq({ query: { formId } });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 404, detail: 'Form not found' }));
     });
   });
 

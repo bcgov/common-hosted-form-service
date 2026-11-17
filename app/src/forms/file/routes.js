@@ -7,7 +7,13 @@ const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 const { currentFileRecord, hasFileCreate, hasFileDelete, hasFilePermissions, hasFileRead } = require('./middleware/filePermissions');
 const fileUpload = require('./middleware/upload').fileUpload;
+const { limitAnonymousUploads, limitSignedInUploads } = require('./middleware/uploadRateLimit');
 const virusScan = require('./middleware/virusScan');
+
+// Upload rate limit, first stage: requests without a Bearer token are counted
+// by client address before currentUser runs. The second stage is on the POST
+// route below, after currentUser.
+routes.post('/', limitAnonymousUploads);
 
 routes.use(currentUser);
 
@@ -15,7 +21,7 @@ routes.param('fileId', validateParameter.validateFileId);
 // Initialize Multer to expect the 'files' field from FormData
 fileUpload.init({ fieldName: 'files' });
 
-routes.post('/', hasFileCreate, fileUpload.upload, virusScan.scanFile, async (req, res, next) => {
+routes.post('/', limitSignedInUploads, hasFileCreate, fileUpload.upload, virusScan.scanFile, async (req, res, next) => {
   await controller.create(req, res, next);
 });
 

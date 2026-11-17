@@ -1,4 +1,5 @@
 const config = require('config');
+const Problem = require('api-problem');
 const uuid = require('uuid');
 const path = require('path');
 const { FileStorage, SubmissionPackageJob } = require('../common/models');
@@ -37,22 +38,25 @@ const BLOCKED_EXTENSIONS = [
 ];
 
 /**
- * CRITICAL SECURITY: File validation at service layer
+ * CRITICAL SECURITY: File validation at service layer. Throws 4xx Problems:
+ * the request is at fault, not the server. The name is never used as a path
+ * (multer stores the file under a sanitized name), so only path separators are
+ * refused; a name such as `a..b.pdf` is allowed.
  */
 const validateFileSecurity = (file) => {
   if (!file || !file.originalname) {
-    throw new Error('No file provided for upload');
+    throw new Problem(400, { detail: 'No file provided for upload' });
   }
 
   const fileName = file.originalname.toLowerCase();
   const fileExtension = path.extname(fileName);
 
   if (BLOCKED_EXTENSIONS.some((ext) => fileName.endsWith(ext))) {
-    throw new Error(`File type ${fileExtension} is not allowed for security reasons`);
+    throw new Problem(415, { detail: `File type ${fileExtension} is not allowed for security reasons` });
   }
 
-  if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
-    throw new Error('Filename contains dangerous characters');
+  if (fileName.includes('/') || fileName.includes('\\')) {
+    throw new Problem(400, { detail: 'Filename contains dangerous characters' });
   }
 
   return true;
@@ -69,6 +73,8 @@ const safeRollback = async (trx, fileId) => {
 };
 
 const service = {
+  validateFileSecurity,
+
   create: async (data, currentUser, folder = 'uploads') => {
     const tempPath = data?.path;
     let trx;
