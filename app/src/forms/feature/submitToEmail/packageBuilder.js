@@ -12,6 +12,7 @@ const fileService = require('../../file/service');
 const storageService = require('../../file/storage/storageService');
 const { fileUpload } = require('../../file/middleware/upload');
 const { FileStorage } = require('../../common/models');
+const { SystemUsers } = require('../../common/constants');
 
 const { chefsTemplate } = require('../../common/utils');
 
@@ -21,8 +22,8 @@ const PERMANENT_STORAGE = config.get('files.permanent');
 const PACKAGE_FOLDER = 'submission-packages';
 
 const WORKER_USER = {
-  username: 'submission-package-worker',
-  idpUserId: 'submission-package-worker',
+  username: SystemUsers.SUBMISSION_PACKAGE_WORKER,
+  idpUserId: SystemUsers.SUBMISSION_PACKAGE_WORKER,
 };
 
 const streamToBuffer = async (stream) =>

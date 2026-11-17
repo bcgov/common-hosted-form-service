@@ -1,7 +1,7 @@
 const config = require('config');
 const uuid = require('uuid');
 const path = require('path');
-const { FileStorage } = require('../common/models');
+const { FileStorage, SubmissionPackageJob } = require('../common/models');
 const { StorageTypes } = require('../common/constants');
 const log = require('../../components/log')(module.filename);
 const storageService = require('./storage/storageService');
@@ -138,6 +138,19 @@ const service = {
 
   read: async (id) => {
     return FileStorage.query().findById(id).throwIfNotFound();
+  },
+
+  /**
+   * Whether a file is a built submission package, i.e. a submission package
+   * job references it. Package files are emailed as plain links and must stay
+   * readable without a session.
+   *
+   * @param {uuidv4} id the file id.
+   * @returns {Promise<boolean>} true if a package job references the file.
+   */
+  isPackageFile: async (id) => {
+    const job = await SubmissionPackageJob.query().select('id').where('packageFileId', id).first();
+    return !!job;
   },
 
   delete: async (id) => {

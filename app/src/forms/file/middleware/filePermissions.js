@@ -1,10 +1,87 @@
 const Problem = require('api-problem');
 
 const userAccess = require('../../auth/middleware/userAccess');
+const idpService = require('../../../components/idpService');
 const log = require('../../../components/log')(module.filename);
 const service = require('../service');
 const formService = require('../../form/service');
-const { Permissions } = require('../../common/constants');
+const { Permissions, SystemUsers } = require('../../common/constants');
+
+const FILE_READ_DENIED = 'Unauthorized to read file.';
+
+const FILE_READ = Object.freeze({
+  ALLOW: 'allow',
+  DENY: 'deny',
+  PACKAGE: 'package',
+  SUBMISSION: 'submission',
+});
+
+/**
+ * True when the identity provider is treated as public for file access
+ * (`extra.restrictFileDownloads`), for example because its accounts can be
+ * created in bulk.
+ *
+ * @param {object} idp the identity provider row.
+ * @returns {boolean}
+ */
+const restrictsFileDownloads = (idp) => idp?.extra?.restrictFileDownloads === true;
+
+/**
+ * True when the identity provider gives every user the same username: its
+ * tokenmap maps `username` to a constant with the `::raw` routine, or does not
+ * map it at all (every user then keeps the default `public`). A createdBy value
+ * from such a provider does not identify one user.
+ *
+ * @param {object} idp the identity provider row.
+ * @returns {boolean}
+ */
+const sharesUsername = (idp) => {
+  const mapping = idp?.tokenmap?.username;
+  return typeof mapping !== 'string' || mapping === '' || mapping.endsWith('::raw');
+};
+
+/**
+ * @function decideFileRead
+ * Decides whether a caller may read a file. Pure, no I/O.
+ *
+ * A requested submission id (a formSubmissionId query parameter) that is not
+ * the file's own submission is denied: the submission permission check would
+ * otherwise test the caller against that submission instead of the file's.
+ *
+ * Callers with no session, with no identity provider row, or from a provider
+ * with extra.restrictFileDownloads are public-like.
+ *
+ * Attached files (formSubmissionId set): API key callers are allowed,
+ * public-like callers are denied, everyone else is checked against the
+ * submission permissions.
+ *
+ * Unattached files: built submission packages are open to anyone, subject to
+ * a package job lookup. Otherwise only the signed-in creator may read, and
+ * only when createdBy identifies one user.
+ *
+ * @param {object} args
+ * @param {object} args.file the file_storage row.
+ * @param {boolean} args.apiUser true when the request passed form API key auth.
+ * @param {object} args.user the current user; the public user when not signed in.
+ * @param {object} [args.idp] the identity provider row for the current user.
+ * @param {*} [args.requestedSubmissionId] the formSubmissionId query parameter, if sent.
+ * @returns {string} one of FILE_READ.
+ */
+const decideFileRead = ({ file, apiUser, user, idp, requestedSubmissionId }) => {
+  if (requestedSubmissionId !== undefined && requestedSubmissionId !== file.formSubmissionId) return FILE_READ.DENY;
+
+  const publicLike = !user?.idpUserId || !idp || restrictsFileDownloads(idp);
+
+  if (file.formSubmissionId) {
+    if (apiUser) return FILE_READ.ALLOW;
+    if (publicLike) return FILE_READ.DENY;
+    return FILE_READ.SUBMISSION;
+  }
+
+  if (file.updatedBy === SystemUsers.SUBMISSION_PACKAGE_WORKER) return FILE_READ.PACKAGE;
+  if (apiUser || publicLike || sharesUsername(idp)) return FILE_READ.DENY;
+  return user.usernameIdp && file.createdBy === user.usernameIdp ? FILE_READ.ALLOW : FILE_READ.DENY;
+};
 
 /**
  * @function currentFileRecord
@@ -167,9 +244,42 @@ const hasFilePermissions = (permissions) => {
   };
 };
 
+/**
+ * @function hasFileRead
+ * Middleware to determine if the current caller can read the file in
+ * req.currentFileRecord. The rules are in decideFileRead.
+ */
+const hasFileRead = async (req, res, next) => {
+  try {
+    const file = req.currentFileRecord;
+    const user = req.currentUser;
+    const idp = user?.idp ? await idpService.findByCode(user.idp) : undefined;
+    const decision = decideFileRead({ file, apiUser: !!req.apiUser, user, idp, requestedSubmissionId: req.query?.formSubmissionId });
+
+    if (decision === FILE_READ.ALLOW) {
+      return next();
+    }
+
+    if (decision === FILE_READ.SUBMISSION) {
+      return userAccess.hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
+    }
+
+    if (decision === FILE_READ.PACKAGE && (await service.isPackageFile(file.id))) {
+      return next();
+    }
+
+    return next(new Problem(403, { detail: FILE_READ_DENIED }));
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
+  FILE_READ,
   currentFileRecord,
+  decideFileRead,
   hasFileCreate,
   hasFileDelete,
   hasFilePermissions,
+  hasFileRead,
 };
