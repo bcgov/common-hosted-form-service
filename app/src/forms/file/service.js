@@ -199,6 +199,34 @@ const service = {
   },
 
   /**
+   * Attaches pending files to a submission inside the caller's transaction.
+   * Each file is taken only while it is on no submission, so two saves at once
+   * cannot both take one; the second waits for the first to commit and then
+   * gets a 409. Nothing is moved in storage.
+   *
+   * @param {uuidv4} submissionId the submission to attach the files to.
+   * @param {FileStorage[]} files the pending files to attach.
+   * @param {string} updatedBy the user who is saving the submission.
+   * @param {*} trx the submission transaction.
+   * @throws Problem 409 if another save has attached any of the files first.
+   */
+  claimSubmissionFiles: async (submissionId, files, updatedBy, trx) => {
+    if (!files.length) return;
+
+    const claimed = await FileStorage.query(trx)
+      .patch({ formSubmissionId: submissionId, updatedBy: updatedBy })
+      .whereIn(
+        'id',
+        files.map((file) => file.id)
+      )
+      .whereNull('formSubmissionId');
+
+    if (claimed !== files.length) {
+      throw new Problem(409, { detail: 'A file in this submission changed while it was being saved. Please try again.' });
+    }
+  },
+
+  /**
    * Move a submission file from the "upload" storage location to the
    * "submission" location. This is used when a submission is either saved as
    * draft or submitted, and makes the uploaded files permanent.
