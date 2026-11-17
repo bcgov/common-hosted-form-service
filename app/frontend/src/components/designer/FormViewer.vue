@@ -1329,6 +1329,10 @@ async function deleteFile(file) {
 }
 
 async function getFile(fileId, options = {}) {
+  // The greyed-out link can still be activated from the keyboard; the API
+  // would refuse the download, so do not request it.
+  if (shouldDisableFileDownloads.value) return;
+
   await formStore.downloadFile(fileId, options);
 
   if (downloadedFile.value?.data && downloadedFile.value?.headers) {

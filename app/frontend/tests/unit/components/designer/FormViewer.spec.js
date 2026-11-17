@@ -319,6 +319,21 @@ describe('FormViewer.vue', () => {
         (await mountViewer({ readOnly: true })).vm.shouldDisableFileDownloads
       ).toBe(true);
     });
+
+    it('getFile does not request a download when downloads are disabled', async () => {
+      authStore.authenticated = false;
+      const anonymous = await mountViewer();
+
+      await anonymous.vm.getFile('asdf');
+
+      authStore.authenticated = true;
+      idpStore.restrictsFileDownloads.mockReturnValue(true);
+      const restricted = await mountViewer();
+
+      await restricted.vm.getFile('asdf');
+
+      expect(downloadFileSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('formUnauthorizedMessage returns the formUnauthorizedMessage translation', async () => {

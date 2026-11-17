@@ -612,10 +612,12 @@ a,
   opacity: 1 !important;
 }
 
-// Disable file downloads for public forms in readonly mode
+// Grey out the per-file download links when FormViewer disables downloads
+// (anonymous users, and providers with extra.restrictFileDownloads). Only the
+// fileLink anchor: browse, camera and links in labels must stay clickable.
 .form-wrapper.disable-file-downloads .formio-form {
-  .formio-component-simplefile a[href],
-  .formio-component-file a[href] {
+  .formio-component-simplefile a[ref='fileLink'],
+  .formio-component-file a[ref='fileLink'] {
     pointer-events: none !important;
     color: #6c757d !important;
     text-decoration: none !important;
