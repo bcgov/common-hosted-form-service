@@ -339,32 +339,6 @@ describe('create', () => {
       expect(result).toBeNull();
       expect(mockTransaction.commit).toHaveBeenCalled();
     });
-    it('deleteFiles: should delete all files and call storageService.delete for each', async () => {
-      const ids = ['id1', 'id2'];
-      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
-      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
-      FileStorage.query = jest.fn().mockReturnValue({
-        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
-      });
-      storageService.delete = jest.fn().mockResolvedValue(true);
-
-      await expect(service.deleteFiles(ids)).resolves.toBeUndefined();
-      expect(storageService.delete).toHaveBeenCalledTimes(ids.length);
-      expect(mockTransaction.commit).toHaveBeenCalled();
-    });
-
-    it('deleteFiles: should throw and rollback if storageService.delete returns falsy', async () => {
-      const ids = ['id1'];
-      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
-      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
-      FileStorage.query = jest.fn().mockReturnValue({
-        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
-      });
-      storageService.delete = jest.fn().mockResolvedValue(false);
-
-      await expect(service.deleteFiles(ids)).rejects.toThrow('Failed to delete file with id id1');
-      expect(mockTransaction.rollback).toHaveBeenCalled();
-    });
   });
 
   describe('move coverage', () => {
@@ -578,34 +552,6 @@ describe('create', () => {
     });
   });
 
-  describe('clone coverage', () => {
-    it('clone: should create a new file record with new ID', async () => {
-      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
-      FileStorage.query = jest
-        .fn()
-        .mockReturnValueOnce({ findById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue({ id: 'fileId' }) }) })
-        .mockReturnValue({ insert: jest.fn().mockResolvedValue({}) });
-      storageService.clone = jest.fn().mockResolvedValue({ id: 'newId', path: '/new/path', storage: 'uploads' });
-      jest.spyOn(service, 'read').mockResolvedValue({ id: 'newId' });
-
-      const result = await service.clone('fileId', { usernameIdp: 'user' });
-      expect(result).toEqual({ id: 'newId' });
-      expect(storageService.clone).toHaveBeenCalled();
-      expect(FileStorage.query().insert).toHaveBeenCalled();
-      expect(mockTransaction.commit).toHaveBeenCalled();
-    });
-
-    it('clone: should throw and rollback if any step fails', async () => {
-      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
-      FileStorage.query = jest.fn().mockReturnValueOnce({ findById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockRejectedValue(new Error('fail')) }) });
-      storageService.clone = jest.fn();
-      jest.spyOn(service, 'read').mockResolvedValue({});
-
-      await expect(service.clone('fileId', { usernameIdp: 'user' })).rejects.toThrow('fail');
-      expect(mockTransaction.rollback).toHaveBeenCalled();
-    });
-  });
-
   describe('validateFileSecurity', () => {
     it('does not throw for a safe filename', async () => {
       FileStorage.query = jest.fn().mockReturnValue({
@@ -651,35 +597,6 @@ describe('create', () => {
       const result = await service.delete(fileId);
 
       expect(result).toBe('deleted');
-      expect(mockTransaction.commit).toHaveBeenCalled();
-    });
-  });
-
-  describe('deleteFiles', () => {
-    it('throws and rolls back if storageService.delete returns falsy', async () => {
-      const ids = ['id1'];
-      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
-      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
-      FileStorage.query = jest.fn().mockReturnValue({
-        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
-      });
-      storageService.delete = jest.fn().mockResolvedValue(false);
-
-      await expect(service.deleteFiles(ids)).rejects.toThrow('Failed to delete file with id id1');
-      expect(mockTransaction.rollback).toHaveBeenCalled();
-    });
-
-    it('completes if storageService.delete returns truthy for all', async () => {
-      const ids = ['id1', 'id2'];
-      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
-      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
-      FileStorage.query = jest.fn().mockReturnValue({
-        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
-      });
-      storageService.delete = jest.fn().mockResolvedValue(true);
-
-      await expect(service.deleteFiles(ids)).resolves.toBeUndefined();
-      expect(storageService.delete).toHaveBeenCalledTimes(ids.length);
       expect(mockTransaction.commit).toHaveBeenCalled();
     });
   });

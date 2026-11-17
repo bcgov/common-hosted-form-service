@@ -1,4 +1,5 @@
 const { Readable } = require('node:stream');
+const { NotFoundError } = require('objection');
 const request = require('supertest');
 const uuid = require('uuid');
 
@@ -29,6 +30,7 @@ const appRequest = request(expressHelper(basePath, router));
 const GATE_DENIED = 'Unauthorized to read file.';
 const NOT_FOUND = 'File access to this ID is unauthorized.';
 const NO_SUBMISSION_ACCESS = 'You do not have access to this submission.';
+const API_KEY_DENIED = 'Invalid authorization credentials.';
 
 const PROVIDERS = [
   { code: 'public', idp: 'public', active: true, login: false, tokenmap: null, extra: {} },
@@ -135,7 +137,7 @@ beforeEach(() => {
   jest.spyOn(authService, 'recordLoginHistory').mockResolvedValue();
   jest.spyOn(authService, 'getSubmissionForm').mockImplementation(async (id) => {
     const s = findSubmission(id);
-    if (!s) throw new Error('NotFoundError');
+    if (!s) throw new NotFoundError({});
     return { submission: { submissionId: s.id, formId: s.form.id, deleted: s.deleted }, form: s.form };
   });
   jest.spyOn(authService, 'getUserForms').mockImplementation(async (user, params) => {
@@ -149,16 +151,15 @@ beforeEach(() => {
   jest.spyOn(formService, 'readApiKey').mockImplementation(async (formId) => (formId === forms.login.id ? { secret: formApiSecret, filesApiAccess: true } : undefined));
   jest.spyOn(submissionService, 'read').mockImplementation(async (id) => {
     const s = findSubmission(id);
-    if (!s) throw new Error('NotFoundError');
+    if (!s) throw new NotFoundError({});
     return { submission: { id: s.id }, form: { id: s.form.id } };
   });
   jest.spyOn(fileService, 'read').mockImplementation(async (id) => {
     const found = Object.values(FILES).find((f) => f.id === id);
-    if (!found) throw new Error('NotFoundError');
+    if (!found) throw new NotFoundError({});
     return found;
   });
   jest.spyOn(fileService, 'isPackageFile').mockImplementation(async (id) => id === FILES.packageFile.id);
-  jest.spyOn(fileService, 'clone').mockImplementation(async (id) => ({ ...FILES.jdoeUpload, id: uuid.v4(), clonedFrom: id }));
   jest.spyOn(storageService, 'read').mockImplementation(async () => Readable.from([Buffer.from('file-bytes')]));
 });
 
@@ -166,8 +167,8 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-const get = (file, { token, basic, query, suffix = '' } = {}) => {
-  let req = appRequest.get(`${basePath}/${file.id}${suffix}`);
+const get = (file, { token, basic, query } = {}) => {
+  let req = appRequest.get(`${basePath}/${file.id}`);
   if (query) req = req.query(query);
   if (token) req = req.set('Authorization', `Bearer ${token}`);
   if (basic) req = req.set('Authorization', basicAuthFor(basic));
@@ -221,8 +222,13 @@ describe('GET /files/:fileId', () => {
       expect((await get(FILES.packageFile, { token: 'idir-asmith' })).status).toBe(200);
     });
 
-    it('403s a valid form API key', async () => {
-      expectGateDenied(await get(FILES.publicUpload, { basic: forms.login.id, query: { formId: forms.login.id } }));
+    it('401s a valid form API key, before the read gate', async () => {
+      const response = await get(FILES.publicUpload, { basic: forms.login.id, query: { formId: forms.login.id } });
+
+      expect(response.status).toBe(401);
+      expect(response.body.detail).toBe(API_KEY_DENIED);
+      expect(formService.readApiKey).not.toBeCalled();
+      expect(storageService.read).not.toBeCalled();
     });
   });
 
@@ -291,6 +297,22 @@ describe('GET /files/:fileId', () => {
       expect(response.status).toBe(401);
       expect(storageService.read).not.toBeCalled();
     });
+
+    it('401s a form API key whose formId query names its own form, on a file of another form', async () => {
+      const response = await get(FILES.publicShared, { basic: forms.login.id, query: { formId: forms.login.id } });
+
+      expect(response.status).toBe(401);
+      expect(response.body.detail).toBe(API_KEY_DENIED);
+      expect(formService.readApiKey).not.toBeCalled();
+      expect(storageService.read).not.toBeCalled();
+    });
+
+    it('serves the form API key with a formId query that names the file form', async () => {
+      const response = await get(FILES.login, { basic: forms.login.id, query: { formId: forms.login.id } });
+
+      expect(response.status).toBe(200);
+      expect(response.text).toBe('file-bytes');
+    });
   });
 
   it('403s an unknown file id', async () => {
@@ -298,22 +320,24 @@ describe('GET /files/:fileId', () => {
 
     expect(response.status).toBe(403);
     expect(response.body.detail).toBe(NOT_FOUND);
-  });
-});
-
-describe('GET /files/:fileId/clone', () => {
-  it('403s an anonymous caller on an anonymous upload', async () => {
-    const response = await get(FILES.publicUpload, { suffix: '/clone' });
-
-    expect(response.status).toBe(403);
-    expect(response.body.detail).toBe(GATE_DENIED);
-    expect(fileService.clone).not.toBeCalled();
+    expect(response.headers['x-robots-tag']).toBe('noindex, nofollow');
   });
 
-  it('clones for the creator of an unattached upload', async () => {
-    const response = await get(FILES.jdoeUpload, { token: 'idir-jdoe', suffix: '/clone' });
+  it('401s a form API key on an unknown file id, as for an unattached one', async () => {
+    const response = await appRequest.get(`${basePath}/${uuid.v4()}`).set('Authorization', basicAuthFor(forms.login.id));
 
-    expect(response.status).toBe(201);
-    expect(fileService.clone).toBeCalledWith(FILES.jdoeUpload.id, expect.objectContaining({ usernameIdp: 'jdoe@idir' }));
+    expect(response.status).toBe(401);
+    expect(response.body.detail).toBe(API_KEY_DENIED);
+    expect(formService.readApiKey).not.toBeCalled();
+  });
+
+  it('sends download headers on a served file', async () => {
+    const response = await get(FILES.login, { token: 'idir-reviewer' });
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-disposition']).toBe('attachment; filename="a.txt"');
+    expect(response.headers['cache-control']).toBe('private, no-store');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
+    expect(response.headers['x-robots-tag']).toBe('noindex, nofollow');
   });
 });
