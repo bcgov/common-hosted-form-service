@@ -6,8 +6,8 @@ const { isConnectionError } = require('../../../db/connectionErrors');
  * @function finalErrorHandler
  * Builds the last error handler in the chain (errorHandler has already sent
  * non-500 Problems). It logs the error and sends a Problem response. It resets
- * the database pool only when the error shows the connections themselves are
- * unusable, so failed requests cannot reset the pool.
+ * the database pool only when the error shows the pool's connections are
+ * unusable (see db/connectionErrors.js), so failed requests cannot reset it.
  *
  * @param {object} deps
  * @param {object} deps.dataConnection the DataConnection whose pool is reset.
@@ -22,7 +22,8 @@ module.exports.finalErrorHandler = ({ dataConnection, statusService, log }) => {
       log.error(err);
     }
 
-    if (isConnectionError(err) && !statusService.getStatus().stopped) {
+    const status = statusService.getStatus();
+    if (isConnectionError(err) && !status.stopped) {
       dataConnection.resetConnection();
     }
 
@@ -30,7 +31,7 @@ module.exports.finalErrorHandler = ({ dataConnection, statusService, log }) => {
       err.send(res, null);
     } else {
       new Problem(500, 'Server Error', {
-        detail: err.message ? err.message : err,
+        detail: err.message || err,
       }).send(res);
     }
   };

@@ -148,12 +148,23 @@ class DataConnection {
 
   /**
    * @function resetConnection
-   * Invalidates and reconnects existing knex connection
+   * Invalidates and reconnects existing knex connection. Calls made while a
+   * reset is running are ignored: overlapping destroy/initialize pairs can
+   * orphan a freshly created pool and leave its connections open.
    */
   resetConnection() {
+    if (this._resetting) {
+      log.warn('Database connection pool reset already in progress', { function: 'resetConnection' });
+      return;
+    }
+    this._resetting = true;
     log.warn('Attempting to reset database connection pool...', { function: 'resetConnection' });
     this.knex.destroy(() => {
-      this.knex.initialize();
+      try {
+        this.knex.initialize();
+      } finally {
+        this._resetting = false;
+      }
     });
   }
 }
