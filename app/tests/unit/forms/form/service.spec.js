@@ -3553,3 +3553,74 @@ describe('_setEnableOfflineSubmission', () => {
     expect(service._setEnableOfflineSubmission(formData)).toBe(true);
   });
 });
+
+describe('_linkSubmissionFiles', () => {
+  const { FileStorage: FileStorageModel } = jest.requireActual('../../../../src/forms/common/models');
+  const fileService = require('../../../../src/forms/file/service');
+
+  const SUB = '4d1f3b8e-5b8a-4d4e-9a39-0e7f1c2f1a01';
+  const F1 = '0b6a2b0c-1d4e-4f5a-8b6c-7d8e9f0a1b21';
+  const F2 = '0b6a2b0c-1d4e-4f5a-8b6c-7d8e9f0a1b22';
+  const user = { usernameIdp: 'jdoe@idir' };
+  const trx = { id: 'submission-trx' };
+  const data = (...fileIds) => ({ submission: { data: { simplefile: fileIds.map((id) => ({ data: { id } })) } } });
+  let whereIn;
+
+  const rows = (list) => {
+    whereIn = jest.fn().mockResolvedValue(list);
+    jest.spyOn(FileStorageModel, 'query').mockReturnValue({ whereIn });
+  };
+
+  beforeEach(() => {
+    jest.spyOn(fileService, 'claimSubmissionFiles').mockResolvedValue();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('claims the submitter own pending uploads in the submission transaction', async () => {
+    const mine = { id: F1, formSubmissionId: null, createdBy: 'jdoe@idir' };
+    rows([mine]);
+
+    await service._linkSubmissionFiles({}, data(F1, F1.toUpperCase(), 'not-a-uuid'), SUB, user, trx);
+
+    expect(FileStorageModel.query).toHaveBeenCalledWith(trx);
+    expect(whereIn).toHaveBeenCalledWith('id', [F1]);
+    expect(fileService.claimSubmissionFiles).toHaveBeenCalledWith(SUB, [mine], 'jdoe@idir', trx);
+  });
+
+  it('leaves a file on another submission where it is', async () => {
+    rows([{ id: F1, formSubmissionId: 'other-submission', createdBy: 'jdoe@idir' }]);
+
+    await service._linkSubmissionFiles({}, data(F1), SUB, user, trx);
+
+    expect(fileService.claimSubmissionFiles).toHaveBeenCalledWith(SUB, [], 'jdoe@idir', trx);
+  });
+
+  it('rejects another user pending upload with a 400, before claiming anything', async () => {
+    rows([
+      { id: F1, formSubmissionId: null, createdBy: 'jdoe@idir' },
+      { id: F2, formSubmissionId: null, createdBy: 'asmith@idir' },
+    ]);
+
+    await expect(service._linkSubmissionFiles({}, data(F1, F2), SUB, user, trx)).rejects.toMatchObject({ status: 400 });
+    expect(fileService.claimSubmissionFiles).not.toHaveBeenCalled();
+  });
+
+  it('passes on a 409 from the claim', async () => {
+    rows([{ id: F1, formSubmissionId: null, createdBy: 'jdoe@idir' }]);
+    fileService.claimSubmissionFiles.mockRejectedValue(Object.assign(new Error('conflict'), { status: 409 }));
+
+    await expect(service._linkSubmissionFiles({}, data(F1), SUB, user, trx)).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('queries nothing when the data names no file ids', async () => {
+    jest.spyOn(FileStorageModel, 'query');
+
+    await service._linkSubmissionFiles({}, data('not-a-uuid'), SUB, user, trx);
+
+    expect(FileStorageModel.query).not.toHaveBeenCalled();
+    expect(fileService.claimSubmissionFiles).not.toHaveBeenCalled();
+  });
+});

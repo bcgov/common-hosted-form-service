@@ -626,3 +626,39 @@ describe('isPackageFile', () => {
     await expect(service.isPackageFile(uuid.v4())).resolves.toBe(false);
   });
 });
+
+describe('claimSubmissionFiles', () => {
+  const trx = { id: 'submission-trx' };
+  const files = [{ id: 'f1' }, { id: 'f2' }];
+
+  const claimQuery = (claimed) => {
+    const whereNull = jest.fn().mockResolvedValue(claimed);
+    const whereIn = jest.fn().mockReturnValue({ whereNull });
+    const patch = jest.fn().mockReturnValue({ whereIn });
+    FileStorage.query = jest.fn().mockReturnValue({ patch });
+    return { patch, whereIn, whereNull };
+  };
+
+  it('attaches the files in one update, only while they are on no submission', async () => {
+    const query = claimQuery(2);
+
+    await expect(service.claimSubmissionFiles('subId', files, 'user', trx)).resolves.toBeUndefined();
+    expect(FileStorage.query).toHaveBeenCalledWith(trx);
+    expect(query.patch).toHaveBeenCalledWith({ formSubmissionId: 'subId', updatedBy: 'user' });
+    expect(query.whereIn).toHaveBeenCalledWith('id', ['f1', 'f2']);
+    expect(query.whereNull).toHaveBeenCalledWith('formSubmissionId');
+  });
+
+  it('409s when any file was attached elsewhere first', async () => {
+    claimQuery(1);
+
+    await expect(service.claimSubmissionFiles('subId', files, 'user', trx)).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('runs no query for no files', async () => {
+    FileStorage.query = jest.fn();
+
+    await service.claimSubmissionFiles('subId', [], 'user', trx);
+    expect(FileStorage.query).not.toHaveBeenCalled();
+  });
+});
