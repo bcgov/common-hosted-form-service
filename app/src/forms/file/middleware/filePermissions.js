@@ -2,6 +2,7 @@ const Problem = require('api-problem');
 const { NotFoundError } = require('objection');
 const { validate: uuidValidate } = require('uuid');
 
+const authService = require('../../auth/service');
 const userAccess = require('../../auth/middleware/userAccess');
 const idpService = require('../../../components/idpService');
 const log = require('../../../components/log')(module.filename);
@@ -125,21 +126,92 @@ const currentFileRecord = async (req, _res, next) => {
   next();
 };
 
+const FILE_CREATE_AUTH_REQUIRED = 'Authentication required for file uploads on this form';
+const FILE_CREATE_NO_ACCESS = 'You do not have access to upload files to this form.';
+const FILE_CREATE_NOT_PUBLISHED = 'This form is not accepting uploads.';
+
+// Form permissions that let a signed-in user upload to a form: submitting to
+// it, editing its submissions (staff edit), or designing it (preview).
+const UPLOAD_PERMISSIONS = [Permissions.SUBMISSION_CREATE, Permissions.SUBMISSION_UPDATE, Permissions.DESIGN_CREATE, Permissions.DESIGN_UPDATE];
+// Of those, the ones that also allow uploads while the form has no published
+// version: editing existing submissions, and previewing a draft version.
+const UNPUBLISHED_UPLOAD_PERMISSIONS = [Permissions.SUBMISSION_UPDATE, Permissions.DESIGN_CREATE, Permissions.DESIGN_UPDATE];
+
+/**
+ * @function decideFileCreate
+ * Decides whether a caller may upload a file for an active form. Pure, no I/O.
+ *
+ * - Anonymous callers: the form must allow public submissions and have a
+ *   published version.
+ * - Signed-in callers who can update the submission they are editing (on
+ *   this form): allowed, published or not. That covers draft owners, people a
+ *   draft was shared with, and submitters asked to revise.
+ * - Other signed-in callers: their access to the form must include one of
+ *   UPLOAD_PERMISSIONS (submitters get submission_create on public forms and
+ *   on login forms of their identity provider; team roles add the rest). A
+ *   caller who can only submit also needs a published version.
+ *
+ * @param {object} args
+ * @param {object} args.form the active form, with identityProviders and versions.
+ * @param {boolean} args.signedIn true when the caller is signed in.
+ * @param {string[]} [args.permissions] the signed-in caller's permissions on the form.
+ * @param {boolean} [args.canUpdateSubmission] true when the signed-in caller can
+ *   update the submission they are editing, and it is on this form.
+ * @returns {null|{status: number, detail: string}} null when allowed, else the refusal.
+ */
+const decideFileCreate = ({ form, signedIn, permissions, canUpdateSubmission }) => {
+  const published = (form.versions || []).some((version) => version.published);
+
+  if (!signedIn) {
+    if (!(form.identityProviders || []).some((idp) => idp.code === 'public')) {
+      return { status: 403, detail: FILE_CREATE_AUTH_REQUIRED };
+    }
+    return published ? null : { status: 403, detail: FILE_CREATE_NOT_PUBLISHED };
+  }
+
+  if (canUpdateSubmission) {
+    return null;
+  }
+
+  const granted = permissions || [];
+  if (!UPLOAD_PERMISSIONS.some((permission) => granted.includes(permission))) {
+    return { status: 403, detail: FILE_CREATE_NO_ACCESS };
+  }
+  if (!published && !UNPUBLISHED_UPLOAD_PERMISSIONS.some((permission) => granted.includes(permission))) {
+    return { status: 403, detail: FILE_CREATE_NOT_PUBLISHED };
+  }
+  return null;
+};
+
+/**
+ * Whether the user can update the submission, and it is a live submission on
+ * the form: the same submission-level check a draft save uses (team access
+ * to the form is already in the caller's form permissions).
+ */
+const canUpdateSubmissionOfForm = async (user, submissionId, formId) => {
+  let submissionForm;
+  try {
+    submissionForm = await authService.getSubmissionForm(submissionId);
+  } catch (error) {
+    if (error instanceof NotFoundError) return false;
+    throw error;
+  }
+  if (submissionForm.form.id !== formId || submissionForm.submission.deleted) return false;
+  return !!(await authService.checkSubmissionPermission(user, submissionId, [Permissions.SUBMISSION_UPDATE]));
+};
+
 /**
  * @function hasFileCreate
- * Middleware to determine if this user can upload a file to the system
- * Allows authenticated users always, and public users for public forms
- * @returns {Function} a middleware function
+ * Middleware to determine if the caller may upload a file for the form named
+ * by the formId query parameter. The form must exist and be active; the rest
+ * of the rules are in decideFileCreate. A signed-in caller's access is the
+ * same per-form lookup hasFormPermissions uses. When that does not allow the
+ * upload and the request names the submission being edited
+ * (formSubmissionId), the caller's permission on that submission is checked.
  */
 const hasFileCreate = async (req, res, next) => {
   try {
-    // If authenticated user, always allow
-    if (req.currentUser && req.currentUser.idpUserId) {
-      return next();
-    }
-
-    // For public users, check if they can upload to this form
-    const formId = req.query.formId;
+    const { formId, formSubmissionId } = req.query;
 
     if (!formId) {
       return next(new Problem(400, { detail: 'formId is required as query parameter for file uploads' }));
@@ -149,30 +221,34 @@ const hasFileCreate = async (req, res, next) => {
       return next(new Problem(400, { detail: 'formId must be a valid UUID' }));
     }
 
-    // Get form configuration with identity providers. readForm only returns
-    // active forms and throws NotFoundError otherwise.
+    if (formSubmissionId !== undefined && (typeof formSubmissionId !== 'string' || !uuidValidate(formSubmissionId))) {
+      return next(new Problem(400, { detail: 'formSubmissionId must be a valid UUID' }));
+    }
+
+    // readForm only returns active forms and throws NotFoundError otherwise.
     const form = await formService.readForm(formId);
-    if (!form) {
-      return next(new Problem(404, { detail: 'Form not found' }));
+
+    const signedIn = !!req.currentUser?.idpUserId;
+    let permissions;
+    if (signedIn) {
+      const forms = await authService.getUserForms(req.currentUser, { active: true, formId }, req.headers);
+      permissions = forms.find((f) => f.formId === formId)?.permissions;
     }
 
-    // Check if form is active
-    if (!form.active) {
-      return next(new Problem(403, { detail: 'Form is not active' }));
+    let refusal = decideFileCreate({ form, signedIn, permissions });
+    if (refusal && signedIn && formSubmissionId && (await canUpdateSubmissionOfForm(req.currentUser, formSubmissionId, formId))) {
+      refusal = decideFileCreate({ form, signedIn, permissions, canUpdateSubmission: true });
     }
-
-    // Check if form allows public access - using the exact same logic as userAccess.js
-    const publicAllowed = form.identityProviders.find((p) => p.code === 'public') !== undefined;
-
-    if (!publicAllowed) {
-      return next(new Problem(403, { detail: 'Authentication required for file uploads on this form' }));
+    if (refusal) {
+      return next(new Problem(refusal.status, { detail: refusal.detail }));
     }
-
-    // If we get here: public user + public form = allow upload
     return next();
   } catch (error) {
     if (error instanceof NotFoundError) {
       return next(new Problem(404, { detail: 'Form not found' }));
+    }
+    if (error instanceof Problem) {
+      return next(error);
     }
     log.error('Error in hasFileCreate middleware:', error);
     return next(new Problem(500, { detail: 'Unable to upload file at this time. Please try again later.' }));
@@ -282,6 +358,7 @@ module.exports = {
   FILE_DELETE,
   FILE_READ,
   currentFileRecord,
+  decideFileCreate,
   decideFileDelete,
   decideFileRead,
   hasFileCreate,

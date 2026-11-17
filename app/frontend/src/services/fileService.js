@@ -9,7 +9,12 @@ export default {
     return appAxios().get(`${ApiRoutes.FILES}/${fileId}`, options);
   },
   async uploadFile(file, config = {}) {
-    const url = `${ApiRoutes.FILES}?formId=${config.formId}`;
+    // formSubmissionId names the submission being edited, so people who can
+    // edit only that submission may upload to it.
+    const submissionQuery = config.formSubmissionId
+      ? `&formSubmissionId=${config.formSubmissionId}`
+      : '';
+    const url = `${ApiRoutes.FILES}?formId=${config.formId}${submissionQuery}`;
     return appAxios().post(url, file, {
       headers: { 'Content-Type': 'multipart/form-data' },
       ...config,
