@@ -64,4 +64,28 @@ describe('identityProviders store', () => {
       expect(result).toBeUndefined();
     });
   });
+
+  describe('restrictsFileDownloads', () => {
+    it('is true for a provider flagged with extra.restrictFileDownloads', () => {
+      idpStore.providers = idpStore.providers.map((p) =>
+        p.code === 'bceid-basic'
+          ? { ...p, extra: { ...p.extra, restrictFileDownloads: true } }
+          : p
+      );
+
+      expect(idpStore.restrictsFileDownloads('bceidbasic')).toBe(true);
+      expect(idpStore.restrictsFileDownloads('idir')).toBe(false);
+    });
+
+    it('is false for a provider without the flag', () => {
+      expect(idpStore.restrictsFileDownloads('bceidbasic')).toBe(false);
+    });
+
+    it('is false for an unknown hint, no hint, or no providers', () => {
+      expect(idpStore.restrictsFileDownloads('unknown')).toBe(false);
+      expect(idpStore.restrictsFileDownloads(undefined)).toBe(false);
+      idpStore.providers = null;
+      expect(idpStore.restrictsFileDownloads('bceidbasic')).toBe(false);
+    });
+  });
 });
