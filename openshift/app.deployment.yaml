@@ -159,6 +159,8 @@ objects:
               env:
                 - name: NODE_ENV
                   value: production
+                - name: NODE_OPTIONS
+                  value: "${NODE_OPTIONS}"
                 - name: DB_DATABASE
                   valueFrom:
                     secretKeyRef:
@@ -409,3 +411,7 @@ parameters:
     description: The number of replicas to run
     displayName: Replicas
     value: "2"
+  - name: NODE_OPTIONS
+    description: Options for the Node runtime in the app container (ex. --max-old-space-size=3072). Empty uses Node's defaults.
+    displayName: Node Options
+    value: ""
