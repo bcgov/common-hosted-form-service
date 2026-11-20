@@ -1,5 +1,5 @@
 import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -33,7 +33,16 @@ describe('Success.vue', () => {
 
   it('renders FormViewer when URL sharing is enabled', async () => {
     const wrapper = mountSuccess();
+    await flushPromises();
     expect(wrapper.html()).toMatch('form-viewer');
+  });
+
+  it('shows the confirmation outside the submission viewer', () => {
+    useFormStore().form.showSubmissionConfirmation = true;
+    const wrapper = mountSuccess();
+
+    expect(wrapper.get('h1').text()).toBeTruthy();
+    expect(wrapper.get('mark').text()).toBe('B8F0C1D2');
   });
 
   it('renders the static confirmation block when URL sharing is disabled and no access token is stored', async () => {
@@ -53,6 +62,7 @@ describe('Success.vue', () => {
     useFormStore().form.enableSubmissionUrlSharing = false;
     sessionStorage.setItem(STORAGE_KEY, buildToken(SUBMISSION_ID, Date.now() + 60_000));
     const wrapper = mountSuccess();
+    await flushPromises();
     expect(wrapper.html()).toMatch('form-viewer');
   });
 
