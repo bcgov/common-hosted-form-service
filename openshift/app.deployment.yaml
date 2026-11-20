@@ -274,13 +274,13 @@ objects:
                 - name: TURNSTILE_SITE_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: site-key
+                      key: turnstile-site-key
                       name: "chefs-${JOB_NAME}-turnstile"
                       optional: true
                 - name: TURNSTILE_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: secret-key
+                      key: turnstile-secret-key
                       name: "chefs-${JOB_NAME}-turnstile"
                       optional: true
                 - name: EVENTSTREAMSERVICE_USERNAME

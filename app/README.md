@@ -65,7 +65,8 @@ Set `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` to the keys for a Cloudflare
 Turnstile widget that allows the CHEFS hostname. Set `TURNSTILE_HOSTNAMES` to a
 comma-separated list of allowed browser hostnames. OpenShift sets this from
 the deployment route hostname and any additional browser hostnames. Provision the
-`chefs-<JOB_NAME>-turnstile` Secret with `site-key` and `secret-key` entries.
+`chefs-<JOB_NAME>-turnstile` Secret with `turnstile-site-key` and
+`turnstile-secret-key` entries.
 CHEFS must be able to reach `https://challenges.cloudflare.com` for server-side
 verification, and browsers must be able to load the widget from that origin.
 
