@@ -58,3 +58,26 @@ npm run test
 npm run lint
 npm run lint-fix
 ```
+
+### Turnstile for hosted form submission
+
+Set `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` to the keys for a Cloudflare
+Turnstile widget that allows the CHEFS hostname. Set `TURNSTILE_HOSTNAMES` to a
+comma-separated list of allowed browser hostnames. OpenShift sets this from
+the deployment route hostname and any additional browser hostnames. Provision the
+`chefs-<JOB_NAME>-turnstile` Secret with `turnstile-site-key` and
+`turnstile-secret-key` entries.
+CHEFS must be able to reach `https://challenges.cloudflare.com` for server-side
+verification, and browsers must be able to load the widget from that origin.
+
+Hosted forms that allow Public or Basic BCeID require verification before the
+form opens. With missing credentials, those forms stay closed. The verification
+cookie lasts 15 minutes and is scoped to the form and current CHEFS identity.
+If proof expires while a user fills out the form, CHEFS asks them to verify
+again before sending the submission.
+
+Each verification allows one final submission, draft finalization, or bulk
+import of up to 1,000 rows. Ordinary draft saves do not spend the allowance.
+PostgreSQL records a spent proof in the same transaction as the submission.
+A bounded cleanup runs every 30 minutes and retains expired proof IDs for five
+extra minutes to cover duplicate Cloudflare token redemption.

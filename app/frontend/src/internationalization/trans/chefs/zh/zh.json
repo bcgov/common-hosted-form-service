@@ -1,5 +1,15 @@
 ﻿{
   "open": "打开",
+  "formSubmissionGate": {
+    "title": "打开此表单前请完成验证",
+    "instructions": "完成验证后即可打开表单。",
+    "recheckTitle": "提交前请完成验证",
+    "recheckInstructions": "完成验证后即可继续。您填写的内容会保留在表单中。",
+    "cancel": "取消",
+    "loading": "正在验证…",
+    "error": "验证不可用或未能完成。请检查网络连接后重试。",
+    "retry": "重试"
+  },
   "date": {
     "date": "年-月-日"
   },

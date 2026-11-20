@@ -1,5 +1,15 @@
 ﻿{
   "open": "mở",
+  "formSubmissionGate": {
+    "title": "Xác minh trước khi mở biểu mẫu này",
+    "instructions": "Hoàn tất xác minh để tiếp tục đến biểu mẫu.",
+    "recheckTitle": "Xác minh trước khi gửi",
+    "recheckInstructions": "Hoàn tất xác minh để tiếp tục. Câu trả lời của bạn sẽ vẫn còn trong biểu mẫu.",
+    "cancel": "Hủy",
+    "loading": "Đang xác minh…",
+    "error": "Không thể thực hiện hoặc hoàn tất xác minh. Hãy kiểm tra kết nối và thử lại.",
+    "retry": "Thử lại"
+  },
   "date": {
     "date": "yyyy-mm-dd"
   },

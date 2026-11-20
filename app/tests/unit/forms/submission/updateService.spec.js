@@ -313,6 +313,24 @@ describe('updateService', () => {
   });
 
   describe('update', () => {
+    it('requires Turnstile proof before finalizing a protected draft', async () => {
+      const trx = {};
+      const form = { id: 'stored-form-id', identityProviders: [{ code: 'bceid-basic' }] };
+      const submissionService = { read: jest.fn().mockResolvedValue({ form, submission: { draft: true } }) };
+      const statusSpy = jest.spyOn(updateService, '_getStatuses').mockResolvedValue([]);
+      const patchSpy = jest.spyOn(updateService, '_patchSubmission');
+      try {
+        await expect(updateService.update(submissionService, 1, { draft: false }, { id: 'user' }, null, trx)).rejects.toMatchObject({
+          status: 403,
+          code: 'TURNSTILE_REQUIRED',
+        });
+        expect(patchSpy).not.toHaveBeenCalled();
+      } finally {
+        statusSpy.mockRestore();
+        patchSpy.mockRestore();
+      }
+    });
+
     it('restores submission if _isRestoring is true', async () => {
       const data = { deleted: true };
       updateService._isRestoring = jest.fn().mockReturnValue(true);

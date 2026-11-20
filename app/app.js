@@ -20,6 +20,7 @@ const dataConnection = new DataConnection();
 const { eventStreamService } = require('./src/components/eventStreamService');
 const clamAvScanner = require('./src/components/clamAvScanner');
 const uploadCleanup = require('./src/forms/file/uploadCleanup');
+const turnstileAllowance = require('./src/forms/form/turnstile/allowanceService');
 
 const statusService = require('./src/components/statusService');
 statusService.registerConnection('dataConnection', 'Database', dataConnection, 'checkAll', 'checkConnection');
@@ -56,6 +57,7 @@ if (process.env.NODE_ENV !== 'test') {
   // Initialize connections and exit if unsuccessful
   // Initialize connections and wait for completion
   statusService.initializeAllConnections();
+  turnstileAllowance.startCleanup();
   app.use(httpLogger);
 
   if (config.has('files.uploads.cleanup')) {
@@ -192,6 +194,7 @@ function cleanup() {
   log.info('Cleaning up...', { function: 'cleanup' });
   clearInterval(probeId);
   uploadCleanup.stopUploadCleanupScheduler();
+  turnstileAllowance.stopCleanup();
 
   eventStreamService.closeConnection();
   dataConnection.close(() => process.exit());

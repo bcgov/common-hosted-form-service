@@ -1,5 +1,15 @@
 ﻿{
   "open": "열려 있는",
+  "formSubmissionGate": {
+    "title": "이 양식을 열기 전에 확인을 완료하세요",
+    "instructions": "양식으로 이동하려면 확인을 완료하세요.",
+    "recheckTitle": "제출하기 전에 확인을 완료하세요",
+    "recheckInstructions": "계속하려면 확인을 완료하세요. 작성한 답변은 양식에 그대로 남습니다.",
+    "cancel": "취소",
+    "loading": "확인 중…",
+    "error": "확인을 이용할 수 없거나 완료하지 못했습니다. 연결 상태를 확인한 후 다시 시도하세요.",
+    "retry": "다시 시도"
+  },
   "date": {
     "date": "yyyy-mm-dd"
   },

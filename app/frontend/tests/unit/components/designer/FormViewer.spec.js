@@ -9,7 +9,7 @@ import { nextTick, ref } from 'vue';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import templateExtensions from '~/plugins/templateExtensions';
-import { fileService, formService, rbacService } from '~/services';
+import { fileService, formService, rbacService, turnstileService } from '~/services';
 import {
   offlineQueue as mockOfflineQueue,
   QueueStatus as MockQueueStatus,
@@ -3416,5 +3416,66 @@ describe('FormViewer.vue', () => {
     // instead of creating a duplicate submission.
     expect(mockOfflineQueue.enqueue).toHaveBeenCalledTimes(1);
     expect(mockOfflineQueue.enqueue.mock.calls[0][0].dedupKey).toBe(sentKey);
+  });
+
+  it('pauses a protected submission until renewed proof is confirmed', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: { ...STUBS, VDialog: true },
+      },
+    });
+    await flushPromises();
+    wrapper.vm.form = {
+      id: formId,
+      identityProviders: [{ code: 'bceid-basic' }],
+    };
+    wrapper.vm.isFormScheduleExpired = false;
+    const status = vi.spyOn(turnstileService, 'readStatus')
+      .mockResolvedValue({ data: { verified: false } });
+    createSubmissionSpy.mockClear();
+    const data = { answer: 'saved answer', files: [{ id: 'file-id' }] };
+
+    const pending = wrapper.vm.doSubmit({ data });
+    await flushPromises();
+    expect(wrapper.vm.showVerification).toBe(true);
+    expect(createSubmissionSpy).not.toHaveBeenCalled();
+
+    wrapper.vm.resolveVerification(true);
+    await pending;
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(1);
+    expect(createSubmissionSpy.mock.calls[0][2].submission.data).toMatchObject(data);
+    status.mockRestore();
+    wrapper.unmount();
+  });
+
+  it('retries finalizing an existing draft after verification and preserves its payload', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: { submissionId: 'saved-draft' },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: { ...STUBS, VDialog: true },
+      },
+    });
+    await flushPromises();
+    const sub = { data: { answer: 'saved answer', files: [{ id: 'file-id' }] } };
+    const response = { status: 200 };
+    updateSubmissionSpy.mockReset();
+    updateSubmissionSpy.mockRejectedValueOnce({
+      response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+    }).mockResolvedValueOnce(response);
+
+    const pending = wrapper.vm.sendSubmission(false, sub);
+    await flushPromises();
+    expect(wrapper.vm.showVerification).toBe(true);
+    expect(updateSubmissionSpy).toHaveBeenCalledTimes(1);
+    wrapper.vm.resolveVerification(true);
+
+    await expect(pending).resolves.toEqual(response);
+    expect(updateSubmissionSpy).toHaveBeenNthCalledWith(2, 'saved-draft', { draft: false, submission: sub });
+    wrapper.unmount();
   });
 });

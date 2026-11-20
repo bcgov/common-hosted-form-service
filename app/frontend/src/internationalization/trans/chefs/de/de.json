@@ -1,5 +1,15 @@
 ﻿{
   "open": "Offen",
+  "formSubmissionGate": {
+    "title": "Vor dem Öffnen dieses Formulars verifizieren",
+    "instructions": "Schließen Sie die Überprüfung ab, um zum Formular zu gelangen.",
+    "recheckTitle": "Vor dem Absenden verifizieren",
+    "recheckInstructions": "Schließen Sie die Überprüfung ab, um fortzufahren. Ihre Antworten bleiben im Formular erhalten.",
+    "cancel": "Abbrechen",
+    "loading": "Überprüfung läuft…",
+    "error": "Die Überprüfung ist derzeit nicht verfügbar oder konnte nicht abgeschlossen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "retry": "Erneut versuchen"
+  },
   "date": {
     "date": "jjjj-mm-tt"
   },

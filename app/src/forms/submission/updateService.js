@@ -7,7 +7,11 @@ const log = require('../../components/log')(module.filename);
 
 const { Statuses } = require('../common/constants');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+const turnstileService = require('../form/turnstile/service');
+const turnstileAllowance = require('../form/turnstile/allowanceService');
 const { validateFormSubmissionSchedule } = require('../common/scheduleService');
+
+const becomesSubmitted = (data, statuses) => !data.draft && (!statuses?.length || statuses[0].code === Statuses.REVISING);
 
 const service = {
   _isRestoring: (data) => {
@@ -26,8 +30,17 @@ const service = {
     return data.draft && statuses && statuses.length > 0 && (statuses[0].code === Statuses.SUBMITTED || statuses[0].code === Statuses.COMPLETED);
   },
 
+  _validateFinalization: async (submissionService, id, willSubmit, { currentUser, cookie, trx }) => {
+    const submissionData = await submissionService.read(id);
+    validateFormSubmissionSchedule(submissionData.form);
+    if (submissionData.submission?.draft || willSubmit) {
+      const proof = turnstileService.requireProof({ currentUser, headers: { cookie } }, submissionData.form);
+      await turnstileAllowance.consume(trx, proof);
+    }
+  },
+
   _handleStatusChange: async (submissionService, id, data, statuses, user, trx) => {
-    if (!data.draft && (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING)) {
+    if (becomesSubmitted(data, statuses)) {
       await submissionService.changeStatusState(id, { code: Statuses.SUBMITTED }, user, trx);
       return true;
     }
@@ -102,7 +115,7 @@ const service = {
     }
   },
 
-  update: async (submissionService, formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
+  update: async (submissionService, formSubmissionId, data, currentUser, referrer, etrx = undefined, cookie = undefined) => {
     let trx;
     let result;
     let submissionReceived = false;
@@ -121,10 +134,8 @@ const service = {
           return false;
         }
 
-        // Validate schedule before allowing draft to be converted to submitted
         if (!data.draft) {
-          const submissionData = await submissionService.read(formSubmissionId);
-          validateFormSubmissionSchedule(submissionData.form);
+          await service._validateFinalization(submissionService, formSubmissionId, becomesSubmitted(data, statuses), { currentUser, cookie, trx });
         }
 
         submissionReceived = await service._handleStatusChange(submissionService, formSubmissionId, data, statuses, currentUser, trx);

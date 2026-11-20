@@ -1,5 +1,15 @@
 ﻿{
   "open": "打開",
+  "formSubmissionGate": {
+    "title": "開啟此表單前請完成驗證",
+    "instructions": "完成驗證後即可開啟表單。",
+    "recheckTitle": "送出前請完成驗證",
+    "recheckInstructions": "完成驗證後即可繼續。您填寫的內容會保留在表單中。",
+    "cancel": "取消",
+    "loading": "正在驗證…",
+    "error": "無法進行或完成驗證。請檢查網路連線後再試一次。",
+    "retry": "再試一次"
+  },
   "date": {
     "date": "年-月-日"
   },

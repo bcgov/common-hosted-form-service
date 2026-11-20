@@ -1,4 +1,9 @@
 {
+  "turnstile": {
+    "siteKey": "TURNSTILE_SITE_KEY",
+    "secretKey": "TURNSTILE_SECRET_KEY",
+    "hostnames": "TURNSTILE_HOSTNAMES"
+  },
   "db": {
     "database": "DB_DATABASE",
     "host": "DB_HOST",
