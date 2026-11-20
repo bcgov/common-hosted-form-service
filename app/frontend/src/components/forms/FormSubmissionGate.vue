@@ -197,14 +197,13 @@ onBeforeUnmount(() => {
         ref="container"
         class="turnstile-widget"
       />
-      <div
+      <output
         v-if="state === 'loading' || state === 'verifying'"
         class="d-flex align-center ga-3"
-        role="status"
       >
         <v-progress-circular indeterminate color="primary" size="20" />
         <span>{{ $t('trans.formSubmissionGate.loading') }}</span>
-      </div>
+      </output>
       <v-alert
         v-if="state === 'error'"
         role="alert"
