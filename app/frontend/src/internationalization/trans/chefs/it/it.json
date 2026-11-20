@@ -1,5 +1,15 @@
 ﻿{
   "open": "Aprire",
+  "formSubmissionGate": {
+    "title": "Verifica prima di aprire il modulo",
+    "instructions": "Completa la verifica per accedere al modulo.",
+    "recheckTitle": "Verifica prima dell’invio",
+    "recheckInstructions": "Completa la verifica per continuare. Le tue risposte resteranno nel modulo.",
+    "cancel": "Annulla",
+    "loading": "Verifica in corso…",
+    "error": "La verifica non è disponibile o non è stata completata. Controlla la connessione e riprova.",
+    "retry": "Riprova"
+  },
   "date": {
     "date": "aaaa-mm-gg"
   },

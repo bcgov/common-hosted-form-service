@@ -1,5 +1,15 @@
 ﻿{
   "open": "Bukas",
+  "formSubmissionGate": {
+    "title": "Magpatunay bago buksan ang form na ito",
+    "instructions": "Kumpletuhin ang pagpapatunay para mabuksan ang form.",
+    "recheckTitle": "Magpatunay bago isumite",
+    "recheckInstructions": "Kumpletuhin ang pagpapatunay para magpatuloy. Mananatili sa form ang iyong mga sagot.",
+    "cancel": "Kanselahin",
+    "loading": "Sinusuri ang pagpapatunay…",
+    "error": "Hindi magamit o hindi nakumpleto ang pagpapatunay. Suriin ang iyong koneksyon at subukang muli.",
+    "retry": "Subukang muli"
+  },
   "date": {
     "date": "yyyy-mm-dd"
   },
