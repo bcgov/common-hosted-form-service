@@ -887,7 +887,9 @@ paths:
       - $ref: '#/components/parameters/turnstileUnused'
     get:
       summary: Get Turnstile verification status for a form
-      description: Form read permission is required.
+      description: >-
+        Form read permission is required. Turnstile GET requests share a limit of 60 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
       operationId: readFormTurnstileStatus
       security:
         - {}
@@ -916,7 +918,9 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
     post:
       summary: Verify a Turnstile challenge for a form
-      description: Form read permission is required.
+      description: >-
+        Form read permission is required. Turnstile POST requests share a limit of 15 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
       operationId: verifyFormTurnstileChallenge
       security:
         - {}
@@ -1812,7 +1816,9 @@ paths:
       - $ref: '#/components/parameters/turnstileUnused'
     get:
       summary: Get Turnstile verification status for a saved submission
-      description: Submission update permission is required.
+      description: >-
+        Submission update permission is required. Turnstile GET requests share a limit of 60 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
       operationId: readSubmissionTurnstileStatus
       security:
         - BearerAuth: []
@@ -1840,7 +1846,9 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
     post:
       summary: Verify a Turnstile challenge for a saved submission
-      description: Submission update permission is required.
+      description: >-
+        Submission update permission is required. Turnstile POST requests share a limit of 15 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
       operationId: verifySubmissionTurnstileChallenge
       security:
         - BearerAuth: []

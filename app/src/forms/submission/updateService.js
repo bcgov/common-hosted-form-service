@@ -30,6 +30,15 @@ const service = {
     return data.draft && statuses && statuses.length > 0 && (statuses[0].code === Statuses.SUBMITTED || statuses[0].code === Statuses.COMPLETED);
   },
 
+  _validateFinalization: async (submissionService, id, willSubmit, { currentUser, cookie, trx }) => {
+    const submissionData = await submissionService.read(id);
+    validateFormSubmissionSchedule(submissionData.form);
+    if (submissionData.submission?.draft || willSubmit) {
+      const proof = turnstileService.requireProof({ currentUser, headers: { cookie } }, submissionData.form);
+      await turnstileAllowance.consume(trx, proof);
+    }
+  },
+
   _handleStatusChange: async (submissionService, id, data, statuses, user, trx) => {
     if (becomesSubmitted(data, statuses)) {
       await submissionService.changeStatusState(id, { code: Statuses.SUBMITTED }, user, trx);
@@ -125,14 +134,8 @@ const service = {
           return false;
         }
 
-        // Validate schedule before allowing draft to be converted to submitted
         if (!data.draft) {
-          const submissionData = await submissionService.read(formSubmissionId);
-          validateFormSubmissionSchedule(submissionData.form);
-          if (submissionData.submission?.draft || becomesSubmitted(data, statuses)) {
-            const proof = turnstileService.requireProof({ currentUser, headers: { cookie } }, submissionData.form);
-            await turnstileAllowance.consume(trx, proof);
-          }
+          await service._validateFinalization(submissionService, formSubmissionId, becomesSubmitted(data, statuses), { currentUser, cookie, trx });
         }
 
         submissionReceived = await service._handleStatusChange(submissionService, formSubmissionId, data, statuses, currentUser, trx);
