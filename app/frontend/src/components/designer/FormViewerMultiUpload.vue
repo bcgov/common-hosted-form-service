@@ -31,6 +31,10 @@ const properties = defineProps({
     type: String,
     default: null,
   },
+  submitBulk: {
+    type: Function,
+    default: (send) => send(),
+  },
   // This is the provided template
   jsonCsv: {
     type: Object,
@@ -488,11 +492,14 @@ async function saveBulkData(submissions) {
 async function sendMultiSubmissionData(body) {
   try {
     isProcessing.value = true;
-    let response = await formService.createMultiSubmission(
-      properties.form.id,
-      properties.submissionVersion,
-      body
+    const response = await properties.submitBulk(() =>
+      formService.createMultiSubmission(
+        properties.form.id,
+        properties.submissionVersion,
+        body
+      )
     );
+    if (!response) return;
     if ([200, 201].includes(response.status)) {
       // all is good, flag no errors and carry on...
       // store our submission result...

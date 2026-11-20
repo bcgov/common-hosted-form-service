@@ -7,6 +7,7 @@ const { currentUser, hasFormPermissions, requireCreateFormPermission } = require
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
+const turnstileController = require('./turnstile/controller');
 
 routes.use(currentUser);
 
@@ -49,6 +50,9 @@ routes.post('/:formId/template/render', apiAccess, hasFormPermissions([P.FORM_RE
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
 });
+
+routes.get('/:formId/turnstile', hasFormPermissions([P.FORM_READ]), turnstileController.readStatus);
+routes.post('/:formId/turnstile', hasFormPermissions([P.FORM_READ]), turnstileController.verifyChallenge);
 
 routes.get('/:formId/version', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readPublishedForm(req, res, next);

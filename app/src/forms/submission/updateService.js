@@ -7,7 +7,11 @@ const log = require('../../components/log')(module.filename);
 
 const { Statuses } = require('../common/constants');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+const turnstileService = require('../form/turnstile/service');
+const turnstileAllowance = require('../form/turnstile/allowanceService');
 const { validateFormSubmissionSchedule } = require('../common/scheduleService');
+
+const becomesSubmitted = (data, statuses) => !data.draft && (!statuses?.length || statuses[0].code === Statuses.REVISING);
 
 const service = {
   _isRestoring: (data) => {
@@ -27,7 +31,7 @@ const service = {
   },
 
   _handleStatusChange: async (submissionService, id, data, statuses, user, trx) => {
-    if (!data.draft && (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING)) {
+    if (becomesSubmitted(data, statuses)) {
       await submissionService.changeStatusState(id, { code: Statuses.SUBMITTED }, user, trx);
       return true;
     }
@@ -102,7 +106,7 @@ const service = {
     }
   },
 
-  update: async (submissionService, formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
+  update: async (submissionService, formSubmissionId, data, currentUser, referrer, etrx = undefined, cookie = undefined) => {
     let trx;
     let result;
     let submissionReceived = false;
@@ -125,6 +129,10 @@ const service = {
         if (!data.draft) {
           const submissionData = await submissionService.read(formSubmissionId);
           validateFormSubmissionSchedule(submissionData.form);
+          if (submissionData.submission?.draft || becomesSubmitted(data, statuses)) {
+            const proof = turnstileService.requireProof({ currentUser, headers: { cookie } }, submissionData.form);
+            await turnstileAllowance.consume(trx, proof);
+          }
         }
 
         submissionReceived = await service._handleStatusChange(submissionService, formSubmissionId, data, statuses, currentUser, trx);

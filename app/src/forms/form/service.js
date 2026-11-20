@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const { EmailTypes, ScheduleType, TenantRoles } = require('../common/constants');
 const eventService = require('../event/eventService');
 const authService = require('../auth/service');
+const turnstileAllowance = require('./turnstile/allowanceService');
 const moment = require('moment');
 const {
   FileStorage,
@@ -161,6 +162,8 @@ async function ensureTenantFormSetup(currentUser, headers, trx, formId) {
   }));
   await FormGroup.query(trx).insert(formGroups);
 }
+
+const MAX_BULK_ROWS = 1000;
 
 const service = {
   /**
@@ -513,6 +516,15 @@ const service = {
       migration: migration ? { migratedAt: migration.createdAt, migratedBy: migration.createdBy, tenantId: migration.tenantId } : null,
     };
   },
+
+  readFormIdentityProviders: (formId) =>
+    Form.query()
+      .findById(formId)
+      .modify('filterActive', true)
+      .select('id')
+      .withGraphFetched('identityProviders')
+      .modifyGraph('identityProviders', (query) => query.select('identity_provider.code'))
+      .throwIfNotFound(),
 
   readFormOptions: (formId, params = {}) => {
     params = queryUtils.defaultActiveOnly(params);
@@ -1019,6 +1031,7 @@ const service = {
         updatedBy: null,
       };
 
+      if (!data.draft) await turnstileAllowance.consume(trx, options.turnstileProof);
       await FormSubmission.query(trx).insert(obj);
 
       if (!isPublicForm && !currentUser.public) {
@@ -1098,7 +1111,7 @@ const service = {
       return result;
     }
   },
-  createMultiSubmission: async (formVersionId, data, currentUser) => {
+  createMultiSubmission: async (formVersionId, data, currentUser, turnstileProof) => {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
@@ -1117,9 +1130,14 @@ const service = {
         // We know this is the submission creator when we see the SUBMISSION_CREATE permission
         // These are adjusted at the update point if going from draft to submitted, or when adding
         // team submitters to a draft
-        trx = await FormSubmission.startTransaction();
+        const submissionDataArray = data.submission?.data;
+        if (!Array.isArray(submissionDataArray) || !submissionDataArray.length) {
+          throw new Problem(400, { detail: 'Bulk upload must contain at least one row.' });
+        }
+        if (submissionDataArray.length > MAX_BULK_ROWS) {
+          throw new Problem(400, { detail: `Bulk upload is limited to ${MAX_BULK_ROWS} rows per batch.` });
+        }
         const createdBy = currentUser.usernameIdp;
-        const submissionDataArray = data.submission.data;
         const recordWithoutData = data;
         delete recordWithoutData.submission.data;
         // let's create multiple submissions with same metadata
@@ -1137,6 +1155,8 @@ const service = {
             },
           };
         });
+        trx = await FormSubmission.startTransaction();
+        await turnstileAllowance.consume(trx, turnstileProof);
         const result = await FormSubmission.query(trx).insert(recordsToInsert);
         const perms = [Permissions.SUBMISSION_CREATE, Permissions.SUBMISSION_READ];
         if (data.draft) {

@@ -1,4 +1,9 @@
 {
+  "turnstile": {
+    "siteKey": "",
+    "secretKey": "",
+    "hostnames": "localhost"
+  },
   "db": {
     "database": "chefs",
     "host": "localhost",
