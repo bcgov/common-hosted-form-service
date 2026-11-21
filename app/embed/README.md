@@ -23,7 +23,7 @@ Versioned releases are served with:
 
 - `Access-Control-Allow-Origin: *`, required for cross-origin scripts, stylesheets and fonts loaded with `integrity`
 - `Cross-Origin-Resource-Policy: cross-origin`
-- `Cache-Control: public, max-age=31536000, immutable`
+- `Cache-Control: public, max-age=31536000, immutable`, except in PR environments (`/pr-<number>`), where releases can be re-cut during review and are sent with `Cache-Control: no-cache` so browsers revalidate them
 - `X-Content-Type-Options: nosniff`
 
 A path whose first segment is `x.y.z` belongs to releases: an unknown version or file returns a JSON 404 with the same CORS headers. A range past the end of a file returns 416 and a failed conditional request 412; these and read errors (500) are sent with `Cache-Control: no-store`, so an error is never cached as the file. Dotfiles and directory listings are never served, and a release must not contain links. Any other path falls through to the `v1` files and then the frontend.

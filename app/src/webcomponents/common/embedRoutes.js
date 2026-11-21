@@ -9,6 +9,9 @@ const { RELEASES_DIR, INTEGRITY_FILE, VERSION_PATTERN } = require('./releases');
 // Matches only an x.y.z first segment, so no other path is decoded or claimed here
 const VERSION_ROUTE = /^\/(\d+\.\d+\.\d+)(?=\/|$)/;
 
+// PR deployments are served at /pr-<number>, and their releases are re-cut while the PR is reviewed
+const PR_BASE_PATH = /^\/pr-\d+$/;
+
 // Headers express.static sets for the file before an error can occur
 const FILE_HEADERS = ['Cache-Control', 'ETag', 'Last-Modified', 'Content-Type', 'Content-Length', 'Content-Range', 'Accept-Ranges'];
 
@@ -17,6 +20,24 @@ function setReleaseHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+}
+
+function isPullRequestBasePath(basePath) {
+  return PR_BASE_PATH.test(basePath);
+}
+
+// Published releases never change, so browsers keep them for a year. A re-cut release must be revalidated instead.
+function releaseStaticOptions(immutable) {
+  const options = { index: false, redirect: false };
+  if (immutable) return { ...options, immutable: true, maxAge: '365d', setHeaders: setReleaseHeaders };
+  return {
+    ...options,
+    cacheControl: false,
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      setReleaseHeaders(res);
+    },
+  };
 }
 
 // Exact-version release folders that have an integrity.json
@@ -28,11 +49,11 @@ function listVersions(dir) {
 }
 
 // Serves exact-version releases at /<x.y.z>/<path> and the frozen v1 embed files at their legacy URLs
-function createEmbedRouter(dir = RELEASES_DIR) {
+function createEmbedRouter({ dir = RELEASES_DIR, immutable = true } = {}) {
   const router = express.Router();
 
   for (const version of listVersions(dir)) {
-    router.use(`/${version}`, express.static(path.join(dir, version), { index: false, redirect: false, immutable: true, maxAge: '365d', setHeaders: setReleaseHeaders }));
+    router.use(`/${version}`, express.static(path.join(dir, version), releaseStaticOptions(immutable)));
   }
 
   // Answer release misses and errors here rather than in the app handlers, keeping CORS so cross-origin loads see the status
@@ -69,4 +90,5 @@ function createEmbedRouter(dir = RELEASES_DIR) {
 
 module.exports = {
   createEmbedRouter,
+  isPullRequestBasePath,
 };

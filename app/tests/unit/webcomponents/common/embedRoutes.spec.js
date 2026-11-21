@@ -4,7 +4,7 @@ const os = require('node:os');
 const path = require('node:path');
 const request = require('supertest');
 
-const { createEmbedRouter } = require('../../../../src/webcomponents/common/embedRoutes');
+const { createEmbedRouter, isPullRequestBasePath } = require('../../../../src/webcomponents/common/embedRoutes');
 const { releaseDir } = require('../../../../src/webcomponents/common/releases');
 
 // Fixture releases folder: one served release, one without integrity.json, a non-version folder and v1
@@ -33,7 +33,7 @@ describe('webcomponents embed routes', () => {
     dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chefs-embed-'));
     writeFixture(dir);
     app = express();
-    app.use('/app/embed', createEmbedRouter(dir));
+    app.use('/app/embed', createEmbedRouter({ dir }));
     app.use((_req, res) => res.status(418).send('fell through'));
   });
 
@@ -119,6 +119,51 @@ describe('webcomponents embed routes', () => {
     it('returns 404 for methods other than GET and HEAD', async () => {
       const res = await request(app).post('/app/embed/1.1.0/chefs-form-viewer.min.js');
       expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('re-cut releases (PR deployments)', () => {
+    let prApp;
+
+    beforeAll(() => {
+      prApp = express();
+      prApp.use('/pr-1234/embed', createEmbedRouter({ dir, immutable: false }));
+    });
+
+    it.each(['/chefs-form-viewer.min.js', '/integrity.json'])('serves %s with no-cache and the release headers', async (file) => {
+      const res = await request(prApp).get(`/pr-1234/embed/1.1.0${file}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['cache-control']).toBe('no-cache');
+      expect(res.headers['access-control-allow-origin']).toBe('*');
+      expect(res.headers['cross-origin-resource-policy']).toBe('cross-origin');
+      expect(res.headers['x-content-type-options']).toBe('nosniff');
+    });
+
+    it('answers a revalidation with 304', async () => {
+      const first = await request(prApp).get('/pr-1234/embed/1.1.0/chefs-form-viewer.min.js');
+      const res = await request(prApp).get('/pr-1234/embed/1.1.0/chefs-form-viewer.min.js').set('If-None-Match', first.headers.etag);
+      expect(res.statusCode).toBe(304);
+    });
+
+    it('still sends errors with no-store', async () => {
+      const res = await request(prApp).get('/pr-1234/embed/1.1.0/chefs-form-viewer.min.js').set('Range', 'bytes=99999999-');
+      expect(res.statusCode).toBe(416);
+      expect(res.headers['cache-control']).toBe('no-store');
+    });
+  });
+
+  describe('isPullRequestBasePath', () => {
+    it.each([
+      ['/pr-1966', true],
+      ['/pr-1', true],
+      ['/app', false],
+      ['/pr-', false],
+      ['/pr-12a', false],
+      ['/pr-12/app', false],
+      ['/app/pr-12', false],
+      ['', false],
+    ])('%s -> %s', (basePath, expected) => {
+      expect(isPullRequestBasePath(basePath)).toBe(expected);
     });
   });
 
