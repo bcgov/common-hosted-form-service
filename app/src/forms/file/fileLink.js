@@ -7,7 +7,8 @@ const { SystemUsers } = require('../common/constants');
 // Uploads by anonymous callers are stored with this createdBy, and anonymous
 // callers and legacy form API key callers (Basic auth on the /forms and
 // /submissions routes) have it as their usernameIdp. Webcomponents callers
-// are their embed user instead (api-user, gateway-user).
+// are their embed user instead (api-user, gateway-user, and public-user for
+// anonymous embeds of Public forms).
 const PUBLIC_UPLOADER = 'public';
 
 const FILE_LINK = Object.freeze({ KEEP: 'keep', LEAVE: 'leave', LINK: 'link', REJECT: 'reject' });

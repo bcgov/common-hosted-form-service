@@ -223,36 +223,29 @@ describe('rbac/enrich', () => {
       // Note: classification is not stored in decision metadata, only fileApiAccess
     });
 
-    it('should record API_USER_DRAFT_FILE_READ and API_USER_DRAFT_FILE_DELETE for API users with webcomponents classification and draft file', async () => {
+    it('should refuse API_USER_DRAFT_FILE_READ, and grant no file access, for API users reading a draft file on webcomponents routes', async () => {
       const enrichRBAC = makeEnrichRBAC({ deps: makeDeps() });
-      // Need SUBMISSION_READ for read and SUBMISSION_UPDATE for delete to trigger decisions
-      const policy = {
-        requiredPermissions: [Permissions.SUBMISSION_READ, Permissions.SUBMISSION_UPDATE],
-        classification: 'webcomponents',
-      };
-      const who = {
-        actor: {
-          type: 'api',
-          id: 'api-user-123',
-        },
-      };
-      const resource = {
-        file: {
-          id: 'file-123',
-          formSubmissionId: null, // draft file
-        },
-      };
+      const policy = { requiredPermissions: [Permissions.SUBMISSION_READ], classification: 'webcomponents' };
+      const who = { actor: { type: 'api', id: 'api-user-123' } };
+      const resource = { file: { id: 'file-123', formSubmissionId: null } }; // draft file
 
       const result = await enrichRBAC({ policy, who, resource, currentUser: null, apiUser: true });
 
       const fileReadDecision = result.decisions.find((d) => d.predicate === 'apiUserDraftFileRead');
+      expect(fileReadDecision).toEqual(expect.objectContaining({ result: false }));
+      expect(result.decisions.find((d) => d.predicate === 'apiUserFileAccess')).toBeUndefined();
+    });
+
+    it('should record API_USER_DRAFT_FILE_DELETE for API users deleting a draft file on webcomponents routes', async () => {
+      const enrichRBAC = makeEnrichRBAC({ deps: makeDeps() });
+      const policy = { requiredPermissions: [Permissions.SUBMISSION_UPDATE], classification: 'webcomponents' };
+      const who = { actor: { type: 'api', id: 'api-user-123' } };
+      const resource = { file: { id: 'file-123', formSubmissionId: null } }; // draft file
+
+      const result = await enrichRBAC({ policy, who, resource, currentUser: null, apiUser: true });
+
       const fileDeleteDecision = result.decisions.find((d) => d.predicate === 'apiUserDraftFileDelete');
-
-      expect(fileReadDecision).toBeDefined();
-      expect(fileReadDecision.result).toBe(true);
-
-      expect(fileDeleteDecision).toBeDefined();
-      expect(fileDeleteDecision.result).toBe(true);
+      expect(fileDeleteDecision).toEqual(expect.objectContaining({ result: true }));
     });
 
     it('should not record API_USER_DRAFT_FILE_READ or API_USER_DRAFT_FILE_DELETE for API users with webcomponents classification and submitted file', async () => {

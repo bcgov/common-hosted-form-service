@@ -163,10 +163,22 @@ describe('webcomponents credential form binding', () => {
     const fileUrl = `/webcomponents/v1/files/${draftFile}`;
     const mockDraft = (formId) => jest.spyOn(fileService, 'read').mockResolvedValue({ id: draftFile, formSubmissionId: null, formId, createdBy: 'api-user' });
 
-    it.each([['GET'], ['DELETE']])('%s returns 200 for a credential on the form the file was uploaded for', async (method) => {
+    it('DELETE returns 200 for a credential on the form the file was uploaded for', async () => {
       mockDraft(formA.id);
-      const res = await request(app)[method.toLowerCase()](fileUrl).set(basicAuth(formA));
+      const res = await request(app).delete(fileUrl).set(basicAuth(formA));
       expect(res.statusCode).toBe(200);
+    });
+
+    it.each([
+      ['Basic auth', () => basicAuth(formA)],
+      ['a gateway token', () => gatewayAuth(formA)],
+    ])('GET returns 403 with %s, even for the form the file was uploaded for: a file on no submission is never downloadable', async (_name, auth) => {
+      mockDraft(formA.id);
+      const res = await request(app)
+        .get(fileUrl)
+        .set(await auth());
+      expect(res.statusCode).toBe(403);
+      expectHandlerNotCalled();
     });
 
     it.each([['GET'], ['DELETE']])('%s returns 404 for a credential on another form', async (method) => {

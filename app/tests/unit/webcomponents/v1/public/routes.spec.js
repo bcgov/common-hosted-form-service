@@ -13,6 +13,9 @@ jest.mock('../../../../../src/forms/file/middleware/upload', () => ({
   },
 }));
 jest.mock('../../../../../src/forms/file/middleware/virusScan', () => ({ scanFile: (_req, _res, next) => next() }));
+// The anonymous upload limit itself is covered by the uploadRateLimit tests; here, only where it runs
+const mockLimitAnonymousUploads = jest.fn((_req, _res, next) => next());
+jest.mock('../../../../../src/forms/file/middleware/uploadRateLimit', () => ({ limitAnonymousUploads: (...args) => mockLimitAnonymousUploads(...args) }));
 
 const authService = require('../../../../../src/forms/auth/service');
 const fileController = require('../../../../../src/forms/file/controller');
@@ -72,6 +75,7 @@ describe('webcomponents/v1/public routes', () => {
     });
     jest.spyOn(webcomponentSettingsService, 'readAllowedOrigins').mockImplementation(async (formId) => forms[formId].allowedOrigins);
     mockUploads.length = 0;
+    mockLimitAnonymousUploads.mockClear();
 
     handlers = [jest.spyOn(publicController, 'readFormSchema'), jest.spyOn(publicController, 'createSubmission')];
 
@@ -310,23 +314,40 @@ describe('webcomponents/v1/public routes', () => {
       expect(mockUploads).toEqual([]);
       expect(fileController.create).not.toHaveBeenCalled();
     });
+
+    it('counts every upload against the anonymous upload limit, with the passed-along token already stripped', async () => {
+      await upload(publicForm);
+      await upload(loginForm);
+      expect(mockLimitAnonymousUploads).toHaveBeenCalledTimes(2);
+      for (const [req] of mockLimitAnonymousUploads.mock.calls) expect(req.headers).not.toHaveProperty('authorization');
+    });
+
+    it('returns 429 without loading the form or reading the body when the limit is reached', async () => {
+      mockLimitAnonymousUploads.mockImplementationOnce((_req, _res, next) => next(Object.assign(new Error('Too many file uploads. Please try again later.'), { status: 429 })));
+      const res = await upload(publicForm);
+      expect(res.statusCode).toBe(429);
+      expect(formService.readPublishedForm).not.toHaveBeenCalled();
+      expect(mockUploads).toEqual([]);
+      expect(fileController.create).not.toHaveBeenCalled();
+    });
   });
 
-  describe('GET and DELETE /:formId/files/:fileId', () => {
+  describe('/:formId/files/:fileId', () => {
     const fileId = '66666666-6666-4666-8666-666666666666';
     const fileUrl = `/webcomponents/v1/public/${publicForm}/files/${fileId}`;
 
     beforeEach(() => {
-      jest.spyOn(fileService, 'findByIds').mockResolvedValue([{ id: fileId, formId: publicForm, formSubmissionId: null }]);
+      jest.spyOn(fileService, 'findByIds');
       jest.spyOn(fileController, 'read').mockImplementation(async (_req, res) => res.status(200).send('file'));
       jest.spyOn(fileService, 'deleteUnsubmittedUpload').mockResolvedValue();
     });
 
-    it('returns an unsubmitted upload for the form', async () => {
+    it('never serves an upload for download, even an unsubmitted one for the form on an allowed origin', async () => {
       const res = await request(app).get(fileUrl).set('Origin', allowedOrigin);
-      expect(res.statusCode).toBe(200);
-      const [req] = fileController.read.mock.calls[0];
-      expect(req.currentFileRecord).toEqual({ id: fileId, formId: publicForm, formSubmissionId: null });
+      expect(res.statusCode).toBe(404);
+      expect(formService.readPublishedForm).not.toHaveBeenCalled();
+      expect(fileService.findByIds).not.toHaveBeenCalled();
+      expect(fileController.read).not.toHaveBeenCalled();
     });
 
     it('deletes an unsubmitted upload for the form', async () => {
@@ -342,36 +363,22 @@ describe('webcomponents/v1/public routes', () => {
       expect(res.body).toEqual({ detail: 'File not found.' });
     });
 
-    it.each([
-      ['part of a submission', { id: fileId, formId: publicForm, formSubmissionId: '44444444-4444-4444-8444-444444444444' }],
-      ['uploaded for another form', { id: fileId, formId: loginForm, formSubmissionId: null }],
-      ['uploaded outside a web component', { id: fileId, formId: null, formSubmissionId: null }],
-    ])('returns 404 for reading a file %s', async (_name, file) => {
-      fileService.findByIds.mockResolvedValue([file]);
-      const res = await request(app).get(fileUrl).set('Origin', allowedOrigin);
-      expect(res.statusCode).toBe(404);
-      expect(fileController.read).not.toHaveBeenCalled();
-    });
-
-    it('returns 403 for an origin that is not allowed', async () => {
-      const read = await request(app).get(fileUrl).set('Origin', 'https://evil.example.org');
-      const remove = await request(app).delete(fileUrl).set('Origin', 'https://evil.example.org');
-      expect(read.statusCode).toBe(403);
-      expect(remove.statusCode).toBe(403);
-      expect(fileService.findByIds).not.toHaveBeenCalled();
+    it('returns 403 for deleting on an origin that is not allowed', async () => {
+      const res = await request(app).delete(fileUrl).set('Origin', 'https://evil.example.org');
+      expect(res.statusCode).toBe(403);
       expect(fileService.deleteUnsubmittedUpload).not.toHaveBeenCalled();
     });
 
-    it('returns 404 for a form that does not use the Public identity provider', async () => {
-      const res = await request(app).get(`/webcomponents/v1/public/${loginForm}/files/${fileId}`).set('Origin', allowedOrigin);
+    it('returns 404 for deleting on a form that does not use the Public identity provider', async () => {
+      const res = await request(app).delete(`/webcomponents/v1/public/${loginForm}/files/${fileId}`).set('Origin', allowedOrigin);
       expect(res.statusCode).toBe(404);
-      expect(fileController.read).not.toHaveBeenCalled();
+      expect(fileService.deleteUnsubmittedUpload).not.toHaveBeenCalled();
     });
 
-    it('returns 400 for a file id that is not a UUID', async () => {
-      const res = await request(app).get(`/webcomponents/v1/public/${publicForm}/files/not-a-uuid`).set('Origin', allowedOrigin);
+    it('returns 400 for deleting a file id that is not a UUID', async () => {
+      const res = await request(app).delete(`/webcomponents/v1/public/${publicForm}/files/not-a-uuid`).set('Origin', allowedOrigin);
       expect(res.statusCode).toBe(400);
-      expect(fileService.findByIds).not.toHaveBeenCalled();
+      expect(fileService.deleteUnsubmittedUpload).not.toHaveBeenCalled();
     });
   });
 });

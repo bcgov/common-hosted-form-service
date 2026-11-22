@@ -344,7 +344,7 @@ describe('middleware/filePermissions', () => {
         });
       });
 
-      it('should allow when API user draft file read is approved (GET request, e.g., webcomponents classification)', async () => {
+      it('should deny a GET of a draft file even when API user draft file read is approved', async () => {
         const middleware = hasFilePermissions(['PERMISSION_READ']);
         const req = {
           method: 'GET',
@@ -357,6 +357,10 @@ describe('middleware/filePermissions', () => {
               decisions: [
                 {
                   predicate: PREDICATES.API_USER_DRAFT_FILE_READ,
+                  result: true,
+                },
+                {
+                  predicate: PREDICATES.API_USER_FILE_ACCESS,
                   result: true,
                 },
               ],
@@ -372,7 +376,10 @@ describe('middleware/filePermissions', () => {
         };
         const res = {};
 
-        await callMiddleware(middleware, req, res);
+        await expect(callMiddleware(middleware, req, res)).rejects.toMatchObject({
+          status: HTTP_STATUS.FORBIDDEN,
+          detail: ERRORS.UNATTACHED_FILE_READ,
+        });
       });
 
       it('should allow when API user draft file delete is approved (DELETE request, e.g., webcomponents classification)', async () => {
@@ -406,26 +413,20 @@ describe('middleware/filePermissions', () => {
         await callMiddleware(middleware, req, res);
       });
 
-      it('should allow API user draft file read even when user is not uploader and form is not public (GET request)', async () => {
+      it('should deny a GET of a draft file to its uploader on a public form', async () => {
         const middleware = hasFilePermissions(['PERMISSION_READ']);
         const req = {
           method: 'GET',
           currentUser: {
-            id: 'user-789',
+            id: 'user-123',
           },
           securityContext: {
             rbac: {
               permissions: [],
-              decisions: [
-                {
-                  predicate: PREDICATES.API_USER_DRAFT_FILE_READ,
-                  result: true,
-                  classification: 'webcomponents',
-                },
-              ],
+              decisions: [],
             },
             resource: {
-              publicForm: false,
+              publicForm: true,
               file: {
                 id: 'file-123',
                 createdBy: 'user-123',
@@ -435,7 +436,10 @@ describe('middleware/filePermissions', () => {
         };
         const res = {};
 
-        await callMiddleware(middleware, req, res);
+        await expect(callMiddleware(middleware, req, res)).rejects.toMatchObject({
+          status: HTTP_STATUS.FORBIDDEN,
+          detail: ERRORS.UNATTACHED_FILE_READ,
+        });
       });
 
       it('should allow API user draft file delete even when user is not uploader and form is not public (DELETE request)', async () => {

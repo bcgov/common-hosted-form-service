@@ -5,10 +5,10 @@ const { AuthCombinations } = require('../../../runtime-auth/security');
 const chefSecurity = require('../../common/security');
 const requireAllowedOrigin = require('../../common/middleware/requireAllowedOrigin');
 const requireFileUploadField = require('../../common/middleware/requireFileUploadField');
-const requireUnsubmittedFormFile = require('../../common/middleware/requireUnsubmittedFormFile');
 const controller = require('./controller');
 const fileController = require('../../../forms/file/controller');
 const fileUpload = require('../../../forms/file/middleware/upload').fileUpload;
+const { limitAnonymousUploads } = require('../../../forms/file/middleware/uploadRateLimit');
 const virusScan = require('../../../forms/file/middleware/virusScan');
 
 const P = require('../../../forms/common/constants').Permissions;
@@ -37,9 +37,12 @@ routes.post('/:formId/submit', publicForm([P.FORM_READ, P.SUBMISSION_CREATE]), r
   await controller.createSubmission(req, res, next);
 });
 
-// Uploads are checked before the body is read, and only for a form with a file upload field
+// Uploads are checked before the body is read, and only for a form with a file upload field.
+// Each counts against the anonymous upload limit first; credentials are already stripped, so
+// a passed-along Bearer token cannot skip it.
 routes.post(
   '/:formId/files',
+  limitAnonymousUploads,
   publicForm([P.FORM_READ, P.SUBMISSION_CREATE]),
   requireAllowedOrigin,
   requireFileUploadField,
@@ -50,11 +53,9 @@ routes.post(
   }
 );
 
-// A submitter can read or remove their upload until it is part of a submission
-routes.get('/:formId/files/:fileId', publicForm([P.FORM_READ, P.SUBMISSION_CREATE]), requireAllowedOrigin, requireUnsubmittedFormFile, async (req, res, next) => {
-  await fileController.read(req, res, next);
-});
-
+// A submitter can remove their upload until it is part of a submission. Uploads are never
+// downloadable here: a file on no submission is readable only by the signed-in user who
+// uploaded it (forms/file/middleware/filePermissions.js decideFileRead).
 // The delete itself matches the upload, so a submit that links it first keeps it
 routes.delete('/:formId/files/:fileId', publicForm([P.FORM_READ, P.SUBMISSION_CREATE]), requireAllowedOrigin, async (req, res, next) => {
   await controller.deleteFile(req, res, next);

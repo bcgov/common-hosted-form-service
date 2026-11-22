@@ -210,6 +210,12 @@ module.exports = function makeEnrichRBAC({ deps }) {
       return;
     }
 
+    // A file on no submission is never downloadable on these routes (middleware/filePermissions.js)
+    if (requiresRead) {
+      decide(PREDICATES.API_USER_DRAFT_FILE_READ, false, { reason: 'a file on no submission cannot be downloaded' });
+      return;
+    }
+
     const result = fileApiAccess !== false;
     recordDraftFileApprovals(requiresRead, requiresUpdate, result, policy, permissions, decide, fileApiAccess);
   }
