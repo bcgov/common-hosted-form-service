@@ -118,7 +118,7 @@ A form that uses the Public login option can be embedded without an API key or g
 ```html
 <script
   src="https://<chefs-host>/app/embed/1.1.0/chefs-form-viewer-embed.min.js?form-id=<formId>"
-  integrity="sha384-0LSpnf2echlzggdJX1PEHyWiWIiLeHoL1yNhjmlPgOtCcDV1f9j518kMevuAlBiR"
+  integrity="sha384-Ei1Ey8aW1/sijXvaCn2IB2gbdsd5vF9Tm2eXGaUsmgYSalYmjNXSVAgrkptGFN6m"
   crossorigin="anonymous"
 ></script>
 ```

@@ -1734,7 +1734,7 @@
       if (!this._isAnonymous() || !schema || typeof schema !== 'object') {
         return schema;
       }
-      const copy = JSON.parse(JSON.stringify(schema));
+      const copy = structuredClone(schema);
       const pending = [copy];
       while (pending.length) {
         const node = pending.pop();
