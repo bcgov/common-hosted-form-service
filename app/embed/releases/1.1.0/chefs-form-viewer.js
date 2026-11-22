@@ -35,6 +35,11 @@
   const ANONYMOUS_HINT =
     'Embedding without an API key or auth token needs a form that uses the Public login option and lists this website in its allowed origins.';
 
+  // CHEFS lets only a signed-in uploader read a file that is not yet part of a submission, so an
+  // anonymous embed never downloads uploads: its file names are shown as text, not links
+  const ANONYMOUS_DOWNLOAD_UNAVAILABLE =
+    'Uploaded files cannot be downloaded when the form is embedded without an API key or auth token.';
+
   /**
    * Creates a minimal redaction-aware logger for the component.
    *
@@ -1719,6 +1724,31 @@
     }
 
     /**
+     * The schema Form.io renders. Anonymous embeds cannot download uploads, so each file upload
+     * field gets Form.io's uploadOnly setting and lists its files as text, not links. The
+     * published schema itself is left as it is.
+     * @param {Object} schema - The published form schema
+     * @returns {Object} The schema to render
+     */
+    _schemaForMode(schema) {
+      if (!this._isAnonymous() || !schema || typeof schema !== 'object') {
+        return schema;
+      }
+      const copy = JSON.parse(JSON.stringify(schema));
+      const pending = [copy];
+      while (pending.length) {
+        const node = pending.pop();
+        if (Array.isArray(node)) {
+          pending.push(...node);
+        } else if (node && typeof node === 'object') {
+          if (node.type === 'simplefile') node.uploadOnly = true;
+          pending.push(...Object.values(node));
+        }
+      }
+      return copy;
+    }
+
+    /**
      * Reports a feature that needs CHEFS credentials when the component has none
      * @param {string} action - What was attempted, e.g. 'Printing'
      * @returns {string} The error message emitted with formio:error
@@ -1782,10 +1812,10 @@
         printSubmission: `${base}/webcomponents/v1/print/${fid}/submission/${sid}/print`,
         printDraft: `${base}/webcomponents/v1/print/${fid}/print`,
 
-        // simplefile component routes
+        // simplefile component routes; anonymous embeds have no download route
         files,
         deleteFile: `${files}/:fileId`,
-        getFile: `${files}/:fileId`,
+        ...(anonymous ? {} : { getFile: `${files}/:fileId` }),
         uploadFile: anonymous ? files : `${files}?formId=${fid}`,
 
         // bcgeoaddress component routes
@@ -3175,7 +3205,11 @@
         });
 
         if (!response.ok) {
-          const errorMsg = `Download failed: ${response.status} ${response.statusText}`;
+          // The server says why, e.g. a file that is not yet part of a submission cannot be downloaded
+          const errorMsg = await this._parseError(
+            response,
+            `Download failed: ${response.status} ${response.statusText}`
+          );
           this._log.error(errorMsg, { fileId, status: response.status });
           throw new Error(errorMsg);
         }
@@ -3412,6 +3446,10 @@
         },
 
         getFile: async (fileId, config = {}) => {
+          // File names are text in anonymous embeds (_schemaForMode); refuse anything that still asks
+          if (this._isAnonymous())
+            throw new Error(ANONYMOUS_DOWNLOAD_UNAVAILABLE);
+
           const proceed = this._emitCancelable('formio:beforeFileDownload', {
             fileId,
             config,
@@ -3715,7 +3753,7 @@
       // Create Form.io instance
       this.formioInstance = await this._createFormioInstance(
         container,
-        this.formSchema,
+        this._schemaForMode(this.formSchema),
         options
       );
 

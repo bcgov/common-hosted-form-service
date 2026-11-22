@@ -118,15 +118,15 @@ A form that uses the Public login option can be embedded without an API key or g
 ```html
 <script
   src="https://<chefs-host>/app/embed/1.1.0/chefs-form-viewer-embed.min.js?form-id=<formId>"
-  integrity="sha384-GVHVtv1oLgPEhiYImin9unQv80r0lihtwuCrXJxKY/aD+pH9xizZCfSN9CmaedS6"
+  integrity="sha384-0LSpnf2echlzggdJX1PEHyWiWIiLeHoL1yNhjmlPgOtCcDV1f9j518kMevuAlBiR"
   crossorigin="anonymous"
 ></script>
 ```
 
 - **Requests**: the schema, submit and file requests go to the endpoints below with no CHEFS credentials and none of the host's `onPassthroughHeaders` headers. (The `headers` attribute only feeds the form's JavaScript and is never sent.)
 - **After a submit**: CHEFS does not return anonymous submissions, so the component shows the data it sent, read-only. If the form's settings hide submission contents on success, it clears the form instead. Listen for `formio:submitDone` to show a confirmation (see its `showConfirmationId` and `hideContent` flags). `auto-reload-on-submit=false` leaves the form as it is.
-- **Files**: a form whose published version has a file upload field accepts uploads, which CHEFS virus-scans and records against the form. A submitter can download or remove an upload until the form is submitted.
-- **Not available**: printing, downloading a submitted file and loading a `submission-id` need an API key or token; the component emits `formio:error` instead. A Public form never allows drafts.
+- **Files**: a form whose published version has a file upload field accepts uploads, which CHEFS rate-limits by address, virus-scans and records against the form. A submitter can remove an upload until the form is submitted, but cannot download it: CHEFS lets only a signed-in uploader read a file that is not yet part of a submission, so the component shows file names as text, not links.
+- **Not available**: printing, downloading any file and loading a `submission-id` need an API key or token; the component emits `formio:error` instead. A Public form never allows drafts.
 - **Set-up errors**: when CHEFS refuses an anonymous request (`401`, `403` or `404`), the `formio:error` message also says that the form must use the Public login option and list the website as an allowed origin.
 
 Releases v1 and 1.0.0 call the keyed `form-viewer` endpoints, so without a key they fail with `401`.
@@ -135,9 +135,10 @@ Releases v1 and 1.0.0 call the keyed `form-viewer` endpoints, so without a key t
 | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `GET {basePath}/webcomponents/v1/public/{formId}/schema`            | Form schema (same response as the keyed endpoint)                                                                                             |
 | `POST {basePath}/webcomponents/v1/public/{formId}/submit`           | Submit; returns `201 { id, confirmationId, createdAt, draft }`                                                                                |
-| `POST {basePath}/webcomponents/v1/public/{formId}/files`            | Upload one file (`files` field); returns `201 { id, originalName, size, createdBy, createdAt }`. `403` when the form has no file upload field |
-| `GET {basePath}/webcomponents/v1/public/{formId}/files/{fileId}`    | Download an upload for this form that is not yet submitted; any other file is `404`                                                           |
+| `POST {basePath}/webcomponents/v1/public/{formId}/files`            | Upload one file (`files` field); returns `201 { id, originalName, size, createdBy, createdAt }`. `403` when the form has no file upload field, `429` past the anonymous upload limit |
 | `DELETE {basePath}/webcomponents/v1/public/{formId}/files/{fileId}` | Remove an upload for this form that is not yet submitted; any other file is `404`                                                             |
+
+There is no anonymous download endpoint.
 
 - **Allowed origins**: the browser's `Origin` header must match one of the form's allowed origins (`https://host[:port]`, or `http://` on `localhost`, `127.0.0.1` or `[::1]` for development). A missing or unlisted origin, or an empty list, returns `403`.
   - The list decides which websites a browser lets embed the form. It is not access control: a script or server can send any `Origin`, and anyone can already submit a Public form in CHEFS.
@@ -146,6 +147,7 @@ Releases v1 and 1.0.0 call the keyed `form-viewer` endpoints, so without a key t
 - **Credentials are ignored**: an `Authorization` or `X-Chefs-Gateway-Token` header is removed before the request is handled, so a host page can pass its own headers. The submission is recorded as `public`, the same as a public form submitted in CHEFS.
 - **Submissions are final**: only `submission.data` and `submission.metadata` are read from the request, `draft` is always `false`, and every file the data references must be an upload made through these endpoints for this form and not yet submitted, otherwise `422`.
 - **Keyed embeds are unchanged**: requests with an API key or gateway token use the `form-viewer` endpoints and are not checked against allowed origins.
+- **No downloads before submit, keyed or not**: `GET {basePath}/webcomponents/v1/files/{fileId}` returns `403` for a file that is not yet part of a submission, whatever the credential. This is a server change, so it applies to every release, v1 included; releases v1 and 1.0.0 show `Download failed: 403 Forbidden`, and 1.1.0 shows the reason.
 - **Only what the component needs**: these endpoints are for the web component only, and return only what a component release reads. This is a server change, so it applies to every release, v1 included.
   - Schema endpoints (`public` and `form-viewer`): `{ form, schema }`, where `form` has `name`, `description`, `showSubmissionConfirmation`, `hideSubmissionContentOnSuccess`, `enableSubmitterDraft` and `identityProviders` (each with only `code`), and `schema` is the published Form.io schema. The same `form` reaches the host through `formio:loadSchema`, the `formMetadata` property and the embed script's `onMetadataLoaded`.
   - Keyed read-submission endpoint: `{ submission: { submission: { data } } }`.

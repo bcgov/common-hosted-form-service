@@ -2969,6 +2969,50 @@ describe('ChefsFormViewer internals', () => {
     expect(el._triggerFileDownload).toHaveBeenCalled();
   });
 
+  it('_handleFileDownload reports why the server refused a download', async () => {
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/file/test-file-id');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    el._triggerFileDownload = vi.fn();
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 403,
+      statusText: 'Forbidden',
+      json: () =>
+        Promise.resolve({
+          detail:
+            'A file can be downloaded only once it is part of a submission.',
+        }),
+    });
+
+    await expect(el._handleFileDownload('test-file-id')).rejects.toThrow(
+      'A file can be downloaded only once it is part of a submission.'
+    );
+    expect(el._triggerFileDownload).not.toHaveBeenCalled();
+  });
+
+  it('_handleFileDownload falls back to the status when the refusal has no reason', async () => {
+    el._resolveUrl = vi.fn().mockReturnValue('https://test/file/test-file-id');
+    el._buildAuthHeader = vi.fn().mockReturnValue({});
+    globalThis.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      statusText: 'Bad Gateway',
+      json: () => Promise.reject(new Error('not json')),
+    });
+
+    await expect(el._handleFileDownload('test-file-id')).rejects.toThrow(
+      'Download failed: 502 Bad Gateway'
+    );
+  });
+
+  it('_schemaForMode leaves a keyed schema as it is', () => {
+    el.apiKey = 'key';
+    const schema = { components: [{ type: 'simplefile', key: 'upload' }] };
+
+    expect(el._schemaForMode(schema)).toBe(schema);
+    expect(schema.components[0].uploadOnly).toBeUndefined();
+  });
+
   it('_handleFileDelete sends DELETE request for file removal', async () => {
     const fileInfo = { data: { id: 'test-file-id' } };
     el._resolveUrl = vi.fn().mockReturnValue('https://test/file/test-file-id');
@@ -4127,32 +4171,56 @@ describe('ChefsFormViewer internals', () => {
       expect(el._isBusy).toBe(false);
     });
 
-    it('uploads, downloads and deletes through the anonymous file routes', () => {
+    it('uploads and deletes through the anonymous file routes, and has no download route', () => {
       const files = 'https://chefs.example/app/webcomponents/v1/public/form-1/files';
-      expect(el._urls()).toEqual(
+      const urls = el._urls();
+      expect(urls).toEqual(
         expect.objectContaining({
           files,
           uploadFile: files,
-          getFile: `${files}/:fileId`,
           deleteFile: `${files}/:fileId`,
         })
       );
+      expect(urls.getFile).toBeUndefined();
     });
 
-    it('lets the file component upload, download and delete', async () => {
+    it('lets the file component upload and delete, and refuses downloads without a request', async () => {
       el._handleFileUpload = vi.fn().mockResolvedValue({ data: { id: 'file-1' } });
       el._handleFileDownload = vi.fn().mockResolvedValue();
       el._handleFileDelete = vi.fn().mockResolvedValue();
       const files = el._getSimpleFileComponentOptions();
 
       await files.uploadFile(new FormData());
-      await files.getFile('file-1');
+      await expect(files.getFile('file-1')).rejects.toThrow(
+        'Uploaded files cannot be downloaded when the form is embedded without an API key or auth token.'
+      );
       await files.deleteFile({ id: 'file-1' });
 
       expect(el._handleFileUpload).toHaveBeenCalledTimes(1);
-      expect(el._handleFileDownload).toHaveBeenCalledWith('file-1', {});
+      expect(el._handleFileDownload).not.toHaveBeenCalled();
       expect(el._handleFileDelete).toHaveBeenCalledWith({ id: 'file-1' });
-      expect(errors).toEqual([]);
+      expect(globalThis.fetch).not.toHaveBeenCalled();
+    });
+
+    it('lists files as text, not download links, in every file upload field', () => {
+      const schema = {
+        components: [
+          { type: 'simplefile', key: 'top' },
+          {
+            type: 'columns',
+            columns: [{ components: [{ type: 'panel', components: [{ type: 'simplefile', key: 'nested' }] }] }],
+          },
+          { type: 'textfield', key: 'name' },
+        ],
+      };
+
+      const rendered = el._schemaForMode(schema);
+
+      expect(rendered.components[0].uploadOnly).toBe(true);
+      expect(rendered.components[1].columns[0].components[0].components[0].uploadOnly).toBe(true);
+      expect(rendered.components[2].uploadOnly).toBeUndefined();
+      // The published schema is left as it is
+      expect(schema.components[0].uploadOnly).toBeUndefined();
     });
 
     it('sends no credentials or host headers with file requests', async () => {
@@ -4161,14 +4229,7 @@ describe('ChefsFormViewer internals', () => {
         Authorization: 'Bearer host-token',
         'X-Host': 'yes',
       }));
-      el._triggerFileDownload = vi.fn();
-      globalThis.fetch
-        .mockResolvedValueOnce({
-          ok: true,
-          blob: () => Promise.resolve(new Blob(['x'])),
-          headers: { get: () => null },
-        })
-        .mockResolvedValueOnce({ ok: true });
+      globalThis.fetch.mockResolvedValueOnce({ ok: true });
       const xhr = {
         upload: { addEventListener: vi.fn() },
         addEventListener: vi.fn(),
@@ -4187,7 +4248,6 @@ describe('ChefsFormViewer internals', () => {
         const upload = el._handleFileUpload(new FormData());
         xhr.addEventListener.mock.calls.find(([name]) => name === 'load')[1]();
         await expect(upload).resolves.toEqual({ data: { id: 'file-1' } });
-        await el._handleFileDownload('file-1');
         await el._handleFileDelete({ id: 'file-1' });
       } finally {
         globalThis.XMLHttpRequest = originalXhr;
@@ -4195,10 +4255,8 @@ describe('ChefsFormViewer internals', () => {
 
       expect(xhr.open).toHaveBeenCalledWith('POST', files);
       expect(xhr.setRequestHeader).not.toHaveBeenCalled();
-      expect(globalThis.fetch).toHaveBeenNthCalledWith(1, `${files}/file-1`, {
-        headers: undefined,
-      });
-      expect(globalThis.fetch).toHaveBeenNthCalledWith(2, `${files}/file-1`, {
+      expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+      expect(globalThis.fetch).toHaveBeenCalledWith(`${files}/file-1`, {
         method: 'DELETE',
         headers: {},
       });
