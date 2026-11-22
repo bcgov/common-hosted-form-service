@@ -1,9 +1,8 @@
 const Problem = require('api-problem');
 const config = require('config');
-const { NotFoundError } = require('objection');
 const uuid = require('uuid');
 const path = require('path');
-const { FileStorage } = require('../common/models');
+const { FileStorage, SubmissionPackageJob } = require('../common/models');
 const { StorageTypes } = require('../common/constants');
 const log = require('../../components/log')(module.filename);
 const storageService = require('./storage/storageService');
@@ -52,22 +51,25 @@ const BLOCKED_EXTENSIONS = [
 ];
 
 /**
- * CRITICAL SECURITY: File validation at service layer
+ * CRITICAL SECURITY: File validation at service layer. Throws 4xx Problems:
+ * the request is at fault, not the server. The name is never used as a path
+ * (multer stores the file under a sanitized name), so only path separators are
+ * refused; a name such as `a..b.pdf` is allowed.
  */
 const validateFileSecurity = (file) => {
   if (!file || !file.originalname) {
-    throw new Error('No file provided for upload');
+    throw new Problem(400, { detail: 'No file provided for upload' });
   }
 
   const fileName = file.originalname.toLowerCase();
   const fileExtension = path.extname(fileName);
 
   if (BLOCKED_EXTENSIONS.some((ext) => fileName.endsWith(ext))) {
-    throw new Error(`File type ${fileExtension} is not allowed for security reasons`);
+    throw new Problem(415, { detail: `File type ${fileExtension} is not allowed for security reasons` });
   }
 
-  if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
-    throw new Error('Filename contains dangerous characters');
+  if (fileName.includes('/') || fileName.includes('\\')) {
+    throw new Problem(400, { detail: 'Filename contains dangerous characters' });
   }
 
   return true;
@@ -84,6 +86,8 @@ const safeRollback = async (trx, fileId) => {
 };
 
 const service = {
+  validateFileSecurity,
+
   // formId records the form a web component upload is for; other uploads leave it unset
   create: async (data, currentUser, folder = StorageTypes.UPLOADS, { formId } = {}) => {
     const tempPath = data?.path;
@@ -173,48 +177,6 @@ const service = {
   },
 
   /**
-   * Links files to a submission inside the caller's transaction, one batch of ids per query.
-   *
-   * @param {string[]} ids the ids of the files to link.
-   * @param {string} submissionId the submission they now belong to.
-   * @param {string} updatedBy who links them.
-   * @param {object} trx the submission's transaction.
-   * @param {object} [options]
-   * @param {string} [options.unsubmittedFor] link only uploads for this form that no submission has.
-   * @returns {Promise<void>}
-   * @throws {Problem} 422 with unsubmittedFor, when a file is no longer such an upload.
-   */
-  linkToSubmission: async (ids, submissionId, updatedBy, trx, { unsubmittedFor } = {}) => {
-    const linked = await idBatches(ids).reduce(async (previous, batch) => {
-      const count = await previous;
-      let query = FileStorage.query(trx).patch({ formSubmissionId: submissionId, updatedBy }).whereIn('id', batch);
-      // Checked again as the rows are updated, so a submission that linked a file first keeps it
-      if (unsubmittedFor) query = query.where('formId', unsubmittedFor).whereNull('formSubmissionId');
-      return count + (await query);
-    }, Promise.resolve(0));
-    if (unsubmittedFor && linked < new Set(ids).size) {
-      throw new Problem(422, { detail: UNSUBMITTED_UPLOADS_ONLY });
-    }
-  },
-
-  /**
-   * Reads files by id, in the order given and without repeats.
-   *
-   * @param {string[]} ids the file ids.
-   * @returns {Promise<FileStorage[]>} the files.
-   * @throws {NotFoundError} when an id matches no file, as read() does.
-   */
-  readAll: async (ids) => {
-    // uuid columns match in any case, so ids are compared, and repeats dropped, the same way
-    const key = (id) => String(id).toLowerCase();
-    const unique = [...new Map(ids.map((id) => [key(id), id])).values()];
-    const byId = new Map((await service.findByIds(unique)).map((file) => [key(file.id), file]));
-    const files = unique.map((id) => byId.get(key(id)));
-    if (files.includes(undefined)) throw new NotFoundError({ modelClass: FileStorage });
-    return files;
-  },
-
-  /**
    * Refuses to link a file to a submission of another form. A web component upload records
    * the form it was uploaded for; other uploads record none and are not checked.
    *
@@ -266,6 +228,19 @@ const service = {
     }
   },
 
+  /**
+   * Whether a file is a built submission package, i.e. a submission package
+   * job references it. Package files are emailed as plain links and must stay
+   * readable without a session.
+   *
+   * @param {uuidv4} id the file id.
+   * @returns {Promise<boolean>} true if a package job references the file.
+   */
+  isPackageFile: async (id) => {
+    const job = await SubmissionPackageJob.query().select('id').where('packageFileId', id).first();
+    return !!job;
+  },
+
   delete: async (id) => {
     let trx;
     try {
@@ -280,29 +255,6 @@ const service = {
       }
       await trx.commit();
       return result;
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
-  },
-
-  deleteFiles: async (ids) => {
-    let trx;
-    try {
-      trx = await FileStorage.startTransaction();
-
-      for (const id of ids) {
-        const obj = await service.read(id);
-
-        await FileStorage.query(trx).deleteById(id).throwIfNotFound();
-
-        const result = await storageService.delete(obj);
-        if (!result) {
-          throw new Error(`Failed to delete file with id ${id}`);
-        }
-      }
-
-      await trx.commit();
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
@@ -325,6 +277,38 @@ const service = {
     } catch (err) {
       log.error(`Failed to delete stored object for file ${fileStorage?.id}`, err);
       return false;
+    }
+  },
+
+  /**
+   * Attaches pending files to a submission inside the caller's transaction.
+   * Each file is taken only while it is on no submission, so two saves at once
+   * cannot both take one; the second waits for the first to commit and then
+   * gets a 409. Nothing is moved in storage.
+   *
+   * @param {uuidv4} submissionId the submission to attach the files to.
+   * @param {FileStorage[]} files the pending files to attach.
+   * @param {string} updatedBy the user who is saving the submission.
+   * @param {*} trx the submission transaction.
+   * @param {object} [options]
+   * @param {string} [options.formId] take each file only while it is an upload for this form.
+   * @throws Problem 409 if another save has attached any of the files first.
+   */
+  claimSubmissionFiles: async (submissionId, files, updatedBy, trx, { formId } = {}) => {
+    if (!files.length) return;
+
+    let query = FileStorage.query(trx)
+      .patch({ formSubmissionId: submissionId, updatedBy: updatedBy })
+      .whereIn(
+        'id',
+        files.map((file) => file.id)
+      )
+      .whereNull('formSubmissionId');
+    if (formId) query = query.where('formId', formId);
+    const claimed = await query;
+
+    if (claimed !== files.length) {
+      throw new Problem(409, { detail: 'A file in this submission changed while it was being saved. Please try again.' });
     }
   },
 
@@ -400,33 +384,6 @@ const service = {
         });
       }
       await trx.commit();
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
-  },
-
-  clone: async (data, currentUser) => {
-    let trx;
-    try {
-      trx = await FileStorage.startTransaction();
-
-      const file = await FileStorage.query().findById(data).throwIfNotFound();
-
-      // Remove the ID to avoid conflicts when inserting
-      const obj = { ...file };
-
-      const uploadResult = await storageService.clone(obj);
-      obj.id = uploadResult.id;
-      obj.path = uploadResult.path;
-      obj.storage = uploadResult.storage;
-      obj.createdBy = currentUser.usernameIdp;
-
-      await FileStorage.query(trx).insert(obj);
-
-      await trx.commit();
-      const result = await service.read(obj.id);
-      return result;
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

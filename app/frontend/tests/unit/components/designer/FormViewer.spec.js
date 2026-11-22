@@ -17,6 +17,7 @@ import {
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, IdentityMode } from '~/utils/constants';
 import * as transformUtils from '~/utils/transformUtils';
@@ -257,6 +258,82 @@ describe('FormViewer.vue', () => {
     };
 
     expect(wrapper.vm.formScheduleExpireMessage).toEqual('custom message');
+  });
+
+  describe('shouldDisableFileDownloads', () => {
+    const idpStore = useIdpStore(pinia);
+
+    const mountViewer = async (props = {}) => {
+      const wrapper = shallowMount(FormViewer, {
+        props: { formId: formId, displayTitle: true, ...props },
+        global: {
+          provide: {
+            setWideLayout: vi.fn(),
+          },
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+      await flushPromises();
+      return wrapper;
+    };
+
+    beforeEach(() => {
+      idpStore.restrictsFileDownloads.mockReset();
+      // These tests mount more than once; keep every mount off the network.
+      readPublishedSpy.mockImplementation(() => ({
+        data: { versions: [{ version: 1, id: '123', schema: {} }] },
+      }));
+    });
+
+    it('is true for anonymous users, read-only or not', async () => {
+      authStore.authenticated = false;
+
+      expect((await mountViewer()).vm.shouldDisableFileDownloads).toBe(true);
+      expect(
+        (await mountViewer({ readOnly: true })).vm.shouldDisableFileDownloads
+      ).toBe(true);
+    });
+
+    it('is false for a signed-in user whose provider is not restricted', async () => {
+      idpStore.restrictsFileDownloads.mockReturnValue(false);
+
+      expect((await mountViewer()).vm.shouldDisableFileDownloads).toBe(false);
+      expect(idpStore.restrictsFileDownloads).toHaveBeenCalledWith('idir');
+    });
+
+    it('is true for a signed-in user of a restricted provider, read-only or not', async () => {
+      authStore.keycloak = {
+        ...authStore.keycloak,
+        tokenParsed: {
+          ...authStore.keycloak.tokenParsed,
+          identity_provider: 'bceidbasic',
+        },
+      };
+      idpStore.restrictsFileDownloads.mockImplementation(
+        (hint) => hint === 'bceidbasic'
+      );
+
+      expect((await mountViewer()).vm.shouldDisableFileDownloads).toBe(true);
+      expect(
+        (await mountViewer({ readOnly: true })).vm.shouldDisableFileDownloads
+      ).toBe(true);
+    });
+
+    it('getFile does not request a download when downloads are disabled', async () => {
+      authStore.authenticated = false;
+      const anonymous = await mountViewer();
+
+      await anonymous.vm.getFile('asdf');
+
+      authStore.authenticated = true;
+      idpStore.restrictsFileDownloads.mockReturnValue(true);
+      const restricted = await mountViewer();
+
+      await restricted.vm.getFile('asdf');
+
+      expect(downloadFileSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('formUnauthorizedMessage returns the formUnauthorizedMessage translation', async () => {
@@ -3128,7 +3205,7 @@ describe('FormViewer.vue', () => {
     revokeObjectURLSpy.mockRestore();
   });
 
-  it('uploadFile will call fileServices uploadFile', async () => {
+  it('uploadFile sends the formId prop and the submission being edited', async () => {
     const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
     uploadFileSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
@@ -3149,6 +3226,95 @@ describe('FormViewer.vue', () => {
 
     await wrapper.vm.uploadFile('this is a file object');
     expect(uploadFileSpy).toBeCalledTimes(1);
+    expect(uploadFileSpy).toBeCalledWith('this is a file object', expect.objectContaining({ formId, formSubmissionId: '123' }));
+  });
+
+  it('uploadFile sends the form loaded with the submission when there is no formId prop (staff edit)', async () => {
+    getSubmissionSpy.mockImplementationOnce(() => ({
+      data: {
+        submission: { submission: { data: { submit: true } }, draft: false },
+        form: { id: 'loaded-form-id', identityProviders: [{ code: IdentityMode.PUBLIC }] },
+        version: { id: '123', schema: { components: [] }, version: 1 },
+      },
+    }));
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        submissionId: 'sub-1',
+        staffEditMode: true,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.uploadFile('this is a file object', { onUploadProgress: 'progress' });
+    expect(getSubmissionSpy).toBeCalledWith('sub-1');
+    expect(uploadFileSpy).toBeCalledWith(
+      'this is a file object',
+      expect.objectContaining({ formId: 'loaded-form-id', formSubmissionId: 'sub-1', onUploadProgress: 'progress' })
+    );
+  });
+
+  it('uploadFile sends the formId prop in preview, not the loaded version row', async () => {
+    readVersionSpy.mockImplementation(() => ({ data: { id: 'version-row-id', schema: { components: [] }, version: 1 } }));
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        versionId: 'version-row-id',
+        preview: true,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.uploadFile('this is a file object');
+    expect(readVersionSpy).toBeCalled();
+    const config = uploadFileSpy.mock.calls[0][1];
+    expect(config.formId).toBe(formId);
+    expect(config).not.toHaveProperty('formSubmissionId');
+  });
+
+  it('uploadFile does not name the source submission when copying it', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: 'source-submission',
+        isDuplicate: true,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.uploadFile('this is a file object');
+    const config = uploadFileSpy.mock.calls[0][1];
+    expect(config.formId).toBe(formId);
+    expect(config).not.toHaveProperty('formSubmissionId');
   });
 
   it('offline edit aborts cleanly when the schema cannot load, so Save cannot overwrite the queued entry', async () => {

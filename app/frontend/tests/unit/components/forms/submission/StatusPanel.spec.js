@@ -7,6 +7,7 @@ import { ref } from 'vue';
 import StatusPanel from '~/components/forms/submission/StatusPanel.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 import { useTenantStore } from '~/store/tenant';
 import { formService } from '~/services';
@@ -54,6 +55,7 @@ describe('StatusPanel', () => {
   setActivePinia(pinia);
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
+  const idpStore = useIdpStore(pinia);
   const notificationStore = useNotificationStore(pinia);
   const appStore = useAppStore(pinia);
   const tenantStore = useTenantStore(pinia);
@@ -67,6 +69,7 @@ describe('StatusPanel', () => {
   beforeEach(() => {
     authStore.$reset();
     formStore.$reset();
+    idpStore.$reset();
     notificationStore.$reset();
     appStore.$reset();
     tenantStore.$reset();
@@ -301,6 +304,43 @@ describe('StatusPanel', () => {
     expect(wrapper.vm.submissionUserEmail).toEqual('email@email.com');
     expect(wrapper.vm.showSendConfirmEmail).toBeTruthy();
 
+    fetchSubmissionUsersSpy.mockReset();
+    addNotificationSpy.mockReset();
+
+    // Submitter logged in via an aliased idp (e.g. Azure IDIR MFA) whose
+    // raw users.idpCode ('azureidir') differs from the canonical idp code
+    // ('idir') used in formSubmission.createdBy - CCP-6248
+    const findByCodeSpy = vi.spyOn(idpStore, 'findByCode');
+    findByCodeSpy.mockImplementation((code) =>
+      code === 'azureidir' ? { code: 'idir' } : undefined
+    );
+
+    formStore.formSubmission = {
+      createdBy: 'TEST@idir',
+    };
+    fetchSubmissionUsersSpy.mockImplementationOnce(() => {
+      formStore.submissionUsers = {
+        data: [
+          {
+            user: {
+              idpCode: 'azureidir',
+              username: 'TEST',
+              email: 'email@email.com',
+            },
+          },
+        ],
+      };
+    });
+    getEmailRecipientsSpy.mockResolvedValue({
+      data: { emailRecipients: ['email@email.com'] },
+    });
+    wrapper.vm.submissionUserEmail = '';
+    wrapper.vm.showSendConfirmEmail = false;
+    await wrapper.vm.onStatusChange('COMPLETED');
+    expect(wrapper.vm.submissionUserEmail).toEqual('email@email.com');
+    expect(wrapper.vm.showSendConfirmEmail).toBeTruthy();
+
+    findByCodeSpy.mockReset();
     fetchSubmissionUsersSpy.mockReset();
     addNotificationSpy.mockReset();
     wrapper.vm.submissionUserEmail = '';

@@ -276,7 +276,7 @@ describe('apiAccess', () => {
       expect(next).toBeCalledWith(expect.objectContaining({ status: 400 }));
     });
 
-    it('should pass exceptions through when file does not exist', async () => {
+    it('should be unauthorized when file does not exist', async () => {
       fileService.read = jest.fn().mockRejectedValue(new NotFoundError());
       const req = getMockReq({
         headers: { authorization: authHeader },
@@ -290,7 +290,24 @@ describe('apiAccess', () => {
       expect(mockReadApiKey).toBeCalledTimes(0);
       expect(res.status).not.toBeCalled();
       expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith(expect.any(Error));
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
+    });
+
+    it('should pass other file lookup errors through', async () => {
+      const error = new Error('connection lost');
+      fileService.read = jest.fn().mockRejectedValue(error);
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        params: { fileId: fileId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeFalsy();
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
     });
 
     it('should be unauthorized when file is empty', async () => {
@@ -307,7 +324,7 @@ describe('apiAccess', () => {
       expect(mockReadApiKey).toBeCalledTimes(0);
       expect(res.status).not.toBeCalled();
       expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith(expect.objectContaining({ status: 500 }));
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when file has no form submission id', async () => {
@@ -324,7 +341,7 @@ describe('apiAccess', () => {
       expect(mockReadApiKey).toBeCalledTimes(0);
       expect(res.status).not.toBeCalled();
       expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith(expect.objectContaining({ status: 500 }));
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when form submission does not exist', async () => {
@@ -450,6 +467,152 @@ describe('apiAccess', () => {
       expect(next).toBeCalledTimes(1);
       expect(mockReadApiKey).toBeCalledTimes(1);
       expect(req.apiUser).toBeTruthy();
+    });
+
+    it('should not apply the files check to a fileId in the query', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret, filesApiAccess: false });
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        params: { formId: formId },
+        query: { fileId: fileId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeTruthy();
+      expect(next).toBeCalledWith();
+    });
+  });
+
+  // The route resource decides which form's key is checked. A formId in the
+  // query string must not move the check to another form.
+  describe('form id in the query string', () => {
+    const otherFormId = uuid.v4();
+
+    it('should be unauthorized when it names a different form than the route formId', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret });
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        params: { formId: otherFormId },
+        query: { formId: formId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeFalsy();
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
+    });
+
+    it('should be unauthorized when it names a different form than the route submission', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret });
+      submissionService.read = jest.fn().mockReturnValue({ form: { id: otherFormId } });
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        params: { formSubmissionId: formSubmissionId },
+        query: { formId: formId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeFalsy();
+      expect(submissionService.read).toBeCalledWith(formSubmissionId);
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
+    });
+
+    it('should be unauthorized when it names a different form than the route file', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret });
+      fileService.read = jest.fn().mockReturnValue({ formSubmissionId: formSubmissionId });
+      submissionService.read = jest.fn().mockReturnValue({ form: { id: otherFormId } });
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        params: { fileId: fileId },
+        query: { formId: formId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeFalsy();
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
+    });
+
+    it('should be bad request when it is repeated', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret });
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        params: { formId: formId },
+        query: { formId: [formId, otherFormId] },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeFalsy();
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 400 }));
+    });
+
+    it('should flag apiUser when it names the same form as the route resource', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret });
+      submissionService.read = jest.fn().mockReturnValue({ form: { id: formId } });
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        params: { formSubmissionId: formSubmissionId },
+        query: { formId: formId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeTruthy();
+      expect(mockReadApiKey).toBeCalledWith(formId);
+      expect(next).toBeCalledWith();
+    });
+
+    it('should use it when the route has no resource parameter', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret });
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        query: { formId: formId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(req.apiUser).toBeTruthy();
+      expect(mockReadApiKey).toBeCalledWith(formId);
+    });
+
+    it('should be bad request when it is not a uuid and the route has no resource parameter', async () => {
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        query: { formId: 'invalidFormId' },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 400 }));
+    });
+
+    it('should ignore a formSubmissionId in the query', async () => {
+      submissionService.read = jest.fn();
+      const req = getMockReq({
+        headers: { authorization: authHeader },
+        query: { formSubmissionId: formSubmissionId },
+      });
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(submissionService.read).not.toBeCalled();
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
   });
 });

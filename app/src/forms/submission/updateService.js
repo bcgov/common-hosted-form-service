@@ -1,7 +1,8 @@
-const { FormSubmission, FormSubmissionStatus, SubmissionMetadata } = require('../common/models');
+const { FileStorage, FormSubmission, FormSubmissionStatus, SubmissionMetadata } = require('../common/models');
 const emailService = require('../email/emailService');
 const eventService = require('../event/eventService');
 const fileService = require('../file/service');
+const { normalizeFileIds, planFileLinks } = require('../file/fileLink');
 const log = require('../../components/log')(module.filename);
 
 const { Statuses } = require('../common/constants');
@@ -41,29 +42,48 @@ const service = {
     });
   },
 
+  /**
+   * Attaches the files the saved data names to the submission and moves them
+   * to permanent storage. The rules are in file/fileLink.decideFileLink: the
+   * submitter's own pending uploads are attached, files already on this or
+   * another submission stay where they are, and any other file fails the save
+   * with a 400. A web component upload for another form fails it with a 422.
+   * Ids that are not UUIDs or not files are ignored, as on create.
+   * All files are claimed before any is moved (a file another save attached
+   * first is a 409), and the moves run one at a time, so a failure stops them
+   * before the caller rolls back.
+   *
+   * @returns {Promise<object[]>} the original (pre-move) file records, so the
+   *   caller can remove the original objects once the transaction commits.
+   */
   _handleFileUploads: async (submissionService, data, id, user, trx) => {
-    const fileIds = submissionService._findFileIds(data);
-    // Every file is read and checked before any is moved
-    const files = fileIds.length ? await fileService.readAll(fileIds) : [];
+    const fileIds = normalizeFileIds(submissionService._findFileIds(data));
+    if (!fileIds.length) return [];
+
+    const files = await FileStorage.query(trx).whereIn('id', fileIds);
     // Only web component uploads record a form, so the submission is read only when one does
     if (files.some((file) => file.formId)) {
       const { form } = await submissionService.read(id);
       fileService.checkFilesForForm(files, form.id);
     }
+    const { link, left } = planFileLinks({ files, submissionId: id, user });
+    if (left) {
+      log.warn('Submission names files on other submissions', { submissionId: id, count: left });
+    }
+
+    await fileService.claimSubmissionFiles(id, link, user.usernameIdp, trx);
+
+    // Each file's row update runs inside the submission transaction so it does
+    // not deadlock against the lock this transaction holds. The original
+    // object is removed by the caller once the transaction has committed.
     const movedFiles = [];
-    for (const fileStorage of files) {
-      const fileId = fileStorage.id;
-      if (!fileStorage.formSubmissionId) {
-        // Run the file's row update inside the submission transaction so it does
-        // not deadlock against the lock this transaction holds. The original
-        // object is removed by the caller once the transaction has committed.
-        try {
-          const moved = await fileService.moveSubmissionFile(id, fileStorage, user.usernameIdp, trx);
-          movedFiles.push(moved || fileStorage);
-        } catch (error) {
-          log.error('Error moving file', { error, fileId, submissionId: id, userId: user.usernameIdp, originalName: fileStorage.originalName });
-          throw error;
-        }
+    for (const fileStorage of link) {
+      try {
+        const moved = await fileService.moveSubmissionFile(id, fileStorage, user.usernameIdp, trx);
+        movedFiles.push(moved || fileStorage);
+      } catch (error) {
+        log.error('Error moving file', { error, fileId: fileStorage.id, submissionId: id, userId: user.usernameIdp, originalName: fileStorage.originalName });
+        throw error;
       }
     }
     return movedFiles;

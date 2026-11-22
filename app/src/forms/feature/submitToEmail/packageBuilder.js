@@ -11,7 +11,8 @@ const log = require('../../../components/log')(module.filename);
 const fileService = require('../../file/service');
 const storageService = require('../../file/storage/storageService');
 const { fileUpload } = require('../../file/middleware/upload');
-const { FileStorage } = require('../../common/models');
+const { FileStorage, SubmissionMetadata } = require('../../common/models');
+const { SystemUsers } = require('../../common/constants');
 
 const { chefsTemplate } = require('../../common/utils');
 
@@ -20,9 +21,12 @@ const PERMANENT_STORAGE = config.get('files.permanent');
 // Sub-directory (under the storage root) the built packages are moved into.
 const PACKAGE_FOLDER = 'submission-packages';
 
+// usernameIdp makes the worker the createdBy of the package files it stores,
+// so a package is never taken for an anonymous upload.
 const WORKER_USER = {
-  username: 'submission-package-worker',
-  idpUserId: 'submission-package-worker',
+  username: SystemUsers.SUBMISSION_PACKAGE_WORKER,
+  idpUserId: SystemUsers.SUBMISSION_PACKAGE_WORKER,
+  usernameIdp: SystemUsers.SUBMISSION_PACKAGE_WORKER,
 };
 
 const streamToBuffer = async (stream) =>
@@ -83,18 +87,50 @@ const service = {
   },
 
   /**
+   * The ids (lowercase) of the named files that belong in the submission's
+   * package: files on this submission, or on another submission of the same
+   * form (a copied submission names the files of the submission it was copied
+   * from). Any other file, including one on another form's submission or on
+   * no submission, is left out. Two queries, whatever the number of files.
+   */
+  _packageableFileIds: async (namedFiles, submission) => {
+    const submissionId = submission?.submission?.id;
+    const formId = submission?.form?.id;
+    if (!namedFiles.length) return new Set();
+
+    const rows = await FileStorage.query()
+      .select('id', 'formSubmissionId')
+      .whereIn(
+        'id',
+        namedFiles.map((file) => file.id)
+      )
+      .whereNotNull('formSubmissionId');
+    const otherSubmissionIds = [...new Set(rows.map((row) => row.formSubmissionId).filter((id) => id !== submissionId))];
+    const sameForm = otherSubmissionIds.length ? await SubmissionMetadata.query().select('submissionId').whereIn('submissionId', otherSubmissionIds).where('formId', formId) : [];
+    const sameFormIds = new Set(sameForm.map((owner) => owner.submissionId));
+
+    return new Set(rows.filter((row) => row.formSubmissionId === submissionId || sameFormIds.has(row.formSubmissionId)).map((row) => row.id));
+  },
+
+  /**
    * Resolve the submission's uploaded files from storage. Returns the files that
-   * were read (with buffers) and a `missing` list for any that couldn't be read,
-   * so the caller (processor) can log each outcome. Does not throw for a single
-   * unreadable file.
+   * were read (with buffers) and a `missing` list for any that couldn't be read
+   * or do not belong in the package (see _packageableFileIds), so the caller
+   * (processor) can log each outcome. Does not throw for a single unreadable
+   * file.
    */
   getSubmissionFiles: async (submission) => {
     const submissionFiles = service.findFiles(submission);
+    const packageable = await service._packageableFileIds(submissionFiles, submission);
     const files = [];
     const missing = [];
 
     for (const file of submissionFiles) {
       const name = file.originalName || file.id;
+      if (!packageable.has(file.id.toLowerCase())) {
+        missing.push({ id: file.id, name, reason: 'The file is not on a submission of this form.' });
+        continue;
+      }
       try {
         const fileRecord = await fileService.read(file.id);
         const stream = await storageService.read(fileRecord);

@@ -6,6 +6,7 @@ const eventService = require('../event/eventService');
 const authService = require('../auth/service');
 const moment = require('moment');
 const {
+  FileStorage,
   Form,
   FormApiKey,
   FormEmailTemplate,
@@ -36,6 +37,7 @@ const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const tenantService = require('../../components/tenantService');
 const log = require('../../components/log')(module.filename);
+const { normalizeFileIds, planFileLinks } = require('../file/fileLink');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -232,20 +234,20 @@ const service = {
   _findFileIds: (_schema, data) => findFileIds(data?.submission?.data),
 
   /**
-   * The files a new submission links to, refused before anything is written if one was
-   * uploaded for another form. With ownUploadsOnly, each must also be an upload for this
-   * form that no submission has yet, and the link checks that again as it updates them.
+   * Refuses, before anything is written, a new submission that names a file uploaded for
+   * another form. With ownUploadsOnly, each file must also be an upload for this form that
+   * no submission has yet, and _linkSubmissionFiles checks that again as it links them.
    *
-   * @returns {Promise<{files: object[], linkOptions: object}>} the files and the options to link them with.
+   * @returns {Promise<object>} the options for _linkSubmissionFiles.
    */
-  _filesToLink: async (formVersion, data, ownUploadsOnly) => {
+  _checkFilesToLink: async (formVersion, data, ownUploadsOnly) => {
     const fileIds = service._findFileIds(formVersion.schema, data);
     const files = fileIds.length ? await fileService.findByIds(fileIds) : [];
     fileService.checkFilesForForm(files, formVersion.formId);
-    if (!ownUploadsOnly) return { files, linkOptions: {} };
+    if (!ownUploadsOnly) return {};
 
     fileService.checkUnsubmittedUploads(files, formVersion.formId);
-    return { files, linkOptions: { unsubmittedFor: formVersion.formId } };
+    return { unsubmittedFor: formVersion.formId };
   },
 
   listForms: async (params) => {
@@ -924,6 +926,35 @@ const service = {
     const clampedMs = Math.min(parsed.getTime(), Date.now());
     return new Date(clampedMs).toISOString();
   },
+  /**
+   * Links the files a new submission names to it, inside its transaction. The
+   * rules are in file/fileLink.decideFileLink: the submitter's own pending
+   * uploads are linked, files on other submissions are left where they are,
+   * and any other file fails the submission with a 400. Ids that are not
+   * UUIDs or not files are ignored. A file another save attached first is a
+   * 409 (fileService.claimSubmissionFiles).
+   *
+   * @param {object} schema the form version schema.
+   * @param {object} data the submission request body.
+   * @param {string} submissionId the new submission.
+   * @param {object} currentUser the submitter.
+   * @param {object} trx the submission transaction.
+   * @param {object} [options]
+   * @param {string} [options.unsubmittedFor] link only uploads for this form, checked as they are linked.
+   */
+  _linkSubmissionFiles: async (schema, data, submissionId, currentUser, trx, { unsubmittedFor } = {}) => {
+    const fileIds = normalizeFileIds(service._findFileIds(schema, data));
+    if (!fileIds.length) return;
+
+    const files = await FileStorage.query(trx).whereIn('id', fileIds);
+    const { link, left } = planFileLinks({ files, submissionId, user: currentUser });
+    if (left) {
+      log.warn('Submission names files on other submissions', { submissionId, count: left });
+    }
+
+    await fileService.claimSubmissionFiles(submissionId, link, currentUser.usernameIdp, trx, { formId: unsubmittedFor });
+  },
+
   // On a unique(dedupKey) violation from a concurrent duplicate insert, replay
   // the winner's submission instead of surfacing a constraint-violation error.
   // Same fail-closed identity rule as checkDedupKey: the original creator gets
@@ -963,7 +994,7 @@ const service = {
         validateSubmissionSchedule(form.schedule);
       }
 
-      const { files, linkOptions } = await service._filesToLink(formVersion, data, ownUploadsOnly);
+      const linkOptions = await service._checkFilesToLink(formVersion, data, ownUploadsOnly);
 
       trx = await FormSubmission.startTransaction();
 
@@ -1023,16 +1054,8 @@ const service = {
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
 
-      // does this submission contain any file uploads?
-      // if so, we need to update the file storage records. Ids that match no file are skipped.
-      // Linked before the submission event, so a refused link sends no event.
-      await fileService.linkToSubmission(
-        files.map((file) => file.id),
-        obj.id,
-        currentUser.usernameIdp,
-        trx,
-        linkOptions
-      );
+      // Linked before the submission event, so a refused link sends no event
+      await service._linkSubmissionFiles(formVersion.schema, data, submissionId, currentUser, trx, linkOptions);
 
       eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
 

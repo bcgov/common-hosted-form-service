@@ -1766,8 +1766,10 @@ describe('createSubmission', () => {
       service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
       eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
       eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
-      fileQuery = { findByIds: jest.fn(), patch: jest.fn().mockReturnThis(), whereIn: jest.fn().mockResolvedValue(1) };
+      fileQuery = { findByIds: jest.fn() };
       jest.spyOn(FileStorage, 'query').mockReturnValue(fileQuery);
+      // The link itself (fileLink rules and the claim) is covered by the _linkSubmissionFiles tests
+      jest.spyOn(service, '_linkSubmissionFiles').mockResolvedValue();
     });
 
     it('refuses a file uploaded for another form before writing anything', async () => {
@@ -1780,48 +1782,42 @@ describe('createSubmission', () => {
 
       expect(fileQuery.findByIds).toHaveBeenCalledWith([file1]);
       expect(FormSubmission.startTransaction).not.toHaveBeenCalled();
-      expect(fileQuery.patch).not.toHaveBeenCalled();
+      expect(service._linkSubmissionFiles).not.toHaveBeenCalled();
     });
 
-    it('refuses a file that records no form when only its own uploads may be linked', async () => {
-      fileQuery.findByIds.mockResolvedValue([{ id: file1, formId: null, formSubmissionId: null }]);
+    it.each([
+      ['records no form', { formId: null, formSubmissionId: null }],
+      ['is already part of a submission', { formSubmissionId: uuid.v4() }],
+    ])('refuses a file that %s when only its own uploads may be linked', async (_name, row) => {
+      fileQuery.findByIds.mockResolvedValue([{ id: file1, formId: formId, ...row }]);
       const data = { draft: false, submission: { data: { upload: upload(file1) } } };
 
       await expect(service.createSubmission('123', data, currentUser, { ownUploadsOnly: true })).rejects.toThrow(expect.objectContaining({ status: 422 }));
 
       expect(FormSubmission.startTransaction).not.toHaveBeenCalled();
-      expect(fileQuery.patch).not.toHaveBeenCalled();
+      expect(service._linkSubmissionFiles).not.toHaveBeenCalled();
     });
 
-    describe('when only its own uploads may be linked', () => {
-      beforeEach(() => {
-        fileQuery.findByIds.mockResolvedValue([{ id: file1, formId: formId, formSubmissionId: null }]);
-        fileQuery.whereIn = jest.fn().mockReturnThis();
-        fileQuery.where = jest.fn().mockReturnThis();
-        fileQuery.whereNull = jest.fn().mockResolvedValue(1);
-      });
+    it('links its own uploads for the form, checking the form again as they are linked', async () => {
+      fileQuery.findByIds.mockResolvedValue([{ id: file1, formId: formId, formSubmissionId: null }]);
+      const data = { draft: false, submission: { data: { upload: upload(file1) } } };
 
-      it('links unsubmitted uploads for the form, checking them again as they are linked', async () => {
-        const data = { draft: false, submission: { data: { upload: upload(file1) } } };
+      await service.createSubmission('123', data, currentUser, { ownUploadsOnly: true });
 
-        await service.createSubmission('123', data, currentUser, { ownUploadsOnly: true });
+      expect(service._linkSubmissionFiles).toHaveBeenCalledWith({}, data, expect.any(String), currentUser, expect.anything(), { unsubmittedFor: formId });
+      expect(MockTransaction.commit).toBeCalledTimes(1);
+    });
 
-        expect(fileQuery.whereIn).toHaveBeenCalledWith('id', [file1]);
-        expect(fileQuery.where).toHaveBeenCalledWith('formId', formId);
-        expect(fileQuery.whereNull).toHaveBeenCalledWith('formSubmissionId');
-        expect(MockTransaction.commit).toBeCalledTimes(1);
-      });
+    it('rolls back and sends no event when the link is refused', async () => {
+      fileQuery.findByIds.mockResolvedValue([{ id: file1, formId: formId, formSubmissionId: null }]);
+      service._linkSubmissionFiles.mockRejectedValue(Object.assign(new Error('conflict'), { status: 409 }));
+      const data = { draft: false, submission: { data: { upload: upload(file1) } } };
 
-      it('refuses with 422, rolls back and sends no event when another submission linked a file first', async () => {
-        fileQuery.whereNull.mockResolvedValue(0);
-        const data = { draft: false, submission: { data: { upload: upload(file1) } } };
+      await expect(service.createSubmission('123', data, currentUser, { ownUploadsOnly: true })).rejects.toMatchObject({ status: 409 });
 
-        await expect(service.createSubmission('123', data, currentUser, { ownUploadsOnly: true })).rejects.toThrow(expect.objectContaining({ status: 422 }));
-
-        expect(MockTransaction.rollback).toHaveBeenCalled();
-        expect(MockTransaction.commit).not.toHaveBeenCalled();
-        expect(eventService.formSubmissionEventReceived).not.toHaveBeenCalled();
-      });
+      expect(MockTransaction.rollback).toHaveBeenCalled();
+      expect(MockTransaction.commit).not.toHaveBeenCalled();
+      expect(eventService.formSubmissionEventReceived).not.toHaveBeenCalled();
     });
 
     it("links files that record no form or the submission's form", async () => {
@@ -1833,19 +1829,7 @@ describe('createSubmission', () => {
 
       await service.createSubmission('123', data, currentUser);
 
-      expect(fileQuery.patch).toHaveBeenCalledTimes(1);
-      expect(fileQuery.patch).toHaveBeenCalledWith({ formSubmissionId: expect.any(String), updatedBy: currentUser.usernameIdp });
-      expect(fileQuery.whereIn).toHaveBeenCalledWith('id', [file1, file2]);
-      expect(MockTransaction.commit).toBeCalledTimes(1);
-    });
-
-    it('skips ids that match no file', async () => {
-      fileQuery.findByIds.mockResolvedValue([]);
-      const data = { draft: false, submission: { data: { upload: upload(file1) } } };
-
-      await service.createSubmission('123', data, currentUser);
-
-      expect(fileQuery.patch).not.toHaveBeenCalled();
+      expect(service._linkSubmissionFiles).toHaveBeenCalledWith({}, data, expect.any(String), currentUser, expect.anything(), {});
       expect(MockTransaction.commit).toBeCalledTimes(1);
     });
 
@@ -1855,7 +1839,6 @@ describe('createSubmission', () => {
       await service.createSubmission('123', data, currentUser);
 
       expect(fileQuery.findByIds).not.toHaveBeenCalled();
-      expect(fileQuery.patch).not.toHaveBeenCalled();
     });
 
     it('does not look up files when the submission references none', async () => {
@@ -3667,5 +3650,108 @@ describe('_setEnableOfflineSubmission', () => {
   it('honors the flag when identityProviders is missing (treated as non-public)', () => {
     const formData = { enableOfflineSubmission: true };
     expect(service._setEnableOfflineSubmission(formData)).toBe(true);
+  });
+});
+
+describe('_linkSubmissionFiles', () => {
+  const { FileStorage: FileStorageModel } = jest.requireActual('../../../../src/forms/common/models');
+  const fileService = require('../../../../src/forms/file/service');
+
+  const SUB = '4d1f3b8e-5b8a-4d4e-9a39-0e7f1c2f1a01';
+  const F1 = '0b6a2b0c-1d4e-4f5a-8b6c-7d8e9f0a1b21';
+  const F2 = '0b6a2b0c-1d4e-4f5a-8b6c-7d8e9f0a1b22';
+  const user = { usernameIdp: 'jdoe@idir' };
+  const trx = { id: 'submission-trx' };
+  const data = (...fileIds) => ({ submission: { data: { simplefile: fileIds.map((id) => ({ data: { id } })) } } });
+  let whereIn;
+
+  const rows = (list) => {
+    whereIn = jest.fn().mockResolvedValue(list);
+    jest.spyOn(FileStorageModel, 'query').mockReturnValue({ whereIn });
+  };
+
+  beforeEach(() => {
+    jest.spyOn(fileService, 'claimSubmissionFiles').mockResolvedValue();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('claims the submitter own pending uploads in the submission transaction', async () => {
+    const mine = { id: F1, formSubmissionId: null, createdBy: 'jdoe@idir' };
+    rows([mine]);
+
+    await service._linkSubmissionFiles({}, data(F1, F1.toUpperCase(), 'not-a-uuid'), SUB, user, trx);
+
+    expect(FileStorageModel.query).toHaveBeenCalledWith(trx);
+    expect(whereIn).toHaveBeenCalledWith('id', [F1]);
+    expect(fileService.claimSubmissionFiles).toHaveBeenCalledWith(SUB, [mine], 'jdoe@idir', trx, {});
+  });
+
+  it('with unsubmittedFor, claims each upload only while it is for that form', async () => {
+    const mine = { id: F1, formSubmissionId: null, createdBy: 'jdoe@idir', formId: 'form-a' };
+    rows([mine]);
+
+    await service._linkSubmissionFiles({}, data(F1), SUB, user, trx, { unsubmittedFor: 'form-a' });
+
+    expect(fileService.claimSubmissionFiles).toHaveBeenCalledWith(SUB, [mine], 'jdoe@idir', trx, { formId: 'form-a' });
+  });
+
+  it('leaves a file on another submission where it is', async () => {
+    rows([{ id: F1, formSubmissionId: 'other-submission', createdBy: 'jdoe@idir' }]);
+
+    await service._linkSubmissionFiles({}, data(F1), SUB, user, trx);
+
+    expect(fileService.claimSubmissionFiles).toHaveBeenCalledWith(SUB, [], 'jdoe@idir', trx, {});
+  });
+
+  it('rejects another user pending upload with a 400, before claiming anything', async () => {
+    rows([
+      { id: F1, formSubmissionId: null, createdBy: 'jdoe@idir' },
+      { id: F2, formSubmissionId: null, createdBy: 'asmith@idir' },
+    ]);
+
+    await expect(service._linkSubmissionFiles({}, data(F1, F2), SUB, user, trx)).rejects.toMatchObject({ status: 400 });
+    expect(fileService.claimSubmissionFiles).not.toHaveBeenCalled();
+  });
+
+  // A data object whose id is not a file id (here a container keyed "data" with an "id" field) is
+  // searched inside, so a file nested in it is found. Before findFileIds the search stopped there.
+  describe('a file nested in a data object whose id is not a file id', () => {
+    const nestedData = (fileId) => ({ submission: { data: { data: { id: 'ABC-123', upload: [{ data: { id: fileId } }] } } } });
+
+    it("is linked when it is the submitter's own pending upload", async () => {
+      const mine = { id: F1, formSubmissionId: null, createdBy: 'jdoe@idir' };
+      rows([mine]);
+
+      await service._linkSubmissionFiles({}, nestedData(F1), SUB, user, trx);
+
+      expect(whereIn).toHaveBeenCalledWith('id', [F1]);
+      expect(fileService.claimSubmissionFiles).toHaveBeenCalledWith(SUB, [mine], 'jdoe@idir', trx, {});
+    });
+
+    it("fails the submission with a 400 when it is another user's pending upload", async () => {
+      rows([{ id: F1, formSubmissionId: null, createdBy: 'asmith@idir' }]);
+
+      await expect(service._linkSubmissionFiles({}, nestedData(F1), SUB, user, trx)).rejects.toMatchObject({ status: 400 });
+      expect(fileService.claimSubmissionFiles).not.toHaveBeenCalled();
+    });
+  });
+
+  it('passes on a 409 from the claim', async () => {
+    rows([{ id: F1, formSubmissionId: null, createdBy: 'jdoe@idir' }]);
+    fileService.claimSubmissionFiles.mockRejectedValue(Object.assign(new Error('conflict'), { status: 409 }));
+
+    await expect(service._linkSubmissionFiles({}, data(F1), SUB, user, trx)).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('queries nothing when the data names no file ids', async () => {
+    jest.spyOn(FileStorageModel, 'query');
+
+    await service._linkSubmissionFiles({}, data('not-a-uuid'), SUB, user, trx);
+
+    expect(FileStorageModel.query).not.toHaveBeenCalled();
+    expect(fileService.claimSubmissionFiles).not.toHaveBeenCalled();
   });
 });

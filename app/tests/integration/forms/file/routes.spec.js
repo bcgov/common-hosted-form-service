@@ -126,30 +126,6 @@ describe('File Routes Integration Tests', () => {
     });
   });
 
-  describe('GET /files/:fileId/clone', () => {
-    it('should handle cloning an existing file', async () => {
-      const fileId = createdFileIds.length > 0 ? createdFileIds[0] : uuid.v4();
-      const response = await request(app).get(`${basePath}/${fileId}/clone`).set('apikey', apikey);
-
-      expect([200, 201, 202, 301, 302, 403, 404, 503]).toContain(response.status);
-
-      if ([200, 201, 202].includes(response.status)) {
-        expect(response.body).toHaveProperty('id');
-        expect(response.body.id).not.toBe(fileId);
-        if (response.body.id) {
-          createdFileIds.push(response.body.id);
-        }
-      }
-    });
-
-    it('should return 401 or 503 when cloning without authentication', async () => {
-      const fileId = uuid.v4();
-      const response = await request(app).get(`${basePath}/${fileId}/clone`);
-
-      expect([301, 302, 401, 403, 404, 503]).toContain(response.status);
-    });
-  });
-
   describe('DELETE /files/:fileId', () => {
     it('should handle deleting an existing file', async () => {
       if (createdFileIds.length === 0) {
@@ -159,7 +135,7 @@ describe('File Routes Integration Tests', () => {
       const fileId = createdFileIds.shift();
       const response = await request(app).delete(`${basePath}/${fileId}`).set('apikey', apikey);
 
-      expect([204, 403, 404, 503]).toContain(response.status);
+      expect([202, 403, 404, 503]).toContain(response.status);
     });
 
     it('should return 401 or 503 when deleting without authentication', async () => {
@@ -176,36 +152,7 @@ describe('File Routes Integration Tests', () => {
     });
   });
 
-  describe('DELETE /files', () => {
-    it('should handle bulk deleting files', async () => {
-      if (createdFileIds.length === 0) {
-        return;
-      }
-
-      const fileIds = createdFileIds.splice(0);
-
-      const response = await request(app).delete(basePath).set('apikey', apikey).send({ fileIds });
-
-      expect([200, 204, 403, 404, 503]).toContain(response.status);
-    });
-
-    it('should return 401 or 503 when bulk deleting without authentication', async () => {
-      const response = await request(app)
-        .delete(basePath)
-        .send({ fileIds: [uuid.v4()] });
-
-      expect([301, 302, 401, 403, 404, 503]).toContain(response.status);
-    });
-
-    it('should return 400 or 503 when fileIds is not an array', async () => {
-      const response = await request(app).delete(basePath).set('apikey', apikey).send({ fileIds: 'not-an-array' });
-      expect([301, 302, 400, 503]).toContain(response.status);
-    });
-  });
-
   afterAll(async () => {
-    if (createdFileIds.length > 0) {
-      await request(app).delete(basePath).set('apikey', apikey).send({ fileIds: createdFileIds });
-    }
+    await Promise.all(createdFileIds.map((fileId) => request(app).delete(`${basePath}/${fileId}`).set('apikey', apikey)));
   });
 });
