@@ -2,6 +2,9 @@ module.exports = Object.freeze({
   Development: {
     LOCALHOST_ORIGIN: 'http://localhost:5173',
   },
+  turnstile: Object.freeze({
+    protectedIDPS: Object.freeze(['public', 'bceid-basic']),
+  }),
   EmailProperties: {
     FROM_EMAIL: 'donotreplyCHEFS@gov.bc.ca',
   },

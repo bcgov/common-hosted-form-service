@@ -5,13 +5,17 @@ const jwt = require('jsonwebtoken');
 const Problem = require('api-problem');
 
 const formService = require('../service');
+const { turnstile } = require('../../common/constants');
+const featureService = require('../../feature/service');
 const allowance = require('./allowanceService');
+const log = require('../../../components/log')(module.filename);
 
 const ACTION = 'chefs_submit';
 const VALIDITY_SECONDS = 900;
 const COOKIE_PREFIX = 'chefs_turnstile_';
 
-const requiresVerification = (form) => form.identityProviders?.some(({ code }) => code === 'public' || code === 'bceid-basic');
+const isEnabled = () => featureService.isEnabled('turnstile');
+const requiresVerification = (form) => isEnabled() && form.identityProviders?.some(({ code }) => turnstile.protectedIDPS.includes(code));
 
 const cookieName = (formId) => COOKIE_PREFIX + formId.toLowerCase();
 const identity = (req) => (req.currentUser.public ? 'public' : req.currentUser.id);
@@ -85,10 +89,26 @@ async function verifyChallenge(req, form) {
   try {
     const { data } = await axios.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', { secret: secretKey, response: token }, { timeout: 5000, maxRedirects: 0 });
     result = data;
-  } catch {
+  } catch (error) {
+    log.warn('Turnstile Siteverify request failed', {
+      formId,
+      httpStatus: Number.isInteger(error?.response?.status) ? error.response.status : undefined,
+      timedOut: error?.code === 'ECONNABORTED' || error?.code === 'ETIMEDOUT',
+    });
     throw new Problem(502, { detail: 'Bot verification is currently unavailable.' });
   }
-  if (result?.success !== true || result.action !== ACTION || result.cdata !== formId || !hostnames.has(result.hostname?.toLowerCase())) {
+  const actionMismatch = result?.action !== ACTION;
+  const cdataMismatch = result?.cdata !== formId;
+  const hostnameMismatch = typeof result?.hostname !== 'string' || !hostnames.has(result.hostname.toLowerCase());
+  if (result?.success !== true || actionMismatch || cdataMismatch || hostnameMismatch) {
+    const errorCodes = result?.['error-codes'];
+    log.warn('Turnstile Siteverify response rejected', {
+      formId,
+      errorCodes: Array.isArray(errorCodes) ? errorCodes.filter((code) => typeof code === 'string' && /^[a-z-]{1,64}$/.test(code)) : [],
+      actionMismatch,
+      cdataMismatch,
+      hostnameMismatch,
+    });
     throw new Problem(403, { detail: 'Bot verification failed. Please try again.' });
   }
 
@@ -116,7 +136,7 @@ async function verifyChallenge(req, form) {
 }
 
 async function requireSubmissionProof(req) {
-  if (!req.apiUser) {
+  if (!req.apiUser && isEnabled()) {
     const form = await formService.readFormIdentityProviders(req.params.formId);
     return requireProof(req, form);
   }

@@ -7,7 +7,8 @@ Please refer to the online [CHEFS Techdocs](https://developer.gov.bc.ca/docs/def
 ## Turnstile
 
 For an end-to-end test, use a development Turnstile widget that allows
-`localhost`. Set `turnstile.siteKey` and `turnstile.secretKey` in your ignored
+`localhost`. Set `features.turnstile.enabled` to `true` and configure
+`turnstile.siteKey` and `turnstile.secretKey` in your ignored
 `.devcontainer/chefs_local/local.json` and restart the CHEFS backend. The
 devcontainer creates this file from `local.sample.json` on first setup. Its
 `turnstile.hostnames` setting defaults to `localhost` in the sample.

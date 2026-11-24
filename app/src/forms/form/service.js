@@ -29,7 +29,7 @@ const {
 } = require('../common/models');
 const { falsey, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
-const { Permissions, Roles, Statuses } = require('../common/constants');
+const { Permissions, Roles, Statuses, turnstile } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const formSubmissionPackageSettingsService = require('../feature/submitToEmail/settingsService');
 const submitToEmailJobService = require('../feature/submitToEmail/jobService');
@@ -1031,7 +1031,7 @@ const service = {
         updatedBy: null,
       };
 
-      if (!data.draft) await turnstileAllowance.consume(trx, options.turnstileProof);
+      await turnstileAllowance.consume(trx, options.turnstileProof);
       await FormSubmission.query(trx).insert(obj);
 
       if (!isPublicForm && !currentUser.public) {
@@ -1070,7 +1070,7 @@ const service = {
 
       await service._linkSubmissionFiles(formVersion.schema, data, submissionId, currentUser, trx);
 
-      eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
+      if (!data.draft) eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
 
       await trx.commit();
       result = await service.readSubmission(obj.id);
@@ -1134,7 +1134,7 @@ const service = {
         if (!Array.isArray(submissionDataArray) || !submissionDataArray.length) {
           throw new Problem(400, { detail: 'Bulk upload must contain at least one row.' });
         }
-        if (submissionDataArray.length > MAX_BULK_ROWS) {
+        if (submissionDataArray.length > MAX_BULK_ROWS && identityProviders.some(({ code }) => turnstile.protectedIDPS.includes(code))) {
           throw new Problem(400, { detail: `Bulk upload is limited to ${MAX_BULK_ROWS} rows per batch.` });
         }
         const createdBy = currentUser.usernameIdp;

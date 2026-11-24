@@ -5,9 +5,17 @@ const { getMockReq, getMockRes } = require('@jest-mock/express');
 
 const service = require('../../../../src/forms/form/service');
 const authService = require('../../../../src/forms/auth/service');
+const featureService = require('../../../../src/forms/feature/service');
 const controller = require('../../../../src/forms/form/turnstile/controller');
 const serviceUnderTest = require('../../../../src/forms/form/turnstile/service');
 const allowance = require('../../../../src/forms/form/turnstile/allowanceService');
+const log = require('../../../../src/components/log');
+
+jest.mock('../../../../src/components/log', () => {
+  const actual = jest.requireActual('../../../../src/components/log');
+  const turnstileLogger = { warn: jest.fn() };
+  return Object.assign((filename) => (filename?.endsWith('/turnstile/service.js') ? turnstileLogger : actual(filename)), actual, { turnstileLogger });
+});
 
 const formId = '343a19be-1077-4437-91fd-dc989a2b3d87';
 const form = { id: formId, identityProviders: [{ code: 'idir' }, { code: 'bceid-basic' }] };
@@ -22,6 +30,8 @@ const request = (overrides = {}) =>
   });
 
 beforeEach(() => {
+  log.turnstileLogger.warn.mockClear();
+  jest.spyOn(featureService, 'isEnabled').mockReturnValue(true);
   jest.spyOn(service, 'readFormIdentityProviders').mockResolvedValue(form);
   const getConfig = config.get.bind(config);
   jest
@@ -30,6 +40,22 @@ beforeEach(() => {
 });
 
 afterEach(() => jest.restoreAllMocks());
+
+test('allows protected forms to load and submit while Turnstile is off', async () => {
+  featureService.isEnabled.mockRestore();
+  config.get.mockImplementation((key) => {
+    if (key === 'features.turnstile.enabled') return 'false';
+    throw new Error(`Unexpected config lookup: ${key}`);
+  });
+  const post = jest.spyOn(axios, 'post');
+
+  expect(serviceUnderTest.requireProof(request(), form)).toBeNull();
+  await expect(serviceUnderTest.requireSubmissionProof(request())).resolves.toBeUndefined();
+  expect(service.readFormIdentityProviders).not.toHaveBeenCalled();
+  await expect(serviceUnderTest.readStatus(request(), form)).resolves.toEqual({ verified: true });
+  await expect(serviceUnderTest.verifyChallenge(request(), form)).resolves.toBeNull();
+  expect(post).not.toHaveBeenCalled();
+});
 
 test('requires proof based on all configured providers and opens an IDIR-only form', async () => {
   const { res, next } = getMockRes();
@@ -98,6 +124,42 @@ test('rejects a successful Cloudflare challenge from a hostname outside this dep
 
   expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403 }));
   expect(res.cookie).not.toHaveBeenCalled();
+  expect(log.turnstileLogger.warn).toHaveBeenCalledWith('Turnstile Siteverify response rejected', {
+    formId,
+    errorCodes: [],
+    actionMismatch: false,
+    cdataMismatch: false,
+    hostnameMismatch: true,
+  });
+});
+
+test('logs Cloudflare error codes and mismatches without logging the response payload', async () => {
+  jest.spyOn(axios, 'post').mockResolvedValue({
+    data: { success: false, 'error-codes': ['timeout-or-duplicate'], action: 'wrong-action', cdata: 'other-form', hostname: 'localhost' },
+  });
+
+  await expect(serviceUnderTest.verifyChallenge(request({ body: { token: 'cloudflare-token' } }), form)).rejects.toMatchObject({ status: 403 });
+  expect(log.turnstileLogger.warn).toHaveBeenCalledWith('Turnstile Siteverify response rejected', {
+    formId,
+    errorCodes: ['timeout-or-duplicate'],
+    actionMismatch: true,
+    cdataMismatch: true,
+    hostnameMismatch: false,
+  });
+});
+
+test('logs Siteverify request failures without logging the Axios error or request data', async () => {
+  jest.spyOn(axios, 'post').mockRejectedValue({
+    code: 'ECONNABORTED',
+    config: { data: { secret: 'secret-key', response: 'cloudflare-token' } },
+  });
+
+  await expect(serviceUnderTest.verifyChallenge(request({ body: { token: 'cloudflare-token' } }), form)).rejects.toMatchObject({ status: 502 });
+  expect(log.turnstileLogger.warn).toHaveBeenCalledWith('Turnstile Siteverify request failed', {
+    formId,
+    httpStatus: undefined,
+    timedOut: true,
+  });
 });
 
 test('keeps the form available after spending a proof and renews it for another submission', async () => {

@@ -18,6 +18,7 @@ const { eventStreamService } = require('../../../../src/components/eventStreamSe
 const tenantService = require('../../../../src/components/tenantService');
 const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
 const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
+const turnstileAllowance = require('../../../../src/forms/form/turnstile/allowanceService');
 const eventService = require('../../../../src/forms//event/eventService');
 const submitToEmailJobService = require('../../../../src/forms/feature/submitToEmail/jobService');
 const emailService = require('../../../../src/forms/email/emailService');
@@ -1773,12 +1774,27 @@ describe('createSubmission', () => {
     eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
     eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
 
-    const data = { draft: true, submission: { data: {} } };
+    const data = { draft: true, submission: { data: { submit: true } } };
     await service.createSubmission('123', data, currentUser);
 
     // enqueue is always called; it no-ops internally for drafts.
     expect(submitToEmailJobService.enqueueForSubmission).toBeCalledWith(expect.objectContaining({ draft: true }));
     expect(emailService.submissionReceived).not.toBeCalled();
+    expect(eventService.formSubmissionEventReceived).not.toHaveBeenCalled();
+  });
+
+  it.each(['public', 'bceid-basic'])('checks for spent Turnstile proof before creating a %s draft', async (code) => {
+    service.readForm = jest.fn().mockResolvedValue({ id: formId, identityProviders: [{ code }] });
+    service.readVersion = jest.fn().mockResolvedValue({ id: '123', formId, schema: {} });
+    const proof = { jti: 'spent-proof' };
+    const error = Object.assign(new Error('Verify again before submitting.'), { code: 'TURNSTILE_REQUIRED' });
+    const consume = jest.spyOn(turnstileAllowance, 'consume').mockRejectedValueOnce(error);
+
+    await expect(service.createSubmission('123', { draft: true, submission: { data: {} } }, currentUser, { turnstileProof: proof })).rejects.toBe(error);
+
+    expect(consume).toHaveBeenCalledWith(MockTransaction, proof);
+    expect(MockTransaction.rollback).toHaveBeenCalledTimes(1);
+    expect(FormSubmission.query).not.toHaveBeenCalled();
   });
 
   it('should validate schedule before allowing submission', async () => {
@@ -2522,19 +2538,22 @@ describe('createMultiSubmission', () => {
     jest.restoreAllMocks();
   });
 
-  it('should create multiple submissions and commit transaction', async () => {
+  it.each([
+    ['idir', 1001],
+    ['bceid-basic', 1000],
+  ])('should create a %s batch of %i rows and commit the transaction', async (code, rowCount) => {
     // Arrange
     const formVersionId = uuid.v4();
     const formVersion = { id: formVersionId, formId: formId };
     const form = {
       formId: formId,
       id: formId,
-      identityProviders: [{ code: 'idir' }],
+      identityProviders: [{ code }],
       enableSubmitterDraft: true,
       allowSubmitterToUploadFile: true,
     };
     const currentUserLocal = { ...currentUser, public: false };
-    const submissionDataArray = [{ foo: 1 }, { bar: 2 }];
+    const submissionDataArray = Array.from({ length: rowCount }, (_, row) => ({ row }));
     const data = {
       submission: { data: submissionDataArray },
       draft: true,
@@ -2544,9 +2563,7 @@ describe('createMultiSubmission', () => {
     service.readForm = jest.fn().mockResolvedValue(form);
     service.popFormLevelInfo = jest.fn((arr) => arr);
     FormSubmission.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
-    FormSubmission.query = jest.fn().mockReturnValue({
-      insert: jest.fn().mockResolvedValue([{ id: uuid.v4() }, { id: uuid.v4() }]),
-    });
+    FormSubmission.query = jest.fn().mockReturnValue({ insert: jest.fn(async (records) => records) });
     FormSubmissionUser.query = jest.fn().mockReturnValue({
       insert: jest.fn().mockResolvedValue(true),
     });
@@ -2561,7 +2578,24 @@ describe('createMultiSubmission', () => {
     expect(FormSubmission.query).toHaveBeenCalledWith(MockTransaction);
     expect(FormSubmissionUser.query).toHaveBeenCalledWith(MockTransaction);
     expect(MockTransaction.commit).toHaveBeenCalled();
-    expect(result.length).toBe(2);
+    expect(result).toHaveLength(rowCount);
+  });
+
+  it('rejects a BCeID Basic bulk upload above the row cap before opening a transaction', async () => {
+    const formVersionId = uuid.v4();
+    service.readVersion = jest.fn().mockResolvedValue({ id: formVersionId, formId });
+    service.readForm = jest.fn().mockResolvedValue({
+      identityProviders: [{ code: 'bceid-basic' }],
+      enableSubmitterDraft: true,
+      allowSubmitterToUploadFile: true,
+    });
+    const data = { submission: { data: Array.from({ length: 1001 }, () => ({})) }, draft: true };
+
+    await expect(service.createMultiSubmission(formVersionId, data, { ...currentUser, public: false })).rejects.toMatchObject({
+      status: 400,
+      detail: 'Bulk upload is limited to 1000 rows per batch.',
+    });
+    expect(FormSubmission.startTransaction).not.toHaveBeenCalled();
   });
 
   it('should throw 401 if enableSubmitterDraft is false', async () => {
