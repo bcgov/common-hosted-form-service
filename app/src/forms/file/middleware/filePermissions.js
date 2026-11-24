@@ -31,7 +31,7 @@ const PUBLIC_UPLOADER = 'public';
 
 // createdBy of uploads made through the webcomponents routes (the seeded
 // runtime-auth users); those are managed on the webcomponents routes.
-const EMBED_UPLOADERS = new Set(['api-user', 'gateway-user']);
+const EMBED_UPLOADERS = new Set(['api-user', 'gateway-user', 'public-user']);
 
 /**
  * True when the identity provider is treated as public for file access

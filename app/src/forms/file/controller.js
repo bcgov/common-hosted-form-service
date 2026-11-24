@@ -4,6 +4,8 @@ const log = require('../../components/log')(module.filename);
 const service = require('./service');
 const storageService = require('./storage/storageService');
 
+const { StorageTypes } = require('../common/constants');
+
 const DOWNLOAD_HEADERS = ['Cache-Control', 'Content-Disposition', 'Content-Length', 'Content-Type', 'Last-Modified', 'X-Content-Type-Options'];
 const READ_FAILED = 'Unable to read the file from storage.';
 
@@ -76,9 +78,9 @@ const sendStream = (stream, res) =>
   });
 
 module.exports = {
-  create: async (req, res, next) => {
+  create: async (req, res, next, formId = null) => {
     try {
-      const response = await service.create(req.file, req.currentUser);
+      const response = await service.create(req.file, req.currentUser, StorageTypes.UPLOADS, { formId });
       res.status(201).json(_trim(response));
     } catch (error) {
       next(error);

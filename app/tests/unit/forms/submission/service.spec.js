@@ -19,6 +19,25 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+describe('_findFileIds', () => {
+  it('finds the files in the submission data', () => {
+    const [file1, file2] = [uuid.v4(), uuid.v4()];
+    const data = { submission: { data: { upload: [{ data: { id: file1 } }], grid: [{ upload: [{ data: { id: file2 } }] }] } } };
+    expect(service._findFileIds(data)).toEqual([file1, file2]);
+  });
+
+  it('finds a file nested in a data object whose id is not a file id, and not that id', () => {
+    const file = uuid.v4();
+    // A container keyed "data" with an "id" field; before findFileIds the search stopped at it
+    const data = { submission: { data: { data: { id: 'ABC-123', upload: [{ data: { id: file } }] } } } };
+    expect(service._findFileIds(data)).toEqual([file]);
+  });
+
+  it.each([[{}], [{ submission: null }]])('finds no files in a body without submission data: %p', (data) => {
+    expect(service._findFileIds(data)).toEqual([]);
+  });
+});
+
 describe('_fetchSubmissionData', () => {
   const formSubmissionId = 'submission-abc';
   const meta = { submissionId: 'sub-1', formVersionId: 'ver-1', formId: 'form-1' };

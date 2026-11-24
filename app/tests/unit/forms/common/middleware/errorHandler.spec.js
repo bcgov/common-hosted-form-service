@@ -1,6 +1,8 @@
 const { getMockRes } = require('@jest-mock/express');
 const Problem = require('api-problem');
+const express = require('express');
 const Objection = require('objection');
+const request = require('supertest');
 
 const middleware = require('../../../../../src/forms/common/middleware');
 
@@ -116,5 +118,23 @@ describe('test error handler middleware', () => {
     middleware.errorHandler(error, {}, {}, next);
 
     expect(next).toBeCalledWith(error);
+  });
+
+  it.each([
+    ['an unsatisfiable Range', { Range: 'bytes=99999999-' }, 416],
+    ['a failed precondition', { 'If-Match': '"not-the-etag"' }, 412],
+  ])('should keep the status of a static file error for %s', async (_name, headers, status) => {
+    const app = express();
+    app.use('/static', express.static(__dirname));
+    app.use(middleware.errorHandler);
+    // eslint-disable-next-line no-unused-vars
+    const fallthrough = jest.fn((_err, _req, res, _next) => res.sendStatus(500));
+    app.use(fallthrough);
+
+    const res = await request(app).get('/static/errorHandler.spec.js').set(headers);
+
+    expect(res.statusCode).toBe(status);
+    expect(res.headers['content-type']).toMatch(/application\/problem\+json/);
+    expect(fallthrough).not.toHaveBeenCalled();
   });
 });

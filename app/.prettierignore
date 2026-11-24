@@ -3,3 +3,4 @@ frontend
 node_modules
 public/js
 src/db/*
+embed/releases

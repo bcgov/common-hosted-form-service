@@ -47,7 +47,8 @@ const service = {
    * to permanent storage. The rules are in file/fileLink.decideFileLink: the
    * submitter's own pending uploads are attached, files already on this or
    * another submission stay where they are, and any other file fails the save
-   * with a 400. Ids that are not UUIDs or not files are ignored, as on create.
+   * with a 400. A web component upload for another form fails it with a 422.
+   * Ids that are not UUIDs or not files are ignored, as on create.
    * All files are claimed before any is moved (a file another save attached
    * first is a 409), and the moves run one at a time, so a failure stops them
    * before the caller rolls back.
@@ -60,6 +61,11 @@ const service = {
     if (!fileIds.length) return [];
 
     const files = await FileStorage.query(trx).whereIn('id', fileIds);
+    // Only web component uploads record a form, so the submission is read only when one does
+    if (files.some((file) => file.formId)) {
+      const { form } = await submissionService.read(id);
+      fileService.checkFilesForForm(files, form.id);
+    }
     const { link, left } = planFileLinks({ files, submissionId: id, user });
     if (left) {
       log.warn('Submission names files on other submissions', { submissionId: id, count: left });

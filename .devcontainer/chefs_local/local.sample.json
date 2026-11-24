@@ -135,11 +135,6 @@
       "precisionPoints": 100
     }
   },
-  "webcomponents": {
-    "assets": {
-      "roots": "/workspaces/common-hosted-form-service/app/webcomponents/v1/assets"
-    }
-  },
   "gateway": {
     "jwtLifetime": "30m"
   },

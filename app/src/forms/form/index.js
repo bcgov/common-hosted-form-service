@@ -6,6 +6,7 @@ const encryptionKeyRoutes = require('./encryptionKey/routes');
 const eventStreamConfigRoutes = require('./eventStreamConfig/routes');
 const externalApiRoutes = require('./externalApi/routes');
 const printConfigRoutes = require('./printConfig/routes');
+const webcomponentSettingsRoutes = require('./webcomponentSettings/routes');
 
 module.exports.mount = (app) => {
   const subRouters = [
@@ -29,6 +30,10 @@ module.exports.mount = (app) => {
     {
       router: printConfigRoutes,
       patterns: ['printConfig', 'printConfigs'],
+    },
+    {
+      router: webcomponentSettingsRoutes,
+      patterns: ['webcomponentSettings'],
     },
   ];
   const p = setupMount('forms', app, {

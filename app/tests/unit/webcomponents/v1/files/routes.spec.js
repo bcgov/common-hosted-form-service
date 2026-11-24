@@ -76,6 +76,7 @@ jest.mock('../../../../../src/webcomponents/common/security', () => ({
       resource: {
         type: 'file',
         id: 'test-file-id',
+        form: { id: 'test-form-id' },
         metadata: {
           submissionId: 'test-submission-id',
           originalName: 'test-file.pdf',
@@ -179,7 +180,7 @@ describe('webcomponents/v1/files routes', () => {
 
       expect(res.statusCode).toBe(201);
       expect(res.body).toEqual({ id: 'new-file-id', filename: 'test.txt' });
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.any(Function), 'test-form-id');
     });
 
     it('handles upload errors', async () => {

@@ -25,6 +25,7 @@ module.exports = {
   MISSING_PERMISSIONS: 'Missing required permissions',
   UNAUTHORIZED_FILE_ACCESS: 'Unauthorized to access file',
   UNAUTHORIZED_FILE_UPLOADER: 'Unauthorized - not the file uploader',
+  UNATTACHED_FILE_READ: 'A file can be downloaded only once it is part of a submission.',
   MISSING_FILE_PERMISSIONS: 'Missing required file permissions',
   FILE_NOT_FOUND: 'File not found in security context',
 

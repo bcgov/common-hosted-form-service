@@ -26,10 +26,11 @@ const {
   FormGroup,
   FormMigrationLog,
 } = require('../common/models');
-const { falsey, queryUtils, typeUtils } = require('../common/utils');
+const { falsey, findFileIds, queryUtils, typeUtils } = require('../common/utils');
 const { checkIsFormExpired, isDateValid, isDateInFuture, validateSubmissionSchedule } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
+const fileService = require('../file/service');
 const formSubmissionPackageSettingsService = require('../feature/submitToEmail/settingsService');
 const submitToEmailJobService = require('../feature/submitToEmail/jobService');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
@@ -37,7 +38,6 @@ const eventStreamConfigService = require('./eventStreamConfig/service');
 const tenantService = require('../../components/tenantService');
 const log = require('../../components/log')(module.filename);
 const { normalizeFileIds, planFileLinks } = require('../file/fileLink');
-const fileService = require('../file/service');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -230,30 +230,24 @@ const service = {
     const isPublicForm = idps.some((idp) => idp.code === 'public');
     return !isPublicForm && formData.enableOfflineSubmission === true;
   },
-  _findFileIds: (schema, data) => {
-    const findFiles = (currentData) => {
-      let fileIds = [];
-      // Check if the current level is an array or an object
-      if (Array.isArray(currentData)) {
-        currentData.forEach((item) => {
-          fileIds = fileIds.concat(findFiles(item));
-        });
-      } else if (typeof currentData === 'object' && currentData !== null) {
-        Object.keys(currentData).forEach((key) => {
-          if (key === 'data' && currentData[key]?.id) {
-            // Add the file ID if it exists
-            fileIds.push(currentData[key].id);
-          } else {
-            // Recurse into nested objects
-            fileIds = fileIds.concat(findFiles(currentData[key]));
-          }
-        });
-      }
-      return fileIds;
-    };
+  // A body without a submission has no files; the insert's schema check then rejects it
+  _findFileIds: (_schema, data) => findFileIds(data?.submission?.data),
 
-    // Start the search from the top-level submission data
-    return findFiles(data.submission.data);
+  /**
+   * Refuses, before anything is written, a new submission that names a file uploaded for
+   * another form. With ownUploadsOnly, each file must also be an upload for this form that
+   * no submission has yet, and _linkSubmissionFiles checks that again as it links them.
+   *
+   * @returns {Promise<object>} the options for _linkSubmissionFiles.
+   */
+  _checkFilesToLink: async (formVersion, data, ownUploadsOnly) => {
+    const fileIds = service._findFileIds(formVersion.schema, data);
+    const files = fileIds.length ? await fileService.findByIds(fileIds) : [];
+    fileService.checkFilesForForm(files, formVersion.formId);
+    if (!ownUploadsOnly) return {};
+
+    fileService.checkUnsubmittedUploads(files, formVersion.formId);
+    return { unsubmittedFor: formVersion.formId };
   },
 
   listForms: async (params) => {
@@ -945,8 +939,10 @@ const service = {
    * @param {string} submissionId the new submission.
    * @param {object} currentUser the submitter.
    * @param {object} trx the submission transaction.
+   * @param {object} [options]
+   * @param {string} [options.unsubmittedFor] link only uploads for this form, checked as they are linked.
    */
-  _linkSubmissionFiles: async (schema, data, submissionId, currentUser, trx) => {
+  _linkSubmissionFiles: async (schema, data, submissionId, currentUser, trx, { unsubmittedFor } = {}) => {
     const fileIds = normalizeFileIds(service._findFileIds(schema, data));
     if (!fileIds.length) return;
 
@@ -956,7 +952,7 @@ const service = {
       log.warn('Submission names files on other submissions', { submissionId, count: left });
     }
 
-    await fileService.claimSubmissionFiles(submissionId, link, currentUser.usernameIdp, trx);
+    await fileService.claimSubmissionFiles(submissionId, link, currentUser.usernameIdp, trx, { formId: unsubmittedFor });
   },
 
   // On a unique(dedupKey) violation from a concurrent duplicate insert, replay
@@ -982,7 +978,8 @@ const service = {
     let trx;
     let result;
     let createdBy;
-    const { dedupKey } = options;
+    // ownUploadsOnly: every linked file must be an upload for this form that no submission has yet
+    const { dedupKey, ownUploadsOnly } = options;
     try {
       const formVersion = await service.readVersion(formVersionId);
       const form = await service.readForm(formVersion.formId);
@@ -996,6 +993,8 @@ const service = {
       if (!queuedAt) {
         validateSubmissionSchedule(form.schedule);
       }
+
+      const linkOptions = await service._checkFilesToLink(formVersion, data, ownUploadsOnly);
 
       trx = await FormSubmission.startTransaction();
 
@@ -1055,7 +1054,8 @@ const service = {
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
 
-      await service._linkSubmissionFiles(formVersion.schema, data, submissionId, currentUser, trx);
+      // Linked before the submission event, so a refused link sends no event
+      await service._linkSubmissionFiles(formVersion.schema, data, submissionId, currentUser, trx, linkOptions);
 
       eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
 

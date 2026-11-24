@@ -75,6 +75,18 @@ function checkDraftFileAccess(file, resource, decisions, req, next) {
   const isReadOperation = req.method === 'GET';
   const isDeleteOperation = req.method === 'DELETE';
 
+  // A file on no submission is never downloadable here, whoever asks. Only its signed-in uploader
+  // may read it (forms/file/middleware/filePermissions.js decideFileRead), and these routes take no
+  // signed-in users.
+  if (isReadOperation) {
+    filePermissionsLogger.warn({
+      event: 'file_access_denied',
+      reason: 'unattached_file_read',
+      fileState: 'draft',
+    });
+    return next(new Problem(HTTP_STATUS.FORBIDDEN, { detail: ERRORS.UNATTACHED_FILE_READ }));
+  }
+
   // Check for explicit denials first (API users with filesApiAccess: false)
   const denialResult = checkOperationSpecificDenial(decisions, isReadOperation, isDeleteOperation, next);
   if (denialResult) {
