@@ -359,8 +359,3 @@ export const DeprecatedIDPs = Object.freeze({
 export const RestrictedIDPs = Object.freeze({
   BCEID_BASIC: 'bceid-basic',
 });
-
-export const TURNSTILE_PROTECTED_IDPS = Object.freeze([
-  IdentityMode.PUBLIC,
-  RestrictedIDPs.BCEID_BASIC,
-]);

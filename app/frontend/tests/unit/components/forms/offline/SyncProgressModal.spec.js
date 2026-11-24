@@ -4,11 +4,16 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const managerMocks = vi.hoisted(() => ({ events: null }));
+const managerMocks = vi.hoisted(() => ({ events: null, verification: null }));
 vi.mock('~/offline/offlineQueueManager', async () => {
   const mitt = (await import('mitt')).default;
   managerMocks.events = mitt();
-  return { offlineQueueEvents: managerMocks.events };
+  const { ref } = await import('vue');
+  managerMocks.verification = ref(null);
+  return {
+    offlineQueueEvents: managerMocks.events,
+    pendingVerification: managerMocks.verification,
+  };
 });
 
 import SyncProgressModal from '~/components/forms/offline/SyncProgressModal.vue';
@@ -17,6 +22,11 @@ function mountModal() {
   return mount(SyncProgressModal, {
     global: {
       stubs: {
+        FormSubmissionGate: {
+          props: { formId: String, recheck: Boolean },
+          emits: ['verified', 'cancel'],
+          template: '<button class="verify-stub" :data-recheck="recheck" @click="$emit(\'verified\')">{{ formId }}</button>',
+        },
         'v-dialog': {
           props: ['modelValue'],
           template: '<div v-if="modelValue" class="dialog-stub"><slot /></div>',
@@ -70,10 +80,33 @@ async function elapseMinimum() {
 
 describe('SyncProgressModal.vue', () => {
   beforeEach(() => {
+    managerMocks.verification.value = null;
     setActivePinia(createPinia());
     // Fake only the timer APIs the minimum hold uses; flushPromises relies on
     // setImmediate, which must stay real.
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  });
+
+  it('shows the Turnstile recheck for the queued form and forwards verification', async () => {
+    const wrapper = mountModal();
+    drainStartTwo();
+    const resolve = vi.fn(() => {
+      managerMocks.verification.value = null;
+    });
+    managerMocks.verification.value = {
+      entryId: 'entry-a',
+      formId: 'queued-form',
+      resolve,
+    };
+    await flushPromises();
+
+    const gate = wrapper.get('.verify-stub');
+    expect(gate.text()).toBe('queued-form');
+    expect(gate.attributes('data-recheck')).toBe('true');
+    await gate.trigger('click');
+    expect(resolve).toHaveBeenCalledWith(true);
+    expect(wrapper.find('.verify-stub').exists()).toBe(false);
+    wrapper.unmount();
   });
 
   afterEach(() => {

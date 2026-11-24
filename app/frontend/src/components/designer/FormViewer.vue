@@ -27,12 +27,7 @@ import {
 import { tryDrain } from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
 import templateExtensions from '~/plugins/templateExtensions';
-import {
-  fileService,
-  formService,
-  rbacService,
-  turnstileService,
-} from '~/services';
+import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -44,11 +39,7 @@ import {
   attachAttributesToLinks,
   getDisposition,
 } from '~/utils/transformUtils';
-import {
-  FormPermissions,
-  NotificationTypes,
-  TURNSTILE_PROTECTED_IDPS,
-} from '~/utils/constants';
+import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -137,6 +128,7 @@ const editingEntry = ref(null);
 const isEditingOfflineEntry = computed(() => !!editingEntry.value);
 const submission = ref({ data: { lateEntry: false } });
 const showVerification = ref(false);
+const verificationOnLoad = ref(false);
 const verificationCancelled = Symbol('verification cancelled');
 let finishVerification;
 let pendingVerification;
@@ -492,7 +484,7 @@ async function getFormSchema() {
       properties.formId,
       properties.versionId
     );
-    if (cache) {
+    if (cache?.form.enableOfflineSubmission) {
       form.value = cache.form;
       formSchema.value = cache.schema;
       versionIdToSubmitTo.value = properties.versionId || cache.versionId;
@@ -510,7 +502,7 @@ async function getFormSchema() {
     }
     await loadPublishedForm();
   } catch (error) {
-    handleGetFormSchemaError(error);
+    if (error !== verificationCancelled) handleGetFormSchemaError(error);
   }
 }
 
@@ -549,7 +541,10 @@ async function loadFormByDraft() {
 }
 
 async function loadPublishedForm() {
-  const response = await formService.readPublished(properties.formId);
+  const response = await withTurnstileVerification(
+    () => formService.readPublished(properties.formId),
+    { onLoad: true }
+  );
   if (!response?.data?.versions?.[0]) {
     router.push({
       name: 'Alert',
@@ -751,12 +746,14 @@ function resolveVerification(verified) {
   finishVerification = undefined;
   pendingVerification = undefined;
   showVerification.value = false;
+  verificationOnLoad.value = false;
 }
 
-async function requestVerification() {
+async function requestVerification({ onLoad = false } = {}) {
   if (!pendingVerification) {
     pendingVerification = new Promise((resolve) => {
       finishVerification = resolve;
+      verificationOnLoad.value = onLoad;
       showVerification.value = true;
     });
   }
@@ -764,42 +761,36 @@ async function requestVerification() {
   if (!verified) throw verificationCancelled;
 }
 
-async function createVerifiedSubmission(body, dedupKey) {
-  const formId = properties.formId;
-  const create = () =>
-    formService.createSubmission(formId, versionIdToSubmitTo.value, body, {
-      dedupKey,
-    });
-
-  if (
-    form.value.identityProviders?.some(({ code }) =>
-      TURNSTILE_PROTECTED_IDPS.includes(code)
+function createVerifiedSubmission(body, dedupKey) {
+  return withTurnstileVerification(() =>
+    formService.createSubmission(
+      properties.formId,
+      versionIdToSubmitTo.value,
+      body,
+      {
+        dedupKey,
+      }
     )
-  ) {
-    const { data } = await turnstileService.readStatus(formId);
-    if (!data.verified) await requestVerification();
-  }
-
-  return submitWithVerification(create);
+  );
 }
 
-async function submitWithVerification(send) {
+async function withTurnstileVerification(send, options) {
   try {
     return await send();
   } catch (error) {
     if (
-      error.response?.status !== 403 ||
+      error?.response?.status !== 403 ||
       error.response?.data?.code !== 'TURNSTILE_REQUIRED'
     )
       throw error;
-    await requestVerification();
+    await requestVerification(options);
     return send();
   }
 }
 
 async function submitBulkWithVerification(send) {
   try {
-    return await submitWithVerification(send);
+    return await withTurnstileVerification(send);
   } catch (error) {
     if (error !== verificationCancelled) throw error;
     return null;
@@ -823,7 +814,9 @@ async function sendSubmission(isDraft, sub, dedupKey) {
     // Updating an existing submission
     const update = () =>
       formService.updateSubmission(properties.submissionId, body);
-    response = isDraft ? await update() : await submitWithVerification(update);
+    response = isDraft
+      ? await update()
+      : await withTurnstileVerification(update);
   } else {
     // Adding a new submission. Send the dedupKey so a lost-response retry
     // (online or via the offline queue) replays instead of creating a duplicate.
@@ -1456,13 +1449,13 @@ async function uploadFile(file, config = {}) {
       max-width="560"
       persistent
       aria-labelledby="submission-verification-title"
-      @keydown.esc="resolveVerification(false)"
+      @keydown.esc="!verificationOnLoad && resolveVerification(false)"
     >
       <FormSubmissionGate
         v-if="showVerification"
         :form-id="form?.id || formId"
         :submission-id="isDuplicate ? undefined : submissionId"
-        recheck
+        :recheck="!verificationOnLoad"
         @cancel="resolveVerification(false)"
         @verified="resolveVerification(true)"
       />

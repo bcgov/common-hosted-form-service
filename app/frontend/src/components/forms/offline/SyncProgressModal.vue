@@ -1,12 +1,24 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { offlineQueueEvents } from '~/offline/offlineQueueManager';
+import FormSubmissionGate from '~/components/forms/FormSubmissionGate.vue';
+import {
+  offlineQueueEvents,
+  pendingVerification,
+} from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 const { online } = useOnlineStatus();
+
+function resolveVerification(verified) {
+  pendingVerification.value?.resolve(verified);
+}
+
+watch(online, (isOnline) => {
+  if (!isOnline) resolveVerification(false);
+});
 
 const visible = ref(false);
 const total = ref(0);
@@ -100,6 +112,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  resolveVerification(false);
   clearTimeout(minTimer);
   offlineQueueEvents.off('drain-start', onStart);
   offlineQueueEvents.off('drain-progress', onProgress);
@@ -114,8 +127,25 @@ function close() {
 </script>
 
 <template>
-  <v-dialog v-model="visible" persistent max-width="560">
+  <v-dialog
+    v-model="visible"
+    persistent
+    max-width="560"
+    :aria-labelledby="
+      pendingVerification ? 'submission-verification-title' : undefined
+    "
+    @keydown.esc="resolveVerification(false)"
+  >
+    <FormSubmissionGate
+      v-if="pendingVerification"
+      :key="pendingVerification.entryId"
+      :form-id="pendingVerification.formId"
+      recheck
+      @cancel="resolveVerification(false)"
+      @verified="resolveVerification(true)"
+    />
     <v-card
+      v-else
       class="d-flex flex-column"
       style="max-height: 80vh; border-radius: 14px !important"
     >

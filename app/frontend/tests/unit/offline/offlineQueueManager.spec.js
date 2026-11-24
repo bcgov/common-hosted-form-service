@@ -2,6 +2,7 @@
 
 import { setActivePinia, createPinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import formService from '~/services/formService';
 
 const authState = vi.hoisted(() => ({ authenticated: true }));
 const queueState = vi.hoisted(() => ({
@@ -77,6 +78,48 @@ beforeEach(() => {
 });
 
 describe('offlineQueueManager', () => {
+  it.each([true, false])('resumes a challenged send only when verified (%s)', async (verified) => {
+    const mod = await freshManager();
+    const entry = {
+      id: 'a',
+      formId: 'f1',
+      versionId: 'v1',
+      body: { draft: false },
+      queuedAt: '2026-11-20T18:00:00Z',
+      dedupKey: 'original-key',
+    };
+    const challenge = {
+      response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+    };
+    queueState.entries.value = [entry];
+    formService.createSubmission.mockReset();
+    formService.createSubmission
+      .mockRejectedValueOnce(challenge)
+      .mockResolvedValueOnce({ data: { id: 'submitted' } });
+    queueState.flush.mockImplementationOnce(async (post) => {
+      const sending = post(entry);
+      await Promise.resolve();
+      expect(mod.pendingVerification.value.formId).toBe(entry.formId);
+      mod.pendingVerification.value.resolve(verified);
+      if (verified) {
+        await expect(sending).resolves.toMatchObject({ data: { id: 'submitted' } });
+      } else {
+        await expect(sending).rejects.toBe(challenge);
+      }
+      return { total: 1, sent: Number(verified), failed: 0 };
+    });
+
+    await mod.tryDrain();
+
+    expect(mod.pendingVerification.value).toBeNull();
+    expect(formService.createSubmission).toHaveBeenCalledTimes(verified ? 2 : 1);
+    if (verified) {
+      expect(formService.createSubmission.mock.calls[1]).toEqual(
+        formService.createSubmission.mock.calls[0]
+      );
+    }
+  });
+
   describe('tryDrain pre-flight auth check', () => {
     it('emits auth-required and skips flush when not authenticated', async () => {
       const mod = await freshManager();

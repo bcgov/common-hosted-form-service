@@ -107,6 +107,23 @@ describe('offline/queue', () => {
       expect(offlineQueue.entries.value[0].status).toBe(QueueStatus.FAILED_AUTH);
     });
 
+    it('keeps a submission pending when Turnstile proof is required', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      await offlineQueue.enqueue({
+        formId: 'f1', versionId: 'v1', userId: 'u1', body: {},
+      });
+      const post = vi.fn().mockRejectedValue({
+        response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+      });
+      const onEntryFailed = vi.fn();
+
+      const result = await offlineQueue.flush(post, undefined, onEntryFailed);
+
+      expect(result).toEqual({ total: 1, sent: 0, failed: 0, paused: true });
+      expect(offlineQueue.entries.value[0].status).toBe(QueueStatus.PENDING);
+      expect(onEntryFailed).not.toHaveBeenCalled();
+    });
+
     it('fires onEntryFailed on permanent 4xx and continues to the next entry', async () => {
       const { offlineQueue, QueueStatus } = await freshQueue();
       await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });

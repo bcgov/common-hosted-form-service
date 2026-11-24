@@ -314,6 +314,12 @@ async function flush(httpPost, onProgress, onEntryFailed, onStart) {
         if (status === 401) {
           return pause(entry, i, QueueStatus.FAILED_AUTH, err);
         }
+        if (
+          status === 403 &&
+          err.response?.data?.code === 'TURNSTILE_REQUIRED'
+        ) {
+          return pause(entry, i, null, err);
+        }
         const failedStatus = STATUS_TO_FAILED[status];
         if (!failedStatus) {
           return pause(entry, i, null, err);

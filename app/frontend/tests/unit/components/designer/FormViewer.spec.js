@@ -9,7 +9,7 @@ import { nextTick, ref } from 'vue';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import templateExtensions from '~/plugins/templateExtensions';
-import { fileService, formService, rbacService, turnstileService } from '~/services';
+import { fileService, formService, rbacService } from '~/services';
 import {
   offlineQueue as mockOfflineQueue,
   QueueStatus as MockQueueStatus,
@@ -3418,6 +3418,43 @@ describe('FormViewer.vue', () => {
     expect(mockOfflineQueue.enqueue.mock.calls[0][0].dedupKey).toBe(sentKey);
   });
 
+  it.each([false, true])(
+    'retries a protected published-form load after verification (duplicate: %s)',
+    async (isDuplicate) => {
+      readPublishedSpy.mockReset();
+      readPublishedSpy
+        .mockRejectedValueOnce({
+          response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+        })
+        .mockResolvedValueOnce({
+          data: { versions: [{ id: 'published', version: 1, schema: {} }] },
+        });
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId,
+          isDuplicate,
+          submissionId: isDuplicate ? 'original-submission' : undefined,
+        },
+        global: {
+          provide: { setWideLayout: vi.fn() },
+          plugins: [pinia],
+          stubs: { ...STUBS, VDialog: true },
+        },
+      });
+
+      await flushPromises();
+      expect(wrapper.vm.showVerification).toBe(true);
+      expect(readPublishedSpy).toHaveBeenCalledTimes(1);
+      expect(getSubmissionSpy).not.toHaveBeenCalled();
+
+      wrapper.vm.resolveVerification(true);
+      await flushPromises();
+      expect(readPublishedSpy).toHaveBeenNthCalledWith(2, formId);
+      expect(getSubmissionSpy).toHaveBeenCalledTimes(isDuplicate ? 1 : 0);
+      wrapper.unmount();
+    }
+  );
+
   it('pauses a protected submission until renewed proof is confirmed', async () => {
     const wrapper = shallowMount(FormViewer, {
       props: { formId, displayTitle: true },
@@ -3433,21 +3470,22 @@ describe('FormViewer.vue', () => {
       identityProviders: [{ code: 'bceid-basic' }],
     };
     wrapper.vm.isFormScheduleExpired = false;
-    const status = vi.spyOn(turnstileService, 'readStatus')
-      .mockResolvedValue({ data: { verified: false } });
     createSubmissionSpy.mockClear();
+    createSubmissionSpy.mockRejectedValueOnce({
+      response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+    });
     const data = { answer: 'saved answer', files: [{ id: 'file-id' }] };
 
     const pending = wrapper.vm.doSubmit({ data });
     await flushPromises();
     expect(wrapper.vm.showVerification).toBe(true);
-    expect(createSubmissionSpy).not.toHaveBeenCalled();
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(1);
 
     wrapper.vm.resolveVerification(true);
     await pending;
-    expect(createSubmissionSpy).toHaveBeenCalledTimes(1);
-    expect(createSubmissionSpy.mock.calls[0][2].submission.data).toMatchObject(data);
-    status.mockRestore();
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(2);
+    expect(createSubmissionSpy.mock.calls[1]).toEqual(createSubmissionSpy.mock.calls[0]);
+    expect(createSubmissionSpy.mock.calls[1][2].submission.data).toMatchObject(data);
     wrapper.unmount();
   });
 

@@ -37,22 +37,18 @@ function loadTurnstile() {
 <script setup>
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
 
 import { turnstileService } from '~/services';
 import { useFormStore } from '~/store/form';
-import { TURNSTILE_PROTECTED_IDPS } from '~/utils/constants';
 
 const props = defineProps({
   formId: { type: String, required: true },
   submissionId: { type: String, default: undefined },
-  allowOffline: Boolean,
   recheck: Boolean,
 });
 
 const emit = defineEmits(['verified', 'cancel']);
 const { locale } = useI18n({ useScope: 'global' });
-const route = useRoute();
 const formStore = useFormStore();
 const state = ref('loading');
 const container = ref(null);
@@ -104,24 +100,6 @@ async function verify(token) {
 async function start() {
   state.value = 'loading';
   try {
-    if (
-      props.allowOffline &&
-      !navigator.onLine &&
-      (route.query.editOffline || route.query.fresh)
-    ) {
-      const providers = formStore.getCachedFormSchema(props.formId)?.form
-        ?.identityProviders;
-      if (
-        providers?.length &&
-        providers.every(
-          ({ code }) => code && !TURNSTILE_PROTECTED_IDPS.includes(code)
-        )
-      ) {
-        allowAccess();
-        return;
-      }
-    }
-
     const { data } = await turnstileService.readStatus(
       props.formId,
       props.submissionId,
@@ -139,6 +117,7 @@ async function start() {
     if (disposed) return;
     widget = api.render(container.value, {
       sitekey: data.siteKey,
+      theme: 'light',
       action: 'chefs_submit',
       cData: props.formId.toLowerCase(),
       callback: verify,
@@ -170,7 +149,7 @@ onBeforeUnmount(() => {
     :lang="locale"
   >
     <v-card-title
-      :id="recheck ? 'submission-verification-title' : undefined"
+      id="submission-verification-title"
       :tag="recheck ? 'h2' : 'h1'"
       class="text-wrap pt-5 px-6"
     >

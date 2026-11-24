@@ -43,17 +43,48 @@ export const offlineQueueEvents = mitt();
 // Exposed so UI can gate a manual Send button while a drain is in flight.
 export const isDraining = ref(false);
 
+export const pendingVerification = ref(null);
+let verificationSnoozed = false;
+
 let started = false;
 // Fires once per editing session so the 30s tick doesn't nag repeatedly.
 let syncPausedToastShown = false;
 
 async function postEntry(entry) {
-  const response = await formService.createSubmission(
-    entry.formId,
-    entry.versionId,
-    { ...entry.body, queuedAt: entry.queuedAt },
-    { dedupKey: entry.dedupKey }
-  );
+  const send = () =>
+    formService.createSubmission(
+      entry.formId,
+      entry.versionId,
+      { ...entry.body, queuedAt: entry.queuedAt },
+      { dedupKey: entry.dedupKey }
+    );
+  let response;
+  try {
+    response = await send();
+  } catch (error) {
+    if (
+      error?.response?.status !== 403 ||
+      error.response?.data?.code !== 'TURNSTILE_REQUIRED' ||
+      !reachable.value ||
+      navigator.onLine === false ||
+      !isPrimary.value
+    ) {
+      throw error;
+    }
+    const verified = await new Promise((resolve) => {
+      pendingVerification.value = {
+        entryId: entry.id,
+        formId: entry.formId,
+        resolve,
+      };
+    });
+    pendingVerification.value = null;
+    if (!verified) {
+      verificationSnoozed = reachable.value && navigator.onLine;
+      throw error;
+    }
+    response = await send();
+  }
   // Surface the real id so synthetic Success pages can swap their URL.
   offlineQueueEvents.emit('synced', {
     dedupKey: entry.dedupKey,
@@ -63,13 +94,14 @@ async function postEntry(entry) {
   return response;
 }
 
-export async function tryDrain() {
+export async function tryDrain({ automatic = false } = {}) {
   // Only the primary (last-focused) tab drains, so SyncProgressModal,
   // ReauthRequiredModal, and drain toasts surface in the tab the user is on.
   if (!isPrimary.value) return;
   if (isDraining.value) return;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   if (!reachable.value) return;
+  if (automatic && verificationSnoozed) return;
   if (offlineQueue.entries.value.length === 0) return;
   // Hold off entirely while the user is editing any queued entry; the next
   // tick (or the endEdit-triggered call) picks up once they close the editor.
@@ -96,6 +128,7 @@ export async function tryDrain() {
   }
 
   isDraining.value = true;
+  verificationSnoozed = false;
   try {
     const result = await offlineQueue.flush(
       postEntry,
@@ -129,7 +162,7 @@ export async function tryDrain() {
 }
 
 function tick() {
-  tryDrain();
+  tryDrain({ automatic: true });
   setTimeout(tick, POLL_INTERVAL_MS);
 }
 
@@ -193,8 +226,11 @@ export function startOfflineQueueManager() {
   // Drain immediately when this tab becomes primary (e.g. user just switched
   // focus to us), so remaining entries don't sit until the next 30s tick.
   watch(isPrimary, (primary) => {
-    if (!primary) return;
-    tryDrain();
+    if (!primary) {
+      pendingVerification.value?.resolve(false);
+      return;
+    }
+    tryDrain({ automatic: true });
   });
   tick();
 }
