@@ -95,9 +95,9 @@ runs:
         # Match the falsey values used by the backend feature service.
         case "${ENABLED,,}" in
           ''|0|false|nada|nil|nay|nah|negative|no|none|nope|nul|null|nix|nyet|uh-uh|veto|zero) exit 0 ;;
+          *) SECRET_NAME="chefs-${JOB_NAME}-turnstile" ;;
         esac
 
-        SECRET_NAME="chefs-${JOB_NAME}-turnstile"
         for KEY in turnstile-site-key turnstile-secret-key; do
           if ! VALUE="$(oc get --namespace "${NAMESPACE}" secret "${SECRET_NAME}" -o jsonpath="{.data.${KEY}}")"; then
             echo "::error::Turnstile is enabled, but Secret ${SECRET_NAME} could not be read in ${NAMESPACE}."

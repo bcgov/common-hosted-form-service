@@ -87,6 +87,10 @@ describe('SyncProgressModal.vue', () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('shows the Turnstile recheck for the queued form and forwards verification', async () => {
     const wrapper = mountModal();
     drainStartTwo();
@@ -107,10 +111,6 @@ describe('SyncProgressModal.vue', () => {
     expect(resolve).toHaveBeenCalledWith(true);
     expect(wrapper.find('.verify-stub').exists()).toBe(false);
     wrapper.unmount();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it('does not render before drain-start', async () => {

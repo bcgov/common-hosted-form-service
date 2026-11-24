@@ -162,7 +162,7 @@ export async function tryDrain({ automatic = false } = {}) {
 }
 
 function tick() {
-  tryDrain({ automatic: true });
+  void tryDrain({ automatic: true });
   setTimeout(tick, POLL_INTERVAL_MS);
 }
 
@@ -230,7 +230,7 @@ export function startOfflineQueueManager() {
       pendingVerification.value?.resolve(false);
       return;
     }
-    tryDrain({ automatic: true });
+    void tryDrain({ automatic: true });
   });
   tick();
 }
