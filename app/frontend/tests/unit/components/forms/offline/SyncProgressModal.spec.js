@@ -13,6 +13,7 @@ vi.mock('~/offline/offlineQueueManager', async () => {
   return {
     offlineQueueEvents: managerMocks.events,
     pendingVerification: managerMocks.verification,
+    VerificationOutcome: { VERIFIED: 'verified', CANCELLED: 'cancelled', INTERRUPTED: 'interrupted' },
   };
 });
 
@@ -25,7 +26,8 @@ function mountModal() {
         FormSubmissionGate: {
           props: { formId: String, recheck: Boolean },
           emits: ['verified', 'cancel'],
-          template: '<button class="verify-stub" :data-recheck="recheck" @click="$emit(\'verified\')">{{ formId }}</button>',
+          template:
+            '<div><button class="verify-stub" :data-recheck="recheck" @click="$emit(\'verified\')">{{ formId }}</button><button class="cancel-stub" @click="$emit(\'cancel\')" /></div>',
         },
         'v-dialog': {
           props: ['modelValue'],
@@ -108,9 +110,23 @@ describe('SyncProgressModal.vue', () => {
     expect(gate.text()).toBe('queued-form');
     expect(gate.attributes('data-recheck')).toBe('true');
     await gate.trigger('click');
-    expect(resolve).toHaveBeenCalledWith(true);
+    expect(resolve).toHaveBeenCalledWith('verified');
     expect(wrapper.find('.verify-stub').exists()).toBe(false);
     wrapper.unmount();
+  });
+
+  it('reports Cancel as a cancel and an unmount as an interruption', async () => {
+    const wrapper = mountModal();
+    drainStartTwo();
+    const resolve = vi.fn();
+    managerMocks.verification.value = { entryId: 'entry-a', formId: 'queued-form', resolve };
+    await flushPromises();
+
+    await wrapper.get('.cancel-stub').trigger('click');
+    expect(resolve).toHaveBeenLastCalledWith('cancelled');
+
+    wrapper.unmount();
+    expect(resolve).toHaveBeenLastCalledWith('interrupted');
   });
 
   it('does not render before drain-start', async () => {

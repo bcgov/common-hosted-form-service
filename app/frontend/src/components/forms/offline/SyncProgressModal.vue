@@ -6,18 +6,19 @@ import FormSubmissionGate from '~/components/forms/FormSubmissionGate.vue';
 import {
   offlineQueueEvents,
   pendingVerification,
+  VerificationOutcome,
 } from '~/offline/offlineQueueManager';
 import { useOnlineStatus } from '~/offline/useOnlineStatus';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 const { online } = useOnlineStatus();
 
-function resolveVerification(verified) {
-  pendingVerification.value?.resolve(verified);
+function resolveVerification(outcome) {
+  pendingVerification.value?.resolve(outcome);
 }
 
 watch(online, (isOnline) => {
-  if (!isOnline) resolveVerification(false);
+  if (!isOnline) resolveVerification(VerificationOutcome.INTERRUPTED);
 });
 
 const visible = ref(false);
@@ -112,7 +113,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  resolveVerification(false);
+  resolveVerification(VerificationOutcome.INTERRUPTED);
   clearTimeout(minTimer);
   offlineQueueEvents.off('drain-start', onStart);
   offlineQueueEvents.off('drain-progress', onProgress);
@@ -134,15 +135,15 @@ function close() {
     :aria-labelledby="
       pendingVerification ? 'submission-verification-title' : undefined
     "
-    @keydown.esc="resolveVerification(false)"
+    @keydown.esc="resolveVerification(VerificationOutcome.CANCELLED)"
   >
     <FormSubmissionGate
       v-if="pendingVerification"
       :key="pendingVerification.entryId"
       :form-id="pendingVerification.formId"
       recheck
-      @cancel="resolveVerification(false)"
-      @verified="resolveVerification(true)"
+      @cancel="resolveVerification(VerificationOutcome.CANCELLED)"
+      @verified="resolveVerification(VerificationOutcome.VERIFIED)"
     />
     <v-card
       v-else

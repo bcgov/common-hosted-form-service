@@ -100,7 +100,9 @@ describe('offlineQueueManager', () => {
       const sending = post(entry);
       await Promise.resolve();
       expect(mod.pendingVerification.value.formId).toBe(entry.formId);
-      mod.pendingVerification.value.resolve(verified);
+      mod.pendingVerification.value.resolve(
+        verified ? mod.VerificationOutcome.VERIFIED : mod.VerificationOutcome.CANCELLED
+      );
       if (verified) {
         await expect(sending).resolves.toMatchObject({ data: { id: 'submitted' } });
       } else {
@@ -118,6 +120,87 @@ describe('offlineQueueManager', () => {
         formService.createSubmission.mock.calls[0]
       );
     }
+  });
+
+  describe('cancelled Turnstile verification', () => {
+    const entryA = { id: 'a', formId: 'f1', versionId: 'v1', body: { draft: false }, dedupKey: 'key-a' };
+    const entryB = { id: 'b', formId: 'f2', versionId: 'v2', body: { draft: false }, dedupKey: 'key-b' };
+    const challenge = { response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } } };
+
+    // One drain that challenges entryA and ends the prompt with `outcome`.
+    function challengeOnce(mod, outcome) {
+      formService.createSubmission.mockReset();
+      formService.createSubmission.mockRejectedValueOnce(challenge);
+      queueState.flush.mockImplementationOnce(async (post) => {
+        const sending = post(entryA);
+        await Promise.resolve();
+        mod.pendingVerification.value.resolve(mod.VerificationOutcome[outcome]);
+        await expect(sending).rejects.toBe(challenge);
+        return { total: 2, sent: 0, failed: 0 };
+      });
+    }
+    const isDeferredFor = (call) => queueState.flush.mock.calls[call][4];
+
+    it('holds back only the cancelled form on automatic drains', async () => {
+      const mod = await freshManager();
+      queueState.entries.value = [entryA, entryB];
+      challengeOnce(mod, 'CANCELLED');
+
+      await mod.tryDrain();
+      // flush reads this live, so the rest of that drain skips the form too.
+      expect(isDeferredFor(0)(entryA)).toBe(true);
+
+      await mod.tryDrain({ automatic: true });
+      expect(queueState.flush).toHaveBeenCalledTimes(2);
+      expect(isDeferredFor(1)(entryA)).toBe(true);
+      expect(isDeferredFor(1)(entryB)).toBe(false);
+    });
+
+    it('asks again for a cancelled form on a drain the user starts', async () => {
+      const mod = await freshManager();
+      queueState.entries.value = [entryA, entryB];
+      challengeOnce(mod, 'CANCELLED');
+
+      await mod.tryDrain();
+      await mod.tryDrain();
+
+      expect(isDeferredFor(1)(entryA)).toBe(false);
+    });
+
+    it('does not hold the form back when the prompt is interrupted', async () => {
+      const mod = await freshManager();
+      queueState.entries.value = [entryA, entryB];
+      challengeOnce(mod, 'INTERRUPTED');
+
+      await mod.tryDrain();
+      await mod.tryDrain({ automatic: true });
+
+      expect(isDeferredFor(1)(entryA)).toBe(false);
+    });
+
+    it('treats losing the primary tab as an interruption, not a cancel', async () => {
+      const mod = await freshManager();
+      const primary = (await primaryState).isPrimary;
+      queueState.entries.value = [entryA];
+      formService.createSubmission.mockReset();
+      formService.createSubmission.mockRejectedValueOnce(challenge);
+      queueState.flush.mockImplementationOnce(async (post) => {
+        await expect(post(entryA)).rejects.toBe(challenge);
+        return { total: 1, sent: 0, failed: 0 };
+      });
+
+      // The initial tick drains and opens the prompt.
+      mod.startOfflineQueueManager();
+      await vi.waitFor(() => expect(mod.pendingVerification.value?.formId).toBe('f1'));
+
+      primary.value = false;
+      await vi.waitFor(() => expect(mod.pendingVerification.value).toBeNull());
+      await vi.waitFor(() => expect(mod.isDraining.value).toBe(false));
+
+      primary.value = true;
+      await vi.waitFor(() => expect(queueState.flush).toHaveBeenCalledTimes(2));
+      expect(isDeferredFor(1)(entryA)).toBe(false);
+    });
   });
 
   describe('tryDrain pre-flight auth check', () => {

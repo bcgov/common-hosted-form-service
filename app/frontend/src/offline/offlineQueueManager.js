@@ -43,8 +43,21 @@ export const offlineQueueEvents = mitt();
 // Exposed so UI can gate a manual Send button while a drain is in flight.
 export const isDraining = ref(false);
 
+// How a Turnstile prompt for a queued entry ended. Only CANCELLED (the user
+// said no) holds back that form's entries; INTERRUPTED (went offline, lost the
+// primary tab, modal unmounted) just leaves the entry for the next drain.
+export const VerificationOutcome = Object.freeze({
+  VERIFIED: 'verified',
+  CANCELLED: 'cancelled',
+  INTERRUPTED: 'interrupted',
+});
+
 export const pendingVerification = ref(null);
-let verificationSnoozed = false;
+// Forms whose verification the user cancelled. Automatic drains skip their
+// entries and keep sending everything else; a user-triggered drain clears it.
+const cancelledVerificationForms = new Set();
+const isVerificationCancelled = (entry) =>
+  cancelledVerificationForms.has(entry.formId);
 
 let started = false;
 // Fires once per editing session so the 30s tick doesn't nag repeatedly.
@@ -71,7 +84,7 @@ async function postEntry(entry) {
     ) {
       throw error;
     }
-    const verified = await new Promise((resolve) => {
+    const outcome = await new Promise((resolve) => {
       pendingVerification.value = {
         entryId: entry.id,
         formId: entry.formId,
@@ -79,8 +92,10 @@ async function postEntry(entry) {
       };
     });
     pendingVerification.value = null;
-    if (!verified) {
-      verificationSnoozed = reachable.value && navigator.onLine;
+    if (outcome !== VerificationOutcome.VERIFIED) {
+      if (outcome === VerificationOutcome.CANCELLED) {
+        cancelledVerificationForms.add(entry.formId);
+      }
       throw error;
     }
     response = await send();
@@ -101,7 +116,6 @@ export async function tryDrain({ automatic = false } = {}) {
   if (isDraining.value) return;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   if (!reachable.value) return;
-  if (automatic && verificationSnoozed) return;
   if (offlineQueue.entries.value.length === 0) return;
   // Hold off entirely while the user is editing any queued entry; the next
   // tick (or the endEdit-triggered call) picks up once they close the editor.
@@ -128,7 +142,10 @@ export async function tryDrain({ automatic = false } = {}) {
   }
 
   isDraining.value = true;
-  verificationSnoozed = false;
+  // Only the 30s tick and tab-focus drains are automatic. Any other drain
+  // (Send, sign-in, reconnect, closing an offline edit) asks again for
+  // cancelled forms.
+  if (!automatic) cancelledVerificationForms.clear();
   try {
     const result = await offlineQueue.flush(
       postEntry,
@@ -149,7 +166,8 @@ export async function tryDrain({ automatic = false } = {}) {
       ({ total, entries }) => {
         const snapshot = JSON.parse(JSON.stringify(entries)); // NOSONAR
         offlineQueueEvents.emit('drain-start', { total, entries: snapshot });
-      }
+      },
+      isVerificationCancelled
     );
     // If another tab held the lock, no drain-start was emitted; don't emit a
     // misleading drain-end (which would show a "sync complete" summary).
@@ -227,7 +245,7 @@ export function startOfflineQueueManager() {
   // focus to us), so remaining entries don't sit until the next 30s tick.
   watch(isPrimary, (primary) => {
     if (!primary) {
-      pendingVerification.value?.resolve(false);
+      pendingVerification.value?.resolve(VerificationOutcome.INTERRUPTED);
       return;
     }
     void tryDrain({ automatic: true });
