@@ -12,51 +12,49 @@ Cypress.Commands.add('waitForLoad', () => {
 });
 
 describe('Form Designer', () => {
+  let formId;
 
-  beforeEach(()=>{
-      cy.on('uncaught:exception', (err, runnable) => {
-        // Form.io throws an uncaught exception for missing projectid
-        // Cypress catches it as undefined: undefined so we can't get the text
-        console.log(err);
-        return false;
-      });
+  before(() => {
     cy.clearCookies();
     cy.clearLocalStorage();
     cy.window().then((win) => {
-    win.sessionStorage.clear();
+      win.sessionStorage.clear();
     });
-  });
-// Publish a simple form with Simplebc Address component
- it('"Verify export submission', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    cy.visit(`/${depEnv}`); 
+    cy.visit(`/${depEnv}`);
     cy.checkA11yPage();
-    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
-    cy.wait(2000);
+    cy.get('#logoutButton').should('not.exist');
     cy.get('#loginButton').click();
     cy.get('[data-test="idir"]').click();
     cy.get('#user').type(username);
-    cy.get('#password').type(password);
+    cy.get('#password').type(password, { log: false });
     cy.get('.btn').click();
-    cy.readFile('cypress/fixtures/formId.json').then(({ formId }) => {
-    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
-    cy.wait(2000);
-    cy.get(".mdi-list-box-outline").click();
-    cy.waitForLoad();
-    //Verify submission file name
-    cy.get("h3").then(($elem) => {
-      const rem = $elem.text();
-      cy.log(rem);
-      const remname = rem + "_submissions.json";
-      cy.wait(2000);
-      cy.get(".mdi-download").click({ force: true });
-      cy.wait(2000);
-      cy.get(".ml-1").contains(remname);
+    cy.get('#logoutButton', { timeout: 30000 }).should('be.visible');
+    cy.readFile('cypress/fixtures/formId.json').its('formId').should('be.a', 'string').then((id) => {
+      formId = id;
     });
-    
-    cy.get(':nth-child(2) > .v-col > .v-input > .v-input__control > .v-selection-control-group > :nth-child(2) > .v-label > .radioboxLabelStyle').click();
-    cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').contains('1');
+  });
+
+  beforeEach(() => {
+    cy.viewport(1000, 1100);
+    cy.on('uncaught:exception', (err) => {
+      // Form.io can throw an uncaught exception for a missing projectid.
+      console.log(err);
+      return false;
+    });
+  });
+
+  it('Verify export submission', () => {
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    cy.get('[data-test="canViewFormSubmissions"]').click();
+    cy.get('button[title="Export Submissions to Files"]').click();
+    cy.contains('h1', 'Export Submissions to File').should('be.visible');
+    cy.get('h3').invoke('text').should('not.be.empty').then((formName) => {
+      cy.get('.fileLabelStyle .ml-1').should('have.text', `${formName.trim()}_submissions.json`);
+    });
+
+    cy.get('input[value="csv"]').check();
+    cy.get('.v-select__selection-text').should('have.text', '1');
     cy.contains('form.submissionId').should('be.visible');
     cy.contains('form.confirmationId').should('be.visible');
     cy.contains('form.formName').should('be.visible');
@@ -66,57 +64,40 @@ describe('Form Designer', () => {
     cy.contains('form.username').should('exist');
     cy.contains('form.email').should('exist');
 
-    cy.get('.v-input.mt-3 > .v-input__control > .v-field').type('status');
+    cy.get('input[placeholder="Search Fields"]').type('status');
     cy.contains('form.status').should('be.visible');
     cy.contains('form.submissionId').should('not.exist');
     cy.contains('form.confirmationId').should('not.exist');
     cy.contains('form.formName').should('not.exist');
     cy.contains('form.version').should('not.exist');
     cy.contains('form.createdAt').should('not.exist');
-    //Close filter option
-    cy.get('.mdi-close-circle').click();
+    cy.get('input[placeholder="Search Fields"]').clear();
     cy.contains('form.submissionId').should('be.visible');
     cy.contains('form.confirmationId').should('be.visible');
     cy.contains('form.formName').should('be.visible');
     cy.contains('form.version').should('be.visible');
     cy.contains('form.createdAt').should('be.visible');
-    //Select Date range
-    cy.get('input[type="radio"]').then($el => {
-
-        const rem=$el[3];
-        const rem1=$el[4];
-        cy.get(rem).click();
-        //Default first Radio button for csv format is enabled
-        cy.get(rem1).should('be.checked');
-  
-      });
+    cy.contains('label', 'Select date range').click();
+    cy.get('input[value="multiRowEmptySpacesCSVExport"]').should('be.checked');
     //verify csv format options
     cy.get('input[type="date"]').should('have.length',2);
     cy.get('span').contains('1 - Multiple rows per submission with indentation spaces');
     cy.get('span').contains('2 - Multiple rows per submission');
     cy.get('span').contains('3 - Single row per submission');
     cy.get('span').contains('4 - Unformatted');
-    cy.get("h3").then(($elem) => {
-        const rem = $elem.text();
-        cy.log(rem);
-        const remname = rem + "_submissions.csv";
-        cy.get(".ml-1").contains(remname);
-    //verify export button is enabled
-    cy.get('.mb-5').should('be.enabled');
-    cy.get('.mb-5').click();
-    const path = require("path");
-    const downloadsFolder=Cypress.config("downloadsFolder");
-    cy.readFile(path.join(downloadsFolder, remname)).should('exist');
-    });
+    cy.get('h3').invoke('text').should('not.be.empty').then((formName) => {
+      const fileName = `${formName.trim()}_submissions.csv`;
+      cy.get('.fileLabelStyle .ml-1').should('have.text', fileName);
+      cy.intercept('POST', `**/forms/${formId}/export/fields`).as('exportSubmissions');
+      cy.get('button[title="Export"]').should('be.enabled').click();
+      cy.wait('@exportSubmissions').its('response.statusCode').should('eq', 200);
+      cy.readFile(`${Cypress.config('downloadsFolder')}/${fileName}`, { timeout: 30000 }).should('not.be.empty');
     });
   });
 
   it("Verify print template functionality", () => {
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    cy.get(".mdi-list-box-outline").click();
-    cy.wait(2000);
-    cy.get(':nth-child(1) > :nth-child(8) > a > .v-btn').click();
+    cy.visit(`/${depEnv}/form/submissions?f=${formId}`);
+    cy.get('button[title="View Submission"]').first().click();
      //print option
     cy.get('.mdi-printer').click();
     cy.get('.flex-container > .v-btn--elevated').should('be.enabled');
