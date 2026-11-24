@@ -38,8 +38,6 @@ jobs:
        with:
           working-directory: 'tests/functional/cypress'
           browser:  chrome
-          # These anonymous submission specs require interactive Turnstile verification.
-          config: 'excludeSpecPattern=e2e/form-submission-public-*.cy.js'
        env:
           CYPRESS_keycloakUsername: ${{ secrets.Username }}
           CYPRESS_keycloakPassword: ${{ secrets.Password }}

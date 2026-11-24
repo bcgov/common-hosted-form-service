@@ -38,6 +38,11 @@ module.exports = defineConfig({
       'e2e/*.cy.{js,jsx,ts,tsx}',
       //'eCHEFS/*.cy.{js,jsx,ts,tsx}',
     ],
+    // These specs require interactive Turnstile verification.
+    excludeSpecPattern: [
+      'e2e/form-submission-public-no-status-assign.cy.js',
+      'e2e/form-submission-public-status-assign.cy.js',
+    ],
     testIsolation: false,
     supportFile: 'support/e2e.js',
     numTestsKeptInMemory: 5,
