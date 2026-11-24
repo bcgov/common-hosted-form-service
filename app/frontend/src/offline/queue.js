@@ -267,8 +267,10 @@ async function markFailed(id, status, lastError) {
 }
 
 // httpPost resolves on 2xx (entry removed). On reject: 401 → failed-auth +
-// pause; mapped 4xx → failed-* (fires onEntryFailed) + continue; else pause.
-async function flush(httpPost, onProgress, onEntryFailed, onStart) {
+// pause; Turnstile verification still needed → stays pending + continue;
+// mapped 4xx → failed-* (fires onEntryFailed) + continue; else pause.
+// isDeferred(entry) → true leaves that entry pending without sending it.
+async function flush(httpPost, onProgress, onEntryFailed, onStart, isDeferred) {
   await ensureLoaded();
   // Skip entries open for edit in any tab so a drain never sends a stale
   // pre-edit body out from under an editor.
@@ -277,7 +279,8 @@ async function flush(httpPost, onProgress, onEntryFailed, onStart) {
     (e) =>
       (e.status === QueueStatus.PENDING ||
         e.status === QueueStatus.FAILED_AUTH) &&
-      !editing.has(e.id)
+      !editing.has(e.id) &&
+      !isDeferred?.(e)
   );
   const total = pending.length;
   let sent = 0;
@@ -301,6 +304,9 @@ async function flush(httpPost, onProgress, onEntryFailed, onStart) {
     onStart?.({ total, entries: pending });
     for (let i = 0; i < pending.length; i++) {
       const entry = pending[i];
+      // The deferral can start mid-drain (e.g. the user cancels verification
+      // for this entry's form on an earlier entry).
+      if (isDeferred?.(entry)) continue;
       entry.status = QueueStatus.SYNCING;
       await persist();
       onProgress?.({ total, sent, failed, currentIndex: i });
@@ -313,6 +319,16 @@ async function flush(httpPost, onProgress, onEntryFailed, onStart) {
         const status = err?.response?.status || err?.status;
         if (status === 401) {
           return pause(entry, i, QueueStatus.FAILED_AUTH, err);
+        }
+        if (
+          status === 403 &&
+          err.response?.data?.code === 'TURNSTILE_REQUIRED'
+        ) {
+          // Not verified this time: keep it for a later drain and carry on, so
+          // one unverified form doesn't hold up the rest of the queue.
+          entry.status = QueueStatus.PENDING;
+          await persist();
+          continue;
         }
         const failedStatus = STATUS_TO_FAILED[status];
         if (!failedStatus) {

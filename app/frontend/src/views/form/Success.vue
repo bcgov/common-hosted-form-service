@@ -1,16 +1,26 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import {
+  computed,
+  defineAsyncComponent,
+  onBeforeUnmount,
+  onMounted,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import FormViewer from '~/components/designer/FormViewer.vue';
-import RequestReceipt from '~/components/forms/RequestReceipt.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import {
   clearSubmissionAccessToken,
   getValidSubmissionAccessToken,
 } from '~/services/formService';
+
+const FormViewer = defineAsyncComponent(() =>
+  import('~/components/designer/FormViewer.vue')
+);
+const RequestReceipt = defineAsyncComponent(() =>
+  import('~/components/forms/RequestReceipt.vue')
+);
 
 const { locale } = useI18n({ useScope: 'global' });
 
@@ -59,55 +69,34 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="useStaticPath" class="mb-5" :class="{ 'dir-rtl': isRTL }">
-    <h1 class="mb-5" :lang="locale">
-      <v-icon size="large" color="success" icon="mdi:mdi-check-circle"></v-icon>
-      {{ $t('trans.sucess.sucessFormSubmissn') }}
-    </h1>
-    <h3 v-if="form.showSubmissionConfirmation">
-      <span :lang="locale">
-        {{ $t('trans.sucess.confirmationId') }}:
-        <mark>{{ confirmationId }}</mark>
-      </span>
-    </h3>
-    <RequestReceipt
-      v-if="form.enableSubmitterEmailReceipt && !urlLeakage"
-      class="d-print-none"
-      :email="email"
+  <div>
+    <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
+      <h1 class="mb-5" :lang="locale">
+        <v-icon size="large" color="success" icon="mdi:mdi-check-circle" />
+        {{ $t('trans.sucess.sucessFormSubmissn') }}
+      </h1>
+      <h3 v-if="form.showSubmissionConfirmation">
+        <span v-if="!useStaticPath" class="d-print-none" :lang="locale">
+          {{ $t('trans.sucess.keepRecord') }}{{ ' ' }}
+        </span>
+        <span :lang="locale">
+          {{ $t('trans.sucess.confirmationId') }}:
+          <mark>{{ confirmationId }}</mark>
+        </span>
+      </h3>
+      <RequestReceipt
+        v-if="form.enableSubmitterEmailReceipt && !urlLeakage"
+        class="d-print-none"
+        :email="email"
+        :submission-id="s"
+      />
+      <hr />
+    </div>
+    <FormViewer
+      v-if="!useStaticPath"
       :submission-id="s"
+      :read-only="true"
+      display-title
     />
-    <hr />
-  </div>
-  <div v-else>
-    <FormViewer :submission-id="s" :read-only="true" display-title>
-      <template #alert>
-        <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
-          <h1 class="mb-5" :lang="locale">
-            <v-icon
-              size="large"
-              color="success"
-              icon="mdi:mdi-check-circle"
-            ></v-icon>
-            {{ $t('trans.sucess.sucessFormSubmissn') }}
-          </h1>
-          <h3 v-if="form.showSubmissionConfirmation">
-            <span class="d-print-none" :lang="locale">
-              {{ $t('trans.sucess.keepRecord') }}{{ ' ' }}
-            </span>
-            <span :lang="locale">
-              {{ $t('trans.sucess.confirmationId') }}:
-              <mark>{{ confirmationId }}</mark>
-            </span>
-          </h3>
-          <RequestReceipt
-            v-if="form.enableSubmitterEmailReceipt"
-            class="d-print-none"
-            :email="email"
-            :submission-id="s"
-          />
-          <hr />
-        </div>
-      </template>
-    </FormViewer>
   </div>
 </template>

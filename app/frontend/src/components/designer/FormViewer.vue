@@ -16,6 +16,7 @@ import { useRoute, useRouter } from 'vue-router';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
+import FormSubmissionGate from '~/components/forms/FormSubmissionGate.vue';
 import { v4 as uuidv4 } from 'uuid';
 import {
   offlineQueue,
@@ -126,6 +127,11 @@ const queueConfirmIsDraft = ref(false);
 const editingEntry = ref(null);
 const isEditingOfflineEntry = computed(() => !!editingEntry.value);
 const submission = ref({ data: { lateEntry: false } });
+const showVerification = ref(false);
+const verificationOnLoad = ref(false);
+const verificationCancelled = Symbol('verification cancelled');
+let finishVerification;
+let pendingVerification;
 const submissionRecord = ref({});
 const version = ref(0);
 const versionIdToSubmitTo = ref(properties.versionId);
@@ -301,6 +307,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', beforeWindowUnload);
   clearTimeout(downloadTimeout.value);
+  resolveVerification(false);
   if (editingEntry.value?.id) {
     offlineQueue.endEdit(editingEntry.value.id);
     tryDrain();
@@ -477,7 +484,7 @@ async function getFormSchema() {
       properties.formId,
       properties.versionId
     );
-    if (cache) {
+    if (cache?.form.enableOfflineSubmission) {
       form.value = cache.form;
       formSchema.value = cache.schema;
       versionIdToSubmitTo.value = properties.versionId || cache.versionId;
@@ -495,7 +502,7 @@ async function getFormSchema() {
     }
     await loadPublishedForm();
   } catch (error) {
-    handleGetFormSchemaError(error);
+    if (error !== verificationCancelled) handleGetFormSchemaError(error);
   }
 }
 
@@ -534,7 +541,10 @@ async function loadFormByDraft() {
 }
 
 async function loadPublishedForm() {
-  const response = await formService.readPublished(properties.formId);
+  const response = await withTurnstileVerification(
+    () => formService.readPublished(properties.formId),
+    { onLoad: true }
+  );
   if (!response?.data?.versions?.[0]) {
     router.push({
       name: 'Alert',
@@ -725,7 +735,65 @@ async function confirmSaveDraft() {
     showSubmitConfirmDialog.value = false;
     saveDraftDialog.value = false;
   } catch (error) {
-    await handleSaveDraftError(error, isNewSubmission, dedupKey);
+    if (error !== verificationCancelled)
+      await handleSaveDraftError(error, isNewSubmission, dedupKey);
+    saving.value = false;
+  }
+}
+
+function resolveVerification(verified) {
+  finishVerification?.(verified);
+  finishVerification = undefined;
+  pendingVerification = undefined;
+  showVerification.value = false;
+  verificationOnLoad.value = false;
+}
+
+async function requestVerification({ onLoad = false } = {}) {
+  if (!pendingVerification) {
+    pendingVerification = new Promise((resolve) => {
+      finishVerification = resolve;
+      verificationOnLoad.value = onLoad;
+      showVerification.value = true;
+    });
+  }
+  const verified = await pendingVerification;
+  if (!verified) throw verificationCancelled;
+}
+
+function createVerifiedSubmission(body, dedupKey) {
+  return withTurnstileVerification(() =>
+    formService.createSubmission(
+      properties.formId,
+      versionIdToSubmitTo.value,
+      body,
+      {
+        dedupKey,
+      }
+    )
+  );
+}
+
+async function withTurnstileVerification(send, options) {
+  try {
+    return await send();
+  } catch (error) {
+    if (
+      error?.response?.status !== 403 ||
+      error.response?.data?.code !== 'TURNSTILE_REQUIRED'
+    )
+      throw error;
+    await requestVerification(options);
+    return send();
+  }
+}
+
+async function submitBulkWithVerification(send) {
+  try {
+    return await withTurnstileVerification(send);
+  } catch (error) {
+    if (error !== verificationCancelled) throw error;
+    return null;
   }
 }
 
@@ -744,19 +812,15 @@ async function sendSubmission(isDraft, sub, dedupKey) {
   //let's check if this is a submission from existing one, If isDuplicate then create new submission if now isDuplicate then update the submission
   if (properties.submissionId && !properties.isDuplicate) {
     // Updating an existing submission
-    response = await formService.updateSubmission(
-      properties.submissionId,
-      body
-    );
+    const update = () =>
+      formService.updateSubmission(properties.submissionId, body);
+    response = isDraft
+      ? await update()
+      : await withTurnstileVerification(update);
   } else {
     // Adding a new submission. Send the dedupKey so a lost-response retry
     // (online or via the offline queue) replays instead of creating a duplicate.
-    response = await formService.createSubmission(
-      properties.formId,
-      versionIdToSubmitTo.value,
-      body,
-      { dedupKey }
-    );
+    response = await createVerifiedSubmission(body, dedupKey);
   }
 
   return response;
@@ -871,7 +935,10 @@ async function onSubmit(sub) {
   // if we are here, the submission has been saved to our db
   // the passed in submission is the formio submission, not our db persisted submission record...
   // fire off the submitDone event.
-  if (errors) {
+  if (errors === verificationCancelled) {
+    submission.value = sub;
+    reRenderFormIo.value += 1;
+  } else if (errors) {
     notificationStore.addNotification({
       text: errors,
       consoleError: t('trans.formViewer.submissionsSubmitErrMsg', {
@@ -1141,6 +1208,7 @@ async function doSubmit(sub) {
       );
     }
   } catch (error) {
+    if (error === verificationCancelled) return verificationCancelled;
     if (
       form.value.enableOfflineSubmission &&
       isNewSubmission &&
@@ -1296,6 +1364,10 @@ async function saveDraftFromModalNow() {
     leaveThisPage();
     showSubmitConfirmDialog.value = false;
   } catch (error) {
+    if (error === verificationCancelled) {
+      saving.value = false;
+      return;
+    }
     // Real-offline fallback: queue then leave.
     if (canQueueOffline && isNetworkError(error)) {
       await queueDraftAndLeave(dedupKey);
@@ -1372,6 +1444,22 @@ async function uploadFile(file, config = {}) {
 
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+    <v-dialog
+      :model-value="showVerification"
+      max-width="560"
+      persistent
+      aria-labelledby="submission-verification-title"
+      @keydown.esc="!verificationOnLoad && resolveVerification(false)"
+    >
+      <FormSubmissionGate
+        v-if="showVerification"
+        :form-id="form?.id || formId"
+        :submission-id="isDuplicate ? undefined : submissionId"
+        :recheck="!verificationOnLoad"
+        @cancel="resolveVerification(false)"
+        @verified="resolveVerification(true)"
+      />
+    </v-dialog>
     <v-container fluid>
       <div v-if="!isAuthorized">
         <v-alert
@@ -1619,6 +1707,7 @@ async function uploadFile(file, config = {}) {
             :form-schema="formSchema"
             :json-csv="json_csv"
             :submission-version="versionIdToSubmitTo"
+            :submit-bulk="submitBulkWithVerification"
             @isProcessingMultiUpload="isProcessingMultiUpload"
           />
 

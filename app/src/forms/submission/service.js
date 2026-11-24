@@ -98,8 +98,8 @@ const service = {
 
   readSubmissionData: (formSubmissionIds) => service._fetchSpecificSubmissionData(formSubmissionIds),
 
-  update: async (formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
-    return updateService.update(service, formSubmissionId, data, currentUser, referrer, etrx);
+  update: async (formSubmissionId, data, currentUser, referrer, etrx = undefined, cookie = undefined) => {
+    return updateService.update(service, formSubmissionId, data, currentUser, referrer, etrx, cookie);
   },
 
   /**

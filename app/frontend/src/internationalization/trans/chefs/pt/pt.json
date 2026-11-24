@@ -1,5 +1,15 @@
 ﻿{
   "open": "Abrir",
+  "formSubmissionGate": {
+    "title": "Verifique antes de abrir este formulário",
+    "instructions": "Conclua a verificação para acessar o formulário.",
+    "recheckTitle": "Verifique antes de enviar",
+    "recheckInstructions": "Conclua a verificação para continuar. Suas respostas permanecerão no formulário.",
+    "cancel": "Cancelar",
+    "loading": "Verificação em andamento…",
+    "error": "A verificação está indisponível ou não pôde ser concluída. Verifique sua conexão e tente novamente.",
+    "retry": "Tentar novamente"
+  },
   "date": {
     "date": "aaaa-mm-dd"
   },

@@ -373,6 +373,7 @@ describe('createSubmission access token attachment', () => {
     });
 
   beforeEach(() => {
+    service.readFormIdentityProviders = jest.fn().mockResolvedValue({ id: formIdLocal, identityProviders: [] });
     service.createSubmission = jest.fn().mockResolvedValue(createdSubmission);
     emailService.submissionReceived = jest.fn().mockResolvedValue(undefined);
     fileService.moveSubmissionFiles = jest.fn().mockResolvedValue(undefined);

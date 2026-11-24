@@ -1,4 +1,9 @@
 {
+  "turnstile": {
+    "siteKey": "TURNSTILE_SITE_KEY",
+    "secretKey": "TURNSTILE_SECRET_KEY",
+    "hostnames": "TURNSTILE_HOSTNAMES"
+  },
   "db": {
     "database": "DB_DATABASE",
     "host": "DB_HOST",
@@ -76,6 +81,11 @@
     "submissionTokenKey": "SUBMISSION_TOKEN_KEY",
     "submissionTokenTtlMinutes": "SUBMISSION_TOKEN_TTL_MINUTES",
     "rateLimit": {
+      "turnstile": {
+        "windowMs": "SERVER_RATELIMIT_TURNSTILE_WINDOWMS",
+        "limitStatus": "SERVER_RATELIMIT_TURNSTILE_LIMITSTATUS",
+        "limitVerification": "SERVER_RATELIMIT_TURNSTILE_LIMITVERIFICATION"
+      },
       "fileUpload": {
         "enabled": "SERVER_RATELIMIT_FILEUPLOAD_ENABLED",
         "windowMs": "SERVER_RATELIMIT_FILEUPLOAD_WINDOWMS",
@@ -145,6 +155,9 @@
     "timeoutMs": "CSTAR_TIMEOUT_MS"
   },
   "features": {
+    "turnstile": {
+      "enabled": "FEATURES_TURNSTILE_ENABLED"
+    },
     "offlineForms": {
       "enabled": "FEATURES_OFFLINEFORMS_ENABLED"
     },

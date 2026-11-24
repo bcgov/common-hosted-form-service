@@ -14,6 +14,7 @@ objects:
     metadata:
       name: "${APP_NAME}-${JOB_NAME}-features-config"
     data:
+      FEATURES_TURNSTILE_ENABLED: ${FEATURES_TURNSTILE_ENABLED}
       FEATURES_OFFLINEFORMS_ENABLED: ${FEATURES_OFFLINEFORMS_ENABLED}
       FEATURES_SUBMITTOEMAIL_ENABLED: ${FEATURES_SUBMITTOEMAIL_ENABLED}
       FEATURES_SUBMITTOEMAIL_BATCHSIZE: ${FEATURES_SUBMITTOEMAIL_BATCHSIZE}
@@ -34,6 +35,11 @@ parameters:
     description: Job/Instance name
     displayName: Job Name
     required: true
+  - name: FEATURES_TURNSTILE_ENABLED
+    description: Master switch for Turnstile verification on hosted forms
+    displayName: Turnstile Enabled
+    required: true
+    value: "false"
   - name: FEATURES_OFFLINEFORMS_ENABLED
     description: Master switch for the Offline Forms feature
     displayName: Offline Forms Enabled

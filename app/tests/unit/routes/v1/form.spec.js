@@ -42,6 +42,7 @@ const formVersionId = uuid.v4();
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/form/service');
+const featureService = require('../../../../src/forms/feature/service');
 service.readDraft = jest.fn().mockReturnValue({
   formId: formId,
   id: formVersionDraftId,
@@ -49,6 +50,11 @@ service.readDraft = jest.fn().mockReturnValue({
 service.readVersion = jest.fn().mockReturnValue({
   formId: formId,
   id: formVersionId,
+});
+
+service.readFormIdentityProviders = jest.fn().mockResolvedValue({
+  id: formId,
+  identityProviders: [{ code: 'idir' }],
 });
 
 const exportService = require('../../../../src/forms/form/exportService');
@@ -1514,5 +1520,34 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions/discover`, () 
       expect(response.statusCode).toBe(500);
       expect(response.body).toBeTruthy();
     });
+  });
+});
+
+describe('Turnstile on protected submission routes', () => {
+  let isEnabled;
+
+  beforeEach(() => {
+    isEnabled = jest.spyOn(featureService, 'isEnabled').mockImplementation((code) => code === 'turnstile');
+  });
+
+  afterEach(() => {
+    isEnabled.mockRestore();
+  });
+
+  it.each([
+    ['submissions', 'createSubmission'],
+    ['multiSubmission', 'createMultiSubmission'],
+  ])('blocks %s before calling the write service when proof is missing', async (endpoint, method) => {
+    service.readFormIdentityProviders.mockResolvedValueOnce({
+      id: formId,
+      identityProviders: [{ code: 'bceid-basic' }],
+    });
+    service[method] = jest.fn();
+
+    const response = await appRequest.post(`${basePath}/${formId}/versions/${formVersionId}/${endpoint}`).send({}).set('Authorization', bearerAuth);
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.code).toBe('TURNSTILE_REQUIRED');
+    expect(service[method]).not.toHaveBeenCalled();
   });
 });

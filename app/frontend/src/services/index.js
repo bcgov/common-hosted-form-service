@@ -9,4 +9,5 @@ export { default as encryptionKeyService } from './encryptionKeyService';
 export { default as eventStreamConfigService } from './eventStreamConfigService';
 export { default as recordsManagementService } from './recordsManagementService';
 export { default as printConfigService } from './printConfigService';
+export { default as turnstileService } from './turnstileService';
 export { default as webcomponentSettingsService } from './webcomponentSettingsService';

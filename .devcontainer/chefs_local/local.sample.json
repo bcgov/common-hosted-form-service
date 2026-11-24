@@ -1,4 +1,9 @@
 {
+  "turnstile": {
+    "siteKey": "",
+    "secretKey": "",
+    "hostnames": "localhost"
+  },
   "db": {
     "database": "chefs",
     "host": "localhost",
@@ -58,6 +63,11 @@
     "logLevel": "http",
     "port": "8080",
     "rateLimit": {
+      "turnstile": {
+        "windowMs": "60000",
+        "limitStatus": "60",
+        "limitVerification": "15"
+      },
       "public": {
         "limitApiKey": "120",
         "limitFrontend": "500",
@@ -139,6 +149,9 @@
     "jwtLifetime": "30m"
   },
   "features": {
+    "turnstile": {
+      "enabled": false
+    },
     "documentGenerationV2": {
       "enabled": true
     },
