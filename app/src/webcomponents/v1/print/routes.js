@@ -24,12 +24,13 @@ routes.post(
   }
 );
 
-// Print draft submission (no submissionId) with direct print config
+// Print draft submission (no submissionId) with direct print config; runtime-auth loads the published form
 routes.post(
   '/:formId/print',
   chefSecurity.inline({
     allowedAuth: AuthCombinations.API_ONLY,
     requiredPermissions: [P.FORM_READ],
+    resourceSpec: { kind: 'publishedForm' },
   }),
   originAccess,
   async (req, res, next) => {

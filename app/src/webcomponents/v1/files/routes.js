@@ -54,7 +54,8 @@ routes.post(
   fileUpload.upload,
   virusScan.scanFile,
   async (req, res, next) => {
-    await controller.create(req, res, next);
+    // The form runtime-auth resolved from ?formId= and checked against the credential
+    await controller.create(req, res, next, req.securityContext.resource.form.id);
   }
 );
 

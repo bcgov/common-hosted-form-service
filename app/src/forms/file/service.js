@@ -1,5 +1,5 @@
-const config = require('config');
 const Problem = require('api-problem');
+const config = require('config');
 const uuid = require('uuid');
 const path = require('path');
 const { FileStorage, SubmissionPackageJob } = require('../common/models');
@@ -9,6 +9,19 @@ const storageService = require('./storage/storageService');
 const uploadCleanup = require('./uploadCleanup');
 
 const PERMANENT_STORAGE = config.get('files.permanent');
+
+// Ids per query, well below the Postgres limit of 65,535 bind parameters
+const FILE_ID_BATCH = 1000;
+
+const UNSUBMITTED_UPLOADS_ONLY = 'The submission references a file that was not uploaded for this form or is already part of a submission.';
+
+// Distinct ids in batches of FILE_ID_BATCH
+const idBatches = (ids) => {
+  const unique = [...new Set(ids)];
+  const batches = [];
+  for (let i = 0; i < unique.length; i += FILE_ID_BATCH) batches.push(unique.slice(i, i + FILE_ID_BATCH));
+  return batches;
+};
 
 const BLOCKED_EXTENSIONS = [
   '.exe',
@@ -75,7 +88,8 @@ const safeRollback = async (trx, fileId) => {
 const service = {
   validateFileSecurity,
 
-  create: async (data, currentUser, folder = 'uploads') => {
+  // formId records the form a web component upload is for; other uploads leave it unset
+  create: async (data, currentUser, folder = StorageTypes.UPLOADS, { formId } = {}) => {
     const tempPath = data?.path;
     let trx;
     let uploadResult;
@@ -100,6 +114,7 @@ const service = {
       obj.size = data.size;
       obj.path = data.path;
       obj.createdBy = currentUser?.usernameIdp || 'public';
+      if (formId) obj.formId = formId;
 
       uploadResult = await storageService.upload(obj);
       obj.path = uploadResult.path;
@@ -144,6 +159,73 @@ const service = {
 
   read: async (id) => {
     return FileStorage.query().findById(id).throwIfNotFound();
+  },
+
+  /**
+   * Finds files by id, one batch of ids per query and one query at a time, so a body
+   * listing many ids neither exceeds the query parameter limit nor floods the pool.
+   *
+   * @param {string[]} ids the file ids; repeats are looked up once.
+   * @returns {Promise<FileStorage[]>} the files found; ids that match no file are left out.
+   */
+  findByIds: async (ids) => {
+    return idBatches(ids).reduce(async (previous, batch) => {
+      const found = await previous;
+      for (const file of await FileStorage.query().findByIds(batch)) found.push(file);
+      return found;
+    }, Promise.resolve([]));
+  },
+
+  /**
+   * Refuses to link a file to a submission of another form. A web component upload records
+   * the form it was uploaded for; other uploads record none and are not checked.
+   *
+   * @param {FileStorage[]} files the files a submission references.
+   * @param {string} formId the id of the submission's form.
+   * @throws {Problem} 422 when a file was uploaded for another form.
+   */
+  checkFilesForForm: (files, formId) => {
+    if (files.some((file) => file?.formId && file.formId !== formId)) {
+      throw new Problem(422, { detail: 'The submission references a file uploaded for another form.' });
+    }
+  },
+
+  /**
+   * Refuses files an anonymous submission may not link: each must have been uploaded for
+   * the submission's form and not yet be part of a submission.
+   *
+   * @param {FileStorage[]} files the files a submission references.
+   * @param {string} formId the id of the submission's form.
+   * @throws {Problem} 422 when a file was uploaded elsewhere or is already submitted.
+   */
+  checkUnsubmittedUploads: (files, formId) => {
+    if (files.some((file) => file.formId !== formId || file.formSubmissionId)) {
+      throw new Problem(422, { detail: UNSUBMITTED_UPLOADS_ONLY });
+    }
+  },
+
+  /**
+   * Deletes an upload for a form that no submission has yet. The row is matched as it is
+   * deleted, so a submission that links the file first keeps it.
+   *
+   * @param {string} id the file id.
+   * @param {string} formId the form the upload must be for.
+   * @returns {Promise<void>}
+   * @throws {Problem} 404 when there is no such upload.
+   */
+  deleteUnsubmittedUpload: async (id, formId) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+      const [obj] = await FileStorage.query(trx).delete().where({ id, formId }).whereNull('formSubmissionId').returning('*');
+      if (!obj) throw new Problem(404, { detail: 'File not found.' });
+
+      await storageService.delete(obj);
+      await trx.commit();
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 
   /**
@@ -208,18 +290,22 @@ const service = {
    * @param {FileStorage[]} files the pending files to attach.
    * @param {string} updatedBy the user who is saving the submission.
    * @param {*} trx the submission transaction.
+   * @param {object} [options]
+   * @param {string} [options.formId] take each file only while it is an upload for this form.
    * @throws Problem 409 if another save has attached any of the files first.
    */
-  claimSubmissionFiles: async (submissionId, files, updatedBy, trx) => {
+  claimSubmissionFiles: async (submissionId, files, updatedBy, trx, { formId } = {}) => {
     if (!files.length) return;
 
-    const claimed = await FileStorage.query(trx)
+    let query = FileStorage.query(trx)
       .patch({ formSubmissionId: submissionId, updatedBy: updatedBy })
       .whereIn(
         'id',
         files.map((file) => file.id)
       )
       .whereNull('formSubmissionId');
+    if (formId) query = query.where('formId', formId);
+    const claimed = await query;
 
     if (claimed !== files.length) {
       throw new Problem(409, { detail: 'A file in this submission changed while it was being saved. Please try again.' });

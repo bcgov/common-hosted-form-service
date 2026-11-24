@@ -138,22 +138,29 @@ module.exports = function makeEnrichRBAC({ deps }) {
   function grantPublicUserPermissions(isPublicUser, publicForm, resource, policy, permissions, decide, actor) {
     if (!isPublicUser) return;
 
+    // Anonymous access only applies to forms that use the Public identity provider
+    if (!publicForm) {
+      decide(PREDICATES.PUBLIC_USER_BASE_ACCESS, false, {
+        formId: resource?.form?.id,
+        publicForm,
+        actorType: actor?.type,
+      });
+      return;
+    }
+
     // Grant base FORM_SUBMITTER permissions
     for (const perm of PUBLIC_USER_PERMISSIONS) {
       permissions.add(perm);
     }
 
-    // Conditional permissions based on form being public
-    if (publicForm) {
-      // Public users can read submissions on public forms (but only SUBMISSION_READ)
-      const requiredPerms = policy.requiredPermissions || [];
-      if (requiredPerms.length === 1 && requiredPerms.includes(Permissions.SUBMISSION_READ)) {
-        permissions.add(Permissions.SUBMISSION_READ);
-        decide(PREDICATES.PUBLIC_USER_SUBMISSION_READ, true, {
-          formId: resource.form?.id,
-          condition: 'single SUBMISSION_READ permission on public form',
-        });
-      }
+    // Public users can read submissions on public forms (but only SUBMISSION_READ)
+    const requiredPerms = policy.requiredPermissions || [];
+    if (requiredPerms.length === 1 && requiredPerms.includes(Permissions.SUBMISSION_READ)) {
+      permissions.add(Permissions.SUBMISSION_READ);
+      decide(PREDICATES.PUBLIC_USER_SUBMISSION_READ, true, {
+        formId: resource.form?.id,
+        condition: 'single SUBMISSION_READ permission on public form',
+      });
     }
 
     decide(PREDICATES.PUBLIC_USER_BASE_ACCESS, true, {
@@ -200,6 +207,12 @@ module.exports = function makeEnrichRBAC({ deps }) {
 
     if (fileApiAccess === false) {
       recordDraftFileDenials(requiresRead, requiresUpdate, decide);
+      return;
+    }
+
+    // A file on no submission is never downloadable on these routes (middleware/filePermissions.js)
+    if (requiresRead) {
+      decide(PREDICATES.API_USER_DRAFT_FILE_READ, false, { reason: 'a file on no submission cannot be downloaded' });
       return;
     }
 

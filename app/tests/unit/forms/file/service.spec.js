@@ -64,6 +64,131 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+describe('findByIds', () => {
+  const ids = (count, prefix = 'id') => Array.from({ length: count }, (_v, i) => `${prefix}-${i}`);
+  let findByIds;
+
+  beforeEach(() => {
+    // Each batch query returns a row for every id it was given, except ids starting with "missing"
+    findByIds = jest.fn((batch) => Promise.resolve(batch.filter((id) => !id.startsWith('missing')).map((id) => ({ id: id.toLowerCase() }))));
+    FileStorage.query = jest.fn().mockReturnValue({ findByIds });
+  });
+
+  it('looks ids up a batch of 1000 at a time, each id once', async () => {
+    const all = [...ids(2500), 'id-0', 'id-1'];
+
+    const found = await service.findByIds(all);
+
+    expect(findByIds.mock.calls.map(([batch]) => batch.length)).toEqual([1000, 1000, 500]);
+    expect(found).toHaveLength(2500);
+  });
+
+  it('waits for each batch before sending the next', async () => {
+    let inFlight = 0;
+    let most = 0;
+    findByIds.mockImplementation(async (batch) => {
+      inFlight++;
+      most = Math.max(most, inFlight);
+      await new Promise((resolve) => setImmediate(resolve));
+      inFlight--;
+      return batch.map((id) => ({ id }));
+    });
+
+    await service.findByIds(ids(3500));
+
+    expect(most).toBe(1);
+  });
+
+  it('leaves out ids that match no file', async () => {
+    expect(await service.findByIds(['id-1', 'missing-1'])).toEqual([{ id: 'id-1' }]);
+  });
+});
+
+describe('deleteUnsubmittedUpload', () => {
+  const formId = '11111111-1111-4111-8111-111111111111';
+  let query;
+  let trx;
+
+  beforeEach(() => {
+    trx = { commit: jest.fn(), rollback: jest.fn() };
+    FileStorage.startTransaction = jest.fn().mockResolvedValue(trx);
+    query = { delete: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), whereNull: jest.fn().mockReturnThis(), returning: jest.fn() };
+    FileStorage.query = jest.fn().mockReturnValue(query);
+    storageService.delete = jest.fn().mockResolvedValue(true);
+  });
+
+  it('deletes the row and the stored file of an unsubmitted upload for the form', async () => {
+    query.returning.mockResolvedValue([mockFileStorage]);
+
+    await service.deleteUnsubmittedUpload(mockFileStorage.id, formId);
+
+    expect(FileStorage.query).toHaveBeenCalledWith(trx);
+    expect(query.where).toHaveBeenCalledWith({ id: mockFileStorage.id, formId });
+    expect(query.whereNull).toHaveBeenCalledWith('formSubmissionId');
+    expect(storageService.delete).toHaveBeenCalledWith(mockFileStorage);
+    expect(trx.commit).toHaveBeenCalled();
+  });
+
+  it('returns 404 and keeps the file when no unsubmitted upload matches', async () => {
+    query.returning.mockResolvedValue([]);
+
+    await expect(service.deleteUnsubmittedUpload(mockFileStorage.id, formId)).rejects.toThrow(expect.objectContaining({ status: 404, detail: 'File not found.' }));
+
+    expect(storageService.delete).not.toHaveBeenCalled();
+    expect(trx.rollback).toHaveBeenCalled();
+    expect(trx.commit).not.toHaveBeenCalled();
+  });
+
+  it('rolls back when the stored file cannot be deleted', async () => {
+    query.returning.mockResolvedValue([mockFileStorage]);
+    storageService.delete.mockRejectedValue(new Error('storage down'));
+
+    await expect(service.deleteUnsubmittedUpload(mockFileStorage.id, formId)).rejects.toThrow('storage down');
+
+    expect(trx.rollback).toHaveBeenCalled();
+    expect(trx.commit).not.toHaveBeenCalled();
+  });
+});
+
+describe('checkFilesForForm', () => {
+  const formId = '11111111-1111-4111-8111-111111111111';
+
+  it.each([
+    ['no files', []],
+    ['files that record no form', [{ formId: null }, {}]],
+    ["files uploaded for the submission's form", [{ formId }]],
+  ])('accepts %s', (_name, files) => {
+    expect(() => service.checkFilesForForm(files, formId)).not.toThrow();
+  });
+
+  it('refuses a file uploaded for another form', () => {
+    expect(() => service.checkFilesForForm([{ formId: null }, { formId: '22222222-2222-4222-8222-222222222222' }], formId)).toThrow(
+      expect.objectContaining({ status: 422, detail: 'The submission references a file uploaded for another form.' })
+    );
+  });
+});
+
+describe('checkUnsubmittedUploads', () => {
+  const formId = '11111111-1111-4111-8111-111111111111';
+
+  it.each([
+    ['no files', []],
+    ['unsubmitted uploads for the form', [{ formId, formSubmissionId: null }, { formId }]],
+  ])('accepts %s', (_name, files) => {
+    expect(() => service.checkUnsubmittedUploads(files, formId)).not.toThrow();
+  });
+
+  it.each([
+    ['records no form', { formId: null, formSubmissionId: null }],
+    ['was uploaded for another form', { formId: '22222222-2222-4222-8222-222222222222', formSubmissionId: null }],
+    ['is part of a submission', { formId, formSubmissionId: '33333333-3333-4333-8333-333333333333' }],
+  ])('refuses a file that %s', (_name, file) => {
+    expect(() => service.checkUnsubmittedUploads([{ formId }, file], formId)).toThrow(
+      expect.objectContaining({ status: 422, detail: 'The submission references a file that was not uploaded for this form or is already part of a submission.' })
+    );
+  });
+});
+
 describe('create', () => {
   describe('temp file cleanup', () => {
     const validFileData = {
@@ -92,6 +217,19 @@ describe('create', () => {
       await service.create(validFileData, currentUser);
 
       expect(uploadCleanup.removeUploadedFile).toHaveBeenCalledWith(validFileData.path, 'object-storage-upload-success');
+    });
+
+    it.each([
+      ['records the form it is given', { formId: '11111111-1111-4111-8111-111111111111' }, '11111111-1111-4111-8111-111111111111'],
+      ['records no form by default', undefined, undefined],
+    ])('%s', async (_name, options, expected) => {
+      storageService.upload = jest.fn().mockResolvedValue({ path: validFileData.path, storage: StorageTypes.UPLOADS });
+
+      await service.create(validFileData, currentUser, StorageTypes.UPLOADS, options);
+
+      const inserted = FileStorage.query.mock.results[0].value.insert.mock.calls[0][0];
+      expect(inserted.formId).toBe(expected);
+      expect(inserted.storage).toBe(StorageTypes.UPLOADS);
     });
 
     it('preserves local temp file after successful local storage upload', async () => {
@@ -660,5 +798,29 @@ describe('claimSubmissionFiles', () => {
 
     await service.claimSubmissionFiles('subId', [], 'user', trx);
     expect(FileStorage.query).not.toHaveBeenCalled();
+  });
+
+  describe('with formId', () => {
+    const formQuery = (claimed) => {
+      const where = jest.fn().mockResolvedValue(claimed);
+      const whereNull = jest.fn().mockReturnValue({ where });
+      const whereIn = jest.fn().mockReturnValue({ whereNull });
+      FileStorage.query = jest.fn().mockReturnValue({ patch: jest.fn().mockReturnValue({ whereIn }) });
+      return { whereNull, where };
+    };
+
+    it('takes each file only while it is an upload for that form on no submission', async () => {
+      const query = formQuery(2);
+
+      await expect(service.claimSubmissionFiles('subId', files, 'user', trx, { formId: 'form-a' })).resolves.toBeUndefined();
+      expect(query.whereNull).toHaveBeenCalledWith('formSubmissionId');
+      expect(query.where).toHaveBeenCalledWith('formId', 'form-a');
+    });
+
+    it('409s when a file stopped being such an upload', async () => {
+      formQuery(1);
+
+      await expect(service.claimSubmissionFiles('subId', files, 'user', trx, { formId: 'form-a' })).rejects.toMatchObject({ status: 409 });
+    });
   });
 });

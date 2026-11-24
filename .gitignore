@@ -16,14 +16,10 @@ node_modules
 /package-lock.json
 
 
-# Embed viewer build artifacts
-app/frontend/public/embed/chefs-form-viewer.min.js
-app/frontend/public/embed/chefs-form-viewer.min.js.map
-app/frontend/public/embed/chefs-form-viewer-embed.min.js
-app/frontend/public/embed/chefs-form-viewer-embed.min.js.map
-app/frontend/public/embed/chefs-index.css
-app/frontend/public/embed/chefs-theme.css
+# Output of the old web component build, replaced by committed releases in app/embed/releases
 app/webcomponents/*
+# Staging folder left by an interrupted npm run embed:release
+app/embed/releases/.*
 
 # local env files
 local.*

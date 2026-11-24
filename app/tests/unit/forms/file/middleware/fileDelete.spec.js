@@ -59,6 +59,8 @@ describe('decideFileDelete', () => {
       ['package file, an API key caller', unattached('public', PACKAGE_WORKER), { apiUser: true, user: publicUser }, FILE_DELETE.DENY],
       ['webcomponents API upload', unattached('api-user'), { apiUser: false, user: publicUser }, FILE_DELETE.DENY],
       ['webcomponents gateway upload', unattached('gateway-user'), { apiUser: false, user: idirUser }, FILE_DELETE.DENY],
+      ['webcomponents anonymous upload, the public user', unattached('public-user'), { apiUser: false, user: publicUser }, FILE_DELETE.DENY],
+      ['webcomponents anonymous upload, an IDIR user', unattached('public-user'), { apiUser: false, user: idirUser }, FILE_DELETE.DENY],
       ['public upload, an API key caller', unattached('public'), { apiUser: true, user: publicUser }, FILE_DELETE.DENY],
       ['public upload, the public user', unattached('public'), { apiUser: false, user: publicUser }, FILE_DELETE.ALLOW],
       ['public upload, no user at all', unattached('public'), { apiUser: false, user: undefined }, FILE_DELETE.ALLOW],

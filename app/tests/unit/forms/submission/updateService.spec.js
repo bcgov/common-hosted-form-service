@@ -12,6 +12,7 @@ jest.mock('../../../../src/forms/file/service', () => ({
   claimSubmissionFiles: jest.fn(),
   moveSubmissionFile: jest.fn(),
   deleteStorageObject: jest.fn(),
+  checkFilesForForm: jest.fn(),
 }));
 jest.mock('../../../../src/forms/email/emailService', () => ({
   submissionReceived: jest.fn().mockResolvedValue(),
@@ -208,6 +209,7 @@ describe('updateService', () => {
       FileStorage.query.mockReset();
       fileService.claimSubmissionFiles.mockReset();
       fileService.claimSubmissionFiles.mockResolvedValue();
+      fileService.checkFilesForForm.mockReset();
       fileService.moveSubmissionFile.mockReset();
       fileService.moveSubmissionFile.mockImplementation((_id, fileStorage) => Promise.resolve(fileStorage));
       mockLog.warn.mockClear();
@@ -288,6 +290,45 @@ describe('updateService', () => {
 
       expect(FileStorage.query).not.toHaveBeenCalled();
       expect(moved).toEqual([]);
+    });
+
+    it("checks every file against the submission's form before claiming or moving any", async () => {
+      const files = [pending(F1, 'uploader', { formId: null }), pending(F2, 'uploader', { formId: 'form-b' })];
+      rows(files);
+      const submissionService = { ...named(F1, F2), read: jest.fn().mockResolvedValue({ form: { id: 'form-a' } }) };
+      const refused = Object.assign(new Error('another form'), { status: 422 });
+      fileService.checkFilesForForm.mockImplementationOnce(() => {
+        throw refused;
+      });
+
+      await expect(updateService._handleFileUploads(submissionService, {}, SUB, user, trx)).rejects.toBe(refused);
+
+      expect(submissionService.read).toHaveBeenCalledWith(SUB);
+      expect(fileService.checkFilesForForm).toHaveBeenCalledWith(files, 'form-a');
+      expect(fileService.claimSubmissionFiles).not.toHaveBeenCalled();
+      expect(fileService.moveSubmissionFile).not.toHaveBeenCalled();
+    });
+
+    it('moves a file uploaded for the same form', async () => {
+      const file = pending(F1, 'uploader', { formId: 'form-a' });
+      rows([file]);
+      const submissionService = { ...named(F1), read: jest.fn().mockResolvedValue({ form: { id: 'form-a' } }) };
+
+      const moved = await updateService._handleFileUploads(submissionService, {}, SUB, user, trx);
+
+      expect(fileService.checkFilesForForm).toHaveBeenCalledWith([file], 'form-a');
+      expect(moved).toEqual([file]);
+    });
+
+    it('does not read the submission when no file records a form', async () => {
+      rows([pending(F1)]);
+      const submissionService = { ...named(F1), read: jest.fn() };
+
+      await updateService._handleFileUploads(submissionService, {}, SUB, user, trx);
+
+      expect(submissionService.read).not.toHaveBeenCalled();
+      expect(fileService.checkFilesForForm).not.toHaveBeenCalled();
+      expect(fileService.moveSubmissionFile).toHaveBeenCalledTimes(1);
     });
 
     it('ignores an id that is not a file', async () => {
