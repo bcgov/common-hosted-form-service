@@ -16,9 +16,16 @@ objects:
     kind: ConfigMap
     metadata:
       name: "${APP_NAME}-${JOB_NAME}-clamav"
+    # The scan limits apply to each app pod. Keep app replicas x MAX_CONCURRENT_SCANS
+    # close to ClamAV replicas x clamd MaxThreads (prod: 3 x 4 = 12 on both sides),
+    # and SCAN_SLOT_WAIT_MS + SCAN_TIMEOUT_MS under the 30s route timeout.
     data:
       FILES_CLAMAV_HOST: ${HOST}
       FILES_CLAMAV_PORT: ${PORT}
+      FILES_CLAMAV_MAX_CONCURRENT_SCANS: ${MAX_CONCURRENT_SCANS}
+      FILES_CLAMAV_MAX_WAITING_SCANS: ${MAX_WAITING_SCANS}
+      FILES_CLAMAV_SCAN_SLOT_WAIT_MS: ${SCAN_SLOT_WAIT_MS}
+      FILES_CLAMAV_SCAN_TIMEOUT_MS: ${SCAN_TIMEOUT_MS}
 parameters:
   - name: APP_NAME
     description: Application name
@@ -37,3 +44,23 @@ parameters:
     displayName: ClamAV Port
     required: true
     default: 3310
+  - name: MAX_CONCURRENT_SCANS
+    description: Scans each app pod runs at once
+    displayName: Max Concurrent Scans
+    required: true
+    value: "2"
+  - name: MAX_WAITING_SCANS
+    description: Uploads each app pod holds waiting for a scan slot; more are refused with a 503
+    displayName: Max Waiting Scans
+    required: true
+    value: "4"
+  - name: SCAN_SLOT_WAIT_MS
+    description: How long an upload waits for a scan slot before a 503 (milliseconds)
+    displayName: Scan Slot Wait (ms)
+    required: true
+    value: "5000"
+  - name: SCAN_TIMEOUT_MS
+    description: How long a single scan may take before a 503 (milliseconds)
+    displayName: Scan Timeout (ms)
+    required: true
+    value: "20000"
