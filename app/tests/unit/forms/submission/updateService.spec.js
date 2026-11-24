@@ -1,5 +1,6 @@
 const updateService = require('../../../../src/forms/submission/updateService');
 const { Statuses } = require('../../../../src/forms/common/constants');
+const featureService = require('../../../../src/forms/feature/service');
 
 jest.mock('../../../../src/forms/common/models', () => ({
   FileStorage: { query: jest.fn() },
@@ -319,6 +320,7 @@ describe('updateService', () => {
       const submissionService = { read: jest.fn().mockResolvedValue({ form, submission: { draft: true } }) };
       const statusSpy = jest.spyOn(updateService, '_getStatuses').mockResolvedValue([]);
       const patchSpy = jest.spyOn(updateService, '_patchSubmission');
+      const isEnabled = jest.spyOn(featureService, 'isEnabled').mockImplementation((code) => code === 'turnstile');
       try {
         await expect(updateService.update(submissionService, 1, { draft: false }, { id: 'user' }, null, trx)).rejects.toMatchObject({
           status: 403,
@@ -328,6 +330,7 @@ describe('updateService', () => {
       } finally {
         statusSpy.mockRestore();
         patchSpy.mockRestore();
+        isEnabled.mockRestore();
       }
     });
 

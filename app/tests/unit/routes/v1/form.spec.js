@@ -42,6 +42,7 @@ const formVersionId = uuid.v4();
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/form/service');
+const featureService = require('../../../../src/forms/feature/service');
 service.readDraft = jest.fn().mockReturnValue({
   formId: formId,
   id: formVersionDraftId,
@@ -1523,6 +1524,16 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions/discover`, () 
 });
 
 describe('Turnstile on protected submission routes', () => {
+  let isEnabled;
+
+  beforeEach(() => {
+    isEnabled = jest.spyOn(featureService, 'isEnabled').mockImplementation((code) => code === 'turnstile');
+  });
+
+  afterEach(() => {
+    isEnabled.mockRestore();
+  });
+
   it.each([
     ['submissions', 'createSubmission'],
     ['multiSubmission', 'createMultiSubmission'],
