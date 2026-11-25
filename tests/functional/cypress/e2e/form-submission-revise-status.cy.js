@@ -91,10 +91,8 @@ it('Submission revise status Assignment', () => {
     cy.viewport(1000, 1100);
     cy.wait(2000);
     cy.location('search').then(search => {
-        //let pathName = fullUrl.pathname
-        let arr = search.split('=');
-        let arrayValues = arr[1].split('&');
-        cy.log(arrayValues[0]);
+    const formId = new URLSearchParams(search).get('f');
+    expect(formId, 'form created for this test').to.be.a('string').and.not.be.empty;
     cy.get('.mdi-pencil').click();
     cy.get('span').contains('Save as Draft').click();
     cy.waitForLoad();
@@ -138,7 +136,7 @@ it('Submission revise status Assignment', () => {
     cy.get('.v-alert__content').contains('div','An email has been sent to chefs.testing@gov.bc.ca.').should('be.visible');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //Assign status submission
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
     cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
@@ -167,8 +165,7 @@ it('Submission revise status Assignment', () => {
     cy.wait(2000);
     //Verify Edit submission button is disabled
     cy.get('button[title="Edit This Submission"]').should('be.disabled');
-    //Delete form after test run
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.get('[data-cy="admin"]').click();
     cy.get('[value="features"] > .v-btn__content').click();
     cy.get('[data-test="featureFlags-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(1)').
@@ -197,14 +194,14 @@ it('Submission revise status Assignment', () => {
     cy.get('[data-test="featureFlags-manage-submitToEmail"]').should('be.visible');
     //Set up a form to use DocumentGenerationV3
     cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
-    cy.get('[data-test="featureFlags-form-input"] input').type(arrayValues[0]);
+    cy.get('[data-test="featureFlags-form-input"] input').type(formId);
     cy.get('[data-test="featureFlags-form-add"]').click();
-    cy.get('code').contains(arrayValues[0]).should('be.visible');
+    cy.get('code').contains(formId).should('be.visible');
     cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
     //Delete the form from DocumentGenerationV3 feature
     cy.get('[data-test="featureFlags-manage-documentGenerationV3"]').click();
-    cy.get('.mdi-delete').click({ multiple: true });
-    cy.contains(arrayValues[0]).should('not.exist');
+    cy.get(`[data-test="featureFlags-form-remove-${formId}"]`).click();
+    cy.contains('code', formId).should('not.exist');
     //Save the changes
     cy.get('.v-card-actions > div > .v-btn').should('be.visible').click();
     //Check all features enabled back to every forms(Universal)
@@ -212,7 +209,7 @@ it('Submission revise status Assignment', () => {
     //Enable submit to email feature for the form
     cy.get('input[type="checkbox"]').eq(4).check({ force: true });
     //Configure submit to Email export
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
     cy.get('[data-test="canAllowEditFormSettings"]').click();
     cy.get('[data-test="submission-package-email-test"]').click();
     cy.get('[data-test="submission-package-email-test"]').parent().find('input[type="text"]').eq(1).type('test@example.com').type('{enter}');
@@ -226,12 +223,15 @@ it('Submission revise status Assignment', () => {
     //Validate codogs file uploaded appears under cdogs section
     cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.contains('span','test.docx').should('be.visible');
-    cy.waitForLoad();
-    //Delete the form after test run
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.get('.mdi-delete').click();
+    cy.location('search').should((search) => {
+      expect(new URLSearchParams(search).get('f')).to.equal(formId);
+    });
+    cy.intercept('DELETE', `**/forms/${formId}`).as('deleteTestForm');
+    cy.get('[data-test="canRemoveForm"]', { timeout: 30000 }).click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('.mdi-logout').click();
+    cy.wait('@deleteTestForm').its('response.statusCode').should('eq', 204);
+    cy.location('pathname').should('eq', `/${depEnv}/user/forms`);
+    cy.get('#logoutButton').click();
     
     });
 });
