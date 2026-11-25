@@ -10,6 +10,16 @@ Cypress.Commands.add("waitForLoad", () => {
 });
 
 describe("Form Designer", () => {
+  let formId;
+
+  before(() => {
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
+  });
+
   beforeEach(()=>{
       cy.on('uncaught:exception', (err, runnable) => {
         // Form.io throws an uncaught exception for missing projectid
@@ -17,11 +27,6 @@ describe("Form Designer", () => {
         console.log(err);
         return false;
       });
-    cy.clearCookies();
-    cy.clearLocalStorage();
-    cy.window().then((win) => {
-    win.sessionStorage.clear();
-    });
   });
   it("Visits the form settings page", () => {
     cy.viewport(1000, 1100);
@@ -144,44 +149,33 @@ it('Checks the Button', () => {
         cy.wait(2000);
         cy.get('.btn-success').click();
     });
-    // Form saving
-    let savedButton = cy.get("[data-cy=saveButton]");
-    expect(savedButton).to.not.be.null;
-    savedButton.trigger("click");
-    cy.wait(2000);
-    // Filter the newly created form
-    cy.location("search").then((search) => {
-      let arr = search.split("=");
-      let arrayValues = arr[1].split("&");
-      cy.log(arrayValues[0]);
-      let dval = arr[2].split("&");
-      cy.log(dval);
-      // Form preview
-      cy.visit(`/${depEnv}/form/preview?f=${arrayValues[0]}&d=${dval[0]}`);
-      cy.wait(2000);
-      //Verify added components presence in the form
-      cy.get(".v-skeleton-loader > .v-container").should("be.visible");
-      cy.get(".card").should("be.visible");
-      cy.get('button[name="data[simplebuttonadvanced1]"]').should("be.visible");
-      cy.get("label").contains("Survey").should("be.visible");
-      cy.get(".signature-pad-canvas").should("be.visible");
-      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.wait(2000);
-    });
+    cy.get('[data-cy="saveButton"]:visible').click();
+    cy.location("search", { timeout: 30000 })
+      .should((search) => {
+        const params = new URLSearchParams(search);
+        expect(params.get("svs"), "form save status").to.equal("Saved");
+        expect(params.get("f"), "saved form ID").to.be.a("string").and.not.be.empty;
+        expect(params.get("d"), "saved draft ID").to.be.a("string").and.not.be.empty;
+      })
+      .then((search) => {
+        const params = new URLSearchParams(search);
+        formId = params.get("f");
+        cy.visit(`/${depEnv}/form/preview?f=${formId}&d=${params.get("d")}`);
+      });
+    cy.get(".v-skeleton-loader > .v-container").should("be.visible");
+    cy.get(".card").should("be.visible");
+    cy.get('button[name="data[simplebuttonadvanced1]"]').should("be.visible");
+    cy.get("label").contains("Survey").should("be.visible");
+    cy.get(".signature-pad-canvas").should("be.visible");
   });
   it("Validate Ministry list", () => {
     cy.viewport(1000, 1100);
-    cy.wait(2000);
-    //Edit the form settings
-    cy.get(
-      ":nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay"
-    ).click();
-    cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
-    cy.wait(2000);
-    // Verfiy Ministry/Organization List
-    cy.get(
-      ".v-row > :nth-child(1) > .v-input > .v-input__control > .v-field > .v-field__append-inner"
-    ).click();
+    expect(formId, "form created by the designer tests").to.be.a("string").and.not.be.empty;
+    cy.visit(`/${depEnv}/form/manage?f=${formId}`);
+    cy.get('[data-test="canAllowEditFormSettings"]', { timeout: 30000 }).click();
+    cy.contains('label[for]', /^Organization$/).invoke("attr", "for").then((inputId) => {
+      cy.get(`input[id="${inputId}"]`).should("be.enabled").click();
+    });
     cy.contains("Citizens' Services (CITZ)").should("exist");
     cy.contains("Agriculture and Food (AF)").should("exist");
     cy.contains("Attorney General (AG)").should("exist");
