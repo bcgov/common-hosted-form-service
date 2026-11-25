@@ -3417,4 +3417,103 @@ describe('FormViewer.vue', () => {
     expect(mockOfflineQueue.enqueue).toHaveBeenCalledTimes(1);
     expect(mockOfflineQueue.enqueue.mock.calls[0][0].dedupKey).toBe(sentKey);
   });
+
+  it.each([false, true])(
+    'retries a protected published-form load after verification (duplicate: %s)',
+    async (isDuplicate) => {
+      readPublishedSpy.mockReset();
+      readPublishedSpy
+        .mockRejectedValueOnce({
+          response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+        })
+        .mockResolvedValueOnce({
+          data: { versions: [{ id: 'published', version: 1, schema: {} }] },
+        });
+      const wrapper = shallowMount(FormViewer, {
+        props: {
+          formId,
+          isDuplicate,
+          submissionId: isDuplicate ? 'original-submission' : undefined,
+        },
+        global: {
+          provide: { setWideLayout: vi.fn() },
+          plugins: [pinia],
+          stubs: { ...STUBS, VDialog: true },
+        },
+      });
+
+      await flushPromises();
+      expect(wrapper.vm.showVerification).toBe(true);
+      expect(readPublishedSpy).toHaveBeenCalledTimes(1);
+      expect(getSubmissionSpy).not.toHaveBeenCalled();
+
+      wrapper.vm.resolveVerification(true);
+      await flushPromises();
+      expect(readPublishedSpy).toHaveBeenNthCalledWith(2, formId);
+      expect(getSubmissionSpy).toHaveBeenCalledTimes(isDuplicate ? 1 : 0);
+      wrapper.unmount();
+    }
+  );
+
+  it('pauses a protected submission until renewed proof is confirmed', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: { formId, displayTitle: true },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: { ...STUBS, VDialog: true },
+      },
+    });
+    await flushPromises();
+    wrapper.vm.form = {
+      id: formId,
+      identityProviders: [{ code: 'bceid-basic' }],
+    };
+    wrapper.vm.isFormScheduleExpired = false;
+    createSubmissionSpy.mockClear();
+    createSubmissionSpy.mockRejectedValueOnce({
+      response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+    });
+    const data = { answer: 'saved answer', files: [{ id: 'file-id' }] };
+
+    const pending = wrapper.vm.doSubmit({ data });
+    await flushPromises();
+    expect(wrapper.vm.showVerification).toBe(true);
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(1);
+
+    wrapper.vm.resolveVerification(true);
+    await pending;
+    expect(createSubmissionSpy).toHaveBeenCalledTimes(2);
+    expect(createSubmissionSpy.mock.calls[1]).toEqual(createSubmissionSpy.mock.calls[0]);
+    expect(createSubmissionSpy.mock.calls[1][2].submission.data).toMatchObject(data);
+    wrapper.unmount();
+  });
+
+  it('retries finalizing an existing draft after verification and preserves its payload', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: { submissionId: 'saved-draft' },
+      global: {
+        provide: { setWideLayout: vi.fn() },
+        plugins: [pinia],
+        stubs: { ...STUBS, VDialog: true },
+      },
+    });
+    await flushPromises();
+    const sub = { data: { answer: 'saved answer', files: [{ id: 'file-id' }] } };
+    const response = { status: 200 };
+    updateSubmissionSpy.mockReset();
+    updateSubmissionSpy.mockRejectedValueOnce({
+      response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+    }).mockResolvedValueOnce(response);
+
+    const pending = wrapper.vm.sendSubmission(false, sub);
+    await flushPromises();
+    expect(wrapper.vm.showVerification).toBe(true);
+    expect(updateSubmissionSpy).toHaveBeenCalledTimes(1);
+    wrapper.vm.resolveVerification(true);
+
+    await expect(pending).resolves.toEqual(response);
+    expect(updateSubmissionSpy).toHaveBeenNthCalledWith(2, 'saved-draft', { draft: false, submission: sub });
+    wrapper.unmount();
+  });
 });

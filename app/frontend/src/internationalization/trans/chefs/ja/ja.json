@@ -1,5 +1,15 @@
 ﻿{
   "open": "開ける",
+  "formSubmissionGate": {
+    "title": "フォームを開く前に確認を行ってください",
+    "instructions": "確認を完了すると、フォームに進めます。",
+    "recheckTitle": "送信前に確認を行ってください",
+    "recheckInstructions": "続行するには確認を完了してください。入力した回答はフォームに残ります。",
+    "cancel": "キャンセル",
+    "loading": "確認中…",
+    "error": "確認を利用できないか、完了できませんでした。接続を確認して、もう一度お試しください。",
+    "retry": "再試行"
+  },
   "date": {
     "date": "yyyy-mm-dd"
   },

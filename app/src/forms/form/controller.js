@@ -4,6 +4,7 @@ const { validate } = require('uuid');
 const docGenService = require('../../components/docGenService');
 const exportService = require('./exportService');
 const service = require('./service');
+const turnstileService = require('./turnstile/service');
 const fileService = require('../file/service');
 const log = require('../../components/log')(module.filename);
 const submissionTokenService = require('../../components/submissionTokenService');
@@ -85,6 +86,8 @@ module.exports = {
   readPublishedForm: async (req, res, next) => {
     try {
       const response = await service.readPublishedForm(req.params.formId, req.query);
+      res.set('Cache-Control', 'private, no-store');
+      turnstileService.requireProof(req, response);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -193,7 +196,8 @@ module.exports = {
   },
   createSubmission: async (req, res, next) => {
     try {
-      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser, { dedupKey: req.dedupKey });
+      const turnstileProof = await turnstileService.requireSubmissionProof(req);
+      const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser, { dedupKey: req.dedupKey, turnstileProof });
       // Submission-received email and submission-package job enqueue are handled
       // inside service.createSubmission (post-commit, best-effort).
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
@@ -216,7 +220,8 @@ module.exports = {
   },
   createMultiSubmission: async (req, res, next) => {
     try {
-      const response = await service.createMultiSubmission(req.params.formVersionId, req.body, req.currentUser);
+      const turnstileProof = await turnstileService.requireSubmissionProof(req);
+      const response = await service.createMultiSubmission(req.params.formVersionId, req.body, req.currentUser, turnstileProof);
       res.status(201).json(response);
     } catch (error) {
       next(error);

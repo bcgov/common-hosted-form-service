@@ -7,12 +7,17 @@ const { currentUser, hasFormPermissions, requireCreateFormPermission } = require
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
-
-routes.use(currentUser);
+const turnstileController = require('./turnstile/controller');
+const { turnstileStatusLimiter, turnstileVerificationLimiter } = require('./turnstile/rateLimiter');
 
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formVersionDraftId', validateParameter.validateFormVersionDraftId);
 routes.param('formVersionId', validateParameter.validateFormVersionId);
+
+routes.get('/:formId/turnstile', turnstileStatusLimiter, currentUser, hasFormPermissions([P.FORM_READ]), turnstileController.readStatus);
+routes.post('/:formId/turnstile', turnstileVerificationLimiter, currentUser, hasFormPermissions([P.FORM_READ]), turnstileController.verifyChallenge);
+
+routes.use(currentUser);
 
 routes.get('/', jwtService.protect('admin'), async (req, res, next) => {
   await controller.listForms(req, res, next);

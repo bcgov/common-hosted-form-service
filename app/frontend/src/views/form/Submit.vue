@@ -14,11 +14,13 @@ const route = useRoute();
 </script>
 
 <template>
-  <FormViewer
-    :key="`${route.query.editOffline ?? 'new'}-${route.query.f ?? ''}-${
-      route.query.fresh ?? ''
-    }`"
-    :form-id="f"
-    display-title
-  />
+  <div>
+    <FormViewer
+      :key="`${route.query.editOffline ?? 'new'}-${f}-${
+        route.query.fresh ?? ''
+      }`"
+      :form-id="f"
+      display-title
+    />
+  </div>
 </template>

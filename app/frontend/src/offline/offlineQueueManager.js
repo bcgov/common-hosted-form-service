@@ -43,17 +43,63 @@ export const offlineQueueEvents = mitt();
 // Exposed so UI can gate a manual Send button while a drain is in flight.
 export const isDraining = ref(false);
 
+// How a Turnstile prompt for a queued entry ended. Only CANCELLED (the user
+// said no) holds back that form's entries; INTERRUPTED (went offline, lost the
+// primary tab, modal unmounted) just leaves the entry for the next drain.
+export const VerificationOutcome = Object.freeze({
+  VERIFIED: 'verified',
+  CANCELLED: 'cancelled',
+  INTERRUPTED: 'interrupted',
+});
+
+export const pendingVerification = ref(null);
+// Forms whose verification the user cancelled. Automatic drains skip their
+// entries and keep sending everything else; a user-triggered drain clears it.
+const cancelledVerificationForms = new Set();
+const isVerificationCancelled = (entry) =>
+  cancelledVerificationForms.has(entry.formId);
+
 let started = false;
 // Fires once per editing session so the 30s tick doesn't nag repeatedly.
 let syncPausedToastShown = false;
 
 async function postEntry(entry) {
-  const response = await formService.createSubmission(
-    entry.formId,
-    entry.versionId,
-    { ...entry.body, queuedAt: entry.queuedAt },
-    { dedupKey: entry.dedupKey }
-  );
+  const send = () =>
+    formService.createSubmission(
+      entry.formId,
+      entry.versionId,
+      { ...entry.body, queuedAt: entry.queuedAt },
+      { dedupKey: entry.dedupKey }
+    );
+  let response;
+  try {
+    response = await send();
+  } catch (error) {
+    if (
+      error?.response?.status !== 403 ||
+      error.response?.data?.code !== 'TURNSTILE_REQUIRED' ||
+      !reachable.value ||
+      navigator.onLine === false ||
+      !isPrimary.value
+    ) {
+      throw error;
+    }
+    const outcome = await new Promise((resolve) => {
+      pendingVerification.value = {
+        entryId: entry.id,
+        formId: entry.formId,
+        resolve,
+      };
+    });
+    pendingVerification.value = null;
+    if (outcome !== VerificationOutcome.VERIFIED) {
+      if (outcome === VerificationOutcome.CANCELLED) {
+        cancelledVerificationForms.add(entry.formId);
+      }
+      throw error;
+    }
+    response = await send();
+  }
   // Surface the real id so synthetic Success pages can swap their URL.
   offlineQueueEvents.emit('synced', {
     dedupKey: entry.dedupKey,
@@ -63,7 +109,7 @@ async function postEntry(entry) {
   return response;
 }
 
-export async function tryDrain() {
+export async function tryDrain({ automatic = false } = {}) {
   // Only the primary (last-focused) tab drains, so SyncProgressModal,
   // ReauthRequiredModal, and drain toasts surface in the tab the user is on.
   if (!isPrimary.value) return;
@@ -96,6 +142,10 @@ export async function tryDrain() {
   }
 
   isDraining.value = true;
+  // Only the 30s tick and tab-focus drains are automatic. Any other drain
+  // (Send, sign-in, reconnect, closing an offline edit) asks again for
+  // cancelled forms.
+  if (!automatic) cancelledVerificationForms.clear();
   try {
     const result = await offlineQueue.flush(
       postEntry,
@@ -116,7 +166,8 @@ export async function tryDrain() {
       ({ total, entries }) => {
         const snapshot = JSON.parse(JSON.stringify(entries)); // NOSONAR
         offlineQueueEvents.emit('drain-start', { total, entries: snapshot });
-      }
+      },
+      isVerificationCancelled
     );
     // If another tab held the lock, no drain-start was emitted; don't emit a
     // misleading drain-end (which would show a "sync complete" summary).
@@ -129,7 +180,7 @@ export async function tryDrain() {
 }
 
 function tick() {
-  tryDrain();
+  void tryDrain({ automatic: true });
   setTimeout(tick, POLL_INTERVAL_MS);
 }
 
@@ -193,8 +244,11 @@ export function startOfflineQueueManager() {
   // Drain immediately when this tab becomes primary (e.g. user just switched
   // focus to us), so remaining entries don't sit until the next 30s tick.
   watch(isPrimary, (primary) => {
-    if (!primary) return;
-    tryDrain();
+    if (!primary) {
+      pendingVerification.value?.resolve(VerificationOutcome.INTERRUPTED);
+      return;
+    }
+    void tryDrain({ automatic: true });
   });
   tick();
 }

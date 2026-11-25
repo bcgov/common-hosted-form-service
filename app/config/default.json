@@ -1,4 +1,9 @@
 {
+  "turnstile": {
+    "siteKey": "",
+    "secretKey": "",
+    "hostnames": ""
+  },
   "db": {
     "database": "chefs",
     "host": "localhost",
@@ -68,6 +73,11 @@
     "logLevel": "http",
     "port": "8080",
     "rateLimit": {
+      "turnstile": {
+        "windowMs": "60000",
+        "limitStatus": "60",
+        "limitVerification": "15"
+      },
       "public": {
         "limitApiKey": "120",
         "limitFrontend": "500",
@@ -161,6 +171,9 @@
     "enabled": true
   },
   "features": {
+    "turnstile": {
+      "enabled": false
+    },
     "offlineForms": {
       "enabled": false
     },

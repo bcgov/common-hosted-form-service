@@ -269,6 +269,20 @@ objects:
                     secretKeyRef:
                       key: submissiontokenkey
                       name: "chefs-${JOB_NAME}-secret"
+                - name: TURNSTILE_HOSTNAMES
+                  value: "${ROUTE_HOST},${TURNSTILE_ADDITIONAL_HOSTNAMES}"
+                - name: TURNSTILE_SITE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: turnstile-site-key
+                      name: "chefs-${JOB_NAME}-turnstile"
+                      optional: true
+                - name: TURNSTILE_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: turnstile-secret-key
+                      name: "chefs-${JOB_NAME}-turnstile"
+                      optional: true
                 - name: EVENTSTREAMSERVICE_USERNAME
                   valueFrom:
                     secretKeyRef:
@@ -360,6 +374,8 @@ parameters:
     description: The host the route will use to expose service outside cluster
     displayName: Route host
     required: true
+  - name: TURNSTILE_ADDITIONAL_HOSTNAMES
+    description: Comma-separated browser hostnames in addition to ROUTE_HOST
   - name: ROUTE_PATH
     description: Configure the route path (ex. /pr-5 or /app), also used for VITE_FRONTEND_BASEPATH
     displayName: Route path

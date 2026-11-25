@@ -107,6 +107,94 @@ describe('offline/queue', () => {
       expect(offlineQueue.entries.value[0].status).toBe(QueueStatus.FAILED_AUTH);
     });
 
+    it('keeps a submission pending when Turnstile proof is required', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      await offlineQueue.enqueue({
+        formId: 'f1', versionId: 'v1', userId: 'u1', body: {},
+      });
+      const post = vi.fn().mockRejectedValue({
+        response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } },
+      });
+      const onEntryFailed = vi.fn();
+
+      const result = await offlineQueue.flush(post, undefined, onEntryFailed);
+
+      expect(result).toEqual({ total: 1, sent: 0, failed: 0 });
+      expect(offlineQueue.entries.value[0].status).toBe(QueueStatus.PENDING);
+      expect(onEntryFailed).not.toHaveBeenCalled();
+    });
+
+    it('carries on with the next entry when one still needs Turnstile verification', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      await offlineQueue.enqueue({ formId: 'f2', versionId: 'v2', userId: 'u1', body: {} });
+      const post = vi.fn(async (entry) => {
+        if (entry.formId === 'f1') {
+          throw { response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } } };
+        }
+      });
+
+      const result = await offlineQueue.flush(post);
+
+      expect(result).toEqual({ total: 2, sent: 1, failed: 0 });
+      expect(post).toHaveBeenCalledTimes(2);
+      expect(offlineQueue.entries.value).toHaveLength(1);
+      expect(offlineQueue.entries.value[0]).toMatchObject({ formId: 'f1', status: QueueStatus.PENDING });
+    });
+
+    it('leaves deferred entries pending and out of the drain', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      await offlineQueue.enqueue({ formId: 'f2', versionId: 'v2', userId: 'u1', body: {} });
+      const post = vi.fn().mockResolvedValue({});
+      const onStart = vi.fn();
+
+      const result = await offlineQueue.flush(post, undefined, undefined, onStart, (e) => e.formId === 'f1');
+
+      expect(result).toEqual({ total: 1, sent: 1, failed: 0 });
+      expect(post).toHaveBeenCalledTimes(1);
+      expect(post.mock.calls[0][0].formId).toBe('f2');
+      expect(onStart).toHaveBeenCalledWith(expect.objectContaining({ total: 1 }));
+      expect(offlineQueue.entries.value).toHaveLength(1);
+      expect(offlineQueue.entries.value[0]).toMatchObject({ formId: 'f1', status: QueueStatus.PENDING });
+    });
+
+    it('does not start a drain when every entry is deferred', async () => {
+      const { offlineQueue } = await freshQueue();
+      await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      const post = vi.fn();
+      const onStart = vi.fn();
+
+      const result = await offlineQueue.flush(post, undefined, undefined, onStart, () => true);
+
+      expect(result).toEqual({ total: 0, sent: 0, failed: 0 });
+      expect(onStart).not.toHaveBeenCalled();
+      expect(post).not.toHaveBeenCalled();
+    });
+
+    it('skips later entries of a form deferred partway through the drain', async () => {
+      const { offlineQueue, QueueStatus } = await freshQueue();
+      await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      await offlineQueue.enqueue({ formId: 'f2', versionId: 'v2', userId: 'u1', body: {} });
+      await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });
+      const deferred = new Set();
+      const post = vi.fn(async (entry) => {
+        if (entry.formId === 'f1') {
+          deferred.add('f1');
+          throw { response: { status: 403, data: { code: 'TURNSTILE_REQUIRED' } } };
+        }
+      });
+
+      const result = await offlineQueue.flush(post, undefined, undefined, undefined, (e) => deferred.has(e.formId));
+
+      expect(result).toEqual({ total: 3, sent: 1, failed: 0 });
+      expect(post.mock.calls.map(([e]) => e.formId)).toEqual(['f1', 'f2']);
+      expect(offlineQueue.entries.value.map((e) => [e.formId, e.status])).toEqual([
+        ['f1', QueueStatus.PENDING],
+        ['f1', QueueStatus.PENDING],
+      ]);
+    });
+
     it('fires onEntryFailed on permanent 4xx and continues to the next entry', async () => {
       const { offlineQueue, QueueStatus } = await freshQueue();
       await offlineQueue.enqueue({ formId: 'f1', versionId: 'v1', userId: 'u1', body: {} });

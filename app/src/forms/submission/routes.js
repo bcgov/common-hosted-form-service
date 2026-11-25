@@ -5,12 +5,23 @@ const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = req
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
-
-routes.use(currentUser);
+const turnstileController = require('../form/turnstile/controller');
+const { turnstileStatusLimiter, turnstileVerificationLimiter } = require('../form/turnstile/rateLimiter');
 
 routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formSubmissionId', validateParameter.validateFormSubmissionId);
+
+routes.get('/:formSubmissionId/turnstile', turnstileStatusLimiter, currentUser, hasSubmissionPermissions([P.SUBMISSION_UPDATE]), turnstileController.readSubmissionStatus);
+routes.post(
+  '/:formSubmissionId/turnstile',
+  turnstileVerificationLimiter,
+  currentUser,
+  hasSubmissionPermissions([P.SUBMISSION_UPDATE]),
+  turnstileController.verifySubmissionChallenge
+);
+
+routes.use(currentUser);
 
 routes.get('/:formSubmissionId', apiAccess, hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.read(req, res, next);

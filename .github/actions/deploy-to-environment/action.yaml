@@ -70,6 +70,45 @@ runs:
         oc login --token="${OC_TOKEN}" --server="${OC_SERVER}" --insecure-skip-tls-verify
         oc project "${OC_NAMESPACE}"
 
+    - name: Check Turnstile Secret
+      id: turnstile-preflight
+      shell: bash
+      env:
+        JOB_NAME: ${{ inputs.job_name }}
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
+        ACRONYM: ${{ inputs.acronym }}
+      run: |
+        set -euo pipefail
+
+        PARAM_FILE="openshift/features.${NAMESPACE_ENVIRONMENT}.param"
+        if [[ "${JOB_NAME}" == pr-* ]]; then
+          PARAM_FILE="openshift/features.pr.param"
+        fi
+
+        FEATURE_CONFIG="$(mktemp "${RUNNER_TEMP}/chefs-features.XXXXXX")"
+        oc process --namespace "${NAMESPACE}" -f openshift/features.cm.yaml \
+          -p APP_NAME="${ACRONYM}" -p JOB_NAME="${JOB_NAME}" --param-file="${PARAM_FILE}" -o json > "${FEATURE_CONFIG}"
+        echo "feature_config=${FEATURE_CONFIG}" >> "${GITHUB_OUTPUT}"
+
+        ENABLED="$(python3 -c 'import json, sys; print(json.load(sys.stdin)["items"][0]["data"]["FEATURES_TURNSTILE_ENABLED"])' < "${FEATURE_CONFIG}")"
+        # Match the falsey values used by the backend feature service.
+        case "${ENABLED,,}" in
+          ''|0|false|nada|nil|nay|nah|negative|no|none|nope|nul|null|nix|nyet|uh-uh|veto|zero) exit 0 ;;
+          *) SECRET_NAME="chefs-${JOB_NAME}-turnstile" ;;
+        esac
+
+        for KEY in turnstile-site-key turnstile-secret-key; do
+          if ! VALUE="$(oc get --namespace "${NAMESPACE}" secret "${SECRET_NAME}" -o jsonpath="{.data.${KEY}}")"; then
+            echo "::error::Turnstile is enabled, but Secret ${SECRET_NAME} could not be read in ${NAMESPACE}."
+            exit 1
+          fi
+          if [[ -z "${VALUE}" ]]; then
+            echo "::error::Turnstile Secret ${SECRET_NAME} in ${NAMESPACE} requires a non-empty ${KEY}."
+            exit 1
+          fi
+        done
+
     - name: Deploy Patroni Secret
       shell: bash
       run: >-
@@ -147,16 +186,10 @@ runs:
     - name: Deploy Feature Flag ConfigMaps
       shell: bash
       env:
-        JOB_NAME: ${{ inputs.job_name }}
-        NAMESPACE_PREFIX: ${{ inputs.namespace_prefix }}
-        NAMESPACE_ENVIRONMENT: ${{ inputs.namespace_environment }}
-        ACRONYM: ${{ inputs.acronym }}
+        NAMESPACE: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        FEATURE_CONFIG: ${{ steps.turnstile-preflight.outputs.feature_config }}
       run: |
-        if [[ "${JOB_NAME}" == pr-* ]]; then
-          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/features.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/features.pr.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
-        else
-          oc process --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f openshift/features.cm.yaml -p APP_NAME=${ACRONYM} -p JOB_NAME=${JOB_NAME} --param-file=openshift/features.${NAMESPACE_ENVIRONMENT}.param -o yaml | oc apply --namespace ${NAMESPACE_PREFIX}-${NAMESPACE_ENVIRONMENT} -f -
-        fi
+        oc apply --namespace "${NAMESPACE}" -f "${FEATURE_CONFIG}"
 
     - name: Delete pre-job if it exists
       shell: bash

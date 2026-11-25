@@ -991,6 +991,91 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/turnstile:
+    parameters:
+      - $ref: '#/components/parameters/formIdParam'
+      - $ref: '#/components/parameters/turnstileUnused'
+    get:
+      summary: Get Turnstile verification status for a form
+      description: >-
+        Form read permission is required. Turnstile GET requests share a limit of 60 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
+      operationId: readFormTurnstileStatus
+      security:
+        - {}
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      responses:
+        '200':
+          description: Verification status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnstileStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Turnstile is not configured for this deployment
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      summary: Verify a Turnstile challenge for a form
+      description: >-
+        Form read permission is required. Turnstile POST requests share a limit of 15 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
+      operationId: verifyFormTurnstileChallenge
+      security:
+        - {}
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                  description: The token returned by the Cloudflare widget
+      responses:
+        '204':
+          description: The request is verified or the form does not require verification.
+          headers:
+            Set-Cookie:
+              description: A form-scoped HTTP-only proof cookie, issued after a successful challenge and valid for 15 minutes.
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The challenge token could not be verified
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Turnstile is not configured for this deployment
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
   /forms/{formId}/options:
     get:
       summary: Get pre-flight details for a form
@@ -1131,7 +1216,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/ForbiddenOrTurnstileRequired'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '503':
@@ -1602,7 +1687,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/ForbiddenOrTurnstileRequired'
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
@@ -1657,7 +1742,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/ForbiddenOrTurnstileRequired'
         '404':
           $ref: '#/components/responses/NotFound'
         '429':
@@ -1789,7 +1874,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/components/responses/ForbiddenOrTurnstileRequired'
         '503':
           $ref: '#/components/responses/ServiceUnavailable'
         default:
@@ -1835,6 +1920,89 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /submissions/{formSubmissionId}/turnstile:
+    parameters:
+      - $ref: '#/components/parameters/formSubmissionIdParam'
+      - $ref: '#/components/parameters/turnstileUnused'
+    get:
+      summary: Get Turnstile verification status for a saved submission
+      description: >-
+        Submission update permission is required. Turnstile GET requests share a limit of 60 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
+      operationId: readSubmissionTurnstileStatus
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      responses:
+        '200':
+          description: Verification status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnstileStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Turnstile is not configured for this deployment
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      summary: Verify a Turnstile challenge for a saved submission
+      description: >-
+        Submission update permission is required. Turnstile POST requests share a limit of 15 per
+        minute per client IP across the form and saved-submission endpoints on each app replica.
+      operationId: verifySubmissionTurnstileChallenge
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Submission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                  description: The token returned by the Cloudflare widget
+      responses:
+        '204':
+          description: The request is verified or the form does not require verification.
+          headers:
+            Set-Cookie:
+              description: A form-scoped HTTP-only proof cookie, issued after a successful challenge and valid for 15 minutes.
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The challenge token could not be verified
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Turnstile is not configured for this deployment
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
   /submissions/{formSubmissionId}/email:
     post:
       summary: Email a message with link to a submission
@@ -4689,6 +4857,14 @@ components:
         format: uuid
       example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
       required: true
+    turnstileUnused:
+      in: query
+      name: unused
+      description: Require proof with a remaining submission allowance.
+      required: false
+      schema:
+        type: boolean
+        default: false
     formIdParam:
       in: path
       name: formId
@@ -6093,6 +6269,17 @@ components:
               type: boolean
               example: true
         - $ref: '#/components/schemas/TimeStampUserData'
+    TurnstileStatus:
+      type: object
+      required:
+        - verified
+      properties:
+        verified:
+          type: boolean
+          description: Whether the request already satisfies the verification requirement.
+        siteKey:
+          type: string
+          description: The public widget key, returned when a challenge is required.
     Problem:
       required:
         - type
@@ -6844,6 +7031,33 @@ components:
                     example: Conflict
                   type:
                     example: https://httpstatuses.com/409
+    ForbiddenOrTurnstileRequired:
+      description: The request is forbidden or requires a fresh Turnstile proof.
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, status, title, detail]
+            properties:
+              type:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              detail:
+                type: string
+              code:
+                type: string
+                description: TURNSTILE_REQUIRED when proof is missing, expired, or spent for a protected write.
+          examples:
+            turnstileRequired:
+              value:
+                type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+                status: 403
+                title: Forbidden
+                detail: Complete bot verification before using this form.
+                code: TURNSTILE_REQUIRED
     Forbidden:
       description: Lack required role to perform action
       content:
